@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +38,7 @@ public class HttpServerChannelInitializer extends ChannelInitializer<SocketChann
 	private final boolean enableGzip;
 	private final boolean enableCors;
 	private final ScheduledExecutorService service;
+	private final Executor executor = Executors.newFixedThreadPool(1024);
 
 	private static final DateTimeFormatter GMT_FMT = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz",
 			Locale.US);
@@ -76,6 +79,6 @@ public class HttpServerChannelInitializer extends ChannelInitializer<SocketChann
 			CorsConfig corsConfig = CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build();
 			pipeline.addLast(new CorsHandler(corsConfig));
 		}
-		pipeline.addLast("server", new HttpServerHandler(context));
+		pipeline.addLast("server", new HttpServerHandler(context, executor));
 	}
 }

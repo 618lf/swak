@@ -3,7 +3,6 @@ package com.swak.http.server;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +40,11 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(HttpServerHandler.class);
 
 	private final HttpServerContext context;
-	private final Executor executor = Executors.newScheduledThreadPool(1024);
+	private final Executor executor;
 
-	public HttpServerHandler(HttpServerContext context) {
+	public HttpServerHandler(HttpServerContext context, Executor executor) {
 		this.context = context;
+		this.executor = executor;
 	}
 
 	@Override
