@@ -1,6 +1,9 @@
 package com.swak.http.server;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +39,9 @@ import io.netty.util.ReferenceCountUtil;
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
 	private static final Logger logger = LoggerFactory.getLogger(HttpServerHandler.class);
-	
+
 	private final HttpServerContext context;
+	private final Executor executor = Executors.newScheduledThreadPool(1024);
 
 	public HttpServerHandler(HttpServerContext context) {
 		this.context = context;
@@ -46,7 +50,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if (msg instanceof HttpRequest) {
-			ctx.executor().execute(new HttpWorkTask(ctx, (FullHttpRequest) msg));
+			CompletableFuture.runAsync(new HttpWorkTask(ctx, (FullHttpRequest) msg), executor);
 		}
 	}
 
@@ -80,7 +84,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	 * @author lifeng
 	 */
 	class HttpWorkTask implements Runnable {
-		
+
 		private ChannelHandlerContext ctx;
 		private FullHttpRequest req;
 
@@ -91,17 +95,16 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
 		@Override
 		public void run() {
-			
+
 			// 标准的 请求 < -- > 响应
 			HttpServletResponse response = HttpServletResponse.build(HttpServerChannelInitializer.date);
 			HttpServletRequest request = HttpServletRequest.build(ctx, req, response);
-			
+
 			// http 请求处理
 			try {
-				
+
 				// filter 的处理
-				
-				
+
 				// Servlet 处理
 				Servlet servlet = HttpServerHandler.this.context.getServlet();
 				if (servlet != null) {
@@ -121,15 +124,17 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 			}
-			
+
 			// 释放资源 for gc
 			finally {
 				ReferenceCountUtil.release(req);
 				try {
 					Closeables.close(request, true);
 					Closeables.close(response, true);
-					request = null; response = null;
-				} catch (IOException e) {}
+					request = null;
+					response = null;
+				} catch (IOException e) {
+				}
 			}
 		}
 	}
