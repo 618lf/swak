@@ -20,6 +20,9 @@
 		<netty.version>4.1.20.Final</netty.version>
 		<metrics.version>4.0.2</metrics.version>
 		<commons-io.version>2.4</commons-io.version>
+		<version.kryo>4.0.1</version.kryo>
+		<version.protostuff>1.6.0</version.protostuff>
+		<version.javassist>3.22.0-GA</version.javassist>
 
 		<!-- test -->
 		<junit.version>4.12</junit.version>
@@ -166,6 +169,27 @@
 				<artifactId>spring-test</artifactId>
 				<version>${spring.version}</version>
 				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.esotericsoftware</groupId>
+				<artifactId>kryo</artifactId>
+				<version>${version.kryo}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.protostuff</groupId>
+				<artifactId>protostuff-core</artifactId>
+				<version>${version.protostuff}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.protostuff</groupId>
+				<artifactId>protostuff-runtime</artifactId>
+				<version>${version.protostuff}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.javassist</groupId>
+				<artifactId>javassist</artifactId>
+				<version>${version.javassist}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
