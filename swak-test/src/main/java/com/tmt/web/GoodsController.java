@@ -26,7 +26,10 @@ public class GoodsController {
 	 */
 	@RequestMapping("/count/{name}")
 	public String count(@PathVariable Integer name, HttpServletResponse response) {
-		for(int i=0; i<5000000;i++) {}
+		try {
+			Thread.sleep(20);
+		} catch (InterruptedException e) {
+		}
 		return "获取总数";
 	}
 
