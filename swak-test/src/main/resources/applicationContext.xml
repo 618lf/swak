@@ -12,10 +12,13 @@
 
 	<description>Spring Configuration</description>
 
-	<context:component-scan base-package="com.tmt" />
+	<context:component-scan base-package="com.tmt.*"/>
 
 	<!-- 系统服务 -->
 	<netty:server host="127.0.0.1" port="8080" enableGzip="true">
 		<netty:servlet class="com.swak.mvc.DispatcherServlet" />
 	</netty:server>
+	
+	<!-- rpc 服务 -->
+	<bean class="com.swak.rpc.boot.ClientBooter"></bean>
 </beans>
