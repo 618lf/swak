@@ -1,4 +1,4 @@
-package com.swak.mvc.utils;
+package com.swak.common.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,25 +15,27 @@ import com.alibaba.fastjson.serializer.SerializeFilter;
 import com.alibaba.fastjson.serializer.SerializeWriter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
+/**
+ * Json 操作工具类
+ * @author lifeng
+ */
 public class JsonMapper {
 
-	// 序列化
-	private static SerializerFeature[] FEATURES = { SerializerFeature.DisableCircularReferenceDetect };
-
+	//序列化
+	private static SerializerFeature[] FEATURES = {SerializerFeature.DisableCircularReferenceDetect};
+	
 	/**
 	 * json to List<java bean>
-	 * 
 	 * @param json
 	 * @param clazz
 	 * @return
 	 */
-	public static <T> List<T> fromJsonToList(String json, Class<T> clazz) {
+	public static <T> List<T> fromJsonToList(String json, Class<T> clazz){
 		return JSON.parseArray(json, clazz);
 	}
-
+	
 	/**
 	 * json to java bean
-	 * 
 	 * @param json
 	 * @param clazz
 	 * @return
@@ -41,55 +43,50 @@ public class JsonMapper {
 	public static <T> T fromJson(String json, Class<T> clazz) {
 		return JSON.parseObject(json, clazz);
 	}
-
+	
 	/**
 	 * java bean to json
-	 * 
 	 * @param object
 	 * @return
 	 */
 	public static String toJson(Object object) {
 		return toJson(object, FEATURES);
 	}
-
+	
 	/**
 	 * java bean to json
-	 * 
 	 * @param object
 	 * @return
 	 */
 	public static String toJson(Object object, SerializerFeature[] features) {
-		if (features == null || features.length == 0) {
-			features = new SerializerFeature[] { SerializerFeature.WriteNullBooleanAsFalse,
-					SerializerFeature.WriteNullListAsEmpty };
+		if (features == null || features.length == 0){
+			features = new SerializerFeature[]{SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullListAsEmpty};
 		}
 		return toJSONString(object, JSON.DEFAULT_GENERATE_FEATURE, features);
 	}
-
+	
 	/**
 	 * copy from JSON 支持 long to string
-	 * 
 	 * @param object
 	 * @param defaultFeatures
 	 * @param features
 	 * @return
 	 */
 	public static String toJSONString(Object object, int defaultFeatures, SerializerFeature... features) {
-		SerializeWriter out = new SerializeWriter((Writer) null, defaultFeatures, features);
+        SerializeWriter out = new SerializeWriter((Writer) null, defaultFeatures, features);
 
-		try {
-			JSONSerializer serializer = new JSONSerializer(out);
-			serializer.getMapping().put(Long.class, longSerializer);
-			serializer.write(object);
-			return out.toString();
-		} finally {
-			out.close();
-		}
-	}
-
+        try {
+            JSONSerializer serializer = new JSONSerializer(out);
+            serializer.getMapping().put(Long.class, longSerializer);
+            serializer.write(object);
+            return out.toString();
+        } finally {
+            out.close();
+        }
+    }
+	
 	/**
 	 * 写入 outputStream
-	 * 
 	 * @param os
 	 * @param charset
 	 * @param object
@@ -109,14 +106,16 @@ public class JsonMapper {
 			String dateFormat, //
 			int defaultFeatures, //
 			SerializerFeature... features) throws IOException {
-		SerializeWriter writer = new SerializeWriter(null, defaultFeatures, features);
+		SerializeWriter writer = new SerializeWriter(null, defaultFeatures,
+				features);
 
 		try {
 			JSONSerializer serializer = new JSONSerializer(writer, config);
 
 			if (dateFormat != null && dateFormat.length() != 0) {
 				serializer.setDateFormat(dateFormat);
-				serializer.config(SerializerFeature.WriteDateUseDateFormat, true);
+				serializer.config(SerializerFeature.WriteDateUseDateFormat,
+						true);
 			}
 
 			if (filters != null) {
@@ -124,7 +123,7 @@ public class JsonMapper {
 					serializer.addFilter(filter);
 				}
 			}
-
+			
 			serializer.getMapping().put(Long.class, longSerializer);
 
 			serializer.write(object);
@@ -135,14 +134,15 @@ public class JsonMapper {
 			writer.close();
 		}
 	}
-
+	
 	/**
 	 * 支持 long 转string
 	 */
 	static ObjectSerializer longSerializer = new ObjectSerializer() {
 
 		@Override
-		public void write(JSONSerializer serializer, Object object, Object fieldName, Type fieldType, int features)
+		public void write(JSONSerializer serializer, Object object,
+				Object fieldName, Type fieldType, int features)
 				throws IOException {
 			SerializeWriter out = serializer.getWriter();
 			if (object != null) {

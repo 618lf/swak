@@ -1,4 +1,4 @@
-package com.swak.mvc.utils;
+package com.swak.common.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,15 +17,22 @@ import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
+import org.apache.commons.io.IOUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.google.common.io.Closeables;
 import com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler;
 
+/**
+ * 使用Jaxb2.0实现XML<->Java Object的Mapper.
+ * 
+ * 在创建时需要设定所有需要序列化的Root对象的Class.
+ * 特别支持Root对象是Collection的情形.
+ * 
+ * @author calvin
+ * @version 2013-01-15
+ */
 @SuppressWarnings("restriction")
 public class JaxbMapper {
 
@@ -42,8 +49,7 @@ public class JaxbMapper {
 	 * Java Object->Xml without encoding.
 	 */
 	public static String toXml(Object root) {
-		Class<?> clazz = ClassUtils.getUserClass(root);
-		return toXml(root, clazz);
+		return toXml(root, root.getClass());
 	}
 
 	/**
@@ -56,10 +62,11 @@ public class JaxbMapper {
 			marshaller = createMarshaller(clazz);
 			marshaller.marshal(root, writer);
 			String xml = writer.toString();
-			Closeables.close(writer, true);
+			IOUtils.closeQuietly(writer);
 			return xml;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (JAXBException e) {
+			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz
+					+ "]: " + e.getMessage(), e);
 		}
 	}
 	
@@ -69,7 +76,7 @@ public class JaxbMapper {
 	public static void toXml(Object root, OutputStream out) {
 		Marshaller marshaller = null;
 		try {
-			marshaller = createMarshaller(ClassUtils.getUserClass(root));
+			marshaller = createMarshaller(root.getClass());
 			marshaller.marshal(root, new StreamResult(out));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -87,7 +94,8 @@ public class JaxbMapper {
 			StringReader reader = new StringReader(xml);
 			return (T) unmarshaller.unmarshal(reader);
 		} catch (JAXBException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz
+					+ "]: " + e.getMessage(), e);
 		}
 	}
 	
@@ -123,7 +131,8 @@ public class JaxbMapper {
             });
 			return marshaller;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz
+					+ "]: " + e.getMessage(), e);
 		}
 	}
 
@@ -137,12 +146,12 @@ public class JaxbMapper {
 			Unmarshaller marshaller = jaxbContext.createUnmarshaller();
 			return marshaller;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz
+					+ "]: " + e.getMessage(), e);
 		}
 	}
 
 	protected static JAXBContext getJaxbContext(Class<?> clazz) {
-		Assert.notNull(clazz, "'clazz' must not be null");
 		JAXBContext jaxbContext = CONTEXT.get(clazz);
 		if (jaxbContext == null) {
 			try {

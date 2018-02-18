@@ -5,10 +5,10 @@ import java.io.InputStream;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
+import com.swak.common.utils.JsonMapper;
 import com.swak.http.HttpConst;
 import com.swak.http.HttpServletRequest;
 import com.swak.http.HttpServletResponse;
-import com.swak.mvc.utils.JsonMapper;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 

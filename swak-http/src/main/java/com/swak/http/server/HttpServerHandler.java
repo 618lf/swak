@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.io.Closeables;
 import com.swak.http.HttpServletRequest;
 import com.swak.http.HttpServletResponse;
-import com.swak.http.Servlet;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -103,13 +102,8 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 			// http 请求处理
 			try {
 
-				// filter 的处理
-
-				// Servlet 处理
-				Servlet servlet = HttpServerHandler.this.context.getServlet();
-				if (servlet != null) {
-					servlet.service(request, response);
-				}
+				// 执行链
+				context.buildFilterChain().doFilter(request, response);
 
 				// 构建响应
 				HttpResponse _response = response.render();

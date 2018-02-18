@@ -7,10 +7,10 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.springframework.core.annotation.AnnotationUtils;
 
+import com.swak.common.utils.JaxbMapper;
 import com.swak.http.HttpConst;
 import com.swak.http.HttpServletRequest;
 import com.swak.http.HttpServletResponse;
-import com.swak.mvc.utils.JaxbMapper;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 

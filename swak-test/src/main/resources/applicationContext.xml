@@ -12,11 +12,20 @@
 
 	<description>Spring Configuration</description>
 
+    <!-- 服务提供 -->
 	<context:component-scan base-package="com.tmt.*"/>
+	
+	<!-- 引入安全服务 -->
+	<import resource="classpath:*applicationContext-security.xml"/>
+	
+    <!-- 引入mvc服务 -->
+    <import resource="classpath:*applicationContext-mvc.xml"/>
 
-	<!-- 系统服务 -->
+	<!-- http服务 -->
 	<netty:server host="127.0.0.1" port="8080" enableGzip="true">
-		<netty:servlet class="com.swak.mvc.DispatcherServlet" />
+	    <!-- 将安全filter设置为全局的filter -->
+	    <netty:filter filter-name="securityFilter"/>
+		<netty:servlet servlet-name="dispatcherServlet"/>
 	</netty:server>
 	
 	<!-- rpc 服务 -->

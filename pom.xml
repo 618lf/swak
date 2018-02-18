@@ -9,6 +9,7 @@
 		<module>swak-http</module>
 		<module>swak-rpc</module>
 		<module>swak-test</module>
+		<module>swak-common</module>
 	</modules>
 	<properties>
 		<cglib.version>2.2.2</cglib.version>
@@ -20,6 +21,7 @@
 		<netty.version>4.1.20.Final</netty.version>
 		<metrics.version>4.0.2</metrics.version>
 		<commons-io.version>2.4</commons-io.version>
+		<commons-codec.version>1.8</commons-codec.version>
 		<version.kryo>4.0.1</version.kryo>
 		<version.protostuff>1.6.0</version.protostuff>
 		<version.javassist>3.22.0-GA</version.javassist>
@@ -47,6 +49,11 @@
 	</repositories>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-common</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>com.swak</groupId>
 				<artifactId>swak-http</artifactId>
@@ -157,6 +164,11 @@
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>${commons-io.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>${commons-codec.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>

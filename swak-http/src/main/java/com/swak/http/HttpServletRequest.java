@@ -153,6 +153,18 @@ public class HttpServletRequest implements Closeable {
 	public String getCharacterEncoding() {
 		return CharsetUtil.UTF_8.name();
 	}
+	
+	/**
+	 * 设置属性
+	 * 
+	 * @param name
+	 * @param value
+	 */
+	public void removeAttribute(String name) {
+		if (attributes != null) {
+			attributes.remove(name);
+		}
+	}
 
 	/**
 	 * 设置属性

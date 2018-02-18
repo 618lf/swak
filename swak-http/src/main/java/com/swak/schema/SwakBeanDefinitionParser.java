@@ -139,6 +139,21 @@ public class SwakBeanDefinitionParser implements BeanDefinitionParser{
 	}
 	
 	/**
+	 * 解析filter
+	 * @param element
+	 * @param parserContext
+	 * @return
+	 */
+	private RuntimeBeanReference parseFilter(Element element, ParserContext parserContext) {
+		Element servletElement = DomUtils.getChildElementByTagName(element, "filter");
+		if (servletElement != null) {
+			String filterName = servletElement.getAttribute("filter-name");
+			return new RuntimeBeanReference(filterName);
+		}
+		return null;
+	}
+	
+	/**
 	 * 解析Servlet
 	 * @param element
 	 * @param parserContext
@@ -146,13 +161,11 @@ public class SwakBeanDefinitionParser implements BeanDefinitionParser{
 	 */
 	private RuntimeBeanReference parseServlet(Element element, ParserContext parserContext) {
 		Element servletElement = DomUtils.getChildElementByTagName(element, "servlet");
-		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ServletBean.class);
-		builder.getRawBeanDefinition().setSource(parserContext.extractSource(servletElement));
-        builder.addPropertyValue("target", servletElement.getAttribute("class"));
-        RootBeanDefinition servletBeanDefinition = (RootBeanDefinition)builder.getBeanDefinition(); 
-        String name = parserContext.getReaderContext().registerWithGeneratedName(servletBeanDefinition);
-        parserContext.getReaderContext().getRegistry().registerBeanDefinition(name , servletBeanDefinition);
-        return new RuntimeBeanReference(name);
+		if (servletElement != null) {
+			String servletName = servletElement.getAttribute("servlet-name");
+			return new RuntimeBeanReference(servletName);
+		}
+		return null;
 	}
 	
 	/**
@@ -210,6 +223,10 @@ public class SwakBeanDefinitionParser implements BeanDefinitionParser{
         	builder.addPropertyValue("privateKeyPassword", privateKeyPassword);
         }
         RootBeanDefinition serverBeanDefinition = (RootBeanDefinition)builder.getBeanDefinition();
+        RuntimeBeanReference filterRef = this.parseFilter(element, parserContext);
+        if (filterRef != null) {
+        	serverBeanDefinition.getPropertyValues().add("filter", filterRef);
+        }
         serverBeanDefinition.getPropertyValues().add("servlet", this.parseServlet(element, parserContext));
         String name = parserContext.getReaderContext().registerWithGeneratedName(serverBeanDefinition);
         parserContext.getReaderContext().getRegistry().registerBeanDefinition(name , serverBeanDefinition);

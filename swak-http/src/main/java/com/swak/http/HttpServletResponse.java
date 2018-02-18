@@ -174,6 +174,18 @@ public class HttpServletResponse implements Closeable {
 		this.statusCode = status.code();
 		this.send(msg);
 	}
+	
+	/**
+	 * 输出错误信息
+	 * 
+	 * @param code
+	 * @throws UnsupportedEncodingException
+	 */
+	public void sendJson(HttpResponseStatus status, String msg) {
+		headers.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
+		this.statusCode = status.code();
+		this.send(msg);
+	}
 
 	/**
 	 * 只能调用一次

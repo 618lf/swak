@@ -2,6 +2,7 @@ package com.swak.http.server;
 
 import com.codahale.metrics.MetricRegistry;
 import com.swak.http.Filter;
+import com.swak.http.FilterChain;
 import com.swak.http.ServerContext;
 import com.swak.http.Servlet;
 import com.swak.http.server.HttpServer.Builder;
@@ -25,8 +26,8 @@ public class HttpServerContext extends ServerContext {
 
 	public HttpServerContext(MetricRegistry registry, Builder builder) {
 		super(registry, builder);
-
 		this.servlet = builder.getServlet();
+		this.filter = builder.getFilters();
 	}
 
 	public Servlet getServlet() {
@@ -35,5 +36,13 @@ public class HttpServerContext extends ServerContext {
 
 	public Filter getFilter() {
 		return this.filter;
+	}
+	
+	/**
+	 * 构建执行链
+	 * @return
+	 */
+	public FilterChain buildFilterChain() {
+		return new DefaultFilterChain(this.filter, this.servlet);
 	}
 }

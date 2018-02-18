@@ -16,7 +16,7 @@ public interface Servlet {
 	/**
 	 * 执行服务
 	 */
-	void service(HttpServletRequest request, HttpServletResponse response);
+	void doService(HttpServletRequest request, HttpServletResponse response);
 	
 	/**
 	 * 销毁

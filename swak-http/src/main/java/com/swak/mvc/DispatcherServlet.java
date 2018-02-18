@@ -44,7 +44,7 @@ public class DispatcherServlet implements Servlet {
 	 * 提供服务
 	 */
 	@Override
-	public void service(HttpServletRequest request, HttpServletResponse response) {
+	public void doService(HttpServletRequest request, HttpServletResponse response) {
 		HandlerExecutionChain mappedHandler = null;
 		Exception dispatchException = null;
 		

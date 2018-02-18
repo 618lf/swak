@@ -117,7 +117,7 @@ public class HttpServer implements Server {
 
 		// mvc 配置
 		private Servlet servlet;
-		private Filter[] filters;
+		private Filter filter;
 
 		public int getPort() {
 			return port;
@@ -183,12 +183,12 @@ public class HttpServer implements Server {
 			this.servlet = servlet;
 		}
 
-		public Filter[] getFilters() {
-			return filters;
+		public Filter getFilters() {
+			return filter;
 		}
 
-		public void setFilters(Filter[] filters) {
-			this.filters = filters;
+		public void setFilters(Filter filter) {
+			this.filter = filter;
 		}
 
 		public void setReadTimeout(int readTimeout) {
