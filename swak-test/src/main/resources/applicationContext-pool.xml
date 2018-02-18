@@ -10,7 +10,7 @@
 		<property name="poolDefinitions">
 			<value>
 				/admin/system = 2:1:0
-				/admin = 2000:1024:60
+				/admin = 2:1:60
 			</value>
 		</property>
 	</bean>
