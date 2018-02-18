@@ -3,10 +3,10 @@ package com.swak.security;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
+import com.swak.http.Filter;
 import com.swak.http.FilterChain;
 import com.swak.http.HttpServletRequest;
 import com.swak.http.HttpServletResponse;
-import com.swak.security.filter.OncePerRequestFilter;
 import com.swak.security.mgt.FilterChainResolver;
 import com.swak.security.mgt.SecurityManager;
 import com.swak.security.subjct.Subject;
@@ -15,7 +15,7 @@ import com.swak.security.subjct.Subject;
  * 安全过滤器
  * @author lifeng
  */
-public class SecurityFilter extends OncePerRequestFilter {
+public class SecurityFilter implements Filter {
 
 	private SecurityManager securityManager;
 	private FilterChainResolver filterChainResolver;
@@ -30,8 +30,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 	 */
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain){
-		
+	public void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain){
 		Throwable t = null;
 		Subject subejct = null;
 		try {
