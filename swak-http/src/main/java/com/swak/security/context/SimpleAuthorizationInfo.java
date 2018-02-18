@@ -2,7 +2,7 @@ package com.swak.security.context;
 
 import java.util.Set;
 
-import com.google.common.collect.Sets;
+import com.swak.common.utils.Sets;
 
 /**
  * 简单的权限信息

@@ -10,9 +10,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.util.StringUtils;
 
-import com.google.common.io.Closeables;
 import com.swak.mvc.annotation.RequestMethod;
 
 import io.netty.buffer.ByteBuf;
@@ -362,7 +362,7 @@ public class HttpServletRequest implements Closeable {
 			this.pathVariables = null;
 		}
 		if (is != null) {
-			Closeables.closeQuietly(is);
+			IOUtils.closeQuietly(is);
 		}
 	}
 

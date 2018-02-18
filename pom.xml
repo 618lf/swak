@@ -15,7 +15,6 @@
 		<cglib.version>2.2.2</cglib.version>
 		<spring.version>4.3.7.RELEASE</spring.version>
 		<fastjson.version>1.2.32</fastjson.version>
-		<guava.version>18.0</guava.version>
 		<logback.version>1.1.7</logback.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<netty.version>4.1.20.Final</netty.version>
@@ -143,11 +142,6 @@
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava.version}</version>
 			</dependency>
 			<!-- netty -->
 			<dependency>

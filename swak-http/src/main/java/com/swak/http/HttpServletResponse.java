@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.google.common.io.Closeables;
+import org.apache.commons.io.IOUtils;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -235,7 +235,7 @@ public class HttpServletResponse implements Closeable {
 	@Override
 	public void close() throws IOException {
 		if (os != null) {
-			Closeables.close(os, true);
+			IOUtils.closeQuietly(os);
 			os = null;
 		}
 		if (buffer != null) {

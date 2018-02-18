@@ -10,7 +10,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
-import com.google.common.collect.Sets;
+import com.swak.common.utils.Sets;
 import com.swak.rpc.annotation.RpcService;
 import com.swak.rpc.remote.RemoteServiceFactory;
 

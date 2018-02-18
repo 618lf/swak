@@ -1,13 +1,12 @@
 package com.swak.http.server;
 
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.Closeables;
 import com.swak.http.HttpServletRequest;
 import com.swak.http.HttpServletResponse;
 
@@ -122,13 +121,10 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 			// 释放资源 for gc
 			finally {
 				ReferenceCountUtil.release(req);
-				try {
-					Closeables.close(request, true);
-					Closeables.close(response, true);
-					request = null;
-					response = null;
-				} catch (IOException e) {
-				}
+				IOUtils.closeQuietly(request);
+				IOUtils.closeQuietly(response);
+				request = null;
+				response = null;
 			}
 		}
 	}
