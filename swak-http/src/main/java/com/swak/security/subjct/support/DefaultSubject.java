@@ -7,7 +7,7 @@ import java.util.concurrent.Callable;
 import com.swak.common.utils.Sets;
 import com.swak.http.HttpServletRequest;
 import com.swak.http.HttpServletResponse;
-import com.swak.security.context.SubjectCallable;
+import com.swak.security.context.ThreadContext;
 import com.swak.security.exception.AuthenticationException;
 import com.swak.security.principal.Principal;
 import com.swak.security.principal.Session;
@@ -160,10 +160,14 @@ public class DefaultSubject implements Subject {
 
 	@Override
 	public <V> V execute(Callable<V> callable) throws Throwable {
-	    try {
-            return new SubjectCallable<V>(this, callable).call();
+		try {
+			ThreadContext.remove();
+	        ThreadContext.bind(this);
+            return callable.call();
         } catch (Throwable t) {
             throw t;
+        } finally {
+        	ThreadContext.remove();
         }
 	}
 
