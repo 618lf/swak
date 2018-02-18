@@ -3,7 +3,6 @@ package com.swak.security.filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
 import com.swak.common.utils.StringUtils;
@@ -20,12 +19,20 @@ public class PathMatchingFilter extends AdviceFilter implements PathConfigProces
 	/**
 	 * 配置信息
 	 */
-	protected Map<String, Object> appliedPaths = new LinkedHashMap<String, Object>();
+	protected Map<String, Object> appliedPaths;
 	
 	/**
 	 * url 匹配器
 	 */
-	private PathMatcher pathMatcher = new AntPathMatcher();
+	private PathMatcher pathMatcher;
+	
+	/**
+	 * 设置模式匹配器
+	 * @param pathMatcher
+	 */
+	public void setPathMatcher(PathMatcher pathMatcher) {
+		this.pathMatcher = pathMatcher;
+	}
 	
 	/**
 	 * 记录 请求设置中每个请求对应的filter
@@ -35,6 +42,9 @@ public class PathMatchingFilter extends AdviceFilter implements PathConfigProces
 		String[] values = null;
         if (config != null) {
             values = StringUtils.split(config);
+        }
+        if (appliedPaths == null) {
+        	appliedPaths = new LinkedHashMap<String, Object>();
         }
         this.appliedPaths.put(path, values);
         return this;
@@ -55,30 +65,17 @@ public class PathMatchingFilter extends AdviceFilter implements PathConfigProces
 	 * 找到需要执行的配置
 	 */
 	protected boolean preHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (this.appliedPaths == null || this.appliedPaths.isEmpty()) {
-            return true;
-        }
-        for (String path : this.appliedPaths.keySet()) {
-            if (pathsMatch(path, request)) {
-                Object config = this.appliedPaths.get(path);
-                return isFilterChainContinued(request, response, path, config);
+        Object config = null;
+        if (!(this.appliedPaths == null || this.appliedPaths.isEmpty())) {
+        	for (String path : this.appliedPaths.keySet()) {
+                if (pathsMatch(path, request)) {
+                	config = this.appliedPaths.get(path);
+                    break;
+                }
             }
         }
-        return true;
+        return onPreHandle(request, response, config);
     }
-	
-	/**
-	 * 找到配置之后继续执行
-	 * @param request
-	 * @param response
-	 * @param path
-	 * @param pathConfig
-	 * @return
-	 * @throws Exception
-	 */
-	private boolean isFilterChainContinued(HttpServletRequest request, HttpServletResponse response, String path, Object pathConfig) throws Exception {
-		return onPreHandle(request, response, pathConfig);
-	}
 	
 	/**
 	 * 将访问控制的合并到这里

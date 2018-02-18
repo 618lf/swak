@@ -113,8 +113,9 @@ public class DefaultFilterChainResolver implements FilterChainResolver {
 		}
 
 		// 设置filter 的 path 对应的权限信息
-		if (filter instanceof PathConfigProcessor) {
+		if (filter instanceof PathConfigProcessor && StringUtils.hasText(filterConfig)) {
 			((PathConfigProcessor) filter).processPathConfig(chainName, filterConfig);
+			((PathConfigProcessor) filter).setPathMatcher(this.patternMatcher);
 		}
 
 		// 设置执行链
