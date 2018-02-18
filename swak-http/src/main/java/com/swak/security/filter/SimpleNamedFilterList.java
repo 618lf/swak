@@ -1,22 +1,27 @@
 package com.swak.security.filter;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import com.swak.common.utils.Lists;
 import com.swak.common.utils.StringUtils;
 import com.swak.http.Filter;
 import com.swak.http.FilterChain;
 
+/**
+ * list 的代理
+ * @author lifeng
+ *
+ */
 public class SimpleNamedFilterList implements NamedFilterList {
 
 	private String name;
 	private List<Filter> backingList;
 
 	public SimpleNamedFilterList(String name) {
-		this(name, new ArrayList<Filter>());
+		this(name, Lists.newArrayList());
 	}
 
 	public SimpleNamedFilterList(String name, List<Filter> backingList) {
@@ -128,9 +133,12 @@ public class SimpleNamedFilterList implements NamedFilterList {
         return this.backingList.toArray(a);
     }
 
+    /**
+     * 构建一个代理
+     */
 	@Override
 	public FilterChain proxy(FilterChain filterChain) {
-		return new ProxiedFilterChain(filterChain, this);
+		return new ProxiedFilterChain(filterChain, this.backingList);
 	}
 
 	@Override

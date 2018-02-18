@@ -18,11 +18,11 @@ import com.swak.security.subjct.Subject;
 public class SecurityFilter implements Filter {
 
 	private SecurityManager securityManager;
-	private FilterChainResolver filterChainResolver;
+	private FilterChainResolver filterChainManager;
 	
-	public SecurityFilter(SecurityManager securityManager, FilterChainResolver filterChainResolver) {
+	public SecurityFilter(SecurityManager securityManager, FilterChainResolver filterChainManager) {
 		this.securityManager = securityManager;
-		this.filterChainResolver = filterChainResolver;
+		this.filterChainManager = filterChainManager;
 	}
 	
 	/**
@@ -76,12 +76,11 @@ public class SecurityFilter implements Filter {
 	protected FilterChain getExecutionChain(HttpServletRequest request, HttpServletResponse response, FilterChain origChain) {
 		FilterChain chain = origChain;
 		
-		FilterChainResolver resolver = getFilterChainResolver();
-        if (resolver == null) {
+        if (this.filterChainManager == null || !this.filterChainManager.hasChains()) {
             return origChain;
         }
         
-        FilterChain resolved = resolver.getChain(request, response, origChain);
+        FilterChain resolved = this.filterChainManager.proxy(request, origChain);
         
         if (resolved != null) {
             chain = resolved;
@@ -89,11 +88,4 @@ public class SecurityFilter implements Filter {
 
         return chain;
 	}
-	
-	public FilterChainResolver getFilterChainResolver() {
-        return filterChainResolver;
-    }
-    public void setFilterChainResolver(FilterChainResolver filterChainResolver) {
-        this.filterChainResolver = filterChainResolver;
-    }
 }
