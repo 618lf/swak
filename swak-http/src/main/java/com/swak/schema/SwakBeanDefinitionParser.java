@@ -169,6 +169,21 @@ public class SwakBeanDefinitionParser implements BeanDefinitionParser{
 	}
 	
 	/**
+	 * 解析pool
+	 * @param element
+	 * @param parserContext
+	 * @return
+	 */
+	private RuntimeBeanReference parsePool(Element element, ParserContext parserContext) {
+		Element servletElement = DomUtils.getChildElementByTagName(element, "pool");
+		if (servletElement != null) {
+			String filterName = servletElement.getAttribute("pool-name");
+			return new RuntimeBeanReference(filterName);
+		}
+		return null;
+	}
+	
+	/**
 	 * 解析Server
 	 * @param element
 	 * @param parserContext
@@ -228,6 +243,10 @@ public class SwakBeanDefinitionParser implements BeanDefinitionParser{
         	serverBeanDefinition.getPropertyValues().add("filter", filterRef);
         }
         serverBeanDefinition.getPropertyValues().add("servlet", this.parseServlet(element, parserContext));
+        RuntimeBeanReference poolRef = this.parsePool(element, parserContext);
+        if (filterRef != null) {
+        	serverBeanDefinition.getPropertyValues().add("pool", poolRef);
+        }
         String name = parserContext.getReaderContext().registerWithGeneratedName(serverBeanDefinition);
         parserContext.getReaderContext().getRegistry().registerBeanDefinition(name , serverBeanDefinition);
         return new RuntimeBeanReference(name);

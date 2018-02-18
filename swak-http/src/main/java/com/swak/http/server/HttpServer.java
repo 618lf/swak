@@ -10,6 +10,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.swak.http.Filter;
 import com.swak.http.Server;
 import com.swak.http.Servlet;
+import com.swak.http.pool.ConfigableThreadPool;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -94,7 +95,6 @@ public class HttpServer implements Server {
 
 	/**
 	 * 参数构造器
-	 * 
 	 * @author lifeng
 	 */
 	public static class Builder {
@@ -118,6 +118,9 @@ public class HttpServer implements Server {
 		// mvc 配置
 		private Servlet servlet;
 		private Filter filter;
+		
+		// pool 配置
+		private ConfigableThreadPool pool;
 
 		public int getPort() {
 			return port;
@@ -231,5 +234,12 @@ public class HttpServer implements Server {
 			this.privateKeyPassword = privateKeyPassword;
 		}
 
+		public ConfigableThreadPool getPool() {
+			return pool;
+		}
+
+		public void setPool(ConfigableThreadPool pool) {
+			this.pool = pool;
+		}
 	}
 }

@@ -5,6 +5,8 @@ import com.swak.http.Filter;
 import com.swak.http.FilterChain;
 import com.swak.http.ServerContext;
 import com.swak.http.Servlet;
+import com.swak.http.pool.ConfigableThreadPool;
+import com.swak.http.pool.ConfigableThreadPoolFactory;
 import com.swak.http.server.HttpServer.Builder;
 
 /**
@@ -24,10 +26,19 @@ public class HttpServerContext extends ServerContext {
 	 */
 	private Filter filter;
 
+	/*
+	 * 线程池
+	 */
+	private ConfigableThreadPool pool;
+
 	public HttpServerContext(MetricRegistry registry, Builder builder) {
 		super(registry, builder);
 		this.servlet = builder.getServlet();
 		this.filter = builder.getFilter();
+		this.pool = builder.getPool();
+		if (this.pool == null) {
+			this.pool = new ConfigableThreadPoolFactory();
+		}
 	}
 
 	public Servlet getServlet() {
@@ -38,8 +49,13 @@ public class HttpServerContext extends ServerContext {
 		return this.filter;
 	}
 	
+	public ConfigableThreadPool getPool() {
+		return pool;
+	}
+
 	/**
 	 * 构建执行链
+	 * 
 	 * @return
 	 */
 	public FilterChain buildFilterChain() {

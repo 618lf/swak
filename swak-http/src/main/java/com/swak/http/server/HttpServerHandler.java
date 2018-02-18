@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.swak.http.HttpServletRequest;
 import com.swak.http.HttpServletResponse;
+import com.swak.http.pool.ConfigableThreadPool;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -38,16 +39,17 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(HttpServerHandler.class);
 
 	private final HttpServerContext context;
-	private final Executor executor;
+	private final ConfigableThreadPool pool;
 
-	public HttpServerHandler(HttpServerContext context, Executor executor) {
+	public HttpServerHandler(HttpServerContext context) {
 		this.context = context;
-		this.executor = executor;
+		this.pool = context.getPool();
 	}
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		if (msg instanceof HttpRequest) {
+		if (msg instanceof FullHttpRequest) {
+			Executor executor = pool.getPool(((FullHttpRequest)msg).uri());
 			CompletableFuture.runAsync(new HttpWorkTask(ctx, (FullHttpRequest) msg), executor);
 		}
 	}
