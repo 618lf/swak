@@ -165,7 +165,7 @@ public interface Subject {
 	 * @return
 	 * @throws ExecutionException
 	 */
-	<V> V execute(Callable<V> callable) throws Throwable;
+	<V> V execute(Callable<V> callable);
 	
 	/**
 	 * 用户拥有的角色

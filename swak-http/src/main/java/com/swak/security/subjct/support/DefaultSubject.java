@@ -159,13 +159,13 @@ public class DefaultSubject implements Subject {
 	}
 
 	@Override
-	public <V> V execute(Callable<V> callable) throws Throwable {
+	public <V> V execute(Callable<V> callable){
 		try {
 			ThreadContext.remove();
 	        ThreadContext.bind(this);
             return callable.call();
-        } catch (Throwable t) {
-            throw t;
+        } catch (Exception t) {
+            throw new RuntimeException(t);
         } finally {
         	ThreadContext.remove();
         }

@@ -1,7 +1,6 @@
 package com.swak.security;
 
 import java.io.IOException;
-import java.util.concurrent.Callable;
 
 import com.swak.http.Filter;
 import com.swak.http.FilterChain;
@@ -29,21 +28,15 @@ public class SecurityFilter implements Filter {
 	 * 具体的执行逻辑
 	 */
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain){
 		Throwable t = null;
 		Subject subejct = null;
 		try {
-			
 			subejct = securityManager.createSubject(request, response);
-			subejct.execute(new Callable() {
-				@Override
-				public Object call() throws Exception {
-					executeChain(request, response, filterChain);
-					return null;
-				}
+			subejct.execute(() -> {
+				executeChain(request, response, filterChain); 
+			    return null;
 			});
-			
 		} catch (Throwable throwable) {
             t = throwable;
         }
