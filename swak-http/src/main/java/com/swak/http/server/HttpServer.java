@@ -183,11 +183,11 @@ public class HttpServer implements Server {
 			this.servlet = servlet;
 		}
 
-		public Filter getFilters() {
+		public Filter getFilter() {
 			return filter;
 		}
 
-		public void setFilters(Filter filter) {
+		public void setFilter(Filter filter) {
 			this.filter = filter;
 		}
 

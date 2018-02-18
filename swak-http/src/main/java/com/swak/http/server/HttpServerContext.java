@@ -27,7 +27,7 @@ public class HttpServerContext extends ServerContext {
 	public HttpServerContext(MetricRegistry registry, Builder builder) {
 		super(registry, builder);
 		this.servlet = builder.getServlet();
-		this.filter = builder.getFilters();
+		this.filter = builder.getFilter();
 	}
 
 	public Servlet getServlet() {
