@@ -5,9 +5,13 @@ import java.lang.reflect.Method;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 
-public class HandlerMethod {
+/**
+ * 也是一个执行链，没有拦截器；
+ * 可以将 handler 定义默认的前置执行器
+ * @author lifeng
+ */
+public class HandlerMethod implements ExecutionChain {
 
 	private final Object bean;
 	private final Method method;
@@ -70,7 +74,6 @@ public class HandlerMethod {
 	 * @return
 	 */
 	public Object doInvoke(Object[] args) throws Exception {
-		ReflectionUtils.makeAccessible(this.getMethod());
 		try {
 			return this.getMethod().invoke(this.getBean(), args);
 		} catch (IllegalAccessException ex) {
@@ -109,5 +112,13 @@ public class HandlerMethod {
 		sb.append("Controller [").append(getBeanType().getName()).append("]\n");
 		sb.append("Method [").append(this.getMethod().toGenericString()).append("]\n");
 		return sb.toString();
+	}
+
+	/**
+	 * 自己就是默认的执行器
+	 */
+	@Override
+	public HandlerMethod getHandler() {
+		return this;
 	}
 }

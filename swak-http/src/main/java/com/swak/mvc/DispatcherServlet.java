@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationContext;
 import com.swak.http.HttpServletRequest;
 import com.swak.http.HttpServletResponse;
 import com.swak.http.Servlet;
+import com.swak.mvc.method.ExecutionChain;
 import com.swak.mvc.method.HandlerAdapter;
 import com.swak.mvc.method.HandlerException;
 import com.swak.mvc.method.HandlerMapping;
@@ -45,7 +46,7 @@ public class DispatcherServlet implements Servlet {
 	 */
 	@Override
 	public void doService(HttpServletRequest request, HttpServletResponse response) {
-		HandlerExecutionChain mappedHandler = null;
+		ExecutionChain mappedHandler = null;
 		Exception dispatchException = null;
 		
 		// 获取请求执行链
@@ -53,7 +54,7 @@ public class DispatcherServlet implements Servlet {
 			try {
 				mappedHandler = getHandler(request);
 				if (mappedHandler == null || mappedHandler.getHandler() == null) {
-					response.send(HttpResponseStatus.NOT_FOUND, "request not found");
+					response.send(HttpResponseStatus.NOT_FOUND, "request handler not found");
 					return;
 				}
 				
@@ -80,8 +81,8 @@ public class DispatcherServlet implements Servlet {
 		}
 	}
 	
-	private HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
-		HandlerExecutionChain handler = handlerMapping.getHandler(request);
+	private ExecutionChain getHandler(HttpServletRequest request) throws Exception {
+		ExecutionChain handler = handlerMapping.getHandler(request);
 		if (handler != null) {
 			return handler;
 		}
@@ -89,7 +90,7 @@ public class DispatcherServlet implements Servlet {
 	}
 	
 	private void processDispatchResult(HttpServletRequest request, HttpServletResponse response,
-			HandlerExecutionChain mappedHandler, Exception exception) {
+			ExecutionChain mappedHandler, Exception exception) {
 		if (exception == null) {
 			return;
 		}

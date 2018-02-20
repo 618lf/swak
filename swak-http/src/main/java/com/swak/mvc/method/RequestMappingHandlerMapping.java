@@ -26,6 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.PathMatcher;
 
 import com.swak.common.utils.Maps;
@@ -127,7 +128,7 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 	 * 获得请求的执行链
 	 */
 	@Override
-	public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+	public ExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking up handler method for path " + lookupPath);
@@ -216,19 +217,43 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 		}
 	}
 
-	protected HandlerExecutionChain getHandlerExecutionChain(HandlerMethod handler, String lookupPath) {
-		HandlerExecutionChain chain = new HandlerExecutionChain(handler);
-		for (HandlerInterceptor interceptor : this.adaptedInterceptors) {
-			if (interceptor instanceof MappedInterceptor) {
-				MappedInterceptor mappedInterceptor = (MappedInterceptor) interceptor;
-				if (mappedInterceptor.matches(lookupPath, this.pathMatcher)) {
-					chain.addInterceptor(mappedInterceptor.getInterceptor());
+	/**
+	 * 保证执行过程中不能创建过多的对象
+	 * @param handler
+	 * @param lookupPath
+	 * @return
+	 */
+	protected ExecutionChain getHandlerExecutionChain(HandlerMethod handler, String lookupPath) {
+		HandlerExecutionChain chain = null;
+		if (!ObjectUtils.isEmpty(this.adaptedInterceptors)) {
+			for(HandlerInterceptor interceptor : this.adaptedInterceptors) {
+				HandlerInterceptor _mapping = null;
+				if (interceptor instanceof MappedInterceptor) {
+					MappedInterceptor mappedInterceptor = (MappedInterceptor) interceptor;
+					if (mappedInterceptor.matches(lookupPath, this.pathMatcher)) {
+						_mapping = mappedInterceptor.getInterceptor();
+					}
+				} else {
+					_mapping = interceptor;
 				}
-			} else {
-				chain.addInterceptor(interceptor);
+				
+				// 没有匹配
+				if (_mapping == null) {
+					continue;
+				}
+				
+				// 匹配到了
+				if (chain == null) {
+					chain = new HandlerExecutionChain(handler);
+				}
+				
+				// 添加到执行链
+				chain.addInterceptor(_mapping);
 			}
 		}
-		return chain;
+		
+		// 如果没有 interceptor 则 直接返回 handler（也是一个执行链）
+		return chain == null ? handler: chain;
 	}
 
 	/**

@@ -1,7 +1,6 @@
 package com.swak.mvc.method;
 
 import com.swak.http.HttpServletRequest;
-import com.swak.mvc.HandlerExecutionChain;
 
 /**
  * 根据请求获取Handler的执行链
@@ -15,5 +14,5 @@ public interface HandlerMapping {
 	 * @return
 	 * @throws Exception
 	 */
-	HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception;
+	ExecutionChain getHandler(HttpServletRequest request) throws Exception;
 }

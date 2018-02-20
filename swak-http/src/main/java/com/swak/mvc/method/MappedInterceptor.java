@@ -13,9 +13,6 @@ public class MappedInterceptor implements HandlerInterceptor {
 
 	private final HandlerInterceptor interceptor;
 
-	private PathMatcher pathMatcher;
-
-
 	/**
 	 * Create a new MappedInterceptor instance.
 	 * @param includePatterns the path patterns to map with a {@code null} value matching to all paths
@@ -35,26 +32,6 @@ public class MappedInterceptor implements HandlerInterceptor {
 		this.includePatterns = includePatterns;
 		this.excludePatterns = excludePatterns;
 		this.interceptor = interceptor;
-	}
-
-	/**
-	 * Configure a PathMatcher to use with this MappedInterceptor instead of the
-	 * one passed by default to the {@link #matches(String, org.springframework.util.PathMatcher)}
-	 * method. This is an advanced property that is only required when using custom
-	 * PathMatcher implementations that support mapping metadata other than the
-	 * Ant-style path patterns supported by default.
-	 *
-	 * @param pathMatcher the path matcher to use
-	 */
-	public void setPathMatcher(PathMatcher pathMatcher) {
-		this.pathMatcher = pathMatcher;
-	}
-
-	/**
-	 * The configured PathMatcher, or {@code null}.
-	 */
-	public PathMatcher getPathMatcher() {
-		return this.pathMatcher;
 	}
 
 	/**
@@ -92,7 +69,7 @@ public class MappedInterceptor implements HandlerInterceptor {
 	 * @param pathMatcher a path matcher for path pattern matching
 	 */
 	public boolean matches(String lookupPath, PathMatcher pathMatcher) {
-		PathMatcher pathMatcherToUse = (this.pathMatcher != null) ? this.pathMatcher : pathMatcher;
+		PathMatcher pathMatcherToUse = pathMatcher;
 		if (this.excludePatterns != null) {
 			for (String pattern : this.excludePatterns) {
 				if (pathMatcherToUse.match(pattern, lookupPath)) {
