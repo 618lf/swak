@@ -24,7 +24,8 @@
 		<version.kryo>4.0.1</version.kryo>
 		<version.protostuff>1.6.0</version.protostuff>
 		<version.javassist>3.22.0-GA</version.javassist>
-
+		<disruptor.version>3.3.8</disruptor.version>
+		
 		<!-- test -->
 		<junit.version>4.12</junit.version>
 
@@ -173,6 +174,12 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-test</artifactId>
 				<version>${spring.version}</version>
+			</dependency>
+			<!-- Disruptor -->
+			<dependency>
+				<groupId>com.lmax</groupId>
+				<artifactId>disruptor</artifactId>
+				<version>${disruptor.version}</version>
 			</dependency>
 
 			<dependency>
