@@ -23,7 +23,7 @@ import com.swak.mvc.method.RequestMappingHandlerMapping;
  * 服务器解析器 - 提供一些默认的配置
  * @author lifeng
  */
-public class SwakBeanDefinitionParser implements BeanDefinitionParser{
+public class SwakServerBeanDefinitionParser implements BeanDefinitionParser{
 
 	public static final String HANDLER_MAPPING_BEAN_NAME = RequestMappingHandlerMapping.class.getName();
 	public static final String HANDLER_ADAPTER_BEAN_NAME = RequestMappingHandlerAdapter.class.getName();

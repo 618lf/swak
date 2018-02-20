@@ -61,4 +61,36 @@
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
+	
+	<xsd:element name="interceptors">
+		<xsd:complexType>
+			<xsd:choice maxOccurs="unbounded">
+				<xsd:choice>
+					<xsd:element ref="beans:bean"></xsd:element>
+					<xsd:element ref="beans:ref"></xsd:element>
+				</xsd:choice>
+				<xsd:element name="interceptor">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="mapping" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:attribute name="path" type="xsd:string" use="required"></xsd:attribute>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="exclude-mapping" minOccurs="0" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:attribute name="path" type="xsd:string" use="required"></xsd:attribute>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:choice>
+								<xsd:element ref="beans:bean"></xsd:element>
+								<xsd:element ref="beans:ref"></xsd:element>
+							</xsd:choice>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+	
 </xsd:schema>

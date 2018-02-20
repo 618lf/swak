@@ -6,6 +6,7 @@ public class SwakNamespaceHandler extends NamespaceHandlerSupport {
 
 	@Override
 	public void init() {
-		registerBeanDefinitionParser("server", new SwakBeanDefinitionParser());
+		registerBeanDefinitionParser("server", new SwakServerBeanDefinitionParser());
+		registerBeanDefinitionParser("interceptors", new SwakInterceptorsBeanDefinitionParser());
 	}
 }
