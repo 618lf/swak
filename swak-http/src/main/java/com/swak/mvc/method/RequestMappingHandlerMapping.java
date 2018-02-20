@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -24,7 +23,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -32,8 +30,10 @@ import org.springframework.util.PathMatcher;
 
 import com.swak.common.utils.Maps;
 import com.swak.http.HttpServletRequest;
+import com.swak.http.PathMatcherHelper;
 import com.swak.mvc.HandlerExecutionChain;
 import com.swak.mvc.annotation.RequestMapping;
+import com.swak.mvc.annotation.RequestMethod;
 import com.swak.mvc.utils.UrlPathHelper;
 
 /**
@@ -45,7 +45,7 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private ApplicationContext applicationContext;
-	private PathMatcher pathMatcher = new AntPathMatcher();
+	private PathMatcher pathMatcher = PathMatcherHelper.getMatcher();
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 	private final List<HandlerInterceptor> adaptedInterceptors = new ArrayList<HandlerInterceptor>();
 	private final MappingRegistry mappingRegistry = new MappingRegistry();
@@ -70,6 +70,7 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		String[] beanNames = this.applicationContext.getBeanNamesForAnnotation(Controller.class);
+		
 		for (String beanName : beanNames) {
 			Object handler = null;
 			try {
@@ -92,7 +93,8 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 										"Invalid mapping on handler class [" + userType.getName() + "]: " + method, ex);
 							}
 						}
-					});
+					}
+			);
 			if (logger.isDebugEnabled()) {
 				logger.debug(methods.size() + " request handler methods found on " + userType + ": " + methods);
 			}
@@ -118,7 +120,7 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 
 	protected RequestMappingInfo createRequestMappingInfo(AnnotatedElement element) {
 		RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(element, RequestMapping.class);
-		return requestMapping != null ? (RequestMappingInfo.paths(pathMatcher, requestMapping.value())) : null;
+		return requestMapping != null ? (RequestMappingInfo.paths(requestMapping.method(), requestMapping.value())) : null;
 	}
 
 	/**
@@ -130,9 +132,16 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking up handler method for path " + lookupPath);
 		}
+		
+		RequestMethod lookupMethod = null;
+		try {
+			lookupMethod = RequestMethod.valueOf(request.getRequestMethod().toUpperCase());
+		}catch(Exception e) {
+			throw new RuntimeException("do not support method");
+		}
 
 		// HandlerMethod
-		HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
+		HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, lookupMethod, request);
 		if (logger.isDebugEnabled()) {
 			if (handlerMethod != null) {
 				logger.debug("Returning handler method [" + handlerMethod + "]");
@@ -153,16 +162,16 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 	 * @return
 	 * @throws Exception
 	 */
-	protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request) throws Exception {
-		Match bestMatch = this.lookupBestMatch(lookupPath);
+	protected HandlerMethod lookupHandlerMethod(String lookupPath, RequestMethod lookupMethod, HttpServletRequest request) throws Exception {
+		Match bestMatch = matchLookup.get(lookupPath);
 		if (bestMatch == null) {
 			List<Match> matches = new ArrayList<Match>();
 			List<RequestMappingInfo> directPathMatches = this.mappingRegistry.getMappingsByUrl(lookupPath);
 			if (directPathMatches != null) {
-				addMatchingMappings(directPathMatches, matches, lookupPath);
+				addMatchingMappings(directPathMatches, matches, lookupPath, lookupMethod);
 			}
 			if (matches.isEmpty()) {
-				addMatchingMappings(this.mappingRegistry.getMappings().keySet(), matches, lookupPath);
+				addMatchingMappings(this.mappingRegistry.getMappings().keySet(), matches, lookupPath, lookupMethod);
 			}
 			if (!matches.isEmpty()) {
 				Collections.sort(matches);
@@ -171,27 +180,19 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 			}
 		}
 		if (bestMatch != null) {
-			this.handleMatch(bestMatch.mapping, lookupPath, request);
-			return bestMatch.handlerMethod;
+			this.handleMatch(bestMatch.getMapping(), lookupPath, request);
+			return bestMatch.getHandlerMethod();
 		}
 		return null;
 	}
 	
-	/**
-	 * 用户缓存最佳的匹配器
-	 * @param lookupPath
-	 * @return
-	 */
-	protected Match lookupBestMatch(String lookupPath) {
-		return matchLookup.get(lookupPath);
-	}
-
 	protected void addMatchingMappings(Collection<RequestMappingInfo> mappings, List<Match> matches,
-			String lookupPath) {
+			String lookupPath, RequestMethod lookupMethod) {
 		for (RequestMappingInfo mapping : mappings) {
-			Set<String> matchs = mapping.getMatchingCondition(lookupPath);
-			if (matchs != null) {
-				matches.add(new Match(lookupPath, matchs, this.mappingRegistry.getMappings().get(mapping)));
+			Match match = mapping.getMatchingCondition(lookupPath, lookupMethod);
+			if (match != null) {
+				match.setHandlerMethod(this.mappingRegistry.getMappings().get(mapping));
+				matches.add(match);
 			}
 		}
 	}
@@ -270,66 +271,6 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 
 		public Map<RequestMappingInfo, HandlerMethod> getMappings() {
 			return this.mappingLookup;
-		}
-	}
-
-	/**
-	 * 匹配器
-	 * @author lifeng
-	 *
-	 */
-	public class Match implements Comparable<Match>{
-
-		private final String lookupPath;
-		private final Set<String> mapping;
-		private final HandlerMethod handlerMethod;
-
-		public Match(String lookupPath, Set<String> mapping, HandlerMethod handlerMethod) {
-			this.lookupPath = lookupPath;
-			this.mapping = mapping;
-			this.handlerMethod = handlerMethod;
-		}
-
-		@Override
-		public String toString() {
-			return this.mapping.toString();
-		}
-
-		@Override
-		public int compareTo(Match other) {
-			Comparator<String> patternComparator = getPathMatcher().getPatternComparator(lookupPath);
-			Iterator<String> iterator = this.mapping.iterator();
-			Iterator<String> iteratorOther = other.mapping.iterator();
-			while (iterator.hasNext() && iteratorOther.hasNext()) {
-				int result = patternComparator.compare(iterator.next(), iteratorOther.next());
-				if (result != 0) {
-					return result;
-				}
-			}
-			if (iterator.hasNext()) {
-				return -1;
-			} else if (iteratorOther.hasNext()) {
-				return 1;
-			} else {
-				return 0;
-			}
-		}
-		
-		@Override
-		public boolean equals(Object other) {
-			if (this == other) {
-				return true;
-			}
-			if (other != null && getClass() == other.getClass()) {
-				RequestMappingInfo obj = (RequestMappingInfo) other;
-				return mapping.equals(obj.getPatterns());
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return this.mapping.hashCode();
 		}
 	}
 }

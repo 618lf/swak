@@ -1,6 +1,6 @@
 package com.swak.mvc.method;
 
-import java.util.Set;
+import com.swak.mvc.annotation.RequestMethod;
 
 public interface RequestCondition<T> {
 
@@ -16,5 +16,5 @@ public interface RequestCondition<T> {
 	 * @param request
 	 * @return
 	 */
-	Set<String> getMatchingCondition(String lookupPath);
+	Match getMatchingCondition(String lookupPath, RequestMethod lookupMethod);
 }

@@ -3,13 +3,13 @@ package com.swak.security.mgt.support;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
 import com.swak.common.utils.StringUtils;
 import com.swak.http.Filter;
 import com.swak.http.FilterChain;
 import com.swak.http.HttpServletRequest;
+import com.swak.http.PathMatcherHelper;
 import com.swak.security.exception.ConfigurationException;
 import com.swak.security.filter.NamedFilterList;
 import com.swak.security.filter.PathConfigProcessor;
@@ -26,7 +26,7 @@ public class DefaultFilterChainResolver implements FilterChainResolver {
 	public DefaultFilterChainResolver() {
 		this.filters = new LinkedHashMap<String, Filter>();
 		this.filterChains = new LinkedHashMap<String, NamedFilterList>();
-		this.patternMatcher = new AntPathMatcher();
+		this.patternMatcher = PathMatcherHelper.getMatcher();
 		this.addDefaultFilters();
 	}
 

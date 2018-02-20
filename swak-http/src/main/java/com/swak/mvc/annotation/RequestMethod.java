@@ -6,5 +6,5 @@ package com.swak.mvc.annotation;
  */
 public enum RequestMethod {
 
-	GET, POST
+	ALL, GET, POST
 }

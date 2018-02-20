@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.swak.common.utils.Maps;
 import com.swak.common.utils.StringUtils;
+import com.swak.http.PathMatcherHelper;
 
 public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 
@@ -31,7 +32,7 @@ public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 	public ThreadPoolExecutor getPool(String path) {
 		if (executors != null && !executors.isEmpty()) {
 			for (String s : executors.keySet()) {
-				if (StringUtils.startsWithIgnoreCase(path, s)) {
+				if (PathMatcherHelper.getMatcher().match(s, path)) {
 					return executors.get(s);
 				}
 			}
@@ -121,10 +122,5 @@ public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 			return def;
 		}
 		return Integer.parseInt(configs[index]);
-	}
-	
-	public static void main(String[] args){
-		ConfigableThreadPoolFactory pool = new ConfigableThreadPoolFactory();
-		pool.setPoolDefinitions("/admin/system = 2:1:0");
 	}
 }

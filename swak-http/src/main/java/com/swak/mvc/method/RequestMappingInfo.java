@@ -13,23 +13,28 @@ import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 
 import com.swak.common.utils.Sets;
+import com.swak.http.PathMatcherHelper;
+import com.swak.mvc.annotation.RequestMethod;
 
 /**
  * mapping 对应 @RequestMapping 的解析
+ * 
  * @author lifeng
  */
 public class RequestMappingInfo implements RequestCondition<RequestMappingInfo> {
 
 	private final Set<String> patterns;
+	private final RequestMethod method;
 	private final PathMatcher pathMatcher;
 
-	public RequestMappingInfo(String[] patterns, PathMatcher pathMatcher) {
-		this(Arrays.asList(patterns), pathMatcher);
+	public RequestMappingInfo(String[] patterns, RequestMethod method) {
+		this(Arrays.asList(patterns), method);
 	}
 
-	public RequestMappingInfo(Collection<String> patterns, PathMatcher pathMatcher) {
+	public RequestMappingInfo(Collection<String> patterns, RequestMethod method) {
 		this.patterns = Collections.unmodifiableSet(prependLeadingSlash(patterns));
-		this.pathMatcher = pathMatcher;
+		this.method = method;
+		this.pathMatcher = PathMatcherHelper.getMatcher();
 	}
 
 	private Set<String> prependLeadingSlash(Collection<String> patterns) {
@@ -45,12 +50,22 @@ public class RequestMappingInfo implements RequestCondition<RequestMappingInfo> 
 		}
 		return result;
 	}
+	
+	public Set<String> getPatterns() {
+		return patterns;
+	}
+
+	public RequestMethod getMethod() {
+		return method;
+	}
 
 	/**
 	 * 合并
 	 */
 	@Override
 	public RequestMappingInfo combine(RequestMappingInfo other) {
+
+		// patterns
 		Set<String> result = new LinkedHashSet<String>();
 		if (!this.patterns.isEmpty() && !other.patterns.isEmpty()) {
 			for (String pattern1 : this.patterns) {
@@ -65,19 +80,29 @@ public class RequestMappingInfo implements RequestCondition<RequestMappingInfo> 
 		} else {
 			result.add("");
 		}
-		return new RequestMappingInfo(result, this.pathMatcher);
+
+		// method
+		RequestMethod method = other.getMethod() == null ? this.getMethod() : other.getMethod();
+
+		return new RequestMappingInfo(result, method);
 	}
 
 	/**
 	 * 获得匹配条件
 	 */
 	@Override
-	public Set<String> getMatchingCondition(String lookupPath) {
-		if (this.patterns.isEmpty()) {
-			return this.patterns;
+	public Match getMatchingCondition(String lookupPath, RequestMethod lookupMethod) {
+
+		// 通用的匹配器
+		if (this.patterns.isEmpty() && (this.method == RequestMethod.ALL || lookupMethod == this.method)) {
+			return new Match(lookupPath, this.patterns, this.method);
 		}
+
+		// 如果有 patterns 则必须要匹配上
 		List<String> matches = getMatchingPatterns(lookupPath);
-		return matches.isEmpty() ? null: Sets.newHashSet(matches);
+		return (!matches.isEmpty() && (this.method == RequestMethod.ALL || lookupMethod == this.method))
+				? new Match(lookupPath, Sets.newHashSet(matches), this.method)
+				: null;
 	}
 
 	private List<String> getMatchingPatterns(String lookupPath) {
@@ -104,7 +129,7 @@ public class RequestMappingInfo implements RequestCondition<RequestMappingInfo> 
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder("[");
+		StringBuilder builder = new StringBuilder("patterns-[");
 		for (Iterator<?> iterator = patterns.iterator(); iterator.hasNext();) {
 			Object expression = iterator.next();
 			builder.append(expression.toString());
@@ -113,11 +138,10 @@ public class RequestMappingInfo implements RequestCondition<RequestMappingInfo> 
 			}
 		}
 		builder.append("]");
+		builder.append(",methos-[");
+		builder.append(this.method.name());
+		builder.append("]");
 		return builder.toString();
-	}
-
-	public Set<String> getPatterns() {
-		return patterns;
 	}
 
 	/**
@@ -126,7 +150,7 @@ public class RequestMappingInfo implements RequestCondition<RequestMappingInfo> 
 	 * @param paths
 	 * @return
 	 */
-	public static RequestMappingInfo paths(PathMatcher pathMatcher, String... paths) {
-		return new RequestMappingInfo(paths, pathMatcher);
+	public static RequestMappingInfo paths(RequestMethod method, String... paths) {
+		return new RequestMappingInfo(paths, method);
 	}
 }
