@@ -1,8 +1,5 @@
 package com.swak.http.server;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +46,15 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if (msg instanceof FullHttpRequest) {
-			Executor executor = pool.getPool(((FullHttpRequest)msg).uri());
-			CompletableFuture.runAsync(new HttpWorkTask(ctx, (FullHttpRequest) msg), executor);
+			String lookupPath = getLookupPath((FullHttpRequest)msg);
+			pool.onExecute(lookupPath, new HttpWorkTask(ctx, (FullHttpRequest) msg));
 		}
+	}
+	
+	private String getLookupPath(FullHttpRequest request) {
+		String url = request.uri();
+		int pathEndPos = url.indexOf('?');
+		return pathEndPos < 0 ? url : url.substring(0, pathEndPos);
 	}
 
 	@Override

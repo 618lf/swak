@@ -25,9 +25,8 @@ public interface ConfigableThreadPool {
 	ThreadPoolExecutor getPool(String path);
 	
 	/**
-	 * 创建一个pool
-	 * @param poolName
-	 * @param pool
+	 * 执行
+	 * @param run
 	 */
-	void createPool(String poolName, ThreadPoolExecutor pool);
+	void onExecute(String lookupPath, Runnable run); 
 }

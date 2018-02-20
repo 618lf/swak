@@ -3,6 +3,8 @@ package com.swak.http.pool;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -16,9 +18,10 @@ import com.swak.http.PathMatcherHelper;
 
 public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 
-	private static int default_threadSize = 2000;
-	private static int default_poolSize = 1024;
-	private static int default_keepAliveTime = 60 * 5;
+	protected static String default_pool_name = "DEFAULT";
+	protected static int default_threadSize = 2000;
+	protected static int default_poolSize = 1024;
+	protected static int default_keepAliveTime = 60 * 5;
 
 	private Map<String, ThreadPoolExecutor> executors;
 	private ThreadPoolExecutor defaultExecutor;
@@ -47,8 +50,12 @@ public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 	 */
 	public ThreadPoolExecutor getDefaultPool() {
 		if (defaultExecutor == null) {
-			defaultExecutor = new ThreadPoolExecutor(default_poolSize, default_threadSize, default_keepAliveTime * 1000,
-					TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+			synchronized (this) {
+				if (defaultExecutor == null) {
+					defaultExecutor = new ThreadPoolExecutor(default_poolSize, default_threadSize,
+							default_keepAliveTime * 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+				}
+			}
 		}
 		return defaultExecutor;
 	}
@@ -60,6 +67,14 @@ public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 	 * @param pool
 	 */
 	public void createPool(String poolName, ThreadPoolExecutor pool) {
+		
+		// 如果配置了默认的线程池 -- 处理所有的其他业务,包括 not found
+		if (default_pool_name.equalsIgnoreCase(poolName)) {
+			defaultExecutor = pool;
+			return;
+		}
+		
+		// 其他的是业务的线程池
 		if (executors == null) {
 			executors = Maps.newHashMap();
 		}
@@ -73,7 +88,7 @@ public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * url 定义的配置 url 配置是有顺序的
 	 * 
@@ -99,28 +114,36 @@ public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 			poolDefinitions.put(path, configs);
 		}
 		IOUtils.closeQuietly(scanner);
-		
+
 		// 构建线程池
-		poolDefinitions.keySet().stream().forEach(s ->{
+		poolDefinitions.keySet().stream().forEach(s -> {
 			String configs = poolDefinitions.get(s);
 			this.createPool(s, configs);
 		});
 	}
-	
+
 	private void createPool(String name, String configs) {
 		String[] _configs = configs.split(":");
-		ThreadPoolExecutor pool = new ThreadPoolExecutor(
-				getDefault(_configs, 1, default_poolSize), 
-				getDefault(_configs, 0, default_threadSize), 
-				getDefault(_configs, 2, default_keepAliveTime) * 1000,
+		ThreadPoolExecutor pool = new ThreadPoolExecutor(getDefault(_configs, 1, default_poolSize),
+				getDefault(_configs, 0, default_threadSize), getDefault(_configs, 2, default_keepAliveTime) * 1000,
 				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 		this.createPool(name, pool);
 	}
-	
+
 	private int getDefault(String[] configs, int index, int def) {
 		if (configs == null || index >= configs.length) {
 			return def;
 		}
 		return Integer.parseInt(configs[index]);
+	}
+
+	/**
+	 * 执行此任务
+	 */
+	@Override
+	public void onExecute(String lookupPath, Runnable run) {
+		// 直接使用 CompletableFuture 来执行
+		Executor executor = this.getPool(lookupPath);
+		CompletableFuture.runAsync(run, executor);
 	}
 }
