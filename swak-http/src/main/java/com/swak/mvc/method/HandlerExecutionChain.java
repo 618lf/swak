@@ -1,4 +1,4 @@
-package com.swak.mvc;
+package com.swak.mvc.method;
 
 import java.util.ArrayList;
 import java.util.Arrays;

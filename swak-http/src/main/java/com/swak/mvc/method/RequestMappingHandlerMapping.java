@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -32,7 +33,6 @@ import org.springframework.util.PathMatcher;
 import com.swak.common.utils.Maps;
 import com.swak.http.HttpServletRequest;
 import com.swak.http.PathMatcherHelper;
-import com.swak.mvc.HandlerExecutionChain;
 import com.swak.mvc.annotation.RequestMapping;
 import com.swak.mvc.annotation.RequestMethod;
 import com.swak.mvc.utils.UrlPathHelper;
@@ -64,13 +64,18 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
-
+	
 	/**
 	 * 初始化所有的请求
 	 */
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		String[] beanNames = this.applicationContext.getBeanNamesForAnnotation(Controller.class);
+		this.initRequestMappings();
+		this.initInterceptors();
+	}
+	
+	private void initRequestMappings() {
+        String[] beanNames = this.applicationContext.getBeanNamesForAnnotation(Controller.class);
 		
 		for (String beanName : beanNames) {
 			Object handler = null;
@@ -105,6 +110,14 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 				RequestMappingInfo mapping = entry.getValue();
 				this.mappingRegistry.register(mapping, handler, invocableMethod);
 			}
+		}
+	}
+	
+	private void initInterceptors() {
+		Map<String, HandlerInterceptor> matchingBeans =
+				BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, HandlerInterceptor.class, true, false);
+		if (!matchingBeans.isEmpty()) {
+			adaptedInterceptors.addAll(matchingBeans.values());
 		}
 	}
 
