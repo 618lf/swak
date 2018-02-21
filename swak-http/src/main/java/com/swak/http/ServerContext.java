@@ -1,6 +1,5 @@
 package com.swak.http;
 
-import com.codahale.metrics.MetricRegistry;
 import com.swak.http.server.HttpServer;
 
 /**
@@ -9,19 +8,11 @@ import com.swak.http.server.HttpServer;
  */
 public abstract class ServerContext {
 
-	private MetricRegistry registry;
-
 	private HttpServer.Builder builder;
 
-	public ServerContext(MetricRegistry registry, HttpServer.Builder builder) {
+	public ServerContext(HttpServer.Builder builder) {
 		this.builder = builder;
-		this.registry = registry;
 	}
-
-	public MetricRegistry getRegistry() {
-		return registry;
-	}
-
 	public HttpServer.Builder getBuilder() {
 		return builder;
 	}

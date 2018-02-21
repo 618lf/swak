@@ -40,6 +40,7 @@ public class HttpServletResponse implements Closeable {
 	private int statusCode = 200;
 	private CharSequence contentType = null;
 	private CharSequence dateString = null;
+	private int contentSize;
 
 	/**
 	 * 返回状态吗
@@ -79,6 +80,14 @@ public class HttpServletResponse implements Closeable {
 	 */
 	public String getContentType() {
 		return null == this.contentType ? null : String.valueOf(this.contentType);
+	}
+	
+	/**
+	 * 获得内容的大小
+	 * @return
+	 */
+	public int getContentSize() {
+		return contentSize;
 	}
 
 	/**
@@ -202,7 +211,8 @@ public class HttpServletResponse implements Closeable {
 		if (!headers.contains(HttpHeaderNames.CONTENT_TYPE)) {
 			headers.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
 		}
-		headers.set(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
+		contentSize = response.content().readableBytes();
+		headers.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
 		headers.set(HttpHeaderNames.DATE, dateString);
 		headers.set(HttpConst.X_POWER_BY, HttpConst.VERSION);
 		if (!headers.contains(HttpHeaderNames.SERVER)) {

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import com.swak.http.HttpServletRequest;
 import com.swak.http.HttpServletResponse;
+import com.swak.http.metric.MetricCenter;
 import com.swak.http.pool.ConfigableThreadPool;
 
 import io.netty.buffer.Unpooled;
@@ -43,14 +44,32 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 		this.pool = context.getPool();
 	}
 
+	/**
+	 * 通道激活
+	 */
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		super.channelActive(ctx);
+		MetricCenter.channelActive();
+	}
+
+	/**
+	 * 通道闲置
+	 */
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		super.channelInactive(ctx);
+		MetricCenter.channelInactive();
+	}
+
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if (msg instanceof FullHttpRequest) {
-			String lookupPath = getLookupPath((FullHttpRequest)msg);
+			String lookupPath = getLookupPath((FullHttpRequest) msg);
 			pool.onExecute(lookupPath, new HttpWorkTask(ctx, (FullHttpRequest) msg));
 		}
 	}
-	
+
 	private String getLookupPath(FullHttpRequest request) {
 		String url = request.uri();
 		int pathEndPos = url.indexOf('?');
@@ -100,17 +119,25 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 		public void run() {
 
 			// 标准的 请求 < -- > 响应
-			HttpServletResponse response = HttpServletResponse.build(HttpServerChannelInitializer.date);
-			HttpServletRequest request = HttpServletRequest.build(ctx, req, response);
+			HttpServletResponse response = null;
+			HttpServletRequest request = null;
 
 			// http 请求处理
 			try {
+
+				// 请求处理
+				MetricCenter.requestHandler();
+
+				// 标准的 请求 < -- > 响应
+				response = HttpServletResponse.build(HttpServerChannelInitializer.date);
+				request = HttpServletRequest.build(ctx, req, response);
 
 				// 执行链
 				context.buildFilterChain().doFilter(request, response);
 
 				// 构建响应
 				HttpResponse _response = response.render();
+
 				boolean keepAlive = request.isKeepAlive();
 				if (!keepAlive) {
 					ctx.writeAndFlush(_response);
@@ -128,6 +155,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 				ReferenceCountUtil.release(req);
 				IOUtils.closeQuietly(request);
 				IOUtils.closeQuietly(response);
+				MetricCenter.responseSize(response != null ? response.getContentSize() : 0);
 				request = null;
 				response = null;
 			}

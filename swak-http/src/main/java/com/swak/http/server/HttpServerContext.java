@@ -1,6 +1,5 @@
 package com.swak.http.server;
 
-import com.codahale.metrics.MetricRegistry;
 import com.swak.http.Filter;
 import com.swak.http.FilterChain;
 import com.swak.http.ServerContext;
@@ -19,7 +18,7 @@ public class HttpServerContext extends ServerContext {
 	/*
 	 * 简单点，只需要一个 servlet 业务上去做分发即可
 	 */
-	private Servlet servlet;
+	private Servlet servlet;	
 
 	/*
 	 * 简单点，只需要一个 filter 过滤所有的请求
@@ -31,8 +30,8 @@ public class HttpServerContext extends ServerContext {
 	 */
 	private ConfigableThreadPool pool;
 
-	public HttpServerContext(MetricRegistry registry, Builder builder) {
-		super(registry, builder);
+	public HttpServerContext(Builder builder) {
+		super(builder);
 		this.servlet = builder.getServlet();
 		this.filter = builder.getFilter();
 		this.pool = builder.getPool();

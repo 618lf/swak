@@ -12,16 +12,18 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.RatioGauge;
 import com.swak.common.utils.Maps;
 import com.swak.common.utils.StringUtils;
-import com.swak.http.PathMatcherHelper;
 
 public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 
 	protected static String default_pool_name = "DEFAULT";
 	protected static int default_threadSize = 2000;
 	protected static int default_poolSize = 1024;
-	protected static int default_keepAliveTime = 60 * 5;
+	protected static int default_keepAliveTime = 60;
 
 	private Map<String, ThreadPoolExecutor> executors;
 	private ThreadPoolExecutor defaultExecutor;
@@ -35,7 +37,7 @@ public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 	public ThreadPoolExecutor getPool(String path) {
 		if (executors != null && !executors.isEmpty()) {
 			for (String s : executors.keySet()) {
-				if (PathMatcherHelper.getMatcher().match(s, path)) {
+				if (StringUtils.startsWithIgnoreCase(path, s)) {
 					return executors.get(s);
 				}
 			}
@@ -54,6 +56,7 @@ public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 				if (defaultExecutor == null) {
 					defaultExecutor = new ThreadPoolExecutor(default_poolSize, default_threadSize,
 							default_keepAliveTime * 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+					defaultExecutor.allowCoreThreadTimeOut(true);
 				}
 			}
 		}
@@ -124,9 +127,13 @@ public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 
 	private void createPool(String name, String configs) {
 		String[] _configs = configs.split(":");
+		int times = getDefault(_configs, 2, default_keepAliveTime) * 1000;
 		ThreadPoolExecutor pool = new ThreadPoolExecutor(getDefault(_configs, 1, default_poolSize),
-				getDefault(_configs, 0, default_threadSize), getDefault(_configs, 2, default_keepAliveTime) * 1000,
+				getDefault(_configs, 0, default_threadSize), times,
 				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+		if (times != 0) {
+			pool.allowCoreThreadTimeOut(true);
+		}
 		this.createPool(name, pool);
 	}
 
@@ -138,12 +145,70 @@ public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 	}
 
 	/**
-	 * 执行此任务
+	 * 直接使用 CompletableFuture 来执行
 	 */
 	@Override
 	public void onExecute(String lookupPath, Runnable run) {
-		// 直接使用 CompletableFuture 来执行
 		Executor executor = this.getPool(lookupPath);
 		CompletableFuture.runAsync(run, executor);
+	}
+
+	/**
+	 * 线程池的指标上报
+	 */
+	@Override
+	public void report(MetricRegistry registry) {
+		// 其他线程池
+		List<String> pools = this.pools();
+		if (pools != null) {
+			pools.stream().forEach(s ->{
+				ThreadPoolExecutor pool = this.getPool(s);
+				registry.register("[pool]" + s, (Gauge<String>) () -> {
+					StringBuilder sb = new StringBuilder();
+					sb.append("Max-").append(pool.getMaximumPoolSize()).append(":");
+					sb.append("CorePool-").append(pool.getCorePoolSize()).append(":");
+					sb.append("LargestPool-").append(pool.getLargestPoolSize()).append(":");
+					sb.append("Pool-").append(pool.getPoolSize()).append(":");
+					sb.append("Active-").append(pool.getActiveCount()).append(":");
+					sb.append("Queue-").append(pool.getQueue().size()).append(":");
+					sb.append("Total-").append(pool.getTaskCount()).append(":");
+					sb.append("Completed-").append(pool.getCompletedTaskCount()).append(":");
+					sb.append("KeepAlive-").append(pool.getKeepAliveTime(TimeUnit.SECONDS)).append(":");
+					return sb.toString();
+				});
+			});
+		}
+		
+		//默认的线程池
+		ThreadPoolExecutor pool = this.getDefaultPool();
+		registry.register("[pool]" + default_pool_name, (Gauge<String>) () -> {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Max-").append(pool.getMaximumPoolSize()).append(":");
+			sb.append("CorePool-").append(pool.getCorePoolSize()).append(":");
+			sb.append("LargestPool-").append(pool.getLargestPoolSize()).append(":");
+			sb.append("Pool-").append(pool.getPoolSize()).append(":");
+			sb.append("Active-").append(pool.getActiveCount()).append(":");
+			sb.append("Queue-").append(pool.getQueue().size()).append(":");
+			sb.append("Total-").append(pool.getTaskCount()).append(":");
+			sb.append("Completed-").append(pool.getCompletedTaskCount()).append(":");
+			sb.append("KeepAlive-").append(pool.getKeepAliveTime(TimeUnit.SECONDS)).append(":");
+			return sb.toString();
+		});
+	}
+	
+	/**
+	 * 每个线程池的使用率
+	 * @author lifeng
+	 */
+	public class PoolRatio extends RatioGauge {
+		
+		public PoolRatio(String name) {
+			
+		}
+
+		@Override
+		protected Ratio getRatio() {
+			return null;
+		}
 	}
 }

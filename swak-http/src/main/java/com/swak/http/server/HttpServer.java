@@ -1,15 +1,12 @@
 package com.swak.http.server;
 
-import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.ConsoleReporter;
-import com.codahale.metrics.MetricRegistry;
 import com.swak.http.Filter;
 import com.swak.http.Server;
 import com.swak.http.Servlet;
+import com.swak.http.metric.MetricCenter;
 import com.swak.http.pool.ConfigableThreadPool;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -21,18 +18,22 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+/**
+ * http 服务器
+ * @author lifeng
+ */
 public class HttpServer implements Server {
 
 	private final static Logger logger = LoggerFactory.getLogger(HttpServer.class);
 	private final EventLoopGroup boosGroup = new NioEventLoopGroup();
 	private final EventLoopGroup workerGroup = new NioEventLoopGroup();
-	private Builder builder;
+	private final Builder builder;
+	private final HttpServerContext context;
 	private ServerBootstrap bootstrap;
-	private MetricRegistry registry;
 
 	public HttpServer(Builder builder) throws Exception {
 		this.builder = builder;
-		this.registry = new MetricRegistry();
+		this.context = new HttpServerContext(builder);
 		this.init();
 	}
 
@@ -47,19 +48,12 @@ public class HttpServer implements Server {
 				.channel(NioServerSocketChannel.class);
 
 		// 设置处理程序
-		bootstrap.childHandler(
-				new HttpServerChannelInitializer(new HttpServerContext(registry, builder), boosGroup.next()));
+		bootstrap.childHandler(new HttpServerChannelInitializer(context, boosGroup.next()));
 
-		// 监控
+		// 监控 --- 应该可以动态改变这个值
 		if (this.builder.startReport) {
-			this.startReport();
+			MetricCenter.report(context);
 		}
-	}
-
-	private void startReport() {
-		ConsoleReporter reporter = ConsoleReporter.forRegistry(registry).convertRatesTo(TimeUnit.SECONDS)
-				.convertDurationsTo(TimeUnit.MILLISECONDS).build();
-		reporter.start(1, TimeUnit.SECONDS);
 	}
 
 	@Override
