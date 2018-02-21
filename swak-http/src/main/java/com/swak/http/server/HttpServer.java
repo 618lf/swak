@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import com.swak.http.Filter;
 import com.swak.http.Server;
 import com.swak.http.Servlet;
-import com.swak.http.metric.MetricCenter;
 import com.swak.http.pool.ConfigableThreadPool;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -49,11 +48,6 @@ public class HttpServer implements Server {
 
 		// 设置处理程序
 		bootstrap.childHandler(new HttpServerChannelInitializer(context, boosGroup.next()));
-
-		// 监控 --- 应该可以动态改变这个值
-		if (this.builder.startReport) {
-			MetricCenter.report(context);
-		}
 	}
 
 	@Override

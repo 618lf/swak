@@ -1,10 +1,14 @@
 package com.swak.schema;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import com.swak.http.Server;
+import com.swak.http.metric.MetricCenter;
 import com.swak.http.server.HttpServer;
 
 /**
@@ -12,9 +16,10 @@ import com.swak.http.server.HttpServer;
  * 
  * @author lifeng
  */
-public class ServerBean extends HttpServer.Builder implements FactoryBean<Server>, InitializingBean, DisposableBean {
+public class ServerBean extends HttpServer.Builder implements FactoryBean<Server>, ApplicationContextAware, InitializingBean, DisposableBean {
 
 	// 服务
+	private ApplicationContext applicationContext;
 	private Server server;
 	private transient volatile boolean initialized;
 
@@ -40,8 +45,14 @@ public class ServerBean extends HttpServer.Builder implements FactoryBean<Server
 			return;
 		}
 		initialized = true;
+		
+		// 启动服务
 		server = new HttpServer(this);
-		server.start();
+		
+		// 启动监控
+		if (this.isStartReport()) {
+			MetricCenter.report(applicationContext);
+		}
 	}
 
 	@Override
@@ -60,5 +71,10 @@ public class ServerBean extends HttpServer.Builder implements FactoryBean<Server
 	@Override
 	public boolean isSingleton() {
 		return true;
+	}
+	
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 }

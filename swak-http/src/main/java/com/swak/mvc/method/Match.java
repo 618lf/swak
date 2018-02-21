@@ -9,9 +9,7 @@ import com.swak.mvc.annotation.RequestMethod;
 
 /**
  * 匹配器
- * 
  * @author lifeng
- *
  */
 public class Match implements Comparable<Match> {
 
@@ -26,14 +24,26 @@ public class Match implements Comparable<Match> {
 		this.method = methodMapping == null ? RequestMethod.ALL : methodMapping;
 	}
 
+	/**
+	 * 得到所有匹配的路径
+	 * @return
+	 */
 	public Set<String> getMapping() {
 		return mapping;
 	}
 
+	/**
+	 * 得到请求的方法数
+	 * @return
+	 */
 	public RequestMethod getMethod() {
 		return method;
 	}
 
+	/**
+	 * 得到实际的执行方法
+	 * @return
+	 */
 	public HandlerMethod getHandlerMethod() {
 		return handlerMethod;
 	}

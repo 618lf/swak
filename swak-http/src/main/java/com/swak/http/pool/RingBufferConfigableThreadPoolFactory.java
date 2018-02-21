@@ -18,6 +18,7 @@ import com.swak.http.PathMatcherHelper;
  * 估计代码上有些问题
  * @author lifeng
  */
+@Deprecated
 public class RingBufferConfigableThreadPoolFactory extends ConfigableThreadPoolFactory {
 
 	private static final int DEFAULT_RING_BUFFER_SIZE = 8 * 1024;
@@ -42,7 +43,7 @@ public class RingBufferConfigableThreadPoolFactory extends ConfigableThreadPoolF
 		disruptors.put(poolName, this.createDisruptor(pool));
 	}
 
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings({ "unchecked"})
 	protected Disruptor<ConcurrentEvent> createDisruptor(ThreadPoolExecutor pool) {
 		Disruptor<ConcurrentEvent> disruptor = new Disruptor<>(new ConcurrentEventFactory(), DEFAULT_RING_BUFFER_SIZE,
 				pool, ProducerType.SINGLE, new BlockingWaitStrategy());

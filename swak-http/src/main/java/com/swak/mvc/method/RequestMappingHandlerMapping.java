@@ -1,5 +1,7 @@
 package com.swak.mvc.method;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -30,9 +32,12 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.PathMatcher;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 import com.swak.common.utils.Maps;
 import com.swak.http.HttpServletRequest;
 import com.swak.http.PathMatcherHelper;
+import com.swak.http.metric.Reportable;
 import com.swak.mvc.annotation.RequestMapping;
 import com.swak.mvc.annotation.RequestMethod;
 import com.swak.mvc.utils.UrlPathHelper;
@@ -42,15 +47,15 @@ import com.swak.mvc.utils.UrlPathHelper;
  * 
  * @author lifeng
  */
-public class RequestMappingHandlerMapping implements HandlerMapping, ApplicationContextAware, InitializingBean {
+public class RequestMappingHandlerMapping implements HandlerMapping, ApplicationContextAware, InitializingBean, Reportable {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private ApplicationContext applicationContext;
 	private PathMatcher pathMatcher = PathMatcherHelper.getMatcher();
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
-	private final List<HandlerInterceptor> adaptedInterceptors = new ArrayList<HandlerInterceptor>();
-	private final MappingRegistry mappingRegistry = new MappingRegistry();
-	private final Map<String, Match> matchLookup = new HashMap<String, Match>();
+	private List<HandlerInterceptor> adaptedInterceptors = new ArrayList<HandlerInterceptor>();
+	private Map<String, Match> matchLookup = new HashMap<String, Match>();
+	private MappingRegistry mappingRegistry = new MappingRegistry();
 	
 	public PathMatcher getPathMatcher() {
 		return this.pathMatcher;
@@ -72,6 +77,9 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 	public void afterPropertiesSet() throws Exception {
 		this.initRequestMappings();
 		this.initInterceptors();
+		
+		// for gc
+		mappingRegistry.readWriteLock = null;
 	}
 	
 	private void initRequestMappings() {
@@ -268,16 +276,38 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 		// 如果没有 interceptor 则 直接返回 handler（也是一个执行链）
 		return chain == null ? handler: chain;
 	}
+	
+	/**
+	 * 上报指标
+	 */
+	@Override
+	public void report(MetricRegistry registry) {
+		Map<RequestMappingInfo, HandlerMethod> mappingLookup = mappingRegistry.getMappings();
+		long pathCount= mappingLookup.keySet().stream().flatMap(m -> m.getPatterns().stream()).count();
+		registry.register("Mapping Path", (Gauge<String>)() -> {
+			return new StringBuilder().append("Path-").append(pathCount).append(":Active-").append(matchLookup.size()).toString();
+		});
+	}
+	
+	/**
+	 * 释放资源
+	 */
+	@Override
+	public void close() throws IOException {
+		this.mappingRegistry.close();
+		this.adaptedInterceptors.clear();
+		this.matchLookup.clear();
+	}
 
 	/**
 	 * 注册器
 	 * @author lifeng
 	 */
-	public class MappingRegistry {
+	public class MappingRegistry implements Closeable {
 
-		private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-		private final Map<RequestMappingInfo, HandlerMethod> mappingLookup = new LinkedHashMap<RequestMappingInfo, HandlerMethod>();
-		private final MultiValueMap<String, RequestMappingInfo> urlLookup = new LinkedMultiValueMap<String, RequestMappingInfo>();
+		private ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+		private Map<RequestMappingInfo, HandlerMethod> mappingLookup = new LinkedHashMap<RequestMappingInfo, HandlerMethod>();
+		private MultiValueMap<String, RequestMappingInfo> urlLookup = new LinkedMultiValueMap<String, RequestMappingInfo>();
 
 		public void register(RequestMappingInfo mapping, Object handler, Method method) {
 			try {
@@ -309,6 +339,17 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 
 		public Map<RequestMappingInfo, HandlerMethod> getMappings() {
 			return this.mappingLookup;
+		}
+
+		/**
+		 * 释放资源
+		 */
+		@Override
+		public void close() throws IOException {
+			mappingLookup.clear();
+			urlLookup.clear();
+			mappingLookup = null;
+			urlLookup = null;
 		}
 	}
 }

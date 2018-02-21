@@ -1,8 +1,10 @@
 package com.swak.http.metric;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
@@ -10,7 +12,6 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
 import com.swak.http.server.HttpServer;
-import com.swak.http.server.HttpServerContext;
 
 /**
  * 指标监控
@@ -91,13 +92,16 @@ public final class MetricCenter {
 	/**
 	 * 输出指标报表
 	 */
-	public static void report(HttpServerContext context) {
+	public static void report(ApplicationContext applicationContext) {
 		
 		// 创建指标
 		getMetrics();
 		
 		// 注册稀有对象监控
-		context.getPool().report(getMetrics().registry);
+		Arrays.stream(applicationContext.getBeanNamesForType(Reportable.class)).forEach(s -> {
+			Reportable reportable = applicationContext.getBean(s, Reportable.class);
+			reportable.report(getMetrics().registry);
+		});
 		
 		// 启动生成报表
 		Slf4jReporter reporter = Slf4jReporter.forRegistry(getMetrics().registry)
