@@ -14,11 +14,33 @@ import org.apache.commons.io.IOUtils;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.RatioGauge;
 import com.swak.common.utils.Maps;
 import com.swak.common.utils.StringUtils;
 
-public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
+/**
+ * 可配置的线程池
+ * java 线程池的策略：
+ * 
+ * 主要是这四个参数来决定线程池的能力
+ * corePoolSize
+ * maximumPoolSize
+ * workQueue
+ * RejectedExecutionHandler
+ * 
+ * 举例：
+ * 如果没有空闲的线程，有如下的情形：
+ * 
+ * 1. 线程数小于    corePoolSize， 则新增线程执行
+ * 2. 线程数大于等于 corePoolSize， workQueue 未满， 则添加到workQueue 中等待
+ * 3. 线程数大于等于 corePoolSize， workQueue已满， 单小于 maximumPoolSize， 则新增线程执行（临时工线程）
+ * 4. 否则 执行 RejectedExecutionHandler
+ * 
+ * 
+ * 警告： workQueue 不能设置为 max ，不然 maximumPoolSize 不能起作用。
+ * 
+ * @author lifeng
+ */
+public class ConfigableThreadPoolFactory extends ExpectConfig {
 
 	protected static String default_pool_name = "DEFAULT";
 	protected static int default_threadSize = 2000;
@@ -125,12 +147,15 @@ public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 		});
 	}
 
-	private void createPool(String name, String configs) {
+	public void createPool(String name, String configs) {
 		String[] _configs = configs.split(":");
 		int times = getDefault(_configs, 2, default_keepAliveTime) * 1000;
-		ThreadPoolExecutor pool = new ThreadPoolExecutor(getDefault(_configs, 1, default_poolSize),
-				getDefault(_configs, 0, default_threadSize), times,
-				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+		ThreadPoolExecutor pool = this.expectPool(name, configs);
+		if (pool == null) {
+			pool = new ThreadPoolExecutor(getDefault(_configs, 1, default_poolSize),
+					getDefault(_configs, 0, default_threadSize), times,
+					TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+		}
 		if (times != 0) {
 			pool.allowCoreThreadTimeOut(true);
 		}
@@ -194,21 +219,5 @@ public class ConfigableThreadPoolFactory implements ConfigableThreadPool {
 			sb.append("KeepAlive-").append(pool.getKeepAliveTime(TimeUnit.SECONDS)).append(":");
 			return sb.toString();
 		});
-	}
-	
-	/**
-	 * 每个线程池的使用率
-	 * @author lifeng
-	 */
-	public class PoolRatio extends RatioGauge {
-		
-		public PoolRatio(String name) {
-			
-		}
-
-		@Override
-		protected Ratio getRatio() {
-			return null;
-		}
 	}
 }

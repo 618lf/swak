@@ -214,4 +214,17 @@ public class StringUtils {
 		}
 		return builder.toString();
 	}
+	
+	/**
+	 * 删除指定的字符
+	 * @param str
+	 * @param remove
+	 * @return
+	 */
+	public static String removeStart(String str, String remove) {
+        if (str.startsWith(remove)){
+            return str.substring(remove.length());
+        }
+        return str;
+    }
 }
