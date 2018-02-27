@@ -12,13 +12,14 @@
 
 	<!-- 线程隔离配置 
 	     ConfigableThreadPoolFactory： 每一条配置对应一个线程池
-	     RingBufferConfigableThreadPoolFactory： 每一条配置对应一个RingBuffer（有问题）
+	     [EXP]10000:50:500 设置业务模块的期望,
+	     [EXP]每秒任务数:任务执行平均时间:最大的等待时间
 	-->
 	<bean id="threadPool" class="com.swak.http.pool.ConfigableThreadPoolFactory">
 		<property name="poolDefinitions">
 			<value>
 				/admin/system = 2:1:0
-				/admin = 2000:1000:60
+				/admin = [EXP]10000:50:500
 				DEFAULT = 2:1:60
 			</value>
 		</property>

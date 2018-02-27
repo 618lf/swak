@@ -9,7 +9,8 @@ import com.swak.common.utils.StringUtils;
 /**
  * 如何设置参数： https://www.cnblogs.com/waytobestcoder/p/5323130.html
  * 
- * 针对线程池的特点， 只需要根据业务的特点，设置业务中的基本情况自动设置线程池的相关参数 : [EXP]每秒任务数:任务执行平均时间:最大的等待时间
+ * 针对线程池的特点， 只需要根据业务的特点，设置业务中的基本情况自动设置线程池的相关参数 : 
+ * [EXP]每秒任务数:任务执行平均时间:最大的等待时间
  * 
  * @author lifeng
  */
