@@ -21,11 +21,16 @@
 		<metrics.version>4.0.2</metrics.version>
 		<commons-io.version>2.4</commons-io.version>
 		<commons-codec.version>1.8</commons-codec.version>
+		<commons-pool.version>2.4.2</commons-pool.version>
 		<version.kryo>4.0.1</version.kryo>
 		<version.protostuff>1.6.0</version.protostuff>
 		<version.javassist>3.22.0-GA</version.javassist>
 		<disruptor.version>3.3.8</disruptor.version>
-		
+		<ehcache.version>2.6.11</ehcache.version>
+		<jedis.version>2.9.0</jedis.version>
+		<fst.version>2.48</fst.version>
+		<kryo.version>4.0.0</kryo.version>
+
 		<!-- test -->
 		<junit.version>4.12</junit.version>
 
@@ -201,6 +206,61 @@
 				<groupId>org.javassist</groupId>
 				<artifactId>javassist</artifactId>
 				<version>${version.javassist}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.ehcache</groupId>
+				<artifactId>ehcache-core</artifactId>
+				<version>${ehcache.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>redis.clients</groupId>
+				<artifactId>jedis</artifactId>
+				<version>${jedis.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.commons</groupId>
+						<artifactId>commons-pool2</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-pool2</artifactId>
+				<version>${commons-pool.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.ruedigermoeller</groupId>
+				<artifactId>fst</artifactId>
+				<version>${fst.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>com.cedarsoftware</groupId>
+						<artifactId>java-util</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.objenesis</groupId>
+						<artifactId>objenesis</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.javassist</groupId>
+						<artifactId>javassist</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-core</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>com.esotericsoftware</groupId>
+				<artifactId>kryo-shaded</artifactId>
+				<version>${kryo.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
