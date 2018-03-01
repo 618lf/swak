@@ -1,4 +1,4 @@
-package com.swak.schema;
+package com.swak.http;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -16,7 +16,7 @@ import com.swak.http.server.HttpServer;
  * 
  * @author lifeng
  */
-public class ServerBean extends HttpServer.Builder implements FactoryBean<Server>, ApplicationContextAware, InitializingBean, DisposableBean {
+public class ServerFactoryBean extends HttpServer.Builder implements FactoryBean<Server>, ApplicationContextAware, InitializingBean, DisposableBean {
 
 	// 服务
 	private ApplicationContext applicationContext;

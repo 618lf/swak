@@ -13,6 +13,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import com.swak.http.ServerFactoryBean;
+import com.swak.mvc.DispatcherServletFactoryBean;
 import com.swak.mvc.converter.DateConverter;
 import com.swak.mvc.converter.StringEscapeConverter;
 import com.swak.mvc.method.DefaultExceptionHandler;
@@ -163,6 +165,11 @@ public class SwakServerBeanDefinitionParser implements BeanDefinitionParser{
 		Element servletElement = DomUtils.getChildElementByTagName(element, "servlet");
 		if (servletElement != null) {
 			String servletName = servletElement.getAttribute("servlet-name");
+			RootBeanDefinition handlerMappingDef = new RootBeanDefinition(DispatcherServletFactoryBean.class);
+			handlerMappingDef.setSource(parserContext.extractSource(element));
+			handlerMappingDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			parserContext.getRegistry().registerBeanDefinition(servletName , handlerMappingDef);
+			parserContext.registerComponent(new BeanComponentDefinition(handlerMappingDef, servletName));
 			return new RuntimeBeanReference(servletName);
 		}
 		return null;
@@ -190,7 +197,7 @@ public class SwakServerBeanDefinitionParser implements BeanDefinitionParser{
 	 * @return
 	 */
 	private RuntimeBeanReference parseServer(Element element, ParserContext parserContext) {
-		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ServerBean.class);
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ServerFactoryBean.class);
 		builder.getRawBeanDefinition().setSource(parserContext.extractSource(element));
 		builder.setLazyInit(false);
 		String host = element.getAttribute("host");  

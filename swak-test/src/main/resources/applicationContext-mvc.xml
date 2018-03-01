@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:netty="http://code.swak.com/schema/netty"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:mvc="http://code.swak.com/schema/netty"
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
@@ -10,14 +10,11 @@
 	    http://code.swak.com/schema/netty http://code.swak.com/schema/netty/netty.xsd"
 	default-lazy-init="true">
 
-	<!-- mvc服务-->
-	<bean name="dispatcherServlet" class="com.swak.mvc.DispatcherServletFactoryBean"/>
-	
 	<!-- 拦截器 -->
-	<netty:interceptors>
-		<netty:interceptor>
-			<netty:mapping path="/admin/**" />
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/admin/**" />
 			<bean id="tokenInterceptor" class="com.tmt.interceptor.TokenInterceptor" />
-		</netty:interceptor>
-	</netty:interceptors>
+		</mvc:interceptor>
+	</mvc:interceptors>
 </beans>
