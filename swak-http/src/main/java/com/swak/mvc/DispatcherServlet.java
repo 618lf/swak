@@ -18,27 +18,49 @@ import io.netty.handler.codec.http.HttpResponseStatus;
  */
 public class DispatcherServlet implements Servlet {
 
-	private ApplicationContext applicationContext;
 	private HandlerMapping handlerMapping;
 	private HandlerAdapter handlerAdapter;
 	private HandlerException handlerException;
+	
+	
+	// 可以自定义如下名称的类来覆盖系统默认的
+	private String handlerMappingBeanName = "handlerMapping";
+	private String handlerAdapterBeanName = "handlerAdapter";
+	private String handlerExceptionBeanName = "handlerException";
 	
 	/**
 	 * 初始化
 	 */
 	@Override
 	public void init(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
-		this.initStrategies();
+		this.initStrategies(applicationContext);
 	}
 	
 	/**
 	 * 默认的策略
 	 */
-	private void initStrategies() {
-		handlerMapping = applicationContext.getBean(HandlerMapping.class);
-		handlerAdapter = applicationContext.getBean(HandlerAdapter.class);
-		handlerException = applicationContext.getBean(HandlerException.class);
+	private void initStrategies(ApplicationContext applicationContext) {
+		
+		// mapping
+		try {
+			handlerMapping = applicationContext.getBean(handlerMappingBeanName, HandlerMapping.class);
+		}catch (Exception e) {
+			handlerMapping = applicationContext.getBean(HandlerMapping.class);
+		}
+		
+		// adapter
+		try {
+			handlerAdapter = applicationContext.getBean(handlerAdapterBeanName, HandlerAdapter.class);
+		}catch (Exception e) {
+			handlerAdapter = applicationContext.getBean(HandlerAdapter.class);
+		}
+		
+		// exception
+		try {
+			handlerException = applicationContext.getBean(handlerExceptionBeanName, HandlerException.class);
+		}catch (Exception e) {
+			handlerException = applicationContext.getBean(HandlerException.class);
+		}
 	}
 	
 	/**
