@@ -768,4 +768,66 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 			this.release(jedis);
 		}
 	}
+
+	@Override
+	public long lPush(String key, Object ... value) {
+		Jedis jedis = this.getJedis();
+		try {
+			List<byte[]> bytes = Lists.newArrayList();
+			for(Object v: value) {
+				bytes.add(SerializationUtils.serialize(v));
+			}
+			byte[][] _value = new byte[bytes.size()][];
+			bytes.toArray(_value);
+			return jedis.lpush(SafeEncoder.encode(key), _value);
+		}catch(Exception e){
+			throw new CacheException(e);
+		}finally{
+			this.release(jedis);
+		}
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T lPop(String key) {
+		Jedis jedis = this.getJedis();
+		try {
+			return (T) SerializationUtils.deserialize(jedis.lpop(SafeEncoder.encode(key)));
+		}catch(Exception e){
+			throw new CacheException(e);
+		}finally{
+			this.release(jedis);
+		}
+	}
+	
+	@Override
+	public long rPush(String key, Object ... value) {
+		Jedis jedis = this.getJedis();
+		try {
+			List<byte[]> bytes = Lists.newArrayList();
+			for(Object v: value) {
+				bytes.add(SerializationUtils.serialize(v));
+			}
+			byte[][] _value = new byte[bytes.size()][];
+			bytes.toArray(_value);
+			return jedis.rpush(SafeEncoder.encode(key), _value);
+		}catch(Exception e){
+			throw new CacheException(e);
+		}finally{
+			this.release(jedis);
+		}
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T rPop(String key) {
+		Jedis jedis = this.getJedis();
+		try {
+			return (T) SerializationUtils.deserialize(jedis.rpop(SafeEncoder.encode(key)));
+		}catch(Exception e){
+			throw new CacheException(e);
+		}finally{
+			this.release(jedis);
+		}
+	}
 }

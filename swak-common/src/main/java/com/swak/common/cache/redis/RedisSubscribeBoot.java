@@ -22,7 +22,7 @@ public class RedisSubscribeBoot extends AbstractBoot {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				RedisUtils.subscribe(redisLocal, redisLocal.getChannels());
+				RedisUtils.getRedis().subscribe(redisLocal, redisLocal.getChannels());
 			}
 		}).start();
 	}

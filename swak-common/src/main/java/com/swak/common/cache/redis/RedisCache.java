@@ -81,7 +81,7 @@ public class RedisCache implements Cache {
 	 */
 	@Override
 	public void delete(String key) {
-		RedisUtils.delete(getKeyName(key));
+		RedisUtils.getRedis().delete(getKeyName(key));
 	}
 
 	@Override
@@ -91,26 +91,26 @@ public class RedisCache implements Cache {
 			for (Object key : keys) {
 				_keys.add(this.getKeyName(key));
 			}
-			RedisUtils.delete(_keys.toArray(new String[] {}));
+			RedisUtils.getRedis().delete(_keys.toArray(new String[] {}));
 		}
 	}
 
 	@Override
 	public boolean exists(String key) {
 		this._expire(key);
-		return RedisUtils.exists(getKeyName(key));
+		return RedisUtils.getRedis().exists(getKeyName(key));
 	}
 
 	@Override
 	public void clear() {
 		String _key = new StringBuilder(name).append(prex).append("*").toString();
-		RedisUtils.deletes(_key);
+		RedisUtils.getRedis().deletes(_key);
 	}
 
 	@Override
 	public long ttl(String key) {
 		String _key = getKeyName(key);
-		return RedisUtils.ttl(_key);
+		return RedisUtils.getRedis().ttl(_key);
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class RedisCache implements Cache {
 	 * @return
 	 */
 	protected Object _get(String key) {
-		return RedisUtils.getObject(key);
+		return RedisUtils.getRedis().getObject(key);
 	}
 
 	/**
@@ -132,9 +132,9 @@ public class RedisCache implements Cache {
 	 */
 	protected void _set(String key, Object value, int expiration) {
 		if (ExpireTimeValueWrapper.isValid(expiration)) {
-			RedisUtils.set(key, value, expiration);
+			RedisUtils.getRedis().set(key, value, expiration);
 		} else {
-			RedisUtils.set(key, value);
+			RedisUtils.getRedis().set(key, value);
 		}
 	}
 
@@ -147,7 +147,7 @@ public class RedisCache implements Cache {
 		String _key = this.getKeyName(key);
 		int expiration = this.getTimeToIdle();
 		if (ExpireTimeValueWrapper.isValid(expiration)) {// 设置了空闲时间的key每次访问才会更新过期时间为最大空闲时间，不会累加
-			RedisUtils.expire(_key, expiration);
+			RedisUtils.getRedis().expire(_key, expiration);
 		}
 	}
 

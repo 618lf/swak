@@ -12,15 +12,15 @@ public class MapCache extends RedisCache implements Map<String, Object>{
 
 	@Override
 	protected Object _get(String key) {
-		return RedisUtils.hGet(this.getKeyName(key), key);
+		return RedisUtils.getRedis().hGet(this.getKeyName(key), key);
 	}
 
 	@Override
 	protected void _set(String key, Object value, int expiration) {
 		String _key = this.getKeyName(key);
-		RedisUtils.hSet(_key, key, value);
+		RedisUtils.getRedis().hSet(_key, key, value);
 		if (ExpireTimeValueWrapper.isValid(expiration)) {
-			RedisUtils.expire(_key, expiration);
+			RedisUtils.getRedis().expire(_key, expiration);
 		}
 	}
 

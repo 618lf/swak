@@ -80,7 +80,7 @@ public class RedisCacheChannel extends RedisCache {
 			for(Object key: keys) {
 				_keys.add(this.getKeyName(key));
 			}
-			RedisUtils.delete(_keys.toArray(new String[]{}));
+			RedisUtils.getRedis().delete(_keys.toArray(new String[]{}));
 			return _keys;
 		}
 		return null;
@@ -100,7 +100,7 @@ public class RedisCacheChannel extends RedisCache {
 	private void _sendClearCmd() {
 		// 发送广播
 		Command cmd = new Command(Command.OPT_CLEAR_KEY, "");
-		RedisUtils.publish(SafeEncoder.encode("local_channel"), cmd.toBuffers());
+		RedisUtils.getRedis().publish(SafeEncoder.encode("local_channel"), cmd.toBuffers());
 	}
 	
 	/**
@@ -115,7 +115,7 @@ public class RedisCacheChannel extends RedisCache {
 		if (key != null) {
 			// 发送广播
 			Command cmd = new Command(Command.OPT_DELETE_KEY, key);
-			RedisUtils.publish(SafeEncoder.encode("local_channel"), cmd.toBuffers());
+			RedisUtils.getRedis().publish(SafeEncoder.encode("local_channel"), cmd.toBuffers());
 		}
 	}
 }

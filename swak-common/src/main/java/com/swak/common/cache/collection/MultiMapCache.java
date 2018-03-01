@@ -15,7 +15,7 @@ public class MultiMapCache extends RedisCache implements MultiMap<String, Object
 	@Override
 	protected Object _get(String key) {
 		String _key = this.getKeyName(key);
-		return RedisUtils.hGetAll(_key);
+		return RedisUtils.getRedis().hGetAll(_key);
 	}
 
 	/**
@@ -25,19 +25,19 @@ public class MultiMapCache extends RedisCache implements MultiMap<String, Object
 	@Override
 	protected void _set(String key, Object value, int expiration) {
 		String _key = this.getKeyName(key);
-		RedisUtils.hMSet(_key, (Map<String, Object>)value);
+		RedisUtils.getRedis().hMSet(_key, (Map<String, Object>)value);
 		if (ExpireTimeValueWrapper.isValid(expiration)) {
-			RedisUtils.expire(_key, expiration);
+			RedisUtils.getRedis().expire(_key, expiration);
 		}
 	}
 
 	@Override
 	public Object get(String k1, String k2) {
-		return RedisUtils.hGet(this.getKeyName(k1), k2);
+		return RedisUtils.getRedis().hGet(this.getKeyName(k1), k2);
 	}
 
 	@Override
 	public void pub(String k1, String k2, Object v) {
-		RedisUtils.hSet(this.getKeyName(k1), k2, v);
+		RedisUtils.getRedis().hSet(this.getKeyName(k1), k2, v);
 	}
 }

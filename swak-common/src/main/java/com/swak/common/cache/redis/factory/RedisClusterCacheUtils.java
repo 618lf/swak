@@ -865,4 +865,30 @@ public class RedisClusterCacheUtils implements IRedisCacheUtils{
 		} while (!sucess && tries <= numRetries);
 		return vals;
 	}
+	
+	// list
+
+	@Override
+	public long lPush(String key, Object... value) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public <T> T lPop(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long rPush(String key, Object... value) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public <T> T rPop(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

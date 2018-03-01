@@ -160,6 +160,12 @@ public interface IRedisCacheUtils {
 	public void hMSet(String key, Map<String, Object> tuple);
 	public List<Object> hVals(String key);
 	
+	// list 操作
+	public long lPush(String key, Object ... value);
+	public <T> T lPop(String key);
+	public long rPush(String key, Object ... value);
+	public <T> T rPop(String key);
+	
 	// 一组原始的操作
 	public void add(final String key, byte[] value);
 	public void set(final String key, byte[] value);
