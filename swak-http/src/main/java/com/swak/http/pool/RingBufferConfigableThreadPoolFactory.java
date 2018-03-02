@@ -43,7 +43,6 @@ public class RingBufferConfigableThreadPoolFactory extends ConfigableThreadPoolF
 		disruptors.put(poolName, this.createDisruptor(pool));
 	}
 
-	@SuppressWarnings({ "unchecked"})
 	protected Disruptor<ConcurrentEvent> createDisruptor(ThreadPoolExecutor pool) {
 		Disruptor<ConcurrentEvent> disruptor = new Disruptor<>(new ConcurrentEventFactory(), DEFAULT_RING_BUFFER_SIZE,
 				pool, ProducerType.SINGLE, new BlockingWaitStrategy());

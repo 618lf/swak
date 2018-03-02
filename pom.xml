@@ -25,7 +25,7 @@
 		<version.kryo>4.0.1</version.kryo>
 		<version.protostuff>1.6.0</version.protostuff>
 		<version.javassist>3.22.0-GA</version.javassist>
-		<disruptor.version>3.3.8</disruptor.version>
+		<disruptor.version>3.4.0</disruptor.version>
 		<ehcache.version>2.6.11</ehcache.version>
 		<jedis.version>2.9.0</jedis.version>
 		<fst.version>2.48</fst.version>
