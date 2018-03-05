@@ -7,7 +7,7 @@ import com.swak.http.Executeable;
 import com.swak.http.pool.RingBufferExecutor;
 
 /**
- * 10000000 次 需要 10300秒
+ * 10000000 次 需要 与线程有关，线程越多越慢
  * @author lifeng
  */
 public class TestRingBufferExecutor {
