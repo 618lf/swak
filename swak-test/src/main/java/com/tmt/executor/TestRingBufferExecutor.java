@@ -13,7 +13,7 @@ import com.swak.http.pool.RingBufferExecutor;
 public class TestRingBufferExecutor {
 
 	public static void main(String[] args) throws InterruptedException {
-		String definitions = "DEFAULT = 1024";
+		String definitions = "DEFAULT = 30";
 		Executeable executor = new RingBufferExecutor();
 		executor.setPoolDefinitions(definitions);
 		
@@ -27,6 +27,11 @@ public class TestRingBufferExecutor {
 				@Override
 				public void run() {
 					count.incrementAndGet();
+					try {
+						Thread.sleep(10);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			});
 		}
