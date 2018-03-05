@@ -11,6 +11,7 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
+import com.swak.http.Reportable;
 import com.swak.http.server.HttpServer;
 
 /**

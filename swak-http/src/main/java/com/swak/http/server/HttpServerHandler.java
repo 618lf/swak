@@ -4,10 +4,10 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.http.Executeable;
 import com.swak.http.HttpServletRequest;
 import com.swak.http.HttpServletResponse;
 import com.swak.http.metric.MetricCenter;
-import com.swak.http.pool.ConfigableThreadPool;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -37,11 +37,11 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(HttpServerHandler.class);
 
 	private final HttpServerContext context;
-	private final ConfigableThreadPool pool;
+	private final Executeable executor;
 
 	public HttpServerHandler(HttpServerContext context) {
 		this.context = context;
-		this.pool = context.getPool();
+		this.executor = context.getPool();
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if (msg instanceof FullHttpRequest) {
 			String lookupPath = getLookupPath((FullHttpRequest) msg);
-			pool.onExecute(lookupPath, new HttpWorkTask(ctx, (FullHttpRequest) msg));
+			executor.onExecute(lookupPath, new HttpWorkTask(ctx, (FullHttpRequest) msg));
 		}
 	}
 

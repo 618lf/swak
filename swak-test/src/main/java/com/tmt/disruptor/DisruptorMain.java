@@ -8,6 +8,10 @@ import com.lmax.disruptor.SleepingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 
+/**
+ * Disruptor 的性能是 BlockingQueue 的 5 倍左右
+ * @author lifeng
+ */
 public class DisruptorMain {
 
 	public static void main(String[] args) throws InterruptedException {
@@ -19,13 +23,13 @@ public class DisruptorMain {
 		Disruptor<MsgData> disruptor = new Disruptor<>(new MsgDataFactory(), 1024, MsgDataThreadFactory.INSTANCE, ProducerType.SINGLE,
 				new SleepingWaitStrategy());
 		
-		// 启动消费者
+		// 启动多个消费线程
 		// disruptor.handleEventsWithWorkerPool(new MsgDataHandler(count), new MsgDataHandler(count), new MsgDataHandler(count));
 		disruptor.handleEventsWith(new MsgDataHandler2(count));
 		disruptor.start();
 		
 		// 生产的总数 
-		int total = 1024;
+		int total = 10000000;
 		
 		// 获取ringBuffer
 		RingBuffer<MsgData> ringBuffer = disruptor.getRingBuffer();

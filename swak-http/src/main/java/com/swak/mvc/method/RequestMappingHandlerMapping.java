@@ -37,7 +37,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.swak.common.utils.Maps;
 import com.swak.http.HttpServletRequest;
 import com.swak.http.PathMatcherHelper;
-import com.swak.http.metric.Reportable;
+import com.swak.http.Reportable;
 import com.swak.mvc.annotation.RequestMapping;
 import com.swak.mvc.annotation.RequestMethod;
 import com.swak.mvc.utils.UrlPathHelper;

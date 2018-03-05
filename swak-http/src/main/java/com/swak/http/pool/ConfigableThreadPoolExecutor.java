@@ -2,15 +2,12 @@ package com.swak.http.pool;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import org.apache.commons.io.IOUtils;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
@@ -40,7 +37,7 @@ import com.swak.common.utils.StringUtils;
  * 
  * @author lifeng
  */
-public class ConfigableThreadPoolFactory extends ExpectConfig {
+public class ConfigableThreadPoolExecutor extends ExpectConfig implements ConfigableThreadPool{
 
 	protected static String default_pool_name = "DEFAULT";
 	protected static int default_threadSize = 2000;
@@ -114,39 +111,6 @@ public class ConfigableThreadPoolFactory extends ExpectConfig {
 		return null;
 	}
 
-	/**
-	 * url 定义的配置 url 配置是有顺序的
-	 * 
-	 * @param definitions
-	 */
-	public void setPoolDefinitions(String definitions) {
-		Map<String, String> poolDefinitions = Maps.newOrderMap();
-		Scanner scanner = new Scanner(definitions);
-		while (scanner.hasNextLine()) {
-			String line = StringUtils.clean(scanner.nextLine());
-			if (!StringUtils.hasText(line)) {
-				continue;
-			}
-			String[] parts = StringUtils.split(line, '=');
-			if (!(parts != null && parts.length == 2)) {
-				continue;
-			}
-			String path = StringUtils.clean(parts[0]);
-			String configs = StringUtils.clean(parts[1]);
-			if (!(StringUtils.hasText(path) && StringUtils.hasText(configs))) {
-				continue;
-			}
-			poolDefinitions.put(path, configs);
-		}
-		IOUtils.closeQuietly(scanner);
-
-		// 构建线程池
-		poolDefinitions.keySet().stream().forEach(s -> {
-			String configs = poolDefinitions.get(s);
-			this.createPool(s, configs);
-		});
-	}
-
 	public void createPool(String name, String configs) {
 		String[] _configs = configs.split(":");
 		int times = getDefault(_configs, 2, default_keepAliveTime) * 1000;
@@ -160,13 +124,6 @@ public class ConfigableThreadPoolFactory extends ExpectConfig {
 			pool.allowCoreThreadTimeOut(true);
 		}
 		this.createPool(name, pool);
-	}
-
-	private int getDefault(String[] configs, int index, int def) {
-		if (configs == null || index >= configs.length) {
-			return def;
-		}
-		return Integer.parseInt(configs[index]);
 	}
 
 	/**

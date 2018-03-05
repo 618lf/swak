@@ -14,6 +14,5 @@ public class MsgDataHandler2 implements EventHandler<MsgData> {
 	@Override
 	public void onEvent(MsgData event, long sequence, boolean endOfBatch) throws Exception {
 		count.incrementAndGet();
-		System.out.println(Thread.currentThread().getName());
 	}
 }

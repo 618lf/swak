@@ -14,7 +14,7 @@ import com.swak.common.utils.StringUtils;
  * 
  * @author lifeng
  */
-public abstract class ExpectConfig implements ConfigableThreadPool {
+public abstract class ExpectConfig {
 
 	/**
 	 * 创建期望配置的线程池

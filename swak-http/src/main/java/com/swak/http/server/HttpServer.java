@@ -3,6 +3,7 @@ package com.swak.http.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.http.Executeable;
 import com.swak.http.Filter;
 import com.swak.http.Server;
 import com.swak.http.Servlet;
@@ -222,7 +223,7 @@ public class HttpServer implements Server {
 			this.privateKeyPassword = privateKeyPassword;
 		}
 
-		public ConfigableThreadPool getPool() {
+		public Executeable getPool() {
 			return pool;
 		}
 

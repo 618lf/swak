@@ -1,4 +1,4 @@
-package com.swak.http.metric;
+package com.swak.http;
 
 import com.codahale.metrics.MetricRegistry;
 

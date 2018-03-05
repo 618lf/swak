@@ -1,11 +1,11 @@
 package com.swak.http.server;
 
+import com.swak.http.Executeable;
 import com.swak.http.Filter;
 import com.swak.http.FilterChain;
 import com.swak.http.ServerContext;
 import com.swak.http.Servlet;
-import com.swak.http.pool.ConfigableThreadPool;
-import com.swak.http.pool.ConfigableThreadPoolFactory;
+import com.swak.http.pool.ConfigableThreadPoolExecutor;
 import com.swak.http.server.HttpServer.Builder;
 
 /**
@@ -28,7 +28,7 @@ public class HttpServerContext extends ServerContext {
 	/*
 	 * 线程池
 	 */
-	private ConfigableThreadPool pool;
+	private Executeable pool;
 
 	public HttpServerContext(Builder builder) {
 		super(builder);
@@ -36,7 +36,8 @@ public class HttpServerContext extends ServerContext {
 		this.filter = builder.getFilter();
 		this.pool = builder.getPool();
 		if (this.pool == null) {
-			this.pool = new ConfigableThreadPoolFactory();
+			// 默认使用基于线程的执行器
+			this.pool = new ConfigableThreadPoolExecutor();
 		}
 	}
 
@@ -48,7 +49,7 @@ public class HttpServerContext extends ServerContext {
 		return this.filter;
 	}
 	
-	public ConfigableThreadPool getPool() {
+	public Executeable getPool() {
 		return pool;
 	}
 
