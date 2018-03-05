@@ -5,6 +5,16 @@ package com.swak.common.cache.collection;
  * @author lifeng
  */
 public class Collections {
+	
+	/**
+	 * 创建一个基于缓存的双Map
+	 * @param name
+	 * @param timeToIdle
+	 * @return
+	 */
+	public static MultiMap<String, Object> newMultiMap(String name) {
+		return new MultiMapCache(name);
+	}
 
 	/**
 	 * 创建一个基于缓存的双Map
@@ -13,9 +23,6 @@ public class Collections {
 	 * @return
 	 */
 	public static MultiMap<String, Object> newMultiMap(String name, int timeToIdle) {
-		MultiMapCache cache = new MultiMapCache();
-		cache.setName(name);
-		cache.setTimeToIdle(timeToIdle);
-		return cache;
+		return new MultiMapCache(name, timeToIdle);
 	}
 }

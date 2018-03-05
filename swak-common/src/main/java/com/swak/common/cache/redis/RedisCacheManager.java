@@ -15,8 +15,7 @@ public class RedisCacheManager extends AbstractCacheManager {
 	 */
 	@Override
 	public Cache createCache(String name, int timeToIdle) {
-		RedisCache cache = new RedisCache();
-		cache.setName(name); 
+		RedisCache cache = new RedisCache(name);
 		cache.setTimeToIdle(timeToIdle);
 		return cache;
 	}

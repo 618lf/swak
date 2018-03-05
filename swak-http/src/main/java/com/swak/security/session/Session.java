@@ -1,14 +1,16 @@
-package com.swak.security.principal;
+package com.swak.security.session;
 
 import java.util.Set;
 import java.util.Stack;
+
+import com.swak.security.principal.Principal;
 
 /**
  * 简单的session存储, 提供类似Session 的存储
  * @author lifeng
  */
 public interface Session {
-
+	
 	/**
 	 * session id
 	 * @return
@@ -20,6 +22,12 @@ public interface Session {
 	 * @return
 	 */
 	Principal getPrincipal();
+	
+	/**
+	 * 设置身份
+	 * @return
+	 */
+	void setPrincipal(Principal principal);
 	
 	/**
 	 * 是否授权登录

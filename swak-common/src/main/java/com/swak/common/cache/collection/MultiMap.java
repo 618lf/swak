@@ -1,6 +1,8 @@
 package com.swak.common.cache.collection;
 
-public interface MultiMap<K, V> extends Map<K, java.util.Map<K, V>> {
+import java.util.Map;
+
+public interface MultiMap<K, V> extends CMap<K, Map<K, V>> {
 
 	/**
 	 * 获得一个值
@@ -17,4 +19,11 @@ public interface MultiMap<K, V> extends Map<K, java.util.Map<K, V>> {
 	 * @param v
 	 */
 	void pub(K k1, K k2, V v);
+	
+	/**
+	 * 删除一个属性
+	 * @param k1
+	 * @param k2
+	 */
+	void delete(K k1, K k2);
 }

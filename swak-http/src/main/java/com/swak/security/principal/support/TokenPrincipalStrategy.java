@@ -2,6 +2,8 @@ package com.swak.security.principal.support;
 
 import java.util.UUID;
 
+import com.swak.common.cache.Cache;
+import com.swak.common.cache.redis.RedisCache;
 import com.swak.common.utils.Digests;
 import com.swak.common.utils.StringUtils;
 import com.swak.http.HttpServletRequest;
@@ -20,7 +22,11 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 
 	private String tokenName = "X-Token";
 	private Integer timeOut = 24 * 60 * 60 * 30; // 一个月
-	private String key = UUID.randomUUID().toString();
+	private Cache _cahce;
+	
+	public TokenPrincipalStrategy() {
+		_cahce = new RedisCache("tokens", timeOut);
+	}
 	
 	public Integer getTimeOut() {
 		return timeOut;
@@ -44,13 +50,15 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	@Override
 	public void createPrincipal(Subject subject, HttpServletRequest request,
 			HttpServletResponse response) {
-		// 让前端可已获取响应头
-		response.header("Access-Control-Expose-Headers", this.getTokenName());
+		
+		// 也可以存储到 cookie 中
+		String key = UUID.randomUUID().toString();
 		String token = TokenUtils.getToken(subject.getPrincipal(), key);
 		response.header(this.getTokenName(), token);
 		
-		// session id
+		// 生成 SessionId
 		String sessionId = this.getKey(token);
+		_cahce.put(sessionId, key);
 		subject.setSessionId(sessionId);
 	}
 
@@ -78,7 +86,13 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 		
 		// 获取加密的key 根据token 获取
 		String sessionId = this.getKey(token);
+		String key = _cahce.get(sessionId);
 		subject.setSessionId(sessionId);
+		
+		if (!StringUtils.hasText(key)) {
+			this.invalidatePrincipal(subject, request, response);
+			return;
+		}
 		
 		// 获取身份
 		Principal principal = TokenUtils.getSubject(token, key);
@@ -92,7 +106,7 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	 */
 	@Override
 	public void invalidatePrincipal(String sessionId) {
-		
+		_cahce.delete(sessionId);
 	}
 
 	/**

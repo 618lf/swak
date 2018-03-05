@@ -8,7 +8,7 @@ import com.swak.http.HttpServletRequest;
 import com.swak.http.HttpServletResponse;
 import com.swak.security.exception.AuthenticationException;
 import com.swak.security.principal.Principal;
-import com.swak.security.principal.Session;
+import com.swak.security.session.Session;
 
 /**
  * 简单的主体
@@ -32,6 +32,7 @@ public interface Subject {
 	 * 能唯一标识一个用户登录有效的字符串
 	 * cookieSession 中的sessionId
 	 * token 中的 key
+	 * 有 SessionId 不一定有session（或许根本不需要）
 	 * @return
 	 */
 	String getSessionId();

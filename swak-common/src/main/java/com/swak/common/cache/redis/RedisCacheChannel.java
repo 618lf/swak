@@ -15,6 +15,10 @@ public class RedisCacheChannel extends RedisCache {
 
 	// 本地缓存
 	private RedisLocalCache local;
+	
+	public RedisCacheChannel(String name) {
+		super(name);
+	}
 		
 	public RedisLocalCache getLocal() {
 		return local;
@@ -77,7 +81,7 @@ public class RedisCacheChannel extends RedisCache {
 	private List<String> _delete(List<String> keys) {
 		if (keys != null && keys.size() != 0) {
 			List<String> _keys = Lists.newArrayList();
-			for(Object key: keys) {
+			for(String key: keys) {
 				_keys.add(this.getKeyName(key));
 			}
 			RedisUtils.getRedis().delete(_keys.toArray(new String[]{}));

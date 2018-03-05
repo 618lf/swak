@@ -10,7 +10,7 @@ import com.swak.http.HttpServletResponse;
 import com.swak.security.context.ThreadContext;
 import com.swak.security.exception.AuthenticationException;
 import com.swak.security.principal.Principal;
-import com.swak.security.principal.Session;
+import com.swak.security.session.Session;
 import com.swak.security.subjct.Subject;
 import com.swak.security.utils.SecurityUtils;
 

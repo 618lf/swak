@@ -5,7 +5,7 @@ package com.swak.common.cache.collection;
  * @author lifeng
  * @param <T>
  */
-public interface List<T> {
+public interface CList<T> {
 
 	/**
 	 * 插入一个元素
