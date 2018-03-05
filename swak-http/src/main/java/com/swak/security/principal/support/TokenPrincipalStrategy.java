@@ -70,6 +70,7 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	public void invalidatePrincipal(Subject subject,
 			HttpServletRequest request, HttpServletResponse response) {
 		response.header(this.getTokenName(), "");
+		_cahce.delete(subject.getSessionId());
 	}
 
 	/**
