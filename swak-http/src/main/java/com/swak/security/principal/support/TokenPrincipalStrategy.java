@@ -16,12 +16,13 @@ import com.swak.security.utils.TokenUtils;
 /**
  * 基于 token 的身份解决方案
  * 对于key 的管理可以更加简单， 看情况而定
+ * 无需支持cookie
  * @author lifeng
  */
 public class TokenPrincipalStrategy implements PrincipalStrategy {
 
 	private String tokenName = "X-Token";
-	private Integer timeOut = 24 * 60 * 60 * 30; // 一个月
+	private Integer timeOut = 24 * 60 * 60 * 7; // 一个星期
 	private Cache _cahce;
 	
 	public TokenPrincipalStrategy() {
