@@ -4,10 +4,10 @@ import java.util.Map;
 import java.util.concurrent.ThreadFactory;
 import java.util.stream.Stream;
 
-import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.EventFactory;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.WorkHandler;
+import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.swak.common.utils.Maps;
@@ -81,7 +81,7 @@ public class RingBufferExecutor implements Executeable {
 	
 	protected Disruptor<ConcurrentEvent> createDisruptor(int poolSize) {
 		Disruptor<ConcurrentEvent> disruptor = new Disruptor<>(new ConcurrentEventFactory(), DEFAULT_RING_BUFFER_SIZE,
-				new ConcurrentThreadFactory(), ProducerType.SINGLE, new BlockingWaitStrategy());
+				new ConcurrentThreadFactory(), ProducerType.SINGLE, new YieldingWaitStrategy());
 		ConcurrentHandler worker = new ConcurrentHandler();
 		ConcurrentHandler[] workers = new ConcurrentHandler[poolSize];
 		Stream.iterate(0, i -> i+1).limit(poolSize).forEach(i -> {
