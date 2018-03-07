@@ -2,12 +2,15 @@ package com.swak.http.pool;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import org.apache.commons.io.IOUtils;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
@@ -110,6 +113,39 @@ public class ConfigableThreadPoolExecutor extends ExpectConfig implements Config
 		}
 		return null;
 	}
+	
+	/**
+	 * url 定义的配置 url 配置是有顺序的
+	 * 
+	 * @param definitions
+	 */
+	public void setPoolDefinitions(String definitions) {
+		Map<String, String> poolDefinitions = Maps.newOrderMap();
+		Scanner scanner = new Scanner(definitions);
+		while (scanner.hasNextLine()) {
+			String line = StringUtils.clean(scanner.nextLine());
+			if (!StringUtils.hasText(line)) {
+				continue;
+			}
+			String[] parts = StringUtils.split(line, '=');
+			if (!(parts != null && parts.length == 2)) {
+				continue;
+			}
+			String path = StringUtils.clean(parts[0]);
+			String configs = StringUtils.clean(parts[1]);
+			if (!(StringUtils.hasText(path) && StringUtils.hasText(configs))) {
+				continue;
+			}
+			poolDefinitions.put(path, configs);
+		}
+		IOUtils.closeQuietly(scanner);
+
+		// 构建线程池
+		poolDefinitions.keySet().stream().forEach(s -> {
+			String configs = poolDefinitions.get(s);
+			this.createPool(s, configs);
+		});
+	}
 
 	public void createPool(String name, String configs) {
 		String[] _configs = configs.split(":");
@@ -134,6 +170,8 @@ public class ConfigableThreadPoolExecutor extends ExpectConfig implements Config
 		Executor executor = this.getPool(lookupPath);
 		CompletableFuture.runAsync(run, executor);
 	}
+	
+	
 
 	/**
 	 * 线程池的指标上报

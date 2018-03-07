@@ -15,12 +15,10 @@
 	     [EXP]10000:50:500 设置业务模块的期望,
 	     [EXP]每秒任务数:任务执行平均时间:最大的等待时间
 	-->
-	<bean id="threadPool" class="com.swak.http.pool.ConfigableThreadPoolFactory">
+	<bean id="threadPool" class="com.swak.http.pool.ConfigableThreadPoolExecutor">
 		<property name="poolDefinitions">
 			<value>
-				/admin/system = 2:1:0
-				/admin = [EXP]10000:50:500
-				DEFAULT = 2:1:60
+				DEFAULT = 2000:1024:5
 			</value>
 		</property>
 	</bean>
