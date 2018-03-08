@@ -4,6 +4,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.FutureTask;
 
+import com.swak.common.cache.redis.AbstractRedisCache;
+import com.swak.common.cache.redis.RedisCacheChannel;
+import com.swak.common.cache.redis.RedisLocalCache;
+import com.swak.common.utils.SpringContextHolder;
+
 /**
  * 默认的缓存管理
  * @author root
@@ -41,5 +46,20 @@ public abstract class AbstractCacheManager implements CacheManager {
 		}catch(Exception e) {
 			return null;
 		}
+	}
+
+	/**
+	 * 将 cache 包裹为二级缓存
+	 */
+	@Override
+	public Cache wrap(Cache cache) {
+		if (cache == null || cache instanceof RedisCacheChannel) {
+			throw new RuntimeException("cache 为一个普通的redis 缓存");
+		}
+		RedisLocalCache local = SpringContextHolder.getBean(RedisLocalCache.class);
+		RedisCacheChannel channel = new RedisCacheChannel();
+		channel.setLocal(local);
+		channel.setRemote((AbstractRedisCache)cache);
+		return channel;
 	}
 }

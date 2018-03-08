@@ -28,5 +28,11 @@ public interface CacheManager {
 	 * @return
 	 */
 	Cache createCache(String name, int timeToIdle);
-
+	
+	/**
+	 * 包括缓存
+	 * @param cache
+	 * @return
+	 */
+	Cache wrap(Cache cache);
 }

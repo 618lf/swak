@@ -9,6 +9,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.swak.http.Reportable;
 import com.swak.mvc.annotation.RequestMapping;
 import com.swak.mvc.annotation.RequestMethod;
+import com.tmt.cache.CacheUtils;
 
 @Controller
 @RequestMapping("/admin/validate")
@@ -24,7 +25,8 @@ public class ValidateController implements Reportable {
 	@RequestMapping(value = "/code", method = RequestMethod.GET)
 	public String postCode() {
 		count.incrementAndGet();
-		return "哈哈";
+		CacheUtils.sys().wrap().get().get("lifeng");
+		return "";
 	}
 	
 	/**

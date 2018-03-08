@@ -2,7 +2,6 @@ package com.swak.common.cache.collection;
 
 import com.swak.common.cache.Cache;
 import com.swak.common.cache.redis.AbstractRedisCache;
-import com.swak.common.cache.redis.ExpireTimeValueWrapper;
 import com.swak.common.cache.redis.RedisUtils;
 
 /**
@@ -37,7 +36,7 @@ public class MapCache implements CMap<String, Object>{
 			protected void _set(String key, Object value, int expiration) {
 				String _key = this.getKeyName(DEFAULT_KEY);
 				RedisUtils.getRedis().hSet(_key, key, value);
-				if (ExpireTimeValueWrapper.isValid(expiration)) {
+				if (isValid(expiration)) {
 					RedisUtils.getRedis().expire(_key, expiration);
 				}
 			}
@@ -46,7 +45,7 @@ public class MapCache implements CMap<String, Object>{
 			protected void _expire(String key) {
 				String keyName = this.getKeyName(DEFAULT_KEY);
 				int expiration = this.getTimeToIdle();
-				if (ExpireTimeValueWrapper.isValid(expiration)) {
+				if (isValid(expiration)) {
 					RedisUtils.getRedis().expire(keyName, expiration);
 				}
 			}

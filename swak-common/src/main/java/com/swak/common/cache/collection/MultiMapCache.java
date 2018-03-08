@@ -3,7 +3,6 @@ package com.swak.common.cache.collection;
 import java.util.Map;
 
 import com.swak.common.cache.redis.AbstractRedisCache;
-import com.swak.common.cache.redis.ExpireTimeValueWrapper;
 import com.swak.common.cache.redis.RedisUtils;
 
 /**
@@ -43,7 +42,7 @@ public class MultiMapCache extends AbstractRedisCache implements MultiMap<String
 	protected void _set(String key, Object value, int expiration) {
 		String _key = this.getKeyName(key);
 		RedisUtils.getRedis().hMSet(_key, (Map<String, Object>)value);
-		if (ExpireTimeValueWrapper.isValid(expiration)) {
+		if (isValid(expiration)) {
 			RedisUtils.getRedis().expire(_key, expiration);
 		}
 	}
@@ -56,7 +55,7 @@ public class MultiMapCache extends AbstractRedisCache implements MultiMap<String
 	protected void _expire(String key) {
 		String keyName = this.getKeyName(key);
 		int expiration = this.getTimeToIdle();
-		if (ExpireTimeValueWrapper.isValid(expiration)) {
+		if (isValid(expiration)) {
 			RedisUtils.getRedis().expire(keyName, expiration);
 		}
 	}

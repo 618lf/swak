@@ -44,7 +44,7 @@ public class RedisCache extends AbstractRedisCache {
 	 */
 	protected void _set(String key, Object value, int expiration) {
 		String keyName = this.getKeyName(key);
-		if (ExpireTimeValueWrapper.isValid(expiration)) {
+		if (isValid(expiration)) {
 			RedisUtils.getRedis().set(keyName, value, expiration);
 		} else {
 			RedisUtils.getRedis().set(keyName, value);
@@ -59,7 +59,7 @@ public class RedisCache extends AbstractRedisCache {
 	protected void _expire(String key) {
 		String keyName = this.getKeyName(key);
 		int expiration = this.getTimeToIdle();
-		if (ExpireTimeValueWrapper.isValid(expiration)) {
+		if (isValid(expiration)) {
 			RedisUtils.getRedis().expire(keyName, expiration);
 		}
 	}

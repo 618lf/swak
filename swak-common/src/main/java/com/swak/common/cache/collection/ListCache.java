@@ -2,7 +2,6 @@ package com.swak.common.cache.collection;
 
 import com.swak.common.cache.Cache;
 import com.swak.common.cache.redis.AbstractRedisCache;
-import com.swak.common.cache.redis.ExpireTimeValueWrapper;
 import com.swak.common.cache.redis.RedisUtils;
 
 /**
@@ -38,7 +37,7 @@ public class ListCache<T> implements CList<T> {
 			protected void _set(String key, Object value, int expiration) {
 				String keyName = this.getKeyName(key);
 				RedisUtils.getRedis().lPush(keyName, value);
-				if (ExpireTimeValueWrapper.isValid(expiration)) {
+				if (isValid(expiration)) {
 					RedisUtils.getRedis().expire(keyName, expiration);
 				}
 			}
@@ -47,7 +46,7 @@ public class ListCache<T> implements CList<T> {
 			protected void _expire(String key) {
 				String keyName = this.getKeyName(key);
 				int expiration = this.getTimeToIdle();
-				if (ExpireTimeValueWrapper.isValid(expiration)) {
+				if (isValid(expiration)) {
 					RedisUtils.getRedis().expire(keyName, expiration);
 				}
 			}

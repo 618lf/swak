@@ -2,6 +2,7 @@ package com.swak.common.cache.redis;
 
 import java.util.List;
 
+import com.swak.common.cache.Cache;
 import com.swak.common.utils.Lists;
 
 import redis.clients.util.SafeEncoder;
@@ -11,23 +12,54 @@ import redis.clients.util.SafeEncoder;
  * 二级缓存功能
  * @author root
  */
-public class RedisCacheChannel extends RedisCache {
+public class RedisCacheChannel implements Cache {
 
 	// 本地缓存
 	private RedisLocalCache local;
 	
-	public RedisCacheChannel(String name) {
-		super(name);
-	}
-		
-	public RedisLocalCache getLocal() {
-		return local;
-	}
-
+	// 远程缓存
+	private AbstractRedisCache remote;
+	
+	/**
+	 * 必须设置这两级缓存
+	 * @param local
+	 */
 	public void setLocal(RedisLocalCache local) {
 		this.local = local;
 	}
+	public void setRemote(AbstractRedisCache remote) {
+		this.remote = remote;
+	}
 
+	/**
+	 * 远程缓存的命名规则
+	 * @param key
+	 * @return
+	 */
+	protected String getKeyName(String key) {
+		return remote.getKeyName(key);
+	}
+
+	// 不使用本地缓存的方法
+	@Override
+	public String getName() {
+		return remote.getName();
+	}
+
+	@Override
+	public Object getNativeCache() {
+		return remote.getNativeCache();
+	}
+
+	@Override
+	public boolean exists(String key) {
+		return remote.exists(key);
+	}
+
+	@Override
+	public long ttl(String key) {
+		return remote.ttl(key);
+	}
 	// 以下实现了使用本地缓存的方法
 	/**
 	 * 优先从1级缓存获取数据。 
@@ -38,10 +70,8 @@ public class RedisCacheChannel extends RedisCache {
 		String localKey = this.getKeyName(key);
 		T t = local.get(localKey);
 		if (t == null) {
-			Object o = super._get(key);
-			if (o != null && o instanceof ExpireTimeValueWrapper) {
-				t = (T) ((ExpireTimeValueWrapper)o).get();
-			} else if(o != null){
+			Object o = remote._get(key);
+			if (o != null){
 				t = (T) o;
 				local.put(localKey, t);
 			}
@@ -54,15 +84,13 @@ public class RedisCacheChannel extends RedisCache {
 		String localKey = this.getKeyName(key);
 		_sendEvictCmd(localKey);// 清除原有的一级缓存的内容
 		local.put(localKey, value);
-		super.put(key, value);
+		remote.put(key, value);
 	}
 
 	@Override
 	public void delete(String key) {
-		
-		// 单个删除
 		String localKey = this.getKeyName(key);
-		super.delete(key);
+		remote.delete(key);
 		local.delete(localKey);
 		_sendEvictCmd(localKey);
 	}
@@ -93,7 +121,7 @@ public class RedisCacheChannel extends RedisCache {
 	@Override
 	public void clear() {
 		local.clear();
-		super.clear();
+		remote.clear();
 		_sendClearCmd();
 	}
 

@@ -10,7 +10,6 @@ public abstract class AbstractRedisCache implements Cache{
 	private static int EXPIRATION_IN = -1; // 默认不过期
 	private String name;
 	private String prex = "#";
-	private int timeToLive = EXPIRATION_IN;// 固定的存活时间，到点就清除
 	private int timeToIdle = EXPIRATION_IN;// 最大空闲时间，每次访问会修改最大的空闲时间
 	
 	/**
@@ -133,11 +132,7 @@ public abstract class AbstractRedisCache implements Cache{
 	 * @return
 	 */
 	protected int getExpiration() {
-		// 这两个只能使用一个,简单点
-		if (ExpireTimeValueWrapper.isValid(this.timeToLive)) {
-			return this.timeToLive;
-		}
-		if (ExpireTimeValueWrapper.isValid(this.timeToIdle)) {
+		if (isValid(this.timeToIdle)) {
 			return this.timeToIdle;
 		}
 		return EXPIRATION_IN;
@@ -150,11 +145,8 @@ public abstract class AbstractRedisCache implements Cache{
 	 * @param timeToIdle
 	 * @return
 	 */
-	protected int getExpiration(int timeToLive, int timeToIdle) {
-		if (ExpireTimeValueWrapper.isValid(timeToLive)) {
-			return timeToLive;
-		}
-		if (ExpireTimeValueWrapper.isValid(timeToIdle)) {
+	protected int getExpiration(int timeToIdle) {
+		if (isValid(timeToIdle)) {
 			return timeToIdle;
 		}
 		return EXPIRATION_IN;
@@ -174,19 +166,20 @@ public abstract class AbstractRedisCache implements Cache{
 		this.prex = prex;
 	}
 
-	public int getTimeToLive() {
-		return timeToLive;
-	}
-
-	public void setTimeToLive(int timeToLive) {
-		this.timeToLive = timeToLive;
-	}
-
 	public int getTimeToIdle() {
 		return timeToIdle;
 	}
 
 	public void setTimeToIdle(int timeToIdle) {
 		this.timeToIdle = timeToIdle;
+	}
+	
+	/**
+	 * 设置的时间是有效的
+	 * @param time
+	 * @return
+	 */
+	public boolean isValid(int time) {
+		return time > 0;
 	}
 }
