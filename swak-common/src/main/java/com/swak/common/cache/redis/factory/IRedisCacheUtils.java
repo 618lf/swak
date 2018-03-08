@@ -178,6 +178,11 @@ public interface IRedisCacheUtils {
 	public void hMSet2(String key, Map<String, byte[]> tuple);
 	public List<byte[]> hVals2(String key);
 	
+	// 脚本执行能力
+	public void run(String script, String ... keys);
+	public <T> T runAndGetOne(String script, String ... keys);
+	public <T> List<T> runAndGetList(String script, String ... keys);
+	
 	// 在一个 jedis 中执行
 	public <T> T invoke(Callback<T> call);
 	

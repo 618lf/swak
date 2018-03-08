@@ -830,4 +830,43 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 			this.release(jedis);
 		}
 	}
+
+	// script 脚本执行能力
+	@Override
+	public void run(String script, String ... keys) {
+		Jedis jedis = this.getJedis();
+		try {
+			jedis.eval(script, keys.length, keys);
+		}catch(Exception e){
+			throw new CacheException(e);
+		}finally{
+			this.release(jedis);
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T runAndGetOne(String script, String... keys) {
+		Jedis jedis = this.getJedis();
+		try {
+			return (T) jedis.eval(script, keys.length, keys);
+		}catch(Exception e){
+			throw new CacheException(e);
+		}finally{
+			this.release(jedis);
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> List<T> runAndGetList(String script, String... keys) {
+		Jedis jedis = this.getJedis();
+		try {
+			return (List<T>) jedis.eval(script, keys.length, keys);
+		}catch(Exception e){
+			throw new CacheException(e);
+		}finally{
+			this.release(jedis);
+		}
+	}
 }

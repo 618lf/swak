@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.swak.common.boot.Boot;
 import com.swak.common.cache.Cache;
+import com.swak.common.cache.redis.RedisUtils;
 import com.swak.common.utils.SpringContextHolder;
 
 /**
@@ -55,12 +56,29 @@ public class TestRedis {
 	 */
 	@Test
 	public void test() {
-		Cache cache = CacheUtils.sys().wrap().get();
+		Cache cache = CacheUtils.sys().get();
 		long t1 = System.currentTimeMillis();
 		System.out.println("begin=" + t1);
 		for (int i = 0; i < 100000; i++) {
-			cache.get("lifeng");
+			cache.put("hanqian", "哈哈");
+			cache.get("hanqian");
 		}
-		System.out.println("over ,use=" + (System.currentTimeMillis() - t1));
+		System.out.println("norma ,use=" + (System.currentTimeMillis() - t1));
+	}
+	
+	/**
+	 * 执行测试
+	 * 多条命令非常的块，而且是原子的操作
+	 */
+	@Test
+	public void testLua() {
+		String lua = new StringBuilder().append("redis.call(\"SET\", KEYS[1], KEYS[2]); return redis.call(\"GET\", KEYS[1]);").toString();
+		long t1 = System.currentTimeMillis();
+		System.out.println("begin=" + t1);
+		String[] keys = new String[] {"sys#lifeng", "哈哈"};
+		for (int i = 0; i < 100000; i++) {
+			RedisUtils.getRedis().runAndGetOne(lua, keys);
+		}
+		System.out.println("lua ,use=" + (System.currentTimeMillis() - t1));
 	}
 }

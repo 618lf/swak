@@ -891,4 +891,19 @@ public class RedisClusterCacheUtils implements IRedisCacheUtils{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void run(String script, String... keys) {
+		
+	}
+
+	@Override
+	public <T> T runAndGetOne(String script, String... keys) {
+		return null;
+	}
+
+	@Override
+	public <T> List<T> runAndGetList(String script, String... keys) {
+		return null;
+	}
 }
