@@ -15,6 +15,8 @@ import com.swak.common.cache.Cache;
 import com.swak.common.cache.redis.RedisUtils;
 import com.swak.common.utils.SpringContextHolder;
 
+import redis.clients.util.SafeEncoder;
+
 /**
  * redis 的性能测试
  * 
@@ -56,29 +58,47 @@ public class TestRedis {
 	 */
 	@Test
 	public void test() {
-		Cache cache = CacheUtils.sys().get();
+		Cache<Object> cache = CacheUtils.sys().expire(60*10).get();
 		long t1 = System.currentTimeMillis();
 		System.out.println("begin=" + t1);
-		for (int i = 0; i < 100000; i++) {
-			cache.put("hanqian", "哈哈");
-			cache.get("hanqian");
+		for (int i = 0; i < 1000000; i++) {
+			cache.putString("hanqian", "{dsdsdsd}");
+			cache.getString("hanqian");
 		}
-		System.out.println("norma ,use=" + (System.currentTimeMillis() - t1));
+		System.out.println(cache.getString("hanqian"));
+		System.out.println("hcache ,use=" + (System.currentTimeMillis() - t1));
+	}
+	
+	/**
+	 * 执行测试
+	 */
+	@Test
+	public void test2() {
+		long t1 = System.currentTimeMillis();
+		System.out.println("begin=" + t1);
+		for (int i = 0; i < 1000000; i++) {
+			RedisUtils.getRedis().add("hanqian2", SafeEncoder.encode("{dsdsdsd}"));
+			RedisUtils.getRedis().expire("hanqian2", 60 * 10);
+			SafeEncoder.encode(RedisUtils.getRedis().get("hanqian2"));
+		}
+		System.out.println("ncahce ,use=" + (System.currentTimeMillis() - t1));
 	}
 	
 	/**
 	 * 执行测试
 	 * 多条命令非常的块，而且是原子的操作
 	 */
-	@Test
 	public void testLua() {
-		String lua = new StringBuilder().append("redis.call(\"SET\", KEYS[1], KEYS[2]); return redis.call(\"GET\", KEYS[1]);").toString();
+		String lua = new StringBuilder().append("redis.call(\"SET\", KEYS[1], KEYS[2]); return redis.call(\"EXISTS\", KEYS[1]);").toString();
 		long t1 = System.currentTimeMillis();
 		System.out.println("begin=" + t1);
-		String[] keys = new String[] {"sys#lifeng", "哈哈"};
+		byte[][] values = new byte[][] {SafeEncoder.encode("sys#lifeng"), SafeEncoder.encode("哈哈")};
 		for (int i = 0; i < 100000; i++) {
-			RedisUtils.getRedis().runAndGetOne(lua, keys);
+			RedisUtils.getRedis().runAndGetOne(lua, values);
 		}
 		System.out.println("lua ,use=" + (System.currentTimeMillis() - t1));
+		
+		Object object = RedisUtils.getRedis().runAndGetOne(lua, values);
+		System.out.println("是否存在：" + object.getClass() );
 	}
 }

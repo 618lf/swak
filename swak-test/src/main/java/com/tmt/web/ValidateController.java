@@ -25,7 +25,7 @@ public class ValidateController implements Reportable {
 	@RequestMapping(value = "/code", method = RequestMethod.GET)
 	public String postCode() {
 		count.incrementAndGet();
-		CacheUtils.sys().wrap().get().get("lifeng");
+		CacheUtils.sys().wrap().get().getString("lifeng");
 		return "";
 	}
 	

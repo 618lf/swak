@@ -23,10 +23,10 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 
 	private String tokenName = "X-Token";
 	private Integer timeOut = 24 * 60 * 60 * 7; // 一个星期
-	private Cache _cahce;
+	private Cache<String> _cahce;
 	
 	public TokenPrincipalStrategy() {
-		_cahce = new RedisCache("tokens", timeOut);
+		_cahce = new RedisCache<String>("tokens", timeOut);
 	}
 	
 	public Integer getTimeOut() {
@@ -59,7 +59,7 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 		
 		// 生成 SessionId
 		String sessionId = this.getKey(token);
-		_cahce.put(sessionId, key);
+		_cahce.putString(sessionId, key);
 		subject.setSessionId(sessionId);
 	}
 
@@ -88,7 +88,7 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 		
 		// 获取加密的key 根据token 获取
 		String sessionId = this.getKey(token);
-		String key = _cahce.get(sessionId);
+		String key = _cahce.getString(sessionId);
 		subject.setSessionId(sessionId);
 		
 		if (!StringUtils.hasText(key)) {

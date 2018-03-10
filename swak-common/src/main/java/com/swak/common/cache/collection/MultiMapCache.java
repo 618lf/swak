@@ -2,76 +2,80 @@ package com.swak.common.cache.collection;
 
 import java.util.Map;
 
-import com.swak.common.cache.redis.AbstractRedisCache;
+import com.swak.common.cache.redis.NameableCache;
 import com.swak.common.cache.redis.RedisUtils;
+import com.swak.common.utils.Maps;
 
 /**
  * value 是 一个 map
  * @author lifeng
  */
-public class MultiMapCache extends AbstractRedisCache implements MultiMap<String, Object>{
+public abstract class MultiMapCache<T> extends NameableCache implements MultiMap<String, T>{
 
-	/**
-	 * 无过期时间
-	 * @param name
-	 */
 	public MultiMapCache(String name) {
-		super(name);
+		this(name, -1);
 	}
 	
-	/**
-	 * 指定过期时间
-	 * @param name
-	 * @param timeToIdle
-	 */
-	public MultiMapCache(String name, int timeToIdle) {
+	public MultiMapCache(final String name, final int timeToIdle) {
 		super(name, timeToIdle);
 	}
-
+	
 	@Override
-	protected Object _get(String key) {
-		String _key = this.getKeyName(key);
-		return RedisUtils.getRedis().hGetAll(_key);
+	public Map<String, T> get(String key) {
+		this.expire(key);
+		Map<String, byte[]> values = RedisUtils.getRedis().hGetAll(this.getKeyName(key));
+		Map<String, T> maps = Maps.newHashMap();
+		values.keySet().stream().forEach(s ->{
+			maps.put(s, this.deserialize(values.get(s)));
+		});
+		return maps;
 	}
 
-	/**
-	 * 必须是这只Map
-	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	protected void _set(String key, Object value, int expiration) {
-		String _key = this.getKeyName(key);
-		RedisUtils.getRedis().hMSet(_key, (Map<String, Object>)value);
-		if (isValid(expiration)) {
-			RedisUtils.getRedis().expire(_key, expiration);
-		}
+	public void put(String key, Map<String, T> v) {
+		this.expire(key);
+		Map<String, byte[]> tuple = Maps.newHashMap();
+		v.keySet().stream().forEach(s ->{
+			tuple.put(s, this.serialize(v.get(s)));
+		});
+		RedisUtils.getRedis().hMSet(key, tuple);
+	}
+
+	@Override
+	public void delete(String key) {
+		String keyName = this.getKeyName(key);
+		RedisUtils.getRedis().delete(keyName);
+	}
+
+	@Override
+	public T get(String key, String k2) {
+		this.expire(key);
+		return this.deserialize(RedisUtils.getRedis().hGet(this.getKeyName(key), k2));
+	}
+
+	@Override
+	public void pub(String key, String k2, T v) {
+		this.expire(key);
+		RedisUtils.getRedis().hSet(this.getKeyName(key), k2, this.serialize(v));
+	}
+
+	@Override
+	public void delete(String key, String k2) {
+		this.expire(key);
+		RedisUtils.getRedis().hDel(this.getKeyName(key), k2);
 	}
 	
 	/**
-	 * 设置过期时间
-	 * 
-	 * @param key
+	 * 序例化的方式
+	 * @param t
+	 * @return
 	 */
-	protected void _expire(String key) {
-		String keyName = this.getKeyName(key);
-		int expiration = this.getTimeToIdle();
-		if (isValid(expiration)) {
-			RedisUtils.getRedis().expire(keyName, expiration);
-		}
-	}
-
-	@Override
-	public Object get(String k1, String k2) {
-		return RedisUtils.getRedis().hGet(this.getKeyName(k1), k2);
-	}
-
-	@Override
-	public void pub(String k1, String k2, Object v) {
-		RedisUtils.getRedis().hSet(this.getKeyName(k1), k2, v);
-	}
-
-	@Override
-	public void delete(String k1, String k2) {
-		RedisUtils.getRedis().hDel(this.getKeyName(k1), k2);
-	}
+	protected abstract byte[] serialize(T t);
+	
+	/**
+	 * 序例化的方式
+	 * @param t
+	 * @return
+	 */
+	protected abstract T deserialize(byte[] bytes);
 }

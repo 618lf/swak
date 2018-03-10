@@ -1,69 +1,64 @@
 package com.swak.common.cache.collection;
 
-import com.swak.common.cache.Cache;
-import com.swak.common.cache.redis.AbstractRedisCache;
+import com.swak.common.cache.redis.NameableCache;
 import com.swak.common.cache.redis.RedisUtils;
 
 /**
  * 是一个大Map
  * @author lifeng
  */
-public class MapCache implements CMap<String, Object>{
+public abstract class MapCache<T> extends NameableCache implements CMap<String, T>{
 
 	/**
 	 * 所有的列表都使用这个作为KEY
 	 */
 	private static String DEFAULT_KEY = "_MAP";
 	
-	/**
-	 * 底层用 Cache 来支持
-	 */
-	private Cache _cache;
-	
 	public MapCache(String name) {
 		this(name, -1);
 	}
 	
 	public MapCache(String name, int timeToIdle) {
-		_cache = new AbstractRedisCache(name, timeToIdle) {
-			
-			@Override
-			protected Object _get(String key) {
-				return RedisUtils.getRedis().hGet(this.getKeyName(DEFAULT_KEY), key);
-			}
-
-			@Override
-			protected void _set(String key, Object value, int expiration) {
-				String _key = this.getKeyName(DEFAULT_KEY);
-				RedisUtils.getRedis().hSet(_key, key, value);
-				if (isValid(expiration)) {
-					RedisUtils.getRedis().expire(_key, expiration);
-				}
-			}
-
-			@Override
-			protected void _expire(String key) {
-				String keyName = this.getKeyName(DEFAULT_KEY);
-				int expiration = this.getTimeToIdle();
-				if (isValid(expiration)) {
-					RedisUtils.getRedis().expire(keyName, expiration);
-				}
-			}
-		};
+		super(name, timeToIdle);
 	}
 
 	@Override
-	public <T> T get(String k) {
-		return this._cache.get(k);
+	public T get(String k) {
+		this.expire(null);
+		return this.deserialize(RedisUtils.getRedis().hGet(this.getKeyName(null), k));
 	}
 
 	@Override
-	public <T> void put(String k, T v) {
-		this._cache.put(k, v);
+	public void put(String k, T v) {
+		this.expire(null);
+		RedisUtils.getRedis().hSet(this.getKeyName(null), k, this.serialize(v));
 	}
 
 	@Override
-	public void delete(String v) {
-		this._cache.delete(v);
+	public void delete(String k) {
+		this.expire(null);
+		RedisUtils.getRedis().hDel(this.getKeyName(null), k);
+	}
+	
+	/**
+	 * 序例化的方式
+	 * @param t
+	 * @return
+	 */
+	protected abstract byte[] serialize(T t);
+	
+	/**
+	 * 序例化的方式
+	 * @param t
+	 * @return
+	 */
+	protected abstract T deserialize(byte[] bytes);
+	
+	/**
+	 * redis list 的名称
+	 * @return
+	 */
+	protected String getKeyName(String key) {
+		return super.getKeyName(DEFAULT_KEY);
 	}
 }

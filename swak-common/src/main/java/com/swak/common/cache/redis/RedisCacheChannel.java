@@ -12,13 +12,13 @@ import redis.clients.util.SafeEncoder;
  * 二级缓存功能
  * @author root
  */
-public class RedisCacheChannel implements Cache {
+public class RedisCacheChannel<T> implements Cache<T> {
 
 	// 本地缓存
 	private RedisLocalCache local;
 	
 	// 远程缓存
-	private AbstractRedisCache remote;
+	private RedisCache<T> remote;
 	
 	/**
 	 * 必须设置这两级缓存
@@ -27,7 +27,7 @@ public class RedisCacheChannel implements Cache {
 	public void setLocal(RedisLocalCache local) {
 		this.local = local;
 	}
-	public void setRemote(AbstractRedisCache remote) {
+	public void setRemote(RedisCache<T> remote) {
 		this.remote = remote;
 	}
 
@@ -60,31 +60,57 @@ public class RedisCacheChannel implements Cache {
 	public long ttl(String key) {
 		return remote.ttl(key);
 	}
+	
 	// 以下实现了使用本地缓存的方法
 	/**
 	 * 优先从1级缓存获取数据。 
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T get(String key) {
+	public T getObject(String key) {
 		String localKey = this.getKeyName(key);
-		T t = local.get(localKey);
+		Object t = local.getObject(localKey);
 		if (t == null) {
-			Object o = remote._get(key);
+			T o = remote.getObject(key);
 			if (o != null){
-				t = (T) o;
-				local.put(localKey, t);
+				t = o;
+				local.putObject(localKey, t);
+			}
+		}
+		return (T)t;
+	}
+	
+	/**
+	 * 优先从1级缓存获取数据。 
+	 */
+	@Override
+	public String getString(String key) {
+		String localKey = this.getKeyName(key);
+		String t = local.getString(localKey);
+		if (t == null) {
+			String o = remote.getString(key);
+			if (o != null){
+				t = o;
+				local.putString(localKey, t);
 			}
 		}
 		return t;
 	}
 
 	@Override
-	public void put(String key, Object value) {
+	public void putObject(String key, T value) {
 		String localKey = this.getKeyName(key);
 		_sendEvictCmd(localKey);// 清除原有的一级缓存的内容
-		local.put(localKey, value);
-		remote.put(key, value);
+		local.putObject(localKey, value);
+		remote.putObject(key, value);
+	}
+	
+	@Override
+	public void putString(String key, String value) {
+		String localKey = this.getKeyName(key);
+		_sendEvictCmd(localKey);// 清除原有的一级缓存的内容
+		local.putString(localKey, value);
+		remote.putString(key, value);
 	}
 
 	@Override
@@ -97,17 +123,17 @@ public class RedisCacheChannel implements Cache {
 
 
 	@Override
-	public void delete(List<String> keys) {
+	public void delete(String ... keys) {
 		List<String> _keys = this._delete(keys);
-		local.delete(_keys);
+		local.delete(keys);
 		if (_keys != null && _keys.size() != 0) {
 			_sendEvictCmd(_keys);
 		}
 	}
 	
 	// 返回整理好的keys
-	private List<String> _delete(List<String> keys) {
-		if (keys != null && keys.size() != 0) {
+	private List<String> _delete(String ... keys) {
+		if (keys != null && keys.length != 0) {
 			List<String> _keys = Lists.newArrayList();
 			for(String key: keys) {
 				_keys.add(this.getKeyName(key));

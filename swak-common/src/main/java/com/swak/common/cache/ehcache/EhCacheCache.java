@@ -1,13 +1,12 @@
 package com.swak.common.cache.ehcache;
 
-import java.util.List;
-
 import com.swak.common.cache.Cache;
+import com.swak.common.utils.Lists;
 
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
-public class EhCacheCache implements Cache {
+public class EhCacheCache implements Cache<Object> {
 
 	private final Ehcache cache;
 
@@ -30,7 +29,7 @@ public class EhCacheCache implements Cache {
 	}
 
 	@Override
-	public void put(String key, Object value) {
+	public void putObject(String key, Object value) {
 		this.cache.put(new Element(key, value));
 	}
 
@@ -40,9 +39,9 @@ public class EhCacheCache implements Cache {
 	}
 	
 	@Override
-	public void delete(List<String> keys) {
-		if (keys != null && keys.size() != 0) {
-			this.cache.removeAll(keys);
+	public void delete(String ... keys) {
+		if (keys != null && keys.length != 0) {
+			this.cache.removeAll(Lists.newArrayList(keys));
 		}
 	}
 	
@@ -52,10 +51,9 @@ public class EhCacheCache implements Cache {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T get(String key) {
+	public Object getObject(String key) {
 		Element element = this.cache.get(key);
-		return  (element != null ? (T)(element.getObjectValue()) : null);
+		return  (element != null ? (element.getObjectValue()) : null);
 	}
 	
 	@Override
@@ -67,5 +65,16 @@ public class EhCacheCache implements Cache {
 	public long ttl(String key) {
 		Element element = this.cache.get(key);
 		return (element != null ? element.getTimeToIdle(): -2);
+	}
+
+	@Override
+	public String getString(String key) {
+		Element element = this.cache.get(key);
+		return  (element != null ? (String)(element.getObjectValue()) : null);
+	}
+
+	@Override
+	public void putString(String key, String value) {
+		this.cache.put(new Element(key, value));
 	}
 }

@@ -32,7 +32,7 @@ public class EhCacheCacheManager extends AbstractCacheManager{
 	 * 只能配置的方式创建，这里只是一个代理
 	 */
 	@Override
-	public Cache createCache(String name, int timeToIdle) {
+	public Cache<Object> createCache(String name, int timeToIdle) {
 		Ehcache ehcache = this.cacheManager.getEhcache(name);
 		return new EhCacheCache(ehcache);
 	}

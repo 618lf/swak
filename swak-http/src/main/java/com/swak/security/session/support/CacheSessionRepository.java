@@ -6,8 +6,9 @@ import java.util.Stack;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.swak.common.cache.collection.Collections;
 import com.swak.common.cache.collection.MultiMap;
+import com.swak.common.cache.collection.MultiMapCache;
+import com.swak.common.serializer.SerializationUtils;
 import com.swak.common.utils.Maps;
 import com.swak.common.utils.StringUtils;
 import com.swak.security.principal.Principal;
@@ -31,7 +32,16 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	private MultiMap<String, Object> _cache;
 			
 	public CacheSessionRepository() {
-		_cache = Collections.newMultiMap(SESSION_PREFIX, sessionTimeout);
+		_cache = new MultiMapCache<Object>(SESSION_PREFIX, sessionTimeout) {
+			@Override
+			protected byte[] serialize(Object t) {
+				return SerializationUtils.serialize(t);
+			}
+			@Override
+			protected Object deserialize(byte[] bytes) {
+				return SerializationUtils.deserialize(bytes);
+			}
+		};
 	}
 	
 	public int getSessionTimeout() {

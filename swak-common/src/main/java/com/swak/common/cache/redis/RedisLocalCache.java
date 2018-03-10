@@ -1,6 +1,6 @@
 package com.swak.common.cache.redis;
 
-import java.util.List;
+import java.lang.reflect.Array;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -19,7 +19,7 @@ import redis.clients.util.SafeEncoder;
  * 
  * @author root
  */
-public class RedisLocalCache extends BinaryJedisPubSub implements Cache, InitializingBean, DisposableBean {
+public class RedisLocalCache extends BinaryJedisPubSub implements Cache<Object>, InitializingBean, DisposableBean {
 
 	private CacheManager cacheManager;
 	
@@ -61,8 +61,8 @@ public class RedisLocalCache extends BinaryJedisPubSub implements Cache, Initial
 	}
 
 	@Override
-	public <T> T get(String key) {
-		return local.get(key);
+	public Object getObject(String key) {
+		return local.getObject(key);
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class RedisLocalCache extends BinaryJedisPubSub implements Cache, Initial
 	}
 
 	@Override
-	public void delete(List<String> keys) {
+	public void delete(String ... keys) {
 		local.delete(keys);
 	}
 
@@ -81,13 +81,23 @@ public class RedisLocalCache extends BinaryJedisPubSub implements Cache, Initial
 	}
 
 	@Override
-	public void put(String key, Object value) {
-		local.put(key, value);
+	public void putObject(String key, Object value) {
+		local.putObject(key, value);
 	}
 	
 	@Override
 	public void clear() {
 		local.clear();
+	}
+	
+	@Override
+	public String getString(String key) {
+		return (String) local.getObject(key);
+	}
+
+	@Override
+	public void putString(String key, String value) {
+		local.putObject(key, value);
 	}
 
 	// ------------- 消息订阅 -------------
@@ -127,10 +137,9 @@ public class RedisLocalCache extends BinaryJedisPubSub implements Cache, Initial
 	 * @param key
 	 *            : cache key
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void onDeleteCacheKey(Object key) {
-		if (key instanceof List)
-			local.delete((List) key);
+		if (key instanceof Array)
+			local.delete((String[]) key);
 		else
 			local.delete((String)key);
 	}

@@ -21,7 +21,7 @@ public final class CacheUtils {
 	   * @param name
 	   * @return
 	   */
-	  public static Cache getSysCache() {
+	  public static <T> Cache<T> getSysCache() {
 		  return cacheManager.getCache("sys");
 	  }
 	  
@@ -30,7 +30,7 @@ public final class CacheUtils {
 	   * @param cache
 	   * @return
 	   */
-	  public static Cache wrap(Cache cache) {
+	  public static <T> Cache<T> wrap(Cache<T> cache) {
 		  return cacheManager.wrap(cache);
 	  }
 	  
@@ -39,21 +39,26 @@ public final class CacheUtils {
 	   * @return
 	   */
 	  public static Builder sys() {
-		  Cache cache = cacheManager.getCache("sys");
+		  Cache<Object> cache = cacheManager.getCache("sys");
 		  return new Builder(cache);
 	  }
 	  
 	  public static class Builder {
-		  private Cache cache;
-		  public Builder(Cache cache) {
+		  private Cache<Object> cache;
+		  private Cache<Object> wrap;
+		  public Builder(Cache<Object> cache) {
 			  this.cache = cache;
 		  }
 		  public Builder wrap() {
-			  cache = CacheUtils.wrap(cache);
+			  wrap = CacheUtils.wrap(cache);
 			  return this;
 		  }
-		  public Cache get() {
-			  return cache;
+		  public Builder expire(int seconds) {
+			  cache.setTimeToIdle(seconds);
+			  return this;
+		  }
+		  public Cache<Object> get() {
+			  return wrap != null ? wrap: cache;
 		  }
 	  }
 }

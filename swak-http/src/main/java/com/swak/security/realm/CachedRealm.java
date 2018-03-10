@@ -18,7 +18,7 @@ public abstract class CachedRealm implements Realm {
 	 * 缓存的名称
 	 */
 	protected String cacheName;
-	protected Cache cache;
+	protected Cache<AuthorizationInfo> cache;
 	protected CacheManager cacheManager;
 	
 	public String getCacheName() {
@@ -44,12 +44,12 @@ public abstract class CachedRealm implements Realm {
 	@Override
 	public AuthorizationInfo getCachedAuthorizationInfo(Principal principal) {
 		String keyName = this.getCachedAuthorizationInfoName(principal);
-		AuthorizationInfo value = cache.get(keyName);
+		AuthorizationInfo value = cache.getObject(keyName);
 		if (value == null) {
 			value = this.doGetAuthorizationInfo(principal);
 		}
 		if (value != null) {
-			cache.put(keyName, value);
+			cache.putObject(keyName, value);
 		}
 		return value;
 	}

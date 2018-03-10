@@ -11,7 +11,7 @@ public interface CacheManager {
 	 * @param name
 	 * @return
 	 */
-	Cache getCache(String name);
+	<T> Cache<T> getCache(String name);
 	
 	/**
 	 * 创建一个缓存
@@ -19,7 +19,7 @@ public interface CacheManager {
 	 * @param timeToIdle
 	 * @return
 	 */
-	Cache getCache(String name, int timeToIdle);
+	<T> Cache<T> getCache(String name, int timeToIdle);
 	
 	/**
 	 * 创建一个缓存
@@ -27,12 +27,12 @@ public interface CacheManager {
 	 * @param timeToIdle
 	 * @return
 	 */
-	Cache createCache(String name, int timeToIdle);
+	<T> Cache<T> createCache(String name, int timeToIdle);
 	
 	/**
 	 * 包括缓存
 	 * @param cache
 	 * @return
 	 */
-	Cache wrap(Cache cache);
+	<T> Cache<T> wrap(Cache<T> cache);
 }

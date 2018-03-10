@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.springframework.util.SerializationUtils;
-
 import com.swak.common.serializer.SerializeException;
 import com.swak.common.utils.Lists;
 import com.swak.common.utils.Maps;
@@ -92,51 +90,11 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 	}
 
 	@Override
-	public void add(String key, Object value) {
-		if(value == null || key == null) { return; }
-		Jedis jedis = this.getJedis();
-		try{
-			jedis.setnx(SafeEncoder.encode(key), SerializationUtils.serialize(value));
-		}catch(Exception e){
-			throw new CacheException(e);
-		}finally{
-			this.release(jedis);
-		}
-	}
-
-	@Override
-	public void set(String key, Object value) {
-		if(value == null || key == null) { return; }
-		Jedis jedis = this.getJedis();
-		try{
-			jedis.set(SafeEncoder.encode(key), SerializationUtils.serialize(value));
-		}catch(Exception e){
-			throw new CacheException(e);
-		}finally{
-			this.release(jedis);
-		}
-	}
-
-	@Override
-	public void set(String key, Object value, int seconds) {
-		if(value == null || key == null) { return; }
-		Jedis jedis = this.getJedis();
-		try{
-			jedis.setex(SafeEncoder.encode(key), seconds, SerializationUtils.serialize(value));
-		}catch(Exception e){
-			throw new CacheException(e);
-		}finally{
-			this.release(jedis);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getObject(String key) {
+	public byte[] get(String key) {
 		if(key == null) return null;
 		Jedis jedis = this.getJedis();
 		try{
-			return (T)SerializationUtils.deserialize(jedis.get(SafeEncoder.encode(key)));
+			return jedis.get(SafeEncoder.encode(key));
 		}catch(SerializeException e){
 			this.innerDel(jedis, key);
 			return null;
@@ -248,14 +206,13 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<T> valueOfObjects(final String pattern) {
+	public List<byte[]> gets(final String pattern) {
 		if(pattern == null) return null;
 		final Jedis jedis = this.getJedis();
 		try{
 			
-            final List<T> values = new ArrayList<T>();
+            final List<byte[]> values = new ArrayList<byte[]>();
 			
 			/**
 			 * 查询回调
@@ -265,8 +222,7 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 				@Override
 				public boolean success(List<String> keys) {
 					for(String key: keys) {
-						T value = (T)SerializationUtils.deserialize(jedis.get(SafeEncoder.encode(key)));
-						values.add(value);
+						values.add(jedis.get(SafeEncoder.encode(key)));
 					}
 					if (values.size() >= 100) {
 						return false;
@@ -300,11 +256,11 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 	}
 
 	@Override
-	public boolean exists(Object key) {
+	public boolean exists(String key) {
 		if(key == null) return false;
 		Jedis jedis = this.getJedis();
 		try{
-			return jedis.exists(String.valueOf(key));
+			return jedis.exists(key);
 		}catch(Exception e){
 			throw new CacheException(e);
 		}finally{
@@ -312,14 +268,13 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> Map<Object, T> keyValues(final String pattern, final String prex) {
+	public Map<String, byte[]> keyValues(final String pattern, final String prex) {
 		if(pattern == null) return null;
 		final Jedis jedis = this.getJedis();
 		try{
 			
-			final Map<Object,T> values = Maps.newHashMap();
+			final Map<String,byte[]> values = Maps.newHashMap();
 			
 			/**
 			 * 查询回调
@@ -329,8 +284,7 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 				@Override
 				public boolean success(List<String> keys) {
 					for(String key: keys) {
-						T value = (T)SerializationUtils.deserialize(jedis.get(SafeEncoder.encode(key)));
-						values.put(StringUtils.removeStart(key, prex), value);
+						values.put(StringUtils.removeStart(key, prex), jedis.get(SafeEncoder.encode(key)));
 					}
 					if (values.size() >= 100) {
 						return false;
@@ -406,41 +360,9 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 		}catch(Exception e){
 			throw new CacheException(e);
 		}
-		// 外部会释放
-//		finally{
-//			this.release(jedis);
-//		}
 	}
 
 	// hash 操作
-	@Override
-	public Boolean hSet(String key, String field, Object value) {
-		if(key == null || field == null) return false;
-		Jedis jedis = this.getJedis();
-		try{
-			Long result = jedis.hset(SafeEncoder.encode(key), SafeEncoder.encode(field), SerializationUtils.serialize(value));
-			return result != null ? result == 1 : null;
-		}catch(Exception e){
-			throw new CacheException(e);
-		}finally{
-			this.release(jedis);
-		}
-	}
-
-	@Override
-	public Boolean hSetNX(String key, String field, Object value) {
-		if(key == null || field == null || value == null) return false;
-		Jedis jedis = this.getJedis();
-		try{
-			Long result = jedis.hsetnx(SafeEncoder.encode(key), SafeEncoder.encode(field), SerializationUtils.serialize(value));
-			return result != null ? result == 1 : null;
-		}catch(Exception e){
-			throw new CacheException(e);
-		}finally{
-			this.release(jedis);
-		}
-	}
-
 	@Override
 	public Long hDel(String key, String... fields) {
 		if(key == null || fields == null || fields.length == 0) return 0l;
@@ -468,12 +390,11 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T hGet(String key, String field) {
+	public byte[] hGet(String key, String field) {
 		if(key == null || field == null) return null;
 		Jedis jedis = this.getJedis();
 		try{
-			return (T)SerializationUtils.deserialize(jedis.hget(SafeEncoder.encode(key), SafeEncoder.encode(field)));
+			return jedis.hget(SafeEncoder.encode(key), SafeEncoder.encode(field));
 		}catch(Exception e){
 			throw new CacheException(e);
 		}finally{
@@ -482,17 +403,17 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 	}
 
 	@Override
-	public Map<String, Object> hGetAll(String key) {
+	public Map<String, byte[]> hGetAll(String key) {
 		if(key == null) return null;
 		Jedis jedis = this.getJedis();
 		try{
-			Map<String, Object> values = Maps.newHashMap();
+			Map<String, byte[]> values = Maps.newHashMap();
 			Map<byte[], byte[]> maps = jedis.hgetAll(SafeEncoder.encode(key));
 			Iterator<byte[]> it = maps.keySet().iterator();
 			while(it.hasNext()) {
 				byte[] _key = it.next();
 				byte[] _val = maps.get(_key);
-				values.put(SafeEncoder.encode(_key), SerializationUtils.deserialize(_val));
+				values.put(SafeEncoder.encode(_key), _val);
 			}
 			return values;
 		}catch(Exception e){
@@ -529,16 +450,11 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 	}
 
 	@Override
-	public List<Object> hMGet(String key, String... fields) {
+	public List<byte[]> hMGet(String key, String... fields) {
 		if(key == null || fields == null || fields.length == 0) return null;
 		Jedis jedis = this.getJedis();
 		try{
-			List<Object> vals = Lists.newArrayList();
-			List<byte[]> values = jedis.hmget(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields));
-			for(byte[] val: values) {
-				vals.add(SerializationUtils.deserialize(val));
-			}
-			return vals;
+			return jedis.hmget(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields));
 		}catch(Exception e){
 			throw new CacheException(e);
 		}finally{
@@ -547,7 +463,7 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 	}
 
 	@Override
-	public void hMSet(String key, Map<String, Object> tuple) {
+	public void hMSet(String key, Map<String, byte[]> tuple) {
 		if(key == null || tuple == null || tuple.isEmpty()) return;
 		Jedis jedis = this.getJedis();
 		try{
@@ -556,11 +472,11 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 			Iterator<String> it = tuple.keySet().iterator();
 			while(it.hasNext()) {
 				String _key = it.next();
-				Object _val = tuple.get(_key);
+				byte[] _val = tuple.get(_key);
 				if (_val == null) {
 					dels.add(SafeEncoder.encode(_key));
 				} else {
-					maps.put(SafeEncoder.encode(_key), SerializationUtils.serialize(_val));
+					maps.put(SafeEncoder.encode(_key), _val);
 				}
 			}
 			if (dels.size() != 0) {
@@ -577,16 +493,11 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 	}
 
 	@Override
-	public List<Object> hVals(String key) {
+	public List<byte[]> hVals(String key) {
 		if(key == null) return null;
 		Jedis jedis = this.getJedis();
 		try{
-			List<Object> vals = Lists.newArrayList();
-			List<byte[]> values = jedis.hvals(SafeEncoder.encode(key));
-			for(byte[] val: values) {
-				vals.add(SerializationUtils.deserialize(val));
-			}
-			return vals;
+			return jedis.hvals(SafeEncoder.encode(key));
 		}catch(Exception e){
 			throw new CacheException(e);
 		}finally{
@@ -662,91 +573,11 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 		}
 	}
 
-	@Override
-	public byte[] hGet2(String key, String field) {
-		if(key == null || field == null) return null;
-		Jedis jedis = this.getJedis();
-		try{
-			return jedis.hget(SafeEncoder.encode(key), SafeEncoder.encode(field));
-		}catch(Exception e){
-			throw new CacheException(e);
-		}finally{
-			this.release(jedis);
-		}
-	}
-
-	@Override
-	public Map<String, byte[]> hGetAll2(String key) {
-		if(key == null) return null;
-		Jedis jedis = this.getJedis();
-		try{
-			Map<String, byte[]> values = Maps.newHashMap();
-			Map<byte[], byte[]> maps = jedis.hgetAll(SafeEncoder.encode(key));
-			Iterator<byte[]> it = maps.keySet().iterator();
-			while(it.hasNext()) {
-				byte[] _key = it.next();
-				byte[] _val = maps.get(_key);
-				values.put(SafeEncoder.encode(_key), _val);
-			}
-			return values;
-		}catch(Exception e){
-			throw new CacheException(e);
-		}finally{
-			this.release(jedis);
-		}
-	}
-
-	@Override
-	public List<byte[]> hMGet2(String key, String... fields) {
-		if(key == null || fields == null || fields.length == 0) return null;
-		Jedis jedis = this.getJedis();
-		try{
-			return jedis.hmget(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields));
-		}catch(Exception e){
-			throw new CacheException(e);
-		}finally{
-			this.release(jedis);
-		}
-	}
-
-	@Override
-	public void hMSet2(String key, Map<String, byte[]> tuple) {
-		if(key == null || tuple == null || tuple.isEmpty()) return;
-		Jedis jedis = this.getJedis();
-		try{
-			Map<byte[], byte[]> maps = Maps.newHashMap();
-			Iterator<String> it = tuple.keySet().iterator();
-			while(it.hasNext()) {
-				String _key = it.next();
-				byte[] _val = tuple.get(_key);
-				maps.put(SafeEncoder.encode(_key), _val);
-			}
-			jedis.hmset(SafeEncoder.encode(key), maps);
-		}catch(Exception e){
-			throw new CacheException(e);
-		}finally{
-			this.release(jedis);
-		}
-	}
-
-	@Override
-	public List<byte[]> hVals2(String key) {
-		if(key == null) return null;
-		Jedis jedis = this.getJedis();
-		try{
-			return jedis.hvals(SafeEncoder.encode(key));
-		}catch(Exception e){
-			throw new CacheException(e);
-		}finally{
-			this.release(jedis);
-		}
-	}
-
 	/**
 	 * 一次执行
 	 */
 	@Override
-	public <T> T invoke(Callback<T> call) {
+	public byte[] invoke(Callback call) {
 		Jedis jedis = this.getJedis();
 		try {
 			return call.doCall(jedis);
@@ -758,7 +589,7 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 	}
 	
 	@Override
-	public long ttl(Object key) {
+	public long ttl(String key) {
 		Jedis jedis = this.getJedis();
 		try {
 			return jedis.ttl(key.toString());
@@ -768,18 +599,12 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 			this.release(jedis);
 		}
 	}
-
+	
 	@Override
-	public long lPush(String key, Object ... value) {
+	public long lLen(String key) {
 		Jedis jedis = this.getJedis();
 		try {
-			List<byte[]> bytes = Lists.newArrayList();
-			for(Object v: value) {
-				bytes.add(SerializationUtils.serialize(v));
-			}
-			byte[][] _value = new byte[bytes.size()][];
-			bytes.toArray(_value);
-			return jedis.lpush(SafeEncoder.encode(key), _value);
+			return jedis.llen(key);
 		}catch(Exception e){
 			throw new CacheException(e);
 		}finally{
@@ -788,11 +613,10 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T lPop(String key) {
+	public long lPush(String key, byte[] ... value) {
 		Jedis jedis = this.getJedis();
 		try {
-			return (T) SerializationUtils.deserialize(jedis.lpop(SafeEncoder.encode(key)));
+			return jedis.lpush(SafeEncoder.encode(key), value);
 		}catch(Exception e){
 			throw new CacheException(e);
 		}finally{
@@ -801,16 +625,10 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 	}
 	
 	@Override
-	public long rPush(String key, Object ... value) {
+	public byte[] lPop(String key) {
 		Jedis jedis = this.getJedis();
 		try {
-			List<byte[]> bytes = Lists.newArrayList();
-			for(Object v: value) {
-				bytes.add(SerializationUtils.serialize(v));
-			}
-			byte[][] _value = new byte[bytes.size()][];
-			bytes.toArray(_value);
-			return jedis.rpush(SafeEncoder.encode(key), _value);
+			return jedis.lpop(SafeEncoder.encode(key));
 		}catch(Exception e){
 			throw new CacheException(e);
 		}finally{
@@ -819,11 +637,22 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T rPop(String key) {
+	public long rPush(String key, byte[] ... value) {
 		Jedis jedis = this.getJedis();
 		try {
-			return (T) SerializationUtils.deserialize(jedis.rpop(SafeEncoder.encode(key)));
+			return jedis.rpush(SafeEncoder.encode(key), value);
+		}catch(Exception e){
+			throw new CacheException(e);
+		}finally{
+			this.release(jedis);
+		}
+	}
+	
+	@Override
+	public byte[] rPop(String key) {
+		Jedis jedis = this.getJedis();
+		try {
+			return jedis.rpop(SafeEncoder.encode(key));
 		}catch(Exception e){
 			throw new CacheException(e);
 		}finally{
@@ -833,10 +662,10 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 
 	// script 脚本执行能力
 	@Override
-	public void run(String script, String ... keys) {
+	public void run(String script, byte[] ... keys) {
 		Jedis jedis = this.getJedis();
 		try {
-			jedis.eval(script, keys.length, keys);
+			jedis.eval(SafeEncoder.encode(script), SafeEncoder.encode(String.valueOf(keys.length)), keys);
 		}catch(Exception e){
 			throw new CacheException(e);
 		}finally{
@@ -846,10 +675,10 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T runAndGetOne(String script, String... keys) {
+	public <T> T runAndGetOne(String script, byte[] ... keys) {
 		Jedis jedis = this.getJedis();
 		try {
-			return (T) jedis.eval(script, keys.length, keys);
+			return (T)jedis.eval(SafeEncoder.encode(script), SafeEncoder.encode(String.valueOf(keys.length)), keys);
 		}catch(Exception e){
 			throw new CacheException(e);
 		}finally{
@@ -859,10 +688,10 @@ public class RedisCacheUtils implements IRedisCacheUtils{
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> List<T> runAndGetList(String script, String... keys) {
+	public <T> List<T> runAndGetList(String script, byte[] ... keys) {
 		Jedis jedis = this.getJedis();
 		try {
-			return (List<T>) jedis.eval(script, keys.length, keys);
+			return (List<T>) jedis.eval(SafeEncoder.encode(script), SafeEncoder.encode(String.valueOf(keys.length)), keys);
 		}catch(Exception e){
 			throw new CacheException(e);
 		}finally{
