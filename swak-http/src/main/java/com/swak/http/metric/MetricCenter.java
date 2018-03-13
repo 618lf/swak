@@ -46,7 +46,8 @@ public final class MetricCenter {
 		if (metrics == null) {
 			synchronized (MetricCenter.class) {
 				if (metrics == null) {
-					metrics = new MetricCenter();
+					MetricCenter _metrics = new MetricCenter();
+					metrics = _metrics;
 				}
 			}
 		}
@@ -91,6 +92,19 @@ public final class MetricCenter {
 	}
 	
 	/**
+	 * 启动报表
+	 */
+	public static void startReport() {
+		// 启动生成报表
+		Slf4jReporter reporter = Slf4jReporter.forRegistry(getMetrics().registry)
+				.outputTo(LoggerFactory.getLogger(HttpServer.class))
+				.convertRatesTo(TimeUnit.SECONDS)
+				.convertDurationsTo(TimeUnit.MILLISECONDS)
+				.build();
+		reporter.start(1, TimeUnit.SECONDS);
+	}
+	
+	/**
 	 * 输出指标报表
 	 */
 	public static void report(ApplicationContext applicationContext) {
@@ -104,12 +118,7 @@ public final class MetricCenter {
 			reportable.report(getMetrics().registry);
 		});
 		
-		// 启动生成报表
-		Slf4jReporter reporter = Slf4jReporter.forRegistry(getMetrics().registry)
-				.outputTo(LoggerFactory.getLogger(HttpServer.class))
-				.convertRatesTo(TimeUnit.SECONDS)
-				.convertDurationsTo(TimeUnit.MILLISECONDS)
-				.build();
-		reporter.start(1, TimeUnit.SECONDS);
+		// 启动报表
+		startReport();
 	}
 }

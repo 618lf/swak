@@ -1,18 +1,26 @@
 package com.swak.common.cache.collection;
 
+import com.swak.common.cache.Cons;
 import com.swak.common.cache.redis.NameableCache;
 import com.swak.common.cache.redis.RedisUtils;
+
+import redis.clients.util.SafeEncoder;
 
 /**
  * 是一个大Map
  * @author lifeng
  */
-public abstract class MapCache<T> extends NameableCache implements CMap<String, T>{
+public class MapCache<T> extends NameableCache implements CMap<String, T>{
 
 	/**
 	 * 所有的列表都使用这个作为KEY
 	 */
 	private static String DEFAULT_KEY = "_MAP";
+	
+	/**
+	 * 序列化策略
+	 */
+	private SerStrategy ser;
 	
 	public MapCache(String name) {
 		this(name, -1);
@@ -21,38 +29,54 @@ public abstract class MapCache<T> extends NameableCache implements CMap<String, 
 	public MapCache(String name, int timeToIdle) {
 		super(name, timeToIdle);
 	}
-
+	
+	public void setStrategy(SerStrategy ser) {
+		this.ser = ser;
+	}
+	
 	@Override
 	public T get(String k) {
-		this.expire(null);
-		return this.deserialize(RedisUtils.getRedis().hGet(this.getKeyName(null), k));
+		if (this.isValid()) {
+			return this.ser.deserialize(this._hget(k));
+		}
+		return this.ser.deserialize(RedisUtils.getRedis().hGet(this.getKeyName(null), k));
+	}
+	
+	/**
+	 * 高性能get
+	 * @param key
+	 * @return
+	 */
+	protected byte[] _hget(String k) {
+		String script = Cons.MAP_GET_LUA;
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(k), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+	    return (byte[])RedisUtils.getRedis().runAndGetOne(script, values);
 	}
 
 	@Override
 	public void put(String k, T v) {
-		this.expire(null);
-		RedisUtils.getRedis().hSet(this.getKeyName(null), k, this.serialize(v));
+		if (this.isValid()) {
+			this._hput(k, v);
+		} else {
+			RedisUtils.getRedis().hSet(this.getKeyName(null), k, this.ser.serialize(v));
+		}
+	}
+	
+	/**
+	 * 高性能put
+	 * @param key
+	 * @return
+	 */
+	protected void _hput(String k, T v) {
+		String script = Cons.MAP_PUT_LUA;
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(k), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+	    RedisUtils.getRedis().runAndGetOne(script, values);
 	}
 
 	@Override
 	public void delete(String k) {
-		this.expire(null);
 		RedisUtils.getRedis().hDel(this.getKeyName(null), k);
 	}
-	
-	/**
-	 * 序例化的方式
-	 * @param t
-	 * @return
-	 */
-	protected abstract byte[] serialize(T t);
-	
-	/**
-	 * 序例化的方式
-	 * @param t
-	 * @return
-	 */
-	protected abstract T deserialize(byte[] bytes);
 	
 	/**
 	 * redis list 的名称
@@ -60,5 +84,34 @@ public abstract class MapCache<T> extends NameableCache implements CMap<String, 
 	 */
 	protected String getKeyName(String key) {
 		return super.getKeyName(DEFAULT_KEY);
+	}
+	
+	/**
+	 * 设置过期时间
+	 * @param seconds
+	 * @return
+	 */
+	public MapCache<T> expire(int seconds) {
+		this.setTimeToIdle(seconds);
+		return this;
+	}
+	
+	/**
+	 * 设置为原型类型的list
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public MapCache<String> primitive() {
+		this.setStrategy(new PrimitiveStrategy());
+		return (MapCache<String>) this;
+	}
+	
+	/**
+	 * 设置为原型类型的list
+	 * @return
+	 */
+	public MapCache<T> complex() {
+		this.setStrategy(new ComplexStrategy());
+		return this;
 	}
 }

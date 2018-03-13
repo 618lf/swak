@@ -12,7 +12,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.swak.common.boot.Boot;
 import com.swak.common.cache.Cache;
+import com.swak.common.cache.collection.CList;
+import com.swak.common.cache.collection.CMap;
+import com.swak.common.cache.collection.Collections;
+import com.swak.common.cache.collection.MultiMap;
 import com.swak.common.cache.redis.RedisUtils;
+import com.swak.common.utils.Maps;
 import com.swak.common.utils.SpringContextHolder;
 
 import redis.clients.util.SafeEncoder;
@@ -60,12 +65,9 @@ public class TestRedis {
 	public void test() {
 		Cache<Object> cache = CacheUtils.sys().expire(60*10).get();
 		long t1 = System.currentTimeMillis();
-		System.out.println("begin=" + t1);
-		for (int i = 0; i < 1000000; i++) {
+		for (int i = 0; i < 100000; i++) {
 			cache.putString("hanqian", "{dsdsdsd}");
-			cache.getString("hanqian");
 		}
-		System.out.println(cache.getString("hanqian"));
 		System.out.println("hcache ,use=" + (System.currentTimeMillis() - t1));
 	}
 	
@@ -75,8 +77,7 @@ public class TestRedis {
 	@Test
 	public void test2() {
 		long t1 = System.currentTimeMillis();
-		System.out.println("begin=" + t1);
-		for (int i = 0; i < 1000000; i++) {
+		for (int i = 0; i < 100000; i++) {
 			RedisUtils.getRedis().add("hanqian2", SafeEncoder.encode("{dsdsdsd}"));
 			RedisUtils.getRedis().expire("hanqian2", 60 * 10);
 			SafeEncoder.encode(RedisUtils.getRedis().get("hanqian2"));
@@ -88,17 +89,48 @@ public class TestRedis {
 	 * 执行测试
 	 * 多条命令非常的块，而且是原子的操作
 	 */
+	@Test
 	public void testLua() {
 		String lua = new StringBuilder().append("redis.call(\"SET\", KEYS[1], KEYS[2]); return redis.call(\"EXISTS\", KEYS[1]);").toString();
 		long t1 = System.currentTimeMillis();
-		System.out.println("begin=" + t1);
-		byte[][] values = new byte[][] {SafeEncoder.encode("sys#lifeng"), SafeEncoder.encode("哈哈")};
 		for (int i = 0; i < 100000; i++) {
+			byte[][] values = new byte[][] {SafeEncoder.encode("sys#lifeng"), SafeEncoder.encode("哈哈")};
 			RedisUtils.getRedis().runAndGetOne(lua, values);
 		}
 		System.out.println("lua ,use=" + (System.currentTimeMillis() - t1));
-		
-		Object object = RedisUtils.getRedis().runAndGetOne(lua, values);
-		System.out.println("是否存在：" + object.getClass() );
+	}
+	
+	/**
+	 * 测试 list 
+	 */
+	@Test
+	public void testList() {
+		CList<String> list = Collections.newList("list").primitive();
+		list.push("123");
+	}
+	
+	/**
+	 * 测试 map 
+	 */
+	@Test
+	public void testMap() {
+		CMap<String, String> list = Collections.newMap("map2").primitive();
+		list.put("name2", "123");
+	}
+	
+	/**
+	 * 测试 map 
+	 */
+	@Test
+	public void testMultiMap() {
+		Map<String, String> values = Maps.newHashMap();
+		values.put("id", "123"); values.put("name", "lifeng");
+		MultiMap<String, String> map = Collections.newMultiMap("mmap").expire(1800).primitive();
+		map.put("2", values);
+		long t1 = System.currentTimeMillis();
+		for (int i = 0; i < 100000; i++) {
+			map.put("2", values);
+		}
+		System.out.println("mmap ,use=" + (System.currentTimeMillis() - t1));
 	}
 }

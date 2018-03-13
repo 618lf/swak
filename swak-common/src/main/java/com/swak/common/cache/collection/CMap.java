@@ -21,4 +21,23 @@ public interface CMap<K, T> {
 	 * @param k
 	 */
 	void delete(K k);
+	
+	/**
+	 * 设置过期时间
+	 * @param seconds
+	 * @return
+	 */
+	CMap<K, T> expire(int seconds);
+	
+	/**
+	 * 设置为原型类型的list
+	 * @return
+	 */
+	CMap<K, String> primitive();
+	
+	/**
+	 * 设置为复杂类型的list
+	 * @return
+	 */
+	CMap<K, T> complex();
 }

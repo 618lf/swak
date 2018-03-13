@@ -18,4 +18,23 @@ public interface CList<T> {
 	 * @return
 	 */
 	T pop();
+	
+	/**
+	 * 设置过期时间
+	 * @param seconds
+	 * @return
+	 */
+	CList<T> expire(int seconds);
+	
+	/**
+	 * 设置为原型类型的list
+	 * @return
+	 */
+	CList<String> primitive();
+	
+	/**
+	 * 设置为复杂类型的list
+	 * @return
+	 */
+	CList<T> complex();
 }

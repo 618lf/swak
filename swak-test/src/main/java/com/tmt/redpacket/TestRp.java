@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
@@ -16,9 +17,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.swak.common.boot.Boot;
 import com.swak.common.cache.redis.RedisUtils;
+import com.swak.common.utils.Ints;
 import com.swak.common.utils.JsonMapper;
 import com.swak.common.utils.Maps;
 import com.swak.common.utils.SpringContextHolder;
+
+import redis.clients.util.SafeEncoder;
 
 /**
  * 测试抢红包
@@ -38,6 +42,8 @@ public class TestRp {
 	String script = "";
 	
 	volatile boolean overed = false;
+	
+	AtomicInteger count = new AtomicInteger();
 	
 	/**
 	 * 需要启动
@@ -92,7 +98,7 @@ public class TestRp {
 					for(int j = i * per; j < (i+1) * per; j++) {  
 						object.put("id", j);
 						object.put("money", j);
-						//RedisUtils.getRedis().lPush(list_rp, JsonMapper.toJson(object));
+						RedisUtils.getRedis().lPush(list_rp, SafeEncoder.encode(JsonMapper.toJson(object)));
 					}
 					latch.countDown();
 				} 
@@ -113,12 +119,21 @@ public class TestRp {
 		
 		// 模拟抢红包
 		long t1 = System.currentTimeMillis();
-		System.out.println("begin=" + t1);
+		System.out.println("开始抢红包");
 		Stream.iterate(0, i -> i+1).limit(threadCount).forEach(i -> {
 			Thread thread = new Thread(() -> {
-				int j = honBaoCount/threadCount * i; 
 				while(!overed) { 
-					// RedisUtils.getRedis().run(script, list_rp, list_rp_robd, map_rp_user, "" + j);
+					int j = Ints.random(honBaoCount);
+					byte[][] values = new byte[][] {
+						SafeEncoder.encode(list_rp),
+						SafeEncoder.encode(list_rp_robd),
+						SafeEncoder.encode(map_rp_user),
+						SafeEncoder.encode("" + j)
+					};
+					RedisUtils.getRedis().run(script, values);
+					
+					// 报表监听
+					count.incrementAndGet();
 				}
 				latch.countDown();
 			}) ;
@@ -130,8 +145,8 @@ public class TestRp {
 			while(!overed) {
 				if (RedisUtils.getRedis().lLen(list_rp) == 0) {
 					overed = true;
+					break;
 				}
-				break;
 			}
 			latch.countDown();
 		}) ;
@@ -142,6 +157,7 @@ public class TestRp {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("redis rp ,use=" + (System.currentTimeMillis() - t1));
+		long t2 = System.currentTimeMillis() - t1;
+		System.out.println("抢红包结束, use=" + t2 + ", count=" + count + ", qps=" + (count.get()/(t2/1000.0)));
 	}
 }

@@ -42,4 +42,23 @@ public interface MultiMap<K, V> {
 	 * @param k2
 	 */
 	void delete(K k1, K k2);
+	
+	/**
+	 * 设置过期时间
+	 * @param seconds
+	 * @return
+	 */
+	MultiMap<K, V> expire(int seconds);
+	
+	/**
+	 * 设置为原型类型的list
+	 * @return
+	 */
+	MultiMap<K, String> primitive();
+	
+	/**
+	 * 设置为复杂类型的list
+	 * @return
+	 */
+	MultiMap<K, V> complex();
 }

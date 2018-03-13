@@ -1,6 +1,7 @@
 package com.swak.common.cache.redis;
 
 import com.swak.common.cache.Cache;
+import com.swak.common.cache.Cons;
 import com.swak.common.serializer.SerializationUtils;
 
 import redis.clients.util.SafeEncoder;
@@ -13,14 +14,6 @@ import redis.clients.util.SafeEncoder;
  */
 public class RedisCache<T> extends NameableCache implements Cache<T> {
 
-	public static String GET_LUA = null;
-	public static String EXISTS_LUA = null;
-	
-	static {
-		GET_LUA = new StringBuilder().append("redis.call(\"EXPIRE\", KEYS[1], KEYS[2]); return redis.call(\"GET\", KEYS[1]);").toString();
-		EXISTS_LUA = new StringBuilder().append("redis.call(\"EXPIRE\", KEYS[1], KEYS[2]); return redis.call(\"EXISTS\", KEYS[1]);").toString();
-	}
-	
 	/**
 	 * 默认不过期
 	 * @param name
@@ -111,7 +104,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	 * @return
 	 */
 	protected byte[] _hget(String key) {
-		String script = GET_LUA;
+		String script = Cons.GET_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
 	    return (byte[])RedisUtils.getRedis().runAndGetOne(script, values);
 	}
@@ -152,7 +145,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	 * @return
 	 */
 	protected boolean _hexists(String key) {
-		String script = EXISTS_LUA;
+		String script = Cons.EXISTS_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
 	    Long e = RedisUtils.getRedis().runAndGetOne(script, values);
 		return e != null && e == 1;
