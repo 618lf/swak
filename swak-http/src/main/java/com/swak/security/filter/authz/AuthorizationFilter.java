@@ -20,7 +20,7 @@ public abstract class AuthorizationFilter extends AccessControllerFilter{
 	 * 权限验证
 	 */
 	protected boolean onAccessDenied(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		response.sendJson(HttpResponseStatus.OK, Result.error(ErrorCode.ACCESS_DENIED).toJson());
+		response.json().status(HttpResponseStatus.OK).out(Result.error(ErrorCode.ACCESS_DENIED).toJson());
 		return false;
 	}
 }

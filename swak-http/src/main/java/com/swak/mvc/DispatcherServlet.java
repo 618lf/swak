@@ -76,7 +76,7 @@ public class DispatcherServlet implements Servlet {
 			try {
 				mappedHandler = getHandler(request);
 				if (mappedHandler == null || mappedHandler.getHandler() == null) {
-					response.send(HttpResponseStatus.NOT_FOUND, "request handler not found");
+					response.status(HttpResponseStatus.NOT_FOUND).text().buffer("request handler not found");
 					return;
 				}
 				
@@ -93,13 +93,13 @@ public class DispatcherServlet implements Servlet {
 			} catch (Exception e) {
 				dispatchException = e;
 			}
-			
-			// response exception info
-			this.processDispatchResult(request, response, mappedHandler, dispatchException);
 		} finally {
 			try {
 				mappedHandler.triggerAfterCompletion(request, response, dispatchException);
 			} catch (Exception e) {}
+			
+			// response exception info
+			this.processDispatchResult(request, response, mappedHandler, dispatchException);
 		}
 	}
 	
@@ -122,8 +122,11 @@ public class DispatcherServlet implements Servlet {
 		
 		// response the exception
 		if (value != null) {
-			response.send(HttpResponseStatus.INTERNAL_SERVER_ERROR, value.toString());
+			response.status(HttpResponseStatus.INTERNAL_SERVER_ERROR).buffer(value.toString());
 		}
+		
+		// 必须执行这个
+		response.out();
 	}
 
 	@Override

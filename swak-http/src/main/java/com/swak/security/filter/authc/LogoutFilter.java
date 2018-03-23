@@ -12,7 +12,6 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 /**
  * 退出登录
  * @author lifeng
- *
  */
 public class LogoutFilter extends AdviceFilter {
 
@@ -32,7 +31,7 @@ public class LogoutFilter extends AdviceFilter {
 		if (subject.getPrincipal() != null) {
 			subject.logout(request, response);
 		}
-		response.sendJson(HttpResponseStatus.OK, Result.success().toJson());
+		response.json().status(HttpResponseStatus.OK).out(Result.success().toJson());
 		return false;
 	}
 }

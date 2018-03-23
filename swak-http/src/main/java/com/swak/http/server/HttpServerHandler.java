@@ -1,9 +1,5 @@
 package com.swak.http.server;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.swak.http.Executeable;
 import com.swak.http.HttpServletRequest;
 import com.swak.http.HttpServletResponse;
@@ -19,13 +15,10 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
-import io.netty.util.ReferenceCountUtil;
 
 /**
  * 服务器处理
@@ -33,8 +26,6 @@ import io.netty.util.ReferenceCountUtil;
  * @author lifeng
  */
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
-
-	private static final Logger logger = LoggerFactory.getLogger(HttpServerHandler.class);
 
 	private final HttpServerContext context;
 	private final Executeable executor;
@@ -65,8 +56,14 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if (msg instanceof FullHttpRequest) {
-			String lookupPath = getLookupPath((FullHttpRequest) msg);
-			executor.onExecute(lookupPath, new HttpWorkTask(ctx, (FullHttpRequest) msg));
+			MetricCenter.requestHandler();
+			FullHttpRequest req = (FullHttpRequest) msg;
+			String lookupPath = getLookupPath(req);
+			executor.onExecute(lookupPath, ()-> {
+				HttpServletRequest request = HttpServletRequest.build(ctx, req);
+				HttpServletResponse response = request.getResponse();
+				context.buildFilterChain().doFilter(request, response);
+			});
 		}
 	}
 
@@ -98,67 +95,5 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 				Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
 		response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
 		ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-	}
-
-	/**
-	 * 请求处理器
-	 * 
-	 * @author lifeng
-	 */
-	class HttpWorkTask implements Runnable {
-
-		private ChannelHandlerContext ctx;
-		private FullHttpRequest req;
-
-		public HttpWorkTask(ChannelHandlerContext ctx, FullHttpRequest req) {
-			this.ctx = ctx;
-			this.req = req;
-		}
-
-		@Override
-		public void run() {
-
-			// 标准的 请求 < -- > 响应
-			HttpServletResponse response = null;
-			HttpServletRequest request = null;
-
-			// http 请求处理
-			try {
-
-				// 请求处理
-				MetricCenter.requestHandler();
-
-				// 标准的 请求 < -- > 响应
-				response = HttpServletResponse.build(HttpServerChannelInitializer.date);
-				request = HttpServletRequest.build(ctx, req, response);
-
-				// 执行链
-				context.buildFilterChain().doFilter(request, response);
-
-				// 构建响应
-				HttpResponse _response = response.render();
-
-				boolean keepAlive = request.isKeepAlive();
-				if (!keepAlive) {
-					ctx.writeAndFlush(_response);
-					ctx.close();
-				} else {
-					_response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-					ctx.writeAndFlush(_response);
-				}
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-			}
-
-			// 释放资源 for gc
-			finally {
-				ReferenceCountUtil.release(req);
-				IOUtils.closeQuietly(request);
-				IOUtils.closeQuietly(response);
-				MetricCenter.responseSize(response != null ? response.getContentSize() : 0);
-				request = null;
-				response = null;
-			}
-		}
 	}
 }

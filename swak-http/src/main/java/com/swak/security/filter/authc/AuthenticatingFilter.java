@@ -27,7 +27,7 @@ public class AuthenticatingFilter extends AuthenticationFilter {
 		// 已登录直接返回
 		boolean authenticated = SecurityUtils.getSubject().isAuthenticated();
 		if (authenticated) {
-			response.sendJson(HttpResponseStatus.OK, Result.success().toJson());
+			response.json().status(HttpResponseStatus.OK).out(Result.success().toJson());
 			return false;
 		}
 		
@@ -37,7 +37,7 @@ public class AuthenticatingFilter extends AuthenticationFilter {
 		}
 		
 		// 如果是登录请求 get 提交的， 直接返回错误
-		response.sendJson(HttpResponseStatus.OK, Result.error(ErrorCode.OPERATE_FAILURE).toJson());
+		response.json().status(HttpResponseStatus.OK).out(Result.error(ErrorCode.OPERATE_FAILURE).toJson());
 		return false;
 	}
 
@@ -70,7 +70,7 @@ public class AuthenticatingFilter extends AuthenticationFilter {
 	 */
 	protected boolean onLoginSuccess(Subject subject, HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		response.sendJson(HttpResponseStatus.OK, Result.success().toJson());
+		response.json().status(HttpResponseStatus.OK).out(Result.success().toJson());
 		return false;
 	}
 
@@ -84,7 +84,7 @@ public class AuthenticatingFilter extends AuthenticationFilter {
 	 */
 	protected boolean onLoginFailure(AuthenticationException e, HttpServletRequest request, HttpServletResponse response) {
 		ErrorCode code = e.getErrorCode();
-		response.sendJson(HttpResponseStatus.OK, Result.error(code).toJson());
+		response.json().status(HttpResponseStatus.OK).out(Result.error(code).toJson());
 		return false;
 	}
 }

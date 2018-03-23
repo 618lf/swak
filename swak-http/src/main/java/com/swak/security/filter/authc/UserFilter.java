@@ -33,7 +33,7 @@ public class UserFilter extends AccessControllerFilter {
 			code = code.clone();
 			code.setReason(subject.getReason());
 		}
-		response.sendJson(HttpResponseStatus.OK, Result.error(code).toJson());
+		response.json().status(HttpResponseStatus.OK).out(Result.error(code).toJson());
 		return false;
 	}
 }

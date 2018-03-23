@@ -29,11 +29,13 @@ import io.netty.handler.codec.http.multipart.HttpDataFactory;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.util.CharsetUtil;
+import io.netty.util.ReferenceCountUtil;
 
 public class HttpServletRequest implements Closeable {
 
 	private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk
 
+	private ChannelHandlerContext channel;
 	private FullHttpRequest _request;
 	private HttpServletResponse response;
 	private ByteBuf body;
@@ -57,6 +59,14 @@ public class HttpServletRequest implements Closeable {
 	 */
 	public HttpServletResponse getResponse() {
 		return response;
+	}
+	
+	/**
+	 * 得到通道
+	 * @return
+	 */
+	public ChannelHandlerContext getChannel() {
+		return channel;
 	}
 
 	/**
@@ -331,6 +341,10 @@ public class HttpServletRequest implements Closeable {
 
 	@Override
 	public void close() throws IOException {
+		
+		// 必须释放这个请求
+		ReferenceCountUtil.release(_request);
+		
 		this._request = null;
 		this.response = null;
 		if (this.body != null) {
@@ -374,18 +388,23 @@ public class HttpServletRequest implements Closeable {
 	 * @param response
 	 * @return
 	 */
-	public static HttpServletRequest build(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest,
-			HttpServletResponse response) {
+	public static HttpServletRequest build(ChannelHandlerContext channel, FullHttpRequest fullHttpRequest) {
+		
+		// 构建请求
 		HttpServletRequest httpRequest = new HttpServletRequest();
-		httpRequest.response = response;
+		httpRequest.channel = channel;
 		httpRequest._request = fullHttpRequest;
 		httpRequest.keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
-		String remoteAddress = ctx.channel().remoteAddress().toString();
+		String remoteAddress = channel.channel().remoteAddress().toString();
 		httpRequest.remoteAddress = remoteAddress;
 		httpRequest.url = fullHttpRequest.uri();
 		int pathEndPos = httpRequest.url.indexOf('?');
 		httpRequest.uri = pathEndPos < 0 ? httpRequest.url : httpRequest.url.substring(0, pathEndPos);
 		httpRequest.method = fullHttpRequest.method().name();
+		
+		// 构建响应
+		HttpServletResponse response = HttpServletResponse.build(httpRequest);
+		httpRequest.response = response;
 		return httpRequest;
 	}
 }

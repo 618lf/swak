@@ -14,12 +14,16 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 
+import com.swak.http.metric.MetricCenter;
+import com.swak.http.server.HttpServerChannelInitializer;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -33,14 +37,18 @@ import io.netty.handler.codec.http.cookie.Cookie;
  */
 public class HttpServletResponse implements Closeable {
 
+	private HttpServletRequest request;
 	private ByteArrayOutputStream os;
 	private ByteBuffer buffer = null;
 	private HttpHeaders headers = new DefaultHttpHeaders(false);
 	private Set<Cookie> cookies = new HashSet<>(4);
 	private int statusCode = 200;
 	private CharSequence contentType = null;
-	private CharSequence dateString = null;
 	private int contentSize;
+	
+	public HttpServletResponse(HttpServletRequest request) {
+		this.request = request;
+	}
 
 	/**
 	 * 返回状态吗
@@ -57,8 +65,41 @@ public class HttpServletResponse implements Closeable {
 	 * @param status
 	 * @return
 	 */
-	public HttpServletResponse status(int status) {
-		this.statusCode = status;
+	public HttpServletResponse status(HttpResponseStatus status) {
+		this.statusCode = status.code();
+		return this;
+	}
+	
+	/**
+	 * 设置输出格式
+	 * 
+	 * @param status
+	 * @return
+	 */
+	public HttpServletResponse json() {
+		headers.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
+		return this;
+	}
+	
+	/**
+	 * 设置输出格式
+	 * 
+	 * @param status
+	 * @return
+	 */
+	public HttpServletResponse text() {
+		headers.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
+		return this;
+	}
+	
+	/**
+	 * 设置输出格式
+	 * 
+	 * @param status
+	 * @return
+	 */
+	public HttpServletResponse xml() {
+		headers.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_XML);
 		return this;
 	}
 
@@ -168,32 +209,9 @@ public class HttpServletResponse implements Closeable {
 	 * @param content
 	 * @throws UnsupportedEncodingException
 	 */
-	public <T> void send(T content) {
+	public <T> void buffer(T content) {
 		byte[] bytes = String.valueOf(content).getBytes(HttpConst.DEFAULT_CHARSET);
 		buffer = ByteBuffer.wrap(bytes);
-	}
-
-	/**
-	 * 输出错误信息
-	 * 
-	 * @param code
-	 * @throws UnsupportedEncodingException
-	 */
-	public void send(HttpResponseStatus status, String msg) {
-		this.statusCode = status.code();
-		this.send(msg);
-	}
-	
-	/**
-	 * 输出错误信息
-	 * 
-	 * @param code
-	 * @throws UnsupportedEncodingException
-	 */
-	public void sendJson(HttpResponseStatus status, String msg) {
-		headers.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
-		this.statusCode = status.code();
-		this.send(msg);
 	}
 
 	/**
@@ -202,7 +220,7 @@ public class HttpServletResponse implements Closeable {
 	 * @return
 	 * @throws IOException
 	 */
-	public HttpResponse render() throws IOException {
+	private HttpResponse render()  {
 		byte[] _content = this.getContent();
 		ByteBuf buffer = _content== null? Unpooled.EMPTY_BUFFER : Unpooled.wrappedBuffer(_content);
 		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,
@@ -213,7 +231,7 @@ public class HttpServletResponse implements Closeable {
 		}
 		contentSize = response.content().readableBytes();
 		headers.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
-		headers.set(HttpHeaderNames.DATE, dateString);
+		headers.set(HttpHeaderNames.DATE, HttpServerChannelInitializer.date);
 		headers.set(HttpConst.X_POWER_BY, HttpConst.VERSION);
 		if (!headers.contains(HttpHeaderNames.SERVER)) {
 			headers.set(HttpHeaderNames.SERVER, HttpConst.VERSION);
@@ -232,7 +250,7 @@ public class HttpServletResponse implements Closeable {
 	 * @return
 	 * @throws IOException
 	 */
-	private byte[] getContent() throws IOException {
+	private byte[] getContent() {
 		if (this.os != null) {
 			return this.os.toByteArray();
 		}
@@ -261,7 +279,39 @@ public class HttpServletResponse implements Closeable {
 			cookies = null;
 		}
 		contentType = null;
-		dateString = null;
+		request = null;
+	}
+	
+	/**
+	 * 输出
+	 * 只能执行一次
+	 */
+	public void out() {
+		try {
+			HttpResponse _response = this.render();
+			boolean keepAlive = request.isKeepAlive();
+			if (!keepAlive) {
+				request.getChannel().writeAndFlush(_response);
+				request.getChannel().close();
+			} else {
+				_response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+				request.getChannel().writeAndFlush(_response);
+			}
+		} finally {
+			MetricCenter.responseSize(this != null ? this.getContentSize() : 0);
+			IOUtils.closeQuietly(request);
+			IOUtils.closeQuietly(this);
+		}
+	}
+	
+	/**
+	 * 输出错误信息
+	 * @param code
+	 * @throws UnsupportedEncodingException
+	 */
+	public void out(String msg) {
+		this.buffer(msg);
+		this.out();
 	}
 
 	/**
@@ -270,9 +320,7 @@ public class HttpServletResponse implements Closeable {
 	 * @param dateString
 	 * @return
 	 */
-	public static HttpServletResponse build(CharSequence dateString) {
-		HttpServletResponse response = new HttpServletResponse();
-		response.dateString = dateString;
-		return response;
+	public static HttpServletResponse build(HttpServletRequest request) {
+		return new HttpServletResponse(request);
 	}
 }

@@ -35,6 +35,6 @@ public class StringHttpMessageConverter implements HttpMessageConverter<String> 
 	@Override
 	public void write(String content, HttpServletResponse response) throws IOException {
 		response.header(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
-		response.send(content);
+		response.buffer(content);
 	}
 }
