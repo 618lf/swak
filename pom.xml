@@ -30,6 +30,9 @@
 		<jedis.version>2.9.0</jedis.version>
 		<fst.version>2.48</fst.version>
 		<kryo.version>4.0.0</kryo.version>
+		<quasar.version>0.7.9</quasar.version>
+		<akka.version>2.5.11</akka.version>
+		<kotlin.version>1.2.30</kotlin.version>
 
 		<!-- test -->
 		<junit.version>4.12</junit.version>
@@ -186,6 +189,11 @@
 				<artifactId>disruptor</artifactId>
 				<version>${disruptor.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>co.paralleluniverse</groupId>
+				<artifactId>quasar-core</artifactId>
+				<version>${quasar.version}</version>
+			</dependency>
 
 			<dependency>
 				<groupId>com.esotericsoftware</groupId>
@@ -261,6 +269,16 @@
 				<groupId>com.esotericsoftware</groupId>
 				<artifactId>kryo-shaded</artifactId>
 				<version>${kryo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.typesafe.akka</groupId>
+				<artifactId>akka-actor_2.12</artifactId>
+				<version>${akka.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib</artifactId>
+				<version>${kotlin.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

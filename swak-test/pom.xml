@@ -8,19 +8,19 @@
 	</parent>
 	<artifactId>swak-test</artifactId>
 	<dependencies>
-	
-	    <!-- http -->
+
+		<!-- http -->
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-http</artifactId>
 		</dependency>
-		
+
 		<!-- rpc -->
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-rpc</artifactId>
 		</dependency>
-		
+
 		<!-- 测试 -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -31,4 +31,17 @@
 			<artifactId>spring-test</artifactId>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.5.1</version>
+				<executions>
+					<execution>
+						<id>getClasspathFilenames</id>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
