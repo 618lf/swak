@@ -71,7 +71,7 @@ public class DispatcherServlet implements Servlet {
 		ExecutionChain mappedHandler = null;
 		Exception dispatchException = null;
 		
-		// 获取请求执行链
+		// exception chain
 		try {
 			try {
 				mappedHandler = getHandler(request);
@@ -93,13 +93,16 @@ public class DispatcherServlet implements Servlet {
 			} catch (Exception e) {
 				dispatchException = e;
 			}
+			
 		} finally {
+			
+			// response out
+			this.processDispatchResult(request, response, mappedHandler, dispatchException);
+			
+			// after completion
 			try {
 				mappedHandler.triggerAfterCompletion(request, response, dispatchException);
 			} catch (Exception e) {}
-			
-			// response exception info
-			this.processDispatchResult(request, response, mappedHandler, dispatchException);
 		}
 	}
 	
@@ -125,7 +128,7 @@ public class DispatcherServlet implements Servlet {
 			response.status(HttpResponseStatus.INTERNAL_SERVER_ERROR).buffer(value.toString());
 		}
 		
-		// 必须执行这个
+		// write data
 		response.out();
 	}
 
