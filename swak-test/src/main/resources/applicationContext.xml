@@ -28,7 +28,7 @@
 	<import resource="classpath:applicationContext-pool.xml"/>
     
 	<!-- http服务 -->
-	<netty:server host="127.0.0.1" port="8080" enableGzip="true" startReport="true">
+	<netty:server host="127.0.0.1" port="8080" enableGzip="true" startReport="false">
 	    <netty:filter filter-name="securityFilter"/>
 		<netty:servlet servlet-name="dispatcherServlet"/>
 		<netty:pool pool-name="threadPool"/>

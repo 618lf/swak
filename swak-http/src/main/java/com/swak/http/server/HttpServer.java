@@ -7,7 +7,6 @@ import com.swak.http.Executeable;
 import com.swak.http.Filter;
 import com.swak.http.Server;
 import com.swak.http.Servlet;
-import com.swak.http.pool.ConfigableThreadPool;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -109,7 +108,7 @@ public class HttpServer implements Server {
 		private Filter filter;
 		
 		// pool 配置
-		private ConfigableThreadPool pool;
+		private Executeable pool;
 
 		public int getPort() {
 			return port;
@@ -227,7 +226,7 @@ public class HttpServer implements Server {
 			return pool;
 		}
 
-		public void setPool(ConfigableThreadPool pool) {
+		public void setPool(Executeable pool) {
 			this.pool = pool;
 		}
 	}
