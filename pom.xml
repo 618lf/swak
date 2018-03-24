@@ -76,7 +76,6 @@
 				<groupId>cglib</groupId>
 				<artifactId>cglib</artifactId>
 				<version>${cglib.version}</version>
-				<scope>runtime</scope>
 			</dependency>
 			<!-- fastjson -->
 			<dependency>
