@@ -8,7 +8,7 @@ import jsr166e.CompletableFuture;
  * 只是简单的执行
  * @author lifeng
  */
-public class CoroutineExecuteable implements Executeable {
+public class AsyncExecutor implements Executeable {
 
 	
 	@Override

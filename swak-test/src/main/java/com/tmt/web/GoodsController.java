@@ -34,10 +34,6 @@ public class GoodsController {
 	 */
 	@RequestMapping("/count/{name}")
 	public String count(@PathVariable Integer name, HttpServletResponse response) {
-		try {
-			Thread.sleep(20);
-		} catch (InterruptedException e) {
-		}
 		helloService.sayHello();
 		return "获取总数";
 	}
