@@ -45,6 +45,7 @@ public class HttpServletResponse implements Closeable {
 	private int statusCode = 200;
 	private CharSequence contentType = null;
 	private int contentSize;
+	private boolean closed;
 	
 	public HttpServletResponse(HttpServletRequest request) {
 		this.request = request;
@@ -262,6 +263,7 @@ public class HttpServletResponse implements Closeable {
 	
 	@Override
 	public void close() throws IOException {
+		this.closed = true;
 		if (os != null) {
 			IOUtils.closeQuietly(os);
 			os = null;
@@ -287,6 +289,12 @@ public class HttpServletResponse implements Closeable {
 	 * 只能执行一次
 	 */
 	public void out() {
+		
+		// 只能执行一次
+		if (this.closed) {
+			return;
+		}
+		
 		try {
 			HttpResponse _response = this.render();
 			boolean keepAlive = request.isKeepAlive();
