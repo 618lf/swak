@@ -7,8 +7,7 @@ import co.paralleluniverse.fibers.Suspendable;
 import com.swak.http.Executeable;
 
 /**
- * 只是简单的执行
- * 
+ * @Suspendable 需要编译的支持，配置很麻烦
  * @author lifeng
  */
 public class AsyncExecutor implements Executeable {

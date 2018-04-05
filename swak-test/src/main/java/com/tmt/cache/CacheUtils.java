@@ -17,15 +17,6 @@ public final class CacheUtils {
 	  }
 	  
 	  /**
-	   * 获得一个指定名称的缓存
-	   * @param name
-	   * @return
-	   */
-	  public static <T> Cache<T> getSysCache() {
-		  return cacheManager.getCache("sys");
-	  }
-	  
-	  /**
 	   * 包装为二级缓存
 	   * @param cache
 	   * @return

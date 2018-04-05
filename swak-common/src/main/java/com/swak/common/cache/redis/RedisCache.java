@@ -129,14 +129,16 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	 * 删除当前的key
 	 */
 	protected void _del(String... keys) {
-		RedisUtils.getRedis().delete(keys);
+		for(String key: keys) {
+			RedisUtils.getRedis().delete(this.getKeyName(key));
+		}
 	}
 
 	/**
 	 * 当前key 是否存在
 	 */
 	protected boolean _exists(String key) {
-		return RedisUtils.getRedis().exists(key);
+		return RedisUtils.getRedis().exists(this.getKeyName(key));
 	}
 	
 	/**

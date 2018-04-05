@@ -14,7 +14,8 @@
 	    <property name="securityManager" ref="securityManager"/>
 		<property name="filterChainDefinitions">
 			<value>
-				/admin/validate/code = anon
+			    /api/** = anon
+				/admin/validate/** = anon
 				/admin/login = authc
 				/admin/logout = logout
 				/admin/system/self/** = user, roles["admin", "admin:user"]
