@@ -1,6 +1,5 @@
 package com.swak.common.coroutines
 
-import com.sun.deploy.trace.TraceLevel.UI
 import kotlinx.coroutines.experimental.*
 /**
  * Created by zzy on 2017/8/21.
