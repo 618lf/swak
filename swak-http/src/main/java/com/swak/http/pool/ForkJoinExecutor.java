@@ -1,8 +1,8 @@
 package com.swak.http.pool;
 
-import com.swak.http.Executeable;
+import java.util.concurrent.CompletableFuture;
 
-import jsr166e.CompletableFuture;
+import com.swak.http.Executeable;
 
 /**
  * 简单的异步执行即可

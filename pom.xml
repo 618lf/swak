@@ -19,6 +19,7 @@
         <slf4j.version>1.7.5</slf4j.version>
         <netty.version>4.1.20.Final</netty.version>
         <metrics.version>4.0.2</metrics.version>
+        <commons-lang3.version>3.3.2</commons-lang3.version>
         <commons-io.version>2.4</commons-io.version>
         <commons-codec.version>1.8</commons-codec.version>
         <commons-pool.version>2.4.2</commons-pool.version>
@@ -34,9 +35,17 @@
         <akka.version>2.5.11</akka.version>
         <kotlin.version>1.2.31</kotlin.version>
         <kotlin.coroutines.version>0.22.5</kotlin.coroutines.version>
+        <mybatis.version>3.4.1</mybatis.version>
+		<mybatis-spring.version>1.3.1</mybatis-spring.version>
+		<druid.version>1.0.24</druid.version>
 
         <!-- test -->
         <junit.version>4.12</junit.version>
+        
+        <!-- mysql driver setting -->
+		<jdbc.driver.groupId>mysql</jdbc.driver.groupId>
+		<jdbc.driver.artifactId>mysql-connector-java</jdbc.driver.artifactId>
+		<jdbc.driver.version>5.1.36</jdbc.driver.version>
 
         <!-- other setting -->
         <jdk.version>1.8</jdk.version>
@@ -113,6 +122,11 @@
                 </exclusions>
             </dependency>
             <dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jdbc</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-tx</artifactId>
                 <version>${spring.version}</version>
@@ -163,6 +177,11 @@
                 <artifactId>metrics-core</artifactId>
                 <version>${metrics.version}</version>
             </dependency>
+            <dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons-lang3.version}</version>
+			</dependency>
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
@@ -303,6 +322,38 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!-- JDBC DRIVER BEGIN -->
+			<dependency>
+				<groupId>${jdbc.driver.groupId}</groupId>
+				<artifactId>${jdbc.driver.artifactId}</artifactId>
+				<version>${jdbc.driver.version}</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>druid</artifactId>
+				<version>${druid.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>com.alibaba</groupId>
+						<artifactId>jconsole</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.alibaba</groupId>
+						<artifactId>tools</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis</artifactId>
+				<version>${mybatis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis-spring</artifactId>
+				<version>${mybatis-spring.version}</version>
+			</dependency>
         </dependencies>
     </dependencyManagement>
 

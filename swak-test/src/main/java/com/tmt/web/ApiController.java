@@ -1,17 +1,25 @@
 package com.tmt.web;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.swak.common.cache.Cache;
 import com.swak.common.utils.JsonMapper;
 import com.swak.http.Result;
 import com.swak.mvc.annotation.RequestMapping;
+import com.tmt.api.IHelloService;
 import com.tmt.cache.CacheUtils;
 
 @Controller
 @RequestMapping("/api/v1")
 public class ApiController {
 
+	/**
+	 * 测试是否能自动注册服务
+	 */
+	@Autowired
+	private IHelloService helloService;
+	
 	/**
 	 * 输出广告
 	 * @return
@@ -39,6 +47,16 @@ public class ApiController {
 		System.out.println("参数："  + name);
 		Cache<Object> cache = CacheUtils.sys().get();
 		cache.delete("ab");
+		return Result.success();
+	}
+	
+	/**
+	 * 清除缓存
+	 * @return
+	 */
+	@RequestMapping("call")
+	public Result call(String name) {
+		helloService.sayHello();
 		return Result.success();
 	}
 }

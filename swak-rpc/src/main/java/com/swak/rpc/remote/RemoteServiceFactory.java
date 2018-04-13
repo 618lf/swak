@@ -2,11 +2,12 @@ package com.swak.rpc.remote;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
 public class RemoteServiceFactory implements Closeable {
 
-	private final RemoteHandler handler = new RemoteHandler();
+	private final InvocationHandler handler = new RemoteHandler();
 
 	@Override
 	public void close() throws IOException {
