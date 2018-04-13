@@ -1,29 +1,36 @@
 package com.tmt.coroutine
 
 import kotlinx.coroutines.experimental.*
-import java.util.concurrent.atomic.AtomicLong
 
 fun main(args: Array<String>) {
 
-    var count = AtomicLong()
-
-    var jobs = List(100_0000) {
-        launch {
-            doWorld(count)
+    runBlocking<Unit> {
+        val jobs = arrayListOf<Job>()
+        jobs += launch(Unconfined) { // not confined -- will work with main thread
+            println("      'Unconfined': I'm working in thread ${Thread.currentThread().name} - ${coroutineContext[Job]}")
         }
+        jobs += launch(coroutineContext) { // context of the parent, runBlocking coroutine
+            println("'coroutineContext': I'm working in thread ${Thread.currentThread().name}")
+        }
+        jobs += launch(CommonPool) { // will get dispatched to ForkJoinPool.commonPool (or equivalent)
+            println("      'CommonPool': I'm working in thread ${Thread.currentThread().name}")
+        }
+        jobs += launch(newSingleThreadContext("MyOwnThread")) { // will get its own new thread
+            println("          'newSTC': I'm working in thread ${Thread.currentThread().name}")
+        }
+        jobs.forEach { println(it.hashCode()); it.join() }
     }
-
-    runBlocking {
-        jobs.forEach { it.join() }
-    }
-
-    println("count: ${count.get()}")
-
 }
 
-suspend fun doWorld(count: AtomicLong):Int {
+suspend fun doSomethingOne(): Int {
+    println("当前线程：one - " + Thread.currentThread().name)
     delay(1000L)
-    count.getAndAdd(1)
-    // println("World!")
     return 1
 }
+
+suspend fun doSomethingTwo(): Int {
+    println("当前线程：two - " + Thread.currentThread().name)
+    delay(2000L)
+    return 2
+}
+

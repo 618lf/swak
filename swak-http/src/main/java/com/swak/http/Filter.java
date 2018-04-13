@@ -12,5 +12,5 @@ public interface Filter {
 	 * @param request
 	 * @param response
 	 */
-	public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain);
+	void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain);
 }
