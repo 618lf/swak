@@ -20,7 +20,7 @@ public class ApiController {
 	public Result ad() {
 		// 数据
     	Theme theme = Theme.newTheme();
-    	theme.setName("李锋4");
+    	theme.setName("李锋5");
     	
     	// 存储到缓存
     	Cache<Object> cache = CacheUtils.sys().get();
@@ -35,7 +35,8 @@ public class ApiController {
 	 * @return
 	 */
 	@RequestMapping("clear")
-	public Result clear() {
+	public Result clear(String name) {
+		System.out.println("参数："  + name);
 		Cache<Object> cache = CacheUtils.sys().get();
 		cache.delete("ab");
 		return Result.success();

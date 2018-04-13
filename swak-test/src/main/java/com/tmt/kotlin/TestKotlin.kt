@@ -1,20 +1,55 @@
 package com.tmt.kotlin
 
-public fun sum(a: Int, b: Int):Int {
-    println(a + b)
-    return 1
+/**
+ *  扩展函数
+ */
+class User(val id: Int, val name: String ="1", val address: String = "1") {
+
+    fun out() :String {
+        return "$name .. $address"
+    }
+
+}
+fun User.validateBeforeSave() {
+    fun validate(value: String, fieldName: String) {
+        if (value.isEmpty()) {
+            throw IllegalAccessError("Can't save user $id: empty $fieldName")
+        }
+    }
+    validate(name, "Name")
+    validate(address, "address")
 }
 
-public fun sum(vararg v: Int) {
-    for (vt in v) {
-        println(vt)
+fun saveUser(user: User) {
+    if (user.name.isEmpty()) {
+        throw IllegalAccessError("Can't save user ${user.id}: empty Name")
     }
+
+    if(user.address.isEmpty()) {
+        throw IllegalAccessError("Can't save user ${user.id}: empty Address")
+    }
+    println(user.out())
 }
 
-public fun length(obj:Any): Int? {
-    if(obj is String) {
-        // 做过类型判断以后，obj会被系统自动转换为String类型
-        return obj.length
+fun saveUser2(user: User) {
+    fun validate(value: String, fieldName: String) {
+        if (value.isEmpty()) {
+            throw IllegalAccessError("Can't save user ${user.id}: empty $fieldName")
+        }
     }
-    return null
+    validate(user.name, "Name")
+    validate(user.address, "address")
+    println(user.out())
+}
+
+fun saveUser3(user: User) {
+    user.validateBeforeSave()
+    println(user.out())
+}
+
+
+fun main(args: Array<String>) {
+    saveUser(User(1, "李锋","深圳市南头街道前海路海岸时代大厦"))
+    saveUser2(User(1, "韩倩","深圳市南头街道前海路海岸时代大厦"))
+    saveUser3(User(1, "小豆","深圳市南头街道前海路海岸时代大厦"))
 }

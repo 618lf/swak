@@ -26,7 +26,7 @@ internal var ThreadPool = newFixedThreadPoolContext(Runtime.getRuntime().availab
  *
  * 注意：该函数会阻塞代码继续执行
  */
-inline fun taskBlockOnMainThread(delayTime: Long = 0, noinline job:suspend () -> Unit) = runBlocking {
+inline fun taskBlock(delayTime: Long = 0, noinline job:suspend () -> Unit) = runBlocking {
     delay(delayTime)
     job()
 }
@@ -36,7 +36,7 @@ inline fun taskBlockOnMainThread(delayTime: Long = 0, noinline job:suspend () ->
  *
  * 注意：该函数会阻塞代码继续执行
  */
-inline fun taskBlockOnWorkThread(delayTime: Long = 0, noinline job:suspend () -> Unit) = runBlocking(ThreadPool) {
+inline fun taskBlockUsePool(delayTime: Long = 0, noinline job:suspend () -> Unit) = runBlocking(ThreadPool) {
     delay(delayTime)
     job()
 }
@@ -54,30 +54,6 @@ inline fun <T> taskAsync(delayTime: Long = 0, noinline job:suspend () -> T) = as
  * 特点不带返回值
  */
 inline fun <T> taskLaunch(delayTime: Long = 0, noinline job:suspend  () -> T) = launch(ThreadPool) {
-    delay(delayTime)
-    job()
-}
-
-/**
- * 此方法用于协程上下文调度，目前主要用于切换到android UI线程
- * 参数添加CoroutineStart.UNDISPATCHED的话表示立即执行
- */
-inline fun <T> taskRunOnUiThread(noinline job:suspend  () -> T) = launch {
-    job()
-}
-
-/**
- * 顺序执行函数，不能用于最外层
- */
-suspend inline fun <T> taskOrder(delayTime: Long = 0,crossinline job:  () -> T) {
-    delay(delayTime)
-    job()
-}
-
-/**
- * 心跳执行 默认重复次数1次，不能用于最外层
- */
-suspend inline fun <T> taskHeartbeat(times: Int = 1, delayTime: Long = 0,crossinline job:  () -> T) = repeat(times) {
     delay(delayTime)
     job()
 }
