@@ -9,6 +9,6 @@ else
     redis.call('hset', KEYS[3], KEYS[4], KEYS[4]);  
     redis.call('lpush', KEYS[2], re);  
     return re;
-  end  
-end  
+  end
+end
 return nil
