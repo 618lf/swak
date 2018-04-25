@@ -1,4 +1,4 @@
-package com.tmt.coroutine
+/*package com.tmt.coroutine
 
 import kotlinx.coroutines.experimental.*
 
@@ -34,3 +34,4 @@ suspend fun doSomethingTwo(): Int {
     return 2
 }
 
+*/
