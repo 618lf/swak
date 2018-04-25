@@ -32,13 +32,12 @@
 			<artifactId>comsat-jdbc</artifactId>
 			<version>0.7.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>co.paralleluniverse</groupId>
 			<artifactId>comsat-spring-webmvc</artifactId>
 			<version>0.7.0</version>
 		</dependency>
-
 
 		<!-- 测试 -->
 		<dependency>

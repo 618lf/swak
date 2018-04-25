@@ -10,6 +10,8 @@
 		<module>swak-rpc</module>
 		<module>swak-test</module>
 		<module>swak-common</module>
+		<module>swak-vert</module>
+		<module>swak-webflux</module>
 	</modules>
 	<properties>
 		<cglib.version>2.2.2</cglib.version>
@@ -40,6 +42,7 @@
 		<druid.version>1.0.24</druid.version>
 		<rxjava.version>1.2.10</rxjava.version>
 		<reactor.version>3.1.6.RELEASE</reactor.version>
+		<vertx.version>3.5.1</vertx.version>
 
 		<!-- test -->
 		<junit.version>4.12</junit.version>
@@ -366,6 +369,11 @@
 				<groupId>io.projectreactor</groupId>
 				<artifactId>reactor-core</artifactId>
 				<version>${reactor.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.vertx</groupId>
+				<artifactId>vertx-core</artifactId>
+				<version>${vertx.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
