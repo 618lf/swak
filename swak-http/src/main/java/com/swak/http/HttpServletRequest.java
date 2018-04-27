@@ -392,15 +392,19 @@ public class HttpServletRequest implements Closeable {
 		
 		// 构建请求
 		HttpServletRequest httpRequest = new HttpServletRequest();
-		httpRequest.channel = channel;
-		httpRequest._request = fullHttpRequest;
-		httpRequest.keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
-		String remoteAddress = channel.channel().remoteAddress().toString();
-		httpRequest.remoteAddress = remoteAddress;
-		httpRequest.url = fullHttpRequest.uri();
-		int pathEndPos = httpRequest.url.indexOf('?');
-		httpRequest.uri = pathEndPos < 0 ? httpRequest.url : httpRequest.url.substring(0, pathEndPos);
-		httpRequest.method = fullHttpRequest.method().name();
+				
+		// 测试需要
+		if(channel != null && fullHttpRequest != null) {
+			httpRequest.channel = channel;
+			httpRequest._request = fullHttpRequest;
+			httpRequest.keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
+			String remoteAddress = channel.channel().remoteAddress().toString();
+			httpRequest.remoteAddress = remoteAddress;
+			httpRequest.url = fullHttpRequest.uri();
+			int pathEndPos = httpRequest.url.indexOf('?');
+			httpRequest.uri = pathEndPos < 0 ? httpRequest.url : httpRequest.url.substring(0, pathEndPos);
+			httpRequest.method = fullHttpRequest.method().name();
+		}
 		
 		// 构建响应
 		HttpServletResponse response = HttpServletResponse.build(httpRequest);
