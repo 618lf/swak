@@ -14,10 +14,10 @@ import io.reactivex.disposables.Disposable;
  * HttpServer http 操作
  * @author lifeng
  */
-public class HttpServerOptions extends HttpServerResponse implements Observer<Void>{
+public class _HttpServerOptions extends HttpServerResponse implements Observer<Void>{
 
 	private HttpHandler handler;
-	private HttpServerOptions(HttpHandler handler) {
+	private _HttpServerOptions(HttpHandler handler) {
 		this.handler = handler;
 	}
 	
@@ -76,7 +76,7 @@ public class HttpServerOptions extends HttpServerResponse implements Observer<Vo
 	 * @param handler
 	 * @return
 	 */
-	public static HttpServerOptions apply(HttpHandler handler) {
-		return new HttpServerOptions(handler);
+	public static _HttpServerOptions apply(HttpHandler handler) {
+		return new _HttpServerOptions(handler);
 	}
 }

@@ -1,6 +1,6 @@
 package com.swak.reactivex.handler;
 
-import com.swak.reactivex.server.HttpServerOptions;
+import com.swak.reactivex.server._HttpServerOptions;
 
 import io.reactivex.Observable;
 
@@ -16,5 +16,5 @@ public interface HttpHandler {
 	 * @param response
 	 * @return
 	 */
-	Observable<Void> apply(HttpServerOptions httpServerOptions);
+	Observable<Void> apply(_HttpServerOptions httpServerOptions);
 }

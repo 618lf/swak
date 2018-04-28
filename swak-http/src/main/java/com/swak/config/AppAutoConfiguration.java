@@ -18,7 +18,11 @@ import com.swak.reactivex.server.ReactiveWebServerFactory;
  */
 @Configuration
 public class AppAutoConfiguration {
-
+	
+	public AppAutoConfiguration() {
+		System.out.println("我启动了");
+	}
+	
 	/**
 	 * 基础服务
 	 * 

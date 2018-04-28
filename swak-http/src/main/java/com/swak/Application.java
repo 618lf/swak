@@ -1,18 +1,20 @@
 package com.swak;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.ConfigurableApplicationContext;
 
-import com.swak.config.ApplicationBoot;
 import com.swak.reactivex.context.ReactiveWebServerApplicationContext;
 
 /**
- * 自定义需要启动的类
+ * @ComponentScan("com.swak")
+ * @ApplicationBoot
  * @author lifeng
  */
-@ComponentScan("com.swak")
-@ApplicationBoot
 public class Application extends SpringApplication {
+	
+	private final static Logger logger = LoggerFactory.getLogger(Application.class);
 	
 	/**
 	 * 初始化
@@ -23,13 +25,22 @@ public class Application extends SpringApplication {
 	}
 	
 	/**
-	 * 执行设置需要启动的类
+	 * 取待 application
 	 */
 	public void initApplication() {
 		this.setApplicationContextClass(ReactiveWebServerApplicationContext.class);
 	}
 	
-	public static void main(String[] args) {
-		new Application(Application.class).run(args);
-    }
+	/**
+	 * 启动服务
+	 * @param primarySource
+	 * @param args
+	 * @return
+	 */
+	public static ConfigurableApplicationContext run(Class<?> primarySource,
+			String... args) {
+		ConfigurableApplicationContext context = new Application(primarySource).run(args);
+		logger.debug("application is start success");
+		return context;
+	}
 }

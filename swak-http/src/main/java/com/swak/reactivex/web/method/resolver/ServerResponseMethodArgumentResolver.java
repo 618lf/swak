@@ -4,7 +4,7 @@ import java.io.OutputStream;
 
 import org.springframework.core.MethodParameter;
 
-import com.swak.reactivex.server.HttpServerOptions;
+import com.swak.reactivex.server._HttpServerOptions;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 import com.swak.reactivex.web.method.HandlerMethodArgumentResolver;
@@ -31,10 +31,10 @@ public class ServerResponseMethodArgumentResolver implements HandlerMethodArgume
 	public Object resolveArgument(MethodParameter parameter, HttpServerRequest webRequest){
 		Class<?> paramType = parameter.getParameterType();
 		if (HttpServerResponse.class.isAssignableFrom(paramType)) {
-			return ((HttpServerOptions)webRequest).getResponse();
+			return ((_HttpServerOptions)webRequest).getResponse();
 		}
 		if (OutputStream.class.isAssignableFrom(paramType)) {
-			return ((HttpServerOptions)webRequest).getResponse().getOutputStream();
+			return ((_HttpServerOptions)webRequest).getResponse().getOutputStream();
 		}
 		return null;
 	}

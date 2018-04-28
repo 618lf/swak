@@ -56,7 +56,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 		if (msg instanceof FullHttpRequest) {
 			MetricCenter.requestHandler();
 			CompletableFuture.runAsync(() -> {
-				HttpServerOptions.apply(handler).handle(ctx, (FullHttpRequest) msg);
+				_HttpServerOptions.apply(handler).handle(ctx, (FullHttpRequest) msg);
 			});
 		}
 	}

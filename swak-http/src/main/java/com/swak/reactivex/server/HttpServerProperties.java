@@ -9,16 +9,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = HttpServerProperties.HTTP_SERVER_PREFIX)
 public class HttpServerProperties {
 
-	public static final String HTTP_SERVER_PREFIX = "http-server";
+	public static final String HTTP_SERVER_PREFIX = "spring.http-server";
 	
 	private int port = 8888;
-	private int readTimeout = 120;
+	private int connectTimeout = 30000;
 	private String host = "localhost";
 	private boolean tcpNoDelay = true;
 	private boolean soKeepAlive = true;
 	private boolean startReport = false;
-	private boolean enableGzip = false;
-	private boolean enableCors = false;
+	private boolean enableGzip = false; // 暂时不支持
+	private boolean enableCors = false; // 暂时不支持
 
 	// 支持ssl
 	private boolean sslOn = false;
@@ -31,11 +31,11 @@ public class HttpServerProperties {
 	public void setPort(int port) {
 		this.port = port;
 	}
-	public int getReadTimeout() {
-		return readTimeout;
+	public int getConnectTimeout() {
+		return connectTimeout;
 	}
-	public void setReadTimeout(int readTimeout) {
-		this.readTimeout = readTimeout;
+	public void setConnectTimeout(int connectTimeout) {
+		this.connectTimeout = connectTimeout;
 	}
 	public String getHost() {
 		return host;
