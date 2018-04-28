@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.swak.common.cache.Cache;
+import com.swak.common.entity.Result;
 import com.swak.common.utils.JsonMapper;
-import com.swak.http.Result;
-import com.swak.mvc.annotation.RequestMapping;
+import com.swak.reactivex.web.annotation.RequestMapping;
 import com.tmt.api.IHelloService;
 import com.tmt.cache.CacheUtils;
 

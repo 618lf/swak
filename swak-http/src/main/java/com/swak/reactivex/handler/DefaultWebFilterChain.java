@@ -7,8 +7,8 @@ import java.util.List;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
-import com.swak.http.HttpServletRequest;
-import com.swak.http.HttpServletResponse;
+import com.swak.reactivex.server.HttpServerRequest;
+import com.swak.reactivex.server.HttpServerResponse;
 
 import io.reactivex.Observable;
 
@@ -43,7 +43,7 @@ public class DefaultWebFilterChain implements WebFilterChain{
 	 * 链式的添加 Observable
 	 */
 	@Override
-	public Observable<Void> filter(HttpServletRequest request, HttpServletResponse response) {
+	public Observable<Void> filter(HttpServerRequest request, HttpServerResponse response) {
 		return Observable.defer(() -> {
 			if (this.index < this.filters.size()) {
 				WebFilter filter = this.filters.get(this.index);

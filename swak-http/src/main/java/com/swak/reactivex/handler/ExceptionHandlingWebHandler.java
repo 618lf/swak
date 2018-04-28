@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.swak.http.HttpServletRequest;
-import com.swak.http.HttpServletResponse;
+import com.swak.reactivex.server.HttpServerRequest;
+import com.swak.reactivex.server.HttpServerResponse;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -31,7 +31,7 @@ public class ExceptionHandlingWebHandler extends WebHandlerDecorator{
 	 * 处理请求
 	 */
 	@Override
-	public Observable<Void> handle(HttpServletRequest request, HttpServletResponse response) {
+	public Observable<Void> handle(HttpServerRequest request, HttpServerResponse response) {
 		Observable<Void> completion;
 		
 		try {

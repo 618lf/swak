@@ -3,8 +3,8 @@ package com.swak.reactivex.handler;
 import java.util.Arrays;
 import java.util.List;
 
-import com.swak.http.HttpServletRequest;
-import com.swak.http.HttpServletResponse;
+import com.swak.reactivex.server.HttpServerRequest;
+import com.swak.reactivex.server.HttpServerResponse;
 
 import io.reactivex.Observable;
 
@@ -30,7 +30,7 @@ public class FilteringWebHandler extends WebHandlerDecorator{
 	}
 	
 	@Override
-	public Observable<Void> handle(HttpServletRequest request, HttpServletResponse response) {
+	public Observable<Void> handle(HttpServerRequest request, HttpServerResponse response) {
 		return this.filters.length != 0 ?
 				new DefaultWebFilterChain(getDelegate(), this.filters).filter(request, response) :
 				super.handle(request, response);

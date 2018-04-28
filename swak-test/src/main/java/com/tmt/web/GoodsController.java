@@ -5,9 +5,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import com.swak.http.HttpServletResponse;
-import com.swak.mvc.annotation.PathVariable;
-import com.swak.mvc.annotation.RequestMapping;
+import com.swak.reactivex.server.HttpServerResponse;
+import com.swak.reactivex.web.annotation.PathVariable;
+import com.swak.reactivex.web.annotation.RequestMapping;
 import com.tmt.api.IHelloService;
 
 /**
@@ -33,7 +33,7 @@ public class GoodsController {
 	 * @return
 	 */
 	@RequestMapping("/count/{name}")
-	public String count(@PathVariable Integer name, HttpServletResponse response) {
+	public String count(@PathVariable Integer name, HttpServerResponse response) {
 		helloService.sayHello();
 		return "获取总数";
 	}

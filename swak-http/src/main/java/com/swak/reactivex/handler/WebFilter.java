@@ -1,7 +1,7 @@
 package com.swak.reactivex.handler;
 
-import com.swak.http.HttpServletRequest;
-import com.swak.http.HttpServletResponse;
+import com.swak.reactivex.server.HttpServerRequest;
+import com.swak.reactivex.server.HttpServerResponse;
 
 import io.reactivex.Observable;
 
@@ -13,5 +13,5 @@ public interface WebFilter {
 	 * @param response
 	 * @return
 	 */
-	Observable<Void> filter(HttpServletRequest request, HttpServletResponse response, WebFilterChain chain);
+	Observable<Void> filter(HttpServerRequest request, HttpServerResponse response, WebFilterChain chain);
 }

@@ -1,7 +1,8 @@
 package com.swak.reactivex.handler;
 
-import com.swak.http.HttpServletRequest;
-import com.swak.http.HttpServletResponse;
+import com.swak.reactivex.server.HttpServerOptions;
+import com.swak.reactivex.server.HttpServerRequest;
+import com.swak.reactivex.server.HttpServerResponse;
 
 import io.reactivex.Observable;
 
@@ -15,8 +16,13 @@ public class HttpWebHandlerAdapter extends WebHandlerDecorator implements HttpHa
 		super(delegate);
 	}
 
+	/**
+	 * 处理请求
+	 */
 	@Override
-	public Observable<Void> apply(HttpServletRequest request, HttpServletResponse response) {
+	public Observable<Void> apply(HttpServerOptions httpServerOptions) {
+		HttpServerRequest request = httpServerOptions.getRequest();
+		HttpServerResponse response = httpServerOptions.getResponse();
 		return this.getDelegate().handle(request, response);
 	}
 }
