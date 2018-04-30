@@ -5,8 +5,9 @@ import java.io.IOException;
 import com.swak.common.exception.ErrorCode;
 import com.swak.reactivex.handler.HttpHandler;
 
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.Channel;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.util.ReferenceCountUtil;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -14,10 +15,13 @@ import io.reactivex.disposables.Disposable;
  * HttpServer http 操作
  * @author lifeng
  */
-public class _HttpServerOptions extends HttpServerResponse implements Observer<Void>{
+public class HttpServerOperations extends HttpServerResponse implements Observer<Void>{
 
 	private HttpHandler handler;
-	private _HttpServerOptions(HttpHandler handler) {
+	private Channel channel;
+	private FullHttpRequest request;
+	
+	private HttpServerOperations(HttpHandler handler) {
 		this.handler = handler;
 	}
 	
@@ -46,6 +50,16 @@ public class _HttpServerOptions extends HttpServerResponse implements Observer<V
 		this.out();
 	}
 	
+	@Override
+	protected Channel channel() {
+		return channel;
+	}
+
+	@Override
+	protected FullHttpRequest request() {
+		return request;
+	}
+
 	/**
 	 * 获得响应
 	 * @return
@@ -66,9 +80,33 @@ public class _HttpServerOptions extends HttpServerResponse implements Observer<V
 	 * @param channel
 	 * @param request
 	 */
-	public void handle(ChannelHandlerContext channel, FullHttpRequest request) {
-		this.initRequest(channel, request);
-		this.handler.apply(this).subscribe(this);
+	public void handleStart() {
+		try {
+			this.initRequest(channel, request);
+			this.handler.apply(this).subscribe(this);
+		} catch(Exception e) {
+			ReferenceCountUtil.release(request);
+		}
+	}
+	
+	/**
+	 * 设置通道
+	 * @param channel
+	 * @return
+	 */
+	public HttpServerOperations request(FullHttpRequest request) {
+		this.request = request;
+		return this;
+	}
+	
+	/**
+	 * 设置通道
+	 * @param channel
+	 * @return
+	 */
+	public HttpServerOperations channel(Channel channel) {
+		this.channel = channel;
+		return this;
 	}
 	
 	/**
@@ -76,7 +114,7 @@ public class _HttpServerOptions extends HttpServerResponse implements Observer<V
 	 * @param handler
 	 * @return
 	 */
-	public static _HttpServerOptions apply(HttpHandler handler) {
-		return new _HttpServerOptions(handler);
+	public static HttpServerOperations apply(HttpHandler handler) {
+		return new HttpServerOperations(handler);
 	}
 }

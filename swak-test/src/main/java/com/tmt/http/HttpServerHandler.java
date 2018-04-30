@@ -11,7 +11,7 @@ import com.swak.reactivex.handler.FilteringWebHandler;
 import com.swak.reactivex.handler.HttpHandler;
 import com.swak.reactivex.handler.HttpWebHandlerAdapter;
 import com.swak.reactivex.handler.WebHandler;
-import com.swak.reactivex.server._HttpServerOptions;
+import com.swak.reactivex.server.HttpServerOperations;
 import com.swak.reactivex.web.DispatcherHandler;
 import com.swak.reactivex.web.method.HandlerAdapter;
 import com.swak.reactivex.web.method.HandlerMapping;
@@ -79,7 +79,7 @@ public class HttpServerHandler {
 	
 	public static void main(String[] args) {
 		HttpHandler httpHandler = buildHttpHandler(buildWebHandler());
-		_HttpServerOptions options = _HttpServerOptions.apply(httpHandler);
+		HttpServerOperations options = HttpServerOperations.apply(httpHandler);
 		httpHandler.apply(options).subscribe(options);
 	}
 }

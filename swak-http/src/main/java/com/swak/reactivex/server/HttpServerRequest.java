@@ -17,7 +17,7 @@ import com.swak.reactivex.Cookie;
 import com.swak.reactivex.web.annotation.RequestMethod;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.Channel;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -36,8 +36,6 @@ public abstract class HttpServerRequest implements Closeable {
 
 	private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk
 
-	private ChannelHandlerContext channel;
-	private FullHttpRequest _request;
 	private ByteBuf body;
 	private String remoteAddress;
 	private String uri;
@@ -58,11 +56,9 @@ public abstract class HttpServerRequest implements Closeable {
 	 * @param channel
 	 * @param fullHttpRequest
 	 */
-	protected void initRequest(ChannelHandlerContext channel, FullHttpRequest fullHttpRequest) {
-		this.channel = channel;
-		this._request = fullHttpRequest;
+	protected void initRequest(Channel channel, FullHttpRequest fullHttpRequest) {
 		this.keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
-		String remoteAddress = channel.channel().remoteAddress().toString();
+		String remoteAddress = channel.remoteAddress().toString();
 		this.remoteAddress = remoteAddress;
 		this.url = fullHttpRequest.uri();
 		int pathEndPos = this.url.indexOf('?');
@@ -71,13 +67,17 @@ public abstract class HttpServerRequest implements Closeable {
 	}
 	
 	/**
-	 * 得到通道
+	 * 获得通道
 	 * @return
 	 */
-	public ChannelHandlerContext getChannel() {
-		return channel;
-	}
-
+	protected abstract Channel channel();
+	
+	/**
+	 * 获得通道
+	 * @return
+	 */
+	protected abstract FullHttpRequest request();
+	
 	/**
 	 * 获取请求的地址
 	 * 
@@ -152,14 +152,14 @@ public abstract class HttpServerRequest implements Closeable {
 	 * 解析出请求参数
 	 */
 	private void parseParameter() {
-		Map<String, List<String>> parameters = new QueryStringDecoder(_request.uri(), CharsetUtil.UTF_8).parameters();
+		Map<String, List<String>> parameters = new QueryStringDecoder(request().uri(), CharsetUtil.UTF_8).parameters();
 		if (null != parameters) {
 			this.parameters = new HashMap<>();
 			this.parameters.putAll(parameters);
 		}
 
-		if (!RequestMethod.GET.name().equals(_request.method().name())) {
-			HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, _request);
+		if (!RequestMethod.GET.name().equals(request().method().name())) {
+			HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, request());
 			decoder.getBodyHttpDatas().forEach(this::parseData);
 		}
 	}
@@ -218,7 +218,7 @@ public abstract class HttpServerRequest implements Closeable {
 	 */
 	public Iterator<String> getHeaderNames() {
 		if (headers == null) {
-			HttpHeaders httpHeaders = _request.headers();
+			HttpHeaders httpHeaders = request().headers();
 			if (httpHeaders.size() > 0) {
 				this.headers = new HashMap<>(httpHeaders.size());
 				httpHeaders.forEach((header) -> headers.put(header.getKey(), header.getValue()));
@@ -237,7 +237,7 @@ public abstract class HttpServerRequest implements Closeable {
 	 */
 	public String getHeader(String name) {
 		if (headers == null) {
-			HttpHeaders httpHeaders = _request.headers();
+			HttpHeaders httpHeaders = request().headers();
 			if (httpHeaders.size() > 0) {
 				this.headers = new HashMap<>(httpHeaders.size());
 				httpHeaders.forEach((header) -> headers.put(header.getKey(), header.getValue()));
@@ -288,7 +288,7 @@ public abstract class HttpServerRequest implements Closeable {
 	 */
 	public ByteBuf body() {
 		if (body == null) {
-			body = _request.content().copy();
+			body = request().content().copy();
 		}
 		return this.body;
 	}
@@ -350,11 +350,7 @@ public abstract class HttpServerRequest implements Closeable {
 
 	@Override
 	public void close() throws IOException {
-		
-		// 必须释放这个请求
-		ReferenceCountUtil.release(_request);
-		
-		this._request = null;
+		ReferenceCountUtil.release(request());
 		if (this.body != null) {
 			this.body.clear();
 			this.body = null;

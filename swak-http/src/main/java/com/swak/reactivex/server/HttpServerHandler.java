@@ -1,15 +1,13 @@
 package com.swak.reactivex.server;
 
-import java.util.concurrent.CompletableFuture;
-
-import com.swak.reactivex.handler.HttpHandler;
 import com.swak.reactivex.metric.MetricCenter;
+import com.swak.reactivex.server.channel.ContextHandler;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.TooLongFrameException;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -25,14 +23,14 @@ import io.netty.util.CharsetUtil;
  * 
  * @author lifeng
  */
-public class HttpServerHandler extends ChannelInboundHandlerAdapter {
+public class HttpServerHandler extends ChannelDuplexHandler {
 
-	private final HttpHandler handler;
+	private final ContextHandler context;
 
-	public HttpServerHandler(HttpHandler handler) {
-		this.handler = handler;
+	public HttpServerHandler(ContextHandler contextHandler) {
+		this.context = contextHandler;
 	}
-
+	
 	/**
 	 * 通道激活
 	 */
@@ -51,16 +49,20 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 		MetricCenter.channelInactive();
 	}
 
+	/**
+	 * 获取数据
+	 */
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if (msg instanceof FullHttpRequest) {
 			MetricCenter.requestHandler();
-			CompletableFuture.runAsync(() -> {
-				_HttpServerOptions.apply(handler).handle(ctx, (FullHttpRequest) msg);
-			});
+			context.doChannel(ctx.channel(), msg);
 		}
 	}
 
+	/**
+	 * 捕获异常
+	 */
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable t) {
 		Channel ch = ctx.channel();

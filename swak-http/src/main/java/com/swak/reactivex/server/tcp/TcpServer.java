@@ -4,12 +4,13 @@ import java.util.function.BiConsumer;
 
 import org.springframework.lang.Nullable;
 
-import com.swak.reactivex.handler.HttpHandler;
+import com.swak.reactivex.server.ChannelHandler;
 import com.swak.reactivex.server.NettyContext;
 import com.swak.reactivex.server.channel.ContextHandler;
 import com.swak.reactivex.server.options.ServerOptions;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -24,7 +25,7 @@ import io.reactivex.schedulers.Schedulers;
  * @author Stephane Maldini
  * @author Violeta Georgieva
  */
-public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHandler>{
+public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHandler>, ChannelHandler<Channel, Object>{
 
 	public abstract ServerOptions getOptions();
 	
@@ -33,11 +34,11 @@ public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHa
 	 * @param handler
 	 * @return
 	 */
-	public final Observable<? extends NettyContext> asyncStart(HttpHandler handler) {
+	public final Observable<? extends NettyContext> asyncStart() {
 		return ObservableCreate.create(new Consumer<Sink<NettyContext>>() {
 			@Override
 			public void accept(Sink<NettyContext> sink) throws Exception {
-				startWithSink(sink, handler);
+				startWithSink(sink);
 			}
 		}).subscribeOn(Schedulers.newThread());
 	}
@@ -47,13 +48,13 @@ public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHa
 	 * @param sink
 	 * @param handler
 	 */
-	protected void startWithSink(Sink<NettyContext> sink, HttpHandler handler) {
+	protected void startWithSink(Sink<NettyContext> sink) {
 		
 		/**
 		 * init Handler
 		 */
 		ContextHandler contextHandler = ContextHandler.newServerContext(getOptions(), sink)
-				.onPipeline(this);
+				.onPipeline(this).onChannel(this);
 		
 		/**
 		 * start server

@@ -8,7 +8,9 @@ import com.swak.reactivex.server.options.HttpServerOptions;
 import com.swak.reactivex.server.tcp.BlockingNettyContext;
 import com.swak.reactivex.server.tcp.TcpServer;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
@@ -21,6 +23,7 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 public class ReactiveWebServer extends TcpServer {
 
 	private final HttpServerOptions options;
+	private HttpHandler handler; 
 	
 	private ReactiveWebServer(Consumer<? super HttpServerOptions.Builder> options) {
 		HttpServerOptions.Builder serverOptionsBuilder = HttpServerOptions.builder();
@@ -38,7 +41,8 @@ public class ReactiveWebServer extends TcpServer {
 	 * @return
 	 */
 	public BlockingNettyContext start(HttpHandler handler) {
-		return new BlockingNettyContext(this.asyncStart(handler), "httpServer");
+		this.handler = handler;
+		return new BlockingNettyContext(this.asyncStart(), "httpServer");
 	}
 	
 	/**
@@ -51,7 +55,7 @@ public class ReactiveWebServer extends TcpServer {
 	}
 
 	/**
-	 * 服务器配置管道
+	 * 管道初始化配置
 	 */
 	@Override
 	public void accept(ChannelPipeline p, ContextHandler u) {
@@ -64,5 +68,15 @@ public class ReactiveWebServer extends TcpServer {
 						options.httpCodecInitialBufferSize()));
 		p.addLast(NettyPipeline.HttpAggregator, new HttpObjectAggregator(Integer.MAX_VALUE));
 		p.addLast(NettyPipeline.ChunkedWriter, new ChunkedWriteHandler());
+		p.addLast(NettyPipeline.HttpServerHandler, new HttpServerHandler(u));
+	}
+
+	/**
+	 * 管道数据处理
+	 */
+	@Override
+	public void handleChannel(Channel channel, Object request) {
+		HttpServerOperations op = HttpServerOperations.apply(handler).channel(channel).request((FullHttpRequest)request);
+		channel.eventLoop().execute(op::handleStart);
 	}
 }

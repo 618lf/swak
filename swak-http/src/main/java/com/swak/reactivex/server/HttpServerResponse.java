@@ -302,11 +302,11 @@ public abstract class HttpServerResponse extends HttpServerRequest {
 			HttpResponse _response = this.render();
 			boolean keepAlive = request.isKeepAlive();
 			if (!keepAlive) {
-				request.getChannel().writeAndFlush(_response);
-				request.getChannel().close();
+				request.channel().writeAndFlush(_response);
+				request.channel().close();
 			} else {
 				_response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-				request.getChannel().writeAndFlush(_response);
+				request.channel().writeAndFlush(_response);
 			}
 		} finally {
 			MetricCenter.responseSize(this != null ? this.getContentSize() : 0);

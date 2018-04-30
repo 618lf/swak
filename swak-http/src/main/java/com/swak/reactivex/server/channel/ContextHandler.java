@@ -6,6 +6,7 @@ import java.util.function.BiConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.reactivex.server.ChannelHandler;
 import com.swak.reactivex.server.NettyContext;
 import com.swak.reactivex.server.NettyPipeline;
 import com.swak.reactivex.server.options.NettyOptions;
@@ -28,6 +29,7 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	static final Logger log = LoggerFactory.getLogger(ContextHandler.class);
 	final NettyOptions options;
 	BiConsumer<ChannelPipeline, ContextHandler> pipelineConfigurator;
+	ChannelHandler<Channel, Object> channelHandler;
 	
 	ContextHandler(NettyOptions options) {
 		this.options = options;
@@ -99,6 +101,17 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	}
 	
 	/**
+	 * 执行
+	 * @param ctx
+	 * @param request
+	 */
+	public void doChannel(Channel channel, Object request) {
+		if (channelHandler != null) {
+			channelHandler.handleChannel(channel, request);
+		}
+	}
+	
+	/**
 	 * 添加 ssl 的处理
 	 * @param secure
 	 * @param pipeline
@@ -118,6 +131,17 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	public final ContextHandler onPipeline(BiConsumer<ChannelPipeline, ContextHandler> pipelineConfigurator) {
 		this.pipelineConfigurator =
 				Objects.requireNonNull(pipelineConfigurator, "pipelineConfigurator");
+		return this;
+	}
+	
+	/**
+	 * 设置管道配置处理器
+	 * @param pipelineConfigurator
+	 * @return
+	 */
+	public final ContextHandler onChannel(ChannelHandler<Channel, Object> channelHandler) {
+		this.channelHandler =
+				Objects.requireNonNull(channelHandler, "channelHandler");
 		return this;
 	}
 	
