@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.metric.MetricCenter;
+import com.swak.reactivex.server.channel.ServerContextHandler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -233,7 +234,7 @@ public abstract class HttpServerResponse extends HttpServerRequest {
 		}
 		contentSize = response.content().readableBytes();
 		headers.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
-		headers.set(HttpHeaderNames.DATE, HttpServerChannelInitializer.date);
+		headers.set(HttpHeaderNames.DATE, ServerContextHandler.date);
 		headers.set(HttpConst.X_POWER_BY, HttpConst.VERSION);
 		if (!headers.contains(HttpHeaderNames.SERVER)) {
 			headers.set(HttpHeaderNames.SERVER, HttpConst.VERSION);

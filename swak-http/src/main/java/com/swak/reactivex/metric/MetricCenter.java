@@ -12,7 +12,7 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
 import com.swak.reactivex.Reportable;
-import com.swak.reactivex.server.HttpServer;
+import com.swak.reactivex.server.ReactiveWebServer;
 
 /**
  * 指标监控
@@ -97,7 +97,7 @@ public final class MetricCenter {
 	public static void startReport() {
 		// 启动生成报表
 		Slf4jReporter reporter = Slf4jReporter.forRegistry(getMetrics().registry)
-				.outputTo(LoggerFactory.getLogger(HttpServer.class))
+				.outputTo(LoggerFactory.getLogger(ReactiveWebServer.class))
 				.convertRatesTo(TimeUnit.SECONDS)
 				.convertDurationsTo(TimeUnit.MILLISECONDS)
 				.build();

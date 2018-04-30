@@ -23,16 +23,22 @@ public class ReactiveWebServerFactory {
 		this.properties = properties;
 	}
 	
+	/**
+	 * 获得webServer
+	 * @param handler
+	 * @return
+	 */
 	public WebServer getWebServer(HttpHandler handler) {
-		return new HttpServer(properties, handler);
+		ReactiveWebServer httpServer = createHttpServer();
+		return new NettyWebServer(httpServer, handler);
 	}
 	
 	/**
 	 * 响应式的 http 服务器
 	 * @return
 	 */
-	public ReactiveHttpServer createHttpServer() {
-		return ReactiveHttpServer.options((options) -> {
+	public ReactiveWebServer createHttpServer() {
+		return ReactiveWebServer.options((options) -> {
 			options.host(properties.getHost()).port(properties.getPort());
 			if (properties.isSslOn()) {
 				this.customizeSsl(options);

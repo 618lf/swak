@@ -5,11 +5,15 @@ import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import com.swak.reactivex.server.resources.LoopResources;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoop;
+import io.netty.channel.EventLoopGroup;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
@@ -18,6 +22,7 @@ import io.netty.util.AttributeKey;
 public class ServerOptions extends NettyOptions {
 
 	private final SocketAddress localAddress;
+	private EventLoop dateServer;
 	
 	/**
 	 * Build a new {@link ServerOptions}.
@@ -34,6 +39,31 @@ public class ServerOptions extends NettyOptions {
 	
 	public final SocketAddress getAddress() {
 		return localAddress;
+	}
+	
+	public final EventLoop dateServer() {
+		return dateServer;
+	}
+	
+	/**
+	 * 复制一份
+	 * 
+	 * @return
+	 */
+	public ServerBootstrap get() {
+		ServerBootstrap b = super.get();
+		groupAndChannel(b);
+		return b;
+	}
+	
+	final void groupAndChannel(ServerBootstrap bootstrap) {
+		LoopResources loops = LoopResources.create("reactor");
+		EventLoopGroup selectorGroup = loops.onServerSelect();
+		EventLoopGroup elg = loops.onClient();
+		bootstrap.group(selectorGroup, elg).channel(loops.onServerChannel());
+		
+		// 开启 日期服务
+		dateServer = selectorGroup.next();
 	}
 	
 	public static class Builder extends NettyOptions.Builder {
