@@ -8,14 +8,12 @@ import com.swak.reactivex.handler.HttpHandler;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.util.ReferenceCountUtil;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 
 /**
  * HttpServer http 操作
  * @author lifeng
  */
-public class HttpServerOperations extends HttpServerResponse implements Observer<Void>{
+public class HttpServerOperations extends HttpServerResponse implements ServerOperations {
 
 	private HttpHandler handler;
 	private Channel channel;
@@ -28,16 +26,6 @@ public class HttpServerOperations extends HttpServerResponse implements Observer
 	@Override
 	public void close() throws IOException {
 		super.close();
-	}
-	
-	@Override
-	public void onSubscribe(Disposable d) {
-		
-	}
-
-	@Override
-	public void onNext(Void t) {
-		
 	}
 
 	@Override

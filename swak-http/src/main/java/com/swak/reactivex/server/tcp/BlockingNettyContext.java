@@ -16,6 +16,7 @@ import io.reactivex.Observable;
  *
  * @author Simon Baslé
  */
+@Deprecated
 public class BlockingNettyContext {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BlockingNettyContext.class);

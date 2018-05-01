@@ -23,7 +23,7 @@ public class ServerOptions extends NettyOptions {
 
 	private final SocketAddress localAddress;
 	private EventLoop dateServer;
-	
+
 	/**
 	 * Build a new {@link ServerOptions}.
 	 */
@@ -31,20 +31,19 @@ public class ServerOptions extends NettyOptions {
 		super(builder);
 		if (Objects.isNull(builder.host)) {
 			this.localAddress = new InetSocketAddress(builder.port);
-		}
-		else {
+		} else {
 			this.localAddress = new InetSocketAddress(builder.host, builder.port);
 		}
 	}
-	
+
 	public final SocketAddress getAddress() {
 		return localAddress;
 	}
-	
+
 	public final EventLoop dateServer() {
 		return dateServer;
 	}
-	
+
 	/**
 	 * 复制一份
 	 * 
@@ -55,17 +54,17 @@ public class ServerOptions extends NettyOptions {
 		groupAndChannel(b);
 		return b;
 	}
-	
+
 	final void groupAndChannel(ServerBootstrap bootstrap) {
 		LoopResources loops = LoopResources.create("reactor");
 		EventLoopGroup selectorGroup = loops.onServerSelect();
 		EventLoopGroup elg = loops.onClient();
 		bootstrap.group(selectorGroup, elg).channel(loops.onServerChannel());
-		
+
 		// 开启 日期服务
 		dateServer = selectorGroup.next();
 	}
-	
+
 	public static class Builder extends NettyOptions.Builder {
 
 		private String host;
@@ -80,31 +79,33 @@ public class ServerOptions extends NettyOptions {
 			bootstrap.option(ChannelOption.SO_REUSEADDR, true).option(ChannelOption.SO_BACKLOG, 1000)
 					.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 					.childOption(ChannelOption.SO_RCVBUF, 1024 * 1024).childOption(ChannelOption.SO_SNDBUF, 1024 * 1024)
-					.childOption(ChannelOption.AUTO_READ, false).childOption(ChannelOption.SO_KEEPALIVE, true)
+					.childOption(ChannelOption.SO_KEEPALIVE, true)
 					.childOption(ChannelOption.TCP_NODELAY, true)
 					.childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, 30000);
 		}
-		
+
 		/**
 		 * The host on which this server should listen.
 		 *
-		 * @param host The host to bind to.
+		 * @param host
+		 *            The host to bind to.
 		 * @return {@code this}
 		 */
 		public final Builder host(String host) {
 			if (Objects.isNull(host)) {
 				this.host = "localhost";
-			}
-			else {
+			} else {
 				this.host = host;
 			}
 			return this;
 		}
 
 		/**
-		 * The port on which this server should listen, assuming it should bind to all available addresses.
+		 * The port on which this server should listen, assuming it should bind to all
+		 * available addresses.
 		 *
-		 * @param port The port to listen on.
+		 * @param port
+		 *            The port to listen on.
 		 * @return {@code this}
 		 */
 		public final Builder port(int port) {
@@ -118,7 +119,8 @@ public class ServerOptions extends NettyOptions {
 		 * @return {@code this}
 		 */
 		public final Builder sslSelfSigned() {
-			return sslSelfSigned(c -> {});
+			return sslSelfSigned(c -> {
+			});
 		}
 
 		/**
@@ -126,7 +128,9 @@ public class ServerOptions extends NettyOptions {
 		 * parameterization of the self signed {@link SslContextBuilder}. The builder is
 		 * then used to invoke {@link #sslContext(SslContext)}.
 		 *
-		 * @param configurator the builder callback to setup the self-signed {@link SslContextBuilder}
+		 * @param configurator
+		 *            the builder callback to setup the self-signed
+		 *            {@link SslContextBuilder}
 		 * @return {@code this}
 		 */
 		public final Builder sslSelfSigned(Consumer<? super SslContextBuilder> configurator) {
@@ -134,24 +138,26 @@ public class ServerOptions extends NettyOptions {
 			SelfSignedCertificate ssc;
 			try {
 				ssc = new SelfSignedCertificate();
-				SslContextBuilder builder =
-						SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey());
+				SslContextBuilder builder = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey());
 				configurator.accept(builder);
 				sslContext(builder.build());
 				return this;
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		/**
-		 * Attribute default attribute to the future {@link Channel} connection. They will
-		 * be available via {@link reactor.ipc.netty.NettyInbound#attr(AttributeKey)}.
+		 * Attribute default attribute to the future {@link Channel} connection. They
+		 * will be available via
+		 * {@link reactor.ipc.netty.NettyInbound#attr(AttributeKey)}.
 		 *
-		 * @param key the attribute key
-		 * @param value the attribute value
-		 * @param <T> the attribute type
+		 * @param key
+		 *            the attribute key
+		 * @param value
+		 *            the attribute value
+		 * @param <T>
+		 *            the attribute type
 		 * @return {@code this}
 		 * @see Bootstrap#attr(AttributeKey, Object)
 		 */
@@ -165,9 +171,12 @@ public class ServerOptions extends NettyOptions {
 		 * SO_TIMEOUT or SO_KEEPALIVE. This will apply to each new channel from remote
 		 * peer.
 		 *
-		 * @param key the option key
-		 * @param value the option value
-		 * @param <T> the option type
+		 * @param key
+		 *            the option key
+		 * @param value
+		 *            the option value
+		 * @param <T>
+		 *            the option type
 		 * @return {@code this}
 		 * @see Bootstrap#option(ChannelOption, Object)
 		 */

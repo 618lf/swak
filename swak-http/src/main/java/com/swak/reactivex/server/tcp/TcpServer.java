@@ -1,9 +1,11 @@
 package com.swak.reactivex.server.tcp;
 
+import java.net.InetSocketAddress;
 import java.util.function.BiConsumer;
 
 import org.springframework.lang.Nullable;
 
+import com.swak.reactivex.handler.HttpHandler;
 import com.swak.reactivex.server.ChannelHandler;
 import com.swak.reactivex.server.NettyContext;
 import com.swak.reactivex.server.channel.ContextHandler;
@@ -27,7 +29,28 @@ import io.reactivex.schedulers.Schedulers;
  */
 public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHandler>, ChannelHandler<Channel, Object>{
 
-	public abstract ServerOptions getOptions();
+	/**
+	 * 配置 ServerOptions
+	 * @return
+	 */
+	public abstract ServerOptions options();
+	
+	/**
+	 * 启动服务，并配置HttpHandler
+	 * @param handler
+	 */
+	public abstract void start(HttpHandler handler);
+	
+	/**
+	 * 停止服务器
+	 */
+	public abstract void stop();
+	
+	/**
+	 * 获得监听端口
+	 * @return
+	 */
+	public abstract InetSocketAddress getAddress();
 	
 	/**
 	 * 异步启动服务器，并注册启动监听
@@ -53,14 +76,14 @@ public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHa
 		/**
 		 * init Handler
 		 */
-		ContextHandler contextHandler = ContextHandler.newServerContext(getOptions(), sink)
+		ContextHandler contextHandler = ContextHandler.newServerContext(options(), sink)
 				.onPipeline(this).onChannel(this);
 		
 		/**
 		 * start server
 		 */
-		ServerBootstrap b = getOptions().get()
-				.localAddress(getOptions().getAddress())
+		ServerBootstrap b = options().get()
+				.localAddress(options().getAddress())
 				.childHandler(contextHandler);
 		
 		/**
