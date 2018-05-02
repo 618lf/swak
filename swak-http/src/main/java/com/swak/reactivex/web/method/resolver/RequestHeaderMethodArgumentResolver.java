@@ -35,16 +35,16 @@ public class RequestHeaderMethodArgumentResolver extends AbstractMethodArgumentR
 	public Object resolveArgumentInternal(MethodParameter parameter, HttpServerRequest webRequest){
 		if (Map.class.isAssignableFrom(parameter.getParameterType())) {
 			Map<String, String> result = new LinkedHashMap<String, String>();
-			for (Iterator<String> iterator = webRequest.getHeaderNames(); iterator.hasNext();) {
+			for (Iterator<String> iterator = webRequest.getRequestHeaderNames(); iterator.hasNext();) {
 				String headerName = iterator.next();
-				String headerValue = webRequest.getHeader(headerName);
+				String headerValue = webRequest.getRequestHeader(headerName);
 				if (headerValue != null) {
 					result.put(headerName, headerValue);
 				}
 			}
 			return result;
 		} else {
-			return webRequest.getHeader(parameter.getParameterName());
+			return webRequest.getRequestHeader(parameter.getParameterName());
 		}
 	}
 }

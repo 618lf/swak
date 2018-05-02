@@ -6,11 +6,8 @@ import java.io.InputStream;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.swak.common.utils.JsonMapper;
-import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
-
-import io.netty.handler.codec.http.HttpHeaderNames;
 
 /**
  * 处理json
@@ -39,8 +36,7 @@ public class JsonHttpMessageConverter implements HttpMessageConverter<Object> {
 
 	@Override
 	public void write(Object obj, HttpServerResponse response) throws IOException {
-		response.header(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
-		JsonMapper.writeJSONString(response.getOutputStream(), fastJsonConfig.getCharset(), obj, fastJsonConfig.getSerializeConfig(),
+		JsonMapper.writeJSONString(response.json().getOutputStream(), fastJsonConfig.getCharset(), obj, fastJsonConfig.getSerializeConfig(),
 				fastJsonConfig.getSerializeFilters(), fastJsonConfig.getDateFormat(), JSON.DEFAULT_GENERATE_FEATURE,
 				fastJsonConfig.getSerializerFeatures());
 	}

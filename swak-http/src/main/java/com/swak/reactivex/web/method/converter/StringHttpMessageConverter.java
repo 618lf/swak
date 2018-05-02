@@ -8,8 +8,6 @@ import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 
-import io.netty.handler.codec.http.HttpHeaderNames;
-
 /**
  * String 处理器
  * 返回值或者对象类型是 String
@@ -34,7 +32,6 @@ public class StringHttpMessageConverter implements HttpMessageConverter<String> 
 
 	@Override
 	public void write(String content, HttpServerResponse response) throws IOException {
-		response.header(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
-		response.buffer(content);
+		response.text().buffer(content);
 	}
 }

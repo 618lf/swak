@@ -8,11 +8,8 @@ import javax.xml.bind.annotation.XmlType;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import com.swak.common.utils.JaxbMapper;
-import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
-
-import io.netty.handler.codec.http.HttpHeaderNames;
 
 /**
  * 处理xml
@@ -39,7 +36,6 @@ public class Jaxb2RootElementHttpMessageConverter implements HttpMessageConverte
 	@Override
 	public void write(Object t, HttpServerResponse response) throws IOException {
 		if (t== null) {return;}
-		response.header(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_XML);
-		JaxbMapper.toXml(t, response.getOutputStream());
+		JaxbMapper.toXml(t, response.xml().getOutputStream());
 	}
 }

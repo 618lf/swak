@@ -216,7 +216,7 @@ public abstract class HttpServerRequest implements Closeable {
 	 * 
 	 * @return
 	 */
-	public Iterator<String> getHeaderNames() {
+	public Iterator<String> getRequestHeaderNames() {
 		if (headers == null) {
 			HttpHeaders httpHeaders = request().headers();
 			if (httpHeaders.size() > 0) {
@@ -235,7 +235,7 @@ public abstract class HttpServerRequest implements Closeable {
 	 * @param name
 	 * @return
 	 */
-	public String getHeader(String name) {
+	public String getRequestHeader(String name) {
 		if (headers == null) {
 			HttpHeaders httpHeaders = request().headers();
 			if (httpHeaders.size() > 0) {
