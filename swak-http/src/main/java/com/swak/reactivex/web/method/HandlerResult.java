@@ -1,23 +1,25 @@
 package com.swak.reactivex.web.method;
 
+import com.swak.reactivex.web.Handler;
+import com.swak.reactivex.web.function.HandlerFunction;
+
 /**
  * 处理结果
  * @author lifeng
  */
 public class HandlerResult {
 	
-	private HandlerMethod handler;
+	private Handler handler;
 	private Object returnValue;
 	
-	public HandlerResult(HandlerMethod handler, Object returnValue) {
+	public HandlerResult(Handler handler, Object returnValue) {
 		this.handler = handler;
 		this.returnValue = returnValue;
 	}
-	
-	public HandlerMethod getHandler() {
+	public Handler getHandler() {
 		return handler;
 	}
-	public void setHandler(HandlerMethod handler) {
+	public void setHandler(Handler handler) {
 		this.handler = handler;
 	}
 	public Object getReturnValue() {
@@ -25,5 +27,20 @@ public class HandlerResult {
 	}
 	public void setReturnValue(Object returnValue) {
 		this.returnValue = returnValue;
+	}
+	
+	/**
+	 * 获得返回值的类型
+	 * @return
+	 */
+	public Class<?> getReturnValueType() {
+	   if (handler instanceof HandlerMethod) {
+		   return ((HandlerMethod)handler).getReturnValue().getNestedParameterType();
+	   } else if(handler instanceof HandlerFunction) {
+		   return null;
+	   } else if(returnValue != null) {
+		   return returnValue.getClass();
+	   }
+	   return null;
 	}
 }

@@ -48,7 +48,7 @@ public class RequestBodyHandlerResult implements HandlerResultHandler, Applicati
 	public Observable<Void> handle(HttpServerRequest request, HttpServerResponse response, HandlerResult result) {
 		Observable<Void> empty = Observable.empty();
 		Object _result = result.getReturnValue();
-		Class<?> _type = result.getHandler().getReturnValue().getNestedParameterType();
+		Class<?> _type = result.getReturnValueType();
 		if(_result != null && _result instanceof Observable) {
 			Observable<?> resultObservable = (Observable<?>)_result;
 			return resultObservable.flatMap(new Function<Object, ObservableSource<Void>>() {

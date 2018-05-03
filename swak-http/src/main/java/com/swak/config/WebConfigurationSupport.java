@@ -13,6 +13,8 @@ import org.springframework.lang.Nullable;
 
 import com.swak.reactivex.handler.HttpWebHandlerAdapter;
 import com.swak.reactivex.web.DispatcherHandler;
+import com.swak.reactivex.web.function.HandlerFunctionAdapter;
+import com.swak.reactivex.web.function.RouterFunctionMapping;
 import com.swak.reactivex.web.method.RequestBodyHandlerResult;
 import com.swak.reactivex.web.method.RequestMappingHandlerAdapter;
 import com.swak.reactivex.web.method.RequestMappingHandlerMapping;
@@ -42,6 +44,7 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		return new HttpWebHandlerAdapter(webHandler);
 	}
 	
+	// ---------- requestMapping ---------
 	@Bean
 	public RequestMappingHandlerMapping requestMappingHandlerMapping() {
 		RequestMappingHandlerMapping mapping = new RequestMappingHandlerMapping();
@@ -51,6 +54,19 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 	@Bean
 	public RequestMappingHandlerAdapter requestMappingHandlerAdapter() {
 		RequestMappingHandlerAdapter adapter = new RequestMappingHandlerAdapter();
+		return adapter;
+	}
+	
+	// ---------- functionMapping ---------
+	@Bean
+	public RouterFunctionMapping routerFunctionMapping() {
+		RouterFunctionMapping mapping = new RouterFunctionMapping();
+		return mapping;
+	}
+	
+	@Bean
+	public HandlerFunctionAdapter handlerFunctionAdapter() {
+		HandlerFunctionAdapter adapter = new HandlerFunctionAdapter();
 		return adapter;
 	}
 	

@@ -12,5 +12,5 @@ public interface HandlerFunction extends Handler {
 	 * @param request the request to handle
 	 * @return the response
 	 */
-	Observable<Void> handle(HttpServerRequest request);
+	Observable<Object> handle(HttpServerRequest request);
 }
