@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.swak</groupId>
 	<artifactId>swak</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2_final</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>swak-http</module>
@@ -12,6 +12,7 @@
 		<module>swak-common</module>
 		<module>swak-vert</module>
 		<module>swak-webflux</module>
+		<module>swak-kotlin</module>
 	</modules>
 	<properties>
 		<spring.version>5.0.5.RELEASE</spring.version>
