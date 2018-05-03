@@ -2,7 +2,8 @@ package com.swak.reactivex.web;
 
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
-import com.swak.reactivex.web.method.HandlerResult;
+import com.swak.reactivex.web.converter.HttpMessageConverter;
+import com.swak.reactivex.web.result.HandlerResult;
 
 import io.reactivex.Observable;
 
@@ -17,6 +18,11 @@ public interface HandlerResultHandler {
 	 * @return
 	 */
 	boolean supports(HandlerResult result);
+	
+	/**
+	 * 添加数据装换器
+	 */
+	void addConverter(HttpMessageConverter<?> messageConverter);
 	
 	/**
 	 * 处理结果

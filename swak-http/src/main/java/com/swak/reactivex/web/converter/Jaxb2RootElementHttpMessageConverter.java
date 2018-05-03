@@ -1,4 +1,4 @@
-package com.swak.reactivex.web.method.converter;
+package com.swak.reactivex.web.converter;
 
 import java.io.IOException;
 

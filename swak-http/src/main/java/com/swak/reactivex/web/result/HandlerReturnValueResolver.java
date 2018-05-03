@@ -1,10 +1,10 @@
-package com.swak.reactivex.web.method;
+package com.swak.reactivex.web.result;
 
 import org.springframework.core.MethodParameter;
 
 import com.swak.reactivex.server.HttpServerResponse;
 
-public interface HandlerMethodReturnValueResolver {
+public interface HandlerReturnValueResolver {
 
 	/**
 	 * Whether the given {@linkplain MethodParameter method return type} is

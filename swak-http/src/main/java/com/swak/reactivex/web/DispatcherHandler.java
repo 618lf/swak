@@ -15,7 +15,7 @@ import com.swak.common.exception.BaseRuntimeException;
 import com.swak.reactivex.handler.WebHandler;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
-import com.swak.reactivex.web.method.HandlerResult;
+import com.swak.reactivex.web.result.HandlerResult;
 
 import io.reactivex.Observable;
 

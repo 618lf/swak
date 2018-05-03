@@ -4,8 +4,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
@@ -13,11 +11,17 @@ import org.springframework.lang.Nullable;
 
 import com.swak.reactivex.handler.HttpWebHandlerAdapter;
 import com.swak.reactivex.web.DispatcherHandler;
+import com.swak.reactivex.web.HandlerResultHandler;
+import com.swak.reactivex.web.converter.DateFormatterConverter;
+import com.swak.reactivex.web.converter.Jaxb2RootElementHttpMessageConverter;
+import com.swak.reactivex.web.converter.JsonHttpMessageConverter;
+import com.swak.reactivex.web.converter.StringEscapeFormatterConverter;
+import com.swak.reactivex.web.converter.StringHttpMessageConverter;
 import com.swak.reactivex.web.function.HandlerFunctionAdapter;
 import com.swak.reactivex.web.function.RouterFunctionMapping;
-import com.swak.reactivex.web.method.RequestBodyHandlerResult;
 import com.swak.reactivex.web.method.RequestMappingHandlerAdapter;
 import com.swak.reactivex.web.method.RequestMappingHandlerMapping;
+import com.swak.reactivex.web.result.RequestBodyHandlerResult;
 
 public class WebConfigurationSupport implements ApplicationContextAware {
 
@@ -78,15 +82,28 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 	}
 	
 	@Bean
-	public RequestBodyHandlerResult requestMappingHandlerResult() {
-		RequestBodyHandlerResult result = new RequestBodyHandlerResult();
+	public HandlerResultHandler requestMappingHandlerResult() {
+		HandlerResultHandler result = new RequestBodyHandlerResult();
+		addMessageConverters(result);
 		return result;
 	}
 	
 	/**
-	 * Override to add custom {@link Converter}s and {@link Formatter}s.
+	 * 参数
+	 * @param registry
 	 */
 	protected void addFormatters(FormatterRegistry registry) {
-		
+		registry.addConverter(new DateFormatterConverter());
+		registry.addConverter(new StringEscapeFormatterConverter());
+	}
+	
+	/**
+	 * 返回值
+	 * @param result
+	 */
+	protected void addMessageConverters(HandlerResultHandler result) {
+		result.addConverter(new StringHttpMessageConverter());
+		result.addConverter(new Jaxb2RootElementHttpMessageConverter());
+		result.addConverter(new JsonHttpMessageConverter());
 	}
 }

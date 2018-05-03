@@ -3,7 +3,7 @@ package com.swak.reactivex.web.converter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.StringUtils;
 
-public class StringEscapeConverter implements Converter<String, String>{
+public class StringEscapeFormatterConverter implements Converter<String, String>{
 	
 	/**
 	 * 格式化(不需要这么严格，直接去掉脚本就行了)

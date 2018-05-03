@@ -3,8 +3,6 @@ package com.swak.reactivex.web.function;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.web.Handler;
 
-import io.reactivex.Observable;
-
 public interface HandlerFunction extends Handler {
 
 	/**
@@ -12,5 +10,5 @@ public interface HandlerFunction extends Handler {
 	 * @param request the request to handle
 	 * @return the response
 	 */
-	Observable<Object> handle(HttpServerRequest request);
+	Object handle(HttpServerRequest request);
 }

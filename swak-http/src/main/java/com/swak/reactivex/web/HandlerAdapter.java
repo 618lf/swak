@@ -2,7 +2,7 @@ package com.swak.reactivex.web;
 
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
-import com.swak.reactivex.web.method.HandlerResult;
+import com.swak.reactivex.web.result.HandlerResult;
 
 /**
  * Handler 的处理器

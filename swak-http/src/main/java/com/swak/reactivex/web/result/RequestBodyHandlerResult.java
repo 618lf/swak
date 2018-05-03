@@ -1,20 +1,12 @@
-package com.swak.reactivex.web.method;
+package com.swak.reactivex.web.result;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-
+import com.swak.common.utils.Lists;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 import com.swak.reactivex.web.HandlerResultHandler;
-import com.swak.reactivex.web.method.converter.HttpMessageConverter;
-import com.swak.reactivex.web.method.converter.Jaxb2RootElementHttpMessageConverter;
-import com.swak.reactivex.web.method.converter.JsonHttpMessageConverter;
-import com.swak.reactivex.web.method.converter.StringHttpMessageConverter;
-import com.swak.reactivex.web.method.resolver.RequestResponseBodyMethodReturnValueResolver;
+import com.swak.reactivex.web.converter.HttpMessageConverter;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -24,23 +16,20 @@ import io.reactivex.functions.Function;
  * 结果处理
  * @author lifeng
  */
-public class RequestBodyHandlerResult implements HandlerResultHandler, ApplicationContextAware{
+public class RequestBodyHandlerResult implements HandlerResultHandler{
 
-	private HandlerMethodReturnValueResolver returnValueResolver;
+	private HandlerReturnValueResolver returnValueResolver;
+	private List<HttpMessageConverter<?>> converters;
 	
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.initValueResolvers();
+	public RequestBodyHandlerResult() {
+		converters = Lists.newArrayList();
+		returnValueResolver = new RequestResponseBodyReturnValueResolver(converters);
 	}
 	
-	public void initValueResolvers() {
-		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
-		converters.add(new StringHttpMessageConverter());
-		converters.add(new Jaxb2RootElementHttpMessageConverter());
-		converters.add(new JsonHttpMessageConverter());
-	    this.returnValueResolver = new RequestResponseBodyMethodReturnValueResolver(converters);
+	public void addConverter(HttpMessageConverter<?> messageConverter) {
+		converters.add(messageConverter);
 	}
-	
+
 	/**
 	 * 这个地方的逻辑是把HandlerResult转换到执行链中
 	 */

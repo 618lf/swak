@@ -1,7 +1,8 @@
-package com.swak.reactivex.web.method;
+package com.swak.reactivex.web.result;
 
 import com.swak.reactivex.web.Handler;
 import com.swak.reactivex.web.function.HandlerFunction;
+import com.swak.reactivex.web.method.HandlerMethod;
 
 /**
  * 处理结果

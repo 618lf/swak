@@ -1,22 +1,21 @@
-package com.swak.reactivex.web.method.resolver;
+package com.swak.reactivex.web.result;
 
 import java.util.List;
 
 import com.swak.common.exception.BaseRuntimeException;
 import com.swak.reactivex.server.HttpServerResponse;
-import com.swak.reactivex.web.method.HandlerMethodReturnValueResolver;
-import com.swak.reactivex.web.method.converter.HttpMessageConverter;
+import com.swak.reactivex.web.converter.HttpMessageConverter;
 
 /**
  * 数据返回支持的类型string、 xml、 json
  * 对应的处理方式见 messageConverters
  * @author lifeng
  */
-public class RequestResponseBodyMethodReturnValueResolver implements HandlerMethodReturnValueResolver{
+public class RequestResponseBodyReturnValueResolver implements HandlerReturnValueResolver{
 
 	protected final List<HttpMessageConverter<?>> messageConverters;
 	
-	public RequestResponseBodyMethodReturnValueResolver(List<HttpMessageConverter<?>> messageConverters) {
+	public RequestResponseBodyReturnValueResolver(List<HttpMessageConverter<?>> messageConverters) {
 		this.messageConverters = messageConverters;
 	}
 	

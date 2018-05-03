@@ -1,5 +1,7 @@
 package com.swak.reactivex.web.function;
 
+import org.springframework.util.Assert;
+
 import com.swak.reactivex.server.HttpServerRequest;
 
 /**
@@ -10,22 +12,42 @@ import com.swak.reactivex.server.HttpServerRequest;
 public abstract class RouterFunctions {
 
 	/**
+	 * Route to the given handler function if the given request predicate applies.
+	 * <p>For instance, the following example routes GET requests for "/user" to the
+	 * {@code listUsers} method in {@code userController}:
+	 * <pre class="code">
+	 * RouterFunction&lt;ServerResponse&gt; route =
+	 *     RouterFunctions.route(RequestPredicates.GET("/user"), userController::listUsers);
+	 * </pre>
+	 * @param predicate the predicate to test
+	 * @param handlerFunction the handler function to route to if the predicate applies
+	 * @param <T> the type of response returned by the handler function
+	 * @return a router function that routes to {@code handlerFunction} if
+	 * {@code predicate} evaluates to {@code true}
+	 * @see RequestPredicates
+	 */
+	public static RouterFunction route(RequestPredicate predicate,
+			HandlerFunction handlerFunction) {
+		Assert.notNull(predicate, "'predicate' must not be null");
+		Assert.notNull(handlerFunction, "'handlerFunction' must not be null");
+		return new DefaultRouterFunction(predicate, handlerFunction);
+	}
+	
+	/**
 	 * 实现一些公用的方法
 	 * 
 	 * @author lifeng
 	 */
-	public static abstract class AbstractRouterFunction implements RouterFunction {
-
-	}
+	private static abstract class AbstractRouterFunction implements RouterFunction {}
 	
 	/**
 	 * 
 	 * @author lifeng
 	 */
-	public static class ComposedRouterFunction extends AbstractRouterFunction {
+	static class ComposedRouterFunction extends AbstractRouterFunction {
 		private final RouterFunction first;
 		private final RouterFunction second;
-		public ComposedRouterFunction(RouterFunction first, RouterFunction second) {
+		ComposedRouterFunction(RouterFunction first, RouterFunction second) {
 			this.first = first;
 			this.second = second;
 		}
@@ -42,12 +64,12 @@ public abstract class RouterFunctions {
 	 * 
 	 * @author lifeng
 	 */
-	public static class DefaultRouterFunction extends AbstractRouterFunction {
+	static class DefaultRouterFunction extends AbstractRouterFunction {
 
 		private final RequestPredicate predicate;
 		private final HandlerFunction handlerFunction;
 
-		public DefaultRouterFunction(RequestPredicate predicate, HandlerFunction handlerFunction) {
+		DefaultRouterFunction(RequestPredicate predicate, HandlerFunction handlerFunction) {
 			this.predicate = predicate;
 			this.handlerFunction = handlerFunction;
 		}
