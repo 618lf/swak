@@ -34,6 +34,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.swak.common.utils.Maps;
 import com.swak.reactivex.Reportable;
 import com.swak.reactivex.server.HttpServerRequest;
+import com.swak.reactivex.web.HandlerMapping;
 import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.PostMapping;
 import com.swak.reactivex.web.annotation.RequestMapping;
@@ -46,7 +47,7 @@ import com.swak.reactivex.web.utils.UrlPathHelper;
  * 请求处理以及
  * 
  * @author lifeng
- */
+ */	
 public class RequestMappingHandlerMapping implements HandlerMapping, ApplicationContextAware, Reportable {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -161,7 +162,7 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 		
 		RequestMethod lookupMethod = null;
 		try {
-			lookupMethod = RequestMethod.valueOf(request.getRequestMethod().toUpperCase());
+			lookupMethod = RequestMethod.valueOf(request.getRequestMethod().name().toUpperCase());
 		}catch(Exception e) {
 			throw new RuntimeException("do not support method");
 		}

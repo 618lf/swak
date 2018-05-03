@@ -1,4 +1,4 @@
-package com.swak.reactivex.web.method;
+package com.swak.reactivex.web;
 
 import java.io.Closeable;
 
@@ -16,5 +16,5 @@ public interface HandlerMapping extends Closeable {
 	 * @return
 	 * @throws Exception
 	 */
-	HandlerMethod getHandler(HttpServerRequest request);
+	Handler getHandler(HttpServerRequest request);
 }

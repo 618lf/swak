@@ -6,12 +6,14 @@ import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.ClassUtils;
 
+import com.swak.reactivex.web.Handler;
+
 /**
  * 也是一个执行链，没有拦截器；
  * 可以将 handler 定义默认的前置执行器
  * @author lifeng
  */
-public class HandlerMethod {
+public class HandlerMethod implements Handler {
 
 	private final Object bean;
 	private final Method method;

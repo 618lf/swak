@@ -15,11 +15,7 @@ import com.swak.common.exception.BaseRuntimeException;
 import com.swak.reactivex.handler.WebHandler;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
-import com.swak.reactivex.web.method.HandlerAdapter;
-import com.swak.reactivex.web.method.HandlerMapping;
-import com.swak.reactivex.web.method.HandlerMethod;
 import com.swak.reactivex.web.method.HandlerResult;
-import com.swak.reactivex.web.method.HandlerResultHandler;
 
 import io.reactivex.Observable;
 
@@ -100,9 +96,9 @@ public class DispatcherHandler implements WebHandler, ApplicationContextAware {
 			   .flatMap(result -> this.handleResult(request, response, result));
 	}
 
-	public Observable<HandlerMethod> handleMappering(HttpServerRequest request, HttpServerResponse response) {
+	public Observable<Handler> handleMappering(HttpServerRequest request, HttpServerResponse response) {
 		for (HandlerMapping mapping : mappings) {
-			HandlerMethod handler = mapping.getHandler(request);
+			Handler handler = mapping.getHandler(request);
 			if (handler != null) {
 				return Observable.just(handler);
 			}
@@ -111,7 +107,7 @@ public class DispatcherHandler implements WebHandler, ApplicationContextAware {
 	}
 
 	public HandlerResult invokeHandler(HttpServerRequest request, HttpServerResponse response,
-			HandlerMethod handler) {
+			Handler handler) {
 		for (HandlerAdapter handlerAdapter : this.adapters) {
 			if (handlerAdapter.supports(handler)) {
 				return handlerAdapter.handle(request, response, handler);

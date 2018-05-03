@@ -21,6 +21,7 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
@@ -40,7 +41,7 @@ public abstract class HttpServerRequest implements Closeable {
 	private String remoteAddress;
 	private String uri;
 	private String url;
-	private String method;
+	private HttpMethod method;
 	private boolean keepAlive;
 
 	private Map<String, String> headers = null;
@@ -63,7 +64,7 @@ public abstract class HttpServerRequest implements Closeable {
 		this.url = fullHttpRequest.uri();
 		int pathEndPos = this.url.indexOf('?');
 		this.uri = pathEndPos < 0 ? this.url : this.url.substring(0, pathEndPos);
-		this.method = fullHttpRequest.method().name();
+		this.method = fullHttpRequest.method();
 	}
 	
 	/**
@@ -101,7 +102,7 @@ public abstract class HttpServerRequest implements Closeable {
 	 * 
 	 * @return
 	 */
-	public String getRequestMethod() {
+	public HttpMethod getRequestMethod() {
 		return method;
 	}
 

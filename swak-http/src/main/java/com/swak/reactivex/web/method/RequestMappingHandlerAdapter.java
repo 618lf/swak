@@ -11,6 +11,8 @@ import org.springframework.core.convert.ConversionService;
 
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
+import com.swak.reactivex.web.Handler;
+import com.swak.reactivex.web.HandlerAdapter;
 import com.swak.reactivex.web.method.resolver.HandlerMethodArgumentResolverComposite;
 import com.swak.reactivex.web.method.resolver.HttpCookieValueMethodArgumentResolver;
 import com.swak.reactivex.web.method.resolver.PathVariableMethodArgumentResolver;
@@ -50,10 +52,11 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 	}
 
 	@Override
-	public HandlerResult handle(HttpServerRequest request, HttpServerResponse response, HandlerMethod handler){
-		Object[] args = getMethodArgumentValues(request, handler);
-		Object returnValue = handler.doInvoke(args);
-		return new HandlerResult(handler, returnValue);
+	public HandlerResult handle(HttpServerRequest request, HttpServerResponse response, Handler handler){
+		HandlerMethod _handler = (HandlerMethod)handler;
+		Object[] args = getMethodArgumentValues(request, _handler);
+		Object returnValue = _handler.doInvoke(args);
+		return new HandlerResult(_handler, returnValue);
 	}
 	
 	private Object[] getMethodArgumentValues(HttpServerRequest request, HandlerMethod handler){
@@ -71,7 +74,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 	}
 
 	@Override
-	public boolean supports(HandlerMethod handlerMethod) {
-		return true;
+	public boolean supports(Handler handler) {
+		return handler instanceof HandlerMethod;
 	}
 }

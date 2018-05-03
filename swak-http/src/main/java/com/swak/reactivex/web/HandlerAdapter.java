@@ -1,7 +1,8 @@
-package com.swak.reactivex.web.method;
+package com.swak.reactivex.web;
 
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
+import com.swak.reactivex.web.method.HandlerResult;
 
 /**
  * Handler 的处理器
@@ -15,7 +16,7 @@ public interface HandlerAdapter {
 	 * @param handlerMethod
 	 * @return
 	 */
-	boolean supports(HandlerMethod handlerMethod);
+	boolean supports(Handler handler);
 	
 	/**
 	 * 处理handler
@@ -26,5 +27,5 @@ public interface HandlerAdapter {
 	 * @return
 	 * @throws Exception
 	 */
-	HandlerResult handle(HttpServerRequest request, HttpServerResponse response, HandlerMethod handlerMethod);
+	HandlerResult handle(HttpServerRequest request, HttpServerResponse response, Handler handler);
 }
