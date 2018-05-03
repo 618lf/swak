@@ -16,9 +16,9 @@ import com.swak.reactivex.web.DispatcherHandler;
 import com.swak.reactivex.web.HandlerAdapter;
 import com.swak.reactivex.web.HandlerMapping;
 import com.swak.reactivex.web.HandlerResultHandler;
-import com.swak.reactivex.web.method.RequestBodyHandlerResult;
 import com.swak.reactivex.web.method.RequestMappingHandlerAdapter;
 import com.swak.reactivex.web.method.RequestMappingHandlerMapping;
+import com.swak.reactivex.web.result.RequestBodyHandlerResult;
 
 /**
  * 测试入口
@@ -54,8 +54,6 @@ public class HttpServerHandler {
 		RequestBodyHandlerResult result = new RequestBodyHandlerResult();
 		List<HandlerResultHandler> results  = Lists.newArrayList();
 		results.add(result);
-		
-		result.initValueResolvers();
 		return results;
 	}
 	

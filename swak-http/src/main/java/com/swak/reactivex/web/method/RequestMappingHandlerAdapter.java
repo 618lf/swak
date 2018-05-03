@@ -57,7 +57,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 		HandlerMethod _handler = (HandlerMethod)handler;
 		Object[] args = getMethodArgumentValues(request, _handler);
 		Object returnValue = _handler.doInvoke(args);
-		return new HandlerResult(_handler, returnValue);
+		return new HandlerResult(returnValue);
 	}
 	
 	private Object[] getMethodArgumentValues(HttpServerRequest request, HandlerMethod handler){

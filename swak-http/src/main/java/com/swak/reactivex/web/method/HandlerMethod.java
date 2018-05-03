@@ -19,7 +19,6 @@ public class HandlerMethod implements Handler {
 	private final Method method;
 	private final Class<?> beanType;
 	private final MethodParameter[] parameters;
-	private final MethodParameter returnValue;
 
 	/**
 	 * Create an instance from a bean instance and a method.
@@ -29,7 +28,6 @@ public class HandlerMethod implements Handler {
 		this.beanType = ClassUtils.getUserClass(bean);
 		this.method = method;
 		this.parameters = initMethodParameters();
-		this.returnValue = initReturnType();
 	}
 
 	private MethodParameter[] initMethodParameters() {
@@ -45,14 +43,6 @@ public class HandlerMethod implements Handler {
 		return result;
 	}
 	
-	/**
-	 * 某些情况会返回范型类型
-	 * @return
-	 */
-	private MethodParameter initReturnType() {
-		return new ReturnValueMethodParameter(this.method).nestedIfOptional();
-	}
-
 	public Object getBean() {
 		return bean;
 	}
@@ -68,11 +58,7 @@ public class HandlerMethod implements Handler {
 	public MethodParameter[] getParameters() {
 		return parameters;
 	}
-
-	public MethodParameter getReturnValue() {
-		return returnValue;
-	}
-
+	
 	/**
 	 * 执行
 	 * 

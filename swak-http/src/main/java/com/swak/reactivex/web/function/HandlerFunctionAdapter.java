@@ -21,6 +21,6 @@ public class HandlerFunctionAdapter implements HandlerAdapter{
 	public HandlerResult handle(HttpServerRequest request, HttpServerResponse response, Handler handler) {
 		HandlerFunction _handler = (HandlerFunction) handler;
 		Object returnValue = _handler.handle(request);
-		return new HandlerResult(_handler, returnValue);
+		return new HandlerResult(returnValue);
 	}
 }

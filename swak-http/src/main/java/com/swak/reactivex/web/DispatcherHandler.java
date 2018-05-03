@@ -32,8 +32,7 @@ public class DispatcherHandler implements WebHandler, ApplicationContextAware {
 	private List<HandlerAdapter> adapters;
 	private List<HandlerResultHandler> resultHandlers;
 
-	public DispatcherHandler() {
-	}
+	public DispatcherHandler() {}
 
 	public DispatcherHandler(ApplicationContext applicationContext) {
 		this.initStrategies(applicationContext);

@@ -5,10 +5,12 @@ import com.swak.reactivex.web.Handler;
 
 public interface HandlerFunction extends Handler {
 
+	String HANDLE_NAME = "handle";
+	
 	/**
-	 * Handle the given request.
-	 * @param request the request to handle
-	 * @return the response
+	 * 获得返回值
+	 * @param request
+	 * @return
 	 */
 	Object handle(HttpServerRequest request);
 }
