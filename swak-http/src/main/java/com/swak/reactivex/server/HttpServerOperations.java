@@ -43,11 +43,6 @@ public class HttpServerOperations extends HttpServerResponse implements ServerOp
 		return channel;
 	}
 
-	@Override
-	protected FullHttpRequest request() {
-		return request;
-	}
-
 	/**
 	 * 获得响应
 	 * @return
@@ -72,7 +67,7 @@ public class HttpServerOperations extends HttpServerResponse implements ServerOp
 		try {
 			this.initRequest(channel, request);
 			this.handler.apply(this).subscribe(this);
-		} catch(Exception e) {
+		} finally {
 			ReferenceCountUtil.release(request);
 		}
 	}

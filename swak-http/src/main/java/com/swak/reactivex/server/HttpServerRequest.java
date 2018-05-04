@@ -31,7 +31,6 @@ import io.netty.handler.codec.http.multipart.HttpDataFactory;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.util.CharsetUtil;
-import io.netty.util.ReferenceCountUtil;
 
 public abstract class HttpServerRequest implements Closeable {
 
@@ -57,14 +56,19 @@ public abstract class HttpServerRequest implements Closeable {
 	 * @param channel
 	 * @param fullHttpRequest
 	 */
-	protected void initRequest(Channel channel, FullHttpRequest fullHttpRequest) {
-		this.keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
+	protected void initRequest(Channel channel, FullHttpRequest request) {
+		this.keepAlive = HttpUtil.isKeepAlive(request);
 		String remoteAddress = channel.remoteAddress().toString();
 		this.remoteAddress = remoteAddress;
-		this.url = fullHttpRequest.uri();
+		this.url = request.uri();
 		int pathEndPos = this.url.indexOf('?');
 		this.uri = pathEndPos < 0 ? this.url : this.url.substring(0, pathEndPos);
-		this.method = fullHttpRequest.method();
+		this.method = request.method();
+		
+		// 获取一些数据
+		this.parseParameter(request);
+		this.parseHeaders(request);
+		this.parseBody(request);
 	}
 	
 	/**
@@ -72,12 +76,6 @@ public abstract class HttpServerRequest implements Closeable {
 	 * @return
 	 */
 	protected abstract Channel channel();
-	
-	/**
-	 * 获得通道
-	 * @return
-	 */
-	protected abstract FullHttpRequest request();
 	
 	/**
 	 * 获取请求的地址
@@ -131,9 +129,6 @@ public abstract class HttpServerRequest implements Closeable {
 	 * @return
 	 */
 	public List<String> getParameterValues(String name) {
-		if (parameters == null) {
-			this.parseParameter();
-		}
 		return parameters.get(name);
 	}
 
@@ -143,24 +138,21 @@ public abstract class HttpServerRequest implements Closeable {
 	 * @return
 	 */
 	public Map<String, List<String>> getParameterMap() {
-		if (parameters == null) {
-			this.parseParameter();
-		}
 		return parameters;
 	}
 
 	/**
 	 * 解析出请求参数
 	 */
-	private void parseParameter() {
-		Map<String, List<String>> parameters = new QueryStringDecoder(request().uri(), CharsetUtil.UTF_8).parameters();
+	private void parseParameter(FullHttpRequest request) {
+		Map<String, List<String>> parameters = new QueryStringDecoder(request.uri(), CharsetUtil.UTF_8).parameters();
 		if (null != parameters) {
 			this.parameters = new HashMap<>();
 			this.parameters.putAll(parameters);
 		}
 
-		if (!RequestMethod.GET.name().equals(request().method().name())) {
-			HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, request());
+		if (!RequestMethod.GET.name().equals(request.method().name())) {
+			HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, request);
 			decoder.getBodyHttpDatas().forEach(this::parseData);
 		}
 	}
@@ -218,15 +210,6 @@ public abstract class HttpServerRequest implements Closeable {
 	 * @return
 	 */
 	public Iterator<String> getRequestHeaderNames() {
-		if (headers == null) {
-			HttpHeaders httpHeaders = request().headers();
-			if (httpHeaders.size() > 0) {
-				this.headers = new HashMap<>(httpHeaders.size());
-				httpHeaders.forEach((header) -> headers.put(header.getKey(), header.getValue()));
-			} else {
-				this.headers = new HashMap<>();
-			}
-		}
 		return headers.keySet().iterator();
 	}
 
@@ -237,16 +220,21 @@ public abstract class HttpServerRequest implements Closeable {
 	 * @return
 	 */
 	public String getRequestHeader(String name) {
-		if (headers == null) {
-			HttpHeaders httpHeaders = request().headers();
-			if (httpHeaders.size() > 0) {
-				this.headers = new HashMap<>(httpHeaders.size());
-				httpHeaders.forEach((header) -> headers.put(header.getKey(), header.getValue()));
-			} else {
-				this.headers = new HashMap<>();
-			}
-		}
 		return headers.get(name);
+	}
+	
+	/**
+	 * 解析 headers
+	 * @param request
+	 */
+	private void parseHeaders(FullHttpRequest request) {
+		HttpHeaders httpHeaders = request.headers();
+		if (httpHeaders.size() > 0) {
+			this.headers = new HashMap<>(httpHeaders.size());
+			httpHeaders.forEach((header) -> headers.put(header.getKey(), header.getValue()));
+		} else {
+			this.headers = new HashMap<>();
+		}
 	}
 
 	/**
@@ -288,10 +276,15 @@ public abstract class HttpServerRequest implements Closeable {
 	 * @return
 	 */
 	public ByteBuf body() {
-		if (body == null) {
-			body = request().content().copy();
-		}
 		return this.body;
+	}
+	
+	/**
+	 * 解析 body 数据
+	 * @param request
+	 */
+	private void parseBody(FullHttpRequest request) {
+		body = request.content().copy();
 	}
 
 	/**
@@ -351,8 +344,8 @@ public abstract class HttpServerRequest implements Closeable {
 
 	@Override
 	public void close() throws IOException {
-		ReferenceCountUtil.release(request());
 		if (this.body != null) {
+			this.body.release();
 			this.body.clear();
 			this.body = null;
 		}
