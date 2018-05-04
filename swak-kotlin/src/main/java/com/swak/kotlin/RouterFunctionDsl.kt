@@ -9,8 +9,12 @@ import io.netty.handler.codec.http.HttpMethod
  *  @Configuration
  *  open class ApplicationRoutes {
  *
+ *
  *   @Bean
  *   fun ShopRouter() = router {
+ *        GET("/") {
+ *            Observable.fromCallable { 123 }
+ *        }
  *        GET("/") {
  *            Observable.fromCallable { 123 }
  *        }

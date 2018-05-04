@@ -290,7 +290,7 @@ public abstract class HttpServerResponse extends HttpServerRequest {
 	 * 输出
 	 * 只能执行一次
 	 */
-	public void out() {
+	protected void out() {
 		
 		// 只能执行一次
 		if (this.closed) {
@@ -319,7 +319,7 @@ public abstract class HttpServerResponse extends HttpServerRequest {
 	 * @param code
 	 * @throws UnsupportedEncodingException
 	 */
-	public void out(String msg) {
+	protected void out(String msg) {
 		this.buffer(msg);
 		this.out();
 	}
