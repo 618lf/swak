@@ -1,4 +1,4 @@
-package com.swak.reactivex.web.utils;
+package com.swak.reactivex.web.method.pattern;
 
 import java.util.Comparator;
 

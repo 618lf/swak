@@ -1,4 +1,4 @@
-package com.swak.reactivex.web.utils;
+package com.swak.reactivex.web.method.pattern;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -97,7 +97,7 @@ public class UrlPathHelper {
 	 * @return the request URI
 	 */
 	public String getRequestUri(HttpServerRequest request) {
-		return request.getRequestURI();
+		return request.getRequestURL();
 	}
 	
 	public Map<String, String> decodePathVariables(HttpServerRequest request, Map<String, String> vars) {

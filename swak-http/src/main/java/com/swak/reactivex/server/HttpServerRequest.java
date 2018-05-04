@@ -60,9 +60,9 @@ public abstract class HttpServerRequest implements Closeable {
 		this.keepAlive = HttpUtil.isKeepAlive(request);
 		String remoteAddress = channel.remoteAddress().toString();
 		this.remoteAddress = remoteAddress;
-		this.url = request.uri();
+		this.uri = request.uri();
 		int pathEndPos = this.url.indexOf('?');
-		this.uri = pathEndPos < 0 ? this.url : this.url.substring(0, pathEndPos);
+		this.url = pathEndPos < 0 ? this.uri : this.uri.substring(0, pathEndPos);
 		this.method = request.method();
 		
 		// 获取一些数据
@@ -79,7 +79,7 @@ public abstract class HttpServerRequest implements Closeable {
 	
 	/**
 	 * 获取请求的地址
-	 * 
+	 * 包含 请求的参数
 	 * @return
 	 */
 	public String getRequestURI() {
@@ -88,7 +88,7 @@ public abstract class HttpServerRequest implements Closeable {
 
 	/**
 	 * 获取请求的地址
-	 * 
+	 * 不包含请求的参数
 	 * @return
 	 */
 	public String getRequestURL() {

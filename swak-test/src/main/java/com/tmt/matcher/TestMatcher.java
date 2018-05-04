@@ -9,7 +9,7 @@ import com.swak.common.utils.Lists;
 import com.swak.common.utils.Sets;
 import com.swak.reactivex.web.annotation.RequestMethod;
 import com.swak.reactivex.web.method.Match;
-import com.swak.reactivex.web.utils.PathMatcherHelper;
+import com.swak.reactivex.web.method.pattern.PathMatcherHelper;
 
 public class TestMatcher {
 

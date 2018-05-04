@@ -12,7 +12,6 @@ public class FilteringWebHandler extends WebHandlerDecorator{
 
 	private final WebFilter[] filters;
 	
-	
 	/**
 	 * Constructor.
 	 * @param filters the chain of filters
@@ -29,6 +28,9 @@ public class FilteringWebHandler extends WebHandlerDecorator{
 		return Arrays.asList(this.filters);
 	}
 	
+	/**
+	 * filter handler
+	 */
 	@Override
 	public Observable<Void> handle(HttpServerRequest request, HttpServerResponse response) {
 		return this.filters.length != 0 ?
