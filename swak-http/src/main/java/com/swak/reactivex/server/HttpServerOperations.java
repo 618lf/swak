@@ -67,7 +67,9 @@ public class HttpServerOperations extends HttpServerResponse implements ServerOp
 		try {
 			this.initRequest(channel, request);
 			this.handler.apply(this).subscribe(this);
-		} finally {
+		} catch (Exception e) {
+			this.out(ErrorCode.OPERATE_FAILURE.toJson());
+		}finally {
 			ReferenceCountUtil.release(request);
 		}
 	}

@@ -368,6 +368,11 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlinx</groupId>
+				<artifactId>kotlinx-coroutines-rx2</artifactId>
+				<version>${kotlin.coroutines.version}</version>
+			</dependency>
 			<!-- JDBC DRIVER BEGIN -->
 			<dependency>
 				<groupId>${jdbc.driver.groupId}</groupId>

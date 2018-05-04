@@ -61,7 +61,7 @@ public abstract class HttpServerRequest implements Closeable {
 		String remoteAddress = channel.remoteAddress().toString();
 		this.remoteAddress = remoteAddress;
 		this.uri = request.uri();
-		int pathEndPos = this.url.indexOf('?');
+		int pathEndPos = this.uri.indexOf('?');
 		this.url = pathEndPos < 0 ? this.uri : this.uri.substring(0, pathEndPos);
 		this.method = request.method();
 		
