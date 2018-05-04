@@ -1,6 +1,10 @@
 package com.swak.config;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +13,12 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.lang.Nullable;
 
+import com.swak.reactivex.handler.ExceptionHandlingWebHandler;
+import com.swak.reactivex.handler.FilteringWebHandler;
 import com.swak.reactivex.handler.HttpWebHandlerAdapter;
+import com.swak.reactivex.handler.WebExceptionHandler;
+import com.swak.reactivex.handler.WebFilter;
+import com.swak.reactivex.handler.WebHandler;
 import com.swak.reactivex.web.DispatcherHandler;
 import com.swak.reactivex.web.HandlerResultHandler;
 import com.swak.reactivex.web.converter.DateFormatterConverter;
@@ -43,9 +52,14 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		return new DispatcherHandler();
 	}
 	
+	// ---------- httpHandler ---------
 	@Bean
 	public HttpWebHandlerAdapter httpHandler(DispatcherHandler webHandler) {
-		return new HttpWebHandlerAdapter(webHandler);
+		SortedBeanContainer container = new SortedBeanContainer();
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(container);
+		WebHandler delegate = new FilteringWebHandler(webHandler, container.getFilters());
+		delegate = new ExceptionHandlingWebHandler(delegate, container.getExceptionHandlers());
+		return new HttpWebHandlerAdapter(delegate);
 	}
 	
 	// ---------- requestMapping ---------
@@ -105,5 +119,31 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		result.addConverter(new StringHttpMessageConverter());
 		result.addConverter(new Jaxb2RootElementHttpMessageConverter());
 		result.addConverter(new JsonHttpMessageConverter());
+	}
+	
+	// Autowire lists for @Bean + @Order
+	private static class SortedBeanContainer {
+		
+		private List<WebFilter> filters = Collections.emptyList();
+
+		private List<WebExceptionHandler> exceptionHandlers = Collections.emptyList();
+
+		@Autowired(required = false)
+		public void setFilters(List<WebFilter> filters) {
+			this.filters = filters;
+		}
+
+		public List<WebFilter> getFilters() {
+			return this.filters;
+		}
+
+		@Autowired(required = false)
+		public void setExceptionHandlers(List<WebExceptionHandler> exceptionHandlers) {
+			this.exceptionHandlers = exceptionHandlers;
+		}
+
+		public List<WebExceptionHandler> getExceptionHandlers() {
+			return this.exceptionHandlers;
+		}
 	}
 }

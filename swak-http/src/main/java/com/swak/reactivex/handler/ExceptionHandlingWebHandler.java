@@ -51,6 +51,5 @@ public class ExceptionHandlingWebHandler extends WebHandlerDecorator{
 		}
 
 		return completion;
-		
 	}
 }
