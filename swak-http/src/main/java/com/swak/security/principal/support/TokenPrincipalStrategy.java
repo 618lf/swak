@@ -1,9 +1,5 @@
 package com.swak.security.principal.support;
 
-import java.util.UUID;
-
-import com.swak.common.cache.Cache;
-import com.swak.common.cache.redis.RedisCache;
 import com.swak.common.utils.Digests;
 import com.swak.common.utils.StringUtils;
 import com.swak.reactivex.server.HttpServerRequest;
@@ -21,11 +17,7 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 
 	private String tokenName = "X-Token";
 	private Integer timeOut = 24 * 60 * 60 * 7; // 一个星期
-	private Cache<String> _cahce;
-	
-	public TokenPrincipalStrategy() {
-		_cahce = new RedisCache<String>("tokens", timeOut);
-	}
+	private String key = "SIMPLE-TOKEN-SERVER";
 	
 	public Integer getTimeOut() {
 		return timeOut;
@@ -51,13 +43,11 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 			HttpServerResponse response) {
 		
 		// 也可以存储到 cookie 中
-		String key = UUID.randomUUID().toString();
 		String token = TokenUtils.getToken(subject.getPrincipal(), key);
 		response.header(this.getTokenName(), token);
 		
 		// 生成 SessionId
 		String sessionId = this.getKey(token);
-		_cahce.putString(sessionId, key);
 		subject.setSessionId(sessionId);
 	}
 
@@ -68,7 +58,6 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	public void invalidatePrincipal(Subject subject,
 			HttpServerRequest request, HttpServerResponse response) {
 		response.header(this.getTokenName(), "");
-		_cahce.delete(subject.getSessionId());
 	}
 
 	/**
@@ -86,13 +75,7 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 		
 		// 获取加密的key 根据token 获取
 		String sessionId = this.getKey(token);
-		String key = _cahce.getString(sessionId);
 		subject.setSessionId(sessionId);
-		
-		if (!StringUtils.hasText(key)) {
-			this.invalidatePrincipal(subject, request, response);
-			return;
-		}
 		
 		// 获取身份
 		Principal principal = TokenUtils.getSubject(token, key);
@@ -105,9 +88,7 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	 * 将此sessionId 无效
 	 */
 	@Override
-	public void invalidatePrincipal(String sessionId) {
-		_cahce.delete(sessionId);
-	}
+	public void invalidatePrincipal(String sessionId) {}
 
 	/**
 	 * 获得缓存的key值
