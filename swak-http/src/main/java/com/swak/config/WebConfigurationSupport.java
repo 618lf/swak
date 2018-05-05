@@ -32,6 +32,10 @@ import com.swak.reactivex.web.method.RequestMappingHandlerAdapter;
 import com.swak.reactivex.web.method.RequestMappingHandlerMapping;
 import com.swak.reactivex.web.result.RequestBodyHandlerResult;
 
+/**
+ * web 相关的服务配置
+ * @author lifeng
+ */
 public class WebConfigurationSupport implements ApplicationContextAware {
 
 	@Nullable

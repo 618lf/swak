@@ -4,7 +4,7 @@ import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebFilterChain;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
-import com.swak.security.mgt.FilterChainResolver;
+import com.swak.security.mgt.FilterChainManager;
 import com.swak.security.mgt.SecurityManager;
 import com.swak.security.subject.Subject;
 
@@ -17,8 +17,13 @@ import io.reactivex.Observable;
  */
 public class SecurityFilter implements WebFilter {
 
-	private SecurityManager securityManager;
-	private FilterChainResolver filterChainManager;
+	private final SecurityManager securityManager;
+	private final FilterChainManager filterChainManager;
+
+	public SecurityFilter(SecurityManager securityManager, FilterChainManager filterChainManager) {
+		this.securityManager = securityManager;
+		this.filterChainManager = filterChainManager;
+	}
 
 	/**
 	 * 执行权限过滤 filter
@@ -28,7 +33,7 @@ public class SecurityFilter implements WebFilter {
 
 		// 获取当前的用户
 		Subject subject = securityManager.createSubject(request, response);
-		
+
 		// 存储在 request 中
 		request.setSubject(subject);
 

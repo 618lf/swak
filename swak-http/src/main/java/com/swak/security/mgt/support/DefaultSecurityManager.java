@@ -17,11 +17,19 @@ import com.swak.security.realm.Realm;
 import com.swak.security.subject.DefaultSubject;
 import com.swak.security.subject.Subject;
 
+/**
+ * 默认的安全管理器
+ * @author lifeng
+ */
 public class DefaultSecurityManager implements SecurityManager {
 
-	// 只支持一个域，会提供一个基础的域管理权限信息
-	private Realm realm;
-	private PrincipalStrategy principalStrategy;
+	private final Realm realm;
+	private final PrincipalStrategy principalStrategy;
+	
+	public DefaultSecurityManager(Realm realm, PrincipalStrategy principalStrategy) {
+		this.realm = realm;
+		this.principalStrategy = principalStrategy;
+	}
 
 	@Override
 	public boolean isPermitted(Subject subject, String permission) {

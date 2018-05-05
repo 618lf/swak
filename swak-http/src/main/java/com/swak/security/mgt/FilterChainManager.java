@@ -4,14 +4,14 @@ import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebFilterChain;
 import com.swak.reactivex.server.HttpServerRequest;
 
-public interface FilterChainResolver {
+public interface FilterChainManager {
 
 	/**
 	 * 是否有chain
 	 * @return
 	 */
 	boolean hasChains();
-
+	
 	/**
 	 * 代理当前请求的filterChain
 	 * @param request
