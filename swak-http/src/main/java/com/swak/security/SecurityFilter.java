@@ -6,6 +6,7 @@ import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 import com.swak.security.mgt.FilterChainResolver;
 import com.swak.security.mgt.SecurityManager;
+import com.swak.security.subject.Subject;
 
 import io.reactivex.Observable;
 
@@ -25,10 +26,13 @@ public class SecurityFilter implements WebFilter {
 	@Override
 	public Observable<Void> filter(HttpServerRequest request, HttpServerResponse response, WebFilterChain origChain) {
 
-		// 获取当前的用户，存储在 request 中
-		securityManager.createSubject(request, response);
+		// 获取当前的用户
+		Subject subject = securityManager.createSubject(request, response);
+		
+		// 存储在 request 中
+		request.setSubject(subject);
 
-		// 执行链
+		// 执行filter链
 		return this.getExecutionChain(request, response, origChain).filter(request, response);
 	}
 
