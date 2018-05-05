@@ -67,6 +67,9 @@ public class SecurityConfigurationSupport {
 		if (!(StringUtils.hasText(path) && StringUtils.hasText(filter))) {
 			return this;
 		}
+		if (chains == null) {
+			chains = Maps.newHashMap();
+		}
 		chains.put(path, filter);
 		return this;
 	}
