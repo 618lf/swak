@@ -49,6 +49,7 @@ public abstract class HttpServerRequest implements Closeable {
 	private Map<String, Cookie> cookies;
 	private Map<String, String> pathVariables = null;
 	private InputStream is;
+	private Object subject;
 
 	
 	/**
@@ -69,6 +70,23 @@ public abstract class HttpServerRequest implements Closeable {
 		this.parseParameter(request);
 		this.parseHeaders(request);
 		this.parseBody(request);
+	}
+	
+	/**
+	 * 获得身份
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T getSubject() {
+		return (T)this.subject;
+	}
+	
+	/**
+	 * 设置身份
+	 * @param subject
+	 */
+    public void setSubject(Object subject) {
+		this.subject = subject;
 	}
 	
 	/**
