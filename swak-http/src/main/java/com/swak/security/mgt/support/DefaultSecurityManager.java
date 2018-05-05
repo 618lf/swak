@@ -115,7 +115,7 @@ public class DefaultSecurityManager implements SecurityManager {
 	private Set<String> loadPermissions(Subject subject) {
 		Set<String> permissions = subject.getPermissions();
 		if (permissions == null) {
-			AuthorizationInfo authorization = realm.getCachedAuthorizationInfo(subject.getPrincipal());
+			AuthorizationInfo authorization = realm.doGetAuthorizationInfo(subject.getPrincipal());
 			subject.setPermissions(authorization.getPermissions());
 			subject.setRoles(authorization.getRoles());
 		}
@@ -130,7 +130,7 @@ public class DefaultSecurityManager implements SecurityManager {
 	private Set<String> loadRoles(Subject subject) {
 		Set<String> roles = subject.getRoles();
 		if (roles == null) {
-			AuthorizationInfo authorization = realm.getCachedAuthorizationInfo(subject.getPrincipal());
+			AuthorizationInfo authorization = realm.doGetAuthorizationInfo(subject.getPrincipal());
 			subject.setPermissions(authorization.getPermissions());
 			subject.setRoles(authorization.getRoles());
 		}

@@ -22,26 +22,8 @@ public interface Realm {
 	 * @param principal
 	 * @return
 	 */
-	AuthorizationInfo getCachedAuthorizationInfo(Principal principal);
-	
-	/**
-	 * 获取当前身份的权限信息
-	 * @param principal
-	 * @return
-	 */
 	AuthorizationInfo doGetAuthorizationInfo(Principal principal);
 	
-	/**
-	 * 删除用户的缓存
-	 * @param principal
-	 */
-    void clearCachedAuthorizationInfo(Principal principal);
-    
-    /**
-     * 删除所有的缓存
-     */
-    void clearAllCachedAuthorizationInfo();
-    
     /**
      * 登录成功
      */

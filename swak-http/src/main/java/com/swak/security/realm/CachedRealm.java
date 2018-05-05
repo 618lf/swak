@@ -42,22 +42,28 @@ public abstract class CachedRealm implements Realm {
 	 * 优先获取缓存中的数据
 	 */
 	@Override
-	public AuthorizationInfo getCachedAuthorizationInfo(Principal principal) {
+	public AuthorizationInfo doGetAuthorizationInfo(Principal principal) {
 		String keyName = this.getCachedAuthorizationInfoName(principal);
 		AuthorizationInfo value = cache.getObject(keyName);
 		if (value == null) {
-			value = this.doGetAuthorizationInfo(principal);
+			value = this.getAuthorizationInfo(principal);
 		}
 		if (value != null) {
 			cache.putObject(keyName, value);
 		}
 		return value;
 	}
+	
+	/**
+	 * 获取权限信息
+	 * @param principal
+	 * @return 
+	 */
+	protected abstract AuthorizationInfo getAuthorizationInfo(Principal principal);
 
 	/**
 	 * 删除单个用户的缓存
 	 */
-	@Override
 	public void clearCachedAuthorizationInfo(Principal principal) {
 		String keyName = this.getCachedAuthorizationInfoName(principal);
 		cache.delete(keyName);
@@ -66,7 +72,6 @@ public abstract class CachedRealm implements Realm {
 	/**
 	 * 清空所有的缓存
 	 */
-	@Override
 	public void clearAllCachedAuthorizationInfo() {
 		cache.clear();
 	}
