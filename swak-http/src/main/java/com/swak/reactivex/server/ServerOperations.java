@@ -1,15 +1,17 @@
 package com.swak.reactivex.server;
 
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-public interface ServerOperations extends Observer<Void>{
+public interface ServerOperations extends Subscriber<Void>{
 
 	/**
-	 * 开始执行
+	 * 请求所有数据
 	 */
-	default void onSubscribe(Disposable d) {}
-
+	default void onSubscribe(Subscription s) {
+	    s.request(Long.MAX_VALUE);	
+	}
+	
 	/**
 	 * 下一步处理
 	 */

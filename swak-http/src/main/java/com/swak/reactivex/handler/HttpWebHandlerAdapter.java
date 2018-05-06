@@ -4,7 +4,7 @@ import com.swak.reactivex.server.HttpServerOperations;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 
-import io.reactivex.Observable;
+import reactor.core.publisher.Mono;
 
 /**
  * httpHandler -> webHandler
@@ -20,7 +20,7 @@ public class HttpWebHandlerAdapter extends WebHandlerDecorator implements HttpHa
 	 * 处理请求
 	 */
 	@Override
-	public Observable<Void> apply(HttpServerOperations httpServerOptions) {
+	public Mono<Void> apply(HttpServerOperations httpServerOptions) {
 		HttpServerRequest request = httpServerOptions.getRequest();
 		HttpServerResponse response = httpServerOptions.getResponse();
 		return this.getDelegate().handle(request, response);

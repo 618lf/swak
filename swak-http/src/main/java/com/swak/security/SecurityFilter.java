@@ -8,7 +8,7 @@ import com.swak.security.mgt.FilterChainManager;
 import com.swak.security.mgt.SecurityManager;
 import com.swak.security.subject.Subject;
 
-import io.reactivex.Observable;
+import reactor.core.publisher.Mono;
 
 /**
  * 构建 API 安全处理，以及用户处理
@@ -29,7 +29,7 @@ public class SecurityFilter implements WebFilter {
 	 * 执行权限过滤 filter
 	 */
 	@Override
-	public Observable<Void> filter(HttpServerRequest request, HttpServerResponse response, WebFilterChain origChain) {
+	public Mono<Void> filter(HttpServerRequest request, HttpServerResponse response, WebFilterChain origChain) {
 
 		// 获取当前的用户
 		Subject subject = securityManager.createSubject(request, response);

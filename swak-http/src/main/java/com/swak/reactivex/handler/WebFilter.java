@@ -3,7 +3,7 @@ package com.swak.reactivex.handler;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 
-import io.reactivex.Observable;
+import reactor.core.publisher.Mono;
 
 public interface WebFilter {
 
@@ -13,5 +13,5 @@ public interface WebFilter {
 	 * @param response
 	 * @return
 	 */
-	Observable<Void> filter(HttpServerRequest request, HttpServerResponse response, WebFilterChain chain);
+	Mono<Void> filter(HttpServerRequest request, HttpServerResponse response, WebFilterChain chain);
 }

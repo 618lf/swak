@@ -2,18 +2,19 @@ package com.swak.reactivex.server.channel;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.function.BiFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.swak.reactivex.server.NettyContext;
 import com.swak.reactivex.server.options.NettyOptions;
-import com.swak.reactivex.server.tcp.TcpServer.Sink;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.util.concurrent.Future;
-import io.reactivex.functions.BiFunction;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoSink;
 
 /**
  * 监听，服务器启动或关闭
@@ -27,9 +28,9 @@ public abstract class CloseableContextHandler extends ContextHandler
 
 	ChannelFuture f;
 	boolean fired;
-	Sink<NettyContext> sink;
+	MonoSink<NettyContext> sink;
 	
-	CloseableContextHandler(NettyOptions options, Sink<NettyContext> sink) {
+	CloseableContextHandler(NettyOptions options, MonoSink<NettyContext> sink) {
 		super(options);
 		this.sink = sink;
 	}

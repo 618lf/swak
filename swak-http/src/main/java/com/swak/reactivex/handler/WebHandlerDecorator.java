@@ -3,7 +3,7 @@ package com.swak.reactivex.handler;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 
-import io.reactivex.Observable;
+import reactor.core.publisher.Mono;
 
 /**
  * 代理实际的 WebHandler
@@ -22,7 +22,7 @@ public class WebHandlerDecorator implements WebHandler {
 	}
 	
 	@Override
-	public Observable<Void> handle(HttpServerRequest request, HttpServerResponse response) {
+	public Mono<Void> handle(HttpServerRequest request, HttpServerResponse response) {
 		return this.delegate.handle(request, response);
 	}
 	

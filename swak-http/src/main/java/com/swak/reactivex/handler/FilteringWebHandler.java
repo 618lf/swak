@@ -6,7 +6,7 @@ import java.util.List;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 
-import io.reactivex.Observable;
+import reactor.core.publisher.Mono;
 
 public class FilteringWebHandler extends WebHandlerDecorator{
 
@@ -32,7 +32,7 @@ public class FilteringWebHandler extends WebHandlerDecorator{
 	 * filter handler
 	 */
 	@Override
-	public Observable<Void> handle(HttpServerRequest request, HttpServerResponse response) {
+	public Mono<Void> handle(HttpServerRequest request, HttpServerResponse response) {
 		return this.filters.length != 0 ?
 				new DefaultWebFilterChain(getDelegate(), this.filters).filter(request, response) :
 				super.handle(request, response);

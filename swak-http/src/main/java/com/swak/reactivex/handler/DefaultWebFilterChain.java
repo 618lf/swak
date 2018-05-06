@@ -10,7 +10,7 @@ import org.springframework.util.ObjectUtils;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 
-import io.reactivex.Observable;
+import reactor.core.publisher.Mono;
 
 public class DefaultWebFilterChain implements WebFilterChain {
 
@@ -37,7 +37,7 @@ public class DefaultWebFilterChain implements WebFilterChain {
 	 * 链式的添加 Observable
 	 */
 	@Override
-	public Observable<Void> filter(HttpServerRequest request, HttpServerResponse response) {
+	public Mono<Void> filter(HttpServerRequest request, HttpServerResponse response) {
 		if (this.index < this.filters.size()) {
 			return this.filters.get(this.index++).filter(request, response, this);
 		} else {

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.swak</groupId>
 		<artifactId>swak</artifactId>
-		<version>0.0.2_final</version>
+		<version>0.0.3_final</version>
 	</parent>
 	<artifactId>swak-http</artifactId>
 	<dependencies>
@@ -13,8 +13,8 @@
 			<artifactId>swak-common</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.reactivex.rxjava2</groupId>
-			<artifactId>rxjava</artifactId>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.redisson</groupId>

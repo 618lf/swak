@@ -12,7 +12,6 @@ import com.swak.reactivex.server.NettyContext;
 import com.swak.reactivex.server.NettyPipeline;
 import com.swak.reactivex.server.options.NettyOptions;
 import com.swak.reactivex.server.options.ServerOptions;
-import com.swak.reactivex.server.tcp.TcpServer.Sink;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -22,6 +21,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.concurrent.Future;
+import reactor.core.publisher.MonoSink;
 
 /**
  * 定义 Channel 的生命周期接口
@@ -163,7 +163,7 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	 *
 	 * @return a new {@link ContextHandler} for servers
 	 */
-	public static ContextHandler newServerContext(ServerOptions options, Sink<NettyContext> sink) {
+	public static ContextHandler newServerContext(ServerOptions options, MonoSink<NettyContext> sink) {
 		return new ServerContextHandler(options, sink);
 	}
 }

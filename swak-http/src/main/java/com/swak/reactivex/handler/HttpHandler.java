@@ -2,7 +2,7 @@ package com.swak.reactivex.handler;
 
 import com.swak.reactivex.server.HttpServerOperations;
 
-import io.reactivex.Observable;
+import reactor.core.publisher.Mono;
 
 /**
  * 处理 http 请求
@@ -16,5 +16,5 @@ public interface HttpHandler {
 	 * @param response
 	 * @return
 	 */
-	Observable<Void> apply(HttpServerOperations httpServerOptions);
+	Mono<Void> apply(HttpServerOperations httpServerOptions);
 }

@@ -8,10 +8,10 @@ import java.util.concurrent.TimeUnit;
 
 import com.swak.reactivex.server.NettyContext;
 import com.swak.reactivex.server.options.ServerOptions;
-import com.swak.reactivex.server.tcp.TcpServer.Sink;
 
 import io.netty.channel.Channel;
 import io.netty.util.AsciiString;
+import reactor.core.publisher.MonoSink;
 
 /**
  * 配置服务器Channel
@@ -27,7 +27,7 @@ public class ServerContextHandler extends CloseableContextHandler implements Net
 
 	final ServerOptions options;
 
-	ServerContextHandler(ServerOptions serverOptions, Sink<NettyContext> sink) {
+	ServerContextHandler(ServerOptions serverOptions, MonoSink<NettyContext> sink) {
 		super(serverOptions, sink);
 		this.options = serverOptions;
 	}

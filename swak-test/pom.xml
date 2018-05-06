@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.swak</groupId>
 		<artifactId>swak</artifactId>
-		<version>0.0.2_final</version>
+		<version>0.0.3_final</version>
 	</parent>
 	<artifactId>swak-test</artifactId>
 	<dependencies>
@@ -71,6 +71,11 @@
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.reactivex.rxjava2</groupId>
+			<artifactId>rxjava</artifactId>
 		</dependency>
 
 		<!-- 测试 -->

@@ -7,7 +7,7 @@ import com.swak.reactivex.handler.WebFilterChain;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 
-import io.reactivex.Observable;
+import reactor.core.publisher.Mono;
 
 public class ProxiedFilterChain implements WebFilterChain {
 
@@ -25,7 +25,7 @@ public class ProxiedFilterChain implements WebFilterChain {
 	}
 
 	@Override
-	public Observable<Void> filter(HttpServerRequest request, HttpServerResponse response) {
+	public Mono<Void> filter(HttpServerRequest request, HttpServerResponse response) {
 		if (this.filters == null || this.filters.size() == this.index) {
 			return this.orig.filter(request, response);
 		} else {

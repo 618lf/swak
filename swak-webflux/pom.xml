@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.swak</groupId>
 		<artifactId>swak</artifactId>
-		<version>0.0.2_final</version>
+		<version>0.0.3_final</version>
 	</parent>
 	<artifactId>swak-webflux</artifactId>
 	<dependencies>

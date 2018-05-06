@@ -6,7 +6,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
-import io.reactivex.Observable;
+import reactor.core.publisher.Mono;
 
 /**
  * Hold contextual information for the underlying {@link Channel}
@@ -57,8 +57,8 @@ public interface NettyContext {
 	 *
 	 * @return a {@link Mono} terminating with success if shutdown successfully or error
 	 */
-	default Observable<Void> onClose(){
-		return Observable.fromFuture(channel().closeFuture());
+	default Mono<Void> onClose(){
+		return FutureMono.from(channel().closeFuture());
 	}
 	
 	/**

@@ -7,11 +7,9 @@ import java.util.List;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.functions.Function;
+import reactor.core.publisher.Mono;
 
-public class ExceptionHandlingWebHandler extends WebHandlerDecorator{
+public class ExceptionHandlingWebHandler extends WebHandlerDecorator {
 
 	private final List<WebExceptionHandler> exceptionHandlers;
 
@@ -19,7 +17,7 @@ public class ExceptionHandlingWebHandler extends WebHandlerDecorator{
 		super(delegate);
 		this.exceptionHandlers = Collections.unmodifiableList(new ArrayList<>(handlers));
 	}
-	
+
 	/**
 	 * Return a read-only list of the configured exception handlers.
 	 */
@@ -31,23 +29,17 @@ public class ExceptionHandlingWebHandler extends WebHandlerDecorator{
 	 * 处理请求
 	 */
 	@Override
-	public Observable<Void> handle(HttpServerRequest request, HttpServerResponse response) {
-		Observable<Void> completion;
-		
+	public Mono<Void> handle(HttpServerRequest request, HttpServerResponse response) {
+		Mono<Void> completion;
+
 		try {
 			completion = super.handle(request, response);
+		} catch (Throwable ex) {
+			completion = Mono.error(ex);
 		}
-		catch (Throwable ex) {
-			completion = Observable.error(ex);
-		}
-		
+
 		for (WebExceptionHandler handler : this.exceptionHandlers) {
-			completion = completion.onErrorResumeNext(new Function<Throwable, ObservableSource<? extends Void>>() {
-				@Override
-				public ObservableSource<? extends Void> apply(Throwable t) throws Exception {
-					return handler.handle(request, response, t);
-				}
-			});
+			completion = completion.onErrorResume(t -> handler.handle(request, response, t));
 		}
 
 		return completion;

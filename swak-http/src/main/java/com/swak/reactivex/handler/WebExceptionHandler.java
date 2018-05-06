@@ -3,7 +3,7 @@ package com.swak.reactivex.handler;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 
-import io.reactivex.Observable;
+import reactor.core.publisher.Mono;
 
 public interface WebExceptionHandler {
 
@@ -15,5 +15,5 @@ public interface WebExceptionHandler {
 	 * @param ex the exception to handle
 	 * @return {@code Mono<Void>} to indicate when exception handling is complete
 	 */
-	Observable<Void> handle(HttpServerRequest request, HttpServerResponse response, Throwable ex);
+	Mono<Void> handle(HttpServerRequest request, HttpServerResponse response, Throwable ex);
 }

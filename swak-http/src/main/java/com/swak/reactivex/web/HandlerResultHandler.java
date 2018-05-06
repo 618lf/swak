@@ -5,7 +5,7 @@ import com.swak.reactivex.server.HttpServerResponse;
 import com.swak.reactivex.web.converter.HttpMessageConverter;
 import com.swak.reactivex.web.result.HandlerResult;
 
-import io.reactivex.Observable;
+import reactor.core.publisher.Mono;
 
 /**
  * 处理结果
@@ -30,5 +30,5 @@ public interface HandlerResultHandler {
 	 * @param response
 	 * @param result
 	 */
-	Observable<Void> handle(HttpServerRequest request, HttpServerResponse response, HandlerResult result);
+	Mono<Void> handle(HttpServerRequest request, HttpServerResponse response, HandlerResult result);
 }

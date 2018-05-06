@@ -17,7 +17,7 @@ import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 import com.swak.reactivex.web.result.HandlerResult;
 
-import io.reactivex.Observable;
+import reactor.core.publisher.Mono;
 
 /**
  * mvc 式的处理方式
@@ -89,20 +89,20 @@ public class DispatcherHandler implements WebHandler, ApplicationContextAware {
 	}
 
 	@Override
-	public Observable<Void> handle(HttpServerRequest request, HttpServerResponse response) {
+	public Mono<Void> handle(HttpServerRequest request, HttpServerResponse response) {
 		return this.handleMappering(request, response)
 			   .map(handler -> this.invokeHandler(request, response, handler))
 			   .flatMap(result -> this.handleResult(request, response, result));
 	}
 
-	public Observable<Handler> handleMappering(HttpServerRequest request, HttpServerResponse response) {
+	public Mono<Handler> handleMappering(HttpServerRequest request, HttpServerResponse response) {
 		for (HandlerMapping mapping : mappings) {
 			Handler handler = mapping.getHandler(request);
 			if (handler != null) {
-				return Observable.just(handler);
+				return Mono.just(handler);
 			}
 		}
-		return Observable.error(HANDLER_NOT_FOUND_EXCEPTION);
+		return Mono.error(HANDLER_NOT_FOUND_EXCEPTION);
 	}
 
 	public HandlerResult invokeHandler(HttpServerRequest request, HttpServerResponse response,
@@ -116,13 +116,13 @@ public class DispatcherHandler implements WebHandler, ApplicationContextAware {
 		return null;
 	}
 
-	public Observable<Void> handleResult(HttpServerRequest request, HttpServerResponse response,
+	public Mono<Void> handleResult(HttpServerRequest request, HttpServerResponse response,
 			HandlerResult result) {
 		for (HandlerResultHandler resultHandler : this.resultHandlers) {
 			if (resultHandler.supports(result)) {
 				return resultHandler.handle(request, response, result);
 			}
 		}
-		return Observable.error(HANDLER_NOT_FOUND_EXCEPTION);
+		return Mono.error(HANDLER_NOT_FOUND_EXCEPTION);
 	}
 }

@@ -22,50 +22,54 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import reactor.core.scheduler.Schedulers;
 
 /**
  * 响应式的 http 服务器
+ * 
  * @author lifeng
  */
 public class ReactiveWebServer extends TcpServer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReactiveWebServer.class);
-	
+
 	private final String serverName;
 	private final HttpServerProperties properties;
 	private HttpServerOptions options;
-	private HttpHandler handler; 
+	private HttpHandler handler;
 	private NettyContext context;
 	private Thread shutdownHook;
-	
+
 	private ReactiveWebServer(HttpServerProperties properties) {
 		this.properties = properties;
 		this.serverName = properties.getName();
 		this.options = this.options();
 	}
-	
-	//------------------ 启动服务器 ---------------------
+
+	// ------------------ 启动服务器 ---------------------
 	/**
 	 * 启动服务器
+	 * 
 	 * @param handler
 	 * @return
 	 */
 	public void start(HttpHandler handler) {
 		this.handler = handler;
-		this.context = this.asyncStart().doOnNext(ctx -> LOG.info("Started {} on {}", "http-server", ctx.address()))
-				.blockingSingle();
+		this.context = this.asyncStart().subscribeOn(Schedulers.immediate()).doOnNext(ctx -> LOG.info("Started {} on {}", "http-server", ctx.address()))
+				.block();
 		this.startDaemonAwaitThread();
 	}
-	
+
 	/**
 	 * 开启后台线程，等待服务器结束
+	 * 
 	 * @param nettyContext
 	 */
 	private void startDaemonAwaitThread() {
 		Thread awaitThread = new Thread("reactive-server") {
 			@Override
 			public void run() {
-				context.onClose().blockingSingle();
+				context.onClose().block();
 			}
 
 		};
@@ -73,12 +77,12 @@ public class ReactiveWebServer extends TcpServer {
 		awaitThread.setDaemon(false);
 		awaitThread.start();
 	}
-	
-	//----------------- 配置服务器 ----------------------
+
+	// ----------------- 配置服务器 ----------------------
 	@Override
 	public HttpServerOptions options() {
 		if (options == null) {
-			this.options = this.options((options)->{
+			this.options = this.options((options) -> {
 				options.host(properties.getHost()).port(properties.getPort());
 				if (properties.isSslOn()) {
 					this.customizeSsl(options);
@@ -90,9 +94,10 @@ public class ReactiveWebServer extends TcpServer {
 		}
 		return this.options;
 	}
-	
+
 	/**
-	 * 配置ssl 
+	 * 配置ssl
+	 * 
 	 * @param builder
 	 */
 	private void customizeSsl(HttpServerOptions.Builder options) {
@@ -100,12 +105,11 @@ public class ReactiveWebServer extends TcpServer {
 			SslContext sslCtx = SslContextBuilder.forServer(new File(properties.getCertFilePath()),
 					new File(properties.getPrivateKeyPath()), properties.getPrivateKeyPassword()).build();
 			options.sslContext(sslCtx);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
-	
+
 	/**
 	 * 配置options
 	 */
@@ -114,8 +118,8 @@ public class ReactiveWebServer extends TcpServer {
 		options.accept(serverOptionsBuilder);
 		return serverOptionsBuilder.build();
 	}
-	
-    // ----------------------  初始化管道 -- 处理数据   ---------------------
+
+	// ---------------------- 初始化管道 -- 处理数据 ---------------------
 	/**
 	 * 管道初始化配置
 	 */
@@ -135,11 +139,12 @@ public class ReactiveWebServer extends TcpServer {
 	 */
 	@Override
 	public void handleChannel(Channel channel, Object request) {
-		HttpServerOperations op = HttpServerOperations.apply(handler).channel(channel).request((FullHttpRequest)request);
+		HttpServerOperations op = HttpServerOperations.apply(handler).channel(channel)
+				.request((FullHttpRequest) request);
 		channel.eventLoop().execute(op::handleStart);
 	}
-	
-	// ----------------------  停止服务器   ---------------------
+
+	// ---------------------- 停止服务器 ---------------------
 	/**
 	 * 停止服务器
 	 */
@@ -151,12 +156,11 @@ public class ReactiveWebServer extends TcpServer {
 		context.dispose();
 		context.onClose()
 				.doOnError(e -> LOG.error("Stopped {} on {} with an error {}", serverName, context.address(), e))
-				.doOnTerminate(() -> LOG.info("Stopped {} on {}", serverName, context.address())).blockingSingle();
-		context.onClose().doOnComplete(()->{}).blockingSingle();
+				.doOnTerminate(() -> LOG.info("Stopped {} on {}", serverName, context.address())).block();
 		context = null;
 	}
-	
-	// ----------------------  JVM   ---------------------
+
+	// ---------------------- JVM ---------------------
 	/**
 	 * Install a {@link Runtime#addShutdownHook(Thread) JVM shutdown hook} that will
 	 * shutdown this {@link BlockingNettyContext} if the JVM is terminated
@@ -173,7 +177,7 @@ public class ReactiveWebServer extends TcpServer {
 		this.shutdownHook = new Thread(this::shutdownFromJVM);
 		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
 	}
-	
+
 	/**
 	 * jvm 处罚关闭
 	 */
@@ -189,11 +193,12 @@ public class ReactiveWebServer extends TcpServer {
 						context.address(), e, hookDesc))
 				.doOnTerminate(
 						() -> LOG.info("Stopped {} on {} from JVM hook {}", serverName, context.address(), hookDesc))
-				.blockingSingle();
+				.block();
 	}
-	
+
 	/**
 	 * 程序触发关闭
+	 * 
 	 * @return
 	 */
 	public boolean removeShutdownHook() {
@@ -204,16 +209,17 @@ public class ReactiveWebServer extends TcpServer {
 		}
 		return false;
 	}
-	
-	// ----------------------  服务器地址 ---------------------
+
+	// ---------------------- 服务器地址 ---------------------
 	@Override
 	public InetSocketAddress getAddress() {
 		return context.address();
 	}
 
-	// ----------------------  创建 http 服务器 ---------------------
+	// ---------------------- 创建 http 服务器 ---------------------
 	/**
 	 * 创建 http 服务器
+	 * 
 	 * @param options
 	 * @return
 	 */

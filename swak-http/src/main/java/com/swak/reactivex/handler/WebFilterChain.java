@@ -3,9 +3,9 @@ package com.swak.reactivex.handler;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 
-import io.reactivex.Observable;
+import reactor.core.publisher.Mono;
 
 public interface WebFilterChain {
 
-	Observable<Void> filter(HttpServerRequest request, HttpServerResponse response);
+	Mono<Void> filter(HttpServerRequest request, HttpServerResponse response);
 }
