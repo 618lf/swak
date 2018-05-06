@@ -70,13 +70,6 @@ public abstract class CachedRealm implements Realm {
 	}
 
 	/**
-	 * 清空所有的缓存
-	 */
-	public void clearAllCachedAuthorizationInfo() {
-		cache.clear();
-	}
-	
-	/**
 	 * 获得缓存名称
 	 * @param principal
 	 * @return

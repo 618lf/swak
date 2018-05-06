@@ -57,11 +57,6 @@ public class EhCacheCache implements Cache<Object> {
 	}
 	
 	@Override
-	public void clear() {
-		this.cache.removeAll();
-	}
-
-	@Override
 	public long ttl(String key) {
 		Element element = this.cache.get(key);
 		return (element != null ? element.getTimeToIdle(): -2);

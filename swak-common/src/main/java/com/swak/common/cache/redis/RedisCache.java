@@ -77,12 +77,6 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	}
 
 	@Override
-	public void clear() {
-		String _key = new StringBuilder(name).append(prex).append("*").toString();
-		RedisUtils.getRedis().deletes(_key);
-	}
-
-	@Override
 	public long ttl(String key) {
 		return RedisUtils.getRedis().ttl(getKeyName(key));
 	}

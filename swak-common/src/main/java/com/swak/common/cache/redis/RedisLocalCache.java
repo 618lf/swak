@@ -86,11 +86,6 @@ public class RedisLocalCache extends BinaryJedisPubSub implements Cache<Object>,
 	}
 	
 	@Override
-	public void clear() {
-		local.clear();
-	}
-	
-	@Override
 	public String getString(String key) {
 		return (String) local.getObject(key);
 	}
@@ -121,9 +116,6 @@ public class RedisLocalCache extends BinaryJedisPubSub implements Cache<Object>,
 			case Command.OPT_DELETE_KEY:
 				onDeleteCacheKey(cmd.getKey());
 				break;
-			case Command.OPT_CLEAR_KEY:
-				onClearCacheKey();
-				break;
 			}
 		} catch (Exception e) {
 		}
@@ -142,16 +134,6 @@ public class RedisLocalCache extends BinaryJedisPubSub implements Cache<Object>,
 			local.delete((String[]) key);
 		else
 			local.delete((String)key);
-	}
-
-	/**
-	 * 清除一级缓存的键对应内容
-	 * 
-	 * @param region
-	 *            Cache region name
-	 */
-	protected void onClearCacheKey() {
-		local.clear();
 	}
 
 	@Override

@@ -144,23 +144,6 @@ public class RedisCacheChannel<T> implements Cache<T> {
 		return null;
 	}
 
-	@Override
-	public void clear() {
-		local.clear();
-		remote.clear();
-		_sendClearCmd();
-	}
-
-	/**
-	 * 发送清除缓存的广播命令
-	 * @param region: Cache region name
-	 */
-	private void _sendClearCmd() {
-		// 发送广播
-		Command cmd = new Command(Command.OPT_CLEAR_KEY, "");
-		RedisUtils.getRedis().publish(SafeEncoder.encode("local_channel"), cmd.toBuffers());
-	}
-	
 	/**
 	 * 发送清除缓存的广播命令
 	 * 

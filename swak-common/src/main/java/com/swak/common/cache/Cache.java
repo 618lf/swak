@@ -78,9 +78,4 @@ public interface Cache<T> {
 	 * @return
 	 */
 	long ttl(String key);
-	
-	/**
-	 * 清除缓存
-	 */
-	void clear();
 }
