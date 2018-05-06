@@ -68,6 +68,11 @@
 			<artifactId>disruptor</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+		</dependency>
+
 		<!-- 测试 -->
 		<dependency>
 			<groupId>junit</groupId>
