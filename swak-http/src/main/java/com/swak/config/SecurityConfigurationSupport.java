@@ -31,8 +31,9 @@ public class SecurityConfigurationSupport {
 	 * 设置域
 	 * @param realm
 	 */
-	public void setRealm(Realm realm) {
+	public SecurityConfigurationSupport realm(Realm realm) {
 		this.realm = realm;
+		return this;
 	}
 	
 	/**
@@ -54,7 +55,7 @@ public class SecurityConfigurationSupport {
 	 * @param line
 	 * @return
 	 */
-	public SecurityConfigurationSupport definitionFilterChain(String line) {
+	public SecurityConfigurationSupport definition(String line) {
 		if (!StringUtils.hasText(line)) {
 			return this;
 		}
@@ -68,7 +69,7 @@ public class SecurityConfigurationSupport {
 			return this;
 		}
 		if (chains == null) {
-			chains = Maps.newHashMap();
+			chains = Maps.newOrderMap();
 		}
 		chains.put(path, filter);
 		return this;
