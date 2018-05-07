@@ -3,8 +3,14 @@ package com.swak.reactivex.server.resources;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.swak.reactivex.server.FutureMono;
+
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.ServerChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.concurrent.Future;
+import reactor.core.publisher.Mono;
 
 /**
  * 创建默认的 EventLoopGroup
@@ -19,57 +25,57 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 	final boolean daemon;
 	final int selectCount;
 	final int workerCount;
-	final EventLoopGroup serverLoops;
-	final EventLoopGroup clientLoops;
-	final EventLoopGroup serverSelectLoops;
+	EventLoopGroup serverLoops;
+	EventLoopGroup serverSelectLoops;
 
 	DefaultLoopResources(String prefix, int selectCount, int workerCount, boolean daemon) {
 		this.daemon = daemon;
 		this.workerCount = workerCount;
+		this.selectCount = selectCount;
 		this.prefix = prefix;
-		this.serverLoops = new NioEventLoopGroup(workerCount, threadFactory(this, "nio-server"));
-		this.clientLoops = new NioEventLoopGroup(workerCount, threadFactory(this, "nio-worker"));
-		this.selectCount = workerCount;
-		this.serverSelectLoops = this.serverLoops;
+	}
+	
+	@Override
+	public Class<? extends ServerChannel> onServerChannel() {
+		return NioServerSocketChannel.class;
 	}
 	
 	@Override
 	public EventLoopGroup onServerSelect() {
+		if (serverSelectLoops == null) {
+			this.serverSelectLoops = new NioEventLoopGroup(selectCount, threadFactory(this, "nio-select"));
+		}
 		return serverSelectLoops;
 	}
 
 	@Override
 	public EventLoopGroup onServer() {
+		if (this.serverLoops == null) {
+			this.serverLoops = new NioEventLoopGroup(workerCount, threadFactory(this, "nio-server"));
+		}
 		return serverLoops;
 	}
 	
+	/**
+	 * 关闭资源
+	 */
 	@Override
-	public EventLoopGroup onClient() {
-		return clientLoops;
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Mono<Void> disposeLater() {
+		serverSelectLoops.shutdownGracefully();
+		serverLoops.shutdownGracefully();
+		Mono<?> sslMono = FutureMono.from((Future)serverSelectLoops.terminationFuture());
+		Mono<?> slMono = FutureMono.from((Future)serverLoops.terminationFuture());
+		return Mono.when(sslMono, slMono);
 	}
-
-	static ThreadFactory threadFactory(DefaultLoopResources parent, String prefix) {
+	
+	/**
+	 * 线程管理器
+	 * @param parent
+	 * @param prefix
+	 * @return
+	 */
+	ThreadFactory threadFactory(DefaultLoopResources parent, String prefix) {
 		return new EventLoopFactory(parent.daemon, parent.prefix + "-" + prefix, parent);
-	}
-
-	final static class EventLoopFactory implements ThreadFactory {
-
-		final boolean daemon;
-		final AtomicLong counter;
-		final String prefix;
-
-		EventLoopFactory(boolean daemon, String prefix, AtomicLong counter) {
-			this.daemon = daemon;
-			this.counter = counter;
-			this.prefix = prefix;
-		}
-
-		@Override
-		public Thread newThread(Runnable r) {
-			Thread t = new Thread(r);
-			t.setDaemon(daemon);
-			t.setName(prefix + "-" + counter.incrementAndGet());
-			return t;
-		}
 	}
 }

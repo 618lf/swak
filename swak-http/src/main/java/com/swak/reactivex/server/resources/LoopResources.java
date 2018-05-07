@@ -1,15 +1,18 @@
 package com.swak.reactivex.server.resources;
 
+import com.swak.reactivex.server.Disposable;
+import com.swak.reactivex.server.TransportMode;
+
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import reactor.core.publisher.Mono;
 
 /**
  * EventLoopGroup
  * @author lifeng
  */
-public interface LoopResources {
+public interface LoopResources extends Disposable{
 	
 	/**
 	 * Default worker thread count, fallback to available processor
@@ -35,7 +38,12 @@ public interface LoopResources {
 	 * @return a new {@link LoopResources} to provide automatically for {@link
 	 * EventLoopGroup} and {@link Channel} factories
 	 */
-	static LoopResources create(String prefix) {
+	static LoopResources create(TransportMode mode, String prefix) {
+		if(mode != null && TransportMode.EPOLL == mode) {
+			return new DefaultEpollLoopResources(prefix, DEFAULT_IO_SELECT_COUNT,
+					DEFAULT_IO_WORKER_COUNT,
+					true);
+		}
 		return new DefaultLoopResources(prefix, DEFAULT_IO_SELECT_COUNT,
 				DEFAULT_IO_WORKER_COUNT,
 				true);
@@ -48,9 +56,7 @@ public interface LoopResources {
 	 *
 	 * @return a {@link Class} target for the underlying {@link ServerChannel} factory
 	 */
-	default Class<? extends ServerChannel> onServerChannel() {
-		return NioServerSocketChannel.class;
-	}
+	Class<? extends ServerChannel> onServerChannel();
 	
 	/**
 	 * Create a server select {@link EventLoopGroup} for servers to be used
@@ -73,12 +79,19 @@ public interface LoopResources {
 	EventLoopGroup onServer();
 	
 	/**
-	 * Callback for client {@link EventLoopGroup} creation.
-	 *
-	 * @param useNative should use native group if current {@link #preferNative()} is also
-	 * true
-	 *
-	 * @return a new {@link EventLoopGroup}
+	 * 关闭的时候释放资源
 	 */
-	EventLoopGroup onClient();
+	default void dispose() {
+		//noop default
+		disposeLater().subscribe();
+	}
+	
+	/**
+	 * Returns a Mono that triggers the disposal of underlying resources when subscribed to.
+	 *
+	 * @return a Mono representing the completion of resources disposal.
+	 **/
+	default Mono<Void> disposeLater() {
+		return Mono.empty(); //noop default
+	}
 }

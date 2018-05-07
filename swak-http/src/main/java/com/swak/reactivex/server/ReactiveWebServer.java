@@ -87,6 +87,8 @@ public class ReactiveWebServer extends TcpServer {
 				if (properties.isSslOn()) {
 					this.customizeSsl(options);
 				}
+				options.serverName(properties.getName());
+				options.transportMode(TransportMode.valueOf(properties.getMode()));
 				options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, properties.getConnectTimeout());
 				options.childOption(ChannelOption.SO_KEEPALIVE, properties.isSoKeepAlive());
 				options.childOption(ChannelOption.TCP_NODELAY, properties.isTcpNoDelay());
@@ -158,6 +160,9 @@ public class ReactiveWebServer extends TcpServer {
 				.doOnError(e -> LOG.error("Stopped {} on {} with an error {}", serverName, context.address(), e))
 				.doOnTerminate(() -> LOG.info("Stopped {} on {}", serverName, context.address())).block();
 		context = null;
+		
+		// 关闭必要的资源
+		this.options.getLoopResources().dispose();
 	}
 
 	// ---------------------- JVM ---------------------

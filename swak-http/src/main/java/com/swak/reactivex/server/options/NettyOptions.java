@@ -6,6 +6,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import com.swak.reactivex.server.NettyContext;
+import com.swak.reactivex.server.TransportMode;
+import com.swak.reactivex.server.resources.LoopResources;
 
 import io.netty.bootstrap.AbstractBootstrap;
 import io.netty.bootstrap.Bootstrap;
@@ -18,6 +20,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.AttributeKey;
+import reactor.util.function.Tuple2;
 
 /**
  * Netty
@@ -27,7 +30,8 @@ import io.netty.util.AttributeKey;
 public class NettyOptions {
 
 	private final ServerBootstrap bootstrapTemplate;
-	private final boolean preferNative;
+	private final String serverName;
+	private final TransportMode transportMode;
 	private final SslContext sslContext;
 	private final long sslHandshakeTimeoutMillis;
 	private final long sslCloseNotifyFlushTimeoutMillis;
@@ -35,10 +39,12 @@ public class NettyOptions {
 	protected final Consumer<? super Channel> afterChannelInit;
 	protected final Consumer<? super NettyContext> afterNettyContextInit;
 	private final Predicate<? super Channel> onChannelInit;
+    private final LoopResources loopResources;
 
 	protected NettyOptions(NettyOptions.Builder builder) {
 		this.bootstrapTemplate = builder.bootstrapTemplate;
-		this.preferNative = builder.preferNative;
+		this.serverName = builder.serverName;
+		this.transportMode = builder.transportMode;
 		this.sslContext = builder.sslContext;
 		this.sslHandshakeTimeoutMillis = builder.sslHandshakeTimeoutMillis;
 		this.sslCloseNotifyFlushTimeoutMillis = builder.sslCloseNotifyFlushTimeoutMillis;
@@ -56,6 +62,9 @@ public class NettyOptions {
 		} else {
 			this.afterChannelInit = null;
 		}
+		
+		// event loop 
+		loopResources = LoopResources.create(this.transportMode(), this.serverName());
 	}
 
 	/**
@@ -75,9 +84,17 @@ public class NettyOptions {
 	public ServerBootstrap getBootstrapTemplate() {
 		return bootstrapTemplate;
 	}
+	
+	public LoopResources getLoopResources() {
+		return loopResources;
+	}
 
-	public boolean preferNative() {
-		return preferNative;
+	public String serverName() {
+		return serverName;
+	}
+	
+	public TransportMode transportMode() {
+		return transportMode;
 	}
 
 	public SslContext sslContext() {
@@ -132,26 +149,9 @@ public class NettyOptions {
 
 	public static class Builder {
 
-		private static final boolean DEFAULT_NATIVE;
-
-		static {
-			// reactor.ipc.netty.epoll should be deprecated in favor of
-			// reactor.ipc.netty.native
-			String defaultNativeEpoll = System.getProperty("reactor.ipc.netty.epoll");
-
-			String defaultNative = System.getProperty("reactor.netty.native");
-
-			if (defaultNative != null) {
-				DEFAULT_NATIVE = Boolean.parseBoolean(defaultNative);
-			} else if (defaultNativeEpoll != null) {
-				DEFAULT_NATIVE = Boolean.parseBoolean(defaultNativeEpoll);
-			} else {
-				DEFAULT_NATIVE = true;
-			}
-		}
-
 		protected ServerBootstrap bootstrapTemplate;
-		private boolean preferNative = DEFAULT_NATIVE;
+		private String serverName = "reactor";
+		private TransportMode transportMode = TransportMode.NIO;
 		private ChannelGroup channelGroup = null;
 		private SslContext sslContext = null;
 		private long sslHandshakeTimeoutMillis = 10000L;
@@ -208,6 +208,18 @@ public class NettyOptions {
 			this.bootstrapTemplate.option(key, value);
 			return this;
 		}
+		
+		/**
+		 * Set the server name
+		 *
+		 * @param preferNative
+		 *            Should the connector prefer native (epoll/kqueue) if available
+		 * @return {@code this}
+		 */
+		public final Builder serverName(String serverName) {
+			this.serverName = serverName;
+			return this;
+		}
 
 		/**
 		 * Set the preferred native option. Determine if epoll/kqueue should be used if
@@ -217,8 +229,8 @@ public class NettyOptions {
 		 *            Should the connector prefer native (epoll/kqueue) if available
 		 * @return {@code this}
 		 */
-		public final Builder preferNative(boolean preferNative) {
-			this.preferNative = preferNative;
+		public final Builder transportMode(TransportMode transportMode) {
+			this.transportMode = transportMode;
 			return this;
 		}
 

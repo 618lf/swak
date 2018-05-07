@@ -13,6 +13,7 @@ public class HttpServerProperties {
 	public static final String HTTP_SERVER_PREFIX = "spring.http-server";
 
 	private String name = "SWAK-REACTIVE-SERVER";
+	private String mode = "NIO";
 	private int port = 8888;
 	private int connectTimeout = 30000;
 	private String host = "localhost";
@@ -34,6 +35,14 @@ public class HttpServerProperties {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
 	}
 
 	public int getPort() {

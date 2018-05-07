@@ -56,9 +56,9 @@ public class ServerOptions extends NettyOptions {
 	}
 
 	final void groupAndChannel(ServerBootstrap bootstrap) {
-		LoopResources loops = LoopResources.create("reactor");
+		LoopResources loops = this.getLoopResources();
 		EventLoopGroup selectorGroup = loops.onServerSelect();
-		EventLoopGroup elg = loops.onClient();
+		EventLoopGroup elg = loops.onServer();
 		bootstrap.group(selectorGroup, elg).channel(loops.onServerChannel());
 
 		// 开启 日期服务
