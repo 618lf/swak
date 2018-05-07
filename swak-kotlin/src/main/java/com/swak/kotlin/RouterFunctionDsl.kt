@@ -1,8 +1,13 @@
 package com.swak.kotlin
 
 import com.swak.reactivex.server.HttpServerRequest
-import com.swak.reactivex.web.function.*
+import com.swak.reactivex.web.function.HandlerFunction
+import com.swak.reactivex.web.function.RequestPredicate
+import com.swak.reactivex.web.function.RequestPredicates
+import com.swak.reactivex.web.function.RouterFunction
+import com.swak.reactivex.web.function.RouterFunctions
 import io.netty.handler.codec.http.HttpMethod
+import java.util.function.Consumer
 
 /**
  *  Example:
@@ -20,8 +25,18 @@ import io.netty.handler.codec.http.HttpMethod
  *        }
  *   }
  *  }
+ *  in java:
+ *  RouterFunctionDslKt.router((dsl) -> {
+ *			dsl.GET("/", request -> {
+ *				return Mono.just("hello lifeng1");
+ *			});
+ *			dsl.GET("/admin/", request -> {
+ *				return Mono.just("hello lifeng2");
+ *			});
+ *			return null;
+ *	 });
  */
-fun router(routes: RouterFunctionDsl.() -> Unit) = RouterFunctionDsl().apply(routes).router()
+public fun router(routes: RouterFunctionDsl.() -> Unit) = RouterFunctionDsl().apply(routes).router()
 
 open class RouterFunctionDsl {
 

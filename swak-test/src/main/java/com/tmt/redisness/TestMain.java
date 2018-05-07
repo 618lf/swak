@@ -1,7 +1,7 @@
 package com.tmt.redisness;
 
 import org.redisson.Redisson;
-import org.redisson.api.RedissonReactiveClient;
+import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.redisson.config.TransportMode;
 
@@ -15,7 +15,6 @@ public class TestMain {
 		Config config = new Config();
 		config.setTransportMode(TransportMode.NIO);
 		config.useSingleServer().setAddress("redis://127.0.0.1:6379").setPassword("12345678....");
-		RedissonReactiveClient client = Redisson.createReactive(config);
-		client.getList("ss").add("12");
+		RedissonClient client = Redisson.create(config);
 	}
 }
