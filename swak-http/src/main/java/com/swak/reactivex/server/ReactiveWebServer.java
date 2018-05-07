@@ -151,7 +151,7 @@ public class ReactiveWebServer extends TcpServer {
 	 * 停止服务器
 	 */
 	public void stop() {
-		if (context.isDisposed()) {
+		if (context == null || context.isDisposed()) {
 			return;
 		}
 		removeShutdownHook();

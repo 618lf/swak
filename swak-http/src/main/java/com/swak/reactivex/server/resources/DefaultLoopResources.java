@@ -31,7 +31,7 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 	DefaultLoopResources(String prefix, int selectCount, int workerCount, boolean daemon) {
 		this.daemon = daemon;
 		this.workerCount = workerCount;
-		this.selectCount = selectCount;
+		this.selectCount = selectCount == -1 ? workerCount: selectCount;
 		this.prefix = prefix;
 	}
 	
