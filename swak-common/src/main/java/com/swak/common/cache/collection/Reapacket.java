@@ -67,7 +67,7 @@ public class Reapacket {
 			SafeEncoder.encode(map_rp_user),
 			SafeEncoder.encode(user)
 		};
-		byte[] result = RedisUtils.runScript(script, null, values);
+		byte[] result = RedisUtils.runScript(script, values);
 		return result != null? SafeEncoder.encode(result) : null;
 	}
 	

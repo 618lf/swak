@@ -37,10 +37,10 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 		if (this.isValid()) {
 			return this._hget(key);
 		}
-		Map<String, byte[]> values = RedisUtils.hGetAll(this.getKeyName(key));
+		Map<byte[], byte[]> values = RedisUtils.hGetAll(this.getKeyName(key));
 		Map<String, T> maps = Maps.newHashMap();
 		values.keySet().stream().forEach(s ->{
-			maps.put(s, this.ser.deserialize(values.get(s)));
+			maps.put(SafeEncoder.encode(s), this.ser.deserialize(values.get(s)));
 		});
 		return maps;
 	}
@@ -49,7 +49,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 		Map<String, T> maps = Maps.newHashMap();
 		String script = Cons.MULTI_MAP_GET_LUA;
 		byte[][] pvalues = new byte[][] {SafeEncoder.encode(this.getKeyName(key)),SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		List<byte[]> values = RedisUtils.runScript(script, null, pvalues);
+		List<byte[]> values = RedisUtils.runScript(script, pvalues);
 	    final Iterator<byte[]> iterator = values.iterator();
 	    while (iterator.hasNext()) {
 	    	maps.put(SafeEncoder.encode(iterator.next()), this.ser.deserialize(iterator.next()));
@@ -62,9 +62,9 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 		if (this.isValid()) {
 			this._hput(key, v);
 		} else {
-			Map<String, byte[]> tuple = Maps.newHashMap();
+			Map<byte[], byte[]> tuple = Maps.newHashMap();
 			v.keySet().stream().forEach(s ->{
-				tuple.put(s, this.ser.serialize(v.get(s)));
+				tuple.put(SafeEncoder.encode(s), this.ser.serialize(v.get(s)));
 			});
 			RedisUtils.hMSet(this.getKeyName(key), tuple);
 		}
@@ -91,7 +91,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 		byte[][] result = new byte[values.length + pvalues.length][];
 		System.arraycopy(pvalues, 0, result, 0, pvalues.length);  
 		System.arraycopy(values, 0, result, pvalues.length, values.length);  
-		RedisUtils.runScript(script.replaceAll("#KEYS#", keys.toString()), null, result);
+		RedisUtils.runScript(script.replaceAll("#KEYS#", keys.toString()), result);
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 	protected byte[] _hget(String key, String k2) {
 		String script = Cons.MAP_GET_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		return RedisUtils.runScript(script, null, values);
+		return RedisUtils.runScript(script, values);
 	}
 
 	@Override
@@ -135,7 +135,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 	protected void _hput(String key, String k2, T v) {
 		String script = Cons.MAP_PUT_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		RedisUtils.runScript(script, null, values);
+		RedisUtils.runScript(script, values);
 	}
 
 	@Override

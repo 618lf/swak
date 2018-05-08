@@ -13,12 +13,12 @@ import io.lettuce.core.support.ConnectionPoolSupport;
  * 池化处理
  * @author lifeng
  */
-public class RedisConnectionPoolFactory implements RedisConnectionFactory<String, byte[]>{
+public class RedisConnectionPoolFactory implements RedisConnectionFactory<byte[], byte[]>{
 
 	private final RedisClientDecorator client;
 	private final GenericObjectPoolConfig poolConfig;
-    private final Map<Class<?>, GenericObjectPool<StatefulConnection<String, byte[]>>> pools;
-    private final Map<StatefulConnection<String, byte[]>, GenericObjectPool<StatefulConnection<String, byte[]>>> poolsRef;
+    private final Map<Class<?>, GenericObjectPool<StatefulConnection<byte[], byte[]>>> pools;
+    private final Map<StatefulConnection<byte[], byte[]>, GenericObjectPool<StatefulConnection<byte[], byte[]>>> poolsRef;
     
 	public RedisConnectionPoolFactory(RedisClientDecorator client, GenericObjectPoolConfig poolConfig) {
 		this.client = client;
@@ -31,16 +31,16 @@ public class RedisConnectionPoolFactory implements RedisConnectionFactory<String
 	 * 获取链接
 	 */
 	@Override
-	public StatefulConnection<String, byte[]> getConnection(Class<?> connectionType) {
+	public StatefulConnection<byte[], byte[]> getConnection(Class<?> connectionType) {
 		try {
 			
-			GenericObjectPool<StatefulConnection<String, byte[]>> pool = pools.computeIfAbsent(connectionType, (poolType) ->{
+			GenericObjectPool<StatefulConnection<byte[], byte[]>> pool = pools.computeIfAbsent(connectionType, (poolType) ->{
 				return ConnectionPoolSupport.createGenericObjectPool(()->{
 					return client.getConnection(connectionType);
 				}, poolConfig, false);
 			});
 			
-			StatefulConnection<String, byte[]> connection = pool.borrowObject();
+			StatefulConnection<byte[], byte[]> connection = pool.borrowObject();
 
 			poolsRef.put(connection, pool);
 			

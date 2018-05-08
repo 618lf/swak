@@ -95,7 +95,7 @@ public class TestRedis {
 		long t1 = System.currentTimeMillis();
 		for (int i = 0; i < 100000; i++) {
 			byte[][] values = new byte[][] {SafeEncoder.encode("sys#lifeng"), SafeEncoder.encode("哈哈")};
-			RedisUtils.runScript(lua, null, values);
+			RedisUtils.runScript(lua, values);
 		}
 		System.out.println("lua ,use=" + (System.currentTimeMillis() - t1));
 	}

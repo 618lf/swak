@@ -49,7 +49,7 @@ public class MapCache<T> extends NameableCache implements CMap<String, T>{
 	protected byte[] _hget(String k) {
 		String script = Cons.MAP_GET_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(k), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-	    return RedisUtils.runScript(script, null, values);
+	    return RedisUtils.runScript(script, values);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class MapCache<T> extends NameableCache implements CMap<String, T>{
 	protected void _hput(String k, T v) {
 		String script = Cons.MAP_PUT_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(k), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		RedisUtils.runScript(script, null, values);
+		RedisUtils.runScript(script, values);
 	}
 
 	@Override

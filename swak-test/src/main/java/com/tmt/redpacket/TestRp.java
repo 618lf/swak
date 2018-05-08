@@ -130,7 +130,7 @@ public class TestRp {
 						SafeEncoder.encode(map_rp_user),
 						SafeEncoder.encode("" + j)
 					};
-					RedisUtils.runScript(script, null, values);
+					RedisUtils.runScript(script, values);
 					
 					// 报表监听
 					count.incrementAndGet();

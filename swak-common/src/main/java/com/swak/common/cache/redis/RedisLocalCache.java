@@ -99,7 +99,7 @@ public class RedisLocalCache extends RedisEventBus implements Cache<Object>, Ini
 	 * 获取订阅的消息
 	 */
 	@Override
-	public void message(String channel, byte[] message) {
+	public void message(byte[] channel, byte[] message) {
 
 		// 无效消息
 		if (message != null && message.length <= 0) {

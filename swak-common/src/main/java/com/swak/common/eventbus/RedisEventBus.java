@@ -6,35 +6,35 @@ import io.lettuce.core.pubsub.RedisPubSubListener;
  * 基于 Redis 的 event bus
  * @author lifeng
  */
-public class RedisEventBus implements RedisPubSubListener<String, byte[]>{
+public class RedisEventBus implements RedisPubSubListener<byte[], byte[]>{
 
 	@Override
-	public void message(String channel, byte[] message) {
+	public void message(byte[] channel, byte[] message) {
 		
 	}
 
 	@Override
-	public void message(String pattern, String channel, byte[] message) {
+	public void message(byte[] pattern, byte[] channel, byte[] message) {
 		
 	}
 
 	@Override
-	public void subscribed(String channel, long count) {
+	public void subscribed(byte[] channel, long count) {
 		
 	}
 
 	@Override
-	public void psubscribed(String pattern, long count) {
+	public void psubscribed(byte[] pattern, long count) {
 		
 	}
 
 	@Override
-	public void unsubscribed(String channel, long count) {
+	public void unsubscribed(byte[] channel, long count) {
 		
 	}
 
 	@Override
-	public void punsubscribed(String pattern, long count) {
+	public void punsubscribed(byte[] pattern, long count) {
 		
 	}
 }

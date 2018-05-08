@@ -102,7 +102,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	protected byte[] _hget(String key) {
 		String script = Cons.GET_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		return RedisUtils.runScript(script, null, values);
+		return RedisUtils.runScript(script, values);
 	}
 	
 	/**
@@ -151,7 +151,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	protected boolean _hexists(String key) {
 		String script = Cons.EXISTS_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		Long e = RedisUtils.runScript(script, null, values);
+		Long e = RedisUtils.runScript(script, values);
 		return e != null && e == 1;
 	}
 }
