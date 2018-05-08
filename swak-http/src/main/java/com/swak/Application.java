@@ -14,7 +14,10 @@ import com.swak.reactivex.context.ReactiveWebServerApplicationContext;
  */
 public class Application extends SpringApplication {
 	
-	private final static Logger logger = LoggerFactory.getLogger(Application.class);
+	/**
+	 * 系统启动的日志
+	 */
+	public final static Logger APP_LOGGER = LoggerFactory.getLogger(Application.class);
 	
 	/**
 	 * 初始化
@@ -39,8 +42,10 @@ public class Application extends SpringApplication {
 	 */
 	public static ConfigurableApplicationContext run(Class<?> primarySource,
 			String... args) {
+		long start = System.currentTimeMillis();
 		ConfigurableApplicationContext context = new Application(primarySource).run(args);
-		logger.debug("application is start success");
+		long end = System.currentTimeMillis();
+		APP_LOGGER.debug("Server start success in "  + (end - start)/ 1000 + "s");
 		return context;
 	}
 }

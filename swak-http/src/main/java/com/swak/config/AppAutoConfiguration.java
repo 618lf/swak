@@ -26,6 +26,7 @@ import com.swak.security.mgt.support.DefaultSecurityManager;
 import com.swak.security.principal.PrincipalStrategy;
 import com.swak.security.principal.support.TokenPrincipalStrategy;
 import com.swak.security.utils.SecurityUtils;
+import static com.swak.Application.APP_LOGGER;
 
 /**
  * 系统配置
@@ -56,7 +57,9 @@ public class AppAutoConfiguration {
 	@ConditionalOnMissingBean(CacheConfigurationSupport.class)
 	@EnableConfigurationProperties(CacheProperties.class)
 	public static class CacheAutoConfiguration extends CacheConfigurationSupport {
-		
+		public CacheAutoConfiguration() {
+			APP_LOGGER.debug("Loading Redis Cache");
+		}
 	} 
 
 	/**
@@ -72,6 +75,10 @@ public class AppAutoConfiguration {
 
 		@Autowired
 		private SecurityConfigurationSupport securityConfig;
+		
+		public SecurityConfiguration() {
+			APP_LOGGER.debug("Loading Security Filter");
+		}
 		
 		/**
 		 * 身份管理策略
@@ -149,6 +156,9 @@ public class AppAutoConfiguration {
 	@Configuration
 	@ConditionalOnMissingBean(WebConfigurationSupport.class)
 	public static class WebAutoConfiguration extends WebConfigurationSupport {
+		public WebAutoConfiguration() {
+			APP_LOGGER.debug("Loading Web Handler");
+		}
 	}
 
 	/**
@@ -162,9 +172,10 @@ public class AppAutoConfiguration {
 	public static class WebServerAutoConfiguration {
 
 		private HttpServerProperties properties;
-
+		
 		public WebServerAutoConfiguration(HttpServerProperties properties) {
 			this.properties = properties;
+			APP_LOGGER.debug("Loading Http Server on http://" + properties.getHost() + ":" + properties.getPort());
 		}
 
 		@Bean
@@ -181,6 +192,10 @@ public class AppAutoConfiguration {
 	@Order(5)
 	@Configuration
 	public static class AppListenerConfig {
+		
+		public AppListenerConfig() {
+			APP_LOGGER.debug("Loading App Booter");
+		}
 
 		@Bean
 		public AppBooter appBooter() {
