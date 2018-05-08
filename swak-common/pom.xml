@@ -100,6 +100,10 @@
 			<groupId>com.esotericsoftware</groupId>
 			<artifactId>kryo-shaded</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-core</artifactId>
+		</dependency>
 		<!-- 数据库层 -->
 		<dependency>
 			<groupId>org.mybatis</groupId>

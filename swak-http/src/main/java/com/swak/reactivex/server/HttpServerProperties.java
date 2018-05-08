@@ -2,15 +2,15 @@ package com.swak.reactivex.server;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.swak.common.Constants;
+
 /**
  * 服务器的默认配置
  * 
  * @author lifeng
  */
-@ConfigurationProperties(prefix = HttpServerProperties.HTTP_SERVER_PREFIX)
+@ConfigurationProperties(prefix = Constants.HTTP_SERVER_PREFIX)
 public class HttpServerProperties {
-
-	public static final String HTTP_SERVER_PREFIX = "spring.http-server";
 
 	private String name = "SWAK-REACTIVE-SERVER";
 	private String mode = "NIO";

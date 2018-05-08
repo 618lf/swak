@@ -14,7 +14,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
 
+import com.swak.ApplicationProperties;
+import com.swak.common.Constants;
 import com.swak.common.cache.CacheProperties;
+import com.swak.common.serializer.FSTSerializer;
+import com.swak.common.serializer.JavaSerializer;
+import com.swak.common.serializer.KryoPoolSerializer;
+import com.swak.common.serializer.KryoSerializer;
+import com.swak.common.serializer.SerializationUtils;
+import com.swak.common.serializer.Serializer;
 import com.swak.common.utils.SpringContextHolder;
 import com.swak.reactivex.booter.AppBooter;
 import com.swak.reactivex.handler.WebFilter;
@@ -35,6 +43,7 @@ import com.swak.security.utils.SecurityUtils;
  * @author lifeng
  */
 @Configuration
+@EnableConfigurationProperties(ApplicationProperties.class)
 public class AppAutoConfiguration {
 
 	/**
@@ -48,6 +57,31 @@ public class AppAutoConfiguration {
 	}
 	
 	/**
+	 * 序列化
+	 * @return
+	 */
+	@Bean
+	public Serializer serializer(ApplicationProperties properties) {
+		String ser = properties.getSerialization();
+		Serializer g_ser = null;
+		if (ser.equals("java")) {
+            g_ser = new JavaSerializer();
+        } else if (ser.equals("fst")) {
+            g_ser = new FSTSerializer();
+        } else if (ser.equals("kryo")) {
+            g_ser = new KryoSerializer();
+        } else if (ser.equals("kryo_pool")){
+        	g_ser = new KryoPoolSerializer();
+        } else {
+        	g_ser = new JavaSerializer();
+        }
+		
+		// 公共引用
+		SerializationUtils.g_ser = g_ser;
+		return g_ser;
+	}
+	
+	/**
 	 * 缓存 服务配置
 	 * 
 	 * @author lifeng
@@ -55,6 +89,7 @@ public class AppAutoConfiguration {
 	@Configuration
 	@ConditionalOnMissingBean(CacheConfigurationSupport.class)
 	@EnableConfigurationProperties(CacheProperties.class)
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableRedis", matchIfMissing = true)
 	public static class CacheAutoConfiguration extends CacheConfigurationSupport {
 		public CacheAutoConfiguration() {
 			APP_LOGGER.debug("Loading Redis Cache");
@@ -69,6 +104,7 @@ public class AppAutoConfiguration {
 	@Configuration
 	@ConditionalOnMissingBean(RedisEventBusConfigurationSupport.class)
 	@AutoConfigureAfter(CacheAutoConfiguration.class)
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableEventBus", matchIfMissing = true)
 	public static class EventBusAutoConfiguration extends RedisEventBusConfigurationSupport {
 		public EventBusAutoConfiguration() {
 			APP_LOGGER.debug("Loading Event bus");
@@ -81,8 +117,8 @@ public class AppAutoConfiguration {
 	 * @author lifeng
 	 */
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.security", name = "enabled", matchIfMissing = true)
 	@ConditionalOnBean({ SecurityConfigurationSupport.class })
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSecurity", matchIfMissing = true)
 	public static class SecurityConfiguration {
 
 		@Autowired
@@ -200,6 +236,7 @@ public class AppAutoConfiguration {
 	 * @author lifeng
 	 */
 	@Configuration
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableBooter", matchIfMissing = true)
 	public static class AppListenerConfig {
 		
 		public AppListenerConfig() {
