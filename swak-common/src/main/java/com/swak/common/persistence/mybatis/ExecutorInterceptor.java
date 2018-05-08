@@ -1,7 +1,5 @@
 package com.swak.common.persistence.mybatis;
 
-import java.util.Properties;
-
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -79,13 +77,7 @@ public class ExecutorInterceptor extends AbstractInterceptor {
 	/**
 	 * 初始化属性
 	 */
-	@Override
-	public void setProperties(Properties properties) {
-		String dialectClass = properties.getProperty("dialectClass");
-		try {
-			dialect = (Dialect) Class.forName(dialectClass).newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException("cannot create dialect instance by dialectClass:" + dialectClass, e);
-		}
+	public void setDialect(Dialect dialect) {
+		this.dialect = dialect;
 	}
 }

@@ -229,6 +229,18 @@ public class AppAutoConfiguration {
 			return new ReactiveWebServerFactory(properties);
 		}
 	}
+	
+	/**
+	 * 数据库配置
+	 * @author lifeng
+	 */
+	@Configuration
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableDataBase", matchIfMissing = true)
+	public static class DataBaseAutoConfiguration extends DataBaseConfigurationSupport {
+		public DataBaseAutoConfiguration() {
+			APP_LOGGER.debug("Loading DataBase");
+		}
+	}
 
 	/**
 	 * 系统服务

@@ -16,6 +16,8 @@ public class ApplicationProperties {
 	private boolean enableEventBus = true;
 	private boolean enableSecurity = true;
 	private boolean enableBooter = true;
+	private boolean enableDataBase = true;
+	private boolean enableMybatis = true;
 	
 	// 系统配置
 	private String serverSn;
@@ -44,6 +46,18 @@ public class ApplicationProperties {
 	}
 	public void setEnableBooter(boolean enableBooter) {
 		this.enableBooter = enableBooter;
+	}
+	public boolean isEnableDataBase() {
+		return enableDataBase;
+	}
+	public void setEnableDataBase(boolean enableDataBase) {
+		this.enableDataBase = enableDataBase;
+	}
+	public boolean isEnableMybatis() {
+		return enableMybatis;
+	}
+	public void setEnableMybatis(boolean enableMybatis) {
+		this.enableMybatis = enableMybatis;
 	}
 	public String getServerSn() {
 		return serverSn;

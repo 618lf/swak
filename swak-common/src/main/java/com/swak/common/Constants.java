@@ -11,6 +11,8 @@ public interface Constants {
 	String HTTP_SERVER_PREFIX = "spring.http-server";
 	String CACHE_PREFIX = "spring.cache";
 	String SECURITY_PREFIX = "spring.security";
+	String MYBATIS_PREFIX = "spring.mybatis";
+	String DATASOURCE_PREFIX = "spring.datasource";
 	
 	/** 用户密码加密 **/
 	String HASH_ALGORITHM = "SHA-1";
