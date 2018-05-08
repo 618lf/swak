@@ -4,10 +4,9 @@ import java.util.List;
 
 import com.swak.common.cache.Cache;
 import com.swak.common.cache.Cons;
+import com.swak.common.cache.SafeEncoder;
 import com.swak.common.serializer.SerializationUtils;
 import com.swak.common.utils.Lists;
-
-import redis.clients.util.SafeEncoder;
 
 /**
  * Redis 需要在配置文件中配置,以后在添加详细的参数

@@ -1,10 +1,9 @@
 package com.swak.common.cache.collection;
 
 import com.swak.common.cache.Cons;
+import com.swak.common.cache.SafeEncoder;
 import com.swak.common.cache.redis.NameableCache;
 import com.swak.common.cache.redis.RedisUtils;
-
-import redis.clients.util.SafeEncoder;
 
 /**
  * FIFO - 本身就是一个 list

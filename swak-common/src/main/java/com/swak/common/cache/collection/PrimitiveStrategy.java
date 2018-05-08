@@ -1,6 +1,6 @@
 package com.swak.common.cache.collection;
 
-import redis.clients.util.SafeEncoder;
+import com.swak.common.cache.SafeEncoder;
 
 /**
  * 针对基本类型的序列化方式

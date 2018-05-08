@@ -5,12 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.swak.common.cache.Cons;
+import com.swak.common.cache.SafeEncoder;
 import com.swak.common.cache.redis.NameableCache;
 import com.swak.common.cache.redis.RedisUtils;
 import com.swak.common.utils.Lists;
 import com.swak.common.utils.Maps;
-
-import redis.clients.util.SafeEncoder;
 
 /**
  * value 是 一个 map
