@@ -32,7 +32,7 @@
 		<version.protostuff>1.6.0</version.protostuff>
 		<version.javassist>3.22.0-GA</version.javassist>
 		<disruptor.version>3.4.0</disruptor.version>
-		<ehcache.version>2.6.11</ehcache.version>
+		<ehcache.version>2.10.5</ehcache.version>
 		<jedis.version>2.9.0</jedis.version>
 		<redisson.version>3.6.5</redisson.version>
 		<lettuce.version>5.0.3.RELEASE</lettuce.version>
@@ -350,7 +350,7 @@
 			</dependency>
 			<dependency>
 				<groupId>net.sf.ehcache</groupId>
-				<artifactId>ehcache-core</artifactId>
+				<artifactId>ehcache</artifactId>
 				<version>${ehcache.version}</version>
 				<exclusions>
 					<exclusion>

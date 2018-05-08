@@ -78,7 +78,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache-core</artifactId>
+			<artifactId>ehcache</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.lettuce</groupId>
@@ -117,7 +117,7 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
 		</dependency>
-		
+
 		<!-- springboot -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
