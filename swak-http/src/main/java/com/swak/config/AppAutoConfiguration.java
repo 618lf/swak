@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.CollectionUtils;
 
+import com.swak.common.cache.CacheProperties;
 import com.swak.common.utils.SpringContextHolder;
 import com.swak.reactivex.booter.AppBooter;
 import com.swak.reactivex.handler.WebFilter;
@@ -53,6 +54,7 @@ public class AppAutoConfiguration {
 	@Order(3)
 	@Configuration
 	@ConditionalOnMissingBean(CacheConfigurationSupport.class)
+	@EnableConfigurationProperties(CacheProperties.class)
 	public static class CacheAutoConfiguration extends CacheConfigurationSupport {
 		
 	} 

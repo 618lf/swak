@@ -11,9 +11,9 @@ public class CacheProperties {
 
 	public static final String CACHE_PREFIX = "spring.cache";
 	
-	private int poolMaxTotal;
-	private int poolMaxIdle;
-	private int poolMaxWaitMillis;
+	private int poolMaxTotal = 2;
+	private int poolMaxIdle = 2;
+	private int poolMaxWaitMillis = -1;
 	private int poolTestOnBorrow;
 	private int readtimeout;
 	private String hosts;
