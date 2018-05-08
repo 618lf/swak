@@ -20,8 +20,9 @@ public class ApplicationProperties {
 	private boolean enableMybatis = true;
 	
 	// 系统配置
-	private String serverSn;
-	private String serialization;
+	private String version = "3.0";
+	private String serverSn = "server-1-1";
+	private String serialization = "kryo_pool";
 	
 	public boolean isEnableRedis() {
 		return enableRedis;
@@ -58,6 +59,12 @@ public class ApplicationProperties {
 	}
 	public void setEnableMybatis(boolean enableMybatis) {
 		this.enableMybatis = enableMybatis;
+	}
+	public String getVersion() {
+		return version;
+	}
+	public void setVersion(String version) {
+		this.version = version;
 	}
 	public String getServerSn() {
 		return serverSn;
