@@ -18,7 +18,7 @@ public class RedisSubscribeBoot extends AbstractBoot {
 	 */
 	@Override
 	public void init() {
-		RedisUtils.getRedis().subscribe(redisLocal, redisLocal.getChannels());
+		RedisUtils.subscribe(redisLocal, redisLocal.getChannels());
 	}
 
 	/**

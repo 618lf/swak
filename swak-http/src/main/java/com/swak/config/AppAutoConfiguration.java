@@ -44,6 +44,18 @@ public class AppAutoConfiguration {
 	public SpringContextHolder springContextHolder() {
 		return new SpringContextHolder();
 	}
+	
+	/**
+	 * Web 服务配置
+	 * 
+	 * @author lifeng
+	 */
+	@Order(3)
+	@Configuration
+	@ConditionalOnMissingBean(CacheConfigurationSupport.class)
+	public static class CacheAutoConfiguration extends CacheConfigurationSupport {
+		
+	} 
 
 	/**
 	 * 安全配置

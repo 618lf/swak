@@ -1,67 +1,36 @@
 package com.swak.common.cache.redis.factory;
 
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.DisposableBean;
 
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Protocol;
+import io.lettuce.core.api.StatefulConnection;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 
 /**
- * jedis 连接工厂
+ * 获得链接
  * @author lifeng
  */
-public class RedisConnectionFactory implements InitializingBean {
+public interface RedisConnectionFactory<K, V> extends DisposableBean {
 
-	private String hosts = Protocol.DEFAULT_HOST.concat(":").concat(String.valueOf(Protocol.DEFAULT_PORT));
-	private int timeout = Protocol.DEFAULT_TIMEOUT;
-	private String password;
-	private boolean enabledCluster = false;
-	private JedisPoolConfig poolConfig = new JedisPoolConfig();
-	private IRedisCacheUtils redisCache; // 真实提供的服务
+	/**
+	 * 获取链接
+	 * @return
+	 */
+	StatefulConnection<K, V> getConnection(Class<?> connectionType);
 	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		if (enabledCluster) {
-			redisCache = new RedisClusterCacheUtils(poolConfig, hosts, password, timeout);
-		} else {
-			redisCache = new RedisCacheUtils(poolConfig, hosts, password, timeout);
-		}
+	/**
+	 * 存储数据
+	 * @return
+	 */
+	default StatefulRedisConnection<K, V> getStandardConnection() {
+		return (StatefulRedisConnection<K, V>)this.getConnection(StatefulRedisConnection.class);
 	}
 	
 	/**
-	 * 获得redis操作入口
+	 * 发布订阅
 	 * @return
 	 */
-	public IRedisCacheUtils getRedisCache() {
-		return redisCache;
-	}
-	public String getHosts() {
-		return hosts;
-	}
-	public void setHosts(String hosts) {
-		this.hosts = hosts;
-	}
-	public int getTimeout() {
-		return timeout;
-	}
-	public void setTimeout(int timeout) {
-		this.timeout = timeout;
-	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	public boolean isEnabledCluster() {
-		return enabledCluster;
-	}
-	public void setEnabledCluster(boolean enabledCluster) {
-		this.enabledCluster = enabledCluster;
-	}
-	public JedisPoolConfig getPoolConfig() {
-		return poolConfig;
-	}
-	public void setPoolConfig(JedisPoolConfig poolConfig) {
-		this.poolConfig = poolConfig;
+	default StatefulRedisPubSubConnection<K, V> getPubsubConnection() {
+		return (StatefulRedisPubSubConnection<K, V>)this.getConnection(StatefulRedisPubSubConnection.class);
 	}
 }

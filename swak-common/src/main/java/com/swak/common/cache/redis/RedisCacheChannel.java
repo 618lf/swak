@@ -5,8 +5,6 @@ import java.util.List;
 import com.swak.common.cache.Cache;
 import com.swak.common.utils.Lists;
 
-import redis.clients.util.SafeEncoder;
-
 /**
  * 如果本地缓存还有，但是远程缓存删除了--怎么处理
  * 二级缓存功能
@@ -138,7 +136,7 @@ public class RedisCacheChannel<T> implements Cache<T> {
 			for(String key: keys) {
 				_keys.add(this.getKeyName(key));
 			}
-			RedisUtils.getRedis().delete(_keys.toArray(new String[]{}));
+			RedisUtils.del(_keys.toArray(new String[]{}));
 			return _keys;
 		}
 		return null;
@@ -156,7 +154,7 @@ public class RedisCacheChannel<T> implements Cache<T> {
 		if (key != null) {
 			// 发送广播
 			Command cmd = new Command(Command.OPT_DELETE_KEY, key);
-			RedisUtils.getRedis().publish(SafeEncoder.encode("local_channel"), cmd.toBuffers());
+			RedisUtils.publish(local.getChannels(), cmd.toBuffers());
 		}
 	}
 }

@@ -7,19 +7,18 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.swak.common.cache.Cache;
 import com.swak.common.cache.ehcache.EhCacheCache;
+import com.swak.common.eventbus.RedisEventBus;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import redis.clients.jedis.BinaryJedisPubSub;
-import redis.clients.util.SafeEncoder;
 
 /**
  * 本地缓存
  * 
  * @author root
  */
-public class RedisLocalCache extends BinaryJedisPubSub implements Cache<Object>, InitializingBean, DisposableBean {
+public class RedisLocalCache extends RedisEventBus implements Cache<Object>, InitializingBean, DisposableBean {
 
 	private CacheManager cacheManager;
 	
@@ -46,8 +45,8 @@ public class RedisLocalCache extends BinaryJedisPubSub implements Cache<Object>,
 	 * 
 	 * @return
 	 */
-	public byte[] getChannels() {
-		return SafeEncoder.encode("local_channel");
+	public String getChannels() {
+		return "local_channel";
 	}
 
 	@Override
@@ -100,7 +99,7 @@ public class RedisLocalCache extends BinaryJedisPubSub implements Cache<Object>,
 	 * 获取订阅的消息
 	 */
 	@Override
-	public void onMessage(byte[] channel, byte[] message) {
+	public void message(String channel, byte[] message) {
 
 		// 无效消息
 		if (message != null && message.length <= 0) {

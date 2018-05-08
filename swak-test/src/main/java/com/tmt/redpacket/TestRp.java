@@ -83,9 +83,9 @@ public class TestRp {
 	private void loadRp() {
 		
 		// 清空数据
-		RedisUtils.getRedis().delete(list_rp);
-		RedisUtils.getRedis().delete(list_rp_robd);
-		RedisUtils.getRedis().delete(map_rp_user);
+		RedisUtils.del(list_rp);
+		RedisUtils.del(list_rp_robd);
+		RedisUtils.del(map_rp_user);
 		
 		// 加载红包
 		final CountDownLatch latch = new CountDownLatch(threadCount);  
@@ -98,7 +98,7 @@ public class TestRp {
 					for(int j = i * per; j < (i+1) * per; j++) {  
 						object.put("id", j);
 						object.put("money", j);
-						RedisUtils.getRedis().lPush(list_rp, SafeEncoder.encode(JsonMapper.toJson(object)));
+						RedisUtils.lPush(list_rp, SafeEncoder.encode(JsonMapper.toJson(object)));
 					}
 					latch.countDown();
 				} 
@@ -130,7 +130,7 @@ public class TestRp {
 						SafeEncoder.encode(map_rp_user),
 						SafeEncoder.encode("" + j)
 					};
-					RedisUtils.getRedis().run(script, values);
+					RedisUtils.runScript(script, null, values);
 					
 					// 报表监听
 					count.incrementAndGet();
@@ -143,7 +143,7 @@ public class TestRp {
 		// 红包检查线程
 		Thread thread = new Thread(() -> {
 			while(!overed) {
-				if (RedisUtils.getRedis().lLen(list_rp) == 0) {
+				if (RedisUtils.lLen(list_rp) == 0) {
 					overed = true;
 					break;
 				}

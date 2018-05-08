@@ -43,7 +43,7 @@ public class ListCache<T> extends NameableCache implements CList<T> {
 		if (this.isValid()) {
 			this._hpush(t);
 		} else {
-			RedisUtils.getRedis().lPush(this.getKeyName(null), this.ser.serialize(t));
+			RedisUtils.lPush(this.getKeyName(null), this.ser.serialize(t));
 		}
 	}
 	
@@ -55,7 +55,7 @@ public class ListCache<T> extends NameableCache implements CList<T> {
 	protected void _hpush(T t) {
 		String script = Cons.LIST_PUT_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), this.ser.serialize(t), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-	    RedisUtils.getRedis().runAndGetOne(script, values);
+	    RedisUtils.runScript(script, null, values);
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class ListCache<T> extends NameableCache implements CList<T> {
 		if (this.isValid()) {
 			return this.ser.deserialize(this._hpop());
 		}
-		return this.ser.deserialize(RedisUtils.getRedis().lPop(this.getKeyName(null)));
+		return this.ser.deserialize(RedisUtils.lPop(this.getKeyName(null)));
 	}
 	
 	/**
@@ -77,7 +77,7 @@ public class ListCache<T> extends NameableCache implements CList<T> {
 	protected byte[] _hpop() {
 		String script = Cons.LIST_GET_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-	    return (byte[])RedisUtils.getRedis().runAndGetOne(script, values);
+	    return RedisUtils.runScript(script, null, values);
 	}
 
 	/**

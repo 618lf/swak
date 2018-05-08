@@ -78,9 +78,9 @@ public class TestRedis {
 	public void test2() {
 		long t1 = System.currentTimeMillis();
 		for (int i = 0; i < 100000; i++) {
-			RedisUtils.getRedis().add("hanqian2", SafeEncoder.encode("{dsdsdsd}"));
-			RedisUtils.getRedis().expire("hanqian2", 60 * 10);
-			SafeEncoder.encode(RedisUtils.getRedis().get("hanqian2"));
+			RedisUtils.set("hanqian2", SafeEncoder.encode("{dsdsdsd}"));
+			RedisUtils.expire("hanqian2", 60 * 10);
+			SafeEncoder.encode(RedisUtils.get("hanqian2"));
 		}
 		System.out.println("ncahce ,use=" + (System.currentTimeMillis() - t1));
 	}
@@ -95,7 +95,7 @@ public class TestRedis {
 		long t1 = System.currentTimeMillis();
 		for (int i = 0; i < 100000; i++) {
 			byte[][] values = new byte[][] {SafeEncoder.encode("sys#lifeng"), SafeEncoder.encode("哈哈")};
-			RedisUtils.getRedis().runAndGetOne(lua, values);
+			RedisUtils.runScript(lua, null, values);
 		}
 		System.out.println("lua ,use=" + (System.currentTimeMillis() - t1));
 	}

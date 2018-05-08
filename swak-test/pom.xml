@@ -88,6 +88,12 @@
 			<artifactId>redisson</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>net.oschina.j2cache</groupId>
+			<artifactId>j2cache-core</artifactId>
+			<version>2.3.16-release</version>
+		</dependency>
+
 		<!-- 测试 -->
 		<dependency>
 			<groupId>junit</groupId>

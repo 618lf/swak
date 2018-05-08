@@ -68,7 +68,7 @@ public class Reapacket {
 			SafeEncoder.encode(map_rp_user),
 			SafeEncoder.encode(user)
 		};
-		byte[] result = RedisUtils.getRedis().runAndGetOne(script, values);
+		byte[] result = RedisUtils.runScript(script, null, values);
 		return result != null? SafeEncoder.encode(result) : null;
 	}
 	
@@ -77,7 +77,7 @@ public class Reapacket {
 	 * @return
 	 */
 	public boolean finish() {
-		return RedisUtils.getRedis().lLen(list_rp) == 0;
+		return RedisUtils.lLen(list_rp) == 0;
 	}
 	
 	private void init() {
@@ -96,7 +96,7 @@ public class Reapacket {
 					for(int j = i * per; j < (i+1) * per; j++) {  
 						object.put("id", j);
 						object.put("men", j);
-						RedisUtils.getRedis().lPush(list_rp, SafeEncoder.encode(JsonMapper.toJson(object)));
+						RedisUtils.lPush(list_rp, SafeEncoder.encode(JsonMapper.toJson(object)));
 					}
 					latch.countDown();
 				} 

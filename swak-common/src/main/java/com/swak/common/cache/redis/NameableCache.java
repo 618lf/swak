@@ -46,7 +46,7 @@ public abstract class NameableCache {
 	 */
 	protected void expire(String key) {
 		if (isValid()) {
-			RedisUtils.getRedis().expire(this.getKeyName(key), this.timeToIdle);
+			RedisUtils.expire(this.getKeyName(key), this.timeToIdle);
 		}
 	}
 	

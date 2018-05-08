@@ -1,8 +1,11 @@
 package com.swak.common.cache.redis;
 
+import java.util.List;
+
 import com.swak.common.cache.Cache;
 import com.swak.common.cache.Cons;
 import com.swak.common.serializer.SerializationUtils;
+import com.swak.common.utils.Lists;
 
 import redis.clients.util.SafeEncoder;
 
@@ -78,7 +81,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 
 	@Override
 	public long ttl(String key) {
-		return RedisUtils.getRedis().ttl(getKeyName(key));
+		return RedisUtils.ttl(getKeyName(key));
 	}
 
 	/**
@@ -89,7 +92,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	 */
 	protected byte[] _get(String key) {
 		String keyName = this.getKeyName(key);
-		return RedisUtils.getRedis().get(keyName);
+		return RedisUtils.get(keyName);
 	}
 	
 	/**
@@ -100,7 +103,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	protected byte[] _hget(String key) {
 		String script = Cons.GET_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-	    return (byte[])RedisUtils.getRedis().runAndGetOne(script, values);
+		return RedisUtils.runScript(script, null, values);
 	}
 	
 	/**
@@ -113,9 +116,9 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	protected void _set(String key, byte[] value) {
 		String keyName = this.getKeyName(key);
 		if (isValid()) {
-			RedisUtils.getRedis().set(keyName, value, this.timeToIdle);
+			RedisUtils.set(keyName, value, this.timeToIdle);
 		} else {
-			RedisUtils.getRedis().set(keyName, value);
+			RedisUtils.set(keyName, value);
 		}
 	}
 	
@@ -123,8 +126,14 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	 * 删除当前的key
 	 */
 	protected void _del(String... keys) {
-		for(String key: keys) {
-			RedisUtils.getRedis().delete(this.getKeyName(key));
+		if (keys.length == 1) {
+			RedisUtils.del(this.getKeyName(keys[0]));
+		} else {
+			List<String> _keys = Lists.newArrayList(keys.length);
+			for(String key: keys) {
+				_keys.add(this.getKeyName(key));
+			}
+			RedisUtils.del(_keys.toArray(keys));
 		}
 	}
 
@@ -132,7 +141,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	 * 当前key 是否存在
 	 */
 	protected boolean _exists(String key) {
-		return RedisUtils.getRedis().exists(this.getKeyName(key));
+		return RedisUtils.exists(this.getKeyName(key));
 	}
 	
 	/**
@@ -143,7 +152,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	protected boolean _hexists(String key) {
 		String script = Cons.EXISTS_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-	    Long e = RedisUtils.getRedis().runAndGetOne(script, values);
+		Long e = RedisUtils.runScript(script, null, values);
 		return e != null && e == 1;
 	}
 }
