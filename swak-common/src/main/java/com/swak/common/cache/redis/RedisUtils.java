@@ -212,13 +212,23 @@ public class RedisUtils {
 	}
 	
 	/**
+	 * 添加监听
+	 * @param key
+	 * @return
+	 */
+	public static void listener(RedisPubSubListener<byte[], byte[]> subscriber) {
+		observable(connect -> {
+			connect.addListener(subscriber);
+		});
+	}
+	
+	/**
 	 * 订阅此主题
 	 * @param key
 	 * @return
 	 */
-	public static void subscribe(RedisPubSubListener<byte[], byte[]> subscriber, String ... channels) {
+	public static void subscribe(String ... channels) {
 		observable(connect -> {
-			connect.addListener(subscriber);
 			connect.async().subscribe(SafeEncoder.encodeMany(channels));
 		});
 	}

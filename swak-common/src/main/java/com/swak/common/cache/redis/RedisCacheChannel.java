@@ -151,10 +151,6 @@ public class RedisCacheChannel<T> implements Cache<T> {
 	 *            : cache key
 	 */
 	private void _sendEvictCmd(Object key) {
-		if (key != null) {
-			// 发送广播
-			Command cmd = new Command(Command.OPT_DELETE_KEY, key);
-			RedisUtils.publish(local.getChannels(), cmd.toBuffers());
-		}
+		local.sendEvictCmd(key);
 	}
 }

@@ -5,6 +5,9 @@ package com.swak.common.cache;
  * @author lifeng
  */
 public class Cons {
+	
+	// 本地缓存
+	public static String LOCAL_CACHE_TOPIC = "LOCAL_CACHE_TOPIC";
 
 	// 普通GET
 	public static String GET_LUA = null;

@@ -1,15 +1,17 @@
 package com.swak.config;
 
+import static com.swak.Application.APP_LOGGER;
+
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.util.CollectionUtils;
 
 import com.swak.common.cache.CacheProperties;
@@ -26,7 +28,6 @@ import com.swak.security.mgt.support.DefaultSecurityManager;
 import com.swak.security.principal.PrincipalStrategy;
 import com.swak.security.principal.support.TokenPrincipalStrategy;
 import com.swak.security.utils.SecurityUtils;
-import static com.swak.Application.APP_LOGGER;
 
 /**
  * 系统配置
@@ -41,18 +42,16 @@ public class AppAutoConfiguration {
 	 * 
 	 * @return
 	 */
-	@Order(1)
 	@Bean
 	public SpringContextHolder springContextHolder() {
 		return new SpringContextHolder();
 	}
 	
 	/**
-	 * Web 服务配置
+	 * 缓存 服务配置
 	 * 
 	 * @author lifeng
 	 */
-	@Order(3)
 	@Configuration
 	@ConditionalOnMissingBean(CacheConfigurationSupport.class)
 	@EnableConfigurationProperties(CacheProperties.class)
@@ -61,13 +60,26 @@ public class AppAutoConfiguration {
 			APP_LOGGER.debug("Loading Redis Cache");
 		}
 	} 
+	
+	/**
+	 * 
+	 * @author lifeng
+	 *
+	 */
+	@Configuration
+	@ConditionalOnMissingBean(RedisEventBusConfigurationSupport.class)
+	@AutoConfigureAfter(CacheAutoConfiguration.class)
+	public static class EventBusAutoConfiguration extends RedisEventBusConfigurationSupport {
+		public EventBusAutoConfiguration() {
+			APP_LOGGER.debug("Loading Event bus");
+		}
+	}
 
 	/**
 	 * 安全配置
 	 * 
 	 * @author lifeng
 	 */
-	@Order(2)
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.security", name = "enabled", matchIfMissing = true)
 	@ConditionalOnBean({ SecurityConfigurationSupport.class })
@@ -152,11 +164,10 @@ public class AppAutoConfiguration {
 	 * 
 	 * @author lifeng
 	 */
-	@Order(3)
 	@Configuration
 	@ConditionalOnMissingBean(WebConfigurationSupport.class)
-	public static class WebAutoConfiguration extends WebConfigurationSupport {
-		public WebAutoConfiguration() {
+	public static class WebHandlerAutoConfiguration extends WebConfigurationSupport {
+		public WebHandlerAutoConfiguration() {
 			APP_LOGGER.debug("Loading Web Handler");
 		}
 	}
@@ -166,14 +177,13 @@ public class AppAutoConfiguration {
 	 * 
 	 * @author lifeng
 	 */
-	@Order(4)
 	@Configuration
 	@EnableConfigurationProperties(HttpServerProperties.class)
-	public static class WebServerAutoConfiguration {
+	public static class HttpServerAutoConfiguration {
 
 		private HttpServerProperties properties;
 		
-		public WebServerAutoConfiguration(HttpServerProperties properties) {
+		public HttpServerAutoConfiguration(HttpServerProperties properties) {
 			this.properties = properties;
 			APP_LOGGER.debug("Loading Http Server on http://" + properties.getHost() + ":" + properties.getPort());
 		}
@@ -189,7 +199,6 @@ public class AppAutoConfiguration {
 	 * 
 	 * @author lifeng
 	 */
-	@Order(5)
 	@Configuration
 	public static class AppListenerConfig {
 		

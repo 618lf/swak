@@ -7,8 +7,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 
 import com.swak.common.cache.CacheProperties;
-import com.swak.common.cache.ehcache.EhCacheCacheManager;
 import com.swak.common.cache.redis.RedisCacheManager;
+import com.swak.common.cache.redis.RedisLocalCache;
 import com.swak.common.cache.redis.factory.RedisClientDecorator;
 import com.swak.common.cache.redis.factory.RedisConnectionPoolFactory;
 import com.swak.common.utils.Lists;
@@ -18,6 +18,7 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DefaultClientResources;
 import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.Configuration;
 
@@ -64,12 +65,13 @@ public class CacheConfigurationSupport {
 	}
 	
 	/**
-	 * 配置 ehCache
+	 * 配置 本地缓存
+	 * 会订阅 Event
 	 * @return
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public EhCacheCacheManager ehCacheCacheManager() {
+	public RedisLocalCache redisLocalCache() {
 		 Configuration configuration = new Configuration();
 		 CacheConfiguration cacheConfiguration = new CacheConfiguration();
 		 cacheConfiguration.setName(cacheProperties.getLocalName());
@@ -80,7 +82,9 @@ public class CacheConfigurationSupport {
 	     cacheConfiguration.setTimeToLiveSeconds(cacheProperties.getLocalLiveSeconds());
 	     cacheConfiguration.setEternal(false);
 		 configuration.addCache(cacheConfiguration);
-		 return new EhCacheCacheManager(CacheManager.newInstance(configuration));
+		 CacheManager cacheManager = CacheManager.newInstance(configuration);
+		 Ehcache ehcache = cacheManager.getCache(cacheProperties.getLocalName());
+		 return new RedisLocalCache(cacheManager, ehcache);
 	}
 	
 	/**
