@@ -47,12 +47,7 @@ public class RedisUtils {
 	
 	// --------------- 基本操作相关--------
 	public static <T> T execute(Function<StatefulRedisConnection<byte[], byte[]>, T> fuc) {
-		StatefulRedisConnection<byte[], byte[]> connect = RedisUtils.getStandardConnection();
-		try {
-            return fuc.apply(connect);
-		} finally {
-			connect.close();
-		}
+		return fuc.apply(RedisUtils.getStandardConnection());
 	}
 
 	/**
@@ -79,7 +74,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static void set(String key, byte[] value) {
-		execute(connect -> connect.sync().set(SafeEncoder.encode(key), value));
+		execute(connect -> connect.async().set(SafeEncoder.encode(key), value));
 	}
 	
 	/**
@@ -89,8 +84,9 @@ public class RedisUtils {
 	 */
 	public static void set(String key, byte[] value, int expire) {
 		execute(connect -> {
-			connect.sync().set(SafeEncoder.encode(key), value);
-			connect.sync().expire(SafeEncoder.encode(key), expire);
+			byte[] _key = SafeEncoder.encode(key);
+			connect.async().set(_key, value);
+			connect.async().expire(_key, expire);
 			return null;
 		});
 	}
@@ -212,12 +208,7 @@ public class RedisUtils {
 	
 	// --------------- 发布订阅--------
 	public static void observable(Consumer<StatefulRedisPubSubConnection<byte[], byte[]>> fuc) {
-		StatefulRedisPubSubConnection<byte[], byte[]> connect = RedisUtils.getPubsubConnection();
-		try {
-            fuc.accept(connect);
-		} finally {
-			connect.close();
-		}
+		fuc.accept(RedisUtils.getPubsubConnection());
 	}
 	
 	/**

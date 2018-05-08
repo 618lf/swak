@@ -11,11 +11,7 @@ public class CacheProperties {
 
 	public static final String CACHE_PREFIX = "spring.cache";
 	
-	private int poolMaxTotal = 2;
-	private int poolMaxIdle = 2;
-	private int poolMaxWaitMillis = -1;
-	private int poolTestOnBorrow;
-	private int readtimeout;
+	private int poolMax = 2;
 	private String hosts;
 	private String password;
 	
@@ -42,35 +38,11 @@ public class CacheProperties {
 	public void setLocalElements(int localElements) {
 		this.localElements = localElements;
 	}
-	public int getPoolMaxTotal() {
-		return poolMaxTotal;
+	public int getPoolMax() {
+		return poolMax;
 	}
-	public void setPoolMaxTotal(int poolMaxTotal) {
-		this.poolMaxTotal = poolMaxTotal;
-	}
-	public int getPoolMaxIdle() {
-		return poolMaxIdle;
-	}
-	public void setPoolMaxIdle(int poolMaxIdle) {
-		this.poolMaxIdle = poolMaxIdle;
-	}
-	public int getPoolMaxWaitMillis() {
-		return poolMaxWaitMillis;
-	}
-	public void setPoolMaxWaitMillis(int poolMaxWaitMillis) {
-		this.poolMaxWaitMillis = poolMaxWaitMillis;
-	}
-	public int getPoolTestOnBorrow() {
-		return poolTestOnBorrow;
-	}
-	public void setPoolTestOnBorrow(int poolTestOnBorrow) {
-		this.poolTestOnBorrow = poolTestOnBorrow;
-	}
-	public int getReadtimeout() {
-		return readtimeout;
-	}
-	public void setReadtimeout(int readtimeout) {
-		this.readtimeout = readtimeout;
+	public void setPoolMax(int poolMax) {
+		this.poolMax = poolMax;
 	}
 	public String getHosts() {
 		return hosts;

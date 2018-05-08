@@ -3,28 +3,26 @@ package com.swak.common.cache.redis.factory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import com.swak.common.cache.CacheProperties;
 
 import io.lettuce.core.api.StatefulConnection;
-import io.lettuce.core.support.ConnectionPoolSupport;
 
 /**
  * 池化处理
+ * 
  * @author lifeng
  */
-public class RedisConnectionPoolFactory implements RedisConnectionFactory<byte[], byte[]>{
+public class RedisConnectionPoolFactory implements RedisConnectionFactory<byte[], byte[]> {
 
 	private final RedisClientDecorator client;
-	private final GenericObjectPoolConfig poolConfig;
-    private final Map<Class<?>, GenericObjectPool<StatefulConnection<byte[], byte[]>>> pools;
-    private final Map<StatefulConnection<byte[], byte[]>, GenericObjectPool<StatefulConnection<byte[], byte[]>>> poolsRef;
-    
-	public RedisConnectionPoolFactory(RedisClientDecorator client, GenericObjectPoolConfig poolConfig) {
+	@SuppressWarnings("unused")
+	private final CacheProperties cacheProperties;
+	private final Map<Class<?>, StatefulConnection<byte[], byte[]>> pools;
+
+	public RedisConnectionPoolFactory(RedisClientDecorator client, CacheProperties properties) {
 		this.client = client;
-		this.poolConfig = poolConfig;
+		this.cacheProperties = properties;
 		pools = new ConcurrentHashMap<>(3);
-		poolsRef = new ConcurrentHashMap<>(3);
 	}
 
 	/**
@@ -33,18 +31,9 @@ public class RedisConnectionPoolFactory implements RedisConnectionFactory<byte[]
 	@Override
 	public StatefulConnection<byte[], byte[]> getConnection(Class<?> connectionType) {
 		try {
-			
-			GenericObjectPool<StatefulConnection<byte[], byte[]>> pool = pools.computeIfAbsent(connectionType, (poolType) ->{
-				return ConnectionPoolSupport.createGenericObjectPool(()->{
-					return client.getConnection(connectionType);
-				}, poolConfig, false);
+			return pools.computeIfAbsent(connectionType, (poolType) -> {
+				return client.getConnection(connectionType);
 			});
-			
-			StatefulConnection<byte[], byte[]> connection = pool.borrowObject();
-
-			poolsRef.put(connection, pool);
-			
-			return connection;
 		} catch (Exception e) {
 			return null;
 		}
@@ -55,12 +44,7 @@ public class RedisConnectionPoolFactory implements RedisConnectionFactory<byte[]
 	 */
 	@Override
 	public void destroy() throws Exception {
-		if (!poolsRef.isEmpty()) {
-			
-			poolsRef.forEach((connection, pool) -> pool.returnObject(connection));
-			poolsRef.clear();
-		}
-		pools.forEach((type, pool) -> pool.close());
+		pools.values().stream().forEach(connect -> connect.close());
 		pools.clear();
 	}
 }

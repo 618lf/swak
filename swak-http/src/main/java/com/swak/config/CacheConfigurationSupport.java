@@ -2,7 +2,6 @@ package com.swak.config;
 
 import java.util.List;
 
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -52,29 +51,15 @@ public class CacheConfigurationSupport {
     }
 	
 	/**
-	 * 配置 RedisClient
-	 * @param clientResources
-	 * @return
-	 */
-	@Bean
-    public GenericObjectPoolConfig cachePoolConfig() {
-		GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-		config.setMaxIdle(cacheProperties.getPoolMaxIdle());
-		config.setMaxTotal(cacheProperties.getPoolMaxTotal());
-		config.setMaxWaitMillis(cacheProperties.getPoolMaxWaitMillis());
-		return config;
-    }
-	
-	/**
 	 * 创建 PoolFactory
 	 * @param cachePoolConfig
 	 * @param client
 	 * @return
 	 */
 	@Bean
-	public RedisConnectionPoolFactory cachePoolFactory(GenericObjectPoolConfig cachePoolConfig, RedisClient client) {
+	public RedisConnectionPoolFactory cachePoolFactory(CacheProperties cacheProperties, RedisClient client) {
 		RedisClientDecorator decorator = new RedisClientDecorator(client);
-		RedisConnectionPoolFactory cachePoolFactory = new RedisConnectionPoolFactory(decorator, cachePoolConfig);
+		RedisConnectionPoolFactory cachePoolFactory = new RedisConnectionPoolFactory(decorator, cacheProperties);
 		return cachePoolFactory;
 	}
 	
