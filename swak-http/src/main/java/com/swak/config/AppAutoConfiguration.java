@@ -12,11 +12,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.util.CollectionUtils;
 
 import com.swak.ApplicationProperties;
@@ -59,28 +58,31 @@ public class AppAutoConfiguration {
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 	public static class BaseFuntionAutoConfiguration {
 		
-		public BaseFuntionAutoConfiguration() {
+		/**
+		 * 基础配置
+		 * @param context
+		 */
+		public BaseFuntionAutoConfiguration(ApplicationContext context, ApplicationProperties properties) {
 			APP_LOGGER.debug("Loading Base Function");
+			
+			// 简单的资源
+			this.springContextHolder(context);
+			this.serializer(properties);
 		}
 		
 		/**
-		 * 基础服务
-		 * 
-		 * @return
+		 * SpringContextHolder
+		 * @param context
 		 */
-		@Bean
-		@Lazy(false)
-		@Order(1)
-		public SpringContextHolder springContextHolder() {
-			return new SpringContextHolder();
+		public void springContextHolder(ApplicationContext context) {
+			SpringContextHolder.setApplicationContext(context);
 		}
 		
 		/**
 		 * 序列化
 		 * @return
 		 */
-		@Bean
-		public Serializer serializer(ApplicationProperties properties) {
+		public void serializer(ApplicationProperties properties) {
 			String ser = properties.getSerialization();
 			Serializer g_ser = null;
 			if (ser.equals("java")) {
@@ -97,7 +99,15 @@ public class AppAutoConfiguration {
 			
 			// 公共引用
 			SerializationUtils.g_ser = g_ser;
-			return g_ser;
+		}
+		
+		/**
+		 * 管理一些生命周期
+		 * @return
+		 */
+		@Bean
+		public DisposeBean disposeBean() {
+			return new DisposeBean();
 		}
 	}
 	
