@@ -6,7 +6,6 @@ import java.util.function.Function;
 
 import com.swak.common.cache.SafeEncoder;
 import com.swak.common.cache.redis.factory.RedisConnectionFactory;
-import com.swak.common.utils.SpringContextHolder;
 
 import io.lettuce.core.ScriptOutputType;
 import io.lettuce.core.api.StatefulRedisConnection;
@@ -23,9 +22,15 @@ public class RedisUtils {
 	/**
 	 * 工厂
 	 */
-	@SuppressWarnings("unchecked")
-	private static RedisConnectionFactory<byte[], byte[]> factory = SpringContextHolder
-			.getBean(RedisConnectionFactory.class);
+	private static RedisConnectionFactory<byte[], byte[]> factory = null;
+	
+	/**
+	 * 设置工厂
+	 * @param _factory
+	 */
+	public static void setRedisConnectionFactory(RedisConnectionFactory<byte[], byte[]> _factory) {
+		factory = _factory;
+	}
 
 	/**
 	 * 获得标准的链接

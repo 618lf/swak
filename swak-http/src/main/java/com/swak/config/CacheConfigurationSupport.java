@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import com.swak.common.cache.CacheProperties;
 import com.swak.common.cache.redis.RedisCacheManager;
 import com.swak.common.cache.redis.RedisLocalCache;
+import com.swak.common.cache.redis.RedisUtils;
 import com.swak.common.cache.redis.factory.RedisClientDecorator;
 import com.swak.common.cache.redis.factory.RedisConnectionPoolFactory;
 import com.swak.common.utils.Lists;
@@ -61,6 +62,7 @@ public class CacheConfigurationSupport {
 	public RedisConnectionPoolFactory cachePoolFactory(CacheProperties cacheProperties, RedisClient client) {
 		RedisClientDecorator decorator = new RedisClientDecorator(client);
 		RedisConnectionPoolFactory cachePoolFactory = new RedisConnectionPoolFactory(decorator, cacheProperties);
+		RedisUtils.setRedisConnectionFactory(cachePoolFactory);
 		return cachePoolFactory;
 	}
 	
