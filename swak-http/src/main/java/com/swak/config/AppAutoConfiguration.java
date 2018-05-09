@@ -6,12 +6,17 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.CollectionUtils;
 
 import com.swak.ApplicationProperties;
@@ -47,38 +52,53 @@ import com.swak.security.utils.SecurityUtils;
 public class AppAutoConfiguration {
 
 	/**
-	 * 基础服务
-	 * 
-	 * @return
+	 * 优先启动 基础组件
+	 * @author lifeng
 	 */
-	@Bean
-	public SpringContextHolder springContextHolder() {
-		return new SpringContextHolder();
-	}
-	
-	/**
-	 * 序列化
-	 * @return
-	 */
-	@Bean
-	public Serializer serializer(ApplicationProperties properties) {
-		String ser = properties.getSerialization();
-		Serializer g_ser = null;
-		if (ser.equals("java")) {
-            g_ser = new JavaSerializer();
-        } else if (ser.equals("fst")) {
-            g_ser = new FSTSerializer();
-        } else if (ser.equals("kryo")) {
-            g_ser = new KryoSerializer();
-        } else if (ser.equals("kryo_pool")){
-        	g_ser = new KryoPoolSerializer();
-        } else {
-        	g_ser = new JavaSerializer();
-        }
+	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
+	public static class BaseFuntionAutoConfiguration {
 		
-		// 公共引用
-		SerializationUtils.g_ser = g_ser;
-		return g_ser;
+		public BaseFuntionAutoConfiguration() {
+			APP_LOGGER.debug("Loading Base Function");
+		}
+		
+		/**
+		 * 基础服务
+		 * 
+		 * @return
+		 */
+		@Bean
+		@Lazy(false)
+		@Order(1)
+		public SpringContextHolder springContextHolder() {
+			return new SpringContextHolder();
+		}
+		
+		/**
+		 * 序列化
+		 * @return
+		 */
+		@Bean
+		public Serializer serializer(ApplicationProperties properties) {
+			String ser = properties.getSerialization();
+			Serializer g_ser = null;
+			if (ser.equals("java")) {
+	            g_ser = new JavaSerializer();
+	        } else if (ser.equals("fst")) {
+	            g_ser = new FSTSerializer();
+	        } else if (ser.equals("kryo")) {
+	            g_ser = new KryoSerializer();
+	        } else if (ser.equals("kryo_pool")){
+	        	g_ser = new KryoPoolSerializer();
+	        } else {
+	        	g_ser = new JavaSerializer();
+	        }
+			
+			// 公共引用
+			SerializationUtils.g_ser = g_ser;
+			return g_ser;
+		}
 	}
 	
 	/**
@@ -87,6 +107,7 @@ public class AppAutoConfiguration {
 	 * @author lifeng
 	 */
 	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 50)
 	@ConditionalOnMissingBean(CacheConfigurationSupport.class)
 	@EnableConfigurationProperties(CacheProperties.class)
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableRedis", matchIfMissing = true)
@@ -102,6 +123,7 @@ public class AppAutoConfiguration {
 	 *
 	 */
 	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 100)
 	@ConditionalOnMissingBean(RedisEventBusConfigurationSupport.class)
 	@AutoConfigureAfter(CacheAutoConfiguration.class)
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableEventBus", matchIfMissing = true)
@@ -117,8 +139,10 @@ public class AppAutoConfiguration {
 	 * @author lifeng
 	 */
 	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 	@ConditionalOnBean({ SecurityConfigurationSupport.class })
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSecurity", matchIfMissing = true)
+	@AutoConfigureBefore(WebHandlerAutoConfiguration.class)
 	public static class SecurityConfiguration {
 
 		@Autowired
@@ -201,6 +225,7 @@ public class AppAutoConfiguration {
 	 * @author lifeng
 	 */
 	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 20)
 	@ConditionalOnMissingBean(WebConfigurationSupport.class)
 	public static class WebHandlerAutoConfiguration extends WebConfigurationSupport {
 		public WebHandlerAutoConfiguration() {
@@ -214,7 +239,9 @@ public class AppAutoConfiguration {
 	 * @author lifeng
 	 */
 	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 50)
 	@EnableConfigurationProperties(HttpServerProperties.class)
+	@AutoConfigureAfter(WebHandlerAutoConfiguration.class)
 	public static class HttpServerAutoConfiguration {
 
 		private HttpServerProperties properties;
@@ -235,6 +262,7 @@ public class AppAutoConfiguration {
 	 * @author lifeng
 	 */
 	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 100)
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableDataBase", matchIfMissing = true)
 	public static class DataBaseAutoConfiguration extends DataBaseConfigurationSupport {
 		public DataBaseAutoConfiguration() {
@@ -248,6 +276,7 @@ public class AppAutoConfiguration {
 	 * @author lifeng
 	 */
 	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 200)
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableBooter", matchIfMissing = true)
 	public static class AppListenerConfig {
 		
