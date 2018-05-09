@@ -1,4 +1,4 @@
-package com.swak.common.persistence.datasource;
+package com.swak.common.persistence;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -7,8 +7,6 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-
-import com.swak.common.utils.SpringContextHolder;
 
 /**
  * 数据源管理器
@@ -23,16 +21,8 @@ public class DataSourceHolder {
 	 * 设置
 	 * @param dataSource
 	 */
-	public void setDataSource(DataSource dataSource) {
+	public static void setDataSource(DataSource dataSource) {
 		DataSourceHolder.dataSource = dataSource;
-	}
-	
-	// 获取链接相关
-	public static DataSource getDataSource() {
-		if (dataSource == null) {
-			SpringContextHolder.getBean("dataSourceHolder");
-		}
-		return dataSource;
 	}
 	
 	/**
@@ -42,7 +32,7 @@ public class DataSourceHolder {
 	 */
 	public static Connection getConnection() throws CannotGetJdbcConnectionException {
 		try {
-			return getDataSource().getConnection();
+			return dataSource.getConnection();
 		} catch (SQLException ex) {
 			throw new CannotGetJdbcConnectionException("Could not get JDBC Connection", ex);
 		}

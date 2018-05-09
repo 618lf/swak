@@ -45,6 +45,8 @@ import org.springframework.util.ObjectUtils;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.swak.common.Constants;
+import com.swak.common.persistence.DataSourceHolder;
+import com.swak.common.persistence.JdbcSqlExecutor;
 import com.swak.common.persistence.QueryCondition;
 import com.swak.common.persistence.dialect.MySQLDialect;
 import com.swak.common.persistence.mybatis.ExecutorInterceptor;
@@ -117,6 +119,9 @@ public class DataBaseConfigurationSupport {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+			
+			// 设置链接
+			DataSourceHolder.setDataSource(dataSource);
 			return dataSource;
 		}
 	}
@@ -158,7 +163,6 @@ public class DataBaseConfigurationSupport {
 				}
 				return jdbcTemplate;
 			}
-
 		}
 
 		@org.springframework.context.annotation.Configuration
@@ -170,7 +174,9 @@ public class DataBaseConfigurationSupport {
 			@ConditionalOnSingleCandidate(JdbcTemplate.class)
 			@ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
 			public NamedParameterJdbcTemplate namedParameterJdbcTemplate(JdbcTemplate jdbcTemplate) {
-				return new NamedParameterJdbcTemplate(jdbcTemplate);
+				NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(jdbcTemplate);
+				JdbcSqlExecutor.setJdbcTemplate(template);
+				return template;
 			}
 		}
 	}
