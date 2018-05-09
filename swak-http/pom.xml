@@ -12,9 +12,5 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-common</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.esotericsoftware</groupId>
-			<artifactId>kryo-shaded</artifactId>
-		</dependency>
 	</dependencies>
 </project>
