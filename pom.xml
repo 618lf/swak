@@ -13,6 +13,7 @@
 		<module>swak-vert</module>
 		<module>swak-webflux</module>
 		<module>swak-kotlin</module>
+		<module>swak-sample</module>
 	</modules>
 	<properties>
 		<spring.version>5.0.5.RELEASE</spring.version>
@@ -90,6 +91,11 @@
 			<dependency>
 				<groupId>com.swak</groupId>
 				<artifactId>swak-rpc</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-kotlin</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
