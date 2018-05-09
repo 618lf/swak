@@ -31,28 +31,10 @@ public class RedisUtils {
 	public static void setRedisConnectionFactory(RedisConnectionFactory<byte[], byte[]> _factory) {
 		factory = _factory;
 	}
-
-	/**
-	 * 获得标准的链接
-	 * 
-	 * @return
-	 */
-	public static StatefulRedisConnection<byte[], byte[]> getStandardConnection() {
-		return factory.getStandardConnection();
-	}
-
-	/**
-	 * 获得发布订阅的链接
-	 * 
-	 * @return
-	 */
-	public static StatefulRedisPubSubConnection<byte[], byte[]> getPubsubConnection() {
-		return factory.getPubsubConnection();
-	}
 	
 	// --------------- 基本操作相关--------
 	public static <T> T execute(Function<StatefulRedisConnection<byte[], byte[]>, T> fuc) {
-		return fuc.apply(RedisUtils.getStandardConnection());
+		return fuc.apply(factory.getStandardConnection());
 	}
 
 	/**
@@ -211,9 +193,12 @@ public class RedisUtils {
 		return execute(connect -> connect.sync().eval(script, ScriptOutputType.VALUE, values, values[0]));
 	}
 	
-	// --------------- 发布订阅--------
-	public static void observable(Consumer<StatefulRedisPubSubConnection<byte[], byte[]>> fuc) {
-		fuc.accept(RedisUtils.getPubsubConnection());
+	// --------------- 发布订阅 (需要是不同的链接) --------
+	public static void subscribe(Consumer<StatefulRedisPubSubConnection<byte[], byte[]>> fuc) {
+		fuc.accept(factory.getSubscribeConnection());
+	}
+	public static void publish(Consumer<StatefulRedisPubSubConnection<byte[], byte[]>> fuc) {
+		fuc.accept(factory.getPublishConnection());
 	}
 	
 	/**
@@ -222,7 +207,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static void listener(RedisPubSubListener<byte[], byte[]> subscriber) {
-		observable(connect -> {
+		subscribe(connect -> {
 			connect.addListener(subscriber);
 		});
 	}
@@ -233,7 +218,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static void subscribe(String ... channels) {
-		observable(connect -> {
+		subscribe(connect -> {
 			connect.async().subscribe(SafeEncoder.encodeMany(channels));
 		});
 	}
@@ -244,6 +229,6 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static void publish(String channel, byte[] message) {
-		observable(connect -> connect.async().publish(SafeEncoder.encode(channel), message));
+		publish(connect -> connect.async().publish(SafeEncoder.encode(channel), message));
 	}
 }

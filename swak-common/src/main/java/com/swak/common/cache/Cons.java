@@ -6,9 +6,6 @@ package com.swak.common.cache;
  */
 public class Cons {
 	
-	// 本地缓存
-	public static String LOCAL_CACHE_TOPIC = "LOCAL_CACHE_TOPIC";
-
 	// 普通GET
 	public static String GET_LUA = null;
 	public static String LIST_GET_LUA = null;

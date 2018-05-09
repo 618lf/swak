@@ -6,7 +6,6 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.codec.ByteArrayCodec;
 import io.lettuce.core.codec.RedisCodec;
-import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 
 /**
  * redis client
@@ -22,9 +21,17 @@ public class RedisClientDecorator implements DisposableBean{
 		this.client = client;
 	}
 	
+	/**
+	 * 订阅和发布是不同的链接
+	 * 在一个链接上订阅，另外一个链接上发布
+	 * @param connectionType
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
-	public <T extends StatefulConnection<byte[], byte[]>> T getConnection(Class<?> connectionType) {
-		if (connectionType.isAssignableFrom(StatefulRedisPubSubConnection.class)) {
+	public <T extends StatefulConnection<byte[], byte[]>> T getConnection(ConnectType connectionType) {
+		if (connectionType == ConnectType.Publish) {
+			return (T) client.connectPubSub(codec);
+		} else if (connectionType == ConnectType.Subscribe) {
 			return (T) client.connectPubSub(codec);
 		}
 		

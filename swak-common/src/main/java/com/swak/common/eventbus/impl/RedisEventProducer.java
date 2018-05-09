@@ -8,7 +8,7 @@ import com.swak.common.serializer.SerializationUtils;
  * 基于 reids 的事件发送
  * @author lifeng
  */
-public class RedisEventProducer implements EventProducer{
+public class RedisEventProducer implements EventProducer {
 
 	/**
 	 * 发布

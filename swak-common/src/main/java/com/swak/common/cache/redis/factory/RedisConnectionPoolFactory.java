@@ -17,7 +17,7 @@ public class RedisConnectionPoolFactory implements RedisConnectionFactory<byte[]
 	private final RedisClientDecorator client;
 	@SuppressWarnings("unused")
 	private final CacheProperties cacheProperties;
-	private final Map<Class<?>, StatefulConnection<byte[], byte[]>> pools;
+	private final Map<ConnectType, StatefulConnection<byte[], byte[]>> pools;
 
 	public RedisConnectionPoolFactory(RedisClientDecorator client, CacheProperties properties) {
 		this.client = client;
@@ -29,7 +29,7 @@ public class RedisConnectionPoolFactory implements RedisConnectionFactory<byte[]
 	 * 获取链接
 	 */
 	@Override
-	public StatefulConnection<byte[], byte[]> getConnection(Class<?> connectionType) {
+	public StatefulConnection<byte[], byte[]> getConnection(ConnectType connectionType) {
 		try {
 			return pools.computeIfAbsent(connectionType, (poolType) -> {
 				return client.getConnection(connectionType);

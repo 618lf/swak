@@ -2,7 +2,6 @@ package com.swak.config;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 
 import com.swak.common.cache.redis.RedisLocalCache;
@@ -35,7 +34,6 @@ public class RedisEventBusConfigurationSupport {
 	 * @return
 	 */
 	@Bean
-	@ConditionalOnBean
 	public EventBusBoot eventBusBooter() {
 		return new EventBusBoot();
 	}

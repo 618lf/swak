@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.config.SecurityConfigurationSupport;
+import com.tmt.consumer.UpdateEventConsumer;
 import com.tmt.filter.BusinessPoolFilter;
 import com.tmt.realm.SimpleRealm;
 
@@ -13,6 +14,15 @@ import com.tmt.realm.SimpleRealm;
  */
 @Configuration
 public class AppConfiguration {
+	
+	/**
+	 * 注册消费者
+	 * @return
+	 */
+	@Bean
+	public UpdateEventConsumer updateEventConsumer() {
+		return new UpdateEventConsumer();
+	}
 
 	/**
 	 * 业务线程池

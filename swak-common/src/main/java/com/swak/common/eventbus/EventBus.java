@@ -10,7 +10,7 @@ import com.swak.common.utils.Lists;
  * 简单的实现 event bus
  * @author lifeng
  */
-public class EventBus extends RedisEventBus{
+public class EventBus extends RedisEventBus {
 
 	private Map<String, List<EventConsumer>> consumers = new ConcurrentHashMap<>(2);
 	
@@ -23,10 +23,19 @@ public class EventBus extends RedisEventBus{
 		consumers.computeIfAbsent(consumer.getChannel(), (channel) ->{
 			return Lists.newArrayList(3);
 		}).add(consumer);
-		this.subscribe(consumer.getChannel());
 		return this;
 	}
 	
+	/**
+	 * 订阅主题
+	 */
+	public void subscribe() {
+		consumers.keySet().forEach(channel -> this.subscribe(channel));
+	}
+	
+	/**
+	 * 处理消息
+	 */
 	@Override
 	protected void onMessage(String channel, byte[] message) {
 		Event event = new Event(message);

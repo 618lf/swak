@@ -4,8 +4,8 @@ import java.lang.reflect.Array;
 
 import org.springframework.beans.factory.DisposableBean;
 
+import com.swak.common.Constants;
 import com.swak.common.cache.Cache;
-import com.swak.common.cache.Cons;
 import com.swak.common.eventbus.Event;
 import com.swak.common.eventbus.EventConsumer;
 import com.swak.common.eventbus.EventProducer;
@@ -103,7 +103,7 @@ public class RedisLocalCache implements Cache<Object>, EventConsumer, Disposable
 
 	@Override
 	public String getChannel() {
-		return Cons.LOCAL_CACHE_TOPIC;
+		return Constants.LOCAL_CACHE_TOPIC;
 	}
 
 	/**

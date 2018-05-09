@@ -9,18 +9,19 @@ import com.swak.common.cache.redis.RedisUtils;
  * 启动 Event bus
  * @author lifeng
  */
-public class EventBusBoot extends AbstractBoot{
+public class EventBusBoot extends AbstractBoot {
 
 	@Autowired
 	private EventBus eventBus;
 	
 	@Override
 	public String describe() {
-		return null;
+		return "事件总线";
 	}
 
 	@Override
 	public void init() {
 		RedisUtils.listener(eventBus);
+		eventBus.subscribe();
 	}
 }

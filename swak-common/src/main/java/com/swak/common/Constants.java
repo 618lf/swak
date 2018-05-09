@@ -24,4 +24,8 @@ public interface Constants {
 
 	/** 默认编码 **/
 	String DEFAULT_ENCODING = "UTF-8";
+	
+	/** 系统通道 **/
+	String LOCAL_CACHE_TOPIC = "LOCAL_CACHE_TOPIC";
+	String UPDATE_EVENT_TOPIC = "UPDATE_EVENT_TOPIC";
 }
