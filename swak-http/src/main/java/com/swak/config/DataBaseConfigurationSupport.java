@@ -181,29 +181,35 @@ public class DataBaseConfigurationSupport {
 	@ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
 	@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 	@ConditionalOnSingleCandidate(DataSource.class)
-	public class DataSourceTransactionManagerAutoConfiguration {
+	public static class DataSourceTransactionManagerAutoConfiguration {
 		
-		private final DataSource dataSource;
+		@org.springframework.context.annotation.Configuration
+		@ConditionalOnSingleCandidate(DataSource.class)
+		static class DataSourceTransactionManagerConfiguration {
 
-		private final TransactionManagerCustomizers transactionManagerCustomizers;
+			private final DataSource dataSource;
 
-		DataSourceTransactionManagerAutoConfiguration(DataSource dataSource,
-				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-			this.dataSource = dataSource;
-			this.transactionManagerCustomizers = transactionManagerCustomizers
-					.getIfAvailable();
-		}
+			private final TransactionManagerCustomizers transactionManagerCustomizers;
 
-		@Bean
-		@ConditionalOnMissingBean(PlatformTransactionManager.class)
-		public DataSourceTransactionManager transactionManager(
-				DataSourceProperties properties) {
-			DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(
-					this.dataSource);
-			if (this.transactionManagerCustomizers != null) {
-				this.transactionManagerCustomizers.customize(transactionManager);
+			DataSourceTransactionManagerConfiguration(DataSource dataSource,
+					ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+				this.dataSource = dataSource;
+				this.transactionManagerCustomizers = transactionManagerCustomizers
+						.getIfAvailable();
 			}
-			return transactionManager;
+
+			@Bean
+			@ConditionalOnMissingBean(PlatformTransactionManager.class)
+			public DataSourceTransactionManager transactionManager(
+					DataSourceProperties properties) {
+				DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(
+						this.dataSource);
+				if (this.transactionManagerCustomizers != null) {
+					this.transactionManagerCustomizers.customize(transactionManager);
+				}
+				return transactionManager;
+			}
+
 		}
 	}
 	

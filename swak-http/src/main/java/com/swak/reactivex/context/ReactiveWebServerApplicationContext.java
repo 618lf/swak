@@ -46,7 +46,7 @@ public class ReactiveWebServerApplicationContext extends AnnotationConfigApplica
 		super.finishRefresh();
 		WebServer localServer = startReactiveWebServer();
 		if (localServer != null) {
-			// publishEvent(new ReactiveWebServerInitializedEvent(localServer, this));
+			publishEvent(new ReactiveWebServerInitializedEvent(localServer, this));
 		}
 	}
 
