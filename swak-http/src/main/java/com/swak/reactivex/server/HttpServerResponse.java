@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 
+import com.swak.common.utils.StringUtils;
 import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.metric.MetricCenter;
 import com.swak.reactivex.server.channel.ServerContextHandler;
@@ -74,6 +75,46 @@ public abstract class HttpServerResponse extends HttpServerRequest {
 	}
 	
 	/**
+	 * 500
+	 * @return
+	 */
+	public HttpServerResponse error() {
+		return this.status(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	/**
+	 * 404
+	 * @return
+	 */
+	public HttpServerResponse notFound() {
+		return this.status(HttpResponseStatus.NOT_FOUND);
+	}
+	
+	/**
+	 * 401
+	 * @return
+	 */
+	public HttpServerResponse unauthorized() {
+		return this.status(HttpResponseStatus.UNAUTHORIZED);
+	}
+	
+	/**
+	 * 301
+	 * @return
+	 */
+	public HttpServerResponse redirect() {
+		return this.status(HttpResponseStatus.MOVED_PERMANENTLY);
+	}
+	
+	/**
+	 * 301
+	 * @return
+	 */
+	public HttpServerResponse ok() {
+		return this.status(HttpResponseStatus.OK);
+	}
+	
+	/**
 	 * 设置输出格式
 	 * 
 	 * @param status
@@ -105,6 +146,15 @@ public abstract class HttpServerResponse extends HttpServerRequest {
 		headers.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_XML);
 		return this;
 	}
+	
+	/**
+	 * 设置浏览器缓存，默认是无缓存
+	 * @return
+	 */
+	public HttpServerResponse cache(int maxAge) {
+		headers.set(HttpHeaderNames.CACHE_CONTROL,StringUtils.format("%s:%s", HttpHeaderValues.MAX_AGE, maxAge));
+		return this;
+	}
 
 	/**
 	 * 设置内容类型
@@ -133,7 +183,7 @@ public abstract class HttpServerResponse extends HttpServerRequest {
 	public int getContentSize() {
 		return contentSize;
 	}
-
+	
 	/**
 	 * 返回所有headers
 	 * 
@@ -231,6 +281,9 @@ public abstract class HttpServerResponse extends HttpServerRequest {
 		
 		if (!headers.contains(HttpHeaderNames.CONTENT_TYPE)) {
 			headers.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
+		}
+		if (!headers.contains(HttpHeaderNames.CACHE_CONTROL)) {
+			headers.set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
 		}
 		contentSize = response.content().readableBytes();
 		headers.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);

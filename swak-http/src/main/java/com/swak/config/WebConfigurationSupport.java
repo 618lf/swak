@@ -13,6 +13,7 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.lang.Nullable;
 
+import com.swak.reactivex.handler.DefaultWebExceptionHandler;
 import com.swak.reactivex.handler.ExceptionHandlingWebHandler;
 import com.swak.reactivex.handler.FilteringWebHandler;
 import com.swak.reactivex.handler.HttpWebHandlerAdapter;
@@ -51,6 +52,13 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		return this.applicationContext;
 	}
 	
+	// ---------- WebExceptionHandler ---------
+	@Bean
+	public WebExceptionHandler webExceptionHandler() {
+		return new DefaultWebExceptionHandler();
+	}
+	
+	// ---------- DispatcherHandler ---------
 	@Bean
 	public DispatcherHandler webHandler() {
 		return new DispatcherHandler();

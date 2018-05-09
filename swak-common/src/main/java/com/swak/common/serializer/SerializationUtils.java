@@ -28,6 +28,6 @@ public class SerializationUtils {
 	 * @throws IOException
 	 */
     public static Object deserialize(byte[] bytes) throws SerializeException {
-        return g_ser.deserialize(bytes);
+        return bytes != null ? g_ser.deserialize(bytes) : null;
     }
 }

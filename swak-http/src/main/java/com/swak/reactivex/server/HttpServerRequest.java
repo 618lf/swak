@@ -96,6 +96,12 @@ public abstract class HttpServerRequest implements Closeable {
 	protected abstract Channel channel();
 	
 	/**
+	 * 获得响应
+	 * @return
+	 */
+	public abstract HttpServerResponse getResponse();
+	
+	/**
 	 * 获取请求的地址
 	 * 包含 请求的参数
 	 * @return

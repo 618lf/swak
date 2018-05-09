@@ -22,6 +22,6 @@ public class SafeEncoder {
 	}
 
 	public static String encode(final byte[] data) {
-		return new String(data, LettuceCharsets.UTF8);
+		return data != null ? new String(data, LettuceCharsets.UTF8) : null;
 	}
 }
