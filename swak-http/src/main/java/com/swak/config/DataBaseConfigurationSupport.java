@@ -24,8 +24,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcProperties;
-import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -37,7 +38,6 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -56,6 +56,7 @@ import com.swak.config.database.SpringBootVFS;
 
 /**
  * 数据库相关配置
+ * 
  * @author lifeng
  */
 public class DataBaseConfigurationSupport {
@@ -66,60 +67,63 @@ public class DataBaseConfigurationSupport {
 	 * @author lifeng
 	 */
 	@org.springframework.context.annotation.Configuration
-	@ConditionalOnClass({DataSource.class, DruidDataSource.class})
+	@ConditionalOnClass({ DataSource.class, DruidDataSource.class })
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	public static class DataSourceAutoConfiguration {
-		
+
 		@Autowired
 		private DataSourceProperties properties;
-		
+
 		public DataSourceAutoConfiguration() {
 			APP_LOGGER.debug("Loading Druid DataSource");
 		}
-		
+
 		/**
-		 * 如果还没有 DataSource 类型
-		 * type = com.alibaba.druid.pool.DruidDataSource 就会构建这个dataSource
+		 * 如果还没有 DataSource 类型 type = com.alibaba.druid.pool.DruidDataSource
+		 * 就会构建这个dataSource
+		 * 
 		 * @return
 		 */
 		@Bean
 		public DataSource dataSource() {
 			DruidDataSource dataSource = new DruidDataSource();
 			dataSource.setUrl(properties.getUrl());
-	        dataSource.setUsername(properties.getUsername());
-	        dataSource.setPassword(properties.getPassword());
+			dataSource.setUsername(properties.getUsername());
+			dataSource.setPassword(properties.getPassword());
 
-	        dataSource.setDriverClassName(properties.getDriverClassName());
-	        dataSource.setInitialSize(properties.getInitialSize());     //定义初始连接数
-	        dataSource.setMinIdle(properties.getMinIdle());             //最小空闲
-	        dataSource.setMaxActive(properties.getMaxActive());         //定义最大连接数
-	        dataSource.setMaxWait(properties.getMaxWait());             //最长等待时间
+			dataSource.setDriverClassName(properties.getDriverClassName());
+			dataSource.setInitialSize(properties.getInitialSize()); // 定义初始连接数
+			dataSource.setMinIdle(properties.getMinIdle()); // 最小空闲
+			dataSource.setMaxActive(properties.getMaxActive()); // 定义最大连接数
+			dataSource.setMaxWait(properties.getMaxWait()); // 最长等待时间
 
-	        // 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-	        dataSource.setTimeBetweenEvictionRunsMillis(properties.getTimeBetweenEvictionRunsMillis());
+			// 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+			dataSource.setTimeBetweenEvictionRunsMillis(properties.getTimeBetweenEvictionRunsMillis());
 
-	        // 配置一个连接在池中最小生存的时间，单位是毫秒
-	        dataSource.setMinEvictableIdleTimeMillis(properties.getMinEvictableIdleTimeMillis());
-	        dataSource.setValidationQuery(properties.getValidationQuery());
-	        dataSource.setTestWhileIdle(properties.getTestWhileIdle());
-	        dataSource.setTestOnBorrow(properties.getTestOnBorrow());
-	        dataSource.setTestOnReturn(properties.getTestOnReturn());
+			// 配置一个连接在池中最小生存的时间，单位是毫秒
+			dataSource.setMinEvictableIdleTimeMillis(properties.getMinEvictableIdleTimeMillis());
+			dataSource.setValidationQuery(properties.getValidationQuery());
+			dataSource.setTestWhileIdle(properties.getTestWhileIdle());
+			dataSource.setTestOnBorrow(properties.getTestOnBorrow());
+			dataSource.setTestOnReturn(properties.getTestOnReturn());
 
-	        // 打开PSCache，并且指定每个连接上PSCache的大小
-	        dataSource.setPoolPreparedStatements(properties.getPoolPreparedStatements());
-	        dataSource.setMaxPoolPreparedStatementPerConnectionSize(properties.getMaxPoolPreparedStatementPerConnectionSize());
+			// 打开PSCache，并且指定每个连接上PSCache的大小
+			dataSource.setPoolPreparedStatements(properties.getPoolPreparedStatements());
+			dataSource.setMaxPoolPreparedStatementPerConnectionSize(
+					properties.getMaxPoolPreparedStatementPerConnectionSize());
 
-	        try {
-	            dataSource.setFilters(properties.getFilters());
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
+			try {
+				dataSource.setFilters(properties.getFilters());
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			return dataSource;
 		}
 	}
-	
+
 	/**
 	 * JDBC 操作模板
+	 * 
 	 * @author lifeng
 	 */
 	@org.springframework.context.annotation.Configuration
@@ -128,7 +132,7 @@ public class DataBaseConfigurationSupport {
 	@AutoConfigureAfter(DataSourceAutoConfiguration.class)
 	@EnableConfigurationProperties(JdbcProperties.class)
 	public static class JdbcTemplateAutoConfiguration {
-		
+
 		@org.springframework.context.annotation.Configuration
 		static class JdbcTemplateConfiguration {
 
@@ -150,8 +154,7 @@ public class DataBaseConfigurationSupport {
 				jdbcTemplate.setFetchSize(template.getFetchSize());
 				jdbcTemplate.setMaxRows(template.getMaxRows());
 				if (template.getQueryTimeout() != null) {
-					jdbcTemplate
-							.setQueryTimeout((int) template.getQueryTimeout().getSeconds());
+					jdbcTemplate.setQueryTimeout((int) template.getQueryTimeout().getSeconds());
 				}
 				return jdbcTemplate;
 			}
@@ -166,55 +169,28 @@ public class DataBaseConfigurationSupport {
 			@Primary
 			@ConditionalOnSingleCandidate(JdbcTemplate.class)
 			@ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
-			public NamedParameterJdbcTemplate namedParameterJdbcTemplate(
-					JdbcTemplate jdbcTemplate) {
+			public NamedParameterJdbcTemplate namedParameterJdbcTemplate(JdbcTemplate jdbcTemplate) {
 				return new NamedParameterJdbcTemplate(jdbcTemplate);
 			}
 		}
 	}
-	
+
 	/**
-	 * 数据库事务
+	 * 数据库事务 -- 使用spring boot 的配置
+	 * 
 	 * @author lifeng
 	 */
 	@org.springframework.context.annotation.Configuration
 	@ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
 	@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 	@ConditionalOnSingleCandidate(DataSource.class)
-	public static class DataSourceTransactionManagerAutoConfiguration {
-		
-		@org.springframework.context.annotation.Configuration
-		@ConditionalOnSingleCandidate(DataSource.class)
-		static class DataSourceTransactionManagerConfiguration {
-
-			private final DataSource dataSource;
-
-			private final TransactionManagerCustomizers transactionManagerCustomizers;
-
-			DataSourceTransactionManagerConfiguration(DataSource dataSource,
-					ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-				this.dataSource = dataSource;
-				this.transactionManagerCustomizers = transactionManagerCustomizers
-						.getIfAvailable();
-			}
-
-			@Bean
-			@ConditionalOnMissingBean(PlatformTransactionManager.class)
-			public DataSourceTransactionManager transactionManager(
-					DataSourceProperties properties) {
-				DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(
-						this.dataSource);
-				if (this.transactionManagerCustomizers != null) {
-					this.transactionManagerCustomizers.customize(transactionManager);
-				}
-				return transactionManager;
-			}
-
-		}
+	@Import({ DataSourceTransactionManagerAutoConfiguration.class, TransactionAutoConfiguration.class })
+	public static class DataSourceTransactionManagerConfiguration {
 	}
-	
+
 	/**
 	 * Mybatis
+	 * 
 	 * @author lifeng
 	 *
 	 */
@@ -230,10 +206,10 @@ public class DataBaseConfigurationSupport {
 		private final ResourceLoader resourceLoader;
 		private final DatabaseIdProvider databaseIdProvider;
 		private final List<ConfigurationCustomizer> configurationCustomizers;
-		
 
-		public MybatisAutoConfiguration(MybatisProperties properties, ObjectProvider<Interceptor[]> interceptorsProvider,
-				ResourceLoader resourceLoader, ObjectProvider<DatabaseIdProvider> databaseIdProvider,
+		public MybatisAutoConfiguration(MybatisProperties properties,
+				ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader,
+				ObjectProvider<DatabaseIdProvider> databaseIdProvider,
 				ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider) {
 			this.properties = properties;
 			this.interceptors = interceptorsProvider.getIfAvailable();
@@ -288,19 +264,19 @@ public class DataBaseConfigurationSupport {
 			if (!ObjectUtils.isEmpty(this.properties.resolveMapperLocations())) {
 				factory.setMapperLocations(this.properties.resolveMapperLocations());
 			}
-			
+
 			// 默认配置
 			this.defaultConfiguration(configuration);
 			return factory.getObject();
 		}
-		
+
 		private void defaultConfiguration(Configuration configuration) {
-			
+
 			// 默认的拦截器
 			ExecutorInterceptor interceptor = new ExecutorInterceptor();
 			interceptor.setDialect(new MySQLDialect());
 			configuration.addInterceptor(interceptor);
-			
+
 			// 默认的别名
 			configuration.getTypeAliasRegistry().registerAlias("queryCondition", QueryCondition.class);
 		}
