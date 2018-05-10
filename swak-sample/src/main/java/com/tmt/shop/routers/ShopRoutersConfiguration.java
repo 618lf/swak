@@ -32,6 +32,10 @@ public class ShopRoutersConfiguration {
 			dsl.GET("/admin/", request -> {
 				return Mono.just("hello lifeng2");
 			});
+			dsl.GET("/admin/hello/say/hehe/{lala}", request -> {
+				System.out.println(request.getPathVariables());
+				return Mono.just("hello lifeng2");
+			});
 		});
 	}
 }

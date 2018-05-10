@@ -333,8 +333,12 @@ public abstract class HttpServerRequest implements Closeable {
 	 * 路径的变量
 	 * @return
 	 */
-	public void setPathVariables(Map<String, String> pathVariables) {
-		this.pathVariables = pathVariables;
+	public void addPathVariables(Map<String, String> pathVariables) {
+		if (this.pathVariables != null) {
+			this.pathVariables.putAll(pathVariables);
+		} else {
+			this.pathVariables = pathVariables;
+		}
 	}
 
 	private void parseData(InterfaceHttpData data) {

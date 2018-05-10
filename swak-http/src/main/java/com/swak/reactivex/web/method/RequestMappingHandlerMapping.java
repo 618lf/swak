@@ -35,11 +35,8 @@ import com.swak.common.utils.Maps;
 import com.swak.reactivex.Reportable;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.web.HandlerMapping;
-import com.swak.reactivex.web.annotation.GetMapping;
-import com.swak.reactivex.web.annotation.PostMapping;
 import com.swak.reactivex.web.annotation.RequestMapping;
 import com.swak.reactivex.web.annotation.RequestMethod;
-import com.swak.reactivex.web.annotation.RestController;
 import com.swak.reactivex.web.method.pattern.PathMatcherHelper;
 import com.swak.reactivex.web.method.pattern.UrlPathHelper;
 
@@ -135,18 +132,6 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 		if (requestMapping == null) {
 			return null;
 		}
-		RestController restController = AnnotatedElementUtils.findMergedAnnotation(element, RestController.class);
-		if (restController != null) {
-			return RequestMappingInfo.paths(restController.method(), restController.value());
-		}
-		GetMapping getMapping = AnnotatedElementUtils.findMergedAnnotation(element, GetMapping.class);
-		if (getMapping != null) {
-			return RequestMappingInfo.paths(RequestMethod.GET, getMapping.value());
-		}
-		PostMapping postMapping = AnnotatedElementUtils.findMergedAnnotation(element, PostMapping.class);
-		if (postMapping != null) {
-			return RequestMappingInfo.paths(RequestMethod.POST, postMapping.value());
-		}
 		return RequestMappingInfo.paths(requestMapping.method(), requestMapping.value());
 	}
 
@@ -228,7 +213,7 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 			Map<String, String> uriVariables = getPathMatcher().extractUriTemplateVariables(patterns.iterator().next(),
 					lookupPath);
 			Map<String, String> decodedUriVariables = getUrlPathHelper().decodePathVariables(request, uriVariables);
-			request.setPathVariables(decodedUriVariables);
+			request.addPathVariables(decodedUriVariables);
 		} else {
 			Iterator<String> macths = patterns.iterator();
 			Map<String, String> all = Maps.newHashMap();
@@ -238,7 +223,7 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 				Map<String, String> decodedUriVariables = getUrlPathHelper().decodePathVariables(request, uriVariables);
 				all.putAll(decodedUriVariables);
 			}
-			request.setPathVariables(all);
+			request.addPathVariables(all);
 		}
 	}
 
