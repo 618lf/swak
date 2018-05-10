@@ -90,13 +90,13 @@ public class CacheConfigurationSupport {
 	}
 	
 	/**
-	 * 配置 ehCache
+	 * 配置redis 缓存管理，并设置二级缓存
 	 * @return
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public RedisCacheManager redisCacheManager() {
-		 return new RedisCacheManager();
+	public RedisCacheManager redisCacheManager(RedisLocalCache localCache) {
+		 return new RedisCacheManager(localCache);
 	}
 	
 	private List<RedisURI> nodes() {

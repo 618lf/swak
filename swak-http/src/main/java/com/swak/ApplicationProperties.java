@@ -15,6 +15,7 @@ public class ApplicationProperties {
 	private boolean enableRedis = true;
 	private boolean enableEventBus = true;
 	private boolean enableSecurity = true;
+	private boolean enableSession = true;
 	private boolean enableBooter = true;
 	private boolean enableDataBase = true;
 	private boolean enableMybatis = true;
@@ -24,6 +25,12 @@ public class ApplicationProperties {
 	private String serverSn = "server-1-1";
 	private String serialization = "kryo_pool";
 	
+	public boolean isEnableSession() {
+		return enableSession;
+	}
+	public void setEnableSession(boolean enableSession) {
+		this.enableSession = enableSession;
+	}
 	public boolean isEnableRedis() {
 		return enableRedis;
 	}

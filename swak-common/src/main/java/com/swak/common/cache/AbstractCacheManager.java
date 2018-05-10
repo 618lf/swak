@@ -7,7 +7,6 @@ import java.util.concurrent.FutureTask;
 import com.swak.common.cache.redis.RedisCache;
 import com.swak.common.cache.redis.RedisCacheChannel;
 import com.swak.common.cache.redis.RedisLocalCache;
-import com.swak.common.utils.SpringContextHolder;
 
 /**
  * 默认的缓存管理
@@ -18,6 +17,12 @@ public abstract class AbstractCacheManager implements CacheManager {
 	@SuppressWarnings("rawtypes")
 	private final ConcurrentMap<String, FutureTask<Cache>> cacheMap = new ConcurrentHashMap<String, FutureTask<Cache>>(16);
 
+	/**
+	 * 获得本地缓存
+	 * @return
+	 */
+	protected abstract RedisLocalCache getLocalCache();
+	
 	/**
 	 * 获得一个缓存，如果不存在则创建一个默认的缓存
 	 */
@@ -58,7 +63,7 @@ public abstract class AbstractCacheManager implements CacheManager {
 		if (cache == null || cache instanceof RedisCacheChannel) {
 			throw new RuntimeException("cache 为一个普通的redis 缓存");
 		}
-		RedisLocalCache local = SpringContextHolder.getBean(RedisLocalCache.class);
+		RedisLocalCache local = getLocalCache();
 		RedisCacheChannel<T> channel = new RedisCacheChannel<T>();
 		channel.setLocal(local);
 		channel.setRemote((RedisCache<T>)cache);

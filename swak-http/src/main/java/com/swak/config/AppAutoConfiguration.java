@@ -134,7 +134,7 @@ public class AppAutoConfiguration {
 		public CacheAutoConfiguration() {
 			APP_LOGGER.debug("Loading Redis Cache");
 		}
-	} 
+	}
 	
 	/**
 	 * 
@@ -172,8 +172,8 @@ public class AppAutoConfiguration {
 		}
 		
 		/**
-		 * 身份管理策略
-		 * 
+		 * 默认的 身份管理策略
+		 * 项目中可以覆盖
 		 * @return
 		 */
 		@Bean
@@ -235,6 +235,22 @@ public class AppAutoConfiguration {
 		@Bean
 		public SecurityFilter securityFilter(SecurityManager securityManager, FilterChainManager filterChainManager) {
 			return new SecurityFilter(securityManager, filterChainManager);
+		}
+	}
+	
+	/**
+	 * session 支持
+	 * 
+	 * @author lifeng
+	 */
+	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 100)
+	@ConditionalOnMissingBean(SessionConfigurationSupport.class)
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSession", matchIfMissing = true)
+	@AutoConfigureAfter({SecurityConfiguration.class, CacheAutoConfiguration.class})
+	public static class SessionAutoConfiguration extends SessionConfigurationSupport {
+		public SessionAutoConfiguration() {
+			APP_LOGGER.debug("Loading Session Manage");
 		}
 	}
 

@@ -7,6 +7,7 @@ import com.swak.common.persistence.DataSourceHolder;
 import com.swak.common.persistence.JdbcSqlExecutor;
 import com.swak.common.serializer.SerializationUtils;
 import com.swak.common.utils.SpringContextHolder;
+import com.swak.security.session.SessionProvider;
 
 /**
  * 释放系统引用的一些资源
@@ -21,5 +22,6 @@ public class DisposeBean implements DisposableBean{
 		SerializationUtils.g_ser = null;
 		JdbcSqlExecutor.setJdbcTemplate(null);
 		DataSourceHolder.setDataSource(null);
+		SessionProvider.setRepository(null);
 	}
 }
