@@ -2,7 +2,7 @@ package com.swak.common.entity;
 
 import java.io.Serializable;
 
-import com.swak.common.persistence.incrementer.IdGen;
+import com.swak.common.Constants;
 import com.swak.common.utils.StringUtils;
 
 /**
@@ -72,7 +72,7 @@ public abstract class BaseParentEntity<PK> extends BaseEntity<PK> implements Ser
 	 */
 	public void fillByParent(BaseParentEntity<PK> parent) {
 		int level = parent == null ? 0 : parent.getLevel();
-		String parentIds = parent == null ? String.valueOf(IdGen.INVALID_ID): (new StringBuilder(parent.getParentIds()).append(this.getParentId()).toString());
+		String parentIds = parent == null ? String.valueOf(Constants.INVALID_ID): (new StringBuilder(parent.getParentIds()).append(this.getParentId()).toString());
 		this.setLevel(level + 1);
 		this.setParentIds(new StringBuilder(parentIds).append(IDS_SEPARATE).toString());
 		this.setPath(new StringBuilder((parent == null?"":StringUtils.defaultString(parent.getPath(), ""))).append(PATH_SEPARATE).append(this.getName()).toString());
@@ -87,7 +87,7 @@ public abstract class BaseParentEntity<PK> extends BaseEntity<PK> implements Ser
 	public void updateIdsByParent(BaseParentEntity<PK> parent, String oldParentIds, String oldPaths, Integer oldLevel) {
 		String _parentIds = (IDS_SEPARATE + this.getParentIds()).replace(IDS_SEPARATE + oldParentIds, IDS_SEPARATE + parent.getParentIds());
 		if (!StringUtils.hasText(_parentIds)) {
-			_parentIds = String.valueOf(IdGen.INVALID_ID);
+			_parentIds = String.valueOf(Constants.INVALID_ID);
 		}
 		if (StringUtils.startsWith(_parentIds, IDS_SEPARATE) ) {
 			_parentIds = StringUtils.removeStart(_parentIds, IDS_SEPARATE);

@@ -21,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 import com.swak.ApplicationProperties;
 import com.swak.common.Constants;
 import com.swak.common.cache.CacheProperties;
+import com.swak.common.persistence.incrementer.IdGen;
 import com.swak.common.serializer.FSTSerializer;
 import com.swak.common.serializer.JavaSerializer;
 import com.swak.common.serializer.KryoPoolSerializer;
@@ -68,6 +69,7 @@ public class AppAutoConfiguration {
 			// 简单的资源
 			this.springContextHolder(context);
 			this.serializer(properties);
+			this.idGenerator(properties);
 		}
 		
 		/**
@@ -76,6 +78,13 @@ public class AppAutoConfiguration {
 		 */
 		public void springContextHolder(ApplicationContext context) {
 			SpringContextHolder.setApplicationContext(context);
+		}
+		
+		/**
+		 * IdGenerator
+		 */
+		public void idGenerator(ApplicationProperties properties) {
+			IdGen.setServerSn(properties.getServerSn());
 		}
 		
 		/**

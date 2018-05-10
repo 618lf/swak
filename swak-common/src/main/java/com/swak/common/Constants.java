@@ -20,8 +20,9 @@ public interface Constants {
 	int SALT_SIZE = 8;
 	
 	/** 保留ID **/
-	Long ROOT = 0L;
-
+	long ROOT = 0L;
+	long INVALID_ID = -1;
+	
 	/** 默认编码 **/
 	String DEFAULT_ENCODING = "UTF-8";
 	

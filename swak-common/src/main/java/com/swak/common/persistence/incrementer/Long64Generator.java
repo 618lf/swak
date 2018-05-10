@@ -1,7 +1,5 @@
 package com.swak.common.persistence.incrementer;
 
-import java.io.Serializable;
-
 /**
  * good
  * 64byte位ID生成规则(42(毫秒)+5(机器ID)+5(业务编码)+12(重复累加)) 
@@ -85,7 +83,8 @@ public class Long64Generator implements IdGenerator {
 	 * 对外提供服务
 	 */
 	@Override
-	public Serializable generateId() {
+	@SuppressWarnings("unchecked")
+	public Long id() {
 		return this.nextId();
 	}
 }

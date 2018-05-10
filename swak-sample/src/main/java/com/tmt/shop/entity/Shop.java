@@ -1,13 +1,7 @@
 package com.tmt.shop.entity;
 
-public class Shop {
-	private String id;
+import com.swak.common.entity.IdEntity;
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
+public class Shop extends IdEntity<Long>{
+	private static final long serialVersionUID = 1L;
 }

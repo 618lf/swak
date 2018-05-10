@@ -40,7 +40,6 @@ public class HelloController {
 	public Mono<Shop> say(@PathVariable String id) {
 		return MonosKt.create(() -> {
 			Shop shop = new Shop();
-			shop.setId(id);
 			return shop;
 		});
 	}

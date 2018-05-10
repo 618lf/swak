@@ -1,6 +1,5 @@
 package com.swak.common.persistence.incrementer;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -11,7 +10,8 @@ import java.util.UUID;
 public class UUIdGenerator implements IdGenerator{
 
 	@Override
-	public Serializable generateId() {
+	@SuppressWarnings("unchecked")
+	public String id() {
 		return uuid();
 	}
 	
