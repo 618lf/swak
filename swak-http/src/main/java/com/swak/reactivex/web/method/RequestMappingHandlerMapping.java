@@ -22,6 +22,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.MethodIntrospector;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
@@ -45,7 +46,7 @@ import com.swak.reactivex.web.method.pattern.UrlPathHelper;
  * 
  * @author lifeng
  */	
-public class RequestMappingHandlerMapping implements HandlerMapping, ApplicationContextAware, Reportable {
+public class RequestMappingHandlerMapping implements HandlerMapping, ApplicationContextAware, Reportable, Ordered {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private PathMatcher pathMatcher = PathMatcherHelper.getMatcher();
@@ -300,5 +301,10 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
 			mappingLookup = null;
 			urlLookup = null;
 		}
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE;
 	}
 }

@@ -1,5 +1,7 @@
 package com.swak.reactivex.web.function;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -93,11 +95,18 @@ public abstract class RequestPredicates {
 			PathContainer pathContainer = PathContainer.parsePath(request.getRequestURL());
 			PathPattern.PathMatchInfo info = this.pattern.matchAndExtract(pathContainer);
 			if (info != null) {
-				request.addPathVariables(info.getUriVariables());
+				mergeTemplateVariables(request, info.getUriVariables());
 				return true;
 			}
 			else {
 				return false;
+			}
+		}
+		
+		private void mergeTemplateVariables(HttpServerRequest request, Map<String, String> variables) {
+			if (!variables.isEmpty()) {
+				Map<String, String> mergedVariables = new LinkedHashMap<>(variables);
+				request.addPathVariables(mergedVariables);
 			}
 		}
 	}

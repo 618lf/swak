@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.Ordered;
 import org.springframework.lang.Nullable;
 
 import com.swak.common.utils.Lists;
@@ -13,7 +14,7 @@ import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.web.Handler;
 import com.swak.reactivex.web.HandlerMapping;
 
-public class RouterFunctionMapping implements HandlerMapping, ApplicationContextAware {
+public class RouterFunctionMapping implements HandlerMapping, ApplicationContextAware, Ordered {
 
 	@Nullable
 	private RouterFunction routerFunction;
@@ -47,5 +48,10 @@ public class RouterFunctionMapping implements HandlerMapping, ApplicationContext
 			return this.routerFunction.route(request);
 		}
 		return null;
+	}
+	
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE + 10;
 	}
 }
