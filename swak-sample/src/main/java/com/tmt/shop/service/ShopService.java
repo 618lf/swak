@@ -24,9 +24,19 @@ public class ShopService extends BaseService<Shop, Long>{
 	 * 看是否有事务
 	 * @return
 	 */
-	@Transactional
 	public String say() {
+		Shop shop = new Shop();
+		shop.setName("丸子世家");
+		this.insert(shop);
 		return "say hello to lifeng";
 	}
 	
+	/**
+	 * 我是有事务的
+	 * @return
+	 */
+	@Transactional
+	public String sayTransactional() {
+		return "say hello to hanqian";
+	}
 }

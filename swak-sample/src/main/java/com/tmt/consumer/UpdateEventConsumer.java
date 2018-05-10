@@ -17,6 +17,6 @@ public class UpdateEventConsumer implements EventConsumer{
 
 	@Override
 	public void onMessge(Event event) {
-		System.out.println("收到消息");
+		// System.out.println("收到消息");
 	}
 }
