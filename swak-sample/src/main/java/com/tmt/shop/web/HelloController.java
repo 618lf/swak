@@ -11,6 +11,7 @@ import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.PathVariable;
 import com.swak.reactivex.web.annotation.RestController;
 import com.tmt.shop.entity.Shop;
+import com.tmt.shop.service.ShopService;
 
 import reactor.core.publisher.Mono;
 
@@ -21,6 +22,8 @@ public class HelloController {
 	private RedisCacheManager cacheManager;
 	@Autowired
 	private EventProducer eventProducer;
+	@Autowired
+	private ShopService shopService;
 
 	@GetMapping("/say")
 	public Mono<String> say() {
@@ -29,7 +32,7 @@ public class HelloController {
 			cache.getString("name");
 			
 			eventProducer.publish(Constants.UPDATE_EVENT_TOPIC, 123);
-			return "123";
+			return shopService.say();
 		});
 	}
 

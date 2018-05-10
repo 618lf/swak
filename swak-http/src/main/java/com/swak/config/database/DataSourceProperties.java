@@ -16,8 +16,8 @@ public class DataSourceProperties {
     private String password;
     private String driverClassName = "com.mysql.jdbc.Driver";
     private Integer initialSize = 2;
-    private Integer minIdle = 1;
-    private Integer maxActive = 20;
+    private Integer minIdle = 10;
+    private Integer maxActive = 50;
     private Integer maxWait = 60000;
     private Integer timeBetweenEvictionRunsMillis = 60000;
     private Integer minEvictableIdleTimeMillis = 300000;
