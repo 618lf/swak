@@ -11,15 +11,12 @@ import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.PathVariable;
 import com.swak.reactivex.web.annotation.RestController;
 import com.tmt.shop.entity.Shop;
-import com.tmt.shop.service.ShopService;
 
 import reactor.core.publisher.Mono;
 
 @RestController("/admin/hello")
 public class HelloController {
 
-	@Autowired
-	private ShopService shopService;
 	@Autowired
 	private RedisCacheManager cacheManager;
 	@Autowired
@@ -32,7 +29,7 @@ public class HelloController {
 			cache.getString("name");
 			
 			eventProducer.publish(Constants.UPDATE_EVENT_TOPIC, 123);
-			return shopService.say();
+			return "123";
 		});
 	}
 
