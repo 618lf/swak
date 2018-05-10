@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tmt.shop.dao.ShopDao" >
+  <resultMap id="BaseResult" type="com.tmt.database.entity.Shop"> 
+    <result column="ID" property="id" jdbcType="BIGINT"/>
+    <result column="NAME" property="name" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <select id="get" resultMap="BaseResult">
+   SELECT ID, NAME
+     FROM SHOP_2
+    WHERE ID = 1 LIMIT 1
+  </select>
+ 
+  <insert id="insert" parameterType="java.util.HashMap">
+   INSERT INTO SHOP_2 (ID, NAME)
+   VALUES (#{id}, #{name})
+  </insert>
+  
+  <update id="update" parameterType="java.util.HashMap">
+   UPDATE SHOP_2
+      SET NAME = #{name}
+    WHERE ID = #{id}
+  </update>
+  
+</mapper>
