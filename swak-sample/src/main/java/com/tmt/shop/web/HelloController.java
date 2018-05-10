@@ -2,15 +2,11 @@ package com.tmt.shop.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.swak.common.Constants;
-import com.swak.common.cache.Cache;
-import com.swak.common.cache.redis.RedisCacheManager;
-import com.swak.common.eventbus.EventProducer;
 import com.swak.kotlin.MonosKt;
 import com.swak.reactivex.web.annotation.GetMapping;
-import com.swak.reactivex.web.annotation.PathVariable;
 import com.swak.reactivex.web.annotation.RestController;
 import com.tmt.shop.entity.Shop;
+import com.tmt.shop.entity.ShopXml;
 import com.tmt.shop.service.ShopService;
 
 import reactor.core.publisher.Mono;
@@ -19,28 +15,58 @@ import reactor.core.publisher.Mono;
 public class HelloController {
 
 	@Autowired
-	private RedisCacheManager cacheManager;
-	@Autowired
-	private EventProducer eventProducer;
-	@Autowired
 	private ShopService shopService;
+	
+	/**
+	 * 输出string 类型
+	 * @return
+	 */
+	@GetMapping("/say/string")
+	public String sayString() {
+		return "lifeng";
+	}
+	
+	/**
+	 * 输出其他对象
+	 * @return
+	 */
+	@GetMapping("/say/object")
+	public Shop sayObject() {
+		return new Shop();
+	}
+	
+	/**
+	 * 输出 Xml
+	 * @return
+	 */
+	@GetMapping("/say/xml")
+	public ShopXml sayXml() {
+		ShopXml xml = new ShopXml();
+		xml.setName("lifeng");
+		return xml;
+	}
 
-	@GetMapping("/say")
-	public Mono<String> say() {
+	/**
+	 * 返回 mono 对象
+	 * @return
+	 */
+	@GetMapping("/say/mono")
+	public Mono<String> sayMono() {
 		return Mono.fromSupplier(() -> {
-			Cache<String> cache = cacheManager.getCache("user2", 1000);
-			cache.getString("name");
-			
-			eventProducer.publish(Constants.UPDATE_EVENT_TOPIC, 123);
 			return shopService.say();
 		});
 	}
 
-	@GetMapping("say/{id}")
-	public Mono<Shop> say(@PathVariable String id) {
+	/**
+	 * 协程
+	 * @param id
+	 * @return
+	 */
+	@GetMapping("/say/xc")
+	public Mono<Shop> sayXc() {
 		return MonosKt.create(() -> {
-			Shop shop = new Shop();
-			return shop;
+			shopService.say();
+			return new Shop();
 		});
 	}
 }

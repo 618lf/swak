@@ -8,17 +8,17 @@
   
   <select id="get" resultMap="BaseResult">
    SELECT ID, NAME
-     FROM SHOP_2
+     FROM SHOP
     WHERE ID = 1 LIMIT 1
   </select>
  
   <insert id="insert" parameterType="java.util.HashMap">
-   INSERT INTO SHOP_2 (ID, NAME)
-   VALUES (#{id}, #{name})
+   INSERT INTO SHOP (ID, NAME)
+   VALUES (#{ID}, #{NAME})
   </insert>
   
   <update id="update" parameterType="java.util.HashMap">
-   UPDATE SHOP_2
+   UPDATE SHOP
       SET NAME = #{name}
     WHERE ID = #{id}
   </update>

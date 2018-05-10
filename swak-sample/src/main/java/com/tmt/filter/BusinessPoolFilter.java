@@ -15,11 +15,12 @@ import reactor.core.scheduler.Schedulers;
 
 /**
  * 业务线程池
+ * 还是需要线程池来处理业务。
  * @author lifeng
  */
 public class BusinessPoolFilter implements WebFilter {
 	
-	Executor executor = new ThreadPoolExecutor(100, 200,
+	Executor executor = new ThreadPoolExecutor(1024, 2000,
 			60 * 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 	
 	@Override

@@ -5,7 +5,6 @@ import javax.sql.DataSource;
 import com.swak.common.persistence.incrementer.IdGen;
 import com.tmt.common.MultiThreadTest;
 import com.tmt.database.datasource.DruidProvider;
-import com.tmt.database.ops.JdbcOps;
 import com.tmt.database.ops.MybatisOps;
 
 /**
@@ -19,7 +18,7 @@ public class TestMain {
 		DataSourceProvider dataSourceProvider = new DruidProvider();
 		IdGen.setServerSn("server-1-1");
 		DataSource dataSource = dataSourceProvider.getDataSource();
-		final InsertOps jops = new JdbcOps(dataSource);
+		//final InsertOps jops = new JdbcOps(dataSource);
 		
 		// jdbc 的测试
 		// 90 * 1000 平均 32s， 每秒 2821
@@ -34,7 +33,7 @@ public class TestMain {
 //			}
 //		}, 1000, "jdbc");
 		
-		final QueryOps mops = new MybatisOps(dataSource);
+		final MybatisOps mops = new MybatisOps(dataSource);
 		
 		// mybatis的测试
 		// 1000 * 90 (800) = 14s 基本和jdbc 差不多
@@ -42,10 +41,10 @@ public class TestMain {
 		MultiThreadTest.run(new Runnable() {
 			@Override
 			public void run() {
-				for(int i = 0; i< 90; i++) {
-					mops.query();
+				for(int i = 0; i< 900; i++) {
+					mops.insert();
 				}
 			}
-		}, 1000, "mybatis");
+		}, 100, "mybatis");
 	}
 }

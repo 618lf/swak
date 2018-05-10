@@ -17,6 +17,7 @@ import org.springframework.util.ObjectUtils;
 import com.google.common.collect.Maps;
 import com.swak.common.persistence.QueryCondition;
 import com.swak.common.persistence.dialect.MySQLDialect;
+import com.swak.common.persistence.incrementer.IdGen;
 import com.swak.common.persistence.mybatis.ExecutorInterceptor;
 import com.swak.common.utils.StringUtils;
 import com.swak.config.database.MybatisProperties;
@@ -104,7 +105,7 @@ public class MybatisOps implements InsertOps, QueryOps {
 	@Override
 	public void insert() {
 		Map<String, Object> param = Maps.newHashMap();
-		param.put("ID", 1);
+		param.put("ID", IdGen.id());
 		param.put("NAME", "lifeng");
 		sqlSessionTemplate.insert("com.tmt.shop.dao.ShopDao.insert", param);
 	}
