@@ -13,7 +13,7 @@ import com.swak.common.Constants;
 public class HttpServerProperties {
 
 	private String name = "SWAK-REACTIVE-SERVER";
-	private String mode = "NIO";
+	private TransportMode mode = TransportMode.NIO;
 	private int port = 8888;
 	private int connectTimeout = 30000;
 	private String host = "localhost";
@@ -37,11 +37,11 @@ public class HttpServerProperties {
 		this.name = name;
 	}
 	
-	public String getMode() {
+	public TransportMode getMode() {
 		return mode;
 	}
 
-	public void setMode(String mode) {
+	public void setMode(TransportMode mode) {
 		this.mode = mode;
 	}
 

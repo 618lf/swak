@@ -13,6 +13,8 @@ import com.swak.common.cache.redis.RedisUtils;
 import com.swak.common.cache.redis.factory.RedisClientDecorator;
 import com.swak.common.cache.redis.factory.RedisConnectionPoolFactory;
 import com.swak.common.utils.Lists;
+import com.swak.reactivex.server.HttpServerProperties;
+import com.swak.reactivex.server.TransportMode;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
@@ -31,6 +33,8 @@ public class CacheConfigurationSupport {
 
 	@Autowired
 	private CacheProperties cacheProperties;
+	@Autowired
+	private HttpServerProperties serverProperties;
 	
 	/**
 	 * 可以配置 event loop 等相关
@@ -38,6 +42,14 @@ public class CacheConfigurationSupport {
 	 */
 	@Bean(destroyMethod = "shutdown")
     public ClientResources clientResources() {
+		// 设置属性 -- lettuce 会根据属性决定启动什么类型 event loop
+		System.setProperty("io.lettuce.core.epoll", "false");
+		System.setProperty("io.lettuce.core.kqueue", "false");
+		if (serverProperties.getMode() == TransportMode.EPOLL) {
+			System.setProperty("io.lettuce.core.epoll", "true");
+		} else if (serverProperties.getMode() == TransportMode.EPOLL) {
+			System.setProperty("io.lettuce.core.kqueue", "true");
+		}
         return DefaultClientResources.create();
     }
 	

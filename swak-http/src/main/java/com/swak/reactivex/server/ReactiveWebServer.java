@@ -88,7 +88,7 @@ public class ReactiveWebServer extends TcpServer {
 					this.customizeSsl(options);
 				}
 				options.serverName(properties.getName());
-				options.transportMode(TransportMode.valueOf(properties.getMode()));
+				options.transportMode(properties.getMode());
 				options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, properties.getConnectTimeout());
 				options.childOption(ChannelOption.SO_KEEPALIVE, properties.isSoKeepAlive());
 				options.childOption(ChannelOption.TCP_NODELAY, properties.isTcpNoDelay());

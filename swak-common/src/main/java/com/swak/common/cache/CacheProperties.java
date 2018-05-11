@@ -11,7 +11,6 @@ public class CacheProperties {
 
 	public static final String CACHE_PREFIX = "spring.cache";
 	
-	private int poolMax = 2;
 	private String hosts;
 	private String password;
 	
@@ -37,12 +36,6 @@ public class CacheProperties {
 	}
 	public void setLocalElements(int localElements) {
 		this.localElements = localElements;
-	}
-	public int getPoolMax() {
-		return poolMax;
-	}
-	public void setPoolMax(int poolMax) {
-		this.poolMax = poolMax;
 	}
 	public String getHosts() {
 		return hosts;

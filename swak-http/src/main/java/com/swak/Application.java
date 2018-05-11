@@ -2,6 +2,7 @@ package com.swak;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -24,16 +25,16 @@ public class Application extends SpringApplication {
 	 */
 	public Application(Class<?>... primarySources) {
 		super(primarySources);
-		this.initApplication();
 	}
 	
 	/**
-	 * 取待 application
+	 * 直接初始化这个context
 	 */
-	public void initApplication() {
-		this.setApplicationContextClass(ReactiveWebServerApplicationContext.class);
+	@Override
+	protected ConfigurableApplicationContext createApplicationContext() {
+		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(ReactiveWebServerApplicationContext.class);
 	}
-	
+
 	/**
 	 * 启动服务
 	 * @param primarySource
