@@ -1,6 +1,5 @@
 package com.swak.reactivex.server;
 
-import com.swak.reactivex.metric.MetricCenter;
 import com.swak.reactivex.server.channel.ContextHandler;
 
 import io.netty.buffer.Unpooled;
@@ -37,7 +36,6 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		super.channelActive(ctx);
-		MetricCenter.channelActive();
 	}
 
 	/**
@@ -46,7 +44,6 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		super.channelInactive(ctx);
-		MetricCenter.channelInactive();
 	}
 
 	/**
@@ -55,7 +52,6 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if (msg instanceof FullHttpRequest) {
-			MetricCenter.requestHandler();
 			context.doChannel(ctx.channel(), msg);
 		}
 	}

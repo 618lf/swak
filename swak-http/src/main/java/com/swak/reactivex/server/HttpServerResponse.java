@@ -15,7 +15,6 @@ import org.apache.commons.io.IOUtils;
 
 import com.swak.common.utils.StringUtils;
 import com.swak.reactivex.HttpConst;
-import com.swak.reactivex.metric.MetricCenter;
 import com.swak.reactivex.server.channel.ServerContextHandler;
 
 import io.netty.buffer.ByteBuf;
@@ -362,7 +361,6 @@ public abstract class HttpServerResponse extends HttpServerRequest {
 				request.channel().writeAndFlush(_response);
 			}
 		} finally {
-			MetricCenter.responseSize(this != null ? this.getContentSize() : 0);
 			IOUtils.closeQuietly(this);
 		}
 	}
