@@ -12,15 +12,18 @@ import com.tmt.actuator.endpoint.invoke.WebOperationInvoker;
  * 基于web 的 endpoint
  * @author lifeng
  */
-public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoint, WebOperation>{
+public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoint, WebOperation> implements WebEndpointsSupplier{
 
-	public WebEndpointDiscoverer(ApplicationContext applicationContext) {
+    private final String rootPath;
+	
+	public WebEndpointDiscoverer(String rootPath, ApplicationContext applicationContext) {
 		super(applicationContext);
+		this.rootPath = rootPath;
 	}
 
 	@Override
 	protected ExposableWebEndpoint createEndpoint(EndpointBean endpointBean, Collection<WebOperation> operations) {
-		return new DiscoveredWebEndpoint(this, endpointBean, "",  operations);
+		return new DiscoveredWebEndpoint(this, endpointBean, rootPath,  operations);
 	}
 
 	@Override
