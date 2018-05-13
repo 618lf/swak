@@ -14,6 +14,7 @@
 		<module>swak-webflux</module>
 		<module>swak-kotlin</module>
 		<module>swak-sample</module>
+		<module>swak-actuator</module>
 	</modules>
 	<properties>
 		<spring.version>5.0.5.RELEASE</spring.version>
