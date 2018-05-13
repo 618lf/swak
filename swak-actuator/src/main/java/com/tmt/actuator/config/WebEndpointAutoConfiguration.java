@@ -1,12 +1,17 @@
 package com.tmt.actuator.config;
 
+import java.util.Collection;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.tmt.actuator.endpoint.web.ExposableWebEndpoint;
 import com.tmt.actuator.endpoint.web.WebEndpointDiscoverer;
+import com.tmt.actuator.endpoint.web.WebEndpointHandlerMapping;
+import com.tmt.actuator.endpoint.web.WebEndpointsSupplier;
 
 /**
  * Endpoint 自动配置
@@ -25,9 +30,27 @@ public class WebEndpointAutoConfiguration {
 		this.properties = properties;
 	}
 	
+	/**
+	 * 加载 Endpoint
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnMissingBean(WebEndpointDiscoverer.class)
 	public WebEndpointDiscoverer webEndpointDiscoverer() {
 		return new WebEndpointDiscoverer(properties.getRootPath(), applicationContext);
+	}
+	
+	/**
+	 * 加载 HandlerMapping
+	 * @param webEndpointsSupplier
+	 * @param webEndpointProperties
+	 * @return
+	 */
+	@Bean
+	@ConditionalOnMissingBean
+	public WebEndpointHandlerMapping webEndpointHandlerMapping(WebEndpointsSupplier webEndpointsSupplier) {
+		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier
+				.getEndpoints();
+		return new WebEndpointHandlerMapping(webEndpoints);
 	}
 }
