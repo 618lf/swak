@@ -1,6 +1,5 @@
 package com.swak.actuator.endpoint.annotation;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -27,6 +26,8 @@ import org.springframework.util.MultiValueMap;
 import com.swak.actuator.endpoint.EndpointsSupplier;
 import com.swak.actuator.endpoint.ExposableEndpoint;
 import com.swak.actuator.endpoint.Operation;
+import com.swak.actuator.endpoint.invoke.OperationParameterResoler;
+import com.swak.actuator.endpoint.invoke.ReflectiveOperationInvoker;
 import com.swak.common.utils.StringUtils;
 
 /**
@@ -39,9 +40,11 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	private final ApplicationContext applicationContext;
 	private volatile Collection<E> endpoints;
+	private final OperationParameterResoler operationParameterResoler;
 	
-	public EndpointDiscoverer(ApplicationContext applicationContext) {
+	public EndpointDiscoverer(ApplicationContext applicationContext, OperationParameterResoler operationParameterResoler) {
 		this.applicationContext  = applicationContext;
+		this.operationParameterResoler = operationParameterResoler;
 	}
 	
 	@Override
@@ -49,7 +52,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		if (this.endpoints == null) {
 			this.endpoints = discoverEndpoints();
 		}
-		return null;
+		return this.endpoints;
 	}
 	
 	private Collection<E> discoverEndpoints() {
@@ -125,8 +128,9 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			if (annotationAttributes == null) {
 				return null;
 			}
-			return createOperation(endpointBean, method);
-		}).values();
+			ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(operationParameterResoler, endpointBean, method);
+			return createOperation(endpointBean, invoker);
+		}).values().stream().filter((i) -> i != null).collect(Collectors.toList());
 	}
 	
 	/**
@@ -145,7 +149,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	 * @param method
 	 * @return
 	 */
-	protected abstract O createOperation(EndpointBean endpointBean, Method method);
+	protected abstract O createOperation(EndpointBean endpointBean, ReflectiveOperationInvoker invoker);
 	
 	/**
 	 * Create a {@link OperationKey} for the given operation.

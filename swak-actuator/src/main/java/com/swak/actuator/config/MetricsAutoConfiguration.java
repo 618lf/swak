@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 
 import com.swak.actuator.config.metrics.MeterRegistryPostProcessor;
@@ -41,14 +42,15 @@ public class MetricsAutoConfiguration {
 	}
 	
 	@Bean
-	public CompositeMeterRegistry noOpMeterRegistry(Clock clock, List<MeterRegistry> registries) {
-		return new CompositeMeterRegistry(clock, registries);
+	public CompositeMeterRegistry noOpMeterRegistry(Clock clock) {
+		return new CompositeMeterRegistry(clock);
 	}
 	
 	@Bean
-	public MeterRegistryPostProcessor meterRegistryPostProcessor(
-			ApplicationContext context) {
-		return new MeterRegistryPostProcessor(context);
+	@Primary
+	public CompositeMeterRegistry compositeMeterRegistry(Clock clock,
+			List<MeterRegistry> registries) {
+		return new CompositeMeterRegistry(clock, registries);
 	}
 	
 	@Bean
@@ -57,10 +59,12 @@ public class MetricsAutoConfiguration {
 		return new PropertiesMeterFilter(properties);
 	}
 	
-	/**
-	 * jvm 相关
-	 * @author lifeng
-	 */
+	@Bean
+	public MeterRegistryPostProcessor meterRegistryPostProcessor(
+			ApplicationContext context) {
+		return new MeterRegistryPostProcessor(context);
+	}
+	
 	@Configuration
 	@ConditionalOnProperty(value = "spring.metrics.binders.jvm.enabled", matchIfMissing = true)
 	static class JvmMeterBindersConfiguration {

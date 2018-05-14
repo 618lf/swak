@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
@@ -52,6 +53,19 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		return this.applicationContext;
 	}
 	
+	// ------------- conversionService --------------
+	@Bean
+	public FormattingConversionService conversionService() {
+		FormattingConversionService service = new DefaultFormattingConversionService();
+		addFormatters(service);
+		return service;
+	}
+	
+	protected void addFormatters(FormatterRegistry registry) {
+		registry.addConverter(new DateFormatterConverter());
+		registry.addConverter(new StringEscapeFormatterConverter());
+	}
+	
 	// ---------- WebExceptionHandler ---------
 	@Bean
 	public WebExceptionHandler webExceptionHandler() {
@@ -82,8 +96,8 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 	}
 	
 	@Bean
-	public RequestMappingHandlerAdapter requestMappingHandlerAdapter() {
-		RequestMappingHandlerAdapter adapter = new RequestMappingHandlerAdapter();
+	public RequestMappingHandlerAdapter requestMappingHandlerAdapter(ConversionService conversionService) {
+		RequestMappingHandlerAdapter adapter = new RequestMappingHandlerAdapter(conversionService);
 		return adapter;
 	}
 	
@@ -100,12 +114,7 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		return adapter;
 	}
 	
-	@Bean
-	public FormattingConversionService conversionService() {
-		FormattingConversionService service = new DefaultFormattingConversionService();
-		addFormatters(service);
-		return service;
-	}
+	// ---------- handlerResult ---------
 	
 	@Bean
 	public HandlerResultHandler requestMappingHandlerResult() {
@@ -114,19 +123,6 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		return result;
 	}
 	
-	/**
-	 * 参数
-	 * @param registry
-	 */
-	protected void addFormatters(FormatterRegistry registry) {
-		registry.addConverter(new DateFormatterConverter());
-		registry.addConverter(new StringEscapeFormatterConverter());
-	}
-	
-	/**
-	 * 返回值
-	 * @param result
-	 */
 	protected void addMessageConverters(HandlerResultHandler result) {
 		result.addConverter(new StringHttpMessageConverter());
 		result.addConverter(new Jaxb2RootElementHttpMessageConverter());

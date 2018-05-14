@@ -56,13 +56,12 @@ public class WebEndpointHandlerMapping extends AbstractRequestMappingHandlerMapp
 	}
 	
 	// ----------- 将endpoint 转为 controller ------------
-	
 	@FunctionalInterface
-	protected interface WebMvcOperation {
+	public interface WebMvcOperation {
 		Object handle(HttpServerRequest request);
 	}
 	
-	private class WebMvcOperationAdapter implements WebMvcOperation {
+	public class WebMvcOperationAdapter implements WebMvcOperation {
 		
 		private final ExposableWebEndpoint endpoint;
 		private final WebOperation operation;
@@ -86,7 +85,7 @@ public class WebEndpointHandlerMapping extends AbstractRequestMappingHandlerMapp
 		}
 		
 		public String getPath() {
-			return endpoint.getRootPath() + "/" + endpoint.getId() + "/" + operation.getId();
+			return endpoint.getRootPath() + "/" + operation.getId();
 		}
 	}
 }

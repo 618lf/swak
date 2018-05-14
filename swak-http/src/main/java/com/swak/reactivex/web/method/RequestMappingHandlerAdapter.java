@@ -3,9 +3,6 @@ package com.swak.reactivex.web.method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 
@@ -27,13 +24,11 @@ import com.swak.reactivex.web.result.HandlerResult;
  * 
  * @author lifeng
  */
-public class RequestMappingHandlerAdapter implements HandlerAdapter, ApplicationContextAware {
+public class RequestMappingHandlerAdapter implements HandlerAdapter {
 
 	private HandlerMethodArgumentResolver argumentResolver;
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		ConversionService conversionService = applicationContext.getBean(ConversionService.class);
+	public RequestMappingHandlerAdapter(ConversionService conversionService){
 		initArgumentResolvers(conversionService);
 	}
 	

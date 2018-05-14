@@ -1,12 +1,12 @@
 package com.swak.actuator.endpoint.web;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 
 import org.springframework.context.ApplicationContext;
 
 import com.swak.actuator.endpoint.annotation.EndpointDiscoverer;
-import com.swak.actuator.endpoint.invoke.WebOperationInvoker;
+import com.swak.actuator.endpoint.invoke.OperationParameterResoler;
+import com.swak.actuator.endpoint.invoke.ReflectiveOperationInvoker;
 
 /**
  * 基于web 的 endpoint
@@ -16,8 +16,9 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 
     private final String rootPath;
 	
-	public WebEndpointDiscoverer(String rootPath, ApplicationContext applicationContext) {
-		super(applicationContext);
+	public WebEndpointDiscoverer(String rootPath, ApplicationContext applicationContext, 
+			OperationParameterResoler operationParameterResoler) {
+		super(applicationContext, operationParameterResoler);
 		this.rootPath = rootPath;
 	}
 
@@ -27,8 +28,8 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 	}
 
 	@Override
-	protected WebOperation createOperation(EndpointBean endpointBean, Method method) {
-		return new DiscoveredWebOperation(endpointBean, new WebOperationInvoker(endpointBean.getBean(), method));
+	protected WebOperation createOperation(EndpointBean endpointBean, ReflectiveOperationInvoker invoker) {
+		return new DiscoveredWebOperation(endpointBean, invoker);
 	}
 
 	@Override
