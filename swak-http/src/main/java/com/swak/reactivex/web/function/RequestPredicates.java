@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 import org.springframework.util.Assert;
 
+import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.web.function.pattern.PathContainer;
 import com.swak.reactivex.web.function.pattern.PathPattern;
@@ -96,6 +97,7 @@ public abstract class RequestPredicates {
 			PathPattern.PathMatchInfo info = this.pattern.matchAndExtract(pathContainer);
 			if (info != null) {
 				mergeTemplateVariables(request, info.getUriVariables());
+				recordPath(pattern, request);
 				return true;
 			}
 			else {
@@ -108,6 +110,10 @@ public abstract class RequestPredicates {
 				Map<String, String> mergedVariables = new LinkedHashMap<>(variables);
 				request.addPathVariables(mergedVariables);
 			}
+		}
+		
+		private void recordPath(PathPattern pattern, HttpServerRequest request) {
+			request.setAttribute(HttpConst.ATTRIBUTE_FOR_PATH, pattern.getPatternString());
 		}
 	}
 	

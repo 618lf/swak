@@ -21,4 +21,7 @@ public interface HttpConst {
 	CharSequence APPLICATION_TEXT = AsciiString.cached("text/plain; charset=UTF-8");
 	CharSequence APPLICATION_JSON = AsciiString.cached("application/json; charset=UTF-8");
 	CharSequence APPLICATION_XML = AsciiString.cached("application/xml; charset=UTF-8");
+	
+	// 某些 key
+	String ATTRIBUTE_FOR_PATH = "base.matched.pattern.path";
 }

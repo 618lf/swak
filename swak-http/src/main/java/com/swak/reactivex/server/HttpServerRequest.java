@@ -35,7 +35,7 @@ import io.netty.util.CharsetUtil;
 public abstract class HttpServerRequest implements Closeable {
 
 	private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk
-
+	
 	private ByteBuf body;
 	private String remoteAddress;
 	private String uri;

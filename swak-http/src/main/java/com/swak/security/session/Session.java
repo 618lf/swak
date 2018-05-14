@@ -42,6 +42,18 @@ public interface Session {
 	long getCreationTime();
 	
 	/**
+	 * 最后一次访问
+	 * @return
+	 */
+	long getLastAccessedTime();
+	
+	/**
+	 * 最大的空闲时间
+	 * @return
+	 */
+	long getMaxInactiveInterval();
+	
+	/**
 	 * 返回 runas
 	 * @return
 	 */

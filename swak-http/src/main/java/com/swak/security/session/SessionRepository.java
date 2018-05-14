@@ -26,4 +26,10 @@ public interface SessionRepository<S extends Session> {
 	 * @param id
 	 */
 	void removeSession(Session session);
+	
+	/**
+	 * 删除一个session
+	 * @param sessionId
+	 */
+	void removeSession(String sessionId);
 }

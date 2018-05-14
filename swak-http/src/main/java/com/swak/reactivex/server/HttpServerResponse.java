@@ -40,7 +40,7 @@ public abstract class HttpServerResponse extends HttpServerRequest {
 	private ByteBuffer buffer = null;
 	private HttpHeaders headers = new DefaultHttpHeaders(false);
 	private Set<Cookie> cookies = new HashSet<>(4);
-	private int statusCode = 200;
+	private HttpResponseStatus status = HttpResponseStatus.OK;
 	private CharSequence contentType = null;
 	private int contentSize;
 	private boolean closed;
@@ -53,13 +53,12 @@ public abstract class HttpServerResponse extends HttpServerRequest {
 		return this;
 	}
 	
-	/**
-	 * 返回状态吗
-	 * 
-	 * @return
-	 */
-	public int getStatusCode() {
-		return statusCode;
+    /**
+     * 状态码
+     * @return
+     */
+	public HttpResponseStatus getStatus() {
+		return status;
 	}
 
 	/**
@@ -69,7 +68,7 @@ public abstract class HttpServerResponse extends HttpServerRequest {
 	 * @return
 	 */
 	public HttpServerResponse status(HttpResponseStatus status) {
-		this.statusCode = status.code();
+		this.status = status;
 		return this;
 	}
 	
@@ -275,8 +274,7 @@ public abstract class HttpServerResponse extends HttpServerRequest {
 	private HttpResponse render()  {
 		byte[] _content = this.getContent();
 		ByteBuf buffer = _content== null? Unpooled.EMPTY_BUFFER : Unpooled.wrappedBuffer(_content);
-		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,
-				HttpResponseStatus.valueOf(statusCode), buffer);
+		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, buffer);
 		
 		if (!headers.contains(HttpHeaderNames.CONTENT_TYPE)) {
 			headers.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);

@@ -27,6 +27,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.PathMatcher;
 
 import com.swak.common.utils.Maps;
+import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.web.HandlerMapping;
 import com.swak.reactivex.web.annotation.RequestMethod;
@@ -144,10 +145,18 @@ public abstract class AbstractRequestMappingHandlerMapping implements Applicatio
 		}
 		if (bestMatch != null) {
 			this.handleMatch(bestMatch.getMapping(), lookupPath, request);
+			this.recordPath(bestMatch, request);
 			return bestMatch.getHandlerMethod();
 		}
 		return null;
 	}
+	
+	private void recordPath(Match bestMatch, HttpServerRequest request) {
+		Set<String> mapping = bestMatch.getMapping();
+		if (mapping != null && !mapping.isEmpty()) {
+			request.setAttribute(HttpConst.ATTRIBUTE_FOR_PATH, mapping.stream().findFirst());
+		}
+	} 
 	
 	protected void addMatchingMappings(Collection<RequestMappingInfo> mappings, List<Match> matches,
 			String lookupPath, RequestMethod lookupMethod) {

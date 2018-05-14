@@ -24,6 +24,7 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	private String SESSION_PREFIX = "session";
 	private String SESSION_ATTR_PREFIX = "attr:";
 	private String CREATION_TIME_ATTR = "ct";
+	private String LASTACCESSED_TIME_ATTR = "lat";
 	private String PRINCIPAL_ATTR = "p";
 	private String AUTHENTICATED_ATTR = "authed";
 	private String RUNASPRINCIPALS_ATTR = "rps";
@@ -85,7 +86,7 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 				session._setAttribute(key.substring(SESSION_ATTR_PREFIX.length()), entry.getValue());
 			 }
 		}
-		return session;
+		return session.accesse();
 	}
 	
 	/**
@@ -95,6 +96,16 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	public void removeSession(Session session) {
 		if (session != null && StringUtils.hasText(session.getId())) {
 			_cache.delete(session.getId());
+		}
+	}
+
+	/**
+	 * 删除session
+	 */
+	@Override
+	public void removeSession(String sessionId) {
+		if (StringUtils.hasText(sessionId)) {
+			_cache.delete(sessionId);
 		}
 	}
 	
@@ -115,6 +126,7 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 		
 		protected String id;
 		protected long creationTime = System.currentTimeMillis();
+		protected long lastAccessedTime;
 		protected Principal principal = null;
 		protected boolean authenticated = false;
 		protected Stack<Principal> runAsPrincipals;
@@ -148,6 +160,16 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 		public long getCreationTime() {
 			return this.creationTime;
 		}
+
+		@Override
+		public long getLastAccessedTime() {
+			return this.lastAccessedTime;
+		}
+
+		@Override
+		public long getMaxInactiveInterval() {
+			return getSessionTimeout();
+		}
 		
 		@Override
 		public void setPrincipal(Principal principal) {
@@ -171,6 +193,15 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 		public void setAuthenticated(boolean authenticated) {
 			this.authenticated = authenticated;
 			this.putAndFlush(AUTHENTICATED_ATTR, runAsPrincipals);
+		}
+		
+		/**
+		 * 访问 session
+		 */
+		public CacheSession accesse() {
+			this.lastAccessedTime = System.currentTimeMillis();
+			this.putAndFlush(LASTACCESSED_TIME_ATTR, lastAccessedTime);
+			return this;
 		}
 		
 		/**
@@ -236,6 +267,7 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 		public void saveDelta() {
 			Map<String, Object> delta = Maps.newHashMap();
 			delta.put(CREATION_TIME_ATTR, this.getCreationTime());
+			delta.put(LASTACCESSED_TIME_ATTR, this.getLastAccessedTime());
 			delta.put(PRINCIPAL_ATTR, this.getPrincipal());
 			delta.put(AUTHENTICATED_ATTR, this.isAuthenticated());
 			_cache.put(this.id, delta);

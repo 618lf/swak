@@ -11,6 +11,8 @@ import com.swak.common.Constants;
 @ConfigurationProperties(prefix = Constants.ACTUATOR_METRICS)
 public class MetricsProperties {
 
+	private String requestsMetricName = "http.server.requests";
+	
 	/**
 	 * Whether auto-configured MeterRegistry implementations should be bound to the global
 	 * static registry on Metrics. For testing, set this to 'false' to maximize test
@@ -46,6 +48,14 @@ public class MetricsProperties {
 		this.enable = enable;
 	}
 	
+	public String getRequestsMetricName() {
+		return requestsMetricName;
+	}
+
+	public void setRequestsMetricName(String requestsMetricName) {
+		this.requestsMetricName = requestsMetricName;
+	}
+
 	public static class Distribution {
 
 		/**
