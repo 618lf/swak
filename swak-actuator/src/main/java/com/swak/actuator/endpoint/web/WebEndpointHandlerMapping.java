@@ -81,6 +81,7 @@ public class WebEndpointHandlerMapping extends AbstractRequestMappingHandlerMapp
 			Map<String, Object> arguments = new LinkedHashMap<>();
 			request.getParameterMap().forEach((name, values) -> arguments.put(name,
 					values.size() != 1 ? Arrays.asList(values) : values.get(0)));
+			request.getPathVariables().forEach((name, value) -> arguments.put(name,value));
 			return arguments;
 		}
 		
