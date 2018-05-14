@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 import org.springframework.util.Assert;
 
 import com.swak.actuator.endpoint.annotation.Endpoint;
-import com.swak.actuator.endpoint.annotation.ReadOperation;
+import com.swak.actuator.endpoint.annotation.Operation;
+import com.swak.actuator.endpoint.annotation.Selector;
 
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -44,7 +45,7 @@ public class MetricsEndpoint {
 	 * 所有注册的名称
 	 * @return
 	 */
-	@ReadOperation
+	@Operation
 	public Set<String> listNames() {
 		Set<String> names = new LinkedHashSet<>();
 		collectNames(names, this.registry);
@@ -64,8 +65,14 @@ public class MetricsEndpoint {
 	}
 	
 
-	@ReadOperation
-	public MetricResponse metric(String requiredMetricName,
+	/**
+	 * requiredMetricName will add the path
+	 * @param requiredMetricName
+	 * @param tag
+	 * @return
+	 */
+	@Operation
+	public MetricResponse metric(@Selector String requiredMetricName,
 			@Nullable List<String> tag) {
 		Assert.isTrue(tag == null || tag.stream().allMatch((t) -> t.contains(":")),
 				"Each tag parameter must be in the form key:value");

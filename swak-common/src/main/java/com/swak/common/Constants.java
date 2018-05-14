@@ -6,6 +6,9 @@ package com.swak.common;
  */
 public interface Constants {
 	
+	/** url path separate */
+	String URL_PATH_SEPARATE = "/";
+	
 	/**  配置项前缀 */
 	String APPLICATION_PREFIX = "spring.application";
 	String HTTP_SERVER_PREFIX = "spring.http-server";
@@ -13,6 +16,9 @@ public interface Constants {
 	String SECURITY_PREFIX = "spring.security";
 	String MYBATIS_PREFIX = "spring.mybatis";
 	String DATASOURCE_PREFIX = "spring.datasource";
+	String ACTUATOR_METRICS="spring.metrics";
+	String ACTUATOR_ENDPOINT_WEB="spring.endpoints.web";
+	
 	
 	/** 用户密码加密 **/
 	String HASH_ALGORITHM = "SHA-1";

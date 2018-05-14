@@ -1,7 +1,5 @@
 package com.swak.actuator.config;
 
-import java.util.List;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -9,7 +7,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 
 import com.swak.actuator.config.metrics.MeterRegistryPostProcessor;
@@ -19,7 +16,6 @@ import com.swak.actuator.config.metrics.PropertiesMeterFilter;
 import ch.qos.logback.classic.LoggerContext;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
@@ -28,7 +24,6 @@ import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
 @Configuration
 @ConditionalOnClass(Timed.class)
@@ -39,18 +34,6 @@ public class MetricsAutoConfiguration {
 	@ConditionalOnMissingBean
 	public Clock micrometerClock() {
 		return Clock.SYSTEM;
-	}
-	
-	@Bean
-	public CompositeMeterRegistry noOpMeterRegistry(Clock clock) {
-		return new CompositeMeterRegistry(clock);
-	}
-	
-	@Bean
-	@Primary
-	public CompositeMeterRegistry compositeMeterRegistry(Clock clock,
-			List<MeterRegistry> registries) {
-		return new CompositeMeterRegistry(clock, registries);
 	}
 	
 	@Bean

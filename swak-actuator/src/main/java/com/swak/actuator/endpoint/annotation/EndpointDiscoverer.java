@@ -26,6 +26,7 @@ import org.springframework.util.MultiValueMap;
 import com.swak.actuator.endpoint.EndpointsSupplier;
 import com.swak.actuator.endpoint.ExposableEndpoint;
 import com.swak.actuator.endpoint.Operation;
+import com.swak.actuator.endpoint.invoke.OperationMethod;
 import com.swak.actuator.endpoint.invoke.OperationParameterResoler;
 import com.swak.actuator.endpoint.invoke.ReflectiveOperationInvoker;
 import com.swak.common.utils.StringUtils;
@@ -124,11 +125,12 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	private Collection<O> createOperations(EndpointBean endpointBean) {
 		return MethodIntrospector.selectMethods(endpointBean.getBean().getClass(), (MetadataLookup<O>) (method) -> {
 			AnnotationAttributes annotationAttributes = AnnotatedElementUtils.getMergedAnnotationAttributes(method,
-					ReadOperation.class);
+					com.swak.actuator.endpoint.annotation.Operation.class);
 			if (annotationAttributes == null) {
 				return null;
 			}
-			ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(operationParameterResoler, endpointBean, method);
+			OperationMethod operationMethod = new OperationMethod(endpointBean.getBean(), method);
+			ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(operationParameterResoler, operationMethod);
 			return createOperation(endpointBean, invoker);
 		}).values().stream().filter((i) -> i != null).collect(Collectors.toList());
 	}

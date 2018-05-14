@@ -2,7 +2,9 @@ package com.swak.actuator.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "spring.endpoints.web")
+import com.swak.common.Constants;
+
+@ConfigurationProperties(prefix = Constants.ACTUATOR_ENDPOINT_WEB)
 public class WebEndpointProperties {
 
 	/**

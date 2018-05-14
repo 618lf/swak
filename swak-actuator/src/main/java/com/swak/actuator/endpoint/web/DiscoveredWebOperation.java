@@ -1,9 +1,8 @@
 package com.swak.actuator.endpoint.web;
 
-import java.lang.reflect.Method;
-
 import com.swak.actuator.endpoint.AbstractDiscoveredOperation;
 import com.swak.actuator.endpoint.annotation.EndpointDiscoverer.EndpointBean;
+import com.swak.actuator.endpoint.invoke.OperationMethod;
 import com.swak.actuator.endpoint.invoke.ReflectiveOperationInvoker;
 
 public class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebOperation {
@@ -15,8 +14,8 @@ public class DiscoveredWebOperation extends AbstractDiscoveredOperation implemen
 		this.id = getId(endpointBean.getId(), invoker.getOperationMethod());
 	}
 	
-	private String getId(String endpointId, Method method) {
-		return endpointId + "/" + method.getName();
+	private String getId(String endpointId, OperationMethod operationMethod) {
+		return endpointId + operationMethod.getPath();
 	}
 	
 	public String getId() {
