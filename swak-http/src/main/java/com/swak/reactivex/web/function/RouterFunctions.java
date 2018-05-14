@@ -57,6 +57,17 @@ public abstract class RouterFunctions {
 			HandlerFunction hf = first.route(request);
 			return hf == null? second.route(request) : hf;
 		}
+		
+		@Override
+		public RouterFunction next() {
+			RouterFunction hf = first.next();
+			return hf == null? second.next(): hf;
+		}
+		
+		@Override
+		public String toString() {
+			return String.format("(left %s or right %s)", first, second);
+		}
 	}
 	
 	/**
@@ -64,7 +75,7 @@ public abstract class RouterFunctions {
 	 * 
 	 * @author lifeng
 	 */
-	static class DefaultRouterFunction extends AbstractRouterFunction {
+	public static class DefaultRouterFunction extends AbstractRouterFunction {
 
 		private final RequestPredicate predicate;
 		private final HandlerFunction handlerFunction;
@@ -83,6 +94,19 @@ public abstract class RouterFunctions {
 				return this.handlerFunction;
 			}
 			return null;
+		}
+
+		/**
+		 * 条件
+		 * @return
+		 */
+		public RequestPredicate getPredicate() {
+			return predicate;
+		}
+		
+		@Override
+		public String toString() {
+			return String.format("(predicate %s -> function %s)", predicate.toString(), handlerFunction.description());
 		}
 	}
 }

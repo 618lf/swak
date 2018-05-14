@@ -13,4 +13,12 @@ public interface HandlerFunction extends Handler {
 	 * @return
 	 */
 	Object handle(HttpServerRequest request);
+	
+	/**
+	 * 描述
+	 * @return
+	 */
+	default String description() {
+		return getClass().getCanonicalName();
+	}
 }

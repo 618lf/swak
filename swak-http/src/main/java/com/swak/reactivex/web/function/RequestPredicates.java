@@ -115,6 +115,11 @@ public abstract class RequestPredicates {
 		private void recordPath(PathPattern pattern, HttpServerRequest request) {
 			request.setAttribute(HttpConst.ATTRIBUTE_FOR_PATH, pattern.getPatternString());
 		}
+
+		@Override
+		public String toString() {
+			return String.format("(pattern %s)", this.pattern.getPatternString());
+		}
 	}
 	
 	/**
@@ -134,9 +139,14 @@ public abstract class RequestPredicates {
 			boolean match = this.httpMethod == request.getRequestMethod();
 			return match;
 		}
+		
+		@Override
+		public String toString() {
+			return String.format("(method %s)", this.httpMethod.name());
+		}
 	}
 	
-	static class AndRequestPredicate implements RequestPredicate {
+	public static class AndRequestPredicate implements RequestPredicate {
 
 		private final RequestPredicate left;
 

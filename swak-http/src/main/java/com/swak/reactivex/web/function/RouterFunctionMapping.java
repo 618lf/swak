@@ -54,4 +54,8 @@ public class RouterFunctionMapping implements HandlerMapping, ApplicationContext
 	public int getOrder() {
 		return Ordered.HIGHEST_PRECEDENCE + 10;
 	}
+
+	public RouterFunction getRouterFunction() {
+		return routerFunction;
+	}
 }

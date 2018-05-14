@@ -42,6 +42,10 @@ public abstract class AbstractRequestMappingHandlerMapping implements Applicatio
 	private Map<String, Match> matchLookup = new HashMap<String, Match>();
 	private MappingRegistry mappingRegistry = new MappingRegistry();
 	
+	public MappingRegistry getMappingRegistry() {
+		return mappingRegistry;
+	}
+	
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.initRequestMappings(applicationContext);
