@@ -1,5 +1,7 @@
 package com.swak.security;
 
+import org.springframework.core.Ordered;
+
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebFilterChain;
 import com.swak.reactivex.server.HttpServerRequest;
@@ -15,7 +17,7 @@ import reactor.core.publisher.Mono;
  * 
  * @author lifeng
  */
-public class SecurityFilter implements WebFilter {
+public class SecurityFilter implements WebFilter, Ordered {
 
 	private final SecurityManager securityManager;
 	private final FilterChainManager filterChainManager;
@@ -61,5 +63,13 @@ public class SecurityFilter implements WebFilter {
 			chain = resolved;
 		}
 		return chain;
+	}
+
+	/**
+	 * 顺序
+	 */
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE + 100;
 	}
 }

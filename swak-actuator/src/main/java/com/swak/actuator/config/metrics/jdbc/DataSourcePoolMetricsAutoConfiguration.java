@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import com.swak.actuator.config.MetricsAutoConfiguration;
 import com.swak.actuator.config.metrics.export.SimpleMetricsExportAutoConfiguration;
+import com.swak.actuator.metrics.jdbc.DataSourcePoolMetrics;
 import com.swak.config.DataBaseConfigurationSupport.DataSourceAutoConfiguration;
 
 import io.micrometer.core.instrument.MeterRegistry;

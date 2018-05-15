@@ -11,6 +11,9 @@ import org.springframework.context.annotation.Configuration;
 import com.swak.actuator.config.MetricsAutoConfiguration;
 import com.swak.actuator.config.metrics.MetricsProperties;
 import com.swak.actuator.config.metrics.export.SimpleMetricsExportAutoConfiguration;
+import com.swak.actuator.metrics.web.MetricsWebFilter;
+import com.swak.actuator.metrics.web.WebFluxTags;
+import com.swak.actuator.metrics.web.WebTagsProvider;
 
 import io.micrometer.core.instrument.MeterRegistry;
 

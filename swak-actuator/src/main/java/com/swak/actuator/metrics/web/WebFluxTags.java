@@ -1,4 +1,4 @@
-package com.swak.actuator.config.metrics.web;
+package com.swak.actuator.metrics.web;
 
 import org.springframework.util.StringUtils;
 

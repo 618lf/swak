@@ -54,4 +54,12 @@ public class AdviceFilter implements WebFilter {
 		}
 		return Mono.empty();
 	}
+
+	/**
+	 * 这个不需要支持顺序
+	 */
+	@Override
+	public int getOrder() {
+		return 1;
+	}
 }

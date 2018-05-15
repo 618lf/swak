@@ -21,11 +21,6 @@ public class HttpTraceWebFilter implements WebFilter, Ordered {
 		this.traceRepository = traceRepository;
 	}
 	
-	@Override
-	public int getOrder() {
-		return Ordered.LOWEST_PRECEDENCE - 10;
-	}
-
 	/**
 	 * 相关于一个后置处理器
 	 */
@@ -35,5 +30,10 @@ public class HttpTraceWebFilter implements WebFilter, Ordered {
 		return chain.filter(request, response).doAfterSuccessOrError((aVoid, ex) ->{
 			this.traceRepository.sendingResponse(trace, response);
 		});
+	}
+	
+	@Override
+	public int getOrder() {
+		return Ordered.LOWEST_PRECEDENCE - 10;
 	}
 }

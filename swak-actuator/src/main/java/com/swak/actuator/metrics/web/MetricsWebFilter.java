@@ -1,10 +1,9 @@
-package com.swak.actuator.config.metrics.web;
+package com.swak.actuator.metrics.web;
 
 import java.util.concurrent.TimeUnit;
 
 import org.reactivestreams.Publisher;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebFilterChain;
@@ -22,8 +21,7 @@ import reactor.core.publisher.Mono;
  * @author Brian Clozel
  * @since 2.0.0
  */
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
-public class MetricsWebFilter implements WebFilter {
+public class MetricsWebFilter implements WebFilter, Ordered{
 
 	private final MeterRegistry registry;
 	private final WebTagsProvider tagsProvider;
@@ -58,5 +56,10 @@ public class MetricsWebFilter implements WebFilter {
 		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(request, cause);
 		this.registry.timer(this.metricName, tags).record(System.nanoTime() - start,
 				TimeUnit.NANOSECONDS);
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE + 10;
 	}
 }

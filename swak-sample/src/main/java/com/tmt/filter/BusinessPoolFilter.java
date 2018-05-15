@@ -5,6 +5,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.core.Ordered;
+
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebFilterChain;
 import com.swak.reactivex.server.HttpServerRequest;
@@ -18,7 +20,7 @@ import reactor.core.scheduler.Schedulers;
  * 还是需要线程池来处理业务。
  * @author lifeng
  */
-public class BusinessPoolFilter implements WebFilter {
+public class BusinessPoolFilter implements WebFilter, Ordered {
 	
 	Executor executor = new ThreadPoolExecutor(1024, 2000,
 			60 * 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
@@ -27,5 +29,13 @@ public class BusinessPoolFilter implements WebFilter {
 	public Mono<Void> filter(HttpServerRequest request, HttpServerResponse response, WebFilterChain chain) {
 		Mono<Void> filters = chain.filter(request, response);
 		return filters.subscribeOn(Schedulers.fromExecutor(executor));
+	}
+
+	/**
+	 * 这个靠前面执行
+	 */
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE;
 	}
 }

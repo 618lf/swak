@@ -1,4 +1,4 @@
-package com.swak.actuator.config.metrics.jdbc;
+package com.swak.actuator.metrics.jdbc;
 
 import java.util.Collection;
 import java.util.Map;
