@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -69,6 +70,7 @@ public class DataBaseConfigurationSupport {
 	 * @author lifeng
 	 */
 	@org.springframework.context.annotation.Configuration
+	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@ConditionalOnClass({ DataSource.class, DruidDataSource.class })
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	public static class DataSourceAutoConfiguration {
@@ -187,6 +189,7 @@ public class DataBaseConfigurationSupport {
 	 * @author lifeng
 	 */
 	@org.springframework.context.annotation.Configuration
+	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
 	@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 	@ConditionalOnSingleCandidate(DataSource.class)
@@ -201,6 +204,7 @@ public class DataBaseConfigurationSupport {
 	 *
 	 */
 	@org.springframework.context.annotation.Configuration
+	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@ConditionalOnClass({ SqlSessionFactory.class, SqlSessionFactoryBean.class })
 	@ConditionalOnBean(DataSource.class)
 	@EnableConfigurationProperties(MybatisProperties.class)
@@ -212,11 +216,12 @@ public class DataBaseConfigurationSupport {
 		private final ResourceLoader resourceLoader;
 		private final DatabaseIdProvider databaseIdProvider;
 		private final List<ConfigurationCustomizer> configurationCustomizers;
-
+		
 		public MybatisAutoConfiguration(MybatisProperties properties,
 				ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader,
 				ObjectProvider<DatabaseIdProvider> databaseIdProvider,
 				ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider) {
+			APP_LOGGER.debug("Loading Mybatis");
 			this.properties = properties;
 			this.interceptors = interceptorsProvider.getIfAvailable();
 			this.resourceLoader = resourceLoader;

@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,6 +15,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.CollectionUtils;
 
 import com.swak.ApplicationProperties;
@@ -57,6 +57,7 @@ public class AppAutoConfiguration {
 	 */
 	@Configuration
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
+	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public static class BaseFuntionAutoConfiguration {
 		
 		/**
@@ -127,6 +128,7 @@ public class AppAutoConfiguration {
 	 */
 	@Configuration
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 50)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 50)
 	@ConditionalOnMissingBean(CacheConfigurationSupport.class)
 	@EnableConfigurationProperties(CacheProperties.class)
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableRedis", matchIfMissing = true)
@@ -143,6 +145,7 @@ public class AppAutoConfiguration {
 	 */
 	@Configuration
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 100)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 100)
 	@ConditionalOnMissingBean(RedisEventBusConfigurationSupport.class)
 	@AutoConfigureAfter(CacheAutoConfiguration.class)
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableEventBus", matchIfMissing = true)
@@ -151,7 +154,21 @@ public class AppAutoConfiguration {
 			APP_LOGGER.debug("Loading Event bus");
 		}
 	}
-
+	
+	/**
+	 * 数据库配置
+	 * @author lifeng
+	 */
+	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableDataBase", matchIfMissing = true)
+	public static class DataBaseAutoConfiguration extends DataBaseConfigurationSupport {
+		public DataBaseAutoConfiguration() {
+			APP_LOGGER.debug("Loading DataBase");
+		}
+	}
+	
 	/**
 	 * 安全配置
 	 * 
@@ -159,9 +176,9 @@ public class AppAutoConfiguration {
 	 */
 	@Configuration
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@ConditionalOnBean({ SecurityConfigurationSupport.class })
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSecurity", matchIfMissing = true)
-	@AutoConfigureBefore(WebHandlerAutoConfiguration.class)
 	public static class SecurityConfiguration {
 
 		@Autowired
@@ -245,6 +262,7 @@ public class AppAutoConfiguration {
 	 */
 	@Configuration
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 100)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 100)
 	@ConditionalOnMissingBean(SessionConfigurationSupport.class)
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSession", matchIfMissing = true)
 	@AutoConfigureAfter({SecurityConfiguration.class, CacheAutoConfiguration.class})
@@ -261,7 +279,9 @@ public class AppAutoConfiguration {
 	 */
 	@Configuration
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 20)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 20)
 	@ConditionalOnMissingBean(WebConfigurationSupport.class)
+	@AutoConfigureAfter({SecurityConfiguration.class, DataBaseAutoConfiguration.class})
 	public static class WebHandlerAutoConfiguration extends WebConfigurationSupport {
 		public WebHandlerAutoConfiguration() {
 			APP_LOGGER.debug("Loading Web Handler");
@@ -275,8 +295,9 @@ public class AppAutoConfiguration {
 	 */
 	@Configuration
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 50)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 50)
 	@EnableConfigurationProperties(HttpServerProperties.class)
-	@AutoConfigureAfter(WebHandlerAutoConfiguration.class)
+	@AutoConfigureAfter({WebHandlerAutoConfiguration.class, SecurityConfiguration.class, DataBaseAutoConfiguration.class})
 	public static class HttpServerAutoConfiguration {
 
 		private HttpServerProperties properties;
@@ -289,19 +310,6 @@ public class AppAutoConfiguration {
 		@Bean
 		public ReactiveWebServerFactory reactiveWebServerFactory() {
 			return new ReactiveWebServerFactory(properties);
-		}
-	}
-	
-	/**
-	 * 数据库配置
-	 * @author lifeng
-	 */
-	@Configuration
-	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 100)
-	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableDataBase", matchIfMissing = true)
-	public static class DataBaseAutoConfiguration extends DataBaseConfigurationSupport {
-		public DataBaseAutoConfiguration() {
-			APP_LOGGER.debug("Loading DataBase");
 		}
 	}
 
