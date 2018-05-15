@@ -18,6 +18,7 @@ public interface Constants {
 	String DATASOURCE_PREFIX = "spring.datasource";
 	String ACTUATOR_METRICS="spring.metrics";
 	String ACTUATOR_ENDPOINT_WEB="spring.endpoints.web";
+	String ACTUATOR_TRACE="spring.trace";
 	
 	
 	/** 用户密码加密 **/
@@ -35,4 +36,5 @@ public interface Constants {
 	/** 系统通道 **/
 	String LOCAL_CACHE_TOPIC = "LOCAL_CACHE_TOPIC";
 	String UPDATE_EVENT_TOPIC = "UPDATE_EVENT_TOPIC";
+	String ACCESS_TRACE = "ACCESS_TRACE";
 }

@@ -248,6 +248,16 @@ public abstract class HttpServerRequest implements Closeable {
 	}
 	
 	/**
+	 * 指定名称的header
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Map<String, String> getRequestHeaders() {
+		return headers;
+	}
+	
+	/**
 	 * 解析 headers
 	 * @param request
 	 */
