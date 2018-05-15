@@ -140,11 +140,37 @@ public abstract class HttpServerResponseOperation extends HttpServerRequestOpera
 	 * @param status
 	 * @return
 	 */
+	public HttpServerResponseOperation html() {
+		headers.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_HTML);
+		return this;
+	}
+	
+	/**
+	 * 设置输出格式
+	 * 
+	 * @param status
+	 * @return
+	 */
 	public HttpServerResponseOperation xml() {
 		headers.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_XML);
 		return this;
 	}
 	
+	/**
+	 * 自动判断类型
+	 * 只判断这两种类型
+	 */
+	@Override
+	public HttpServerResponse accept() {
+		String acceptType = this.getRequestHeader(HttpHeaderNames.ACCEPT.toString());
+		if (!StringUtils.isBlank(acceptType) && StringUtils.contains(acceptType, "text/html")) {
+			return this.html();
+		} else if (!StringUtils.isBlank(acceptType) && StringUtils.contains(acceptType, "text/plain")) {
+			return this.text();
+		}
+		return this;
+	}
+
 	/**
 	 * 设置浏览器缓存，默认是无缓存
 	 * @return

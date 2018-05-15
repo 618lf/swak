@@ -86,7 +86,22 @@ public interface HttpServerResponse extends Closeable {
 	 * @param status
 	 * @return
 	 */
+	HttpServerResponse html();
+	
+	/**
+	 * 设置输出格式
+	 * 
+	 * @param status
+	 * @return
+	 */
 	HttpServerResponse xml();
+	
+	/**
+	 * 根据 accept 判断接收的类型
+	 * 只有返回string 或抛出异常时才会使用
+	 * @return
+	 */
+	HttpServerResponse accept();
 	
 	/**
 	 * 设置浏览器缓存，默认是无缓存

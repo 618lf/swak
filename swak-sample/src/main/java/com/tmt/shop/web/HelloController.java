@@ -18,6 +18,16 @@ public class HelloController {
 	private ShopService shopService;
 	
 	/**
+	 * 抛出异常
+	 * @return
+	 */
+	@GetMapping("/say/error")
+	public String sayError() {
+		int i = 1/ 0;
+		return "lifeng" + i;
+	}
+	
+	/**
 	 * 输出string 类型
 	 * @return
 	 */

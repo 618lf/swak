@@ -32,6 +32,6 @@ public class StringHttpMessageConverter implements HttpMessageConverter<String> 
 
 	@Override
 	public void write(String content, HttpServerResponse response) throws IOException {
-		response.text().buffer(content);
+		response.text().accept().buffer(content);
 	}
 }

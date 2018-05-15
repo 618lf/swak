@@ -260,13 +260,14 @@ public abstract class HttpServerRequestOperation implements HttpServerRequest {
 	
 	/**
 	 * 解析 headers
+	 * 最新的协议都是小写的
 	 * @param request
 	 */
 	private void parseHeaders(FullHttpRequest request) {
 		HttpHeaders httpHeaders = request.headers();
 		if (httpHeaders.size() > 0) {
 			this.headers = new HashMap<>(httpHeaders.size());
-			httpHeaders.forEach((header) -> headers.put(header.getKey(), header.getValue()));
+			httpHeaders.forEach((header) -> headers.put(header.getKey().toLowerCase(), header.getValue()));
 		} else {
 			this.headers = new HashMap<>();
 		}

@@ -23,7 +23,7 @@ public class DefaultWebExceptionHandler implements WebExceptionHandler{
 	@Override
 	public Mono<Void> handle(HttpServerRequest request, HttpServerResponse response, Throwable ex) {
 		logger.error("{}", request.getRequestURL(), ex);
-		response.error().json().buffer(ErrorCode.OPERATE_FAILURE.toJson());
+		response.error().json().accept().buffer(ErrorCode.OPERATE_FAILURE.toJson());
 		return Mono.empty();
 	}
 }
