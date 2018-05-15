@@ -16,10 +16,17 @@ public interface ServerOperations extends Subscriber<Void>{
 	}
 	
 	/**
-	 * 下一步处理
+	 * 不需要
 	 */
 	default void onNext(Void t) {}
-
+	
+	/**
+	 * 程序执行错误
+	 */
+	default void onError(Throwable e) {
+		this.onComplete();
+	}
+	
 	/**
 	 * 获得响应
 	 * @return

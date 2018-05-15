@@ -27,7 +27,7 @@ public class HttpTraceWebFilter implements WebFilter, Ordered {
 	@Override
 	public Mono<Void> filter(HttpServerRequest request, HttpServerResponse response, WebFilterChain chain) {
 		HttpTrace trace = this.traceRepository.receivedRequest(request);
-		return chain.filter(request, response).doAfterSuccessOrError((aVoid, ex) ->{
+		return chain.filter(request, response).doOnSuccessOrError((aVoid, ex) ->{
 			this.traceRepository.sendingResponse(trace, response);
 		});
 	}

@@ -8,6 +8,8 @@ import org.springframework.util.ClassUtils;
 
 import com.swak.reactivex.web.Handler;
 
+import reactor.core.publisher.Mono;
+
 /**
  * 也是一个执行链，没有拦截器；
  * 可以将 handler 定义默认的前置执行器
@@ -60,7 +62,7 @@ public class HandlerMethod implements Handler {
 	}
 	
 	/**
-	 * 执行
+	 * 如果出错了，则输出 Mono.error(e) 对象
 	 * 
 	 * @param args
 	 * @return
@@ -68,41 +70,8 @@ public class HandlerMethod implements Handler {
 	public Object doInvoke(Object[] args){
 		try {
 			return this.getMethod().invoke(this.getBean(), args);
-		} catch (IllegalAccessException ex) {
-			String text = (ex.getMessage() != null ? ex.getMessage() : "Illegal argument");
-			throw new IllegalStateException(getInvocationErrorMessage(text, args), ex);
 		} catch (Exception e) {
-			return null;
+			return Mono.error(e);
 		}
-	}
-
-	private String getInvocationErrorMessage(String text, Object[] resolvedArgs) {
-		StringBuilder sb = new StringBuilder(getDetailedErrorMessage(text));
-		sb.append("Resolved arguments: \n");
-		for (int i = 0; i < resolvedArgs.length; i++) {
-			sb.append("[").append(i).append("] ");
-			if (resolvedArgs[i] == null) {
-				sb.append("[null] \n");
-			} else {
-				sb.append("[type=").append(resolvedArgs[i].getClass().getName()).append("] ");
-				sb.append("[value=").append(resolvedArgs[i]).append("]\n");
-			}
-		}
-		return sb.toString();
-	}
-
-	/**
-	 * Adds HandlerMethod details such as the bean type and method signature to the
-	 * message.
-	 * 
-	 * @param text
-	 *            error message to append the HandlerMethod details to
-	 */
-	private String getDetailedErrorMessage(String text) {
-		StringBuilder sb = new StringBuilder(text).append("\n");
-		sb.append("HandlerMethod details: \n");
-		sb.append("Controller [").append(getBeanType().getName()).append("]\n");
-		sb.append("Method [").append(this.getMethod().toGenericString()).append("]\n");
-		return sb.toString();
 	}
 }

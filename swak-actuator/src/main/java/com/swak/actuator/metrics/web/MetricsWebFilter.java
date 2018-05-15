@@ -2,7 +2,6 @@ package com.swak.actuator.metrics.web;
 
 import java.util.concurrent.TimeUnit;
 
-import org.reactivestreams.Publisher;
 import org.springframework.core.Ordered;
 
 import com.swak.reactivex.HttpServerRequest;
@@ -36,12 +35,8 @@ public class MetricsWebFilter implements WebFilter, Ordered{
 	
 	@Override
 	public Mono<Void> filter(HttpServerRequest request, HttpServerResponse response, WebFilterChain chain) {
-		return chain.filter(request, response).compose((call) -> filter(request, call));
-	}
-	
-	private Publisher<Void> filter(HttpServerRequest request, Mono<Void> call) {
 		long start = System.nanoTime();
-		return call.doOnSuccess((done) -> success(request, start)).doOnError((cause) -> {
+		return chain.filter(request, response).doOnSuccess((done) -> success(request, start)).doOnError((cause) -> {
 			error(request, start, cause);
 		});
 	}

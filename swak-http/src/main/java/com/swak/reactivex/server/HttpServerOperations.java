@@ -2,7 +2,6 @@ package com.swak.reactivex.server;
 
 import java.io.IOException;
 
-import com.swak.common.exception.ErrorCode;
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.handler.HttpHandler;
@@ -30,11 +29,9 @@ public class HttpServerOperations extends HttpServerResponseOperation implements
 		super.close();
 	}
 
-	@Override
-	public void onError(Throwable e) {
-		this.out(ErrorCode.OPERATE_FAILURE.toJson());
-	}
-
+	/**
+	 * 直接输出响应
+	 */
 	@Override
 	public void onComplete() {
 		this.out();
@@ -70,7 +67,7 @@ public class HttpServerOperations extends HttpServerResponseOperation implements
 			this.initRequest(channel, request);
 			this.handler.apply(this).subscribe(this);
 		} catch (Exception e) {
-			this.out(ErrorCode.OPERATE_FAILURE.toJson());
+			this.text().out(e.getMessage());
 		}finally {
 			ReferenceCountUtil.release(request);
 		}
