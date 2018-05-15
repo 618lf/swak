@@ -3,7 +3,7 @@ package com.swak.actuator.metrics.web;
 import org.springframework.util.StringUtils;
 
 import com.swak.reactivex.HttpConst;
-import com.swak.reactivex.server.HttpServerRequest;
+import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.web.HandlerMapping;
 
 import io.micrometer.core.instrument.Tag;

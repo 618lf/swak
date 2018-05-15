@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.core.MethodParameter;
 
-import com.swak.reactivex.server.HttpServerRequest;
+import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.web.method.HandlerMethodArgumentResolver;
 
 /**

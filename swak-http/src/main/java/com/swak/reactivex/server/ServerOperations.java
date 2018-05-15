@@ -3,6 +3,9 @@ package com.swak.reactivex.server;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import com.swak.reactivex.HttpServerRequest;
+import com.swak.reactivex.HttpServerResponse;
+
 public interface ServerOperations extends Subscriber<Void>{
 
 	/**

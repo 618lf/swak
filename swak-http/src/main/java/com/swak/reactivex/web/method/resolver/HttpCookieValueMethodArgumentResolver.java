@@ -8,7 +8,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 
 import com.swak.reactivex.Cookie;
-import com.swak.reactivex.server.HttpServerRequest;
+import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.web.annotation.CookieValue;
 
 /**

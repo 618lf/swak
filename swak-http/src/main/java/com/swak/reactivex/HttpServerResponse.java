@@ -1,4 +1,4 @@
-package com.swak.reactivex.server;
+package com.swak.reactivex;
 
 import java.io.Closeable;
 import java.io.IOException;

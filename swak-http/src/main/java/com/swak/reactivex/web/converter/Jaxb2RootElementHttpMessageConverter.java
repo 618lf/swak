@@ -8,8 +8,8 @@ import javax.xml.bind.annotation.XmlType;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import com.swak.common.utils.JaxbMapper;
-import com.swak.reactivex.server.HttpServerRequest;
-import com.swak.reactivex.server.HttpServerResponse;
+import com.swak.reactivex.HttpServerRequest;
+import com.swak.reactivex.HttpServerResponse;
 
 /**
  * 处理xml

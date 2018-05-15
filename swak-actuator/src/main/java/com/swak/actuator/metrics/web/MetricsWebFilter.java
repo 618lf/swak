@@ -5,10 +5,10 @@ import java.util.concurrent.TimeUnit;
 import org.reactivestreams.Publisher;
 import org.springframework.core.Ordered;
 
+import com.swak.reactivex.HttpServerRequest;
+import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebFilterChain;
-import com.swak.reactivex.server.HttpServerRequest;
-import com.swak.reactivex.server.HttpServerResponse;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;

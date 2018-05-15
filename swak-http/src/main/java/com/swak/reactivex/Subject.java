@@ -2,10 +2,6 @@ package com.swak.reactivex;
 
 import java.util.Set;
 
-import com.swak.reactivex.Principal;
-import com.swak.reactivex.Session;
-import com.swak.reactivex.server.HttpServerRequest;
-import com.swak.reactivex.server.HttpServerResponse;
 import com.swak.security.exception.AuthenticationException;
 
 /**
