@@ -53,7 +53,7 @@ public class OperationMethod {
 	}
 
 	public String getPath() {
-		return new StringBuilder(Constants.URL_PATH_SEPARATE).append(method.getName())
+		return new StringBuilder().append(method.getName())
 				.append(parameters.stream().filter(parameter -> parameter.isSelector())
 				.map(parameter -> this.parsePath(parameter.getName())).collect(Collectors.joining())).toString();
 	}

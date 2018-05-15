@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 
 import com.swak.actuator.endpoint.InvocationContext;
+import com.swak.common.Constants;
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.web.annotation.RequestMethod;
 import com.swak.reactivex.web.method.AbstractRequestMappingHandlerMapping;
@@ -86,7 +87,8 @@ public class WebEndpointHandlerMapping extends AbstractRequestMappingHandlerMapp
 		}
 		
 		public String getPath() {
-			return endpoint.getRootPath() + "/" + operation.getId();
+			return new StringBuilder(endpoint.getRootPath())
+					.append(Constants.URL_PATH_SEPARATE).append(operation.getId()).toString();
 		}
 	}
 }
