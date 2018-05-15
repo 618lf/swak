@@ -34,6 +34,6 @@ public class HttpTraceWebFilter implements WebFilter, Ordered {
 	
 	@Override
 	public int getOrder() {
-		return Ordered.LOWEST_PRECEDENCE - 10;
+		return Ordered.HIGHEST_PRECEDENCE + 20;
 	}
 }

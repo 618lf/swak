@@ -13,7 +13,7 @@ import io.netty.util.ReferenceCountUtil;
  * HttpServer http 操作
  * @author lifeng
  */
-public class HttpServerOperations extends HttpServerResponse implements ServerOperations {
+public class HttpServerOperations extends HttpServerResponseOperation implements ServerOperations {
 
 	private HttpHandler handler;
 	private Channel channel;
@@ -54,7 +54,7 @@ public class HttpServerOperations extends HttpServerResponse implements ServerOp
 	/**
 	 * 获得请求
 	 */
-	public HttpServerResponse getRequest() {
+	public HttpServerRequest getRequest() {
 		return this;
 	}
 	

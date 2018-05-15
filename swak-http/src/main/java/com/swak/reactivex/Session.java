@@ -1,9 +1,7 @@
-package com.swak.security.session;
+package com.swak.reactivex;
 
 import java.util.Set;
 import java.util.Stack;
-
-import com.swak.security.principal.Principal;
 
 /**
  * 简单的session存储, 提供类似Session 的存储

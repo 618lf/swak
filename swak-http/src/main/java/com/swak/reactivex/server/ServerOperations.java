@@ -26,5 +26,5 @@ public interface ServerOperations extends Subscriber<Void>{
 	/**
 	 * 获得请求
 	 */
-	HttpServerResponse getRequest();
+	HttpServerRequest getRequest();
 }

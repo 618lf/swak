@@ -36,5 +36,6 @@ public interface Constants {
 	/** 系统通道 **/
 	String LOCAL_CACHE_TOPIC = "LOCAL_CACHE_TOPIC";
 	String UPDATE_EVENT_TOPIC = "UPDATE_EVENT_TOPIC";
+	String SYS_EVENT_TOPIC = "SYS_EVENT_TOPIC";
 	String ACCESS_TRACE = "ACCESS_TRACE";
 }

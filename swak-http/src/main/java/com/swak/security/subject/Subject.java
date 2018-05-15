@@ -2,11 +2,11 @@ package com.swak.security.subject;
 
 import java.util.Set;
 
+import com.swak.reactivex.Principal;
+import com.swak.reactivex.Session;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 import com.swak.security.exception.AuthenticationException;
-import com.swak.security.principal.Principal;
-import com.swak.security.session.Session;
 
 /**
  * 简单的主体

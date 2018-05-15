@@ -1,4 +1,4 @@
-package com.swak.security.principal;
+package com.swak.reactivex;
 
 import java.io.Externalizable;
 import java.io.IOException;

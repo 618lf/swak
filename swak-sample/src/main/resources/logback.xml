@@ -19,6 +19,27 @@
 		</encoder>
 	</appender>
 	
+	<!-- 访问日志 appender -->
+	<appender name="ACCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>/home/lifeng/logs/access/%d{yyyy-MM-dd-HH-mm}.master.log</fileNamePattern>
+			<maxHistory>0</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 异步实现访问记录 -->
+	<appender name="ACCESS_TRACE" class="ch.qos.logback.classic.AsyncAppender">
+		 <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->  
+         <discardingThreshold>0</discardingThreshold>  
+         <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->  
+         <queueSize>512</queueSize>  
+         <!-- 添加附加的appender,最多只能添加一个 -->  
+         <appender-ref ref="ACCESS"/>  
+	</appender>
+	
     <!-- 默认是错误级别 -->
 	<root level="ERROR">
 	    <appender-ref ref="STDOUT"/>

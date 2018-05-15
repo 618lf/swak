@@ -5,7 +5,7 @@ import java.util.Set;
 import com.swak.actuator.endpoint.annotation.Endpoint;
 import com.swak.actuator.endpoint.annotation.Operation;
 import com.swak.actuator.endpoint.annotation.Selector;
-import com.swak.security.session.Session;
+import com.swak.reactivex.Session;
 import com.swak.security.session.SessionRepository;
 
 /**

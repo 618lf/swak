@@ -1,5 +1,7 @@
 package com.swak.security.session;
 
+import com.swak.reactivex.Session;
+
 public interface SessionRepository<S extends Session> {
 
 	/**

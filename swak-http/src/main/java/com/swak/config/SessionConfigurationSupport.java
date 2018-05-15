@@ -2,7 +2,7 @@ package com.swak.config;
 
 import org.springframework.context.annotation.Bean;
 
-import com.swak.security.session.Session;
+import com.swak.reactivex.Session;
 import com.swak.security.session.SessionProvider;
 import com.swak.security.session.SessionRepository;
 import com.swak.security.session.support.CacheSessionRepository;

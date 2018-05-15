@@ -1,9 +1,9 @@
 package com.swak.security.realm;
 
+import com.swak.reactivex.Principal;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.security.context.AuthorizationInfo;
 import com.swak.security.exception.AuthenticationException;
-import com.swak.security.principal.Principal;
 import com.swak.security.subject.Subject;
 
 public interface Realm {

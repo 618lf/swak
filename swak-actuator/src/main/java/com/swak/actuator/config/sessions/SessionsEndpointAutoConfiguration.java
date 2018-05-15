@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.swak.actuator.session.SessionsEndpoint;
 import com.swak.config.AppAutoConfiguration.SessionAutoConfiguration;
-import com.swak.security.session.Session;
+import com.swak.reactivex.Session;
 import com.swak.security.session.SessionRepository;
 
 /**

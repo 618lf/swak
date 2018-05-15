@@ -3,11 +3,11 @@ package com.swak.security.utils;
 import com.swak.common.utils.DateUtils;
 import com.swak.common.utils.JsonMapper;
 import com.swak.common.utils.StringUtils;
+import com.swak.reactivex.Principal;
 import com.swak.security.jwt.JWT;
 import com.swak.security.jwt.JWTVerifier;
 import com.swak.security.jwt.algorithms.Algorithm;
 import com.swak.security.jwt.interfaces.DecodedJWT;
-import com.swak.security.principal.Principal;
 
 /**
  * 创建token Jwts 依赖 fastxml 需要研究是否有替代的方案

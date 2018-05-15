@@ -1,10 +1,10 @@
 package com.tmt.realm;
 
+import com.swak.reactivex.Principal;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.security.context.AuthorizationInfo;
 import com.swak.security.context.SimpleAuthorizationInfo;
 import com.swak.security.exception.AuthenticationException;
-import com.swak.security.principal.Principal;
 import com.swak.security.realm.Realm;
 import com.swak.security.subject.Subject;
 
