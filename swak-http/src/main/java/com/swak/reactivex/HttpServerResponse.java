@@ -175,7 +175,15 @@ public interface HttpServerResponse extends Closeable {
 	 * @param content
 	 * @throws UnsupportedEncodingException
 	 */
-	<T> void buffer(T content);
+	<T> HttpServerResponse buffer(T content);
+	
+	/**
+	 * 如果是json则会使用这个数据
+	 * 
+	 * @param content
+	 * @throws UnsupportedEncodingException
+	 */
+	<T> HttpServerResponse orJsonBuffer(T content);
 
 	/**
 	 * 关闭

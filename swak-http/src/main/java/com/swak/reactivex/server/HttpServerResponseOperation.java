@@ -286,9 +286,27 @@ public abstract class HttpServerResponseOperation extends HttpServerRequestOpera
 	 * @param content
 	 * @throws UnsupportedEncodingException
 	 */
-	public <T> void buffer(T content) {
+	public <T> HttpServerResponseOperation buffer(T content) {
+		if (buffer != null) {
+			buffer.clear();
+		}
 		byte[] bytes = String.valueOf(content).getBytes(HttpConst.DEFAULT_CHARSET);
 		buffer = ByteBuffer.wrap(bytes);
+		return this;
+	}
+	
+	/**
+	 * 输出数据
+	 * 
+	 * @param content
+	 * @throws UnsupportedEncodingException
+	 */
+	public <T> HttpServerResponseOperation orJsonBuffer(T content) {
+		if (headers.contains(HttpHeaderNames.CONTENT_TYPE)
+				&& headers.get(HttpHeaderNames.CONTENT_TYPE).equals(HttpConst.APPLICATION_JSON.toString())) {
+			this.buffer(content);
+		}
+		return this;
 	}
 
 	/**
