@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.swak.reactivex.Cookie;
+import com.swak.reactivex.Subject;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpMethod;
@@ -18,13 +19,13 @@ public interface HttpServerRequest extends Closeable {
 	 * 获得身份
 	 * @return
 	 */
-	<T> T getSubject();
+	Subject getSubject();
 	
 	/**
 	 * 设置身份
 	 * @param subject
 	 */
-    void setSubject(Object subject);
+    void setSubject(Subject subject);
 	
 	/**
 	 * 获得响应

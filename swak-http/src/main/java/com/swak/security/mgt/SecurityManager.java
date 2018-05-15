@@ -1,10 +1,10 @@
 package com.swak.security.mgt;
 
 import com.swak.reactivex.Principal;
+import com.swak.reactivex.Subject;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 import com.swak.security.exception.AuthenticationException;
-import com.swak.security.subject.Subject;
 
 /**
  * 总体的控制器

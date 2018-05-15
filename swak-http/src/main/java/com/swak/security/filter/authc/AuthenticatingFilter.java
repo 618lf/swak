@@ -2,10 +2,10 @@ package com.swak.security.filter.authc;
 
 import com.swak.common.entity.Result;
 import com.swak.common.exception.ErrorCode;
+import com.swak.reactivex.Subject;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 import com.swak.security.exception.AuthenticationException;
-import com.swak.security.subject.Subject;
 import com.swak.security.utils.SecurityUtils;
 
 import io.netty.handler.codec.http.HttpResponseStatus;

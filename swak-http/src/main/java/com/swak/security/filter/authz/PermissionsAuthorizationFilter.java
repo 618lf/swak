@@ -1,8 +1,8 @@
 package com.swak.security.filter.authz;
 
+import com.swak.reactivex.Subject;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
-import com.swak.security.subject.Subject;
 import com.swak.security.utils.SecurityUtils;
 
 /**

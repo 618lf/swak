@@ -13,6 +13,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.util.StringUtils;
 
 import com.swak.reactivex.Cookie;
+import com.swak.reactivex.Subject;
 import com.swak.reactivex.web.annotation.RequestMethod;
 
 import io.netty.buffer.ByteBuf;
@@ -48,7 +49,7 @@ public abstract class HttpServerRequestOperation implements HttpServerRequest {
 	private Map<String, Cookie> cookies;
 	private Map<String, String> pathVariables = null;
 	private InputStream is;
-	private Object subject;
+	private Subject subject;
 
 	
 	/**
@@ -75,16 +76,15 @@ public abstract class HttpServerRequestOperation implements HttpServerRequest {
 	 * 获得身份
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public <T> T getSubject() {
-		return (T)this.subject;
+	public Subject getSubject() {
+		return this.subject;
 	}
 	
 	/**
 	 * 设置身份
 	 * @param subject
 	 */
-    public void setSubject(Object subject) {
+    public void setSubject(Subject subject) {
 		this.subject = subject;
 	}
 	

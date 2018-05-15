@@ -5,8 +5,8 @@ import java.util.Set;
 import com.swak.common.cache.Cache;
 import com.swak.common.cache.CacheManager;
 import com.swak.reactivex.Principal;
+import com.swak.reactivex.Subject;
 import com.swak.security.context.AuthorizationInfo;
-import com.swak.security.subject.Subject;
 
 /**
  * 提供缓存的支持

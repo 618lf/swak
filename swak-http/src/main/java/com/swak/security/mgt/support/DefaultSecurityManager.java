@@ -7,6 +7,7 @@ import org.springframework.util.CollectionUtils;
 import com.swak.common.exception.ErrorCode;
 import com.swak.common.utils.StringUtils;
 import com.swak.reactivex.Principal;
+import com.swak.reactivex.Subject;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 import com.swak.security.context.AuthorizationInfo;
@@ -15,7 +16,6 @@ import com.swak.security.mgt.SecurityManager;
 import com.swak.security.principal.PrincipalStrategy;
 import com.swak.security.realm.Realm;
 import com.swak.security.subject.DefaultSubject;
-import com.swak.security.subject.Subject;
 
 /**
  * 默认的安全管理器

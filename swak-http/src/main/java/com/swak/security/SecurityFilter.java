@@ -2,13 +2,13 @@ package com.swak.security;
 
 import org.springframework.core.Ordered;
 
+import com.swak.reactivex.Subject;
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebFilterChain;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
 import com.swak.security.mgt.FilterChainManager;
 import com.swak.security.mgt.SecurityManager;
-import com.swak.security.subject.Subject;
 
 import reactor.core.publisher.Mono;
 

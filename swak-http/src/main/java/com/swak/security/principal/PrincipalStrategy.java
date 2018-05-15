@@ -1,8 +1,8 @@
 package com.swak.security.principal;
 
+import com.swak.reactivex.Subject;
 import com.swak.reactivex.server.HttpServerRequest;
 import com.swak.reactivex.server.HttpServerResponse;
-import com.swak.security.subject.Subject;
 
 /**
  * 身份的存储策略
