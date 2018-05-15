@@ -21,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 import com.swak.ApplicationProperties;
 import com.swak.common.Constants;
 import com.swak.common.cache.CacheProperties;
+import com.swak.common.eventbus.system.SystemEventPublisher;
 import com.swak.common.persistence.incrementer.IdGen;
 import com.swak.common.serializer.FSTSerializer;
 import com.swak.common.serializer.JavaSerializer;
@@ -127,8 +128,8 @@ public class AppAutoConfiguration {
 	 * @author lifeng
 	 */
 	@Configuration
-	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 50)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 50)
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@ConditionalOnMissingBean(CacheConfigurationSupport.class)
 	@EnableConfigurationProperties(CacheProperties.class)
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableRedis", matchIfMissing = true)
@@ -139,13 +140,12 @@ public class AppAutoConfiguration {
 	}
 	
 	/**
-	 * 
+	 * Event bus
 	 * @author lifeng
-	 *
 	 */
 	@Configuration
-	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 100)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 100)
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@ConditionalOnMissingBean(RedisEventBusConfigurationSupport.class)
 	@AutoConfigureAfter(CacheAutoConfiguration.class)
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableEventBus", matchIfMissing = true)
@@ -156,17 +156,15 @@ public class AppAutoConfiguration {
 	}
 	
 	/**
-	 * 数据库配置
+	 * 系统事件
 	 * @author lifeng
 	 */
 	@Configuration
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
-	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableDataBase", matchIfMissing = true)
-	public static class DataBaseAutoConfiguration extends DataBaseConfigurationSupport {
-		public DataBaseAutoConfiguration() {
-			APP_LOGGER.debug("Loading DataBase");
-		}
+	@AutoConfigureAfter(EventBusAutoConfiguration.class)
+	@ConditionalOnMissingBean(SystemEventConfigurationSupport.class)
+	public static class SystemEventAutoConfiguration extends SystemEventConfigurationSupport {
 	}
 	
 	/**
@@ -207,8 +205,8 @@ public class AppAutoConfiguration {
 		 * @return
 		 */
 		@Bean
-		public SecurityManager securityManager(PrincipalStrategy principalStrategy) {
-			SecurityManager securityManager = new DefaultSecurityManager(securityConfig.getRealm(), principalStrategy);
+		public SecurityManager securityManager(PrincipalStrategy principalStrategy, SystemEventPublisher eventPublisher) {
+			SecurityManager securityManager = new DefaultSecurityManager(securityConfig.getRealm(), principalStrategy, eventPublisher);
 			SecurityUtils.setSecurityManager(securityManager);
 			return securityManager;
 		}
@@ -256,19 +254,16 @@ public class AppAutoConfiguration {
 	}
 	
 	/**
-	 * session 支持
-	 * 
+	 * 数据库配置
 	 * @author lifeng
 	 */
 	@Configuration
-	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 100)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 100)
-	@ConditionalOnMissingBean(SessionConfigurationSupport.class)
-	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSession", matchIfMissing = true)
-	@AutoConfigureAfter({SecurityConfiguration.class, CacheAutoConfiguration.class})
-	public static class SessionAutoConfiguration extends SessionConfigurationSupport {
-		public SessionAutoConfiguration() {
-			APP_LOGGER.debug("Loading Session Manage");
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 20)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 20)
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableDataBase", matchIfMissing = true)
+	public static class DataBaseAutoConfiguration extends DataBaseConfigurationSupport {
+		public DataBaseAutoConfiguration() {
+			APP_LOGGER.debug("Loading DataBase");
 		}
 	}
 
@@ -310,6 +305,23 @@ public class AppAutoConfiguration {
 		@Bean
 		public ReactiveWebServerFactory reactiveWebServerFactory() {
 			return new ReactiveWebServerFactory(properties);
+		}
+	}
+	
+	/**
+	 * session 支持
+	 * 
+	 * @author lifeng
+	 */
+	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 100)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 100)
+	@ConditionalOnMissingBean(SessionConfigurationSupport.class)
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSession", matchIfMissing = true)
+	@AutoConfigureAfter({SecurityConfiguration.class, CacheAutoConfiguration.class})
+	public static class SessionAutoConfiguration extends SessionConfigurationSupport {
+		public SessionAutoConfiguration() {
+			APP_LOGGER.debug("Loading Session Manage");
 		}
 	}
 

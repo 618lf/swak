@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.springframework.util.CollectionUtils;
 
+import com.swak.common.eventbus.system.SystemEventPublisher;
 import com.swak.common.exception.ErrorCode;
 import com.swak.common.utils.StringUtils;
 import com.swak.reactivex.HttpServerRequest;
@@ -25,10 +26,13 @@ public class DefaultSecurityManager implements SecurityManager {
 
 	private final Realm realm;
 	private final PrincipalStrategy principalStrategy;
+	private final SystemEventPublisher eventPublisher;
 	
-	public DefaultSecurityManager(Realm realm, PrincipalStrategy principalStrategy) {
+	public DefaultSecurityManager(Realm realm, PrincipalStrategy principalStrategy,
+			SystemEventPublisher eventPublisher) {
 		this.realm = realm;
 		this.principalStrategy = principalStrategy;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@Override
@@ -230,6 +234,7 @@ public class DefaultSecurityManager implements SecurityManager {
 	 */
 	void onLoginSuccess(Subject subject, HttpServerRequest request, HttpServerResponse response) {
 		realm.onLoginSuccess(subject, request);
+		eventPublisher.publishSignIn(subject);
 	}
 	
 	/**
@@ -245,5 +250,6 @@ public class DefaultSecurityManager implements SecurityManager {
 	 */
 	void onLogout(Subject subject, HttpServerRequest request, HttpServerResponse response) {
 		realm.onLogout(subject);
+		eventPublisher.publishLogout(subject);
 	}
 }

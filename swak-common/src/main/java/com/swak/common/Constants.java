@@ -36,6 +36,11 @@ public interface Constants {
 	/** 系统通道 **/
 	String LOCAL_CACHE_TOPIC = "LOCAL_CACHE_TOPIC";
 	String UPDATE_EVENT_TOPIC = "UPDATE_EVENT_TOPIC";
-	String SYS_EVENT_TOPIC = "SYS_EVENT_TOPIC";
+	String SYSTEM_EVENT_TOPIC = "SYSTEM_EVENT_TOPIC";
 	String ACCESS_TRACE = "ACCESS_TRACE";
+	
+	/**  事件类型 **/
+	int SIGN_IN = 1; // 登录
+	int SIGN_UP = 2; // 注册
+	int LOGOUT = 3;  // 退出
 }
