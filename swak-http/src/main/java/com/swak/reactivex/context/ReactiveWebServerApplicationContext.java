@@ -1,13 +1,13 @@
 package com.swak.reactivex.context;
 
 import org.springframework.beans.BeansException;
-import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.StringUtils;
 
 import com.swak.reactivex.handler.HttpHandler;
 import com.swak.reactivex.server.ReactiveWebServerFactory;
+import com.swak.reactivex.server.WebServer;
 
 /**
  * 只是一个基本的web服务
@@ -59,7 +59,7 @@ public class ReactiveWebServerApplicationContext extends AnnotationConfigApplica
 	private void createWebServer() {
 		WebServer localServer = this.webServer;
 		if (localServer == null) {
-			this.webServer = getWebServerFactory().getWebServer(getHttpHandler());
+			this.webServer = getWebServerFactory().getWebServer();
 		}
 		initPropertySources();
 	}
@@ -120,7 +120,7 @@ public class ReactiveWebServerApplicationContext extends AnnotationConfigApplica
 	private WebServer startReactiveWebServer() {
 		WebServer localServer = this.webServer;
 		if (localServer != null) {
-			localServer.start();
+			localServer.start(this.getHttpHandler());
 		}
 		return localServer;
 	}

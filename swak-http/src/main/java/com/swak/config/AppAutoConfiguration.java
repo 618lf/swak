@@ -53,76 +53,6 @@ import com.swak.security.utils.SecurityUtils;
 public class AppAutoConfiguration {
 
 	/**
-	 * 优先启动 基础组件
-	 * @author lifeng
-	 */
-	@Configuration
-	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	public static class BaseFuntionAutoConfiguration {
-		
-		/**
-		 * 基础配置
-		 * @param context
-		 */
-		public BaseFuntionAutoConfiguration(ApplicationContext context, ApplicationProperties properties) {
-			APP_LOGGER.debug("Loading Base Function");
-			
-			// 简单的资源
-			this.springContextHolder(context);
-			this.serializer(properties);
-			this.idGenerator(properties);
-		}
-		
-		/**
-		 * SpringContextHolder
-		 * @param context
-		 */
-		public void springContextHolder(ApplicationContext context) {
-			SpringContextHolder.setApplicationContext(context);
-		}
-		
-		/**
-		 * IdGenerator
-		 */
-		public void idGenerator(ApplicationProperties properties) {
-			IdGen.setServerSn(properties.getServerSn());
-		}
-		
-		/**
-		 * 序列化
-		 * @return
-		 */
-		public void serializer(ApplicationProperties properties) {
-			String ser = properties.getSerialization();
-			Serializer g_ser = null;
-			if (ser.equals("java")) {
-	            g_ser = new JavaSerializer();
-	        } else if (ser.equals("fst")) {
-	            g_ser = new FSTSerializer();
-	        } else if (ser.equals("kryo")) {
-	            g_ser = new KryoSerializer();
-	        } else if (ser.equals("kryo_pool")){
-	        	g_ser = new KryoPoolSerializer();
-	        } else {
-	        	g_ser = new JavaSerializer();
-	        }
-			
-			// 公共引用
-			SerializationUtils.g_ser = g_ser;
-		}
-		
-		/**
-		 * 管理一些生命周期
-		 * @return
-		 */
-		@Bean
-		public DisposeBean disposeBean() {
-			return new DisposeBean();
-		}
-	}
-	
-	/**
 	 * 缓存 服务配置
 	 * 
 	 * @author lifeng
@@ -258,13 +188,10 @@ public class AppAutoConfiguration {
 	 * @author lifeng
 	 */
 	@Configuration
-	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 20)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 20)
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableDataBase", matchIfMissing = true)
 	public static class DataBaseAutoConfiguration extends DataBaseConfigurationSupport {
-		public DataBaseAutoConfiguration() {
-			APP_LOGGER.debug("Loading DataBase");
-		}
 	}
 
 	/**
@@ -284,15 +211,33 @@ public class AppAutoConfiguration {
 	}
 
 	/**
-	 * 服务器配置
+	 * session 支持
 	 * 
 	 * @author lifeng
 	 */
 	@Configuration
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 50)
 	@Order(Ordered.HIGHEST_PRECEDENCE + 50)
+	@ConditionalOnMissingBean(SessionConfigurationSupport.class)
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSession", matchIfMissing = true)
+	@AutoConfigureAfter({SecurityConfiguration.class, CacheAutoConfiguration.class})
+	public static class SessionAutoConfiguration extends SessionConfigurationSupport {
+		public SessionAutoConfiguration() {
+			APP_LOGGER.debug("Loading Session Manage");
+		}
+	}
+	
+	
+	/**
+	 * 服务器配置
+	 * 
+	 * @author lifeng
+	 */
+	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 100)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 100)
 	@EnableConfigurationProperties(HttpServerProperties.class)
-	@AutoConfigureAfter({WebHandlerAutoConfiguration.class, SecurityConfiguration.class, DataBaseAutoConfiguration.class})
+	@AutoConfigureAfter({WebHandlerAutoConfiguration.class})
 	public static class HttpServerAutoConfiguration {
 
 		private HttpServerProperties properties;
@@ -309,19 +254,72 @@ public class AppAutoConfiguration {
 	}
 	
 	/**
-	 * session 支持
-	 * 
+	 * 基础组件
 	 * @author lifeng
 	 */
 	@Configuration
-	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 100)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 100)
-	@ConditionalOnMissingBean(SessionConfigurationSupport.class)
-	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSession", matchIfMissing = true)
-	@AutoConfigureAfter({SecurityConfiguration.class, CacheAutoConfiguration.class})
-	public static class SessionAutoConfiguration extends SessionConfigurationSupport {
-		public SessionAutoConfiguration() {
-			APP_LOGGER.debug("Loading Session Manage");
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 150)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 150)
+	public static class BaseFuntionAutoConfiguration {
+		
+		/**
+		 * 基础配置
+		 * @param context
+		 */
+		public BaseFuntionAutoConfiguration(ApplicationContext context, ApplicationProperties properties) {
+			APP_LOGGER.debug("Loading Base Function");
+			
+			// 简单的资源
+			this.springContextHolder(context);
+			this.serializer(properties);
+			this.idGenerator(properties);
+		}
+		
+		/**
+		 * SpringContextHolder
+		 * @param context
+		 */
+		public void springContextHolder(ApplicationContext context) {
+			SpringContextHolder.setApplicationContext(context);
+		}
+		
+		/**
+		 * IdGenerator
+		 */
+		public void idGenerator(ApplicationProperties properties) {
+			IdGen.setServerSn(properties.getServerSn());
+		}
+		
+		/**
+		 * 序列化
+		 * @return
+		 */
+		public void serializer(ApplicationProperties properties) {
+			String ser = properties.getSerialization();
+			Serializer g_ser = null;
+			if (ser.equals("java")) {
+	            g_ser = new JavaSerializer();
+	        } else if (ser.equals("fst")) {
+	            g_ser = new FSTSerializer();
+	        } else if (ser.equals("kryo")) {
+	            g_ser = new KryoSerializer();
+	        } else if (ser.equals("kryo_pool")){
+	        	g_ser = new KryoPoolSerializer();
+	        } else {
+	        	g_ser = new JavaSerializer();
+	        }
+			
+			// 公共引用
+			SerializationUtils.g_ser = g_ser;
+		}
+		
+		/**
+		 * 管理一些生命周期
+		 * @return
+		 */
+		@Bean
+		public DisposeBean disposeBean() {
+			return new DisposeBean();
 		}
 	}
 

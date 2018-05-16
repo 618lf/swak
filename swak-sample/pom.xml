@@ -17,12 +17,22 @@
 			<artifactId>swak-kotlin</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-actuator</artifactId>
+		</dependency>
+		
+		<!-- 项目的特定配置 -->
+		<dependency>
 			<groupId>com.esotericsoftware</groupId>
 			<artifactId>kryo-shaded</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.swak</groupId>
-			<artifactId>swak-actuator</artifactId>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
 		</dependency>
 	</dependencies>
 </project>

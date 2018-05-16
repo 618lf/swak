@@ -1,7 +1,8 @@
 package com.swak.reactivex.context;
 
-import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationEvent;
+
+import com.swak.reactivex.server.WebServer;
 
 public abstract class WebServerInitializedEvent extends ApplicationEvent {
 

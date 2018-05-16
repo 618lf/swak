@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @Import({
 	AppAutoConfiguration.class,
-	ActuatorAutoConfiguration.class
+	ActuatorAutoConfiguration.class,
 })
 public @interface ApplicationBoot {
 

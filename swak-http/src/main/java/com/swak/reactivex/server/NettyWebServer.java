@@ -1,6 +1,5 @@
 package com.swak.reactivex.server;
 
-import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 
 import com.swak.reactivex.handler.HttpHandler;
@@ -11,18 +10,16 @@ import com.swak.reactivex.handler.HttpHandler;
  */
 public class NettyWebServer implements WebServer{
 	
-	private final HttpHandler httpHandler;
 	private final ReactiveWebServer httpServer;
 	
-	public NettyWebServer(ReactiveWebServer httpServer, HttpHandler httpHandler) {
-		this.httpHandler = httpHandler;
+	public NettyWebServer(ReactiveWebServer httpServer) {
 		this.httpServer = httpServer;
 	}
 	
 	@Override
-	public void start() throws WebServerException {
+	public void start(HttpHandler httpHandler) throws WebServerException {
 		try {
-			this.httpServer.start(this.httpHandler);
+			this.httpServer.start(httpHandler);
 		}catch (Exception ex) {
 			throw new WebServerException("Unable to start Netty", ex);
 		}

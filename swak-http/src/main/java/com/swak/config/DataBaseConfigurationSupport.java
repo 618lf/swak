@@ -56,6 +56,8 @@ import com.swak.config.database.ConfigurationCustomizer;
 import com.swak.config.database.DataSourceProperties;
 import com.swak.config.database.MybatisProperties;
 import com.swak.config.database.SpringBootVFS;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * 数据库相关配置
@@ -65,31 +67,30 @@ import com.swak.config.database.SpringBootVFS;
 public class DataBaseConfigurationSupport {
 
 	/**
-	 * 数据源
+	 * Druid 数据源
 	 * 
 	 * @author lifeng
 	 */
 	@org.springframework.context.annotation.Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
-	@ConditionalOnClass({ DataSource.class, DruidDataSource.class })
+	@ConditionalOnClass(DataSource.class)
+	@ConditionalOnMissingBean(DataSource.class)
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	public static class DataSourceAutoConfiguration {
 
 		@Autowired
 		private DataSourceProperties properties;
-
-		public DataSourceAutoConfiguration() {
-			APP_LOGGER.debug("Loading Druid DataSource");
-		}
-
+		
 		/**
-		 * 如果还没有 DataSource 类型 type = com.alibaba.druid.pool.DruidDataSource
-		 * 就会构建这个dataSource
-		 * 
+		 * 构建 DruidDataSource
 		 * @return
 		 */
 		@Bean
-		public DataSource dataSource() {
+		@ConditionalOnClass({DruidDataSource.class})
+		@ConditionalOnMissingBean(DataSource.class)
+		public DataSource druidDataSource() {
+			APP_LOGGER.debug("Loading Druid DataSource");
 			DruidDataSource dataSource = new DruidDataSource();
 			dataSource.setUrl(properties.getUrl());
 			dataSource.setUsername(properties.getUsername());
@@ -126,6 +127,45 @@ public class DataBaseConfigurationSupport {
 			DataSourceHolder.setDataSource(dataSource);
 			return dataSource;
 		}
+		
+		/**
+		 * 构建 HikariDataSource
+		 * @return
+		 */
+		@Bean
+		@ConditionalOnClass({HikariDataSource.class})
+		@ConditionalOnMissingBean(DataSource.class)
+		public DataSource hikariDataSource() {
+			APP_LOGGER.debug("Loading Hikari DataSource");
+			HikariConfig config = new HikariConfig();
+			config.setPoolName(properties.getName());
+			config.setJdbcUrl(properties.getUrl());
+			config.setUsername(properties.getUsername());
+			config.setPassword(properties.getPassword());
+			config.setDriverClassName(properties.getDriverClassName());
+			
+			config.addDataSourceProperty("cachePrepStmts", "true");
+			config.addDataSourceProperty("prepStmtCacheSize", properties.getPrepStmtCacheSize());
+			config.addDataSourceProperty("prepStmtCacheSqlLimit", properties.getPrepStmtCacheSqlLimit());
+		    config.addDataSourceProperty("useServerPrepStmts", "true");
+	        config.addDataSourceProperty("useLocalSessionState", "true");
+	        config.addDataSourceProperty("useLocalTransactionState", "true");
+	        config.addDataSourceProperty("rewriteBatchedStatements", "true");
+	        config.addDataSourceProperty("cacheResultSetMetadata", "true");
+	        config.addDataSourceProperty("cacheServerConfiguration", "true");
+	        config.addDataSourceProperty("elideSetAutoCommits", "true");
+	        config.addDataSourceProperty("maintainTimeStats", "false");
+	        config.setMinimumIdle(properties.getMinIdle());
+	        config.setMaximumPoolSize(properties.getMaxActive());
+	        config.setConnectionTimeout(properties.getMaxWait());
+	        config.setIdleTimeout(properties.getMinEvictableIdleTimeMillis());
+	        config.setMaxLifetime(properties.getMaxLifetime());
+	        
+	        // 创建连接
+	        HikariDataSource dataSource = new HikariDataSource(config);
+			DataSourceHolder.setDataSource(dataSource);
+			return dataSource;
+		}
 	}
 
 	/**
@@ -148,6 +188,7 @@ public class DataBaseConfigurationSupport {
 			private final JdbcProperties properties;
 
 			JdbcTemplateConfiguration(DataSource dataSource, JdbcProperties properties) {
+				APP_LOGGER.debug("Loading Jdbc Template");
 				this.dataSource = dataSource;
 				this.properties = properties;
 			}
@@ -195,6 +236,9 @@ public class DataBaseConfigurationSupport {
 	@ConditionalOnSingleCandidate(DataSource.class)
 	@Import({ DataSourceTransactionManagerAutoConfiguration.class, TransactionAutoConfiguration.class })
 	public static class DataSourceTransactionManagerConfiguration {
+		DataSourceTransactionManagerConfiguration() {
+			APP_LOGGER.debug("Loading Transaction Manager");
+		}
 	}
 
 	/**

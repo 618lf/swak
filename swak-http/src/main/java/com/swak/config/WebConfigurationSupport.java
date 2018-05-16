@@ -79,16 +79,6 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		return new DispatcherHandler();
 	}
 	
-	// ---------- httpHandler ---------
-	@Bean
-	public HttpWebHandlerAdapter httpHandler(DispatcherHandler webHandler) {
-		SortedBeanContainer container = new SortedBeanContainer();
-		applicationContext.getAutowireCapableBeanFactory().autowireBean(container);
-		WebHandler delegate = new FilteringWebHandler(webHandler, container.getFilters());
-		delegate = new ExceptionHandlingWebHandler(delegate, container.getExceptionHandlers(), container.getEventPublisher());
-		return new HttpWebHandlerAdapter(delegate);
-	}
-	
 	// ---------- requestMapping ---------
 	@Bean
 	public RequestMappingHandlerMapping requestMappingHandlerMapping() {
@@ -128,6 +118,16 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		result.addConverter(new StringHttpMessageConverter());
 		result.addConverter(new Jaxb2RootElementHttpMessageConverter());
 		result.addConverter(new JsonHttpMessageConverter());
+	}
+	
+	// ---------- httpHandler ---------
+	@Bean
+	public HttpWebHandlerAdapter httpHandler(DispatcherHandler webHandler) {
+		SortedBeanContainer container = new SortedBeanContainer();
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(container);
+		WebHandler delegate = new FilteringWebHandler(webHandler, container.getFilters());
+		delegate = new ExceptionHandlingWebHandler(delegate, container.getExceptionHandlers(), container.getEventPublisher());
+		return new HttpWebHandlerAdapter(delegate);
 	}
 	
 	// Autowire lists for @Bean + @Order

@@ -93,6 +93,17 @@
 			<artifactId>j2cache-core</artifactId>
 			<version>2.3.16-release</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- 测试 -->
 		<dependency>

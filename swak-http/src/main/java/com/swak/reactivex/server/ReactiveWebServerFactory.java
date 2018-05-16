@@ -1,9 +1,5 @@
 package com.swak.reactivex.server;
 
-import org.springframework.boot.web.server.WebServer;
-
-import com.swak.reactivex.handler.HttpHandler;
-
 /**
  * 还有一些属性每配置，在研究
  * @author lifeng
@@ -21,8 +17,8 @@ public class ReactiveWebServerFactory {
 	 * @param handler
 	 * @return
 	 */
-	public WebServer getWebServer(HttpHandler handler) {
+	public WebServer getWebServer() {
 		ReactiveWebServer httpServer = ReactiveWebServer.build(properties);
-		return new NettyWebServer(httpServer, handler);
+		return new NettyWebServer(httpServer);
 	}
 }

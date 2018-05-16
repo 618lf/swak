@@ -12,5 +12,15 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-common</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 </project>
