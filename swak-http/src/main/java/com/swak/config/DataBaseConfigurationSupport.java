@@ -2,7 +2,6 @@ package com.swak.config;
 
 import static com.swak.Application.APP_LOGGER;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -16,7 +15,6 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -44,9 +42,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import com.alibaba.druid.pool.DruidDataSource;
 import com.swak.common.Constants;
-import com.swak.common.persistence.DataSourceHolder;
 import com.swak.common.persistence.JdbcSqlExecutor;
 import com.swak.common.persistence.QueryCondition;
 import com.swak.common.persistence.dialect.MySQLDialect;
@@ -54,10 +50,10 @@ import com.swak.common.persistence.mybatis.ExecutorInterceptor;
 import com.swak.common.utils.StringUtils;
 import com.swak.config.database.ConfigurationCustomizer;
 import com.swak.config.database.DataSourceProperties;
+import com.swak.config.database.DruidDataSourceAutoConfiguration;
+import com.swak.config.database.HikariDataSourceAutoConfiguration;
 import com.swak.config.database.MybatisProperties;
 import com.swak.config.database.SpringBootVFS;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * 数据库相关配置
@@ -77,96 +73,11 @@ public class DataBaseConfigurationSupport {
 	@ConditionalOnClass(DataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
 	@EnableConfigurationProperties(DataSourceProperties.class)
-	public static class DataSourceAutoConfiguration {
-
-		@Autowired
-		private DataSourceProperties properties;
-		
-		/**
-		 * 构建 DruidDataSource
-		 * @return
-		 */
-		@Bean
-		@ConditionalOnClass({DruidDataSource.class})
-		@ConditionalOnMissingBean(DataSource.class)
-		public DataSource druidDataSource() {
-			APP_LOGGER.debug("Loading Druid DataSource");
-			DruidDataSource dataSource = new DruidDataSource();
-			dataSource.setUrl(properties.getUrl());
-			dataSource.setUsername(properties.getUsername());
-			dataSource.setPassword(properties.getPassword());
-
-			dataSource.setDriverClassName(properties.getDriverClassName());
-			dataSource.setInitialSize(properties.getInitialSize()); // 定义初始连接数
-			dataSource.setMinIdle(properties.getMinIdle()); // 最小空闲
-			dataSource.setMaxActive(properties.getMaxActive()); // 定义最大连接数
-			dataSource.setMaxWait(properties.getMaxWait()); // 最长等待时间
-
-			// 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-			dataSource.setTimeBetweenEvictionRunsMillis(properties.getTimeBetweenEvictionRunsMillis());
-
-			// 配置一个连接在池中最小生存的时间，单位是毫秒
-			dataSource.setMinEvictableIdleTimeMillis(properties.getMinEvictableIdleTimeMillis());
-			dataSource.setValidationQuery(properties.getValidationQuery());
-			dataSource.setTestWhileIdle(properties.getTestWhileIdle());
-			dataSource.setTestOnBorrow(properties.getTestOnBorrow());
-			dataSource.setTestOnReturn(properties.getTestOnReturn());
-
-			// 打开PSCache，并且指定每个连接上PSCache的大小
-			dataSource.setPoolPreparedStatements(properties.getPoolPreparedStatements());
-			dataSource.setMaxPoolPreparedStatementPerConnectionSize(
-					properties.getMaxPoolPreparedStatementPerConnectionSize());
-
-			try {
-				dataSource.setFilters(properties.getFilters());
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			
-			// 设置链接
-			DataSourceHolder.setDataSource(dataSource);
-			return dataSource;
-		}
-		
-		/**
-		 * 构建 HikariDataSource
-		 * @return
-		 */
-		@Bean
-		@ConditionalOnClass({HikariDataSource.class})
-		@ConditionalOnMissingBean(DataSource.class)
-		public DataSource hikariDataSource() {
-			APP_LOGGER.debug("Loading Hikari DataSource");
-			HikariConfig config = new HikariConfig();
-			config.setPoolName(properties.getName());
-			config.setJdbcUrl(properties.getUrl());
-			config.setUsername(properties.getUsername());
-			config.setPassword(properties.getPassword());
-			config.setDriverClassName(properties.getDriverClassName());
-			
-			config.addDataSourceProperty("cachePrepStmts", "true");
-			config.addDataSourceProperty("prepStmtCacheSize", properties.getPrepStmtCacheSize());
-			config.addDataSourceProperty("prepStmtCacheSqlLimit", properties.getPrepStmtCacheSqlLimit());
-		    config.addDataSourceProperty("useServerPrepStmts", "true");
-	        config.addDataSourceProperty("useLocalSessionState", "true");
-	        config.addDataSourceProperty("useLocalTransactionState", "true");
-	        config.addDataSourceProperty("rewriteBatchedStatements", "true");
-	        config.addDataSourceProperty("cacheResultSetMetadata", "true");
-	        config.addDataSourceProperty("cacheServerConfiguration", "true");
-	        config.addDataSourceProperty("elideSetAutoCommits", "true");
-	        config.addDataSourceProperty("maintainTimeStats", "false");
-	        config.setMinimumIdle(properties.getMinIdle());
-	        config.setMaximumPoolSize(properties.getMaxActive());
-	        config.setConnectionTimeout(properties.getMaxWait());
-	        config.setIdleTimeout(properties.getMinEvictableIdleTimeMillis());
-	        config.setMaxLifetime(properties.getMaxLifetime());
-	        
-	        // 创建连接
-	        HikariDataSource dataSource = new HikariDataSource(config);
-			DataSourceHolder.setDataSource(dataSource);
-			return dataSource;
-		}
-	}
+	@Import({
+		DruidDataSourceAutoConfiguration.class,
+		HikariDataSourceAutoConfiguration.class
+	})
+	public static class DataSourceAutoConfiguration {}
 
 	/**
 	 * JDBC 操作模板

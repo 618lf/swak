@@ -1,6 +1,5 @@
 package com.swak.actuator.config.metrics.jdbc;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -9,6 +8,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
@@ -27,27 +27,22 @@ import io.micrometer.core.instrument.MeterRegistry;
 		MeterRegistry.class })
 public class DataSourcePoolMetricsAutoConfiguration {
 
-	private static final String DATASOURCE_SUFFIX = "dataSource";
+	private static final String DATASOURCE_SUFFIX = "DataSourcePoolMetadata";
 	
 	private final MeterRegistry registry;
 
-	private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
-
-	public DataSourcePoolMetricsAutoConfiguration(MeterRegistry registry,
-			Collection<DataSourcePoolMetadataProvider> metadataProviders) {
+	public DataSourcePoolMetricsAutoConfiguration(MeterRegistry registry) {
 		this.registry = registry;
-		this.metadataProviders = metadataProviders;
 	}
 	
 	@Autowired
-	public void bindDataSourcesToRegistry(Map<String, DataSource> dataSources) {
-		dataSources.forEach(this::bindDataSourceToRegistry);
+	public void bindDataSourcesToRegistry(Map<String, DataSourcePoolMetadata> dataSourcePoolMetadatas) {
+		dataSourcePoolMetadatas.forEach(this::bindDataSourceToRegistry);
 	}
 	
-	private void bindDataSourceToRegistry(String beanName, DataSource dataSource) {
+	private void bindDataSourceToRegistry(String beanName, DataSourcePoolMetadata dataSource) {
 		String dataSourceName = getDataSourceName(beanName);
-		new DataSourcePoolMetrics(dataSource, this.metadataProviders, dataSourceName,
-				Collections.emptyList()).bindTo(this.registry);
+		new DataSourcePoolMetrics(dataSource, dataSourceName, Collections.emptyList()).bindTo(this.registry);
 	}
 	
 	/**

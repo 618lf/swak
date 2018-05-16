@@ -120,6 +120,11 @@
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 			<version>${spring-boot.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-core</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
