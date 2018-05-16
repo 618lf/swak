@@ -90,5 +90,10 @@ public class WebEndpointHandlerMapping extends AbstractRequestMappingHandlerMapp
 			return new StringBuilder(endpoint.getRootPath())
 					.append(Constants.URL_PATH_SEPARATE).append(operation.getId()).toString();
 		}
+
+		@Override
+		public String toString() {
+			return operation.toString();
+		}
 	}
 }

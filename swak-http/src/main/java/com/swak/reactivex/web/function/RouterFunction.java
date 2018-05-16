@@ -15,16 +15,6 @@ public interface RouterFunction {
 	HandlerFunction route(HttpServerRequest request);
 	
 	/**
-	 * Return the {@linkplain HandlerFunction handler function} that matches the given request.
-	 * @param request the request to route
-	 * @return an {@code Mono} describing the {@code HandlerFunction} that matches this request,
-	 * or an empty {@code Mono} if there is no match
-	 */
-	default RouterFunction next() {
-		return null;
-	}
-	
-	/**
 	 * Return a composed routing function that first invokes this function,
 	 * and then invokes the {@code other} function (of the same response type {@code T})
 	 * if this route had {@linkplain Mono#empty() no result}.

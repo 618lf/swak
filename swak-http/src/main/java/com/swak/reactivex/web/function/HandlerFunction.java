@@ -19,6 +19,6 @@ public interface HandlerFunction extends Handler {
 	 * @return
 	 */
 	default String description() {
-		return getClass().getCanonicalName();
+		return getClass().getSimpleName();
 	}
 }

@@ -1,6 +1,7 @@
 package com.swak.actuator.web;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.swak.actuator.endpoint.annotation.Endpoint;
@@ -11,6 +12,7 @@ import com.swak.reactivex.web.DispatcherHandler;
 import com.swak.reactivex.web.HandlerMapping;
 import com.swak.reactivex.web.function.RouterFunction;
 import com.swak.reactivex.web.function.RouterFunctionMapping;
+import com.swak.reactivex.web.function.RouterFunctions.ComposedRouterFunction;
 import com.swak.reactivex.web.function.RouterFunctions.DefaultRouterFunction;
 import com.swak.reactivex.web.method.AbstractRequestMappingHandlerMapping;
 import com.swak.reactivex.web.method.HandlerMethod;
@@ -51,7 +53,8 @@ public class MappingsEndpoint {
 			((AbstractRequestMappingHandlerMapping)mapping).getMappingRegistry().getMappings().entrySet().stream().forEach(entry ->{
 				RequestMappingInfo rm = entry.getKey();
 				HandlerMethod hm = entry.getValue();
-				hd.addHandler(String.format("(method %s && pattern %s -> function %s)", rm.getMethod().name(), StringUtils.join(rm.getPatterns(), ","), hm.getBeanType().getSimpleName() + "." + hm.getMethod().getName()));
+				hd.addHandler(String.format("(method %s && pattern %s -> handler %s)", rm.getMethod().name(), StringUtils.join(rm.getPatterns(), ","), 
+						hm.toString()));
 			});
 			
 		}
@@ -62,15 +65,21 @@ public class MappingsEndpoint {
 		HandlersDescription hd = new HandlersDescription();
 		if (mapping instanceof RouterFunctionMapping) {
 			RouterFunction routerFunction = ((RouterFunctionMapping)mapping).getRouterFunction();
-			RouterFunction hf = routerFunction;
-			while(hf != null) {
-				if (hf instanceof DefaultRouterFunction) {
-					hd.addHandler(hf.toString());
-				}
-				hf = routerFunction.next();
-			}
+			this.routerFunctionIteration(routerFunction, (rf) ->{
+				hd.addHandler(rf.toString());
+			});
 		}
 		return hd;
+	}
+	
+	private void routerFunctionIteration(RouterFunction hf, Consumer<RouterFunction> consumer) {
+		if (hf instanceof DefaultRouterFunction) {
+			consumer.accept(hf);
+		} else if(hf instanceof ComposedRouterFunction){
+			ComposedRouterFunction chf = (ComposedRouterFunction)hf;
+			routerFunctionIteration(chf.getFirst(), consumer);
+			routerFunctionIteration(chf.getSecond(), consumer);
+		}
 	}
 	
 	/**

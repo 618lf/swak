@@ -44,7 +44,7 @@ public abstract class RouterFunctions {
 	 * 
 	 * @author lifeng
 	 */
-	static class ComposedRouterFunction extends AbstractRouterFunction {
+	public static class ComposedRouterFunction extends AbstractRouterFunction {
 		private final RouterFunction first;
 		private final RouterFunction second;
 		ComposedRouterFunction(RouterFunction first, RouterFunction second) {
@@ -58,12 +58,22 @@ public abstract class RouterFunctions {
 			return hf == null? second.route(request) : hf;
 		}
 		
-		@Override
-		public RouterFunction next() {
-			RouterFunction hf = first.next();
-			return hf == null? second.next(): hf;
+		/**
+		 * 左树
+		 * @return
+		 */
+		public RouterFunction getFirst() {
+			return first;
 		}
-		
+
+		/**
+		 * 右树
+		 * @return
+		 */
+		public RouterFunction getSecond() {
+			return second;
+		}
+
 		@Override
 		public String toString() {
 			return String.format("(left %s or right %s)", first, second);

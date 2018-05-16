@@ -74,4 +74,9 @@ public class HandlerMethod implements Handler {
 			return Mono.error(e);
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return this.method.toGenericString();
+	}
 }
