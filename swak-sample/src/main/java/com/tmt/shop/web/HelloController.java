@@ -18,12 +18,21 @@ public class HelloController {
 	private ShopService shopService;
 	
 	/**
-	 * 抛出异常
+	 * 返回 null 的问题
 	 * @return
 	 */
 	@GetMapping("/say/void")
 	public void sayVoid() {
 		
+	}
+	
+	/**
+	 * 返回 null 的问题
+	 * @return
+	 */
+	@GetMapping("/say/mono-void")
+	public Mono<Void> sayMonoVoid() {
+		return Mono.empty();
 	}
 	
 	/**
