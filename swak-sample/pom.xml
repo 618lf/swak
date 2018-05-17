@@ -20,7 +20,7 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-actuator</artifactId>
 		</dependency>
-		
+
 		<!-- 项目的特定配置 -->
 		<dependency>
 			<groupId>com.esotericsoftware</groupId>

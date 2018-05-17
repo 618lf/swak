@@ -5,10 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import com.swak.common.exception.BaseRuntimeException;
@@ -24,15 +22,13 @@ import reactor.core.publisher.Mono;
  * 
  * @author lifeng
  */
-public class DispatcherHandler implements WebHandler, ApplicationContextAware {
+public class DispatcherHandler implements WebHandler {
 
 	private static final Exception HANDLER_NOT_FOUND_EXCEPTION = new BaseRuntimeException("No matching handler");
 
 	private List<HandlerMapping> mappings;
 	private List<HandlerAdapter> adapters;
 	private List<HandlerResultHandler> resultHandlers;
-
-	public DispatcherHandler() {}
 
 	public DispatcherHandler(ApplicationContext applicationContext) {
 		this.initStrategies(applicationContext);
@@ -60,11 +56,6 @@ public class DispatcherHandler implements WebHandler, ApplicationContextAware {
 
 	public void setResultHandlers(List<HandlerResultHandler> resultHandlers) {
 		this.resultHandlers = resultHandlers;
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.initStrategies(applicationContext);
 	}
 
 	protected void initStrategies(ApplicationContext context) {

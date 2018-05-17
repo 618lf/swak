@@ -76,7 +76,7 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 	// ---------- DispatcherHandler ---------
 	@Bean
 	public DispatcherHandler webHandler() {
-		return new DispatcherHandler();
+		return new DispatcherHandler(applicationContext);
 	}
 	
 	// ---------- requestMapping ---------
