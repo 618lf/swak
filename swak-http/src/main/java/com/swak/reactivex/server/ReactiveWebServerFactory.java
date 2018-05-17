@@ -18,7 +18,6 @@ public class ReactiveWebServerFactory {
 	 * @return
 	 */
 	public WebServer getWebServer() {
-		ReactiveWebServer httpServer = ReactiveWebServer.build(properties);
-		return new NettyWebServer(httpServer);
+		return ReactiveWebServer.build(properties);
 	}
 }

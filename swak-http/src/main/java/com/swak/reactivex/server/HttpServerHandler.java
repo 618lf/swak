@@ -4,8 +4,6 @@ import com.swak.reactivex.server.channel.ContextHandler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.util.ReferenceCountUtil;
 
 /**
  * 服务器处理
@@ -41,11 +39,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	 */
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		if (msg instanceof FullHttpRequest) {
-			context.doChannel(ctx.channel(), msg);
-		} else {
-			ReferenceCountUtil.release(msg);
-		}
+		context.doChannel(ctx.channel(), msg);
 	}
 
 	/**

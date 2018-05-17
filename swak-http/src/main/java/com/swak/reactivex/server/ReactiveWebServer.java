@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.server.WebServerException;
 
 import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.handler.HttpHandler;
@@ -38,7 +39,7 @@ import reactor.core.scheduler.Schedulers;
  * 
  * @author lifeng
  */
-public class ReactiveWebServer extends TcpServer {
+public class ReactiveWebServer extends TcpServer implements WebServer{
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReactiveWebServer.class);
 
@@ -63,10 +64,14 @@ public class ReactiveWebServer extends TcpServer {
 	 * @return
 	 */
 	public void start(HttpHandler handler) {
-		this.handler = handler;
-		this.context = this.asyncStart().subscribeOn(Schedulers.immediate()).doOnNext(ctx -> LOG.info("Started {} on {}", "http-server", ctx.address()))
-				.block();
-		this.startDaemonAwaitThread();
+		try {
+			this.handler = handler;
+			this.context = this.asyncStart().subscribeOn(Schedulers.immediate()).doOnNext(ctx -> LOG.info("Started {} on {}", "http-server", ctx.address()))
+					.block();
+			this.startDaemonAwaitThread();
+		} catch (Exception ex) {
+			throw new WebServerException("Unable to start Netty", ex);
+		}
 	}
 
 	/**
@@ -240,6 +245,11 @@ public class ReactiveWebServer extends TcpServer {
 	public InetSocketAddress getAddress() {
 		return context.address();
 	}
+	
+	@Override
+	public int getPort() {
+		return getAddress().getPort();
+	}
 
 	// ---------------------- 创建 http 服务器 ---------------------
 	/**
@@ -251,4 +261,5 @@ public class ReactiveWebServer extends TcpServer {
 	public static ReactiveWebServer build(HttpServerProperties properties) {
 		return new ReactiveWebServer(properties);
 	}
+	
 }
