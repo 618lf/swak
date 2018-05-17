@@ -2,20 +2,9 @@ package com.swak.reactivex.server;
 
 import com.swak.reactivex.server.channel.ContextHandler;
 
-import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.TooLongFrameException;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
-import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
 
 /**
@@ -64,25 +53,6 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	 */
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable t) {
-		Channel ch = ctx.channel();
-
-		Throwable cause = t.getCause();
-		if (cause instanceof TooLongFrameException) {
-			sendError(ctx, HttpResponseStatus.BAD_REQUEST, null);
-			return;
-		}
-		if (ch.isOpen()) {
-			sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR, null);
-		}
-		if (ctx.channel().isActive()) {
-			sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR, null);
-		}
-	}
-
-	private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status, HttpRequest request) {
-		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status,
-				Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
-		response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
-		ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+		context.doChannel(ctx.channel(), t);
 	}
 }

@@ -7,21 +7,30 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.handler.HttpHandler;
 import com.swak.reactivex.server.channel.ContextHandler;
 import com.swak.reactivex.server.options.HttpServerOptions;
 import com.swak.reactivex.server.tcp.TcpServer;
 
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpContentCompressor;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.util.CharsetUtil;
 import reactor.core.scheduler.Schedulers;
 
 /**
@@ -144,6 +153,17 @@ public class ReactiveWebServer extends TcpServer {
 		HttpServerOperations op = HttpServerOperations.apply(handler).channel(channel)
 				.request((FullHttpRequest) request);
 		channel.eventLoop().execute(op::handleStart);
+	}
+	
+	/**
+	 * 处理错误
+	 */
+	@Override
+	public void handleError(Channel channel, Throwable t) {
+		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR,
+				Unpooled.copiedBuffer("Failure: " + HttpResponseStatus.INTERNAL_SERVER_ERROR + "\r\n", CharsetUtil.UTF_8));
+		response.headers().set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
+		channel.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
 	}
 
 	// ---------------------- 停止服务器 ---------------------

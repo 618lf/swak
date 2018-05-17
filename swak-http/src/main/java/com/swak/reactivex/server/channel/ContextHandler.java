@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.swak.reactivex.server.ChannelHandler;
-import com.swak.reactivex.server.HttpServerHandler;
 import com.swak.reactivex.server.NettyContext;
 import com.swak.reactivex.server.NettyPipeline;
 import com.swak.reactivex.server.options.NettyOptions;
@@ -16,10 +15,7 @@ import com.swak.reactivex.server.options.ServerOptions;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.ssl.SslHandler;
-import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.concurrent.Future;
 import reactor.core.publisher.MonoSink;
 
@@ -55,12 +51,7 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 
 	@Override
 	protected void initChannel(Channel ch) throws Exception {
-		//accept(ch);
-		ChannelPipeline pipeline = ch.pipeline();
-		pipeline.addLast(new HttpServerCodec(36192 * 2, 36192 * 8, 36192 * 16, false));
-		pipeline.addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
-		pipeline.addLast(new ChunkedWriteHandler());
-		pipeline.addLast("server", new HttpServerHandler(this));
+		accept(ch);
 	}
 
 	/**
@@ -117,6 +108,17 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	public void doChannel(Channel channel, Object request) {
 		if (channelHandler != null) {
 			channelHandler.handleChannel(channel, request);
+		}
+	}
+	
+	/**
+	 * 错误
+	 * @param ctx
+	 * @param request
+	 */
+	public void doChannel(Channel channel, Throwable t) {
+		if (channelHandler != null) {
+			channelHandler.handleError(channel, t);
 		}
 	}
 	
