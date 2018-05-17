@@ -21,6 +21,15 @@ public class HelloController {
 	 * 抛出异常
 	 * @return
 	 */
+	@GetMapping("/say/void")
+	public void sayVoid() {
+		
+	}
+	
+	/**
+	 * 抛出异常
+	 * @return
+	 */
 	@GetMapping("/say/error")
 	public String sayError() {
 		int i = 1/ 0;

@@ -42,5 +42,5 @@ public interface HttpMessageConverter<T> {
 	 * @param response
 	 * @throws IOException
 	 */
-	void write(T t, HttpServerResponse response) throws IOException;
+	void write(T t, HttpServerResponse response);
 }

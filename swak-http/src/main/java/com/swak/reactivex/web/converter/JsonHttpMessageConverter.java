@@ -24,7 +24,7 @@ public class JsonHttpMessageConverter implements HttpMessageConverter<Object> {
 	}
 
 	@Override
-	public Object read(Class<? extends Object> clazz, HttpServerRequest request) throws IOException {
+	public Object read(Class<? extends Object> clazz, HttpServerRequest request)  throws IOException{
 		InputStream in = request.getInputStream();
 		return JSON.parseObject(in, fastJsonConfig.getCharset(), clazz, fastJsonConfig.getFeatures());
 	}
@@ -35,9 +35,11 @@ public class JsonHttpMessageConverter implements HttpMessageConverter<Object> {
 	}
 
 	@Override
-	public void write(Object obj, HttpServerResponse response) throws IOException {
-		JsonMapper.writeJSONString(response.json().getOutputStream(), fastJsonConfig.getCharset(), obj, fastJsonConfig.getSerializeConfig(),
-				fastJsonConfig.getSerializeFilters(), fastJsonConfig.getDateFormat(), JSON.DEFAULT_GENERATE_FEATURE,
-				fastJsonConfig.getSerializerFeatures());
+	public void write(Object obj, HttpServerResponse response) {
+		try {
+			JsonMapper.writeJSONString(response.json().getOutputStream(), fastJsonConfig.getCharset(), obj, fastJsonConfig.getSerializeConfig(),
+					fastJsonConfig.getSerializeFilters(), fastJsonConfig.getDateFormat(), JSON.DEFAULT_GENERATE_FEATURE,
+					fastJsonConfig.getSerializerFeatures());
+		} catch (Exception e) {}
 	}
 }

@@ -1,7 +1,5 @@
 package com.swak.reactivex.web.converter;
 
-import java.io.IOException;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -24,7 +22,7 @@ public class Jaxb2RootElementHttpMessageConverter implements HttpMessageConverte
 	}
 
 	@Override
-	public Object read(Class<? extends Object> clazz, HttpServerRequest request) throws IOException {
+	public Object read(Class<? extends Object> clazz, HttpServerRequest request){
 		return JaxbMapper.fromXml(request.getInputStream(), clazz);
 	}
 
@@ -34,8 +32,7 @@ public class Jaxb2RootElementHttpMessageConverter implements HttpMessageConverte
 	}
 
 	@Override
-	public void write(Object t, HttpServerResponse response) throws IOException {
-		if (t== null) {return;}
+	public void write(Object t, HttpServerResponse response) {
 		JaxbMapper.toXml(t, response.xml().getOutputStream());
 	}
 }

@@ -21,7 +21,7 @@ public class StringHttpMessageConverter implements HttpMessageConverter<String> 
 	}
 
 	@Override
-	public String read(Class<? extends String> clazz, HttpServerRequest request) throws IOException {
+	public String read(Class<? extends String> clazz, HttpServerRequest request) throws IOException{
 		return StreamUtils.copyToString(request.getInputStream(), HttpConst.DEFAULT_CHARSET);
 	}
 
@@ -31,7 +31,7 @@ public class StringHttpMessageConverter implements HttpMessageConverter<String> 
 	}
 
 	@Override
-	public void write(String content, HttpServerResponse response) throws IOException {
+	public void write(String content, HttpServerResponse response) {
 		response.text().accept().buffer(content);
 	}
 }

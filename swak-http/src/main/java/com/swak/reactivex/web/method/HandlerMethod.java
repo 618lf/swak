@@ -56,7 +56,7 @@ public class HandlerMethod implements Handler {
 	public Class<?> getBeanType() {
 		return beanType;
 	}
-
+	
 	public MethodParameter[] getParameters() {
 		return parameters;
 	}

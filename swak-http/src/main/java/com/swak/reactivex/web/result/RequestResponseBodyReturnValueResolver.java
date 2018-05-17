@@ -2,7 +2,6 @@ package com.swak.reactivex.web.result;
 
 import java.util.List;
 
-import com.swak.common.exception.BaseRuntimeException;
 import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.web.converter.HttpMessageConverter;
 
@@ -33,15 +32,16 @@ public class RequestResponseBodyReturnValueResolver implements HandlerReturnValu
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void handleReturnValue(Object value, Class<?> returnType, HttpServerResponse response) {
-		try {
-			for (HttpMessageConverter<?> messageConverter : this.messageConverters) {
-				if (messageConverter.canWrite(returnType)) {
-					((HttpMessageConverter)messageConverter).write(value, response);
-					return;
-				}
+		
+		// not done null
+		if (value == null) {return;}
+		
+		// find one Message Converter
+		for (HttpMessageConverter<?> messageConverter : this.messageConverters) {
+			if (messageConverter.canWrite(returnType)) {
+				((HttpMessageConverter)messageConverter).write(value, response);
+				return;
 			}
-		}catch (Exception e) {
-			throw new BaseRuntimeException(e.getMessage());
 		}
 	}
 }
