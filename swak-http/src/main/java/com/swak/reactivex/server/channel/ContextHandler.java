@@ -1,7 +1,7 @@
 package com.swak.reactivex.server.channel;
 
 import java.util.Objects;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 
 	static final Logger log = LoggerFactory.getLogger(ContextHandler.class);
 	final NettyOptions options;
-	BiConsumer<ChannelPipeline, ContextHandler> pipelineConfigurator;
+	Consumer<ChannelPipeline> pipelineConfigurator;
 	ChannelHandler<Channel, Object> channelHandler;
 	
 	ContextHandler(NettyOptions options) {
@@ -73,7 +73,7 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 				}
 			}
 			if (pipelineConfigurator != null) {
-				pipelineConfigurator.accept(channel.pipeline(), this);
+				pipelineConfigurator.accept(channel.pipeline());
 			}
 		} finally {
 			if (null != options.afterChannelInit()) {
@@ -139,7 +139,7 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	 * @param pipelineConfigurator
 	 * @return
 	 */
-	public final ContextHandler onPipeline(BiConsumer<ChannelPipeline, ContextHandler> pipelineConfigurator) {
+	public final ContextHandler onPipeline(Consumer<ChannelPipeline> pipelineConfigurator) {
 		this.pipelineConfigurator =
 				Objects.requireNonNull(pipelineConfigurator, "pipelineConfigurator");
 		return this;

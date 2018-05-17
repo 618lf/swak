@@ -10,7 +10,6 @@ import org.springframework.boot.web.server.WebServerException;
 
 import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.handler.HttpHandler;
-import com.swak.reactivex.server.channel.ContextHandler;
 import com.swak.reactivex.server.options.HttpServerOptions;
 import com.swak.reactivex.server.tcp.TcpServer;
 
@@ -32,6 +31,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.CharsetUtil;
+import io.netty.util.ReferenceCountUtil;
 import reactor.core.scheduler.Schedulers;
 
 /**
@@ -49,6 +49,7 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 	private HttpHandler handler;
 	private NettyContext context;
 	private Thread shutdownHook;
+	private HttpServerHandler serverHandler;
 
 	private ReactiveWebServer(HttpServerProperties properties) {
 		this.properties = properties;
@@ -68,6 +69,7 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 			this.handler = handler;
 			this.context = this.asyncStart().subscribeOn(Schedulers.immediate()).doOnNext(ctx -> LOG.info("Started {} on {}", "http-server", ctx.address()))
 					.block();
+			this.serverHandler = new HttpServerHandler(this.contextHandler);
 			this.startDaemonAwaitThread();
 		} catch (Exception ex) {
 			throw new WebServerException("Unable to start Netty", ex);
@@ -140,14 +142,14 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 	 * 管道初始化配置
 	 */
 	@Override
-	public void accept(ChannelPipeline p, ContextHandler u) {
+	public void accept(ChannelPipeline p) {
 		if (options.enabledCompression()) {
 			p.addLast(NettyPipeline.HttpCompressor, new HttpContentCompressor());
 		}
 		p.addLast(NettyPipeline.HttpCodec, new HttpServerCodec(36192 * 2, 36192 * 8, 36192 * 16, false));
 		p.addLast(NettyPipeline.HttpAggregator, new HttpObjectAggregator(Integer.MAX_VALUE));
 		p.addLast(NettyPipeline.ChunkedWriter, new ChunkedWriteHandler());
-		p.addLast(NettyPipeline.HttpServerHandler, new HttpServerHandler(u));
+		p.addLast(NettyPipeline.HttpServerHandler, this.serverHandler);
 	}
 
 	/**
@@ -155,9 +157,13 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 	 */
 	@Override
 	public void handleChannel(Channel channel, Object request) {
-		HttpServerOperations op = HttpServerOperations.apply(handler).channel(channel)
-				.request((FullHttpRequest) request);
-		channel.eventLoop().execute(op::handleStart);
+		if (request instanceof FullHttpRequest) {
+			HttpServerOperations op = HttpServerOperations.apply(handler).channel(channel)
+					.request((FullHttpRequest) request);
+			channel.eventLoop().execute(op::handleStart);
+		} else {
+			ReferenceCountUtil.release(request);
+		}
 	}
 	
 	/**

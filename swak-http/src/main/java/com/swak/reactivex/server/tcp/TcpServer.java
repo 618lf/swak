@@ -1,7 +1,7 @@
 package com.swak.reactivex.server.tcp;
 
 import java.net.InetSocketAddress;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.swak.reactivex.handler.HttpHandler;
 import com.swak.reactivex.server.ChannelHandler;
@@ -21,8 +21,13 @@ import reactor.core.publisher.MonoSink;
  * @author Stephane Maldini
  * @author Violeta Georgieva
  */
-public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHandler>, ChannelHandler<Channel, Object>{
+public abstract class TcpServer implements Consumer<ChannelPipeline>, ChannelHandler<Channel, Object>{
 
+	/**
+	 * 上下文处理器
+	 */
+	protected ContextHandler contextHandler;
+	
 	/**
 	 * 配置 ServerOptions
 	 * @return
@@ -67,7 +72,7 @@ public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHa
 		/**
 		 * init Handler
 		 */
-		ContextHandler contextHandler = ContextHandler.newServerContext(options(), sink)
+		contextHandler = ContextHandler.newServerContext(options(), sink)
 				.onPipeline(this).onChannel(this);
 		
 		/**
