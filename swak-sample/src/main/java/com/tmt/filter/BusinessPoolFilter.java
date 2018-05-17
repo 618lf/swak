@@ -27,8 +27,7 @@ public class BusinessPoolFilter implements WebFilter, Ordered {
 	
 	@Override
 	public Mono<Void> filter(HttpServerRequest request, HttpServerResponse response, WebFilterChain chain) {
-		Mono<Void> filters = chain.filter(request, response);
-		return filters.subscribeOn(Schedulers.fromExecutor(executor));
+		return chain.filter(request, response).subscribeOn(Schedulers.fromExecutor(executor));
 	}
 
 	/**
