@@ -11,6 +11,10 @@ import com.tmt.shop.service.ShopService;
 
 import reactor.core.publisher.Mono;
 
+/**
+ * 测试的 demo
+ * @author lifeng
+ */
 @RestController("/admin/hello")
 public class HelloController {
 
