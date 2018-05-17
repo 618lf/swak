@@ -86,7 +86,8 @@ public class HelloController {
 	}
 
 	/**
-	 * 协程
+	 * 协程 -- 只能用来处理 io 的问题
+	 * 如果仅仅是cpu 的事情，反而慢，所有只有一个场景可用，那就是 网络IO
 	 * @param id
 	 * @return
 	 */
