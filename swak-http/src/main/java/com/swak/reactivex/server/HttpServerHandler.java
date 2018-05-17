@@ -16,6 +16,7 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
+import io.netty.util.ReferenceCountUtil;
 
 /**
  * 服务器处理
@@ -53,6 +54,8 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		if (msg instanceof FullHttpRequest) {
 			context.doChannel(ctx.channel(), msg);
+		} else {
+			ReferenceCountUtil.release(msg);
 		}
 	}
 
