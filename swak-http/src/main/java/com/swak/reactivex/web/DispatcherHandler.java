@@ -9,7 +9,7 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
-import com.swak.common.exception.BaseRuntimeException;
+import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.handler.WebHandler;
@@ -23,8 +23,6 @@ import reactor.core.publisher.Mono;
  * @author lifeng
  */
 public class DispatcherHandler implements WebHandler {
-
-	private static final Exception HANDLER_NOT_FOUND_EXCEPTION = new BaseRuntimeException("No matching handler");
 
 	private List<HandlerMapping> mappings;
 	private List<HandlerAdapter> adapters;
@@ -93,7 +91,7 @@ public class DispatcherHandler implements WebHandler {
 				return Mono.just(handler);
 			}
 		}
-		return Mono.error(HANDLER_NOT_FOUND_EXCEPTION);
+		return Mono.error(HttpConst.HANDLER_NOT_FOUND_EXCEPTION);
 	}
 
 	public HandlerResult invokeHandler(HttpServerRequest request, HttpServerResponse response,
@@ -114,6 +112,6 @@ public class DispatcherHandler implements WebHandler {
 				return resultHandler.handle(request, response, result);
 			}
 		}
-		return Mono.error(HANDLER_NOT_FOUND_EXCEPTION);
+		return Mono.error(HttpConst.HANDLER_NOT_FOUND_EXCEPTION);
 	}
 }

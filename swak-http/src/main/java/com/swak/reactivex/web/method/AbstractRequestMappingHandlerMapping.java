@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -24,21 +22,16 @@ import org.springframework.core.MethodIntrospector;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.PathMatcher;
 
 import com.swak.common.utils.Maps;
 import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.HttpServerRequest;
+import com.swak.reactivex.web.AbstractHandlerMapping;
 import com.swak.reactivex.web.HandlerMapping;
 import com.swak.reactivex.web.annotation.RequestMethod;
-import com.swak.reactivex.web.method.pattern.PathMatcherHelper;
-import com.swak.reactivex.web.method.pattern.UrlPathHelper;
 
-public abstract class AbstractRequestMappingHandlerMapping implements ApplicationContextAware, HandlerMapping {
+public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandlerMapping implements ApplicationContextAware, HandlerMapping {
 
-	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private PathMatcher pathMatcher = PathMatcherHelper.getMatcher();
-	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 	private Map<String, Match> matchLookup = new HashMap<String, Match>();
 	private MappingRegistry mappingRegistry = new MappingRegistry();
 	
@@ -192,14 +185,6 @@ public abstract class AbstractRequestMappingHandlerMapping implements Applicatio
 		}
 	}
 	
-	public PathMatcher getPathMatcher() {
-		return this.pathMatcher;
-	}
-
-	public UrlPathHelper getUrlPathHelper() {
-		return urlPathHelper;
-	}
-
 	/**
 	 * 释放资源
 	 */
@@ -236,7 +221,7 @@ public abstract class AbstractRequestMappingHandlerMapping implements Applicatio
 		private List<String> getDirectUrls(RequestMappingInfo mapping) {
 			List<String> urls = new ArrayList<String>(1);
 			for (String path : mapping.getPatterns()) {
-				if (!pathMatcher.isPattern(path)) {
+				if (!getPathMatcher().isPattern(path)) {
 					urls.add(path);
 				}
 			}

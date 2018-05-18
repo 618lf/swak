@@ -2,6 +2,8 @@ package com.swak.reactivex;
 
 import java.nio.charset.Charset;
 
+import com.swak.common.exception.BaseRuntimeException;
+
 import io.netty.util.AsciiString;
 
 /**
@@ -10,9 +12,12 @@ import io.netty.util.AsciiString;
  */
 public interface HttpConst {
 	
+	// 错误
+	Exception HANDLER_NOT_FOUND_EXCEPTION = new BaseRuntimeException("No matching handler");
+
 	// 系统级别
 	CharSequence X_POWER_BY = AsciiString.cached("X-Powered-By");
-	CharSequence VERSION = AsciiString.cached("SWAK-0.0.3_final");
+	CharSequence VERSION = AsciiString.cached("SWAK-0.0.4_final");
 	
 	// 只支持的编码格式
 	Charset DEFAULT_CHARSET = Charset.forName("utf-8");

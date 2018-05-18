@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.swak.common.exception.ErrorCode;
+import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
 
@@ -27,9 +28,20 @@ public class DefaultWebExceptionHandler implements WebExceptionHandler{
 	 */
 	@Override
 	public Mono<Void> handle(HttpServerRequest request, HttpServerResponse response, Throwable ex) {
-		logger.error("{}", request.getRequestURL(), ex);
+		if (isSystemException(ex)) {
+			logger.error("{} - {}", request.getRequestURL(), ex.getMessage());
+		} else {
+			logger.error("{}", request.getRequestURL(), ex);
+		}
 		response.error().json().accept().buffer(errorPage).orJsonBuffer(ErrorCode.OPERATE_FAILURE.toJson());
 		return Mono.empty();
+	}
+	
+	private boolean isSystemException(Throwable ex) {
+		if (ex != null && ex == HttpConst.HANDLER_NOT_FOUND_EXCEPTION) {
+			return true;
+		}
+		return false;
 	}
 	
 	public String errorMessage() {
