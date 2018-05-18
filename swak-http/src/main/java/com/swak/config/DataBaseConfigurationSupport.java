@@ -142,10 +142,11 @@ public class DataBaseConfigurationSupport {
 	 */
 	@org.springframework.context.annotation.Configuration
 	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
+	@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE + 10)
 	@ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
-	@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	@Import({ DataSourceTransactionManagerAutoConfiguration.class, TransactionAutoConfiguration.class })
+	@AutoConfigureAfter(DataSourceAutoConfiguration.class)
 	public static class DataSourceTransactionManagerConfiguration {
 		DataSourceTransactionManagerConfiguration() {
 			APP_LOGGER.debug("Loading Transaction Manager");
@@ -159,7 +160,8 @@ public class DataBaseConfigurationSupport {
 	 *
 	 */
 	@org.springframework.context.annotation.Configuration
-	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 20)
+	@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE + 20)
 	@ConditionalOnClass({ SqlSessionFactory.class, SqlSessionFactoryBean.class })
 	@ConditionalOnBean(DataSource.class)
 	@EnableConfigurationProperties(MybatisProperties.class)
