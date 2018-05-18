@@ -320,7 +320,7 @@ public abstract class HttpServerRequestOperation implements HttpServerRequest {
 	 * @param request
 	 */
 	private void parseBody(FullHttpRequest request) {
-		body = request.content().copy();
+		body = request.content();
 	}
 
 	/**
@@ -385,8 +385,6 @@ public abstract class HttpServerRequestOperation implements HttpServerRequest {
 	@Override
 	public void close() throws IOException {
 		if (this.body != null) {
-			this.body.release();
-			this.body.clear();
 			this.body = null;
 		}
 		this.remoteAddress = null;

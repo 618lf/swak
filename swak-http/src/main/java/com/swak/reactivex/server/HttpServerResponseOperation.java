@@ -385,24 +385,19 @@ public abstract class HttpServerResponseOperation extends HttpServerRequestOpera
 	 * 只能执行一次
 	 */
 	protected void out() {
-		
 		// 只能执行一次
 		if (this.closed) {
 			return;
 		}
 		
-		try {
-			HttpResponse _response = this.render();
-			boolean keepAlive = isKeepAlive();
-			if (!keepAlive) {
-				channel().writeAndFlush(_response);
-				channel().close();
-			} else {
-				_response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-				channel().writeAndFlush(_response);
-			}
-		} finally {
-			IOUtils.closeQuietly(this);
+		HttpResponse _response = this.render();
+		boolean keepAlive = isKeepAlive();
+		if (!keepAlive) {
+			channel().writeAndFlush(_response);
+			channel().close();
+		} else {
+			_response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+			channel().writeAndFlush(_response);
 		}
 	}
 	

@@ -32,7 +32,6 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.CharsetUtil;
-import io.netty.util.ReferenceCountUtil;
 import reactor.core.scheduler.Schedulers;
 
 /**
@@ -156,13 +155,9 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 	 */
 	@Override
 	public void handleChannel(Channel channel, Object request) {
-		try {
-			HttpServerOperations op = HttpServerOperations.apply(handler).channel(channel)
-					.request((FullHttpRequest) request);
-			op.handleStart();
-		} finally {
-			ReferenceCountUtil.release(request);
-		}
+		HttpServerOperations op = HttpServerOperations.apply(handler).channel(channel)
+				.request((FullHttpRequest) request);
+		op.handleStart();
 	}
 	
 	/**

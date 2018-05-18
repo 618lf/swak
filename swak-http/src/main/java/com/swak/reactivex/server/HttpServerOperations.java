@@ -1,6 +1,6 @@
 package com.swak.reactivex.server;
 
-import java.io.IOException;
+import org.apache.commons.io.IOUtils;
 
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
@@ -8,6 +8,7 @@ import com.swak.reactivex.handler.HttpHandler;
 
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.util.ReferenceCountUtil;
 
 /**
  * HttpServer http 操作
@@ -23,17 +24,17 @@ public class HttpServerOperations extends HttpServerResponseOperation implements
 		this.handler = handler;
 	}
 	
-	@Override
-	public void close() throws IOException {
-		super.close();
-	}
-
 	/**
 	 * 直接输出响应
 	 */
 	@Override
 	public void onComplete() {
-		this.out();
+        try {
+        	this.out();
+		} finally {
+			IOUtils.closeQuietly(this);
+			ReferenceCountUtil.release(request);
+		}
 	}
 	
 	@Override
@@ -66,7 +67,7 @@ public class HttpServerOperations extends HttpServerResponseOperation implements
 			this.initRequest(channel, request);
 			this.handler.apply(this).subscribe(this);
 		} catch (Exception e) {
-			this.text().out(e.getMessage());
+			this.onComplete();
 		}
 	}
 	
