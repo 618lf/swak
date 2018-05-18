@@ -8,7 +8,6 @@ import com.swak.reactivex.handler.HttpHandler;
 
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.util.ReferenceCountUtil;
 
 /**
  * HttpServer http 操作
@@ -68,8 +67,6 @@ public class HttpServerOperations extends HttpServerResponseOperation implements
 			this.handler.apply(this).subscribe(this);
 		} catch (Exception e) {
 			this.text().out(e.getMessage());
-		}finally {
-			ReferenceCountUtil.release(request);
 		}
 	}
 	

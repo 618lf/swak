@@ -156,11 +156,11 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 	 */
 	@Override
 	public void handleChannel(Channel channel, Object request) {
-		if (request instanceof FullHttpRequest) {
+		try {
 			HttpServerOperations op = HttpServerOperations.apply(handler).channel(channel)
 					.request((FullHttpRequest) request);
-			channel.eventLoop().execute(op::handleStart);
-		} else {
+			op.handleStart();
+		} finally {
 			ReferenceCountUtil.release(request);
 		}
 	}
