@@ -6,14 +6,14 @@
     <result column="NAME" property="name" jdbcType="VARCHAR"/>
   </resultMap>
   
-  <select id="get" resultMap="BaseResult">
+  <select id="get" resultMap="BaseResult" parameterType="Long">
    SELECT ID, NAME
      FROM SHOP
-    WHERE ID = 1 LIMIT 1
+    WHERE ID = #{ID}
   </select>
  
   <insert id="insert" parameterType="java.util.HashMap">
-   INSERT INTO SHOP (ID, NAME)
+   INSERT INTO SHOP_3 (ID, NAME)
    VALUES (#{ID}, #{NAME})
   </insert>
   

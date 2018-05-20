@@ -15,6 +15,7 @@
 		<module>swak-kotlin</module>
 		<module>swak-sample</module>
 		<module>swak-actuator</module>
+		<module>swak-benchmark</module>
 	</modules>
 	<properties>
 		<spring.version>5.0.5.RELEASE</spring.version>

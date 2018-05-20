@@ -112,6 +112,6 @@ public class MybatisOps implements InsertOps, QueryOps {
 
 	@Override
 	public void query() {
-		sqlSessionTemplate.selectList("com.tmt.shop.dao.ShopDao.get");
+		sqlSessionTemplate.selectList("com.tmt.shop.dao.ShopDao.get", IdGen.id());
 	}
 }

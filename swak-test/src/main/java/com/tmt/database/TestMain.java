@@ -4,20 +4,35 @@ import javax.sql.DataSource;
 
 import com.swak.common.persistence.incrementer.IdGen;
 import com.tmt.common.MultiThreadTest;
-import com.tmt.database.datasource.DruidProvider;
+import com.tmt.database.datasource.HikariDataSourceProvider;
 import com.tmt.database.ops.MybatisOps;
 
 /**
  * 数据库的性能测试
+ * 数据库的查询基本在 20000 左右的性能
+ * 数据库的插入性能基本在 2000 左右（20个连接）
+ * 
+ * DML 性能如下：
+ * 事务表（主键基本每啥影响）：
+ *    有主建： 9万条数据58秒
+ *    无主建： 9万条数据55秒
+ * 无事务表： 
+ *    9万条数据3秒，基本和查询的性能一直
+ * 数据库连接池：
+ *    Druid 的性能没有 Hikari 的性能好
+ *  
+ * DQL性能如下：
+ *    查询基本在 20000/s
  * @author lifeng
  */
 public class TestMain {
 	
 	public static void main(String[] args) {
 		
-		DataSourceProvider dataSourceProvider = new DruidProvider();
+		// DataSourceProvider druiddataSourceProvider = new DruidProvider();
+		DataSourceProvider hikariDataSourceProvider = new HikariDataSourceProvider();
 		IdGen.setServerSn("server-1-1");
-		DataSource dataSource = dataSourceProvider.getDataSource();
+		DataSource dataSource = hikariDataSourceProvider.getDataSource();
 		//final InsertOps jops = new JdbcOps(dataSource);
 		
 		// jdbc 的测试
