@@ -148,6 +148,16 @@
 			<artifactId>comsat-actors-netty</artifactId>
 			<version>0.7.0</version>
 		</dependency>
+		<dependency>
+			<groupId>co.paralleluniverse</groupId>
+			<artifactId>comsat-httpclient</artifactId>
+			<version>0.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>co.paralleluniverse</groupId>
+			<artifactId>comsat-okhttp</artifactId>
+			<version>0.7.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

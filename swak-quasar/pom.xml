@@ -13,6 +13,11 @@
 			<artifactId>quasar-core</artifactId>
 			<classifier>jdk8</classifier>
 		</dependency>
+		<dependency>
+			<groupId>co.paralleluniverse</groupId>
+			<artifactId>comsat-okhttp</artifactId>
+			<version>0.7.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

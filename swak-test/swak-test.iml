@@ -143,5 +143,16 @@
     <orderEntry type="library" name="Maven: co.paralleluniverse:comsat-actors-netty:0.7.0" level="project" />
     <orderEntry type="library" name="Maven: co.paralleluniverse:comsat-actors-api:0.7.0" level="project" />
     <orderEntry type="library" name="Maven: co.paralleluniverse:quasar-actors:0.7.4" level="project" />
+    <orderEntry type="library" name="Maven: co.paralleluniverse:comsat-httpclient:0.7.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.5.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpasyncclient:4.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore-nio:4.4.4" level="project" />
+    <orderEntry type="library" name="Maven: co.paralleluniverse:comsat-okhttp:0.7.0" level="project" />
+    <orderEntry type="library" name="Maven: com.squareup.okhttp:okhttp-urlconnection:2.6.0" level="project" />
+    <orderEntry type="library" name="Maven: com.squareup.okhttp:okhttp-apache:2.6.0" level="project" />
+    <orderEntry type="library" name="Maven: com.squareup.okhttp:okhttp:2.6.0" level="project" />
+    <orderEntry type="library" name="Maven: com.squareup.okio:okio:1.6.0" level="project" />
   </component>
 </module>
