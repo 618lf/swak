@@ -16,6 +16,7 @@
 		<module>swak-sample</module>
 		<module>swak-actuator</module>
 		<module>swak-benchmark</module>
+		<module>swak-quasar</module>
 	</modules>
 	<properties>
 		<spring.version>5.0.5.RELEASE</spring.version>
@@ -356,6 +357,7 @@
 				<groupId>co.paralleluniverse</groupId>
 				<artifactId>quasar-core</artifactId>
 				<version>${quasar.version}</version>
+				<classifier>jdk8</classifier>
 			</dependency>
 
 			<dependency>
