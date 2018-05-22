@@ -26,7 +26,7 @@
 		<jackson.version>2.9.5</jackson.version>
 		<logback.version>1.2.3</logback.version>
 		<slf4j.version>1.7.5</slf4j.version>
-		<netty.version>4.1.23.Final</netty.version>
+		<netty.version>4.1.24.Final</netty.version>
 		<metrics.version>4.0.2</metrics.version>
 		<micrometer.version>1.0.4</micrometer.version>
 		<commons-lang3.version>3.3.2</commons-lang3.version>
@@ -54,6 +54,8 @@
 		<rxjava.version>2.1.12</rxjava.version>
 		<reactor.version>3.1.7.RELEASE</reactor.version>
 		<vertx.version>3.5.1</vertx.version>
+		<httpclient.version>4.1.3</httpclient.version>
+		<async.httpclient.version>2.4.7</async.httpclient.version>
 
 		<!-- test -->
 		<junit.version>4.12</junit.version>
@@ -292,6 +294,11 @@
 			</dependency>
 			<dependency>
 				<groupId>io.netty</groupId>
+				<artifactId>netty-codec-socks</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
 				<artifactId>netty-resolver</artifactId>
 				<version>${netty.version}</version>
 			</dependency>
@@ -303,6 +310,12 @@
 			<dependency>
 				<groupId>io.netty</groupId>
 				<artifactId>netty-transport-native-epoll</artifactId>
+				<version>${netty.version}</version>
+				<optional>true</optional>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-transport-native-unix-common</artifactId>
 				<version>${netty.version}</version>
 				<optional>true</optional>
 			</dependency>
@@ -706,6 +719,70 @@
 				<groupId>io.vertx</groupId>
 				<artifactId>vertx-sync</artifactId>
 				<version>${vertx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.asynchttpclient</groupId>
+				<artifactId>async-http-client</artifactId>
+				<version>${async.httpclient.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-common</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-buffer</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-transport</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-handler</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-handler-proxy</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-codec</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-codec-http</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-codec-socks</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-codec-http2</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-resolver</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-resolver-dns</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-transport-native-epoll</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty-transport-native-kqueue</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpasyncclient</artifactId>
+				<version>${httpclient.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

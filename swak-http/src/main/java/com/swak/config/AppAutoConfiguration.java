@@ -14,6 +14,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.CollectionUtils;
@@ -22,6 +23,7 @@ import com.swak.ApplicationProperties;
 import com.swak.common.Constants;
 import com.swak.common.cache.CacheProperties;
 import com.swak.common.eventbus.system.SystemEventPublisher;
+import com.swak.common.http.HttpClientProperties;
 import com.swak.common.persistence.incrementer.IdGen;
 import com.swak.common.serializer.FSTSerializer;
 import com.swak.common.serializer.JavaSerializer;
@@ -251,6 +253,20 @@ public class AppAutoConfiguration {
 		public ReactiveWebServerFactory reactiveWebServerFactory() {
 			return new ReactiveWebServerFactory(properties);
 		}
+	}
+	
+	/**
+	 * HttpClient 服务配置
+	 * @author lifeng
+	 */
+	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 200)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 200)
+	@ConditionalOnMissingBean(HttpClientConfigurationSupport.class)
+	@EnableConfigurationProperties(HttpClientProperties.class)
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableHttpClient", matchIfMissing = true)
+	@Import(HttpClientConfigurationSupport.class)
+	public static class HttpClientAutoConfiguration {
 	}
 	
 	/**

@@ -125,6 +125,13 @@
 			<artifactId>HikariCP</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- 客户端 -->
+		<dependency>
+			<groupId>org.asynchttpclient</groupId>
+			<artifactId>async-http-client</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- springboot -->
 		<dependency>

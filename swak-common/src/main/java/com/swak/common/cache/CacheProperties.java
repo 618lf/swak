@@ -2,15 +2,15 @@ package com.swak.common.cache;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.swak.common.Constants;
+
 /**
  * 缓存属性配置
  * @author lifeng
  */
-@ConfigurationProperties(prefix = CacheProperties.CACHE_PREFIX)
+@ConfigurationProperties(prefix = Constants.CACHE_PREFIX)
 public class CacheProperties {
 
-	public static final String CACHE_PREFIX = "spring.cache";
-	
 	private String hosts;
 	private String password;
 	

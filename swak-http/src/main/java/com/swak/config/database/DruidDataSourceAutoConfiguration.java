@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.swak.common.persistence.DataSourceHolder;
@@ -19,7 +18,6 @@ import com.swak.common.persistence.DataSourceHolder;
  * 配置 Druid
  * @author lifeng
  */
-@Configuration
 @ConditionalOnClass({DruidDataSource.class})
 @ConditionalOnMissingBean(DataSource.class)
 public class DruidDataSourceAutoConfiguration {

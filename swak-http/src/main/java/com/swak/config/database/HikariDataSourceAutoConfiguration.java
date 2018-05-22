@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.jdbc.metadata.HikariDataSourcePoolMetadata;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import com.swak.common.persistence.DataSourceHolder;
 import com.zaxxer.hikari.HikariConfig;
@@ -19,7 +18,6 @@ import com.zaxxer.hikari.HikariDataSource;
  * 配置 Hikari
  * @author lifeng
  */
-@Configuration
 @ConditionalOnClass({HikariDataSource.class})
 @ConditionalOnMissingBean(DataSource.class)
 public class HikariDataSourceAutoConfiguration {

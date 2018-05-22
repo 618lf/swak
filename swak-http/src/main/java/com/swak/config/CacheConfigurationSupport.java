@@ -47,8 +47,6 @@ public class CacheConfigurationSupport {
 		System.setProperty("io.lettuce.core.kqueue", "false");
 		if (serverProperties.getMode() == TransportMode.EPOLL) {
 			System.setProperty("io.lettuce.core.epoll", "true");
-		} else if (serverProperties.getMode() == TransportMode.EPOLL) {
-			System.setProperty("io.lettuce.core.kqueue", "true");
 		}
         return DefaultClientResources.create();
     }

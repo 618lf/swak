@@ -13,6 +13,7 @@ public interface Constants {
 	String APPLICATION_PREFIX = "spring.application";
 	String HTTP_SERVER_PREFIX = "spring.http-server";
 	String CACHE_PREFIX = "spring.cache";
+	String HTTP_CLIENT_PREFIX = "spring.http-client";
 	String SECURITY_PREFIX = "spring.security";
 	String MYBATIS_PREFIX = "spring.mybatis";
 	String DATASOURCE_PREFIX = "spring.datasource";
