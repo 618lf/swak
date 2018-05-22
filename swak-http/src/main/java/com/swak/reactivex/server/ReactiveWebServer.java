@@ -71,7 +71,7 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 	 * @param nettyContext
 	 */
 	private void startDaemonAwaitThread() {
-		Thread awaitThread = new Thread("reactive-server") {
+		Thread awaitThread = new Thread("SWAK-server-closeAwait") {
 			@Override
 			public void run() {
 				context.onClose().block();
@@ -192,7 +192,7 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 		if (this.shutdownHook != null) {
 			return;
 		}
-		this.shutdownHook = new Thread(this::shutdownFromJVM);
+		this.shutdownHook = new Thread(this::shutdownFromJVM, "SWAK - ShutdownHook - jvm");
 		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
 	}
 

@@ -1,41 +1,59 @@
 package com.tmt.reactor;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoSink;
 
 public class ReactorMain {
 
-	public static void main(String[] args) {
+	public static void async_task(MonoSink<Object> sink) {
+		Thread nThread = new Thread() {
+			@Override
+			public void run() {
+				try {
+					System.out.println(Thread.currentThread().getName());
+					Thread.sleep(2000L);
+					sink.success("123");
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		nThread.setDaemon(true);
+		nThread.start();
+	}
 
-		Mono.just("123").map(s -> { /*int i= 1/0;*/ return s+"1";}).doOnSuccess(done -> {
-			System.out.println("中间监听：" + done);
-		}).doOnError(cause -> {
-			System.out.println("中间监听：" + cause);
-		}).doOnSuccessOrError((a,b) ->{
-			System.out.println("都会收到消息");
-		}).subscribe(new Subscriber<String>() {
-
+	public static void main(String[] args) throws InterruptedException {
+		CountDownLatch latch = new CountDownLatch(1);
+		//Mono.just("123").map(s -> Integer.parseInt(s)).defer(supplier)
+		Mono.just("123").map(s -> Integer.parseInt(s)).flatMap((s) -> {
+			return Mono.create((sink) -> {
+				async_task(sink);
+			}).flatMap((i) -> {
+				return Mono.empty();
+			});
+		}).subscribe(new Subscriber() {
 			@Override
 			public void onSubscribe(Subscription s) {
-				s.request(Long.MAX_VALUE);
 			}
-
 			@Override
-			public void onNext(String t) {
-				System.out.println("收到消息" + t);
+			public void onNext(Object t) {
+				System.out.println(t);
 			}
-
 			@Override
 			public void onError(Throwable t) {
-				System.out.println("错误");
+				
 			}
-
 			@Override
 			public void onComplete() {
-				System.out.println("完成");
+				latch.countDown();
+				System.out.println("123");
 			}
 		});
+		latch.await();
 	}
 }

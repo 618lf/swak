@@ -79,6 +79,11 @@ public class DispatcherHandler implements WebHandler {
 
 	@Override
 	public Mono<Void> handle(HttpServerRequest request, HttpServerResponse response) {
+//		mappings.stream().filter(mapping -> mapping.getHandler(request) != null)
+//		.map(mapping -> this.invokeHandler(request, response, mapping.getHandler(request)))
+//		.map(result -> this.handleResult(request, response, result));
+		
+		// 是否可以在这部分不需要 mono 的处理
 		return this.handleMappering(request, response)
 			   .map(handler -> this.invokeHandler(request, response, handler))
 			   .flatMap(result -> this.handleResult(request, response, result));

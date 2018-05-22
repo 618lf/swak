@@ -11,7 +11,7 @@ import com.swak.common.Constants;
 @ConfigurationProperties(prefix = Constants.DATASOURCE_PREFIX)
 public class DataSourceProperties {
 	
-	private String name = "SWAK-";
+	private String name = "SWAK - DB";
 	private String url;
     private String username;
     private String password;

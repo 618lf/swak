@@ -1,19 +1,14 @@
 package com.tmt.httpclient;
 
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
-import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
-import org.asynchttpclient.Response;
 import org.asynchttpclient.extras.rxjava2.RxHttpClient;
-
-import com.swak.common.http.HttpClients;
 
 
 public class TestNettyClient {

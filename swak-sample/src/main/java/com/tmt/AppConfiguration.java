@@ -25,10 +25,9 @@ public class AppConfiguration {
 	}
 
 	/**
-	 * 业务线程池
+	 * 业务线程池 -- 需要线程隔离， 而不是无目的的切换线程
 	 * @return
 	 */
-	@Bean
 	public BusinessPoolFilter businessPoolFilter() {
 		return new BusinessPoolFilter();
 	}

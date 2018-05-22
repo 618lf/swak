@@ -25,7 +25,7 @@ public class DefaultEpollLoopResources extends DefaultLoopResources {
 	@Override
 	public EventLoopGroup onServerSelect() {
 		if (this.serverSelectLoops == null) {
-			this.serverSelectLoops = new EpollEventLoopGroup(selectCount, threadFactory(this, "nio-select"));
+			this.serverSelectLoops = new EpollEventLoopGroup(selectCount, threadFactory(this, "epoll-select"));
 		}
 		return this.serverSelectLoops;
 	}
@@ -33,7 +33,7 @@ public class DefaultEpollLoopResources extends DefaultLoopResources {
 	@Override
 	public EventLoopGroup onServer() {
 		if (this.serverLoops == null) {
-			this.serverLoops = new EpollEventLoopGroup(workerCount, threadFactory(this, "nio-server"));
+			this.serverLoops = new EpollEventLoopGroup(workerCount, threadFactory(this, "epoll-server"));
 		}
 		return this.serverLoops;
 	}
