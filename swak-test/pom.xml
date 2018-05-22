@@ -20,6 +20,12 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-rpc</artifactId>
 		</dependency>
+		
+		<!-- rpc -->
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-kotlin</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>

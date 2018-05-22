@@ -27,7 +27,11 @@ public class HelloController {
 	 */
 	@GetMapping("/say/void")
 	public void sayVoid() {
-		
+		try {
+			Thread.sleep(10000L);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**

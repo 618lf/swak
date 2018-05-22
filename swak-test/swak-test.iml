@@ -75,6 +75,9 @@
     <orderEntry type="library" name="Maven: io.protostuff:protostuff-runtime:1.6.0" level="project" />
     <orderEntry type="library" name="Maven: io.protostuff:protostuff-collectionschema:1.6.0" level="project" />
     <orderEntry type="library" name="Maven: org.javassist:javassist:3.22.0-GA" level="project" />
+    <orderEntry type="module" module-name="swak-kotlin" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlinx:kotlinx-coroutines-reactor:0.22.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlinx:kotlinx-coroutines-reactive:0.22.5" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.2.31" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:13.0" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5" level="project" />

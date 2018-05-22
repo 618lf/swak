@@ -18,7 +18,8 @@ inline fun taskBlock(noinline job: suspend () -> Unit) = runBlocking {
  * 并发执行，常用于最外层
  * 返回值 -- DeferredCoroutine, 通过 await 获取具体的值
  */
-inline fun <T> taskAsync(noinline job: suspend () -> T) = async {
+inline fun <T> taskAsync(delayTime: Long = 0, noinline job: suspend () -> T) = async {
+	delay(delayTime)
     job()
 }
 
@@ -26,7 +27,8 @@ inline fun <T> taskAsync(noinline job: suspend () -> T) = async {
  * 并发执行，常用于最外层
  * 返回值 --- StandaloneCoroutine
  */
-inline fun taskLaunch(noinline job: suspend () -> Unit) = launch {
+inline fun taskLaunch(delayTime: Long = 0, noinline job: suspend () -> Unit) = launch {
+	delay(delayTime)
     job()
 }
 

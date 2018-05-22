@@ -43,7 +43,7 @@
 		<lettuce.version>5.0.4.RELEASE</lettuce.version>
 		<fst.version>2.48</fst.version>
 		<kryo.version>4.0.2</kryo.version>
-		<quasar.version>0.7.9</quasar.version>
+		<quasar.version>0.7.5</quasar.version>
 		<akka.version>2.5.11</akka.version>
 		<kotlin.version>1.2.31</kotlin.version>
 		<kotlin.coroutines.version>0.22.5</kotlin.coroutines.version>
@@ -700,6 +700,11 @@
 			<dependency>
 				<groupId>io.vertx</groupId>
 				<artifactId>vertx-web</artifactId>
+				<version>${vertx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.vertx</groupId>
+				<artifactId>vertx-sync</artifactId>
 				<version>${vertx.version}</version>
 			</dependency>
 		</dependencies>

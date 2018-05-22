@@ -9,6 +9,10 @@
 	<artifactId>swak-vert</artifactId>
 	<dependencies>
 		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.vertx</groupId>
 			<artifactId>vertx-core</artifactId>
 		</dependency>
@@ -17,12 +21,39 @@
 			<artifactId>vertx-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-sync</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
+			<groupId>co.paralleluniverse</groupId>
+			<artifactId>quasar-core</artifactId>
+			<classifier>jdk8</classifier>
 		</dependency>
 	</dependencies>
+	<profiles>
+		<profile>
+			<id>aot</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.vlkan</groupId>
+						<artifactId>quasar-maven-plugin</artifactId>
+						<version>0.7.3</version>
+						<configuration>
+							<check>true</check>
+							<debug>true</debug>
+							<verbose>true</verbose>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>instrument</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
