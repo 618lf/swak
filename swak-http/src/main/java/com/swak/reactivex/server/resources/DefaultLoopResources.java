@@ -3,7 +3,7 @@ package com.swak.reactivex.server.resources;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.swak.reactivex.server.FutureMono;
+import com.swak.common.reactor.publisher.FutureMono;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;

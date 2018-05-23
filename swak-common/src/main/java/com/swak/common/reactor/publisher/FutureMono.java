@@ -1,4 +1,4 @@
-package com.swak.reactivex.server;
+package com.swak.common.reactor.publisher;
 
 import java.util.Objects;
 
