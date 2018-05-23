@@ -2,6 +2,7 @@ package com.swak.config;
 
 import org.springframework.beans.factory.DisposableBean;
 
+import com.swak.common.cache.CacheManagers;
 import com.swak.common.cache.redis.RedisUtils;
 import com.swak.common.http.HttpClients;
 import com.swak.common.persistence.DataSourceHolder;
@@ -25,5 +26,6 @@ public class DisposeBean implements DisposableBean{
 		DataSourceHolder.setDataSource(null);
 		SessionProvider.setRepository(null);
 		HttpClients.setAsyncHttpClient(null);
+		CacheManagers.setCacheManager(null);
 	}
 }

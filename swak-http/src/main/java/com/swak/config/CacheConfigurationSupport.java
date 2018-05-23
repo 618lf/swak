@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
+import com.swak.common.cache.CacheManagers;
 import com.swak.common.cache.CacheProperties;
 import com.swak.common.cache.redis.RedisCacheManager;
 import com.swak.common.cache.redis.RedisLocalCache;
@@ -106,7 +107,8 @@ public class CacheConfigurationSupport {
 	@Bean
 	@ConditionalOnMissingBean
 	public RedisCacheManager redisCacheManager(RedisLocalCache localCache) {
-		 return new RedisCacheManager(localCache);
+		CacheManagers.setCacheManager(new RedisCacheManager(localCache));
+		return CacheManagers.manager();
 	}
 	
 	private List<RedisURI> nodes() {
