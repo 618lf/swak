@@ -19,12 +19,26 @@ public class ApplicationProperties {
 	private boolean enableBooter = true;
 	private boolean enableDataBase = true;
 	private boolean enableMybatis = true;
+	private boolean enableHttpClient = true;
+	private boolean enableWorkers = true;
 	
 	// 系统配置
 	private String version = "3.0";
 	private String serverSn = "server-1-1";
 	private String serialization = "kryo_pool";
 	
+	public boolean isEnableHttpClient() {
+		return enableHttpClient;
+	}
+	public void setEnableHttpClient(boolean enableHttpClient) {
+		this.enableHttpClient = enableHttpClient;
+	}
+	public boolean isEnableWorkers() {
+		return enableWorkers;
+	}
+	public void setEnableWorkers(boolean enableWorkers) {
+		this.enableWorkers = enableWorkers;
+	}
 	public boolean isEnableSession() {
 		return enableSession;
 	}

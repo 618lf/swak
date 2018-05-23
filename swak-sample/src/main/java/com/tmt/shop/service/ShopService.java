@@ -1,5 +1,8 @@
 package com.tmt.shop.service;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,5 +41,22 @@ public class ShopService extends BaseService<Shop, Long>{
 	@Transactional
 	public String sayTransactional() {
 		return "say hello to hanqian";
+	}
+
+	/**
+	 * 保存数据
+	 */
+	@Override
+	@Transactional
+	public CompletableFuture<Long> save(Shop entity) {
+		return this.doSave(entity);
+	}
+
+	/**
+	 * 删除数据
+	 */
+	@Override
+	public CompletableFuture<Void> delete(List<Shop> entities) {
+		return this.doDelete(entities);
 	}
 }

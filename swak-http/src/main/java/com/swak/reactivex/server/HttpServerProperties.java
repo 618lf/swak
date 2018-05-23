@@ -22,12 +22,41 @@ public class HttpServerProperties {
 	private boolean startReport = false;
 	private boolean enableGzip = false; // 暂时不支持
 	private boolean enableCors = false; // 暂时不支持
+	
+	// 线程数量
+	private int serverSelect = -1; //  自动计算
+	private int serverWorker = -1; //  自动计算
+	private int workerThreads = 20; // 默认 20 和数据库连接池一样
 
 	// 支持ssl
 	private boolean sslOn = false;
 	private String certFilePath;
 	private String privateKeyPath;
 	private String privateKeyPassword;
+
+	public int getServerSelect() {
+		return serverSelect;
+	}
+
+	public void setServerSelect(int serverSelect) {
+		this.serverSelect = serverSelect;
+	}
+
+	public int getServerWorker() {
+		return serverWorker;
+	}
+
+	public void setServerWorker(int serverWorker) {
+		this.serverWorker = serverWorker;
+	}
+
+	public int getWorkerThreads() {
+		return workerThreads;
+	}
+
+	public void setWorkerThreads(int workerThreads) {
+		this.workerThreads = workerThreads;
+	}
 
 	public String getName() {
 		return name;

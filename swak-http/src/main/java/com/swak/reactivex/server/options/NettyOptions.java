@@ -32,6 +32,8 @@ public class NettyOptions {
 	private final ServerBootstrap bootstrapTemplate;
 	private final String serverName;
 	private final TransportMode transportMode;
+	private final Integer serverSelect;
+	private final Integer serverWorker;
 	private final SslContext sslContext;
 	private final long sslHandshakeTimeoutMillis;
 	private final long sslCloseNotifyFlushTimeoutMillis;
@@ -45,6 +47,8 @@ public class NettyOptions {
 		this.bootstrapTemplate = builder.bootstrapTemplate;
 		this.serverName = builder.serverName;
 		this.transportMode = builder.transportMode;
+		this.serverSelect = builder.serverSelect;
+		this.serverWorker = builder.serverWorker;
 		this.sslContext = builder.sslContext;
 		this.sslHandshakeTimeoutMillis = builder.sslHandshakeTimeoutMillis;
 		this.sslCloseNotifyFlushTimeoutMillis = builder.sslCloseNotifyFlushTimeoutMillis;
@@ -64,7 +68,7 @@ public class NettyOptions {
 		}
 		
 		// event loop 
-		loopResources = LoopResources.create(this.transportMode(), this.serverName());
+		loopResources = LoopResources.create(this.transportMode(), this.serverSelect(), this.serverWorker(), this.serverName());
 	}
 
 	/**
@@ -95,6 +99,14 @@ public class NettyOptions {
 	
 	public TransportMode transportMode() {
 		return transportMode;
+	}
+	
+	public Integer serverSelect() {
+		return serverSelect;
+	}
+
+	public Integer serverWorker() {
+		return serverWorker;
 	}
 
 	public SslContext sslContext() {
@@ -152,6 +164,8 @@ public class NettyOptions {
 		protected ServerBootstrap bootstrapTemplate;
 		private String serverName = "reactor";
 		private TransportMode transportMode = TransportMode.NIO;
+		private Integer serverSelect;
+		private Integer serverWorker;
 		private ChannelGroup channelGroup = null;
 		private SslContext sslContext = null;
 		private long sslHandshakeTimeoutMillis = 10000L;
@@ -231,6 +245,16 @@ public class NettyOptions {
 		 */
 		public final Builder transportMode(TransportMode transportMode) {
 			this.transportMode = transportMode;
+			return this;
+		}
+		
+		public final Builder serverSelect(Integer serverSelect) {
+			this.serverSelect = serverSelect;
+			return this;
+		}
+
+		public final Builder serverWorker(Integer serverWorker) {
+			this.serverWorker = serverWorker;
 			return this;
 		}
 

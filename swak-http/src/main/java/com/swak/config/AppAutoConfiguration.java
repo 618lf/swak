@@ -256,20 +256,6 @@ public class AppAutoConfiguration {
 	}
 	
 	/**
-	 * HttpClient 服务配置
-	 * @author lifeng
-	 */
-	@Configuration
-	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 200)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 200)
-	@ConditionalOnMissingBean(HttpClientConfigurationSupport.class)
-	@EnableConfigurationProperties(HttpClientProperties.class)
-	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableHttpClient", matchIfMissing = true)
-	@Import(HttpClientConfigurationSupport.class)
-	public static class HttpClientAutoConfiguration {
-	}
-	
-	/**
 	 * 基础组件
 	 * @author lifeng
 	 */
@@ -337,6 +323,33 @@ public class AppAutoConfiguration {
 		public DisposeBean disposeBean() {
 			return new DisposeBean();
 		}
+	}
+	
+	/**
+	 * Worker Executor 配置
+	 * @author lifeng
+	 */
+	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 150)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 150)
+	@ConditionalOnMissingBean(ExecutorConfigurationSupport.class)
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableWorkers", matchIfMissing = true)
+	@Import(ExecutorConfigurationSupport.class)
+	public static class ExecutorAutoConfiguration {
+	}
+	
+	/**
+	 * HttpClient 服务配置
+	 * @author lifeng
+	 */
+	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 200)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 200)
+	@ConditionalOnMissingBean(HttpClientConfigurationSupport.class)
+	@EnableConfigurationProperties(HttpClientProperties.class)
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableHttpClient", matchIfMissing = true)
+	@Import(HttpClientConfigurationSupport.class)
+	public static class HttpClientAutoConfiguration {
 	}
 
 	/**

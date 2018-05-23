@@ -94,6 +94,8 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 				}
 				options.serverName(properties.getName());
 				options.transportMode(properties.getMode());
+				options.serverSelect(properties.getServerSelect());
+				options.serverWorker(properties.getServerWorker());
 				options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, properties.getConnectTimeout());
 				options.childOption(ChannelOption.SO_KEEPALIVE, properties.isSoKeepAlive());
 				options.childOption(ChannelOption.TCP_NODELAY, properties.isTcpNoDelay());

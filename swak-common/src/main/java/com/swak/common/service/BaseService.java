@@ -1,15 +1,21 @@
 package com.swak.common.service;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.common.entity.IdEntity;
+import com.swak.common.executor.Workers;
 import com.swak.common.persistence.BaseDao;
 import com.swak.common.persistence.Page;
 import com.swak.common.persistence.PageParameters;
 import com.swak.common.persistence.QueryCondition;
+import com.swak.common.persistence.incrementer.IdGen;
 
 /**
  * @author TMT
@@ -17,7 +23,7 @@ import com.swak.common.persistence.QueryCondition;
  * 目的是不让子类外部直接传入sql就可以查询，应在子类内部实现一个sql的方法，在方法中
  * 调用基础的方式来查询数据
  */
-public abstract class BaseService<T, PK> implements BaseServiceFacade<T, PK> {
+public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializable> implements BaseServiceFacade<T, PK> {
 	
 	protected static Logger logger = LoggerFactory.getLogger(BaseService.class);
     
@@ -27,20 +33,21 @@ public abstract class BaseService<T, PK> implements BaseServiceFacade<T, PK> {
     protected abstract BaseDao<T, PK> getBaseDao();
     
     /**
+     * 异步执行指定的代码
+     * @param supplier
+     * @return
+     */
+    protected <U> CompletableFuture<U> execute(Supplier<U> supplier) {
+    	return CompletableFuture.supplyAsync(supplier, Workers.executor());
+    }
+    
+    /**
      * 获取单个值
      * @param id
      * @return
      */
-    public T get(final PK id) {
-        return getBaseDao().get(id);
-    }
-    
-    /**
-     * 获取所有值
-     * @return
-     */
-    public List<T> getAll() {
-        return getBaseDao().getAll();
+    public CompletableFuture<T> get(final PK id) {
+    	return execute(() -> getBaseDao().get(id));
     }
     
     /**
@@ -48,8 +55,8 @@ public abstract class BaseService<T, PK> implements BaseServiceFacade<T, PK> {
      * @param qc
      * @return
      */
-    public List<T> queryByCondition(QueryCondition qc){
-    	return getBaseDao().queryByCondition(qc);
+    public CompletableFuture<List<T>> queryByCondition(QueryCondition qc){
+    	return execute(() -> getBaseDao().queryByCondition(qc));
     }
     
     /**
@@ -58,8 +65,8 @@ public abstract class BaseService<T, PK> implements BaseServiceFacade<T, PK> {
      * @param param
      * @return
      */
-    public Page queryForPage(QueryCondition qc, PageParameters param) {
-    	return this.getBaseDao().queryForPage(qc, param);
+    public CompletableFuture<Page> queryForPage(QueryCondition qc, PageParameters param) {
+    	return execute(() -> getBaseDao().queryForPage(qc, param));
     }
     
     /**
@@ -68,8 +75,8 @@ public abstract class BaseService<T, PK> implements BaseServiceFacade<T, PK> {
      * @param param
      * @return
      */
-    public Integer countByCondition(QueryCondition qc){
-   		return this.getBaseDao().countByCondition(qc);
+    public CompletableFuture<Integer> countByCondition(QueryCondition qc){
+   		return execute(() -> getBaseDao().countByCondition(qc));
    	}
     
     /**
@@ -78,8 +85,8 @@ public abstract class BaseService<T, PK> implements BaseServiceFacade<T, PK> {
      * @param param
      * @return
      */
-    public List<T> queryForLimitList(QueryCondition qc, int size){
-		return this.getBaseDao().queryForLimitList(qc, size);
+    public CompletableFuture<List<T>> queryForLimitList(QueryCondition qc, int size){
+		return execute(() -> getBaseDao().queryForLimitList(qc, size));
 	}
     
     /**
@@ -87,16 +94,44 @@ public abstract class BaseService<T, PK> implements BaseServiceFacade<T, PK> {
      * @param id
      * @return
      */
-    public boolean exists(PK id) {
-    	return this.getBaseDao().exists(id);
+    public CompletableFuture<Boolean> exists(PK id) {
+    	return execute(() -> getBaseDao().exists(id));
     }
     
     /**
+     * 执行保存
+     * @param entity
+     * @return
+     */
+    protected CompletableFuture<PK> doSave(T entity) {
+    	return execute(() -> {
+    		if (IdGen.isInvalidId(entity.getId())) {
+    			this.insert(entity);
+    		}else {
+    			this.update(entity);
+    		}
+    		return entity.getId();
+    	});
+    }
+    
+    /**
+     * 执行删除
+     * @param entity
+     * @return
+     */
+    protected CompletableFuture<Void> doDelete(List<T> entities) {
+    	return execute(() -> {
+    		this.batchDelete(entities);
+    		return null;
+    	});
+    }
+    
+	/**
      * 插入数据
      * @param entity
      * @return
      */
-    protected PK insert(final T entity) {
+    protected PK insert(T entity) {
         return getBaseDao().insert(entity);
     }
     
@@ -105,7 +140,7 @@ public abstract class BaseService<T, PK> implements BaseServiceFacade<T, PK> {
      * @param entity
      * @return
      */
-    protected int update(final T entity) {
+    protected int update(T entity) {
         return getBaseDao().update(entity);
     }
     
@@ -114,7 +149,7 @@ public abstract class BaseService<T, PK> implements BaseServiceFacade<T, PK> {
      * @param entity
      * @return
      */
-    protected int updateVersion(final T entity){
+    protected int updateVersion(T entity){
 		this.getBaseDao().compareVersion(entity);
 		return getBaseDao().update(entity);
     }
@@ -124,7 +159,7 @@ public abstract class BaseService<T, PK> implements BaseServiceFacade<T, PK> {
      * @param entity
      * @return
      */
-    protected int delete(final T entity) {
+    protected int delete(T entity) {
         return getBaseDao().delete(entity);
     }
     
@@ -170,11 +205,8 @@ public abstract class BaseService<T, PK> implements BaseServiceFacade<T, PK> {
      * @return
      */
     protected int updateVersion(String statementName, final T entity) {
-    	synchronized (this) {
-    		//会抛出异常
-    		getBaseDao().compareVersion(entity);
-    		return getBaseDao().update(statementName, entity);
-		}
+		getBaseDao().compareVersion(entity);
+		return getBaseDao().update(statementName, entity);
     }
     
     /**
