@@ -103,14 +103,14 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param entity
      * @return
      */
-    protected CompletableFuture<PK> doSave(T entity) {
+    protected CompletableFuture<T> doSave(T entity) {
     	return execute(() -> {
     		if (IdGen.isInvalidId(entity.getId())) {
     			this.insert(entity);
     		}else {
     			this.update(entity);
     		}
-    		return entity.getId();
+    		return entity;
     	});
     }
     

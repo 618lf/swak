@@ -48,7 +48,7 @@ public class ShopService extends BaseService<Shop, Long>{
 	 */
 	@Override
 	@Transactional
-	public CompletableFuture<Long> save(Shop entity) {
+	public CompletableFuture<Shop> save(Shop entity) {
 		return this.doSave(entity);
 	}
 

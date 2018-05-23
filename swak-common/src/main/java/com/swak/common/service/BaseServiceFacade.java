@@ -66,7 +66,7 @@ public interface BaseServiceFacade<T, PK>{
      * @param t
      * @return
      */
-    public CompletableFuture<PK> save(T entity);
+    public CompletableFuture<T> save(T entity);
     
     /**
      * 保存数据
