@@ -18,6 +18,7 @@ public class TestMain {
 		StatefulRedisConnection<byte[], byte[]> connection = client.connect(new ByteArrayCodec());
 		String key = "test_script";
 		connection.sync().set(SafeEncoder.encode(key), SafeEncoder.encode("123"));
+		
 		connection.reactive().get(SafeEncoder.encode(key)).subscribe((bs)->{
 			System.out.println(SafeEncoder.encode(bs));
 		});

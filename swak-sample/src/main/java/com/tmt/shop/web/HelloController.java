@@ -2,6 +2,8 @@ package com.tmt.shop.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.swak.common.cache.Cache;
+import com.swak.common.cache.CacheManager;
 import com.swak.kotlin.MonosKt;
 import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.RestController;
@@ -22,6 +24,9 @@ public class HelloController {
 	@Autowired
 	private ShopService shopService;
 	
+	@Autowired
+	private CacheManager cacheManager;
+	
 	// 模拟异步api的调用
 	public static void async_task(MonoSink<String> sink) {
 		Thread nThread = new Thread() {
@@ -29,7 +34,7 @@ public class HelloController {
 			public void run() {
 				try {
 					System.out.println(Thread.currentThread().getName());
-					Thread.sleep(200000L);
+					Thread.sleep(30000L);
 					sink.success("123");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -39,6 +44,29 @@ public class HelloController {
 		nThread.setName("我是用来阻塞的");
 		nThread.setDaemon(true);
 		nThread.start();
+	}
+	
+	/**
+	 * from async apis
+	 * @return
+	 */
+	@GetMapping("/say/cache_put")
+	public void sayPut() {
+		Cache<Object> cache = cacheManager.getCache("sys");
+		cache.putObject("shop-1", new Shop());
+		cache.putObject("shop-2", "shop");
+	}
+	
+	/**
+	 * from async apis
+	 * @return
+	 */
+	@GetMapping("/say/cache_get")
+	public void sayCache() {
+		Cache<String> cache = cacheManager.getCache("sys");
+		System.out.println(cache.getObject("shop-1"));
+		Cache<Shop> cache2 = cacheManager.getCache("sys");
+		System.out.println(cache2.getObject("shop-2"));
 	}
 	
 	/**
