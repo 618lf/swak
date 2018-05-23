@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.swak.common.cache.Cache;
 import com.swak.common.cache.CacheManager;
+import com.swak.common.entity.Result;
 import com.swak.kotlin.MonosKt;
 import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.RestController;
@@ -150,6 +151,16 @@ public class HelloController {
 		return Mono.fromSupplier(() -> {
 			return shopService.say();
 		});
+	}
+	
+	/**
+	 * 返回 mono 对象
+	 * @return
+	 */
+	@GetMapping("/say/future")
+	public Mono<Object> sayFuture(String name) {
+		Shop shop = new Shop(); shop.setName(name);
+		return Mono.fromFuture(shopService.save(shop)).map(id -> Result.success(id));
 	}
 
 	/**

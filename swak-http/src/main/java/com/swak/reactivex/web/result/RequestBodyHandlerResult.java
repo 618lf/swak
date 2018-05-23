@@ -1,6 +1,7 @@
 package com.swak.reactivex.web.result;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.reactivestreams.Publisher;
 
@@ -36,20 +37,21 @@ public class RequestBodyHandlerResult implements HandlerResultHandler {
 	 */
 	@Override
 	public Mono<Void> handle(HttpServerRequest request, HttpServerResponse response, HandlerResult result) {
-		return transformMono(result).flatMap(t ->{
+		return transformMono(result.getReturnValue()).flatMap(t ->{
 			handleResult(response, result.getReturnValueType(), t);
 			return Mono.empty();
 		});
 	}
 	
-	private Mono<?> transformMono(HandlerResult result) {
-		Object _result = result.getReturnValue();
-		if (_result != null && _result instanceof Mono) {
-			return (Mono<?>) _result;
-		} else if(_result != null && _result instanceof Publisher) {
-			return Mono.from((Publisher<?>)_result);
-		} else if(_result != null) {
-			return Mono.just(_result);
+	private Mono<?> transformMono(Object result) {
+		if (result != null && result instanceof Mono) {
+			return (Mono<?>) result;
+		} else if(result != null && result instanceof Publisher) {
+			return Mono.from((Publisher<?>)result);
+		} else if(result != null && result instanceof CompletableFuture) {
+			return Mono.fromFuture((CompletableFuture<?>)result);
+		} else if(result != null) {
+			return Mono.just(result);
 		}
 		return Mono.empty();
 	}
