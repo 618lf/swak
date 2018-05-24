@@ -1,7 +1,6 @@
 package com.swak.common.http.reactor;
 
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
 
 import org.asynchttpclient.AsyncHandler;
 import org.asynchttpclient.AsyncHttpClient;
@@ -35,10 +34,10 @@ public class DefaultReactorHttpClient implements ReactorHttpClient {
 	 * -- 上层不会取消, 做一个简单的监控
 	 */
 	@Override
-	public <T> Mono<T> prepare(Request request, Supplier<? extends AsyncHandler<T>> handlerSupplier) {
+	public <T> Mono<T> prepare(Request request, AsyncHandler<T> handler) {
 		return Mono.create(sink -> {
 			DisposableMonoSink<T> sinkProxy = new DisposableMonoSink<T>(sink);
-			final AsyncHandler<?> bridge = createBridge(sinkProxy, handlerSupplier.get());
+			final AsyncHandler<?> bridge = createBridge(sinkProxy, handler);
 			final Future<?> responseFuture = httpClient.executeRequest(request, bridge);
 			Disposable disposable = new FutureDisposable(responseFuture, true);
 			sinkProxy.onDispose(disposable);

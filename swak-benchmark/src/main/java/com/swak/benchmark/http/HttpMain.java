@@ -69,7 +69,7 @@ public class HttpMain {
 	public void mono_get(BenchmarkState state) throws InterruptedException {
 		CountDownLatch latch = new CountDownLatch(1);
 		Request request = new RequestBuilder().setUrl("http://www.example.com/").build();
-		ReactorHttpClient.create(HttpClients.client()).prepare(request, AsyncCompletionHandlerBase::new).subscribe((t)->{
+		ReactorHttpClient.create(HttpClients.client()).prepare(request, new AsyncCompletionHandlerBase()).subscribe((t)->{
 			latch.countDown();
 	    });
 		latch.await();

@@ -1,7 +1,5 @@
 package com.swak.common.http.reactor;
 
-import java.util.function.Supplier;
-
 import org.asynchttpclient.AsyncHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Request;
@@ -43,5 +41,5 @@ public interface ReactorHttpClient {
 	 * @throws NullPointerException
 	 *             if at least one of the parameters is {@code null}
 	 */
-	<T> Mono<T> prepare(Request request, Supplier<? extends AsyncHandler<T>> handlerSupplier);
+	<T> Mono<T> prepare(Request request, AsyncHandler<T> handler);
 }
