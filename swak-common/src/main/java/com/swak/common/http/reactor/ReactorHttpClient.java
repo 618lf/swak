@@ -20,7 +20,7 @@ public interface ReactorHttpClient {
 	 * @param httpClient
 	 * @return
 	 */
-	default ReactorHttpClient create(AsyncHttpClient httpClient) {
+	public static ReactorHttpClient create(AsyncHttpClient httpClient) {
 		return new DefaultReactorHttpClient(httpClient);
 	}
 	

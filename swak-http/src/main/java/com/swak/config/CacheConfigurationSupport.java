@@ -70,9 +70,9 @@ public class CacheConfigurationSupport {
 	 * @return
 	 */
 	@Bean
-	public RedisConnectionPoolFactory cachePoolFactory(CacheProperties cacheProperties, RedisClient client) {
+	public RedisConnectionPoolFactory cachePoolFactory(RedisClient client) {
 		RedisClientDecorator decorator = new RedisClientDecorator(client);
-		RedisConnectionPoolFactory cachePoolFactory = new RedisConnectionPoolFactory(decorator, cacheProperties);
+		RedisConnectionPoolFactory cachePoolFactory = new RedisConnectionPoolFactory(decorator);
 		RedisUtils.setRedisConnectionFactory(cachePoolFactory);
 		return cachePoolFactory;
 	}

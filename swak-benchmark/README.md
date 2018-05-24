@@ -90,3 +90,21 @@ Database.mybatis_insert_InnoBDB                 thrpt   10   1755.026 ±   450.6
 Database.mybatis_insert_InnoBDB_no_primary_key  thrpt   10   1674.278 ±   342.738  ops/s
 Database.mybatis_insert_MYISAM                  thrpt   10  28172.040 ±  3760.703  ops/s
 Database.mybatis_query                          thrpt   10  38353.745 ±  6000.068  ops/s
+
+# redis
+结论： 异步性能应该很高，因为使用了CountDownLatch 来处理是否成功所以会有性能损耗
+4 threads 1 connects
+Benchmark                Mode  Cnt      Score       Error  Units
+RedisMain.async_get     thrpt   10  90295.071 ± 22201.500  ops/s
+RedisMain.async_set     thrpt   10  52479.316 ± 20335.167  ops/s
+RedisMain.reactive_get  thrpt   10  78443.056 ± 14324.918  ops/s
+RedisMain.reactive_set  thrpt   10  80375.268 ± 14725.299  ops/s
+RedisMain.sync_get      thrpt   10  61846.928 ± 22990.440  ops/s
+RedisMain.sync_set      thrpt   10  85478.258 ± 19106.547  ops/s
+
+# http
+结论： 与网络关系比较大
+Benchmark             Mode  Cnt      Score       Error  Units
+HttpMain.common_get  thrpt   10  21900.804 ± 18575.729  ops/s
+HttpMain.future_get  thrpt   10  24357.787 ± 12154.162  ops/s
+HttpMain.mono_get    thrpt   10  27053.433 ± 10930.513  ops/s

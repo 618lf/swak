@@ -3,8 +3,6 @@ package com.swak.common.cache.redis.factory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.swak.common.cache.CacheProperties;
-
 import io.lettuce.core.api.StatefulConnection;
 
 /**
@@ -15,13 +13,10 @@ import io.lettuce.core.api.StatefulConnection;
 public class RedisConnectionPoolFactory implements RedisConnectionFactory<byte[], byte[]> {
 
 	private final RedisClientDecorator client;
-	@SuppressWarnings("unused")
-	private final CacheProperties cacheProperties;
 	private final Map<ConnectType, StatefulConnection<byte[], byte[]>> pools;
 
-	public RedisConnectionPoolFactory(RedisClientDecorator client, CacheProperties properties) {
+	public RedisConnectionPoolFactory(RedisClientDecorator client) {
 		this.client = client;
-		this.cacheProperties = properties;
 		pools = new ConcurrentHashMap<>(3);
 	}
 

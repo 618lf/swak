@@ -8,7 +8,9 @@ import com.swak.common.cache.SafeEncoder;
 import com.swak.common.cache.redis.factory.RedisConnectionFactory;
 
 import io.lettuce.core.ScriptOutputType;
-import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.async.RedisAsyncCommands;
+import io.lettuce.core.api.reactive.RedisReactiveCommands;
+import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.pubsub.RedisPubSubListener;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 
@@ -19,22 +21,22 @@ import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
  */
 public class RedisUtils {
 
-	/**
-	 * 工厂
-	 */
 	private static RedisConnectionFactory<byte[], byte[]> factory = null;
-	
-	/**
-	 * 设置工厂
-	 * @param _factory
-	 */
-	public static void setRedisConnectionFactory(RedisConnectionFactory<byte[], byte[]> _factory) {
-		factory = _factory;
+	public static void setRedisConnectionFactory(RedisConnectionFactory<byte[], byte[]> factory) {
+		RedisUtils.factory = factory;
 	}
 	
-	// --------------- 基本操作相关--------
-	public static <T> T execute(Function<StatefulRedisConnection<byte[], byte[]>, T> fuc) {
-		return fuc.apply(factory.getStandardConnection());
+	// ---------------- 同步 ---------
+	public static <T> T sync(Function<RedisCommands<byte[], byte[]>, T> fuc) {
+		return fuc.apply(factory.getStandardConnection().sync());
+	}
+	// ---------------- 异步 ------------
+	public static <T> T async(Function<RedisAsyncCommands<byte[], byte[]>, T> fuc) {
+		return fuc.apply(factory.getStandardConnection().async());
+	}
+	// ---------------- 响应式 ------------
+	public static <T> T reactive(Function<RedisReactiveCommands<byte[], byte[]>, T> fuc) {
+		return fuc.apply(factory.getStandardConnection().reactive());
 	}
 
 	/**
@@ -43,7 +45,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static long ttl(String key) {
-		return execute(connect -> connect.sync().ttl(SafeEncoder.encode(key)));
+		return sync(connect -> connect.ttl(SafeEncoder.encode(key)));
 	}
 	
 	/**
@@ -52,7 +54,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static byte[] get(String key) {
-		return execute(connect -> connect.sync().get(SafeEncoder.encode(key)));
+		return sync(connect -> connect.get(SafeEncoder.encode(key)));
 	}
 	
 	/**
@@ -61,7 +63,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static void set(String key, byte[] value) {
-		execute(connect -> connect.async().set(SafeEncoder.encode(key), value));
+		sync(connect -> connect.set(SafeEncoder.encode(key), value));
 	}
 	
 	/**
@@ -70,10 +72,10 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static void set(String key, byte[] value, int expire) {
-		execute(connect -> {
+		sync(connect -> {
 			byte[] _key = SafeEncoder.encode(key);
-			connect.async().set(_key, value);
-			connect.async().expire(_key, expire);
+			connect.set(_key, value);
+			connect.expire(_key, expire);
 			return null;
 		});
 	}
@@ -84,7 +86,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static long del(String ... keys) {
-		return execute(connect -> connect.sync().del(SafeEncoder.encodeMany(keys)));
+		return sync(connect -> connect.del(SafeEncoder.encodeMany(keys)));
 	}
 	
 	/**
@@ -93,7 +95,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static boolean expire(String key, int expire) {
-		return execute(connect -> connect.sync().expire(SafeEncoder.encode(key), expire));
+		return sync(connect -> connect.expire(SafeEncoder.encode(key), expire));
 	}
 	
 	/**
@@ -102,7 +104,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static boolean exists(String ... key) {
-		return execute(connect -> connect.sync().exists(SafeEncoder.encodeMany(key)) > 0);
+		return sync(connect -> connect.exists(SafeEncoder.encodeMany(key)) > 0);
 	}
 	
 	/**
@@ -112,7 +114,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static long lPush(String key, byte[] ... value) {
-		return execute(connect -> connect.sync().lpush(SafeEncoder.encode(key), value));
+		return sync(connect -> connect.lpush(SafeEncoder.encode(key), value));
 	}
 	
 	/**
@@ -122,7 +124,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static byte[] lPop(String key) {
-		return execute(connect -> connect.sync().lpop(SafeEncoder.encode(key)));
+		return sync(connect -> connect.lpop(SafeEncoder.encode(key)));
 	}
 	
 	/**
@@ -132,7 +134,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static long lLen(String key) {
-		return execute(connect -> connect.sync().llen(SafeEncoder.encode(key)));
+		return sync(connect -> connect.llen(SafeEncoder.encode(key)));
 	}
 	
 	/**
@@ -142,7 +144,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static byte[] hGet(String key, String field) {
-		return execute(connect -> connect.sync().hget(SafeEncoder.encode(key), SafeEncoder.encode(field)));
+		return sync(connect -> connect.hget(SafeEncoder.encode(key), SafeEncoder.encode(field)));
 	}
 	
 	/**
@@ -152,7 +154,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static boolean hSet(String key, String field, byte[] value) {
-		return execute(connect -> connect.sync().hset(SafeEncoder.encode(key), SafeEncoder.encode(field), value));
+		return sync(connect -> connect.hset(SafeEncoder.encode(key), SafeEncoder.encode(field), value));
 	}
 	
 	/**
@@ -162,7 +164,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static long hDel(String key, String ... fields) {
-		return execute(connect -> connect.sync().hdel(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
+		return sync(connect -> connect.hdel(SafeEncoder.encode(key), SafeEncoder.encodeMany(fields)));
 	}
 	
 	/**
@@ -171,7 +173,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static Map<byte[], byte[]> hGetAll(String key) {
-		return execute(connect -> connect.sync().hgetall(SafeEncoder.encode(key))) ;
+		return sync(connect -> connect.hgetall(SafeEncoder.encode(key))) ;
 	}
 	
 	/**
@@ -181,7 +183,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static String hMSet(String key, Map<byte[], byte[]> map) {
-		return execute(connect -> connect.sync().hmset(SafeEncoder.encode(key), map));
+		return sync(connect -> connect.hmset(SafeEncoder.encode(key), map));
 	}
 	
 	/**
@@ -190,7 +192,7 @@ public class RedisUtils {
 	 * @return
 	 */
 	public static <T> T runScript(String script, byte[][] values) {
-		return execute(connect -> connect.sync().eval(script, ScriptOutputType.VALUE, values, values[0]));
+		return sync(connect -> connect.eval(script, ScriptOutputType.VALUE, values, values[0]));
 	}
 	
 	// --------------- 发布订阅 (需要是不同的链接) --------
