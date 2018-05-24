@@ -8,7 +8,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.swak.common.boot.Boot;
 import com.swak.common.cache.redis.RedisUtils;
+import com.swak.common.utils.IOUtils;
 import com.swak.common.utils.Ints;
 import com.swak.common.utils.JsonMapper;
 import com.swak.common.utils.Maps;

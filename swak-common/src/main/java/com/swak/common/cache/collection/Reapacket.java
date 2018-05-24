@@ -5,10 +5,9 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.IOUtils;
-
 import com.swak.common.cache.SafeEncoder;
 import com.swak.common.cache.redis.RedisUtils;
+import com.swak.common.utils.IOUtils;
 import com.swak.common.utils.JsonMapper;
 import com.swak.common.utils.Maps;
 

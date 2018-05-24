@@ -11,8 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
-
+import com.swak.common.utils.IOUtils;
 import com.swak.common.utils.StringUtils;
 import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.HttpServerRequest;
@@ -385,9 +384,15 @@ public abstract class HttpServerResponseOperation extends HttpServerRequestOpera
 	 * 只能执行一次
 	 */
 	protected void out() {
+		
 		// 只能执行一次
 		if (this.closed) {
 			return;
+		}
+		
+		// 通道已经关闭
+		if (!channel().isActive()) {
+			channel().close();
 		}
 		
 		HttpResponse _response = this.render();
