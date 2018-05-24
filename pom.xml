@@ -110,6 +110,11 @@
 				<artifactId>swak-actuator</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-test</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
 			<!-- spring boot -->
 			<dependency>

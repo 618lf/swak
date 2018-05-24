@@ -19,7 +19,6 @@ public interface DataSourceProvider {
 	default DataSourceProperties getProperties() {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUrl("jdbc:mysql://localhost:3306/shop?useUnicode=true&characterEncoding=utf-8");
-		properties.setMaxActive(200);
 		properties.setUsername("root");
 		properties.setPassword("rootadmin");
 		return properties;

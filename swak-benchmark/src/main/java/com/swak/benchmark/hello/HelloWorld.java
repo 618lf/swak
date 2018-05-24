@@ -42,8 +42,7 @@ public class HelloWorld {
     }
     
     @Benchmark
-    public void measureShared(BenchmarkState state) {
-        state.x++;
+    public void measureShared() {
     }
 
 	public static void main(String[] args) throws RunnerException {

@@ -13,6 +13,16 @@
   </select>
  
   <insert id="insert" parameterType="java.util.HashMap">
+   INSERT INTO SHOP (ID, NAME)
+   VALUES (#{ID}, #{NAME})
+  </insert>
+  
+  <insert id="insert2" parameterType="java.util.HashMap">
+   INSERT INTO SHOP_2 (ID, NAME)
+   VALUES (#{ID}, #{NAME})
+  </insert>
+  
+  <insert id="insert3" parameterType="java.util.HashMap">
    INSERT INTO SHOP_3 (ID, NAME)
    VALUES (#{ID}, #{NAME})
   </insert>

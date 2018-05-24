@@ -109,6 +109,36 @@ public class MybatisOps implements InsertOps, QueryOps {
 		param.put("NAME", "lifeng");
 		sqlSessionTemplate.insert("com.tmt.shop.dao.ShopDao.insert", param);
 	}
+	
+	/**
+	 * 事务表
+	 */
+	public void insert1() {
+		Map<String, Object> param = Maps.newHashMap();
+		param.put("ID", IdGen.id());
+		param.put("NAME", "lifeng");
+		sqlSessionTemplate.insert("com.tmt.shop.dao.ShopDao.insert", param);
+	}
+	
+	/**
+	 * 事务表 无主键
+	 */
+	public void insert2() {
+		Map<String, Object> param = Maps.newHashMap();
+		param.put("ID", IdGen.id());
+		param.put("NAME", "lifeng");
+		sqlSessionTemplate.insert("com.tmt.shop.dao.ShopDao.insert2", param);
+	}
+	
+	/**
+	 * 无事务表
+	 */
+	public void insert3() {
+		Map<String, Object> param = Maps.newHashMap();
+		param.put("ID", IdGen.id());
+		param.put("NAME", "lifeng");
+		sqlSessionTemplate.insert("com.tmt.shop.dao.ShopDao.insert3", param);
+	}
 
 	@Override
 	public void query() {

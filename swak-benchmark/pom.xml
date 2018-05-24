@@ -20,15 +20,9 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-actuator</artifactId>
 		</dependency>
-
-		<!-- 项目的特定配置 -->
 		<dependency>
-			<groupId>com.esotericsoftware</groupId>
-			<artifactId>kryo-shaded</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-test</artifactId>
 		</dependency>
 
 		<!-- 性能测试 -->
@@ -44,6 +38,9 @@
 			<version>1.20</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- 需要测试的组件 -->
+		
 	</dependencies>
 	<build>
 		<plugins>
