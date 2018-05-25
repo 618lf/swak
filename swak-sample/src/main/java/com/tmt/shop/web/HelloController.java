@@ -29,14 +29,14 @@ public class HelloController {
 	private CacheManager cacheManager;
 	
 	// 模拟异步api的调用
-	public static void async_task(MonoSink<String> sink) {
+	public static void async_task(MonoSink<Object> sink) {
 		Thread nThread = new Thread() {
 			@Override
 			public void run() {
 				try {
 					System.out.println(Thread.currentThread().getName());
 					Thread.sleep(10000L);
-					sink.success("123");
+					sink.success(new Shop());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -75,10 +75,10 @@ public class HelloController {
 	 * @return
 	 */
 	@GetMapping("/say/async_api")
-	public Mono<String> sayAsync_api() {
+	public Mono<Result> sayAsync_api() {
 		return Mono.create((sink) -> {
 			async_task(sink);
-		});
+		}).map(s -> Result.success(s));
 	}
 	
 	/**
@@ -158,9 +158,9 @@ public class HelloController {
 	 * @return
 	 */
 	@GetMapping("/say/future")
-	public Mono<Object> sayFuture(String name) {
+	public Mono<Result> sayFuture(String name) {
 		Shop shop = new Shop(); shop.setName(name);
-		return Mono.fromFuture(shopService.save(shop)).map(s -> Result.success(s));
+		return Mono.fromFuture(shopService.saveAndGet(shop)).map(s -> Result.success(s));
 	}
 
 	/**

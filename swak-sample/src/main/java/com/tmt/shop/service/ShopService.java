@@ -51,6 +51,16 @@ public class ShopService extends BaseService<Shop, Long>{
 	public CompletableFuture<Shop> save(Shop entity) {
 		return this.doSave(entity);
 	}
+	
+	/**
+	 * 保存数据
+	 */
+	@Transactional
+	public CompletableFuture<Shop> saveAndGet(Shop entity) {
+		return this.doSave(entity).thenApply((shop) -> {
+			return this.shopDao.get(shop.getId());
+		});
+	}
 
 	/**
 	 * 删除数据
