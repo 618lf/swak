@@ -238,4 +238,20 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 		}
 		return value;
 	}
+	
+	/**
+	 * 删除： utf-8 无法显示的字符(有问题)，直接将数据库的相关字段改为
+	 * NAME VARCHAR(100) CHARACTER SET UTF8MB4 COLLATE UTF8MB4_GENERAL_CI DEFAULT NULL COMMENT '昵称';
+	 * 貌似不能解决所有问题，很多地方需要改，还不如把不能插入的字符过滤掉
+	 * @param src
+	 * @param replace
+	 * @return
+	 */
+	public static String mb4Replace(String src, String replace) {
+		replace = replace==null?"":replace;
+		if(StringUtils.isNotBlank(src)) {
+			return src.replaceAll("[\\x{10000}-\\x{10FFFF}]", replace);
+		}
+		return src;
+	}
 }
