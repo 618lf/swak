@@ -17,6 +17,11 @@
 		<module>swak-actuator</module>
 		<module>swak-benchmark</module>
 		<module>swak-quasar</module>
+		<module>swak-core</module>
+		<module>swak-jdbc</module>
+		<module>swak-redis</module>
+		<module>swak-strater-http</module>
+		<module>swak-web</module>
 	</modules>
 	<properties>
 		<spring.version>5.0.5.RELEASE</spring.version>
@@ -113,6 +118,26 @@
 			<dependency>
 				<groupId>com.swak</groupId>
 				<artifactId>swak-test</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-jdbc</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-redis</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-starter-http</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
