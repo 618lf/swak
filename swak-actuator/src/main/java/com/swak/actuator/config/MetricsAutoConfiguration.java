@@ -12,6 +12,7 @@ import org.springframework.core.annotation.Order;
 import com.swak.actuator.config.metrics.MeterRegistryPostProcessor;
 import com.swak.actuator.config.metrics.MetricsProperties;
 import com.swak.actuator.config.metrics.PropertiesMeterFilter;
+import com.swak.common.meters.MeterCenter;
 
 import ch.qos.logback.classic.LoggerContext;
 import io.micrometer.core.annotation.Timed;
@@ -48,6 +49,11 @@ public class MetricsAutoConfiguration {
 		return new MeterRegistryPostProcessor(context);
 	}
 	
+	/**
+	 *  jvm 
+	 * @author lifeng
+	 *
+	 */
 	@Configuration
 	@ConditionalOnProperty(value = "spring.metrics.binders.jvm.enabled", matchIfMissing = true)
 	static class JvmMeterBindersConfiguration {
@@ -77,6 +83,10 @@ public class MetricsAutoConfiguration {
 		}
 	}
 	
+	/**
+	 * 程序资源
+	 * @author lifeng
+	 */
 	@Configuration
 	static class MeterBindersConfiguration {
 		
@@ -107,6 +117,21 @@ public class MetricsAutoConfiguration {
 		@ConditionalOnMissingBean
 		public FileDescriptorMetrics fileDescriptorMetrics() {
 			return new FileDescriptorMetrics();
+		}
+	}
+	
+	/**
+	 * 程序状态
+	 * @author lifeng
+	 */
+	@Configuration
+	@ConditionalOnProperty(value = "spring.metrics.binders.system.enabled", matchIfMissing = true)
+	static class SystemMeterBindersConfiguration {
+		
+		@Bean
+		@ConditionalOnMissingBean
+		public MeterCenter meterCenter() {
+			return new MeterCenter();
 		}
 	}
 }
