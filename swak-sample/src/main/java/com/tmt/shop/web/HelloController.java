@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.swak.cache.Cache;
 import com.swak.cache.CacheManager;
 import com.swak.entity.Result;
+import com.swak.executor.Workers;
 import com.swak.kotlin.MonosKt;
 import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.RestController;
@@ -13,7 +14,6 @@ import com.tmt.shop.entity.ShopXml;
 import com.tmt.shop.service.ShopService;
 
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoSink;
 
 /**
  * 测试的 demo
@@ -27,25 +27,6 @@ public class HelloController {
 	
 	@Autowired
 	private CacheManager cacheManager;
-	
-	// 模拟异步api的调用
-	public static void async_task(MonoSink<Object> sink) {
-		Thread nThread = new Thread() {
-			@Override
-			public void run() {
-				try {
-					System.out.println(Thread.currentThread().getName());
-					Thread.sleep(10000L);
-					sink.success(new Shop());
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		};
-		nThread.setName("我是用来阻塞的");
-		nThread.setDaemon(true);
-		nThread.start();
-	}
 	
 	/**
 	 * from async apis
@@ -76,8 +57,8 @@ public class HelloController {
 	 */
 	@GetMapping("/say/async_api")
 	public Mono<Result> sayAsync_api() {
-		return Mono.create((sink) -> {
-			async_task(sink);
+		return Workers.sink(() ->{
+			return "123";
 		}).map(s -> Result.success(s));
 	}
 	
@@ -166,6 +147,8 @@ public class HelloController {
 	/**
 	 * 协程 -- 只能用来处理 io 的问题
 	 * 如果仅仅是cpu 的事情，反而慢，所有只有一个场景可用，那就是 网络IO
+	 * 而且必须是异步IO，不知道是否会自动切协程，同步IO不会自动切协程
+	 * 但如果是异步IO，那协程仅仅将异步代码变为同步代码。
 	 * @param id
 	 * @return
 	 */
