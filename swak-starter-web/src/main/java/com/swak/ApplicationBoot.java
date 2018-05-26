@@ -24,6 +24,4 @@ import com.swak.config.AppAutoConfiguration;
 @Import({
 	AppAutoConfiguration.class
 })
-public @interface ApplicationBoot {
-
-}
+public @interface ApplicationBoot {}
