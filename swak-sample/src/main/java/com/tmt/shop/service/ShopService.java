@@ -66,6 +66,7 @@ public class ShopService extends BaseService<Shop, Long>{
 	 * 删除数据
 	 */
 	@Override
+	@Transactional
 	public CompletableFuture<Void> delete(List<Shop> entities) {
 		return this.doDelete(entities);
 	}
