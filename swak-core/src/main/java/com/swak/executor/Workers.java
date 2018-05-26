@@ -11,9 +11,14 @@ import org.springframework.util.Assert;
 import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Operators;
+import reactor.core.scheduler.Schedulers;
 
 /**
  * 通过线城池 executor来异步执行任务，提供不同的获取结果的方式
+ * 
+ * stream 、mono     延迟执行，只有最后终端操作时才会触发整个执行链
+ * future 、optional 立即执行
+ * 
  * @author lifeng
  */
 public class Workers {
@@ -146,5 +151,14 @@ public class Workers {
 		return sink(() -> {
 			return stream.findFirst().get();
 		}) ;
+	}
+	
+	/**
+	 * 切换线程
+	 * @param mono
+	 * @return
+	 */
+	public static <T> Mono<T> mono(Mono<T> mono) {
+		return mono.subscribeOn(Schedulers.fromExecutor(executor));
 	}
 }

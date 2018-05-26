@@ -1,5 +1,8 @@
 package com.tmt.shop.web;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.swak.cache.Cache;
@@ -142,6 +145,21 @@ public class HelloController {
 	public Mono<Result> sayFuture(String name) {
 		Shop shop = new Shop(); shop.setName(name);
 		return Mono.fromFuture(shopService.saveAndGet(shop)).map(s -> Result.success(s));
+	}
+	
+	/**
+	 * 返回 mono 对象
+	 * @return
+	 */
+	@GetMapping("/say/stream")
+	public Mono<Result> sayStream(String name) {
+		Stream<CompletableFuture<Shop>> optional = Stream.of(name).map(s -> {
+			Shop shop = new Shop(); shop.setName(name);
+			return shop;
+		}).map(s -> {
+			return shopService.saveAndGet(s);
+		});
+		return Workers.stream(optional).map(s -> Result.success(s));
 	}
 
 	/**
