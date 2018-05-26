@@ -137,23 +137,6 @@ public class WebModuleAutoConfiguration {
 	}
 
 	/**
-	 * session 支持
-	 * 
-	 * @author lifeng
-	 */
-	@Configuration
-	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 50)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 50)
-	@ConditionalOnMissingBean(SessionConfigurationSupport.class)
-	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSession", matchIfMissing = true)
-	@AutoConfigureAfter({ SecurityConfiguration.class})
-	public static class SessionAutoConfiguration extends SessionConfigurationSupport {
-		public SessionAutoConfiguration() {
-			APP_LOGGER.debug("Loading Session Manage");
-		}
-	}
-
-	/**
 	 * 服务器配置
 	 * 
 	 * @author lifeng
@@ -177,4 +160,17 @@ public class WebModuleAutoConfiguration {
 			return new ReactiveWebServerFactory(properties);
 		}
 	}
+	
+	/**
+	 * session 支持
+	 * 
+	 * @author lifeng
+	 */
+	@Configuration
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 150)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 150)
+	@ConditionalOnMissingBean(SessionConfigurationSupport.class)
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSession", matchIfMissing = true)
+	public static class SessionAutoConfiguration extends SessionConfigurationSupport {}
+
 }

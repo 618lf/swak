@@ -14,6 +14,18 @@
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>
+			<artifactId>swak-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-http</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
 			<artifactId>swak-kotlin</artifactId>
 		</dependency>
 		<dependency>
@@ -25,14 +37,12 @@
 		<dependency>
 			<groupId>com.esotericsoftware</groupId>
 			<artifactId>kryo-shaded</artifactId>
+			<version>${kryo.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.asynchttpclient</groupId>
-			<artifactId>async-http-client</artifactId>
+			<version>${HikariCP.version}</version>
 		</dependency>
 	</dependencies>
 </project>

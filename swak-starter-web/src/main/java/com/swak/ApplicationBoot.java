@@ -10,11 +10,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.swak.config.ActuatorAutoConfiguration;
 import com.swak.config.AppAutoConfiguration;
-import com.swak.config.CacheAutoConfiguration;
-import com.swak.config.DataBaseAutoConfiguration;
-import com.swak.config.WebAutoConfiguration;
 
 /**
  * 添加需要的配置类
@@ -26,11 +22,7 @@ import com.swak.config.WebAutoConfiguration;
 @Inherited
 @Configuration
 @Import({
-	DataBaseAutoConfiguration.class,
-	CacheAutoConfiguration.class,
-	WebAutoConfiguration.class,
-	AppAutoConfiguration.class,
-	ActuatorAutoConfiguration.class,
+	AppAutoConfiguration.class
 })
 public @interface ApplicationBoot {
 

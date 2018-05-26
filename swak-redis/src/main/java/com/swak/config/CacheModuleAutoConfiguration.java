@@ -27,10 +27,7 @@ public class CacheModuleAutoConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@ConditionalOnMissingBean(CacheConfigurationSupport.class)
 	@EnableConfigurationProperties(CacheProperties.class)
-	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableRedis", matchIfMissing = true)
-	public static class CacheAutoConfiguration extends CacheConfigurationSupport {
-		
-	}
+	public static class CacheAutoConfiguration extends CacheConfigurationSupport {}
 	
 	/**
 	 * Event bus
@@ -47,15 +44,4 @@ public class CacheModuleAutoConfiguration {
 			APP_LOGGER.debug("Loading Event bus");
 		}
 	}
-	
-	/**
-	 * 系统事件
-	 * @author lifeng
-	 */
-	@Configuration
-	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
-	@AutoConfigureAfter(EventBusAutoConfiguration.class)
-	@ConditionalOnMissingBean(SystemEventConfigurationSupport.class)
-	public static class SystemEventAutoConfiguration extends SystemEventConfigurationSupport {}
 }

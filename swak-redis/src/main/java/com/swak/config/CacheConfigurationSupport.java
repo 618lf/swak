@@ -112,7 +112,7 @@ public class CacheConfigurationSupport {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public RedisCacheManager redisCacheManager(RedisLocalCache localCache) {
+	public com.swak.cache.CacheManager redisCacheManager(RedisLocalCache localCache) {
 		CacheManagers.setCacheManager(new RedisCacheManager(localCache));
 		return CacheManagers.manager();
 	}

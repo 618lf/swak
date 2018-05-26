@@ -1,7 +1,5 @@
 package com.swak.cache;
 
-import com.swak.cache.redis.RedisCacheManager;
-
 /**
  * 简单的获取 CacheManager
  * @author lifeng
@@ -11,11 +9,11 @@ public class CacheManagers {
 	/**
 	 * 真实的缓存管理器
 	 */
-	private static RedisCacheManager cacheManager;
-	public static void setCacheManager(RedisCacheManager cacheManager) {
+	private static CacheManager cacheManager;
+	public static void setCacheManager(CacheManager cacheManager) {
 		CacheManagers.cacheManager = cacheManager;
 	}
-	public static RedisCacheManager manager() {
+	public static CacheManager manager() {
 		return cacheManager;
 	}
 	
