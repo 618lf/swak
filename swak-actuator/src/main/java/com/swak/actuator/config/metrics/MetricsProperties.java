@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
-import com.swak.common.Constants;
+import com.swak.Constants;
 
 @ConfigurationProperties(prefix = Constants.ACTUATOR_METRICS)
 public class MetricsProperties {

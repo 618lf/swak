@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
@@ -15,7 +16,6 @@ import org.springframework.util.StringUtils;
 import com.swak.actuator.config.MetricsAutoConfiguration;
 import com.swak.actuator.config.metrics.export.SimpleMetricsExportAutoConfiguration;
 import com.swak.actuator.metrics.jdbc.DataSourcePoolMetrics;
-import com.swak.config.DataBaseConfigurationSupport.DataSourceAutoConfiguration;
 
 import io.micrometer.core.instrument.MeterRegistry;
 

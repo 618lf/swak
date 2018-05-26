@@ -1,5 +1,7 @@
 package com.swak.cache;
 
+import org.apache.commons.codec.Charsets;
+
 import com.swak.exception.CacheException;
 
 public class SafeEncoder {
@@ -16,10 +18,10 @@ public class SafeEncoder {
 		if (str == null) {
 			throw new CacheException("value sent to redis cannot be null");
 		}
-		return str.getBytes(LettuceCharsets.UTF8);
+		return str.getBytes(Charsets.UTF_8);
 	}
 
 	public static String encode(final byte[] data) {
-		return data != null ? new String(data, LettuceCharsets.UTF8) : null;
+		return data != null ? new String(data, Charsets.UTF_8) : null;
 	}
 }

@@ -5,11 +5,11 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.actuator.session.SessionsEndpoint;
-import com.swak.config.AppAutoConfiguration.SessionAutoConfiguration;
 import com.swak.reactivex.Session;
 import com.swak.security.session.SessionRepository;
 

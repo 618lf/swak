@@ -19,8 +19,7 @@ import com.swak.cache.CacheProperties;
  * 
  * @author lifeng
  */
-@Configuration
-public class CacheModuleAutoConfiguration extends CacheConfigurationSupport {
+public class CacheModuleAutoConfiguration {
 
 	
 	@Configuration

@@ -4,14 +4,18 @@
 	<parent>
 		<groupId>com.swak</groupId>
 		<artifactId>swak</artifactId>
-		<version>0.0.5_final</version>
+		<version>0.0.6_final</version>
 	</parent>
 	<artifactId>swak-kotlin</artifactId>
 	<dependencies>
 		<!-- http -->
 		<dependency>
 			<groupId>com.swak</groupId>
-			<artifactId>swak-http</artifactId>
+			<artifactId>swak-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>

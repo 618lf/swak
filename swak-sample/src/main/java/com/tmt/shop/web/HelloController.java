@@ -2,9 +2,9 @@ package com.tmt.shop.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.swak.common.cache.Cache;
-import com.swak.common.cache.CacheManager;
-import com.swak.common.entity.Result;
+import com.swak.cache.Cache;
+import com.swak.cache.CacheManager;
+import com.swak.entity.Result;
 import com.swak.kotlin.MonosKt;
 import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.RestController;

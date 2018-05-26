@@ -2,7 +2,7 @@ package com.swak.actuator.config.trace;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.swak.common.Constants;
+import com.swak.Constants;
 
 /**
  * 配置 HttpTrace

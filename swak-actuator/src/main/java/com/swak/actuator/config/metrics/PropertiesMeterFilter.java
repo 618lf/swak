@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.springframework.util.Assert;
 
 import com.swak.actuator.config.metrics.MetricsProperties.Distribution;
-import com.swak.common.utils.StringUtils;
+import com.swak.utils.StringUtils;
 
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Id;

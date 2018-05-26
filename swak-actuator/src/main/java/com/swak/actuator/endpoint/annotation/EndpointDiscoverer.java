@@ -29,7 +29,7 @@ import com.swak.actuator.endpoint.Operation;
 import com.swak.actuator.endpoint.invoke.OperationMethod;
 import com.swak.actuator.endpoint.invoke.OperationParameterResoler;
 import com.swak.actuator.endpoint.invoke.ReflectiveOperationInvoker;
-import com.swak.common.utils.StringUtils;
+import com.swak.utils.StringUtils;
 
 /**
  * 获得 Endpoints

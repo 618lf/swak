@@ -7,10 +7,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.swak.Constants;
 import com.swak.actuator.trace.HttpTraceRepository;
 import com.swak.actuator.trace.HttpTraceWebFilter;
 import com.swak.actuator.trace.LoggerHttpTraceRepository;
-import com.swak.common.Constants;
 
 /**
  * 默认开启 Http Trace

@@ -12,7 +12,7 @@ import org.springframework.core.annotation.Order;
 import com.swak.actuator.config.metrics.MeterRegistryPostProcessor;
 import com.swak.actuator.config.metrics.MetricsProperties;
 import com.swak.actuator.config.metrics.PropertiesMeterFilter;
-import com.swak.common.meters.MeterCenter;
+import com.swak.meters.MeterCenter;
 
 import ch.qos.logback.classic.LoggerContext;
 import io.micrometer.core.annotation.Timed;

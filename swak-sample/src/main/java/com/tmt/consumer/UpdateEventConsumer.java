@@ -1,8 +1,8 @@
 package com.tmt.consumer;
 
-import com.swak.common.Constants;
-import com.swak.common.eventbus.Event;
-import com.swak.common.eventbus.EventConsumer;
+import com.swak.Constants;
+import com.swak.eventbus.Event;
+import com.swak.eventbus.EventConsumer;
 
 /**
  * 更新事件的消费者

@@ -3,7 +3,7 @@ package com.tmt;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.swak.Application;
-import com.swak.config.ApplicationBoot;
+import com.swak.ApplicationBoot;
 
 @ComponentScan
 @ApplicationBoot

@@ -2,7 +2,7 @@ package com.swak.actuator.web;
 
 import java.util.List;
 
-import com.swak.common.utils.Lists;
+import com.swak.utils.Lists;
 
 /**
  * handler 的 描述

@@ -4,13 +4,17 @@
 	<parent>
 		<groupId>com.swak</groupId>
 		<artifactId>swak</artifactId>
-		<version>0.0.5_final</version>
+		<version>0.0.6_final</version>
 	</parent>
 	<artifactId>swak-web</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-redis</artifactId>
 		</dependency>
 	</dependencies>
 </project>

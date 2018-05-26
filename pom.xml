@@ -3,25 +3,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.swak</groupId>
 	<artifactId>swak</artifactId>
-	<version>0.0.5_final</version>
+	<version>0.0.6_final</version>
 	<packaging>pom</packaging>
 	<modules>
-		<module>swak-http</module>
-		<module>swak-rpc</module>
-		<module>swak-test</module>
-		<module>swak-common</module>
-		<module>swak-vert</module>
-		<module>swak-webflux</module>
-		<module>swak-kotlin</module>
-		<module>swak-sample</module>
-		<module>swak-actuator</module>
-		<module>swak-benchmark</module>
-		<module>swak-quasar</module>
 		<module>swak-core</module>
+		<module>swak-web</module>
+		<module>swak-kotlin</module>
 		<module>swak-jdbc</module>
 		<module>swak-redis</module>
-		<module>swak-strater-http</module>
-		<module>swak-web</module>
+		<module>swak-http</module>
+		<module>swak-actuator</module>
+		<module>swak-sample</module>
+		<module>swak-starter-web</module>
 	</modules>
 	<properties>
 		<spring.version>5.0.5.RELEASE</spring.version>
@@ -92,17 +85,7 @@
 		<dependencies>
 			<dependency>
 				<groupId>com.swak</groupId>
-				<artifactId>swak-common</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.swak</groupId>
 				<artifactId>swak-http</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.swak</groupId>
-				<artifactId>swak-rpc</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -117,7 +100,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.swak</groupId>
-				<artifactId>swak-test</artifactId>
+				<artifactId>swak-web</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -137,7 +120,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.swak</groupId>
-				<artifactId>swak-starter-http</artifactId>
+				<artifactId>swak-starter-web</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 

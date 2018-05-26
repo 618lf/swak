@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 
-import com.swak.common.http.HttpClientProperties;
-import com.swak.common.http.HttpClients;
+import com.swak.http.HttpClientProperties;
+import com.swak.http.HttpClients;
 import com.swak.reactivex.server.HttpServerProperties;
 import com.swak.reactivex.server.TransportMode;
 

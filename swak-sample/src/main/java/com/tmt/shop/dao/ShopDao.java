@@ -2,7 +2,7 @@ package com.tmt.shop.dao;
 
 import org.springframework.stereotype.Repository;
 
-import com.swak.common.persistence.BaseDaoImpl;
+import com.swak.persistence.BaseDaoImpl;
 import com.tmt.shop.entity.Shop;
 
 @Repository

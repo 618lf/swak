@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
+import com.swak.Constants;
 import com.swak.actuator.endpoint.annotation.Selector;
-import com.swak.common.Constants;
-import com.swak.common.utils.Lists;
 import com.swak.reactivex.web.method.ParameterNameResolver;
+import com.swak.utils.Lists;
 
 public class OperationMethod {
 

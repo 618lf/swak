@@ -27,7 +27,7 @@ import org.springframework.util.ReflectionUtils;
 
 import com.swak.actuator.endpoint.annotation.Endpoint;
 import com.swak.actuator.endpoint.annotation.Operation;
-import com.swak.common.entity.Result;
+import com.swak.entity.Result;
 
 /**
  * Web {@link Endpoint} to expose heap dumps.

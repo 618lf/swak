@@ -7,11 +7,11 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.actuator.config.MetricsAutoConfiguration;
 import com.swak.actuator.config.metrics.export.SimpleMetricsExportAutoConfiguration;
-import com.swak.config.DataBaseConfigurationSupport.DataSourceAutoConfiguration;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.metrics.micrometer.MicrometerMetricsTrackerFactory;
 

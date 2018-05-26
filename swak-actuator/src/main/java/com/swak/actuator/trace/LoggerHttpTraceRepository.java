@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.swak.actuator.config.trace.HttpTraceProperties;
-import com.swak.common.utils.JsonMapper;
+import com.swak.utils.JsonMapper;
 
 /**
  * 基于日志的 Trace 存储

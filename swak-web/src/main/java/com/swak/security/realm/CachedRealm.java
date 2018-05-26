@@ -2,8 +2,8 @@ package com.swak.security.realm;
 
 import java.util.Set;
 
-import com.swak.common.cache.Cache;
-import com.swak.common.cache.CacheManager;
+import com.swak.cache.Cache;
+import com.swak.cache.CacheManager;
 import com.swak.reactivex.Principal;
 import com.swak.reactivex.Subject;
 import com.swak.security.context.AuthorizationInfo;

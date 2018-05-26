@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.swak.common.Constants;
+import com.swak.Constants;
 
 import io.micrometer.core.instrument.simple.CountingMode;
 import io.micrometer.core.instrument.simple.SimpleConfig;

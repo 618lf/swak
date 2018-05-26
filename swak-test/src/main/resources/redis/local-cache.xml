@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE xml>
-<ehcache updateCheck="false" name="ehcache">
-	<diskStore path="/home/lifeng/resource/cache"/>
-    <cache name="local" maxElementsInMemory="2000" timeToLiveSeconds="600" timeToIdleSeconds="0" eternal="false" overflowToDisk="true"></cache>
-</ehcache>

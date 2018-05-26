@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.swak.common.persistence.BaseDao;
-import com.swak.common.service.BaseService;
+import com.swak.persistence.BaseDao;
+import com.swak.service.BaseService;
 import com.tmt.shop.dao.ShopDao;
 import com.tmt.shop.entity.Shop;
 

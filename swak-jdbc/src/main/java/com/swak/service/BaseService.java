@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import com.swak.entity.IdEntity;
 import com.swak.executor.Workers;
+import com.swak.incrementer.IdGen;
 import com.swak.persistence.BaseDao;
 import com.swak.persistence.Page;
 import com.swak.persistence.PageParameters;
 import com.swak.persistence.QueryCondition;
-import com.swak.persistence.incrementer.IdGen;
 
 /**
  * @author TMT

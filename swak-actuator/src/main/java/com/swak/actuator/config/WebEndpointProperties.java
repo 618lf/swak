@@ -2,7 +2,7 @@ package com.swak.actuator.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.swak.common.Constants;
+import com.swak.Constants;
 
 @ConfigurationProperties(prefix = Constants.ACTUATOR_ENDPOINT_WEB)
 public class WebEndpointProperties {

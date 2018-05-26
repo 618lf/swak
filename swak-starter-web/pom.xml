@@ -6,33 +6,23 @@
 		<artifactId>swak</artifactId>
 		<version>0.0.6_final</version>
 	</parent>
-	<artifactId>swak-redis</artifactId>
+	<artifactId>swak-starter-web</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
-			<version>${ehcache.version}</version>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.lettuce</groupId>
-			<artifactId>lettuce-core</artifactId>
-			<version>${lettuce.version}</version>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-jdbc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.ruedigermoeller</groupId>
-			<artifactId>fst</artifactId>
-			<version>${fst.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.esotericsoftware</groupId>
-			<artifactId>kryo-shaded</artifactId>
-			<version>${kryo.version}</version>
-			<scope>provided</scope>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-redis</artifactId>
 		</dependency>
 	</dependencies>
 </project>
