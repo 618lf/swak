@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>swak-core</module>
-		<module>swak-web</module>
+		<module>swak-flux</module>
 		<module>swak-kotlin</module>
 		<module>swak-jdbc</module>
 		<module>swak-redis</module>
@@ -85,7 +85,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.swak</groupId>
-				<artifactId>swak-web</artifactId>
+				<artifactId>swak-flux</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

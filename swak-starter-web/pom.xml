@@ -14,7 +14,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>
-			<artifactId>swak-web</artifactId>
+			<artifactId>swak-flux</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>

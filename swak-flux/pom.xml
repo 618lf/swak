@@ -6,7 +6,7 @@
 		<artifactId>swak</artifactId>
 		<version>0.0.6_final</version>
 	</parent>
-	<artifactId>swak-web</artifactId>
+	<artifactId>swak-flux</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>com.swak</groupId>
