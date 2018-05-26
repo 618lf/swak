@@ -126,6 +126,42 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
     	});
     }
     
+    /**
+     * 提供直接得到数据的操作
+     * @param id
+     * @return
+     */
+    protected T selectOne(PK id) {
+    	return this.getBaseDao().get(id);
+    }
+    
+    /**
+     * 提供直接得到数据的操作
+     * @param id
+     * @return
+     */
+    protected List<T> selectList(QueryCondition qc) {
+    	return this.getBaseDao().queryByCondition(qc);
+    }
+    
+    /**
+     * 提供直接得到数据的操作
+     * @param id
+     * @return
+     */
+    protected List<T> selectList(QueryCondition qc, int size) {
+    	return this.getBaseDao().queryForLimitList(qc, size);
+    }
+    
+    /**
+     * 提供直接得到数据的操作
+     * @param id
+     * @return
+     */
+    protected Page selectPage(QueryCondition qc, PageParameters param) {
+    	return this.getBaseDao().queryForPage(qc, param);
+    }
+    
 	/**
      * 插入数据
      * @param entity

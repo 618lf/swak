@@ -1,5 +1,6 @@
 package com.tmt.shop.web;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -160,6 +161,18 @@ public class HelloController {
 			return shopService.saveAndGet(s);
 		});
 		return Workers.stream(optional).map(s -> Result.success(s));
+	}
+	
+	/**
+	 * 返回 mono 对象
+	 * @return
+	 */
+	@GetMapping("/say/optional")
+	public Mono<Result> sayOptional(String name) {
+		Optional<String> so = Optional.of(name).filter(s -> {
+			return s!=null;
+		});
+		return Mono.just(so.get()).map(s -> Result.success(s));
 	}
 
 	/**

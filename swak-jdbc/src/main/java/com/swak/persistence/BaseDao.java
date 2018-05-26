@@ -85,12 +85,6 @@ public interface BaseDao<T, PK> {
 	public boolean exists(PK id);
 
 	/**
-	 * 查询全部
-	 * @return
-	 */
-	public List<T> getAll();
-
-	/**
 	 * 条件查询
 	 * @return
 	 */

@@ -58,7 +58,7 @@ public class ShopService extends BaseService<Shop, Long>{
 	@Transactional
 	public CompletableFuture<Shop> saveAndGet(Shop entity) {
 		return this.doSave(entity).thenApply((shop) -> {
-			return this.shopDao.get(shop.getId());
+			return this.selectOne(shop.getId());
 		});
 	}
 

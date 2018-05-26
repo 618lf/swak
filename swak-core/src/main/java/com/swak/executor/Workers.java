@@ -36,6 +36,7 @@ import reactor.core.scheduler.Schedulers;
  * 
  * 重要性：
  * Mono、Optional、future 是可以重用的
+ * 意味着：可以多次获取结果，而不会重复计算
  * 
  * @author lifeng
  */
