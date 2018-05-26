@@ -2,7 +2,6 @@ package com.swak.config;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
 import com.swak.cache.redis.RedisLocalCache;
@@ -10,9 +9,8 @@ import com.swak.eventbus.EventBus;
 import com.swak.eventbus.EventBusBoot;
 import com.swak.eventbus.EventConsumer;
 import com.swak.eventbus.EventProducer;
+import com.swak.eventbus.RedisEventBus;
 import com.swak.eventbus.impl.RedisEventProducer;
-import com.swak.eventbus.system.SystemEventProducer;
-import com.swak.eventbus.system.SystemEventPublisher;
 
 /**
  * EventBus 自动配置
@@ -27,7 +25,7 @@ public class EventBusConfigurationSupport {
 	 */
 	@Bean
 	public EventBus eventBus(List<EventConsumer> consumers) {
-		EventBus eventBus = new EventBus();
+		RedisEventBus eventBus = new RedisEventBus();
 		consumers.stream().forEach(consumer -> eventBus.addConsumer(consumer));
 		return eventBus;
 	}
@@ -50,16 +48,5 @@ public class EventBusConfigurationSupport {
 		EventProducer producer = new RedisEventProducer();
 		localCache.setProducer(producer);
 		return producer;
-	}
-	
-	/**
-	 * 系统事件
-	 * @param eventProducer
-	 * @return
-	 */
-	@Bean
-	@ConditionalOnMissingBean(SystemEventPublisher.class)
-	public SystemEventPublisher systemEventPublisher(EventProducer eventProducer) {
-		return new SystemEventProducer(eventProducer);
 	}
 }

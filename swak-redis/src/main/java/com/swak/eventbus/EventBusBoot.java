@@ -12,7 +12,7 @@ import com.swak.cache.redis.RedisUtils;
 public class EventBusBoot extends AbstractBoot {
 
 	@Autowired
-	private EventBus eventBus;
+	private RedisEventBus eventBus;
 	
 	@Override
 	public String describe() {

@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -24,6 +25,8 @@ import org.springframework.core.annotation.Order;
 
 import com.swak.ApplicationProperties;
 import com.swak.Constants;
+import com.swak.eventbus.EventProducer;
+import com.swak.eventbus.system.SystemEventProducer;
 import com.swak.eventbus.system.SystemEventPublisher;
 import com.swak.executor.Workers;
 import com.swak.incrementer.IdGen;
@@ -95,8 +98,19 @@ public class AppAutoConfiguration {
 	@Configuration
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
-	@ConditionalOnMissingBean(SystemEventPublisher.class)
 	public static class SystemEventAutoConfiguration {
+		
+		/**
+		 * 系统事件
+		 * @param eventProducer
+		 * @return
+		 */
+		@Bean
+		@ConditionalOnBean(EventProducer.class)
+		@ConditionalOnMissingBean(SystemEventPublisher.class)
+		public SystemEventPublisher systemEventPublisher(EventProducer eventProducer) {
+			return new SystemEventProducer(eventProducer);
+		}
 		
 		/**
 		 * 如果没有这个启动一个空的实现
@@ -104,6 +118,7 @@ public class AppAutoConfiguration {
 		 * @return
 		 */
 		@Bean
+		@ConditionalOnMissingBean(SystemEventPublisher.class)
 		public SystemEventPublisher noSystemEventPublisher() {
 			return new SystemEventPublisher() {
 				@Override

@@ -11,12 +11,15 @@ public abstract class AbstractBoot implements Boot{
 	 */
 	@Override
 	public void start() {
-		new Thread(new Runnable() {
+		Thread task =  new Thread(new Runnable() {
 			@Override
 			public void run() {
 				AbstractBoot.this.init();
 			}
-		}).start();;
+		});
+		task.setName("Boot-Task for:" + this.describe());
+		task.setDaemon(true);
+		task.start();
 	}
 	
 	/**
