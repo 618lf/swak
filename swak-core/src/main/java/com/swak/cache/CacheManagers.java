@@ -18,12 +18,11 @@ public class CacheManagers {
 	}
 	
 	/**
-	 * 获得一个缓存
+	 * 获得一个缓存， 内部会有一个缓存来存储
 	 * @param key
 	 * @return
 	 */
 	public static <T> Cache<T> getCache(String key) {
-		Cache<T> cache = cacheManager.getCache(key);
-		return cache;
+		return cacheManager.getCache(key);
 	}
 }

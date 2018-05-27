@@ -159,7 +159,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 		return count != null && count >0;
 	}
 	
-	// -------------  提供的异步化支持 ------------ 
+	// -------------  提供的异步化支持 ------------
 	@Override
 	public AsyncCache<T> async() {
 		return new AsyncRedisCache<T>(this.name, this.timeToIdle);

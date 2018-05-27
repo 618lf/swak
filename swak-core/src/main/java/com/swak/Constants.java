@@ -39,6 +39,7 @@ public interface Constants {
 	String UPDATE_EVENT_TOPIC = "UPDATE_EVENT_TOPIC";
 	String SYSTEM_EVENT_TOPIC = "SYSTEM_EVENT_TOPIC";
 	String ACCESS_TRACE = "ACCESS_TRACE";
+	String LOCK_TOPIC = "LOCK_TOPIC";
 	
 	/**  事件类型 **/
 	int SIGN_IN = 1; // 登录
