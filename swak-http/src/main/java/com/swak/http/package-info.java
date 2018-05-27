@@ -1,9 +1,10 @@
 /**
- * 
- * 暂时使用 org.asynchttpclient 来做客户端
- * 
- * 感觉直接可以根据 netty 来写一个客户端
- * 
+ * 使用方式： 
+ * 只需一步： HttpClients.request().XXX.future()
+ * 多步操作：
+ * Request request = RequestBuilder.create().XXX.build(); 
+ * HttpClients.future(request, XXX);
  * @author lifeng
+ *
  */
 package com.swak.http;

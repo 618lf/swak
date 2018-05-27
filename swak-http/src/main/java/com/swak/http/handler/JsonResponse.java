@@ -1,7 +1,5 @@
 package com.swak.http.handler;
 
-import java.nio.charset.Charset;
-
 import org.asynchttpclient.Response;
 
 import com.swak.utils.JsonMapper;
@@ -29,32 +27,7 @@ public class JsonResponse<T> extends AbstractResponse<T>{
 	 * 对象
 	 * @return
 	 */
-	public static <T> JsonResponse<T> object(Class<T> clazz) {
+	public static <T> JsonResponse<T> create(Class<T> clazz) {
 		return new JsonResponse<T>().use(clazz);
-	}
-	
-	/**
-	 * gbk
-	 * @return
-	 */
-	public static <T> JsonResponse<T> gbk() {
-		return new JsonResponse<T>().use(Charset.forName("gbk"));
-	}
-	
-	/**
-	 * utf-8
-	 * @return
-	 */
-	public static <T> JsonResponse<T> utf8() {
-		return new JsonResponse<T>().use(Charset.forName("utf-8"));
-	}
-	
-	/**
-	 * 自定义编码
-	 * @param charset
-	 * @return
-	 */
-	public static <T> JsonResponse<T> charset(Charset charset) {
-		return new JsonResponse<T>().use(charset);
 	}
 }

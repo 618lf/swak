@@ -10,6 +10,7 @@ import com.swak.cache.Cache;
 import com.swak.cache.CacheManager;
 import com.swak.entity.Result;
 import com.swak.executor.Workers;
+import com.swak.http.builder.RequestBuilder;
 import com.swak.kotlin.MonosKt;
 import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.RestController;
@@ -173,6 +174,16 @@ public class HelloController {
 			return s!=null;
 		});
 		return Mono.just(so.get()).map(s -> Result.success(s));
+	}
+	
+	/**
+	 * 返回 mono 对象
+	 * @return
+	 */
+	@GetMapping("/say/http")
+	public Mono<Result> sayHttp(String name) {
+		return RequestBuilder.create().setUrl("https://www.2345.com/").text()
+				.reactive().map(s -> Result.success(s));
 	}
 
 	/**

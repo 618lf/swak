@@ -1,7 +1,5 @@
 package com.swak.http.handler;
 
-import java.nio.charset.Charset;
-
 import org.asynchttpclient.Response;
 
 import com.swak.utils.JaxbMapper;
@@ -30,32 +28,7 @@ public class XmlResponse<T> extends AbstractResponse<T>{
 	 * 对象
 	 * @return
 	 */
-	public static <T> XmlResponse<T> object(Class<T> clazz) {
+	public static <T> XmlResponse<T> create(Class<T> clazz) {
 		return new XmlResponse<T>().use(clazz);
-	}
-	
-	/**
-	 * gbk
-	 * @return
-	 */
-	public static <T> XmlResponse<T> gbk() {
-		return new XmlResponse<T>().use(Charset.forName("gbk"));
-	}
-	
-	/**
-	 * utf-8
-	 * @return
-	 */
-	public static <T> XmlResponse<T> utf8() {
-		return new XmlResponse<T>().use(Charset.forName("utf-8"));
-	}
-	
-	/**
-	 * 自定义编码
-	 * @param charset
-	 * @return
-	 */
-	public static <T> XmlResponse<T> charset(Charset charset) {
-		return new XmlResponse<T>().use(charset);
 	}
 }
