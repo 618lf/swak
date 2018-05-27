@@ -3,7 +3,7 @@ package com.swak.cache.collection;
 import com.swak.cache.Cons;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.NameableCache;
-import com.swak.cache.redis.RedisUtils;
+import com.swak.cache.redis.operations.SyncOperations;
 
 /**
  * 是一个大Map
@@ -38,7 +38,7 @@ public class MapCache<T> extends NameableCache implements CMap<String, T>{
 		if (this.isValid()) {
 			return this.ser.deserialize(this._hget(k));
 		}
-		return this.ser.deserialize(RedisUtils.hGet(this.getKeyName(null), k));
+		return this.ser.deserialize(SyncOperations.hGet(this.getKeyName(null), k));
 	}
 	
 	/**
@@ -49,7 +49,7 @@ public class MapCache<T> extends NameableCache implements CMap<String, T>{
 	protected byte[] _hget(String k) {
 		String script = Cons.MAP_GET_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(k), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-	    return RedisUtils.runScript(script, values);
+	    return SyncOperations.runScript(script, values);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class MapCache<T> extends NameableCache implements CMap<String, T>{
 		if (this.isValid()) {
 			this._hput(k, v);
 		} else {
-			RedisUtils.hSet(this.getKeyName(null), k, this.ser.serialize(v));
+			SyncOperations.hSet(this.getKeyName(null), k, this.ser.serialize(v));
 		}
 	}
 	
@@ -69,12 +69,12 @@ public class MapCache<T> extends NameableCache implements CMap<String, T>{
 	protected void _hput(String k, T v) {
 		String script = Cons.MAP_PUT_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(k), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		RedisUtils.runScript(script, values);
+		SyncOperations.runScript(script, values);
 	}
 
 	@Override
 	public void delete(String k) {
-		RedisUtils.hDel(this.getKeyName(null), k);
+		SyncOperations.hDel(this.getKeyName(null), k);
 	}
 	
 	/**

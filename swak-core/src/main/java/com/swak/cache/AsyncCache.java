@@ -1,11 +1,14 @@
 package com.swak.cache;
 
+import java.util.concurrent.CompletionStage;
+
 /**
- * 只提供最基本的缓存操作
+ * 异步 cache
  * @author lifeng
+ * @param <T>
  */
-public interface Cache<T> {
-	
+public interface AsyncCache<T> {
+
 	/**
 	 * 缓存的名称
 	 */
@@ -30,68 +33,52 @@ public interface Cache<T> {
 	 * @param key
 	 * @return
 	 */
-	T getObject(String key);
+	CompletionStage<T> getObject(String key);
 	
 	/**
 	 * 得到一个值
 	 * @param key
 	 * @return
 	 */
-	String getString(String key);
+	CompletionStage<String> getString(String key);
 	
 	/**
 	 * 删除一个
 	 * @param key
 	 */
-	Long delete(String key);
+	CompletionStage<Long> delete(String key);
 	
 	/**
 	 * 删除一系列值
 	 * @param keys
 	 * @return
 	 */
-	Long delete(String ... keys);
+	CompletionStage<Long> delete(String ... keys);
 	
 	/**
 	 * key 是否存在
 	 * @param key
 	 */
-	Boolean exists(String key);
+	CompletionStage<Long> exists(String key);
 	
 	/**
 	 * 添加key， 使用默认定义的时间
 	 * @param key
 	 * @param value
 	 */
-	String putObject(String key, T value);
+	CompletionStage<String> putObject(String key, T value);
 	
 	/**
 	 * 添加key， 使用默认定义的时间
 	 * @param key
 	 * @param value
 	 */
-	String putString(String key, String value);
+	CompletionStage<String> putString(String key, String value);
 	
 	/**
 	 * 生存时间
 	 * @param key
 	 * @return
 	 */
-	Long ttl(String key);
-	
-	/**
-	 * 转为异步
-	 * @return
-	 */
-	default AsyncCache<T> async() {
-		return null;
-	}
-	
-	/**
-	 * 转为响应式
-	 * @return
-	 */
-	default ReactiveCache<T> reactive() {
-		return null;
-	}
+	CompletionStage<Long> ttl(String key);
 }

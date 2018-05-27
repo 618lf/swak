@@ -1,11 +1,13 @@
 package com.swak.cache;
 
+import reactor.core.publisher.Mono;
+
 /**
- * 只提供最基本的缓存操作
+ * 响应式 cache
  * @author lifeng
  */
-public interface Cache<T> {
-	
+public interface ReactiveCache<T> {
+
 	/**
 	 * 缓存的名称
 	 */
@@ -30,68 +32,52 @@ public interface Cache<T> {
 	 * @param key
 	 * @return
 	 */
-	T getObject(String key);
+	Mono<T> getObject(String key);
 	
 	/**
 	 * 得到一个值
 	 * @param key
 	 * @return
 	 */
-	String getString(String key);
+	Mono<String> getString(String key);
 	
 	/**
 	 * 删除一个
 	 * @param key
 	 */
-	Long delete(String key);
+	Mono<Long> delete(String key);
 	
 	/**
 	 * 删除一系列值
 	 * @param keys
 	 * @return
 	 */
-	Long delete(String ... keys);
+	Mono<Long> delete(String ... keys);
 	
 	/**
 	 * key 是否存在
 	 * @param key
 	 */
-	Boolean exists(String key);
+	Mono<Long> exists(String key);
 	
 	/**
 	 * 添加key， 使用默认定义的时间
 	 * @param key
 	 * @param value
 	 */
-	String putObject(String key, T value);
+	Mono<String> putObject(String key, T value);
 	
 	/**
 	 * 添加key， 使用默认定义的时间
 	 * @param key
 	 * @param value
 	 */
-	String putString(String key, String value);
+	Mono<String> putString(String key, String value);
 	
 	/**
 	 * 生存时间
 	 * @param key
 	 * @return
 	 */
-	Long ttl(String key);
-	
-	/**
-	 * 转为异步
-	 * @return
-	 */
-	default AsyncCache<T> async() {
-		return null;
-	}
-	
-	/**
-	 * 转为响应式
-	 * @return
-	 */
-	default ReactiveCache<T> reactive() {
-		return null;
-	}
+	Mono<Long> ttl(String key);
 }

@@ -50,12 +50,12 @@ public class RedisCacheChannel<T> implements Cache<T> {
 	}
 
 	@Override
-	public boolean exists(String key) {
+	public Boolean exists(String key) {
 		return remote.exists(key);
 	}
 
 	@Override
-	public long ttl(String key) {
+	public Long ttl(String key) {
 		return remote.ttl(key);
 	}
 	
@@ -96,37 +96,38 @@ public class RedisCacheChannel<T> implements Cache<T> {
 	}
 
 	@Override
-	public void putObject(String key, T value) {
+	public String putObject(String key, T value) {
 		String localKey = this.getKeyName(key);
 		_sendEvictCmd(localKey);// 清除原有的一级缓存的内容
 		local.putObject(localKey, value);
-		remote.putObject(key, value);
+		return remote.putObject(key, value);
 	}
 	
 	@Override
-	public void putString(String key, String value) {
+	public String putString(String key, String value) {
 		String localKey = this.getKeyName(key);
 		_sendEvictCmd(localKey);// 清除原有的一级缓存的内容
 		local.putString(localKey, value);
-		remote.putString(key, value);
+		return remote.putString(key, value);
 	}
 
 	@Override
-	public void delete(String key) {
+	public Long delete(String key) {
 		String localKey = this.getKeyName(key);
-		remote.delete(key);
 		local.delete(localKey);
 		_sendEvictCmd(localKey);
+		return remote.delete(key);
 	}
 
 
 	@Override
-	public void delete(String ... keys) {
+	public Long delete(String ... keys) {
 		List<String> _keys = this._delete(keys);
 		local.delete(keys);
 		if (_keys != null && _keys.size() != 0) {
 			_sendEvictCmd(_keys);
 		}
+		return _keys != null ? (long)_keys.size() : 0;
 	}
 	
 	// 返回整理好的keys
@@ -136,7 +137,7 @@ public class RedisCacheChannel<T> implements Cache<T> {
 			for(String key: keys) {
 				_keys.add(this.getKeyName(key));
 			}
-			RedisUtils.del(_keys.toArray(new String[]{}));
+			remote.delete(_keys.toArray(new String[]{}));
 			return _keys;
 		}
 		return null;

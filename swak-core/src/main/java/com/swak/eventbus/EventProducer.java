@@ -1,5 +1,7 @@
 package com.swak.eventbus;
 
+import java.util.concurrent.CompletionStage;
+
 /**
  * 事件生产者
  * @author lifeng
@@ -11,12 +13,12 @@ public interface EventProducer {
 	 * @param channel
 	 * @param message
 	 */
-	void publish(String channel, byte[] message);
+	CompletionStage<Long> publish(String channel, byte[] message);
 	
 	/**
 	 * 发布消息
 	 * @param channel
 	 * @param obj
 	 */
-	void publish(String channel, Object obj);
+	CompletionStage<Long> publish(String channel, Object obj);
 }

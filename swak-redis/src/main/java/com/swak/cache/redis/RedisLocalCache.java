@@ -45,24 +45,27 @@ public class RedisLocalCache implements Cache<Object>, EventConsumer, Disposable
 	}
 
 	@Override
-	public void putObject(String key, Object value) {
+	public String putObject(String key, Object value) {
 		this.cache.put(new Element(key, value));
+		return key;
 	}
 
 	@Override
-	public void delete(String key) {
+	public Long delete(String key) {
 		this.cache.remove(key);
+		return 1L;
 	}
 
 	@Override
-	public void delete(String... keys) {
+	public Long delete(String... keys) {
 		if (keys != null && keys.length != 0) {
 			this.cache.removeAll(Lists.newArrayList(keys));
 		}
+		return keys != null ? (long)keys.length : 0;
 	}
 
 	@Override
-	public boolean exists(String key) {
+	public Boolean exists(String key) {
 		return this.cache.isKeyInCache(key);
 	}
 
@@ -79,17 +82,18 @@ public class RedisLocalCache implements Cache<Object>, EventConsumer, Disposable
 	}
 
 	@Override
-	public void putString(String key, String value) {
+	public String putString(String key, String value) {
 		this.cache.put(new Element(key, value));
+		return key;
 	}
 
 	@Override
-	public long ttl(String key) {
+	public Long ttl(String key) {
 		Element element = this.cache.get(key);
 		if (element != null && element.getTimeToLive() != 0) {
 			return (element.getExpirationTime() - System.currentTimeMillis()) / 1000;
 		}
-		return -2;
+		return -2L;
 	}
 	
 	// ------------ 销毁 ----------

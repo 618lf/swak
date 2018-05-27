@@ -2,9 +2,12 @@ package com.swak.cache.redis;
 
 import java.util.List;
 
+import com.swak.cache.AsyncCache;
 import com.swak.cache.Cache;
 import com.swak.cache.Cons;
+import com.swak.cache.ReactiveCache;
 import com.swak.cache.SafeEncoder;
+import com.swak.cache.redis.operations.SyncOperations;
 import com.swak.serializer.SerializationUtils;
 import com.swak.utils.Lists;
 
@@ -51,7 +54,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	}
 	
 	@Override
-	public boolean exists(String key) {
+	public Boolean exists(String key) {
 		if (!isValid()) {
 			return _exists(key);
 		}
@@ -59,28 +62,28 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	}
 
 	@Override
-	public void delete(String key) {
-		this._del(key);
+	public Long delete(String key) {
+		return this._del(key);
 	}
 
 	@Override
-	public void delete(String ... keys) {
-		this._del(keys);
+	public Long delete(String ... keys) {
+		return this._del(keys);
 	}
 
 	@Override
-	public void putObject(String key, T value) {
-		this._set(key, SerializationUtils.serialize(value));
+	public String putObject(String key, T value) {
+		return this._set(key, SerializationUtils.serialize(value));
 	}
 	
 	@Override
-	public void putString(String key, String value) {
-		this._set(key, SafeEncoder.encode(value));
+	public String putString(String key, String value) {
+		return this._set(key, SafeEncoder.encode(value));
 	}
 
 	@Override
-	public long ttl(String key) {
-		return RedisUtils.ttl(getKeyName(key));
+	public Long ttl(String key) {
+		return SyncOperations.ttl(getKeyName(key));
 	}
 
 	/**
@@ -91,7 +94,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	 */
 	protected byte[] _get(String key) {
 		String keyName = this.getKeyName(key);
-		return RedisUtils.get(keyName);
+		return SyncOperations.get(keyName);
 	}
 	
 	/**
@@ -102,7 +105,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	protected byte[] _hget(String key) {
 		String script = Cons.GET_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		return RedisUtils.runScript(script, values);
+		return SyncOperations.runScript(script, values);
 	}
 	
 	/**
@@ -112,35 +115,36 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	 * @param value
 	 * @param expiration
 	 */
-	protected void _set(String key, byte[] value) {
+	protected String _set(String key, byte[] value) {
 		String keyName = this.getKeyName(key);
 		if (isValid()) {
-			RedisUtils.set(keyName, value, this.timeToIdle);
+			return SyncOperations.set(keyName, value, this.timeToIdle);
 		} else {
-			RedisUtils.set(keyName, value);
+			return SyncOperations.set(keyName, value);
 		}
 	}
 	
 	/**
 	 * 删除当前的key
 	 */
-	protected void _del(String... keys) {
+	protected Long _del(String... keys) {
 		if (keys.length == 1) {
-			RedisUtils.del(this.getKeyName(keys[0]));
+			return SyncOperations.del(this.getKeyName(keys[0]));
 		} else {
 			List<String> _keys = Lists.newArrayList(keys.length);
 			for(String key: keys) {
 				_keys.add(this.getKeyName(key));
 			}
-			RedisUtils.del(_keys.toArray(keys));
+			return SyncOperations.del(_keys.toArray(keys));
 		}
 	}
 
 	/**
 	 * 当前key 是否存在
 	 */
-	protected boolean _exists(String key) {
-		return RedisUtils.exists(this.getKeyName(key));
+	protected Boolean _exists(String key) {
+		Long count = SyncOperations.exists(this.getKeyName(key));
+		return count != null && count >0;
 	}
 	
 	/**
@@ -148,10 +152,20 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	 * @param key
 	 * @return
 	 */
-	protected boolean _hexists(String key) {
+	protected Boolean _hexists(String key) {
 		String script = Cons.EXISTS_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		Long e = RedisUtils.runScript(script, values);
-		return e != null && e == 1;
+		Long count = SyncOperations.runScript(script, values);
+		return count != null && count >0;
+	}
+	
+	// -------------  提供的异步化支持 ------------ 
+	@Override
+	public AsyncCache<T> async() {
+		return new AsyncRedisCache<T>(this.name, this.timeToIdle);
+	}
+	@Override
+	public ReactiveCache<T> reactive() {
+		return new ReactiveRedisCache<T>(this.name, this.timeToIdle);
 	}
 }

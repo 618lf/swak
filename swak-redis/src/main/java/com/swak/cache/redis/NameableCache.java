@@ -1,5 +1,7 @@
 package com.swak.cache.redis;
 
+import com.swak.cache.redis.operations.SyncOperations;
+
 public abstract class NameableCache {
 
 	private static int EXPIRATION_IN = -1; // 默认不过期
@@ -46,7 +48,7 @@ public abstract class NameableCache {
 	 */
 	protected void expire(String key) {
 		if (isValid()) {
-			RedisUtils.expire(this.getKeyName(key), this.timeToIdle);
+			SyncOperations.expire(this.getKeyName(key), this.timeToIdle);
 		}
 	}
 	
