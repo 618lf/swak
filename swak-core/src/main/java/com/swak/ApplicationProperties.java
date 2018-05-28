@@ -19,12 +19,19 @@ public class ApplicationProperties {
 	private boolean enableMybatis = true;
 	private boolean enableHttpClient = true;
 	private boolean enableWorkers = true;
+	private boolean enableActuator = true;
 	
 	// 系统配置
 	private String version = "3.0";
 	private String serverSn = "server-1-1";
 	private String serialization = "kryo_pool";
 	
+	public boolean isEnableActuator() {
+		return enableActuator;
+	}
+	public void setEnableActuator(boolean enableActuator) {
+		this.enableActuator = enableActuator;
+	}
 	public boolean isEnableHttpClient() {
 		return enableHttpClient;
 	}

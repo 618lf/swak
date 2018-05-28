@@ -8,8 +8,14 @@ swak-actuator : actuator
 swak-sample : 样例
 
 # 启动线程
-系统启动之后，如果开启 redis 的pub/sub 的功能则开始5个线程，不知道干吗的.
+系统启动之后，如果开启 redis 的pub/sub 的功能则开始5个线程，不知道干吗的. 其中有一个thread 
+named： thread-9（or 12）
 其他模块的都是基于 nio 的io线程。所以一般不会阻塞线程，除了数据库连接外。
+
+如果启动了 micrometer 则会启动一个线程，named： thread-4 
+
+到此为止： 系统中所有启动的线程都知道来源了。
+
 
 # 异步分析
 整个系统通过 mono 进行事件推送，其他模块可以通过 future 和 mono 接入到服务器
