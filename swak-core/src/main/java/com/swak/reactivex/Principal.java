@@ -27,7 +27,7 @@ public class Principal implements Externalizable {
 	public String getAccount() {
 		return account;
 	}
-	public void setId(Long id) {
+	public void setId(Serializable id) {
 		this.id = id;
 	}
 	public void setAccount(String account) {
