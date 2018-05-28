@@ -16,6 +16,7 @@ import io.netty.util.ReferenceCountUtil;
 public class HttpServerOperations extends HttpServerResponseOperation implements ServerOperations {
 
 	private HttpHandler handler;
+	private String serverName;
 	private Channel channel;
 	private FullHttpRequest request;
 	
@@ -57,6 +58,13 @@ public class HttpServerOperations extends HttpServerResponseOperation implements
 	}
 	
 	/**
+	 * 返回提供服务的名称
+	 */
+	public String getServerName() {
+		return serverName;
+	}
+
+	/**
 	 * 处理请求
 	 * @param channel
 	 * @param request
@@ -87,6 +95,16 @@ public class HttpServerOperations extends HttpServerResponseOperation implements
 	 */
 	public HttpServerOperations channel(Channel channel) {
 		this.channel = channel;
+		return this;
+	}
+	
+	/**
+	 * 提供服务的名称
+	 * @param channel
+	 * @return
+	 */
+	public HttpServerOperations server(String serverName) {
+		this.serverName = serverName;
 		return this;
 	}
 	

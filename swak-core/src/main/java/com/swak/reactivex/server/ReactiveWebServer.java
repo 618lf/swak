@@ -34,16 +34,15 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReactiveWebServer.class);
 
-	private final String serverName;
 	private final HttpServerProperties properties;
 	private HttpServerOptions options;
+	private String serverName; // 类似 http://127.0.0.1:8080
 	private HttpHandler handler;
 	private NettyContext context;
 	private Thread shutdownHook;
 
 	private ReactiveWebServer(HttpServerProperties properties) {
 		this.properties = properties;
-		this.serverName = properties.getName();
 		this.options = this.options();
 	}
 
@@ -100,6 +99,12 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 				options.childOption(ChannelOption.SO_KEEPALIVE, properties.isSoKeepAlive());
 				options.childOption(ChannelOption.TCP_NODELAY, properties.isTcpNoDelay());
 			});
+			
+			this.serverName = new StringBuilder().append(this.options.sslContext() != null ? "https://": "http://")
+					.append(this.options.getAddress().getHostString()).toString();
+			if (this.options.getAddress().getPort() != 80) {
+				this.serverName = new StringBuilder(this.serverName).append(":").append(this.options.getAddress().getPort()).toString();
+			}
 		}
 		return this.options;
 	}
@@ -148,7 +153,7 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 	 */
 	@Override
 	public void handleChannel(Channel channel, Object request) {
-		HttpServerOperations op = HttpServerOperations.apply(handler).channel(channel)
+		HttpServerOperations op = HttpServerOperations.apply(handler).server(serverName).channel(channel)
 				.request((FullHttpRequest) request);
 		op.handleStart();
 	}
@@ -158,7 +163,7 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 	 */
 	@Override
 	public void handleError(Channel channel, Throwable t) {
-		HttpServerOperations.apply(handler).channel(channel).text().out(t.getMessage());
+		HttpServerOperations.apply(handler).server(serverName).channel(channel).text().out(t.getMessage());
 	}
 
 	// ---------------------- 停止服务器 ---------------------
@@ -172,8 +177,8 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 		removeShutdownHook();
 		context.dispose();
 		context.onClose()
-				.doOnError(e -> LOG.error("Stopped {} on {} with an error {}", serverName, context.address(), e))
-				.doOnTerminate(() -> LOG.info("Stopped {} on {}", serverName, context.address())).block();
+				.doOnError(e -> LOG.error("Stopped {} on {} with an error {}", properties.getName(), context.address(), e))
+				.doOnTerminate(() -> LOG.info("Stopped {} on {}", properties.getName(), context.address())).block();
 		context = null;
 		
 		// 关闭必要的资源
@@ -209,10 +214,10 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 
 		context.dispose();
 		context.onClose()
-				.doOnError(e -> LOG.error("Stopped {} on {} with an error {} from JVM hook {}", serverName,
+				.doOnError(e -> LOG.error("Stopped {} on {} with an error {} from JVM hook {}", properties.getName(),
 						context.address(), e, hookDesc))
 				.doOnTerminate(
-						() -> LOG.info("Stopped {} on {} from JVM hook {}", serverName, context.address(), hookDesc))
+						() -> LOG.info("Stopped {} on {} from JVM hook {}", properties.getName(), context.address(), hookDesc))
 				.block();
 	}
 

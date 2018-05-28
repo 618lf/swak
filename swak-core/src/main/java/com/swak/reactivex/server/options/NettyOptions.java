@@ -162,7 +162,7 @@ public class NettyOptions {
 	public static class Builder {
 
 		protected ServerBootstrap bootstrapTemplate;
-		private String serverName = "reactor";
+		private String serverName = "REACTOR";
 		private TransportMode transportMode = TransportMode.NIO;
 		private Integer serverSelect;
 		private Integer serverWorker;

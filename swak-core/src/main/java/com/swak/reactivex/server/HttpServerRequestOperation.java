@@ -102,6 +102,12 @@ public abstract class HttpServerRequestOperation implements HttpServerRequest {
 	public abstract HttpServerResponse getResponse();
 	
 	/**
+	 * 服务的名称
+	 * @return
+	 */
+	public abstract String getServerName();
+	
+	/**
 	 * 获取请求的地址
 	 * 包含 请求的参数
 	 * @return
@@ -118,7 +124,7 @@ public abstract class HttpServerRequestOperation implements HttpServerRequest {
 	public String getRequestURL() {
 		return url;
 	}
-
+	
 	/**
 	 * 获取请求的方法
 	 * 

@@ -1,7 +1,6 @@
 package com.swak.reactivex.server.options;
 
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -21,7 +20,7 @@ import io.netty.util.AttributeKey;
 
 public class ServerOptions extends NettyOptions {
 
-	private final SocketAddress localAddress;
+	private final InetSocketAddress localAddress;
 	private EventLoop dateServer;
 
 	/**
@@ -36,7 +35,7 @@ public class ServerOptions extends NettyOptions {
 		}
 	}
 
-	public final SocketAddress getAddress() {
+	public final InetSocketAddress getAddress() {
 		return localAddress;
 	}
 
