@@ -1,6 +1,5 @@
 package com.tmt.shop.service;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,28 +45,10 @@ public class ShopService extends BaseService<Shop, Long>{
 	/**
 	 * 保存数据
 	 */
-	@Override
-	@Transactional
-	public CompletableFuture<Shop> save(Shop entity) {
-		return this.doSave(entity);
-	}
-	
-	/**
-	 * 保存数据
-	 */
 	@Transactional
 	public CompletableFuture<Shop> saveAndGet(Shop entity) {
-		return this.doSave(entity).thenApply((shop) -> {
+		return this.save(entity).thenApply((shop) -> {
 			return this.selectOne(shop.getId());
 		});
-	}
-
-	/**
-	 * 删除数据
-	 */
-	@Override
-	@Transactional
-	public CompletableFuture<Void> delete(List<Shop> entities) {
-		return this.doDelete(entities);
 	}
 }

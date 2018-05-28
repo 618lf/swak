@@ -4,6 +4,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.io.Serializable;
 
 /**
  * 认证后的身份信息,只需要存储一个登录的用户ID
@@ -12,15 +13,15 @@ import java.io.ObjectOutput;
 public class Principal implements Externalizable {
 
 	private static final long serialVersionUID = 1L;
-	private Long id;// 用户id
+	private Serializable id;// 用户id
 	private String account; // 登录帐号
 
 	public Principal(){}
-	public Principal(Long userId, String account) {
+	public Principal(Serializable userId, String account) {
 		this.id = userId;
 		this.account = account;
 	}
-	public Long getId() {
+	public Serializable getId() {
 		return id;
 	}
 	public String getAccount() {
@@ -40,7 +41,7 @@ public class Principal implements Externalizable {
 	}
 	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		this.id = (Long)in.readObject();
+		this.id = (Serializable)in.readObject();
 		this.account = (String)in.readObject();
 	}
 	@Override

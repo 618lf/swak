@@ -182,7 +182,7 @@ public class HelloController {
 	 */
 	@GetMapping("/say/http")
 	public Mono<Result> sayHttp(String name) {
-		return RequestBuilder.create().setUrl("https://www.2345.com/").text()
+		return RequestBuilder.get().setUrl("https://www.2345.com/").text()
 				.reactive().map(s -> Result.success(s));
 	}
 

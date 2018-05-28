@@ -8,7 +8,6 @@ import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.Response;
 
-import com.swak.http.builder.RequestBuilder;
 import com.swak.http.reactor.ReactorHttpClient;
 
 import reactor.core.publisher.Mono;
@@ -22,14 +21,6 @@ public class HttpClients {
 	}
 	public static AsyncHttpClient client() {
 		return httpClient;
-	}
-	
-	/**
-	 * 创建 request 的接口
-	 * @return
-	 */
-	public static RequestBuilder request() {
-		return RequestBuilder.create();
 	}
 	
 	/**

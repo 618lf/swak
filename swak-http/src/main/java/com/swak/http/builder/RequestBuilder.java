@@ -16,6 +16,7 @@ import com.swak.http.handler.TextResponse;
 import com.swak.http.handler.XmlResponse;
 import com.swak.http.reactor.ReactorHttpClient;
 
+import io.netty.handler.codec.http.HttpMethod;
 import reactor.core.publisher.Mono;
 
 /**
@@ -75,14 +76,16 @@ public class RequestBuilder extends RequestBuilderBase<RequestBuilder> {
 	public <T> CompletableFuture<T> future(AsyncCompletionHandler<T> handler) {
 		return HttpClients.future(build(), handler).toCompletableFuture();
 	}
-	public CompletableFuture<?> future() {
-		return HttpClients.future(build(), getHandler()).toCompletableFuture();
+	@SuppressWarnings("unchecked")
+	public <T> CompletableFuture<T> future() {
+		return (CompletableFuture<T>) HttpClients.future(build(), getHandler()).toCompletableFuture();
 	}
 	public <T> Mono<T> reactive(AsyncCompletionHandler<T> handler) {
 		return ReactorHttpClient.create(HttpClients.client()).prepare(build(), handler);
 	}
-	public Mono<?> reactive() {
-		return ReactorHttpClient.create(HttpClients.client()).prepare(build(), getHandler());
+	@SuppressWarnings("unchecked")
+	public <T> Mono<T> reactive() {
+		return (Mono<T>) ReactorHttpClient.create(HttpClients.client()).prepare(build(), getHandler());
 	}
 
 	/**
@@ -90,7 +93,16 @@ public class RequestBuilder extends RequestBuilderBase<RequestBuilder> {
 	 * 
 	 * @return
 	 */
-	public static RequestBuilder create() {
-		return new RequestBuilder();
+	public static RequestBuilder post() {
+		return new RequestBuilder(HttpMethod.POST.name());
+	}
+	
+	/**
+	 * 创建一个builder
+	 * 
+	 * @return
+	 */
+	public static RequestBuilder get() {
+		return new RequestBuilder(HttpMethod.GET.name());
 	}
 }

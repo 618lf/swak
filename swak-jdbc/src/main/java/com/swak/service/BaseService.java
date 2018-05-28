@@ -103,7 +103,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param entity
      * @return
      */
-    protected CompletableFuture<T> doSave(T entity) {
+    public CompletableFuture<T> save(T entity) {
     	return execute(() -> {
     		if (IdGen.isInvalidId(entity.getId())) {
     			this.insert(entity);
@@ -119,7 +119,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param entity
      * @return
      */
-    protected CompletableFuture<Void> doDelete(List<T> entities) {
+    public CompletableFuture<Void> delete(List<T> entities) {
     	return execute(() -> {
     		this.batchDelete(entities);
     		return null;
