@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.swak.config.AppAutoConfiguration;
+import com.swak.config.AutoConfigurationImportSelector;
 
 /**
  * 添加需要的配置类
@@ -21,7 +21,5 @@ import com.swak.config.AppAutoConfiguration;
 @Documented
 @Inherited
 @Configuration
-@Import({
-	AppAutoConfiguration.class
-})
+@Import({AutoConfigurationImportSelector.class})
 public @interface ApplicationBoot {}
