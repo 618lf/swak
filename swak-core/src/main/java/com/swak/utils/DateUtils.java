@@ -604,4 +604,38 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils{
         }
         return s.reverse().toString();
     }
+    
+    /**
+	 * 将毫秒的差额 格式化时间格式
+	 * @param ms
+	 * @param pattern dd:hh:mm:ss:ms(默认)
+	 * @return
+	 */
+	public static String formatLongTime(long ms, String pattern) {
+		String _pattern = pattern==null?"dd:hh:mm:ss:ms":pattern;
+		Boolean ddShow = _pattern.contains("dd");
+		Boolean hhShow = _pattern.contains("hh");
+		Boolean mmShow = _pattern.contains("mm");
+		Boolean ssShow = _pattern.contains("ss");
+		Boolean msShow = _pattern.contains("ms");
+		
+		Integer ss = 1000;  
+	    Integer mi = ss * 60;  
+	    Integer hh = mi * 60;  
+	    Integer dd = hh * 24;  
+	  
+	    Long day = ms / dd;  
+	    Long hour = (ms - day * dd) / hh;  
+	    Long minute = (ms - day * dd - hour * hh) / mi;  
+	    Long second = (ms - day * dd - hour * hh - minute * mi) / ss;  
+	    Long milliSecond = ms - day * dd - hour * hh - minute * mi - second * ss;  
+	      
+	    StringBuffer sb = new StringBuffer();
+	    if(day > 0 && ddShow) {sb.append(day).append("天");}  
+	    if(hour > 0 && hhShow) {sb.append(hour).append("小时");}  
+	    if(minute > 0 && mmShow) {sb.append(minute).append("分");}  
+	    if(second > 0 && ssShow) {sb.append(second).append("秒");}
+	    if(milliSecond > 0 && msShow) {sb.append(milliSecond).append("毫秒");} 
+	    return sb.toString();
+	}
 }
