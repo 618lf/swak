@@ -254,4 +254,15 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 		}
 		return src;
 	}
+	
+	/**
+	 * 替换所有的空白
+	 * @return
+	 */
+	public static String removeZ(String text){
+		if (StringUtils.isNotBlank(text)) {
+		    return text.replaceAll("\\pZ", "");
+		}
+		return text;
+	}
 }
