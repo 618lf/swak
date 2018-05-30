@@ -1,4 +1,4 @@
-package com.swak.config.database;
+package com.swak.config.jdbc.database;
 
 import static com.swak.Application.APP_LOGGER;
 

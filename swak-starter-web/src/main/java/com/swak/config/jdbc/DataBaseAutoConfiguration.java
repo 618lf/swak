@@ -1,4 +1,4 @@
-package com.swak.config;
+package com.swak.config.jdbc;
 
 import static com.swak.Application.APP_LOGGER;
 
@@ -43,12 +43,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.swak.Constants;
-import com.swak.config.database.ConfigurationCustomizer;
-import com.swak.config.database.DataSourceProperties;
-import com.swak.config.database.DruidDataSourceAutoConfiguration;
-import com.swak.config.database.HikariDataSourceAutoConfiguration;
-import com.swak.config.database.MybatisProperties;
-import com.swak.config.database.SpringBootVFS;
+import com.swak.config.jdbc.database.ConfigurationCustomizer;
+import com.swak.config.jdbc.database.DataSourceProperties;
+import com.swak.config.jdbc.database.DruidDataSourceAutoConfiguration;
+import com.swak.config.jdbc.database.HikariDataSourceAutoConfiguration;
+import com.swak.config.jdbc.database.MybatisProperties;
+import com.swak.config.jdbc.database.SpringBootVFS;
 import com.swak.persistence.JdbcSqlExecutor;
 import com.swak.persistence.QueryCondition;
 import com.swak.persistence.dialect.MySQLDialect;
@@ -56,10 +56,13 @@ import com.swak.persistence.mybatis.ExecutorInterceptor;
 import com.swak.utils.StringUtils;
 
 /**
- * 数据库相关配置
- * 
+ * 会判断是否引入了数据库组件
  * @author lifeng
  */
+@org.springframework.context.annotation.Configuration
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
+@Order(Ordered.HIGHEST_PRECEDENCE + 10)
+@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableDataBase", matchIfMissing = true)
 public class DataBaseAutoConfiguration {
 
 	/**

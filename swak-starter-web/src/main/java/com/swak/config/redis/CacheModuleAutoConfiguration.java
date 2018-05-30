@@ -1,9 +1,10 @@
-package com.swak.config;
+package com.swak.config.redis;
 
 import static com.swak.Application.APP_LOGGER;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,12 +14,17 @@ import org.springframework.core.annotation.Order;
 
 import com.swak.Constants;
 import com.swak.cache.CacheProperties;
+import com.swak.cache.redis.RedisCacheManager;
 
 /**
- * 缓存 服务配置
- * 
+ * 会判断是否引入了缓存组件
  * @author lifeng
  */
+@Configuration
+@ConditionalOnClass(RedisCacheManager.class)
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
+@Order(Ordered.HIGHEST_PRECEDENCE + 10)
+@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableRedis", matchIfMissing = true)
 public class CacheModuleAutoConfiguration {
 
 	

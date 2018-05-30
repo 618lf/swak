@@ -50,7 +50,7 @@ public class RequestBuilder extends RequestBuilderBase<RequestBuilder> {
 		handler = XmlResponse.create(clazz);
 		return this;
 	}
-	public <T> RequestBuilder text() {
+	public RequestBuilder text() {
 		handler = TextResponse.create();
 		return this;
 	}

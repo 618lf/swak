@@ -1,4 +1,4 @@
-package com.swak.config;
+package com.swak.config.http;
 
 import static com.swak.Application.APP_LOGGER;
 

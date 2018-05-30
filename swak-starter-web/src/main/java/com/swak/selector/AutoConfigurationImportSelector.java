@@ -1,4 +1,4 @@
-package com.swak.config;
+package com.swak.selector;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

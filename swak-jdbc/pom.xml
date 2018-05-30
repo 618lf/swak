@@ -56,13 +56,11 @@
 					<artifactId>tools</artifactId>
 				</exclusion>
 			</exclusions>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<version>${HikariCP.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${jdbc.driver.groupId}</groupId>

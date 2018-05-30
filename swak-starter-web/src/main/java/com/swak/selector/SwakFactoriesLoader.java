@@ -1,4 +1,4 @@
-package com.swak.config;
+package com.swak.selector;
 
 import java.io.IOException;
 import java.net.URL;

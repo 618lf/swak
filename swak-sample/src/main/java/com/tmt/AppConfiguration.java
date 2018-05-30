@@ -3,7 +3,7 @@ package com.tmt;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.swak.config.SecurityConfigurationSupport;
+import com.swak.config.flux.SecurityConfigurationSupport;
 import com.tmt.consumer.UpdateEventConsumer;
 import com.tmt.filter.BusinessPoolFilter;
 import com.tmt.realm.SimpleRealm;

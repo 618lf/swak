@@ -1,5 +1,7 @@
 package com.swak.actuator.config;
 
+import static com.swak.Application.APP_LOGGER;
+
 import java.util.Collection;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,6 +30,7 @@ public class WebEndpointAutoConfiguration {
 	
 	public WebEndpointAutoConfiguration(ApplicationContext applicationContext,
 			WebEndpointProperties properties) {
+		APP_LOGGER.debug("Loading Web Endpoint");
 		this.applicationContext = applicationContext;
 		this.properties = properties;
 	}

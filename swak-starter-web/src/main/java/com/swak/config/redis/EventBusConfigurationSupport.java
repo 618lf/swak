@@ -1,4 +1,4 @@
-package com.swak.config;
+package com.swak.config.redis;
 
 import java.util.List;
 

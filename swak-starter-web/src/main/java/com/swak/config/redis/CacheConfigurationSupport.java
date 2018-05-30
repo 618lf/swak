@@ -1,4 +1,4 @@
-package com.swak.config;
+package com.swak.config.redis;
 
 import static com.swak.Application.APP_LOGGER;
 

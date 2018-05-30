@@ -1,11 +1,12 @@
-package com.swak.config;
+package com.swak.config.flux;
 
 import static com.swak.Application.APP_LOGGER;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
+import com.swak.cache.CacheManager;
 import com.swak.reactivex.Session;
 import com.swak.security.session.SessionProvider;
 import com.swak.security.session.SessionRepository;
@@ -22,10 +23,10 @@ public class SessionConfigurationSupport {
 	 * @return
 	 */
 	@Bean
-	@ConditionalOnClass(name="com.swak.cache.CacheManager")
+	@ConditionalOnBean(CacheManager.class)
 	@ConditionalOnMissingBean(SessionRepository.class)
 	public SessionRepository<? extends Session> sessionRepository() {
-		APP_LOGGER.debug("Loading Session Manage");
+		APP_LOGGER.debug("Loading Session Manager");
 		SessionRepository<? extends Session> repository = new CacheSessionRepository();
 		SessionProvider.setRepository(repository);
 		return repository;

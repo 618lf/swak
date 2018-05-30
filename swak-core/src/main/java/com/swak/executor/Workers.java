@@ -10,6 +10,7 @@ import org.springframework.util.Assert;
 
 import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoSink;
 import reactor.core.publisher.Operators;
 import reactor.core.scheduler.Schedulers;
 
@@ -91,6 +92,32 @@ public class Workers {
 	public static Mono<Void> reactive(Runnable runnable) {
 		Assert.notNull(executor, "please init Worker Executor");
 		return Mono.fromCompletionStage(CompletableFuture.runAsync(runnable, executor));
+	}
+	
+	/**
+	 * 异步执行代码 -- 有返回值 通过sink
+	 * @param supplier
+	 * @return
+	 */
+	public static <T> void sink(CompletableFuture<T> future, MonoSink<T> sink) {
+		Assert.notNull(executor, "please init Worker Executor");
+		future.whenComplete((v, e) ->{
+			 try {
+               if (e != null) {
+               	sink.error(e);
+               }
+               else if (v != null) {
+                   sink.success(v);
+               }
+               else {
+                   sink.success();
+               }
+           }
+           catch (Throwable e1) {
+               Operators.onErrorDropped(e1, sink.currentContext());
+               throw Exceptions.bubble(e1);
+           }
+		});
 	}
 	
 	/**

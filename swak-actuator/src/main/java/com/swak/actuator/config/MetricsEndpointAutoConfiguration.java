@@ -1,5 +1,7 @@
 package com.swak.actuator.config;
 
+import static com.swak.Application.APP_LOGGER;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -17,6 +19,10 @@ import io.micrometer.core.instrument.MeterRegistry;
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, 
 	SimpleMetricsExportAutoConfiguration.class})
 public class MetricsEndpointAutoConfiguration {
+	
+	public MetricsEndpointAutoConfiguration() {
+		APP_LOGGER.debug("Loading Metrics Endpoint");
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

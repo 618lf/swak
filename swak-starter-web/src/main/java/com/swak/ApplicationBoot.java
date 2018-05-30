@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.swak.config.AutoConfigurationImportSelector;
+import com.swak.selector.AutoConfigurationImportSelector;
 
 /**
  * 添加需要的配置类
