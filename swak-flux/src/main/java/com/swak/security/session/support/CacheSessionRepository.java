@@ -46,11 +46,15 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	
 	/**
 	 * 创建session
+	 * 主动的去创建一个 session
 	 */
 	@Override
 	public CacheSession createSession(String sessionId) {
-		CacheSession session = new CacheSession(sessionId);
-		session.saveDelta();
+		CacheSession session = getSession(sessionId);
+		if (session == null) {
+			session = new CacheSession(sessionId);
+			session.saveDelta();
+		}
 		return session;
 	}
 	
