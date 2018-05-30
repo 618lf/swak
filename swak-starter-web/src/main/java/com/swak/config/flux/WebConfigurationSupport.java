@@ -23,6 +23,8 @@ import com.swak.reactivex.handler.WebExceptionHandler;
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebHandler;
 import com.swak.reactivex.web.DispatcherHandler;
+import com.swak.reactivex.web.HandlerAdapter;
+import com.swak.reactivex.web.HandlerMapping;
 import com.swak.reactivex.web.HandlerResultHandler;
 import com.swak.reactivex.web.converter.DateFormatterConverter;
 import com.swak.reactivex.web.converter.Jaxb2RootElementHttpMessageConverter;
@@ -67,18 +69,6 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		registry.addConverter(new StringEscapeFormatterConverter());
 	}
 	
-	// ---------- WebExceptionHandler ---------
-	@Bean
-	public WebExceptionHandler webExceptionHandler() {
-		return new DefaultWebExceptionHandler();
-	}
-	
-	// ---------- DispatcherHandler ---------
-	@Bean
-	public DispatcherHandler webHandler() {
-		return new DispatcherHandler(applicationContext);
-	}
-	
 	// ---------- requestMapping ---------
 	@Bean
 	public RequestMappingHandlerMapping requestMappingHandlerMapping() {
@@ -120,11 +110,30 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		result.addConverter(new JsonHttpMessageConverter());
 	}
 	
+	// ---------- DispatcherHandler ---------
+	@Bean
+	public DispatcherHandler webHandler() {
+		return new DispatcherHandler();
+	}
+	
+	// ---------- WebExceptionHandler ---------
+	@Bean
+	public WebExceptionHandler webExceptionHandler() {
+		return new DefaultWebExceptionHandler();
+	}
+	
 	// ---------- httpHandler ---------
 	@Bean
 	public HttpWebHandlerAdapter httpHandler(DispatcherHandler webHandler) {
 		SortedBeanContainer container = new SortedBeanContainer();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(container);
+		
+		// Dispatcher Handler
+		webHandler.setMappings(Collections.unmodifiableList(container.getMappings()));
+		webHandler.setAdapters(Collections.unmodifiableList(container.getAdapters()));
+		webHandler.setResultHandlers(Collections.unmodifiableList(container.getResultHandlers()));
+		
+		// Http Handler
 		WebHandler delegate = new FilteringWebHandler(webHandler, container.getFilters());
 		delegate = new ExceptionHandlingWebHandler(delegate, container.getExceptionHandlers(), container.getEventPublisher());
 		return new HttpWebHandlerAdapter(delegate);
@@ -133,12 +142,13 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 	// Autowire lists for @Bean + @Order
 	private static class SortedBeanContainer {
 		
+		private List<HandlerMapping> mappings = Collections.emptyList();
+		private List<HandlerAdapter> adapters = Collections.emptyList();
+		private List<HandlerResultHandler> resultHandlers = Collections.emptyList();
 		private List<WebFilter> filters = Collections.emptyList();
-
 		private List<WebExceptionHandler> exceptionHandlers = Collections.emptyList();
-		
 		private SystemEventPublisher eventPublisher;
-
+		
 		@Autowired(required = false)
 		public void setFilters(List<WebFilter> filters) {
 			this.filters = filters;
@@ -164,6 +174,33 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		@Autowired(required = false)
 		public void setEventPublisher(SystemEventPublisher eventPublisher) {
 			this.eventPublisher = eventPublisher;
+		}
+
+		public List<HandlerMapping> getMappings() {
+			return mappings;
+		}
+
+		@Autowired(required = false)
+		public void setMappings(List<HandlerMapping> mappings) {
+			this.mappings = mappings;
+		}
+
+		public List<HandlerAdapter> getAdapters() {
+			return adapters;
+		}
+
+		@Autowired(required = false)
+		public void setAdapters(List<HandlerAdapter> adapters) {
+			this.adapters = adapters;
+		}
+
+		public List<HandlerResultHandler> getResultHandlers() {
+			return resultHandlers;
+		}
+
+		@Autowired(required = false)
+		public void setResultHandlers(List<HandlerResultHandler> resultHandlers) {
+			this.resultHandlers = resultHandlers;
 		}
 	}
 }

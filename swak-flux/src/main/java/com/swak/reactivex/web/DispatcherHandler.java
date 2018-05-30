@@ -1,13 +1,6 @@
 package com.swak.reactivex.web;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import com.swak.reactivex.HttpConst;
 import com.swak.reactivex.HttpServerRequest;
@@ -27,10 +20,6 @@ public class DispatcherHandler implements WebHandler {
 	private List<HandlerMapping> mappings;
 	private List<HandlerAdapter> adapters;
 	private List<HandlerResultHandler> resultHandlers;
-
-	public DispatcherHandler(ApplicationContext applicationContext) {
-		this.initStrategies(applicationContext);
-	}
 
 	public List<HandlerMapping> getMappings() {
 		return mappings;
@@ -55,28 +44,7 @@ public class DispatcherHandler implements WebHandler {
 	public void setResultHandlers(List<HandlerResultHandler> resultHandlers) {
 		this.resultHandlers = resultHandlers;
 	}
-
-	protected void initStrategies(ApplicationContext context) {
-		Map<String, HandlerMapping> mappingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(context,
-				HandlerMapping.class, true, false);
-
-		ArrayList<HandlerMapping> mappings = new ArrayList<>(mappingBeans.values());
-		AnnotationAwareOrderComparator.sort(mappings);
-		this.mappings = Collections.unmodifiableList(mappings);
-
-		Map<String, HandlerAdapter> adapterBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(context,
-				HandlerAdapter.class, true, false);
-
-		this.adapters = new ArrayList<>(adapterBeans.values());
-		AnnotationAwareOrderComparator.sort(this.adapters);
-
-		Map<String, HandlerResultHandler> beans = BeanFactoryUtils.beansOfTypeIncludingAncestors(context,
-				HandlerResultHandler.class, true, false);
-
-		this.resultHandlers = new ArrayList<>(beans.values());
-		AnnotationAwareOrderComparator.sort(this.resultHandlers);
-	}
-
+	
 	@Override
 	public Mono<Void> handle(HttpServerRequest request, HttpServerResponse response) {
 		return this.handleMappering(request, response)

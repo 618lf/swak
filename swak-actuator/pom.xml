@@ -15,11 +15,12 @@
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-flux</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-			<version>${HikariCP.version}</version>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-jdbc</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<build>

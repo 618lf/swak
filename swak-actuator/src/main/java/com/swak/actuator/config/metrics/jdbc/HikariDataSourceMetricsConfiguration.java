@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,6 +23,7 @@ import io.micrometer.core.instrument.MeterRegistry;
  * @author lifeng
  */
 @Configuration
+@ConditionalOnClass(HikariDataSource.class)
 @ConditionalOnBean({MeterRegistry.class})
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, DataSourceAutoConfiguration.class,
 	SimpleMetricsExportAutoConfiguration.class })
