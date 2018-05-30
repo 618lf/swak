@@ -70,6 +70,7 @@ public abstract class HttpServerRequestOperation implements HttpServerRequest {
 		// 获取一些数据
 		this.parseParameter(request);
 		this.parseHeaders(request);
+		this.parseCookies();
 		this.parseBody(request);
 	}
 	
@@ -277,6 +278,20 @@ public abstract class HttpServerRequestOperation implements HttpServerRequest {
 			this.headers = new HashMap<>();
 		}
 	}
+	
+	/**
+	 * 解析 Cookie 
+	 */
+	private void parseCookies() {
+		String cookie = headers.getOrDefault(HttpHeaderNames.COOKIE, "");
+		cookie = cookie.length() > 0 ? cookie : headers.getOrDefault(HttpHeaderNames.COOKIE, "");
+		if (!StringUtils.isEmpty(cookie)) {
+			ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
+		}
+		if (this.cookies == null) {
+			this.cookies = new HashMap<>();
+		}
+	}
 
 	/**
 	 * 说的所有的cookie
@@ -284,13 +299,6 @@ public abstract class HttpServerRequestOperation implements HttpServerRequest {
 	 * @return
 	 */
 	public Iterator<Cookie> getCookies() {
-		if (this.cookies == null) {
-			String cookie = headers.getOrDefault(HttpHeaderNames.COOKIE, "");
-			cookie = cookie.length() > 0 ? cookie : headers.getOrDefault(HttpHeaderNames.COOKIE, "");
-			if (!StringUtils.isEmpty(cookie)) {
-				ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
-			}
-		}
 		return this.cookies.values().iterator();
 	}
 
@@ -301,13 +309,6 @@ public abstract class HttpServerRequestOperation implements HttpServerRequest {
 	 * @return
 	 */
 	public Cookie getCookie(String name) {
-		if (this.cookies == null) {
-			String cookie = headers.getOrDefault(HttpHeaderNames.COOKIE, "");
-			cookie = cookie.length() > 0 ? cookie : headers.getOrDefault(HttpHeaderNames.COOKIE, "");
-			if (!StringUtils.isEmpty(cookie)) {
-				ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
-			}
-		}
 		return this.cookies.get(name);
 	}
 

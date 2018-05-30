@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.swak.eventbus.system.SystemEventPublisher;
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
 
@@ -13,12 +12,9 @@ import reactor.core.publisher.Mono;
 public class ExceptionHandlingWebHandler extends WebHandlerDecorator {
 
 	private final List<WebExceptionHandler> exceptionHandlers;
-	private final SystemEventPublisher eventPublisher;
 
-	public ExceptionHandlingWebHandler(WebHandler delegate, List<WebExceptionHandler> handlers,
-			SystemEventPublisher eventPublisher) {
+	public ExceptionHandlingWebHandler(WebHandler delegate, List<WebExceptionHandler> handlers) {
 		super(delegate);
-		this.eventPublisher = eventPublisher;
 		this.exceptionHandlers = Collections.unmodifiableList(new ArrayList<>(handlers));
 	}
 
@@ -39,7 +35,6 @@ public class ExceptionHandlingWebHandler extends WebHandlerDecorator {
 		try {
 			completion = super.handle(request, response);
 		} catch (Throwable ex) {
-			eventPublisher.publishError(ex);
 			completion = Mono.error(ex);
 		}
 

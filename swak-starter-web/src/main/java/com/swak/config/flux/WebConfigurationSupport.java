@@ -14,7 +14,6 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.lang.Nullable;
 
-import com.swak.eventbus.system.SystemEventPublisher;
 import com.swak.reactivex.handler.DefaultWebExceptionHandler;
 import com.swak.reactivex.handler.ExceptionHandlingWebHandler;
 import com.swak.reactivex.handler.FilteringWebHandler;
@@ -135,7 +134,7 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		
 		// Http Handler
 		WebHandler delegate = new FilteringWebHandler(webHandler, container.getFilters());
-		delegate = new ExceptionHandlingWebHandler(delegate, container.getExceptionHandlers(), container.getEventPublisher());
+		delegate = new ExceptionHandlingWebHandler(delegate, container.getExceptionHandlers());
 		return new HttpWebHandlerAdapter(delegate);
 	}
 	
@@ -147,7 +146,6 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		private List<HandlerResultHandler> resultHandlers = Collections.emptyList();
 		private List<WebFilter> filters = Collections.emptyList();
 		private List<WebExceptionHandler> exceptionHandlers = Collections.emptyList();
-		private SystemEventPublisher eventPublisher;
 		
 		@Autowired(required = false)
 		public void setFilters(List<WebFilter> filters) {
@@ -165,15 +163,6 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 
 		public List<WebExceptionHandler> getExceptionHandlers() {
 			return this.exceptionHandlers;
-		}
-
-		public SystemEventPublisher getEventPublisher() {
-			return eventPublisher;
-		}
-
-		@Autowired(required = false)
-		public void setEventPublisher(SystemEventPublisher eventPublisher) {
-			this.eventPublisher = eventPublisher;
 		}
 
 		public List<HandlerMapping> getMappings() {
