@@ -9,6 +9,7 @@ import com.swak.entity.Result;
 import com.swak.http.builder.RequestBuilder;
 import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.RestController;
+import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.tmt.shop.entity.Area;
 
@@ -18,7 +19,7 @@ import reactor.core.publisher.Mono;
  * 区域管理
  * @author root
  */
-@RestController(value = "${adminPath}/system/area")
+@RestController(value = "/admin/system/area")
 public class AreaController {
 
 	/**
@@ -44,52 +45,57 @@ public class AreaController {
 	}
 
 	private CompletableFuture<Void> citys(AreaParse parse, Area province) {
+		List<Area> areas = Lists.newArrayList(); areas.add(province);
 		String pcode = province.getCode();
 		String url = parse.getAddress() + pcode;
 		CompletableFuture<String> fhtml = RequestBuilder.get().setUrl(url).text().charset(Charset.forName("gb2312")).future();
-		return fhtml.thenCompose((html) ->{
+		return fhtml.thenCompose((html) -> {
 			List<CompletableFuture<Void>> futures = parse.parseOthers(html, "citytr").stream().map(city ->{
 				city.setParentId(province.getId());
-				return countys(parse, province, city);
+				areas.add(city);
+				return countys(parse, province, city, areas);
 			}).collect(Collectors.toList());
 			return CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
+		}).thenCompose((v) ->{
+			return this.save_parse_result(areas);
 		});
 	}
 	
-	private CompletableFuture<Void> countys(AreaParse parse, Area province, Area city) {
+	private CompletableFuture<Void> countys(AreaParse parse, Area province, Area city, List<Area> areas) {
 		String ccode = city.getCode();
 		String url = parse.getAddress() + ccode;
 		CompletableFuture<String> fhtml = RequestBuilder.get().setUrl(url).text().charset(Charset.forName("gb2312")).future();
 		return fhtml.thenCompose((html) ->{
 			List<CompletableFuture<Void>> futures = parse.parseOthers(html, "countytr").stream().map(county ->{
 				county.setParentId(city.getId());
-				return towns(parse, province, city, county);
+				areas.add(county);
+				return towns(parse, province, city, county, areas);
 			}).collect(Collectors.toList());
 			return CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
 		});
 	}
 	
-	private CompletableFuture<Void> towns(AreaParse parse, Area province, Area city, Area county) {
+	private CompletableFuture<Void> towns(AreaParse parse, Area province, Area city, Area county, List<Area> areas) {
 		String cocode = county.getCode();
 		county.setParentId(city.getId());
 		if (StringUtils.endsWith(cocode, ".html")) {
 			String url = parse.getAddress() + province.getId() + "/" + cocode;
 			CompletableFuture<String> fhtml = RequestBuilder.get().setUrl(url).text().charset(Charset.forName("gb2312")).future();
-			return fhtml.thenCompose((html) -> {
+			return fhtml.thenAccept((html) -> {
 				List<Area> towns = parse.parseOthers(html, "towntr");
-				for(Area town: towns) {
+				towns.stream().forEach((town) ->{
 					town.setParentId(county.getId());
 					town.setName(StringUtils.remove(town.getName(), "办事处"));
-				}
-				return save_parse_result(province, city, county, towns);
+				});
+				areas.addAll(towns);
 			});
 		}
-		return save_parse_result(province, city, county, null);
+		return CompletableFuture.runAsync(() ->{});
 	}
 	
-	private CompletableFuture<Void> save_parse_result( Area province, Area city, Area county, List<Area> towns) {
+	private CompletableFuture<Void> save_parse_result(List<Area> areas) {
 		return CompletableFuture.runAsync(() ->{
-			System.out.println("save resutl");
+			System.out.println("save one province");
 		});
 	}
 }

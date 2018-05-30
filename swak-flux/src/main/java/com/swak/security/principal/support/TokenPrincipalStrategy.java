@@ -10,7 +10,7 @@ import com.swak.utils.Digests;
 import com.swak.utils.StringUtils;
 
 /**
- * 基于 jwt 的 身份管理方式
+ * 基于 TOKEN 的身份管理方式
  * @author lifeng
  */
 public class TokenPrincipalStrategy implements PrincipalStrategy {

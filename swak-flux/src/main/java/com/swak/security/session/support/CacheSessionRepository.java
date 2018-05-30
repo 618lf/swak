@@ -3,6 +3,7 @@ package com.swak.security.session.support;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,6 +50,18 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	@Override
 	public CacheSession createSession(String sessionId) {
 		CacheSession session = new CacheSession(sessionId);
+		session.saveDelta();
+		return session;
+	}
+	
+	/**
+	 * 创建session
+	 */
+	@Override
+	public CacheSession createSession(Principal principal, boolean authenticated) {
+		CacheSession session = new CacheSession(UUID.randomUUID().toString());
+		session.principal = principal;
+		session.authenticated = authenticated;
 		session.saveDelta();
 		return session;
 	}

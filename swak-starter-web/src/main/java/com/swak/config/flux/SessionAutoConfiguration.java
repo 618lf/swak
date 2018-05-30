@@ -15,8 +15,8 @@ import com.swak.Constants;
  * @author lifeng
  */
 @Configuration
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 150)
-@Order(Ordered.HIGHEST_PRECEDENCE + 150)
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
+@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @ConditionalOnMissingBean(SessionConfigurationSupport.class)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSession", matchIfMissing = true)
 public class SessionAutoConfiguration extends SessionConfigurationSupport {}

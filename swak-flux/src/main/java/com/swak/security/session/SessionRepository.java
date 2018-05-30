@@ -1,5 +1,6 @@
 package com.swak.security.session;
 
+import com.swak.reactivex.Principal;
 import com.swak.reactivex.Session;
 
 public interface SessionRepository<S extends Session> {
@@ -15,6 +16,12 @@ public interface SessionRepository<S extends Session> {
 	 * @param session
 	 */
 	S createSession(String sessionId);
+	
+	/**
+	 * 创建一个Session， 指定身份
+	 * @param session
+	 */
+	S createSession(Principal principal, boolean authenticated);
 	
 	/**
 	 * 返回一个Session

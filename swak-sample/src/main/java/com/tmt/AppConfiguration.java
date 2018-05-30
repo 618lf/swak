@@ -4,8 +4,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.config.flux.SecurityConfigurationSupport;
+import com.swak.security.principal.PrincipalStrategy;
+import com.swak.security.principal.support.CookiePrincipalStrategy;
 import com.tmt.consumer.UpdateEventConsumer;
-import com.tmt.filter.BusinessPoolFilter;
 import com.tmt.realm.SimpleRealm;
 
 /**
@@ -23,13 +24,14 @@ public class AppConfiguration {
 	public UpdateEventConsumer updateEventConsumer() {
 		return new UpdateEventConsumer();
 	}
-
+	
 	/**
-	 * 业务线程池 -- 需要线程隔离， 而不是无目的的切换线程
+	 * 使用 基于cookie的身份管理方式
 	 * @return
 	 */
-	public BusinessPoolFilter businessPoolFilter() {
-		return new BusinessPoolFilter();
+	@Bean
+	public PrincipalStrategy principalStrategy() {
+		return new CookiePrincipalStrategy();
 	}
 	
 	/**
