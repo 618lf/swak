@@ -9,6 +9,7 @@ import com.swak.cache.redis.operations.ReactiveOperations;
 import com.swak.serializer.SerializationUtils;
 import com.swak.utils.Lists;
 
+import io.lettuce.core.ScriptOutputType;
 import reactor.core.publisher.Mono;
 
 /**
@@ -110,7 +111,7 @@ public class ReactiveRedisCache<T> extends NameableCache implements ReactiveCach
 	protected Mono<byte[]> _hget(String key) {
 		String script = Cons.GET_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		return Mono.from(ReactiveOperations.runScript(script, values));
+		return Mono.from(ReactiveOperations.runScript(script, ScriptOutputType.VALUE, values));
 	}
 	
 	/**
@@ -159,6 +160,6 @@ public class ReactiveRedisCache<T> extends NameableCache implements ReactiveCach
 	protected Mono<Long> _hexists(String key) {
 		String script = Cons.EXISTS_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		return Mono.from(ReactiveOperations.runScript(script, values));
+		return Mono.from(ReactiveOperations.runScript(script, ScriptOutputType.VALUE, values));
 	}
 }

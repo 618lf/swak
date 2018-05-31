@@ -168,7 +168,7 @@ public class ReactiveOperations {
 	 * @param key
 	 * @return
 	 */
-	public static <T> Flux<T> runScript(String script, byte[][] values) {
-		return RedisUtils.reactive(connect -> connect.eval(script, ScriptOutputType.VALUE, values, values[0]));
+	public static <T> Flux<T> runScript(String script, ScriptOutputType type, byte[][] values) {
+		return RedisUtils.reactive(connect -> connect.eval(script, type, values, values[0]));
 	}
 }

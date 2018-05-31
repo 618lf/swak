@@ -166,7 +166,7 @@ public class AsyncOperations {
 	 * @param key
 	 * @return
 	 */
-	public static <T> CompletionStage<T> runScript(String script, byte[][] values) {
-		return RedisUtils.async(connect -> connect.eval(script, ScriptOutputType.VALUE, values, values[0]));
+	public static <T> CompletionStage<T> runScript(String script, ScriptOutputType type, byte[][] values) {
+		return RedisUtils.async(connect -> connect.eval(script, type, values, values[0]));
 	}
 }

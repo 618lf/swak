@@ -5,6 +5,8 @@ import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.NameableCache;
 import com.swak.cache.redis.operations.SyncOperations;
 
+import io.lettuce.core.ScriptOutputType;
+
 /**
  * FIFO - 本身就是一个 list
  * 
@@ -54,7 +56,7 @@ public class ListCache<T> extends NameableCache implements CList<T> {
 	protected void _hpush(T t) {
 		String script = Cons.LIST_PUT_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), this.ser.serialize(t), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		SyncOperations.runScript(script, values);
+		SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
 	/**
@@ -76,7 +78,7 @@ public class ListCache<T> extends NameableCache implements CList<T> {
 	protected byte[] _hpop() {
 		String script = Cons.LIST_GET_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-	    return SyncOperations.runScript(script, values);
+	    return SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
 	/**

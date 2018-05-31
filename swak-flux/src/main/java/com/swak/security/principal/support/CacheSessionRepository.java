@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.swak.cache.collection.ReactiveMultiMap;
+import com.swak.cache.collection.AsyncMultiMap;
 import com.swak.reactivex.Principal;
 import com.swak.reactivex.Session;
 import com.swak.security.principal.SessionRepository;
@@ -30,9 +30,9 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	private String AUTHENTICATED_ATTR = "authed";
 	private String RUNASPRINCIPALS_ATTR = "rps";
 	private int sessionTimeout = 1800;
-	private ReactiveMultiMap<String, Object> _cache;
+	private AsyncMultiMap<String, Object> _cache;
 			
-	public CacheSessionRepository(ReactiveMultiMap<String, Object> _cache) {
+	public CacheSessionRepository(AsyncMultiMap<String, Object> _cache) {
 		this._cache = _cache.expire(sessionTimeout);
 	}
 	
@@ -56,7 +56,7 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	 */
 	@Override
 	public Mono<CacheSession> getSession(String id) {
-		return _cache.get(id).map(entries ->{
+		return Mono.fromCompletionStage(_cache.get(id)).map(entries ->{
 			if (entries == null || entries.isEmpty()) {
 				return null;
 			}
@@ -94,7 +94,7 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	@Override
 	public Mono<Void> removeSession(Session session) {
 		if (session != null && StringUtils.hasText(session.getId())) {
-			return _cache.delete(session.getId()).map(s -> null);
+			return Mono.fromCompletionStage( _cache.delete(session.getId())).map(s -> null);
 		}
 		return Mono.empty();
 	}
@@ -105,7 +105,7 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	@Override
 	public Mono<Void> removeSession(String sessionId) {
 		if (StringUtils.hasText(sessionId)) {
-			return _cache.delete(sessionId).map(s -> null);
+			return Mono.fromCompletionStage(_cache.delete(sessionId)).map(s -> null);
 		}
 		return Mono.empty();
 	}
@@ -260,7 +260,7 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 			if (v == null) {
 				_cache.delete(this.id, a);
 			} else {
-				_cache.pub(this.id, a, v);
+				_cache.put(this.id, a, v);
 			}
 		}
 		
@@ -271,7 +271,7 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 			delta.put(LASTACCESSED_TIME_ATTR, this.getLastAccessedTime());
 			delta.put(PRINCIPAL_ATTR, this.getPrincipal());
 			delta.put(AUTHENTICATED_ATTR, this.isAuthenticated());
-			return _cache.put(this.id, delta).map(sessionAttrs -> this);
+			return Mono.fromCompletionStage(_cache.put(this.id, delta)).map(sessionAttrs -> this);
 		}
 		
 		public void _setAttribute(String key, Object v) {

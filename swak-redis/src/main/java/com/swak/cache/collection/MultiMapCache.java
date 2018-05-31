@@ -11,6 +11,8 @@ import com.swak.cache.redis.operations.SyncOperations;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 
+import io.lettuce.core.ScriptOutputType;
+
 /**
  * value 是 一个 map
  * @author lifeng
@@ -49,7 +51,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 		Map<String, T> maps = Maps.newHashMap();
 		String script = Cons.MULTI_MAP_GET_LUA;
 		byte[][] pvalues = new byte[][] {SafeEncoder.encode(this.getKeyName(key)),SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		List<byte[]> values = SyncOperations.runScript(script, pvalues);
+		List<byte[]> values = SyncOperations.runScript(script, ScriptOutputType.MULTI, pvalues);
 	    final Iterator<byte[]> iterator = values.iterator();
 	    while (iterator.hasNext()) {
 	    	maps.put(SafeEncoder.encode(iterator.next()), this.ser.deserialize(iterator.next()));
@@ -91,7 +93,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 		byte[][] result = new byte[values.length + pvalues.length][];
 		System.arraycopy(pvalues, 0, result, 0, pvalues.length);  
 		System.arraycopy(values, 0, result, pvalues.length, values.length);  
-		SyncOperations.runScript(script.replaceAll("#KEYS#", keys.toString()), result);
+		SyncOperations.runScript(script.replaceAll("#KEYS#", keys.toString()), ScriptOutputType.VALUE, result);
 	}
 
 	@Override
@@ -115,7 +117,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 	protected byte[] _hget(String key, String k2) {
 		String script = Cons.MAP_GET_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		return SyncOperations.runScript(script, values);
+		return SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
 	@Override
@@ -135,7 +137,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 	protected void _hput(String key, String k2, T v) {
 		String script = Cons.MAP_PUT_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		SyncOperations.runScript(script, values);
+		SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
 	@Override

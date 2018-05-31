@@ -5,6 +5,8 @@ import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.NameableCache;
 import com.swak.cache.redis.operations.SyncOperations;
 
+import io.lettuce.core.ScriptOutputType;
+
 /**
  * 是一个大Map
  * @author lifeng
@@ -49,7 +51,7 @@ public class MapCache<T> extends NameableCache implements CMap<String, T>{
 	protected byte[] _hget(String k) {
 		String script = Cons.MAP_GET_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(k), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-	    return SyncOperations.runScript(script, values);
+	    return SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
 	@Override
@@ -69,7 +71,7 @@ public class MapCache<T> extends NameableCache implements CMap<String, T>{
 	protected void _hput(String k, T v) {
 		String script = Cons.MAP_PUT_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(k), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		SyncOperations.runScript(script, values);
+		SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
 	@Override

@@ -11,6 +11,8 @@ import com.swak.utils.IOUtils;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Maps;
 
+import io.lettuce.core.ScriptOutputType;
+
 /**
  * 红包
  * @author lifeng
@@ -66,7 +68,7 @@ public class Reapacket {
 			SafeEncoder.encode(map_rp_user),
 			SafeEncoder.encode(user)
 		};
-		byte[] result = SyncOperations.runScript(script, values);
+		byte[] result = SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 		return result != null? SafeEncoder.encode(result) : null;
 	}
 	

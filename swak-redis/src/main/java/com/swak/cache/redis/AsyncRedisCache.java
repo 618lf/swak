@@ -10,6 +10,8 @@ import com.swak.cache.redis.operations.AsyncOperations;
 import com.swak.serializer.SerializationUtils;
 import com.swak.utils.Lists;
 
+import io.lettuce.core.ScriptOutputType;
+
 public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 
 	/**
@@ -103,7 +105,7 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 	protected CompletionStage<byte[]> _hget(String key) {
 		String script = Cons.GET_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		return AsyncOperations.runScript(script, values);
+		return AsyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 	
 	/**
@@ -152,6 +154,6 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 	protected CompletionStage<Long> _hexists(String key) {
 		String script = Cons.EXISTS_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		return AsyncOperations.runScript(script, values);
+		return AsyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 }

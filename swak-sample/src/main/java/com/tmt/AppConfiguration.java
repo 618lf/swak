@@ -3,8 +3,8 @@ package com.tmt;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.swak.cache.collection.ReactiveMultiMap;
-import com.swak.cache.collection.ReactiveMultiMapCache;
+import com.swak.cache.collection.AsyncMultiMap;
+import com.swak.cache.collection.AsyncMultiMapCache;
 import com.swak.config.flux.SecurityConfigurationSupport;
 import com.swak.reactivex.Session;
 import com.swak.security.principal.PrincipalStrategy;
@@ -36,7 +36,7 @@ public class AppConfiguration {
 	 */
 	@Bean
 	public SessionRepository<? extends Session> sessionRepository() {
-		ReactiveMultiMap<String, Object> _cache = new ReactiveMultiMapCache<Object>("SESSION:");
+		AsyncMultiMap<String, Object> _cache = new AsyncMultiMapCache<Object>("SESSION");
 		return new CacheSessionRepository(_cache);
 	}
 	
@@ -58,6 +58,8 @@ public class AppConfiguration {
 	public SecurityConfigurationSupport securityConfigurationSupport() {
 		SecurityConfigurationSupport securityConfig = new SecurityConfigurationSupport();
 		securityConfig.definition("/admin/hello/**=anon")
+		        .definition("/admin/login=authc")
+		        .definition("/admin/logout=logout")
 		        .definition("/admin/**=user")
 		        .definition("/=user")
 				.realm(new SimpleRealm());

@@ -28,7 +28,7 @@ public class Cons {
 		MAP_PUT_LUA = new StringBuilder().append("redis.call(\"EXPIRE\", KEYS[1], KEYS[4]); return redis.call(\"HSET\", KEYS[1], KEYS[2], KEYS[3]);").toString();
 		MAP_GET_LUA = new StringBuilder().append("redis.call(\"EXPIRE\", KEYS[1], KEYS[3]); return redis.call(\"HGET\", KEYS[1], KEYS[2]);").toString();
 		
-		MULTI_MAP_PUT_LUA = new StringBuilder().append("redis.call(\"EXPIRE\", KEYS[1], KEYS[2]); return redis.call(\"hMSet\", KEYS[1]#KEYS#);").toString();
-		MULTI_MAP_GET_LUA = new StringBuilder().append("redis.call(\"EXPIRE\", KEYS[1], KEYS[2]); return redis.call(\"MGETALL\", KEYS[1]);").toString();
+		MULTI_MAP_PUT_LUA = new StringBuilder().append("redis.call(\"EXPIRE\", KEYS[1], KEYS[2]); return redis.call(\"HMSET\", KEYS[1]#KEYS#);").toString();
+		MULTI_MAP_GET_LUA = new StringBuilder().append("redis.call(\"EXPIRE\", KEYS[1], KEYS[2]); return redis.call(\"HGETALL\", KEYS[1]);").toString();
 	}
 }

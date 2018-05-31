@@ -165,7 +165,7 @@ public class SyncOperations {
 	 * @param key
 	 * @return
 	 */
-	public static <T> T runScript(String script, byte[][] values) {
-		return RedisUtils.sync(connect -> connect.eval(script, ScriptOutputType.VALUE, values, values[0]));
+	public static <T> T runScript(String script, ScriptOutputType type, byte[][] values) {
+		return RedisUtils.sync(connect -> connect.eval(script, type, values, values[0]));
 	}
 }
