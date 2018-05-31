@@ -10,6 +10,8 @@ import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.utils.StringUtils;
 
+import reactor.core.publisher.Mono;
+
 public abstract class PathMatchingFilter extends AdviceFilter implements PathConfigProcessor {
 
 	/**
@@ -61,7 +63,7 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
 	/**
 	 * 找到需要执行的配置
 	 */
-	protected boolean preHandle(HttpServerRequest request, HttpServerResponse response) {
+	protected Mono<Boolean> preHandle(HttpServerRequest request, HttpServerResponse response) {
         Object config = null;
         if (!(this.appliedPaths == null || this.appliedPaths.isEmpty())) {
         	for (String path : this.appliedPaths.keySet()) {
@@ -82,7 +84,5 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
 	 * @return
 	 * @throws Exception
 	 */
-	protected boolean onPreHandle(HttpServerRequest request, HttpServerResponse response, Object mappedValue){
-		return true;
-    }
+	protected abstract Mono<Boolean> onPreHandle(HttpServerRequest request, HttpServerResponse response, Object mappedValue);
 }

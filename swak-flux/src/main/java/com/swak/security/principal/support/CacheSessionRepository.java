@@ -1,4 +1,4 @@
-package com.swak.security.session.support;
+package com.swak.security.principal.support;
 
 import java.util.Map;
 import java.util.Set;
@@ -7,14 +7,15 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.swak.cache.collection.Collections;
-import com.swak.cache.collection.MultiMap;
+import com.swak.cache.collection.ReactiveMultiMap;
 import com.swak.reactivex.Principal;
 import com.swak.reactivex.Session;
-import com.swak.security.session.SessionRepository;
-import com.swak.security.session.support.CacheSessionRepository.CacheSession;
+import com.swak.security.principal.SessionRepository;
+import com.swak.security.principal.support.CacheSessionRepository.CacheSession;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
+
+import reactor.core.publisher.Mono;
 
 /**
  * 基于缓存的 session 管理
@@ -22,7 +23,6 @@ import com.swak.utils.StringUtils;
  */
 public class CacheSessionRepository implements SessionRepository<CacheSession> {
 
-	private String SESSION_PREFIX = "session";
 	private String SESSION_ATTR_PREFIX = "attr:";
 	private String CREATION_TIME_ATTR = "ct";
 	private String LASTACCESSED_TIME_ATTR = "lat";
@@ -30,56 +30,38 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	private String AUTHENTICATED_ATTR = "authed";
 	private String RUNASPRINCIPALS_ATTR = "rps";
 	private int sessionTimeout = 1800;
-	private MultiMap<String, Object> _cache;
+	private ReactiveMultiMap<String, Object> _cache;
 			
-	public CacheSessionRepository() {
-		_cache = Collections.newMultiMap(SESSION_PREFIX).expire(sessionTimeout).complex();
+	public CacheSessionRepository(ReactiveMultiMap<String, Object> _cache) {
+		this._cache = _cache.expire(sessionTimeout);
 	}
 	
-	public int getSessionTimeout() {
-		return sessionTimeout;
-	}
-
 	public void setSessionTimeout(int sessionTimeout) {
 		this.sessionTimeout = sessionTimeout;
 	}
 	
 	/**
 	 * 创建session
-	 * 主动的去创建一个 session
 	 */
 	@Override
-	public CacheSession createSession(String sessionId) {
-		CacheSession session = getSession(sessionId);
-		if (session == null) {
-			session = new CacheSession(sessionId);
-			session.saveDelta();
-		}
-		return session;
-	}
-	
-	/**
-	 * 创建session
-	 */
-	@Override
-	public CacheSession createSession(Principal principal, boolean authenticated) {
+	public Mono<CacheSession> createSession(Principal principal, boolean authenticated) {
 		CacheSession session = new CacheSession(UUID.randomUUID().toString());
 		session.principal = principal;
 		session.authenticated = authenticated;
-		session.saveDelta();
-		return session;
+		return session.saveDelta();
 	}
 
 	/**
 	 * 获取session
 	 */
 	@Override
-	public CacheSession getSession(String id) {
-		Map<String, Object> entries = _cache.get(id);
-		if (entries == null || entries.isEmpty()) {
-			return null;
-		}
-		return loadSession(id, entries);
+	public Mono<CacheSession> getSession(String id) {
+		return _cache.get(id).map(entries ->{
+			if (entries == null || entries.isEmpty()) {
+				return null;
+			}
+			return loadSession(id, entries);
+		});
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -103,27 +85,29 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 				session._setAttribute(key.substring(SESSION_ATTR_PREFIX.length()), entry.getValue());
 			 }
 		}
-		return session.accesse();
+		return session.access();
 	}
 	
 	/**
 	 * 删除session
 	 */
 	@Override
-	public void removeSession(Session session) {
+	public Mono<Void> removeSession(Session session) {
 		if (session != null && StringUtils.hasText(session.getId())) {
-			_cache.delete(session.getId());
+			return _cache.delete(session.getId()).map(s -> null);
 		}
+		return Mono.empty();
 	}
 
 	/**
 	 * 删除session
 	 */
 	@Override
-	public void removeSession(String sessionId) {
+	public Mono<Void> removeSession(String sessionId) {
 		if (StringUtils.hasText(sessionId)) {
-			_cache.delete(sessionId);
+			return _cache.delete(sessionId).map(s -> null);
 		}
+		return Mono.empty();
 	}
 	
 	/**
@@ -185,7 +169,7 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 
 		@Override
 		public long getMaxInactiveInterval() {
-			return getSessionTimeout();
+			return sessionTimeout;
 		}
 		
 		@Override
@@ -215,7 +199,7 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 		/**
 		 * 访问 session
 		 */
-		public CacheSession accesse() {
+		public CacheSession access() {
 			this.lastAccessedTime = System.currentTimeMillis();
 			this.putAndFlush(LASTACCESSED_TIME_ATTR, lastAccessedTime);
 			return this;
@@ -281,13 +265,13 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 		}
 		
 		// 初始化才刷新数据
-		public void saveDelta() {
+		public Mono<CacheSession> saveDelta() {
 			Map<String, Object> delta = Maps.newHashMap();
 			delta.put(CREATION_TIME_ATTR, this.getCreationTime());
 			delta.put(LASTACCESSED_TIME_ATTR, this.getLastAccessedTime());
 			delta.put(PRINCIPAL_ATTR, this.getPrincipal());
 			delta.put(AUTHENTICATED_ATTR, this.isAuthenticated());
-			_cache.put(this.id, delta);
+			return _cache.put(this.id, delta).map(sessionAttrs -> this);
 		}
 		
 		public void _setAttribute(String key, Object v) {

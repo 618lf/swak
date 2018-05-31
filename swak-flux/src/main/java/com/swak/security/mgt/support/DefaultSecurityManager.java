@@ -10,13 +10,13 @@ import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.Principal;
 import com.swak.reactivex.Subject;
-import com.swak.security.context.AuthorizationInfo;
 import com.swak.security.exception.AuthenticationException;
 import com.swak.security.mgt.SecurityManager;
 import com.swak.security.principal.PrincipalStrategy;
 import com.swak.security.realm.Realm;
 import com.swak.security.subject.DefaultSubject;
-import com.swak.utils.StringUtils;
+
+import reactor.core.publisher.Mono;
 
 /**
  * 默认的安全管理器
@@ -36,79 +36,83 @@ public class DefaultSecurityManager implements SecurityManager {
 	}
 
 	@Override
-	public boolean isPermitted(Subject subject, String permission) {
-		return this.loadPermissions(subject).contains(permission);
+	public Mono<Boolean> isPermitted(Subject subject, String permission) {
+		return this.loadPermissions(subject).map(ps -> ps.contains(permission));
 	}
 
 	@Override
-	public boolean[] isPermitted(Subject subject, String... permissions) {
-		Set<String> _permissions = this.loadPermissions(subject);
-		boolean[] result;
-        if (permissions != null && permissions.length != 0) {
-            int size = permissions.length;
-            result = new boolean[size];
-            int i = 0;
-            for (String p : permissions) {
-                result[i++] = !CollectionUtils.isEmpty(_permissions) && _permissions.contains(p);
-            }
-        } else {
-            result = new boolean[0];
-        }
-        return result;
+	public Mono<boolean[]> isPermitted(Subject subject, String... permissions) {
+		return this.loadPermissions(subject).map(ps ->{
+			boolean[] result;
+	        if (permissions != null && permissions.length != 0) {
+	            int size = permissions.length;
+	            result = new boolean[size];
+	            int i = 0;
+	            for (String p : permissions) {
+	                result[i++] = !CollectionUtils.isEmpty(ps) && ps.contains(p);
+	            }
+	        } else {
+	            result = new boolean[0];
+	        }
+	        return result;
+		});
 	}
 
 	@Override
-	public boolean isPermittedAll(Subject subject, String... permissions) {
-		Set<String> _permissions = this.loadPermissions(subject);
-		if (CollectionUtils.isEmpty(_permissions)) {
-			return false;
-		}
-		if (permissions != null && permissions.length != 0) {
-            for (String p : permissions) {
-                if (!_permissions.contains(p)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+	public Mono<Boolean> isPermittedAll(Subject subject, String... permissions) {
+		return this.loadPermissions(subject).map(ps -> {
+			if (CollectionUtils.isEmpty(ps)) {
+				return false;
+			}
+			if (permissions != null && permissions.length != 0) {
+	            for (String p : permissions) {
+	                if (!ps.contains(p)) {
+	                    return false;
+	                }
+	            }
+	        }
+	        return true;
+		});
 	}
 
 	@Override
-	public boolean hasRole(Subject subject, String role) {
-		return this.loadRoles(subject).contains(role);
+	public Mono<Boolean> hasRole(Subject subject, String role) {
+		return this.loadRoles(subject).map(rs->rs.contains(role));
 	}
 
 	@Override
-	public boolean[] hasRoles(Subject subject, String... roles) {
-		Set<String> _roles = this.loadRoles(subject);
-		boolean[] result;
-        if (roles != null && roles.length != 0) {
-            int size = roles.length;
-            result = new boolean[size];
-            int i = 0;
-            for (String p : roles) {
-                result[i++] = !CollectionUtils.isEmpty(_roles) && _roles.contains(p);
-            }
-        } else {
-            result = new boolean[0];
-        }
-        return result;
+	public Mono<boolean[]> hasRoles(Subject subject, String... roles) {
+		return this.loadRoles(subject).map(rs ->{
+			boolean[] result;
+	        if (roles != null && roles.length != 0) {
+	            int size = roles.length;
+	            result = new boolean[size];
+	            int i = 0;
+	            for (String p : roles) {
+	                result[i++] = !CollectionUtils.isEmpty(rs) && rs.contains(p);
+	            }
+	        } else {
+	            result = new boolean[0];
+	        }
+	        return result;
+		});
 	}
 
 	@Override
-	public boolean hasAllRoles(Subject subject, String... roles) {
-		Set<String> _roles = this.loadRoles(subject);
-		if (CollectionUtils.isEmpty(_roles)) {
-			return false;
-		}
-		if (roles != null && roles.length != 0) {
-            for (String p : roles) {
-                if (!_roles.contains(p)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+	public Mono<Boolean> hasAllRoles(Subject subject, String... roles) {
+		return this.loadRoles(subject).map(rs -> {
+			if (CollectionUtils.isEmpty(rs)) {
+				return false;
+			}
+			if (roles != null && roles.length != 0) {
+	            for (String p : roles) {
+	                if (!rs.contains(p)) {
+	                    return false;
+	                }
+	            }
+	        }
+	        return true;
+		});
 	}
 	
 	/**
@@ -116,14 +120,16 @@ public class DefaultSecurityManager implements SecurityManager {
 	 * @param subject
 	 * @return
 	 */
-	private Set<String> loadPermissions(Subject subject) {
+	private Mono<Set<String>> loadPermissions(Subject subject) {
 		Set<String> permissions = subject.getPermissions();
 		if (permissions == null) {
-			AuthorizationInfo authorization = realm.doGetAuthorizationInfo(subject.getPrincipal());
-			subject.setPermissions(authorization.getPermissions());
-			subject.setRoles(authorization.getRoles());
+			return realm.doGetAuthorizationInfo(subject.getPrincipal()).map(authorization ->{
+				subject.setPermissions(authorization.getPermissions());
+				subject.setRoles(authorization.getRoles());
+				return subject.getPermissions();
+			});
 		}
-		return subject.getPermissions();
+		return Mono.just(subject.getPermissions());
 	}
 	
 	/**
@@ -131,44 +137,38 @@ public class DefaultSecurityManager implements SecurityManager {
 	 * @param subject
 	 * @return
 	 */
-	private Set<String> loadRoles(Subject subject) {
+	private Mono<Set<String>> loadRoles(Subject subject) {
 		Set<String> roles = subject.getRoles();
 		if (roles == null) {
-			AuthorizationInfo authorization = realm.doGetAuthorizationInfo(subject.getPrincipal());
-			subject.setPermissions(authorization.getPermissions());
-			subject.setRoles(authorization.getRoles());
+			return realm.doGetAuthorizationInfo(subject.getPrincipal()).map(authorization ->{
+				subject.setPermissions(authorization.getPermissions());
+				subject.setRoles(authorization.getRoles());
+				return authorization.getRoles();
+			});
 		}
-		return subject.getRoles();
+		return Mono.just(subject.getRoles());
 	}
 
 	@Override
-	public void login(Subject subject, HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
-		
-		// 验证
-		Principal principal;
-		try {
-			principal = realm.doAuthentication(request);
-		} catch (AuthenticationException ae) {
+	public Mono<Void> login(Subject subject, HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
+		return realm.doAuthentication(request).map(principal ->{
+			if (principal == null) {
+				throw new AuthenticationException(ErrorCode.U_P_FAILURE);
+			}
+			return principal;
+		}).doOnError((e) ->{
 			this.onLoginFailure(request, response);
-			throw ae;
-		}
-		
-		// 必须返回身份
-		if (principal == null) {
-			this.onLoginFailure(request, response);
-			throw new AuthenticationException(ErrorCode.U_P_FAILURE);
-		}
-		
-		// 登录成功 保存用户凭证，设置到subject中即可
-		this.login(subject, principal, request, response);
+		}).flatMap(principal ->{
+			return this.login(subject, principal, request, response);
+		});
 	}
 	
 	/**
 	 * 指定了身份来登录
 	 */
 	@Override
-	public void login(Subject subject, Principal principal, HttpServerRequest request, HttpServerResponse response) {
-		this.login(subject, principal, true, request, response);
+	public Mono<Void> login(Subject subject, Principal principal, HttpServerRequest request, HttpServerResponse response) {
+		return this.login(subject, principal, true, request, response);
 	}
 	
 	/**
@@ -178,54 +178,44 @@ public class DefaultSecurityManager implements SecurityManager {
 	 * @param request
 	 * @param response
 	 */
-	private void login(Subject subject, Principal principal, boolean authenticated, HttpServerRequest request, HttpServerResponse response) {
+	private Mono<Void> login(Subject subject, Principal principal, boolean authenticated, HttpServerRequest request, HttpServerResponse response) {
+		
 		// 设置相关信息到主体中
 		subject.setPrincipal(principal);  subject.setAuthenticated(authenticated);
 		
 		// 创建身份
-		principalStrategy.createPrincipal(subject, request, response);
-		
-		// 通知登录成功
-		this.onLoginSuccess(subject, request, response);
+		return principalStrategy.createPrincipal(subject, request, response).doOnSuccess((v) ->{
+			// 通知登录成功
+			this.onLoginSuccess(subject, request, response);
+		});
 	}
 
 	/**
 	 * 退出登录
 	 */
 	@Override
-	public void logout(Subject subject, HttpServerRequest request, HttpServerResponse response) {
-		principalStrategy.invalidatePrincipal(subject, request, response);
-		this.onLogout(subject, request, response);
+	public Mono<Void> logout(Subject subject, HttpServerRequest request, HttpServerResponse response) {
+		return principalStrategy.invalidatePrincipal(subject, request, response).doOnSuccess((v) ->{
+			this.onLogout(subject, request, response);
+		});
 	}
 
 	/**
 	 * 获取用户信息
 	 */
 	@Override
-	public Subject createSubject(HttpServerRequest request, HttpServerResponse response) {
-		
-		// 基本的 Subject
-		Subject subject = new DefaultSubject();
-		
-		// 获取身份
-		principalStrategy.resolvePrincipal(subject, request, response);
-		
-		// session 失效的原因
-		if (StringUtils.hasText(subject.getSessionId()) 
-				&& subject.getSession() == null) {
-			subject.setReason(this.realm.resolveReason(subject.getSessionId()));
-		}
-		
-		return subject;
+	public Mono<Subject> createSubject(HttpServerRequest request, HttpServerResponse response) {
+		return principalStrategy.resolvePrincipal(new DefaultSubject(), request, response);
 	}
 	
 	/**
 	 * 将此身份失效
 	 */
 	@Override
-	public void invalidate(String sessionId, String reason) {
-		principalStrategy.invalidatePrincipal(sessionId);
-		this.realm.onInvalidate(sessionId, reason);
+	public Mono<Void> invalidate(String sessionId, String reason) {
+		return principalStrategy.invalidatePrincipal(sessionId).doOnSuccess((v)->{
+			realm.onInvalidate(sessionId, reason);
+		});
 	}
 	
 	/**

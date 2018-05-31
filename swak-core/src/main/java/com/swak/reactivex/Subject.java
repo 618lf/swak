@@ -2,6 +2,8 @@ package com.swak.reactivex;
 
 import java.util.Set;
 
+import reactor.core.publisher.Mono;
+
 /**
  * 简单的主体
  * @author lifeng
@@ -72,42 +74,42 @@ public interface Subject {
 	 * @param permission
 	 * @return
 	 */
-	boolean isPermitted(String permission);
+	Mono<Boolean> isPermitted(String permission);
 	
 	/**
 	 * 是否有权限
 	 * @param permissions
 	 * @return
 	 */
-	boolean[] isPermitted(String... permissions);
+	Mono<boolean[]> isPermitted(String... permissions);
 	
 	/**
 	 * 是否拥有所有的权限
 	 * @param permissions
 	 * @return
 	 */
-	boolean isPermittedAll(String... permissions);
+	Mono<Boolean> isPermittedAll(String... permissions);
 	
 	/**
 	 * 是否拥有这个角色
 	 * @param role
 	 * @return
 	 */
-	boolean hasRole(String role);
+	Mono<Boolean> hasRole(String role);
 	
 	/**
 	 * 是否拥有这个角色
 	 * @param role
 	 * @return
 	 */
-	boolean[] hasRoles(String... permissions);
+	Mono<boolean[]> hasRoles(String... permissions);
 	
 	/**
 	 * 是否拥有所有的角色
 	 * @param permissions
 	 * @return
 	 */
-	boolean hasAllRoles(String... permissions);
+	Mono<Boolean> hasAllRoles(String... permissions);
 	
 	/**
 	 * 是否授权登录
@@ -137,18 +139,18 @@ public interface Subject {
 	 * 登录
 	 * @param token
 	 */
-	void login(HttpServerRequest request, HttpServerResponse response);
+	Mono<Void> login(HttpServerRequest request, HttpServerResponse response);
 	
 	/**
 	 * 登录
 	 * @param token
 	 */
-	void login(Principal principal, HttpServerRequest request, HttpServerResponse response);
+	Mono<Void> login(Principal principal, HttpServerRequest request, HttpServerResponse response);
 	
 	/**
 	 * 退出系统
 	 */
-	void logout(HttpServerRequest request, HttpServerResponse response);
+	Mono<Void> logout(HttpServerRequest request, HttpServerResponse response);
 	
 	/**
 	 * 用户拥有的角色

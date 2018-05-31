@@ -1,7 +1,9 @@
-package com.swak.security.session;
+package com.swak.security.principal;
 
 import com.swak.reactivex.Principal;
 import com.swak.reactivex.Session;
+
+import reactor.core.publisher.Mono;
 
 public interface SessionRepository<S extends Session> {
 
@@ -12,33 +14,27 @@ public interface SessionRepository<S extends Session> {
 	void setSessionTimeout(int sessionTimeout);
 	
 	/**
-	 * 创建一个Session, 必须指定sessionId
-	 * @param session
-	 */
-	S createSession(String sessionId);
-	
-	/**
 	 * 创建一个Session， 指定身份
 	 * @param session
 	 */
-	S createSession(Principal principal, boolean authenticated);
+	Mono<S> createSession(Principal principal, boolean authenticated);
 	
 	/**
 	 * 返回一个Session
 	 * @param sessionId
 	 * @return
 	 */
-	S getSession(String sessionId);
+	Mono<S> getSession(String sessionId);
 	
 	/**
 	 * 删除一个session
 	 * @param id
 	 */
-	void removeSession(Session session);
+	Mono<Void> removeSession(Session session);
 	
 	/**
 	 * 删除一个session
 	 * @param sessionId
 	 */
-	void removeSession(String sessionId);
+	Mono<Void> removeSession(String sessionId);
 }

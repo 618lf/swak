@@ -4,7 +4,6 @@ import org.springframework.core.Ordered;
 
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
-import com.swak.reactivex.Subject;
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebFilterChain;
 import com.swak.security.mgt.FilterChainManager;
@@ -32,15 +31,9 @@ public class SecurityFilter implements WebFilter, Ordered {
 	 */
 	@Override
 	public Mono<Void> filter(HttpServerRequest request, HttpServerResponse response, WebFilterChain origChain) {
-
-		// 获取当前的用户
-		Subject subject = securityManager.createSubject(request, response);
-
-		// 存储在 request 中
-		request.setSubject(subject);
-
-		// 执行filter链
-		return this.getExecutionChain(request, response, origChain).filter(request, response);
+		return securityManager.createSubject(request, response)
+			   .map(subject -> this.getExecutionChain(request, response, origChain))
+			   .flatMap(chain -> chain.filter(request, response));
 	}
 
 	/**

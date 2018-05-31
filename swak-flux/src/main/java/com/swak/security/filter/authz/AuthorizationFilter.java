@@ -7,6 +7,7 @@ import com.swak.reactivex.web.Result;
 import com.swak.security.filter.AccessControllerFilter;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import reactor.core.publisher.Mono;
 
 /**
  * 权限验证器
@@ -18,8 +19,8 @@ public abstract class AuthorizationFilter extends AccessControllerFilter {
 	/**
 	 * 权限验证
 	 */
-	protected boolean onAccessDenied(HttpServerRequest request, HttpServerResponse response) {
+	protected Mono<Boolean> onAccessDenied(HttpServerRequest request, HttpServerResponse response) {
 		response.json().status(HttpResponseStatus.OK).buffer(Result.error(ErrorCode.ACCESS_DENIED).toJson());
-		return false;
+		return Mono.just(false);
 	}
 }

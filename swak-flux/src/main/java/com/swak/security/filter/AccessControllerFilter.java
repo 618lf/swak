@@ -3,6 +3,8 @@ package com.swak.security.filter;
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
 
+import reactor.core.publisher.Mono;
+
 /**
  * 访问控制
  * @author lifeng
@@ -17,7 +19,7 @@ public abstract class AccessControllerFilter extends PathMatchingFilter{
 	 * @return
 	 * @throws Exception
 	 */
-	protected abstract boolean isAccessAllowed(HttpServerRequest request, HttpServerResponse response, Object mappedValue);
+	protected abstract Mono<Boolean> isAccessAllowed(HttpServerRequest request, HttpServerResponse response, Object mappedValue);
 
 	/**
 	 * 如果没权访问这个请求，需要做什么动作
@@ -26,12 +28,17 @@ public abstract class AccessControllerFilter extends PathMatchingFilter{
 	 * @return
 	 * @throws Exception
 	 */
-	protected abstract boolean onAccessDenied(HttpServerRequest request, HttpServerResponse response);
+	protected abstract Mono<Boolean> onAccessDenied(HttpServerRequest request, HttpServerResponse response);
 
 	/**
 	 * 将 preHandle 分为两步来执行
 	 */
-	public boolean onPreHandle(HttpServerRequest request, HttpServerResponse response, Object mappedValue){
-		return isAccessAllowed(request, response, mappedValue) || onAccessDenied(request, response);
+	public Mono<Boolean> onPreHandle(HttpServerRequest request, HttpServerResponse response, Object mappedValue) {
+		return isAccessAllowed(request, response, mappedValue).flatMap((allowed) ->{
+			if (!allowed) {
+				return onAccessDenied(request, response);
+			}
+			return Mono.just(allowed);
+		});
 	}
 }

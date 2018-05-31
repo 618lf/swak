@@ -8,6 +8,7 @@ import com.swak.security.filter.AdviceFilter;
 import com.swak.security.utils.SecurityUtils;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import reactor.core.publisher.Mono;
 
 /**
  * 退出登录
@@ -15,23 +16,13 @@ import io.netty.handler.codec.http.HttpResponseStatus;
  */
 public class LogoutFilter extends AdviceFilter {
 
-	private String redirectUrl;
-
-	public String getRedirectUrl() {
-		return redirectUrl;
-	}
-
-	public void setRedirectUrl(String redirectUrl) {
-		this.redirectUrl = redirectUrl;
-	}
-
 	@Override
-	protected boolean preHandle(HttpServerRequest request, HttpServerResponse response) {
+	protected Mono<Boolean> preHandle(HttpServerRequest request, HttpServerResponse response) {
 		Subject subject = SecurityUtils.getSubject(request);
 		if (subject.getPrincipal() != null) {
 			subject.logout(request, response);
 		}
 		response.json().status(HttpResponseStatus.OK).buffer(Result.success().toJson());
-		return false;
+		return Mono.just(false);
 	}
 }

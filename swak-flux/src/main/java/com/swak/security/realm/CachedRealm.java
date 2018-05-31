@@ -8,6 +8,8 @@ import com.swak.reactivex.Principal;
 import com.swak.reactivex.Subject;
 import com.swak.security.context.AuthorizationInfo;
 
+import reactor.core.publisher.Mono;
+
 /**
  * 提供缓存的支持
  * @author lifeng
@@ -42,16 +44,13 @@ public abstract class CachedRealm implements Realm {
 	 * 优先获取缓存中的数据
 	 */
 	@Override
-	public AuthorizationInfo doGetAuthorizationInfo(Principal principal) {
+	public Mono<AuthorizationInfo> doGetAuthorizationInfo(Principal principal) {
 		String keyName = this.getCachedAuthorizationInfoName(principal);
 		AuthorizationInfo value = cache.getObject(keyName);
 		if (value == null) {
-			value = this.getAuthorizationInfo(principal);
+			return this.getAuthorizationInfo(principal).doOnSuccess(authorization -> cache.putObject(keyName, authorization));
 		}
-		if (value != null) {
-			cache.putObject(keyName, value);
-		}
-		return value;
+		return Mono.just(value);
 	}
 	
 	/**
@@ -59,7 +58,7 @@ public abstract class CachedRealm implements Realm {
 	 * @param principal
 	 * @return 
 	 */
-	protected abstract AuthorizationInfo getAuthorizationInfo(Principal principal);
+	protected abstract Mono<AuthorizationInfo> getAuthorizationInfo(Principal principal);
 
 	/**
 	 * 删除单个用户的缓存

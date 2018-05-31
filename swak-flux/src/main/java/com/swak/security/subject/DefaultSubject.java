@@ -12,6 +12,8 @@ import com.swak.security.exception.AuthenticationException;
 import com.swak.security.utils.SecurityUtils;
 import com.swak.utils.Sets;
 
+import reactor.core.publisher.Mono;
+
 public class DefaultSubject implements Subject {
 
 	private String sessionId; // 登录之后分配的会话ID
@@ -92,32 +94,32 @@ public class DefaultSubject implements Subject {
 	}
 
 	@Override
-	public boolean isPermitted(String permission) {
+	public Mono<Boolean> isPermitted(String permission) {
 		return SecurityUtils.getSecurityManager().isPermitted(this, permission);
 	}
 
 	@Override
-	public boolean[] isPermitted(String... permissions) {
+	public Mono<boolean[]> isPermitted(String... permissions) {
 		return SecurityUtils.getSecurityManager().isPermitted(this, permissions);
 	}
 
 	@Override
-	public boolean isPermittedAll(String... permissions) {
+	public Mono<Boolean> isPermittedAll(String... permissions) {
 		return SecurityUtils.getSecurityManager().isPermittedAll(this, permissions);
 	}
 
 	@Override
-	public boolean hasRole(String role) {
+	public Mono<Boolean> hasRole(String role) {
 		return SecurityUtils.getSecurityManager().hasRole(this, role);
 	}
 
 	@Override
-	public boolean[] hasRoles(String... permissions) {
+	public Mono<boolean[]> hasRoles(String... permissions) {
 		return SecurityUtils.getSecurityManager().hasRoles(this, permissions);
 	}
 
 	@Override
-	public boolean hasAllRoles(String... permissions) {
+	public Mono<Boolean> hasAllRoles(String... permissions) {
 		return SecurityUtils.getSecurityManager().hasAllRoles(this, permissions);
 	}
 
@@ -132,24 +134,22 @@ public class DefaultSubject implements Subject {
 	}
 
 	@Override
-	public void login(HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
-		SecurityUtils.getSecurityManager().login(this, request, response);
+	public Mono<Void> login(HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
+		return SecurityUtils.getSecurityManager().login(this, request, response);
 	}
 	
 	@Override
-	public void login(Principal principal, HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
-		SecurityUtils.getSecurityManager().login(this, principal, request, response);
+	public Mono<Void> login(Principal principal, HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
+		return SecurityUtils.getSecurityManager().login(this, principal, request, response);
 	}
 
 	@Override
-	public void logout(HttpServerRequest request, HttpServerResponse response) {
-		try {
-			SecurityUtils.getSecurityManager().logout(this, request, response);
-		} finally {
+	public Mono<Void> logout(HttpServerRequest request, HttpServerResponse response) {
+		return SecurityUtils.getSecurityManager().logout(this, request, response).doOnSuccess((t) ->{
 			this.authenticated = false;
 			this.roles = null;
 			this.permissions = null;
-		}
+		});
 	}
 
 	@Override

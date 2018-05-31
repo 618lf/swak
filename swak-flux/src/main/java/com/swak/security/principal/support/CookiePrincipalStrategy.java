@@ -6,8 +6,9 @@ import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.Session;
 import com.swak.reactivex.Subject;
 import com.swak.security.principal.PrincipalStrategy;
-import com.swak.security.session.SessionRepository;
-import com.swak.utils.StringUtils;
+import com.swak.security.principal.SessionRepository;
+
+import reactor.core.publisher.Mono;
 
 /**
  * 基于 COOKIE 的身份管理方式
@@ -15,66 +16,58 @@ import com.swak.utils.StringUtils;
  */
 public class CookiePrincipalStrategy implements PrincipalStrategy{
 
-	private String cookieName = "SESSION";
-	private SessionRepository<? extends Session> sessionRepository;
+	private final String cookieName;
+	private final SessionRepository<? extends Session> sessionRepository;
 	
-	/**
-	 * 设置 session 存储
-	 * @param sessionRepository
-	 */
-	public void setSessionRepository(SessionRepository<? extends Session> sessionRepository) {
+	public CookiePrincipalStrategy(String cookieName, SessionRepository<? extends Session> sessionRepository) {
+		this.cookieName = cookieName;
 		this.sessionRepository = sessionRepository;
 	}
-	
+
 	/**
 	 * 登录时用于创建身份
 	 */
 	@Override
-	public void createPrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
-		Session session = sessionRepository.createSession(subject.getPrincipal(), subject.isAuthenticated());
-		subject.setSession(session);
-		this.onNewSession(session, request, response);
+	public Mono<Void> createPrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
+		return sessionRepository.createSession(subject.getPrincipal(), subject.isAuthenticated()).map(session ->{
+			subject.setSession(session);
+			this.onNewSession(session, request, response);
+			return null;
+		});
 	}
 
 	/**
 	 * 身份已经失效
 	 */
 	@Override
-	public void invalidatePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
-		sessionRepository.removeSession(subject.getSession());
-		this.onInvalidateSession(request, response);
+	public Mono<Void> invalidatePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
+		return sessionRepository.removeSession(subject.getSession()).doOnSuccess((v) ->{
+			this.onInvalidateSession(request, response);
+		});
 	}
 
 	/**
 	 * 获取身份
 	 */
 	@Override
-	public void resolvePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
-		// 获取sesson
-		Session session = null;
-		String sessionId = this.readCookie(request);
-		if (StringUtils.hasText(sessionId)) {
-			session = sessionRepository.getSession(sessionId);
+	public Mono<Subject> resolvePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
+		return sessionRepository.getSession(this.readCookie(request)).map(session ->{
 			if (session == null) {
 				this.onInvalidateSession(request, response);
 			}
-			
-			// 保存 sessionId
-			subject.setSessionId(sessionId);
-		}
-		
-		// 保存 session 信息
-		if (session != null) {
-			subject.setSession(session);
-		}
+			if (session != null) {
+				subject.setSession(session);
+			}
+			return subject;
+		});
 	}
 
 	/**
 	 * 将身份失效
 	 */
 	@Override
-	public void invalidatePrincipal(String sessionId) {
-		sessionRepository.removeSession(sessionId);
+	public Mono<Void> invalidatePrincipal(String sessionId) {
+		return sessionRepository.removeSession(sessionId);
 	}
 	
 	protected void onNewSession(Session session, HttpServerRequest request, HttpServerResponse response) {

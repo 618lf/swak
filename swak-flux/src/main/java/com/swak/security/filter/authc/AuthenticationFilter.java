@@ -5,6 +5,8 @@ import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.web.annotation.RequestMethod;
 import com.swak.security.filter.AccessControllerFilter;
 
+import reactor.core.publisher.Mono;
+
 /**
  * 登录相关的操作
  * @author lifeng
@@ -15,9 +17,9 @@ public abstract class AuthenticationFilter extends AccessControllerFilter {
 	 * 都不需要访问登录请求
 	 */
 	@Override
-	protected boolean isAccessAllowed(HttpServerRequest request,
+	protected Mono<Boolean> isAccessAllowed(HttpServerRequest request,
 			HttpServerResponse response, Object mappedValue) {
-		return false;
+		return Mono.just(false);
 	}
 	
 	/**

@@ -5,6 +5,8 @@ import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.Subject;
 import com.swak.security.utils.SecurityUtils;
 
+import reactor.core.publisher.Mono;
+
 /**
  * 角色验证
  * @author lifeng
@@ -12,16 +14,16 @@ import com.swak.security.utils.SecurityUtils;
 public class RolesAuthorizationFilter extends AuthorizationFilter {
 
 	@Override
-	protected boolean isAccessAllowed(HttpServerRequest request,
+	protected Mono<Boolean> isAccessAllowed(HttpServerRequest request,
 			HttpServerResponse response, Object mappedValue) {
 		Subject subject = SecurityUtils.getSubject(request);
 		if (subject.getPrincipal() == null) {
-			return false;
+			return Mono.just(false);
 		}
 		
 		String[] rolesArray = (String[]) mappedValue;
 		if (rolesArray == null || rolesArray.length == 0) {
-            return true;
+			return Mono.just(true);
         }
 		return subject.hasAllRoles(rolesArray);
 	}

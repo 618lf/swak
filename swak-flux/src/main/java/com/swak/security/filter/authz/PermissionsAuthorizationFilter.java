@@ -5,6 +5,8 @@ import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.Subject;
 import com.swak.security.utils.SecurityUtils;
 
+import reactor.core.publisher.Mono;
+
 /**
  * 权限信息判断
  * @author lifeng
@@ -15,24 +17,19 @@ public class PermissionsAuthorizationFilter extends AuthorizationFilter {
 	 * 验证权限,必须有用户信息
 	 */
 	@Override
-	protected boolean isAccessAllowed(HttpServerRequest request, HttpServerResponse response, Object mappedValue) {
+	protected Mono<Boolean> isAccessAllowed(HttpServerRequest request, HttpServerResponse response, Object mappedValue) {
 		Subject subject = SecurityUtils.getSubject(request);
 		if (subject.getPrincipal() == null) {
-			return false;
+			return Mono.just(false);
 		}
 		String[] perms = (String[]) mappedValue;
-		boolean isPermitted = true;
         if (perms != null && perms.length > 0) {
             if (perms.length == 1) {
-                if (!subject.isPermitted(perms[0])) {
-                    isPermitted = false;
-                }
+               return subject.isPermitted(perms[0]);
             } else {
-                if (!subject.isPermittedAll(perms)) {
-                    isPermitted = false;
-                }
+               return subject.isPermittedAll(perms);
             }
         }
-		return isPermitted;
+		return Mono.just(true);
 	}
 }

@@ -4,6 +4,8 @@ import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
 import com.swak.security.filter.PathMatchingFilter;
 
+import reactor.core.publisher.Mono;
+
 /**
  * 匿名用户
  * @author lifeng
@@ -11,7 +13,7 @@ import com.swak.security.filter.PathMatchingFilter;
 public class AnonymousFilter extends PathMatchingFilter {
 
 	@Override
-	protected boolean onPreHandle(HttpServerRequest request, HttpServerResponse response, Object mappedValue) {
-		return true;
+	protected Mono<Boolean> onPreHandle(HttpServerRequest request, HttpServerResponse response, Object mappedValue) {
+		return Mono.just(true);
 	}
 }

@@ -6,6 +6,8 @@ import com.swak.reactivex.Subject;
 import com.swak.security.context.AuthorizationInfo;
 import com.swak.security.exception.AuthenticationException;
 
+import reactor.core.publisher.Mono;
+
 public interface Realm {
 
 	/**
@@ -15,14 +17,14 @@ public interface Realm {
 	 * @return
 	 * @throws AuthenticationException
 	 */
-	Principal doAuthentication(HttpServerRequest request) throws AuthenticationException;
+	Mono<Principal> doAuthentication(HttpServerRequest request);
 	
 	/**
 	 * 获取当前身份的权限信息
 	 * @param principal
 	 * @return
 	 */
-	AuthorizationInfo doGetAuthorizationInfo(Principal principal);
+	Mono<AuthorizationInfo> doGetAuthorizationInfo(Principal principal);
 	
     /**
      * 登录成功
@@ -45,11 +47,4 @@ public interface Realm {
      * @param reason
      */
     void onInvalidate(String sessionId, String reason);
-    
-    /**
-     * 获取原因
-     * @param sessionId
-     * @return
-     */
-    String resolveReason(String sessionId);
 }

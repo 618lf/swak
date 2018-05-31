@@ -8,6 +8,8 @@ import com.swak.security.context.SimpleAuthorizationInfo;
 import com.swak.security.exception.AuthenticationException;
 import com.swak.security.realm.Realm;
 
+import reactor.core.publisher.Mono;
+
 /**
  * 一个最简单的用户域
  * @author lifeng
@@ -16,20 +18,22 @@ public class SimpleRealm implements Realm {
 
 	/**
 	 * 模拟一个用户
-	 */
+	 */	
 	@Override
-	public Principal doAuthentication(HttpServerRequest request) throws AuthenticationException {
-		return new Principal(1L, "lifeng");
+	public Mono<Principal> doAuthentication(HttpServerRequest request) throws AuthenticationException {
+		return Mono.just(new Principal(1L, "lifeng"));
 	}
 
 	/**
 	 * 为用户分配权限
 	 */
 	@Override
-	public AuthorizationInfo doGetAuthorizationInfo(Principal principal) {
-		SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-		info.addRole("admin");
-		return info;
+	public Mono<AuthorizationInfo> doGetAuthorizationInfo(Principal principal) {
+		return Mono.fromSupplier(() ->{
+			SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+			info.addRole("admin");
+			return info;
+		});
 	}
 
 	@Override
@@ -50,10 +54,5 @@ public class SimpleRealm implements Realm {
 	@Override
 	public void onInvalidate(String sessionId, String reason) {
 		System.out.println("身份失效");
-	}
-
-	@Override
-	public String resolveReason(String sessionId) {
-		return null;
 	}
 }

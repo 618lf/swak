@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
  * 
  * @author lifeng
  */
-public class AdviceFilter implements WebFilter {
+public abstract class AdviceFilter implements WebFilter {
 
 	/**
 	 * 执行前
@@ -22,9 +22,7 @@ public class AdviceFilter implements WebFilter {
 	 * @return
 	 * @throws Exception
 	 */
-	protected boolean preHandle(HttpServerRequest request, HttpServerResponse response) {
-		return true;
-	}
+	protected abstract Mono<Boolean> preHandle(HttpServerRequest request, HttpServerResponse response);
 
 	/**
 	 * 执行后面的过滤器
@@ -35,7 +33,7 @@ public class AdviceFilter implements WebFilter {
 	 * @throws Exception
 	 */
 	protected Mono<Void> executeChain(HttpServerRequest request, HttpServerResponse response,
-			WebFilterChain chain) throws Exception {
+			WebFilterChain chain) {
 		return chain.filter(request, response);
 	}
 
@@ -44,15 +42,12 @@ public class AdviceFilter implements WebFilter {
 	 */
 	@Override
 	public Mono<Void> filter(HttpServerRequest request, HttpServerResponse response, WebFilterChain chain) {
-		try {
-			boolean continueChain = preHandle(request, response);
+		return preHandle(request, response).flatMap(continueChain ->{
 			if (continueChain) {
 				return executeChain(request, response, chain);
 			}
-		} catch (Exception e) {
-			return Mono.error(e);
-		}
-		return Mono.empty();
+			return Mono.empty();
+		});
 	}
 
 	/**
