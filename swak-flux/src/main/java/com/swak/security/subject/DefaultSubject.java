@@ -134,17 +134,17 @@ public class DefaultSubject implements Subject {
 	}
 
 	@Override
-	public Mono<Void> login(HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
+	public Mono<Subject> login(HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
 		return SecurityUtils.getSecurityManager().login(this, request, response);
 	}
 	
 	@Override
-	public Mono<Void> login(Principal principal, HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
+	public Mono<Subject> login(Principal principal, HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
 		return SecurityUtils.getSecurityManager().login(this, principal, request, response);
 	}
 
 	@Override
-	public Mono<Void> logout(HttpServerRequest request, HttpServerResponse response) {
+	public Mono<Boolean> logout(HttpServerRequest request, HttpServerResponse response) {
 		return SecurityUtils.getSecurityManager().logout(this, request, response).doOnSuccess((t) ->{
 			this.authenticated = false;
 			this.roles = null;

@@ -8,10 +8,10 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.swak.cache.collection.AsyncMultiMap;
+import com.swak.executor.Workers;
 import com.swak.reactivex.Principal;
 import com.swak.reactivex.Session;
 import com.swak.security.principal.SessionRepository;
-import com.swak.security.principal.support.CacheSessionRepository.CacheSession;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 
@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
  * 基于缓存的 session 管理
  * @author lifeng
  */
-public class CacheSessionRepository implements SessionRepository<CacheSession> {
+public class CacheSessionRepository implements SessionRepository {
 
 	private String SESSION_ATTR_PREFIX = "attr:";
 	private String CREATION_TIME_ATTR = "ct";
@@ -44,7 +44,7 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	 * 创建session
 	 */
 	@Override
-	public Mono<CacheSession> createSession(Principal principal, boolean authenticated) {
+	public Mono<Session> createSession(Principal principal, boolean authenticated) {
 		CacheSession session = new CacheSession(UUID.randomUUID().toString());
 		session.principal = principal;
 		session.authenticated = authenticated;
@@ -55,13 +55,13 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	 * 获取session
 	 */
 	@Override
-	public Mono<CacheSession> getSession(String id) {
-		return Mono.fromCompletionStage(_cache.get(id)).map(entries ->{
+	public Mono<Session> getSession(String id) {
+		return Workers.sink(_cache.get(id), (entries) -> {
 			if (entries == null || entries.isEmpty()) {
 				return null;
 			}
 			return loadSession(id, entries);
-		});
+		}); 
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -92,9 +92,9 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	 * 删除session
 	 */
 	@Override
-	public Mono<Void> removeSession(Session session) {
+	public Mono<Boolean> removeSession(Session session) {
 		if (session != null && StringUtils.hasText(session.getId())) {
-			return Mono.fromCompletionStage( _cache.delete(session.getId())).map(s -> null);
+			return Mono.fromCompletionStage( _cache.delete(session.getId())).map(s -> true);
 		}
 		return Mono.empty();
 	}
@@ -103,9 +103,9 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 	 * 删除session
 	 */
 	@Override
-	public Mono<Void> removeSession(String sessionId) {
+	public Mono<Boolean> removeSession(String sessionId) {
 		if (StringUtils.hasText(sessionId)) {
-			return Mono.fromCompletionStage(_cache.delete(sessionId)).map(s -> null);
+			return Mono.fromCompletionStage(_cache.delete(sessionId)).map(s -> true);
 		}
 		return Mono.empty();
 	}
@@ -265,7 +265,7 @@ public class CacheSessionRepository implements SessionRepository<CacheSession> {
 		}
 		
 		// 初始化才刷新数据
-		public Mono<CacheSession> saveDelta() {
+		public Mono<Session> saveDelta() {
 			Map<String, Object> delta = Maps.newHashMap();
 			delta.put(CREATION_TIME_ATTR, this.getCreationTime());
 			delta.put(LASTACCESSED_TIME_ATTR, this.getLastAccessedTime());

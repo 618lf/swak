@@ -139,18 +139,18 @@ public interface Subject {
 	 * 登录
 	 * @param token
 	 */
-	Mono<Void> login(HttpServerRequest request, HttpServerResponse response);
+	Mono<Subject> login(HttpServerRequest request, HttpServerResponse response);
 	
 	/**
 	 * 登录
 	 * @param token
 	 */
-	Mono<Void> login(Principal principal, HttpServerRequest request, HttpServerResponse response);
+	Mono<Subject> login(Principal principal, HttpServerRequest request, HttpServerResponse response);
 	
 	/**
 	 * 退出系统
 	 */
-	Mono<Void> logout(HttpServerRequest request, HttpServerResponse response);
+	Mono<Boolean> logout(HttpServerRequest request, HttpServerResponse response);
 	
 	/**
 	 * 用户拥有的角色

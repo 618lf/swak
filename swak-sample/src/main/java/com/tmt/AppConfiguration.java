@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import com.swak.cache.collection.AsyncMultiMap;
 import com.swak.cache.collection.AsyncMultiMapCache;
 import com.swak.config.flux.SecurityConfigurationSupport;
-import com.swak.reactivex.Session;
 import com.swak.security.principal.PrincipalStrategy;
 import com.swak.security.principal.SessionRepository;
 import com.swak.security.principal.support.CacheSessionRepository;
@@ -35,7 +34,7 @@ public class AppConfiguration {
 	 * @return
 	 */
 	@Bean
-	public SessionRepository<? extends Session> sessionRepository() {
+	public SessionRepository sessionRepository() {
 		AsyncMultiMap<String, Object> _cache = new AsyncMultiMapCache<Object>("SESSION");
 		return new CacheSessionRepository(_cache);
 	}
@@ -45,7 +44,7 @@ public class AppConfiguration {
 	 * @return
 	 */
 	@Bean
-	public PrincipalStrategy principalStrategy(SessionRepository<? extends Session> sessionRepository) {
+	public PrincipalStrategy principalStrategy(SessionRepository sessionRepository) {
 		return new CookiePrincipalStrategy("SESSION", sessionRepository);
 	}
 	

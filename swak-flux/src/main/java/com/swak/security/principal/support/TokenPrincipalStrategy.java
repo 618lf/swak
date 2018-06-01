@@ -41,9 +41,9 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	 * 创建身份信息 基于 Jwts
 	 */
 	@Override
-	public Mono<Void> createPrincipal(Subject subject, HttpServerRequest request,
+	public Mono<Subject> createPrincipal(Subject subject, HttpServerRequest request,
 			HttpServerResponse response) {
-		return Mono.fromRunnable(() -> {
+		return Mono.fromCallable(() -> {
 			// 也可以存储到 cookie 中
 			String token = TokenUtils.getToken(subject.getPrincipal(), key);
 			response.header(this.getTokenName(), token);
@@ -51,6 +51,7 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 			// 生成 SessionId
 			String sessionId = this.getKey(token);
 			subject.setSessionId(sessionId);
+			return subject;
 		});
 	}
 
@@ -58,10 +59,11 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	 * 将身份信息无效
 	 */
 	@Override
-	public Mono<Void> invalidatePrincipal(Subject subject,
+	public Mono<Boolean> invalidatePrincipal(Subject subject,
 			HttpServerRequest request, HttpServerResponse response) {
-		return Mono.fromRunnable(() -> {
+		return Mono.fromCallable(() -> {
 			response.header(this.getTokenName(), "");
+			return true;
 		});
 	}
 
@@ -96,7 +98,7 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	 * 将此sessionId 无效
 	 */
 	@Override
-	public Mono<Void> invalidatePrincipal(String sessionId) {return Mono.empty();}
+	public Mono<Boolean> invalidatePrincipal(String sessionId) {return Mono.empty();}
 
 	/**
 	 * 获得缓存的key值

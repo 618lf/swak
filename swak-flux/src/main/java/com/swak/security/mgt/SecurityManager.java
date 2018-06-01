@@ -23,9 +23,9 @@ public interface SecurityManager {
 	Mono<Boolean> hasAllRoles(Subject subject, String... roles);
 
 	// 身份
-	Mono<Void> login(Subject subject, HttpServerRequest request, HttpServerResponse response);
-	Mono<Void> login(Subject subject, Principal principal, HttpServerRequest request, HttpServerResponse response);
-	Mono<Void> logout(Subject subject, HttpServerRequest request, HttpServerResponse response);
+	Mono<Subject> login(Subject subject, HttpServerRequest request, HttpServerResponse response);
+	Mono<Subject> login(Subject subject, Principal principal, HttpServerRequest request, HttpServerResponse response);
+	Mono<Boolean> logout(Subject subject, HttpServerRequest request, HttpServerResponse response);
 	Mono<Subject> createSubject(HttpServerRequest request, HttpServerResponse response);
-	Mono<Void> invalidate(String sessionId, String reason);
+	Mono<Boolean> invalidate(String sessionId, String reason);
 }

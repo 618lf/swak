@@ -19,7 +19,7 @@ public interface PrincipalStrategy {
 	 * @param request
 	 * @param response
 	 */
-	Mono<Void> createPrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response);
+	Mono<Subject> createPrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response);
 
 	/**
 	 * 将身份失效
@@ -27,7 +27,7 @@ public interface PrincipalStrategy {
 	 * @param request
 	 * @param response
 	 */
-	Mono<Void> invalidatePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response);
+	Mono<Boolean> invalidatePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response);
 
 	/**
 	 * 获取身份
@@ -44,5 +44,5 @@ public interface PrincipalStrategy {
 	 * @param request
 	 * @param response
 	 */
-	Mono<Void> invalidatePrincipal(String sessionId);
+	Mono<Boolean> invalidatePrincipal(String sessionId);
 }

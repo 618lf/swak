@@ -150,7 +150,7 @@ public class DefaultSecurityManager implements SecurityManager {
 	}
 
 	@Override
-	public Mono<Void> login(Subject subject, HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
+	public Mono<Subject> login(Subject subject, HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
 		return realm.doAuthentication(request).map(principal ->{
 			if (principal == null) {
 				throw new AuthenticationException(ErrorCode.U_P_FAILURE);
@@ -167,7 +167,7 @@ public class DefaultSecurityManager implements SecurityManager {
 	 * 指定了身份来登录
 	 */
 	@Override
-	public Mono<Void> login(Subject subject, Principal principal, HttpServerRequest request, HttpServerResponse response) {
+	public Mono<Subject> login(Subject subject, Principal principal, HttpServerRequest request, HttpServerResponse response) {
 		return this.login(subject, principal, true, request, response);
 	}
 	
@@ -178,7 +178,7 @@ public class DefaultSecurityManager implements SecurityManager {
 	 * @param request
 	 * @param response
 	 */
-	private Mono<Void> login(Subject subject, Principal principal, boolean authenticated, HttpServerRequest request, HttpServerResponse response) {
+	private Mono<Subject> login(Subject subject, Principal principal, boolean authenticated, HttpServerRequest request, HttpServerResponse response) {
 		
 		// 设置相关信息到主体中
 		subject.setPrincipal(principal);  subject.setAuthenticated(authenticated);
@@ -194,7 +194,7 @@ public class DefaultSecurityManager implements SecurityManager {
 	 * 退出登录
 	 */
 	@Override
-	public Mono<Void> logout(Subject subject, HttpServerRequest request, HttpServerResponse response) {
+	public Mono<Boolean> logout(Subject subject, HttpServerRequest request, HttpServerResponse response) {
 		return principalStrategy.invalidatePrincipal(subject, request, response).doOnSuccess((v) ->{
 			this.onLogout(subject, request, response);
 		});
@@ -212,7 +212,7 @@ public class DefaultSecurityManager implements SecurityManager {
 	 * 将此身份失效
 	 */
 	@Override
-	public Mono<Void> invalidate(String sessionId, String reason) {
+	public Mono<Boolean> invalidate(String sessionId, String reason) {
 		return principalStrategy.invalidatePrincipal(sessionId).doOnSuccess((v)->{
 			realm.onInvalidate(sessionId, reason);
 		});

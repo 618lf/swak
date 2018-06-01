@@ -17,9 +17,9 @@ import reactor.core.publisher.Mono;
 public class CookiePrincipalStrategy implements PrincipalStrategy{
 
 	private final String cookieName;
-	private final SessionRepository<? extends Session> sessionRepository;
+	private final SessionRepository sessionRepository;
 	
-	public CookiePrincipalStrategy(String cookieName, SessionRepository<? extends Session> sessionRepository) {
+	public CookiePrincipalStrategy(String cookieName, SessionRepository sessionRepository) {
 		this.cookieName = cookieName;
 		this.sessionRepository = sessionRepository;
 	}
@@ -28,11 +28,11 @@ public class CookiePrincipalStrategy implements PrincipalStrategy{
 	 * 登录时用于创建身份
 	 */
 	@Override
-	public Mono<Void> createPrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
+	public Mono<Subject> createPrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
 		return sessionRepository.createSession(subject.getPrincipal(), subject.isAuthenticated()).map(session ->{
 			subject.setSession(session);
 			this.onNewSession(session, request, response);
-			return null;
+			return subject;
 		});
 	}
 
@@ -40,7 +40,7 @@ public class CookiePrincipalStrategy implements PrincipalStrategy{
 	 * 身份已经失效
 	 */
 	@Override
-	public Mono<Void> invalidatePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
+	public Mono<Boolean> invalidatePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
 		return sessionRepository.removeSession(subject.getSession()).doOnSuccess((v) ->{
 			this.onInvalidateSession(request, response);
 		});
@@ -66,7 +66,7 @@ public class CookiePrincipalStrategy implements PrincipalStrategy{
 	 * 将身份失效
 	 */
 	@Override
-	public Mono<Void> invalidatePrincipal(String sessionId) {
+	public Mono<Boolean> invalidatePrincipal(String sessionId) {
 		return sessionRepository.removeSession(sessionId);
 	}
 	

@@ -49,9 +49,9 @@ public class AuthenticatingFilter extends AuthenticationFilter {
 	 * @return
 	 * @throws Exception
 	 */
-	protected Mono<Void> executeLogin(HttpServerRequest request, HttpServerResponse response) {
+	protected Mono<Boolean> executeLogin(HttpServerRequest request, HttpServerResponse response) {
 		Subject subject = SecurityUtils.getSubject(request);
-		return subject.login(request, response).doOnSuccessOrError((v, t) -> {
+		return subject.login(request, response).map(v->true).doOnSuccessOrError((v, t) -> {
 			if (t != null && t instanceof AuthenticationException) {
 				onLoginFailure((AuthenticationException)t, request, response);
 			} else {

@@ -56,7 +56,7 @@ public class AsyncMultiMapCache<T> extends NameableCache implements AsyncMultiMa
 		CompletionStage<List<byte[]>> fvalues = AsyncOperations.runScript(script, ScriptOutputType.MULTI, pvalues);
 		return fvalues.thenApply(values -> {
 			Map<String, T> maps = Maps.newHashMap();
-			if (values != null) {
+			if (values != null && !values.isEmpty()) {
 				Iterator<byte[]> iterator = values.iterator();
 				while (iterator.hasNext()) {
 					maps.put(SafeEncoder.encode(iterator.next()), this.ser.deserialize(iterator.next()));
