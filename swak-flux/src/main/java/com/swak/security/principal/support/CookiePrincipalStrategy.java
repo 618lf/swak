@@ -5,6 +5,7 @@ import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.Session;
 import com.swak.reactivex.Subject;
+import com.swak.security.principal.NoneSession;
 import com.swak.security.principal.PrincipalStrategy;
 import com.swak.security.principal.SessionRepository;
 
@@ -52,10 +53,9 @@ public class CookiePrincipalStrategy implements PrincipalStrategy{
 	@Override
 	public Mono<Subject> resolvePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
 		return sessionRepository.getSession(this.readCookie(request)).map(session ->{
-			if (session == null) {
+			if (session instanceof NoneSession) {
 				this.onInvalidateSession(request, response);
-			}
-			if (session != null) {
+			} else {
 				subject.setSession(session);
 			}
 			return subject;

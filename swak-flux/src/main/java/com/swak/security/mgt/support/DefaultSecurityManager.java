@@ -5,7 +5,6 @@ import java.util.Set;
 import org.springframework.util.CollectionUtils;
 
 import com.swak.eventbus.system.SystemEventPublisher;
-import com.swak.exception.ErrorCode;
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.Principal;
@@ -150,13 +149,8 @@ public class DefaultSecurityManager implements SecurityManager {
 	}
 
 	@Override
-	public Mono<Subject> login(Subject subject, HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
-		return realm.doAuthentication(request).map(principal ->{
-			if (principal == null) {
-				throw new AuthenticationException(ErrorCode.U_P_FAILURE);
-			}
-			return principal;
-		}).doOnError((e) ->{
+	public Mono<Boolean> login(Subject subject, HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
+		return realm.doAuthentication(request).doOnError((e) ->{
 			this.onLoginFailure(request, response);
 		}).flatMap(principal ->{
 			return this.login(subject, principal, request, response);
@@ -167,7 +161,7 @@ public class DefaultSecurityManager implements SecurityManager {
 	 * 指定了身份来登录
 	 */
 	@Override
-	public Mono<Subject> login(Subject subject, Principal principal, HttpServerRequest request, HttpServerResponse response) {
+	public Mono<Boolean> login(Subject subject, Principal principal, HttpServerRequest request, HttpServerResponse response) {
 		return this.login(subject, principal, true, request, response);
 	}
 	
@@ -178,13 +172,13 @@ public class DefaultSecurityManager implements SecurityManager {
 	 * @param request
 	 * @param response
 	 */
-	private Mono<Subject> login(Subject subject, Principal principal, boolean authenticated, HttpServerRequest request, HttpServerResponse response) {
+	private Mono<Boolean> login(Subject subject, Principal principal, boolean authenticated, HttpServerRequest request, HttpServerResponse response) {
 		
 		// 设置相关信息到主体中
 		subject.setPrincipal(principal);  subject.setAuthenticated(authenticated);
 		
 		// 创建身份
-		return principalStrategy.createPrincipal(subject, request, response).doOnSuccess((v) ->{
+		return principalStrategy.createPrincipal(subject, request, response).map(s -> false).doOnSuccess((v) ->{
 			// 通知登录成功
 			this.onLoginSuccess(subject, request, response);
 		});

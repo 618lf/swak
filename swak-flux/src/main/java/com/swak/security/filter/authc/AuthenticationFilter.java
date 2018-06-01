@@ -2,7 +2,6 @@ package com.swak.security.filter.authc;
 
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
-import com.swak.reactivex.web.annotation.RequestMethod;
 import com.swak.security.filter.AccessControllerFilter;
 
 import reactor.core.publisher.Mono;
@@ -20,16 +19,5 @@ public abstract class AuthenticationFilter extends AccessControllerFilter {
 	protected Mono<Boolean> isAccessAllowed(HttpServerRequest request,
 			HttpServerResponse response, Object mappedValue) {
 		return Mono.just(false);
-	}
-	
-	/**
-	 * 是 post 提交
-	 * 
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	protected boolean isLoginSubmission(HttpServerRequest request, HttpServerResponse response) {
-		return request.getRequestMethod().name().equalsIgnoreCase(RequestMethod.POST.name());
 	}
 }

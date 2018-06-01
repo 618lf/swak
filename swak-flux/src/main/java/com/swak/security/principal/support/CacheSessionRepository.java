@@ -11,6 +11,7 @@ import com.swak.cache.collection.AsyncMultiMap;
 import com.swak.executor.Workers;
 import com.swak.reactivex.Principal;
 import com.swak.reactivex.Session;
+import com.swak.security.principal.NoneSession;
 import com.swak.security.principal.SessionRepository;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
@@ -31,7 +32,7 @@ public class CacheSessionRepository implements SessionRepository {
 	private String RUNASPRINCIPALS_ATTR = "rps";
 	private int sessionTimeout = 1800;
 	private AsyncMultiMap<String, Object> _cache;
-			
+	
 	public CacheSessionRepository(AsyncMultiMap<String, Object> _cache) {
 		this._cache = _cache.expire(sessionTimeout);
 	}
@@ -58,7 +59,7 @@ public class CacheSessionRepository implements SessionRepository {
 	public Mono<Session> getSession(String id) {
 		return Workers.sink(_cache.get(id), (entries) -> {
 			if (entries == null || entries.isEmpty()) {
-				return null;
+				return NoneSession.NONE;
 			}
 			return loadSession(id, entries);
 		}); 

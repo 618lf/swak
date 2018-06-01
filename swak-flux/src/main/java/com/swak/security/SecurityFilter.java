@@ -4,6 +4,7 @@ import org.springframework.core.Ordered;
 
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
+import com.swak.reactivex.Subject;
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebFilterChain;
 import com.swak.security.mgt.FilterChainManager;
@@ -32,7 +33,7 @@ public class SecurityFilter implements WebFilter, Ordered {
 	@Override
 	public Mono<Void> filter(HttpServerRequest request, HttpServerResponse response, WebFilterChain origChain) {
 		return securityManager.createSubject(request, response)
-			   .map(subject -> this.getExecutionChain(request, response, origChain))
+			   .map(subject -> this.getExecutionChain(subject, request, response, origChain))
 			   .flatMap(chain -> chain.filter(request, response));
 	}
 
@@ -44,8 +45,13 @@ public class SecurityFilter implements WebFilter, Ordered {
 	 * @param origChain
 	 * @return
 	 */
-	protected WebFilterChain getExecutionChain(HttpServerRequest request, HttpServerResponse response,
+	protected WebFilterChain getExecutionChain(Subject subject, HttpServerRequest request, HttpServerResponse response,
 			WebFilterChain origChain) {
+		
+		// 当前的主体
+		request.setSubject(subject);
+		
+		// 构建请求
 		WebFilterChain chain = origChain;
 		if (this.filterChainManager == null || !this.filterChainManager.hasChains()) {
 			return origChain;
