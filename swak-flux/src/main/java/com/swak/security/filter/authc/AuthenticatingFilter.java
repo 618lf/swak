@@ -50,7 +50,7 @@ public class AuthenticatingFilter extends AuthenticationFilter {
 			} else {
 				onLoginSuccess(subject, request, response);
 			}
-		});
+		}).onErrorResume(b->Mono.just(false));
 	}
 
 	/**
