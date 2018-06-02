@@ -21,6 +21,7 @@ public class CookiePrincipalStrategy implements PrincipalStrategy{
 
 	private final String cookieName;
 	private final SessionRepository sessionRepository;
+	private final String DELETED_COOKIE_VALUE = "deleteMe";
 	
 	public CookiePrincipalStrategy(String cookieName, SessionRepository sessionRepository) {
 		this.cookieName = cookieName;
@@ -86,14 +87,15 @@ public class CookiePrincipalStrategy implements PrincipalStrategy{
 	// cookie 相关的操作
 	public String readCookie(HttpServerRequest request) {
 		Cookie cookie = request.getCookie(this.cookieName);
-		return cookie != null ? cookie.value(): null;
+		String sessionId = cookie != null ? cookie.value(): null;
+		return DELETED_COOKIE_VALUE.equals(sessionId) ? null: sessionId;
 	}
 	public void writeCookie(HttpServerRequest request, HttpServerResponse response, String cookieValue) {
 		SimpleCookie sessionCookie = new SimpleCookie(this.cookieName, cookieValue);
 		sessionCookie.saveTo(request, response);
 	}
 	public void removeCookie(HttpServerRequest request, HttpServerResponse response) {
-		SimpleCookie sessionCookie = new SimpleCookie(this.cookieName, "");
+		SimpleCookie sessionCookie = new SimpleCookie(this.cookieName, DELETED_COOKIE_VALUE);
 		sessionCookie.removeFrom(request, response);
 	}
 }

@@ -11,10 +11,9 @@ import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
  */
 public class SimpleCookie extends DefaultCookie {
 
-	public static final String DELETED_COOKIE_VALUE = "deleteMe";
-
 	public SimpleCookie(String name, String value) {
 		super(name, value);
+		this.setPath("/");
 		this.setHttpOnly(true);
 	}
 
@@ -24,7 +23,7 @@ public class SimpleCookie extends DefaultCookie {
 	}
 
 	public void removeFrom(HttpServerRequest request, HttpServerResponse response) {
-		this.setValue(DELETED_COOKIE_VALUE);
+		this.setMaxAge(0);
 		String cookieValue = ServerCookieEncoder.LAX.encode(this);
 		addCookieHeader(response, cookieValue);
 	}
