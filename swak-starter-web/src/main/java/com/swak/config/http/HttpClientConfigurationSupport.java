@@ -43,6 +43,10 @@ public class HttpClientConfigurationSupport {
 		if (serverProperties.getMode() == TransportMode.EPOLL) {
 			builder.setUseNativeTransport(true);
 		}
+		builder.setConnectTimeout(httpClientProperties.getConnectTimeout());
+		builder.setReadTimeout(httpClientProperties.getReadTimeout());
+		builder.setRequestTimeout(httpClientProperties.getRequestTimeout());
+		builder.setHandshakeTimeout(httpClientProperties.getHandshakeTimeout());
 		builder.setUserAgent(httpClientProperties.getUserAgent());
 		return builder.build();
 	}
