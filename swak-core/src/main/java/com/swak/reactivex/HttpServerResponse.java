@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.cookie.Cookie;
 
 /**
  * 响应
@@ -152,7 +153,7 @@ public interface HttpServerResponse extends Closeable {
 	 * @param cookie
 	 * @return
 	 */
-	HttpServerResponse cookie(com.swak.reactivex.Cookie cookie);
+	HttpServerResponse cookie(Cookie cookie);
 
 	/**
 	 * 删除cookie

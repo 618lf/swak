@@ -34,7 +34,7 @@ public class CacheSessionRepository implements SessionRepository {
 	private AsyncMultiMap<String, Object> _cache;
 	
 	public CacheSessionRepository(AsyncMultiMap<String, Object> _cache) {
-		this._cache = _cache.expire(sessionTimeout);
+		this._cache = _cache.expire(sessionTimeout).complex();
 	}
 	
 	public void setSessionTimeout(int sessionTimeout) {
@@ -272,7 +272,7 @@ public class CacheSessionRepository implements SessionRepository {
 			delta.put(LASTACCESSED_TIME_ATTR, this.getLastAccessedTime());
 			delta.put(PRINCIPAL_ATTR, this.getPrincipal());
 			delta.put(AUTHENTICATED_ATTR, this.isAuthenticated());
-			return Mono.fromCompletionStage(_cache.put(this.id, delta)).map(sessionAttrs -> this);
+			return Mono.fromCompletionStage(_cache.put(this.id, delta)).map(s -> this);
 		}
 		
 		public void _setAttribute(String key, Object v) {

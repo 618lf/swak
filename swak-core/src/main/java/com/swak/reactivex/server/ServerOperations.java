@@ -24,6 +24,7 @@ public interface ServerOperations extends Subscriber<Void>{
 	 * 程序执行错误
 	 */
 	default void onError(Throwable e) {
+		this.getResponse().error().buffer(e);
 		this.onComplete();
 	}
 	

@@ -85,7 +85,7 @@ public class DefaultFilterChainManager implements FilterChainManager {
 		if (!this.hasChains()) {
 			return null;
 		}
-		String requestURI = request.getRequestURI();
+		String requestURI = request.getRequestURL();
 		for (String chainName : this.filterChains.keySet()) {
 			if (patternMatcher.match(chainName, requestURI)) {
 				return this.proxy(original, chainName);

@@ -11,7 +11,6 @@ import java.util.Map;
 
 import org.springframework.util.StringUtils;
 
-import com.swak.reactivex.Cookie;
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.Subject;
@@ -25,6 +24,7 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import io.netty.handler.codec.http.multipart.Attribute;
 import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
@@ -283,9 +283,9 @@ public abstract class HttpServerRequestOperation implements HttpServerRequest {
 	 * 解析 Cookie 
 	 */
 	private void parseCookies() {
-		String cookie = headers.getOrDefault(HttpHeaderNames.COOKIE, "");
-		cookie = cookie.length() > 0 ? cookie : headers.getOrDefault(HttpHeaderNames.COOKIE, "");
+		String cookie = headers.getOrDefault(HttpHeaderNames.COOKIE.toString(), "");
 		if (!StringUtils.isEmpty(cookie)) {
+			this.cookies = new HashMap<>();
 			ServerCookieDecoder.LAX.decode(cookie).forEach(this::parseCookie);
 		}
 		if (this.cookies == null) {
@@ -377,14 +377,7 @@ public abstract class HttpServerRequestOperation implements HttpServerRequest {
 		}
 	}
 
-	private void parseCookie(io.netty.handler.codec.http.cookie.Cookie nettyCookie) {
-		Cookie cookie = new Cookie();
-		cookie.name(nettyCookie.name());
-		cookie.value(nettyCookie.value());
-		cookie.httpOnly(nettyCookie.isHttpOnly());
-		cookie.path(nettyCookie.path());
-		cookie.domain(nettyCookie.domain());
-		cookie.maxAge(nettyCookie.maxAge());
+	private void parseCookie(Cookie cookie) {
 		this.cookies.put(cookie.name(), cookie);
 	}
 

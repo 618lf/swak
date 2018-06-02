@@ -30,6 +30,7 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.cookie.Cookie;
+import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 
 /**
  * 响应
@@ -236,18 +237,8 @@ public abstract class HttpServerResponseOperation extends HttpServerRequestOpera
 	 * @param cookie
 	 * @return
 	 */
-	public HttpServerResponseOperation cookie(com.swak.reactivex.Cookie cookie) {
-		Cookie nettyCookie = new io.netty.handler.codec.http.cookie.DefaultCookie(cookie.name(), cookie.value());
-		if (cookie.domain() != null) {
-			nettyCookie.setDomain(cookie.domain());
-		}
-		if (cookie.maxAge() > 0) {
-			nettyCookie.setMaxAge(cookie.maxAge());
-		}
-		nettyCookie.setPath(cookie.path());
-		nettyCookie.setHttpOnly(cookie.httpOnly());
-		nettyCookie.setSecure(cookie.secure());
-		this.cookies.add(nettyCookie);
+	public HttpServerResponseOperation cookie(Cookie cookie) {
+		this.cookies.add(cookie);
 		return this;
 	}
 
@@ -333,8 +324,7 @@ public abstract class HttpServerResponseOperation extends HttpServerRequestOpera
 			headers.set(HttpHeaderNames.SERVER, HttpConst.VERSION);
 		}
 		if (this.cookies.size() > 0) {
-			this.cookies.forEach(cookie -> headers.add(HttpHeaderNames.SET_COOKIE,
-					io.netty.handler.codec.http.cookie.ServerCookieEncoder.LAX.encode(cookie)));
+			this.cookies.forEach(cookie -> headers.add(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.LAX.encode(cookie)));
 		}
 		response.headers().set(headers);
 		return response;

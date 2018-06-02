@@ -74,7 +74,7 @@ public class HttpServerOperations extends HttpServerResponseOperation implements
 			this.initRequest(channel, request);
 			this.handler.apply(this).subscribe(this);
 		} catch (Exception e) {
-			this.onComplete();
+			this.onError(e);
 		}
 	}
 	

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.cookie.Cookie;
 
 public interface HttpServerRequest extends Closeable {
 

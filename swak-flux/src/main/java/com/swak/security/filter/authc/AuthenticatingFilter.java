@@ -44,13 +44,16 @@ public class AuthenticatingFilter extends AuthenticationFilter {
 	 */
 	protected Mono<Boolean> executeLogin(HttpServerRequest request, HttpServerResponse response) {
 		Subject subject = SecurityUtils.getSubject(request);
-		return subject.login(request, response).doOnSuccessOrError((v, t) -> {
-			if (t != null && t instanceof AuthenticationException) {
-				onLoginFailure((AuthenticationException)t, request, response);
-			} else {
-				onLoginSuccess(subject, request, response);
+		return subject.login(request, response).doOnSuccess(v -> {
+			onLoginSuccess(subject, request, response);
+		}).map(s->false).onErrorResume(e->{
+			if (e instanceof AuthenticationException) {
+				this.onLoginFailure((AuthenticationException)e, request, response);
+				return Mono.just(false);
 			}
-		}).onErrorResume(b->Mono.just(false));
+			// 其他的错误不处理
+			return Mono.error(e);
+		});
 	}
 
 	/**
@@ -76,7 +79,7 @@ public class AuthenticatingFilter extends AuthenticationFilter {
 	 * @return
 	 */
 	protected void onLoginFailure(AuthenticationException e, HttpServerRequest request, HttpServerResponse response) {
-		ErrorCode code = e.getErrorCode();
+		ErrorCode code = ((AuthenticationException)e).getErrorCode();
 		response.json().ok().buffer(Result.error(code).toJson());
 	}
 }

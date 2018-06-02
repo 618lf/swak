@@ -1,14 +1,16 @@
 package com.swak.security.principal.support;
 
-import com.swak.reactivex.Cookie;
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.Session;
+import com.swak.reactivex.SimpleCookie;
 import com.swak.reactivex.Subject;
 import com.swak.security.principal.NoneSession;
 import com.swak.security.principal.PrincipalStrategy;
 import com.swak.security.principal.SessionRepository;
+import com.swak.utils.StringUtils;
 
+import io.netty.handler.codec.http.cookie.Cookie;
 import reactor.core.publisher.Mono;
 
 /**
@@ -52,14 +54,18 @@ public class CookiePrincipalStrategy implements PrincipalStrategy{
 	 */
 	@Override
 	public Mono<Subject> resolvePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
-		return sessionRepository.getSession(this.readCookie(request)).map(session ->{
-			if (session instanceof NoneSession) {
-				this.onInvalidateSession(request, response);
-			} else {
-				subject.setSession(session);
-			}
-			return subject;
-		});
+		String sessionId = this.readCookie(request);
+		if (StringUtils.hasText(sessionId)) {
+			return sessionRepository.getSession(this.readCookie(request)).map(session ->{
+				if (session instanceof NoneSession) {
+					this.onInvalidateSession(request, response);
+				} else {
+					subject.setSession(session);
+				}
+				return subject;
+			});
+		}
+		return Mono.just(subject);
 	}
 
 	/**
@@ -83,14 +89,11 @@ public class CookiePrincipalStrategy implements PrincipalStrategy{
 		return cookie != null ? cookie.value(): null;
 	}
 	public void writeCookie(HttpServerRequest request, HttpServerResponse response, String cookieValue) {
-		Cookie sessionCookie = new Cookie();
-		sessionCookie.name(this.cookieName);
-		sessionCookie.value(cookieValue);
+		SimpleCookie sessionCookie = new SimpleCookie(this.cookieName, cookieValue);
 		sessionCookie.saveTo(request, response);
 	}
 	public void removeCookie(HttpServerRequest request, HttpServerResponse response) {
-		Cookie sessionCookie = new Cookie();
-		sessionCookie.name(this.cookieName);
+		SimpleCookie sessionCookie = new SimpleCookie(this.cookieName, "");
 		sessionCookie.removeFrom(request, response);
 	}
 }

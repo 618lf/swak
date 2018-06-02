@@ -99,7 +99,10 @@ public class AsyncMultiMapCache<T> extends NameableCache implements AsyncMultiMa
 		byte[][] result = new byte[values.length + pvalues.length][];
 		System.arraycopy(pvalues, 0, result, 0, pvalues.length);  
 		System.arraycopy(values, 0, result, pvalues.length, values.length);  
-		return AsyncOperations.runScript(script.replaceAll("#KEYS#", keys.toString()), ScriptOutputType.VALUE, result);
+		CompletionStage<byte[]> bFuture = AsyncOperations.runScript(script.replaceAll("#KEYS#", keys.toString()), ScriptOutputType.VALUE, result);
+		return bFuture.thenApply(b->{
+			return SafeEncoder.encode(b);
+		});
 	}
 
 	@Override
