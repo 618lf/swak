@@ -133,7 +133,19 @@ public interface Subject {
 	 * 以其他的身份运行
 	 * @param principal
 	 */
-	void runAs(Principal principal);
+	Mono<Boolean> runAs(Principal principal);
+	
+	/**
+	 * 是否是其他身份在运行
+	 * @return
+	 */
+	boolean isRunAs();
+	
+	/**
+	 * 返回原始身份
+	 * @return
+	 */
+	Mono<Principal> releaseRunAs();
 	
 	/**
 	 * 登录
@@ -175,18 +187,6 @@ public interface Subject {
 	 * @param permissions
 	 */
 	void setPermissions(Set<String> permissions);
-	
-	/**
-	 * 是否是其他身份在运行
-	 * @return
-	 */
-	boolean isRunAs();
-	
-	/**
-	 * 返回原始身份
-	 * @return
-	 */
-	Object releaseRunAs();
 	
 	/**
 	 * 销毁 for gc 

@@ -173,10 +173,9 @@ public class DefaultSubject implements Subject {
 	}
 
 	@Override
-	public void runAs(Principal principal) {
+	public Mono<Boolean> runAs(Principal principal) {
 		if (this.getPrincipal() == null || principal == null) {
-			String msg = "This subject does not yet have an identity.";
-            throw new IllegalStateException(msg);
+            return Mono.just(false);
 		}
 		
 		// 创建 runAsPrincipals
@@ -187,6 +186,7 @@ public class DefaultSubject implements Subject {
 		// 添加到顶部
 		runAsPrincipals.push(principal);
 		this.getSession().setRunAsPrincipals(runAsPrincipals);
+		return Mono.just(true);
 	}
 	
 	/**
@@ -198,16 +198,18 @@ public class DefaultSubject implements Subject {
 	}
 
 	@Override
-	public Object releaseRunAs() {
-		if (this.isRunAs()) {
-			Object principal = runAsPrincipals.pop();
-			if (runAsPrincipals.isEmpty()) {
-				runAsPrincipals = null;
+	public Mono<Principal> releaseRunAs() {
+		return Mono.fromCallable(() ->{
+			if (this.isRunAs()) {
+				Principal principal = runAsPrincipals.pop();
+				if (runAsPrincipals.isEmpty()) {
+					runAsPrincipals = null;
+				}
+				this.getSession().setRunAsPrincipals(runAsPrincipals);
+			    return principal;
 			}
-			this.getSession().setRunAsPrincipals(runAsPrincipals);
-		    return principal;
-		}
-		return null;
+			return this.getPrimaryPrincipal();
+		});
 	}
 
 	@Override
