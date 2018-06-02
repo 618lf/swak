@@ -174,7 +174,8 @@ public class DefaultSubject implements Subject {
 
 	@Override
 	public Mono<Boolean> runAs(Principal principal) {
-		if (this.getPrincipal() == null || principal == null) {
+		if (this.getPrincipal() == null || principal == null
+				|| this.getPrincipal().equals(principal)) {
             return Mono.just(false);
 		}
 		

@@ -39,6 +39,18 @@ public class Principal implements Externalizable {
 	public String toString(){
 		return new StringBuilder("Principal").append("@user=").append(this.getId()).toString();
 	}
+	
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (obj != null && obj instanceof Principal) {
+			return ((Principal)obj).getId().equals(this.getId());
+		}
+		return false;
+	}
 	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		this.id = (Serializable)in.readObject();
