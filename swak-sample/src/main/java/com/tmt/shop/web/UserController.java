@@ -23,4 +23,24 @@ public class UserController {
 	public Mono<Result> user(HttpServerRequest request) {
 		return Mono.just(Result.success(request.getSubject().getPrincipal()));
 	}
+	
+	/**
+	 * 需要管理员
+	 * @param request
+	 * @return
+	 */
+	@GetMapping("admin")
+	public Mono<Result> admin(HttpServerRequest request) {
+		return Mono.just(Result.success(request.getSubject().getPrincipal()));
+	}
+	
+	/**
+	 * 需要系统管理员
+	 * @param request
+	 * @return
+	 */
+	@GetMapping("system")
+	public Mono<Result> system(HttpServerRequest request) {
+		return Mono.just(Result.success(request.getSubject().getPrincipal()));
+	}
 }

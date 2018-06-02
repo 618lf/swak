@@ -59,6 +59,10 @@ public class AppConfiguration {
 		securityConfig.definition("/admin/hello/**=anon")
 		        .definition("/admin/login=authc")
 		        .definition("/admin/logout=logout")
+		        .definition("/admin/user/get=user")
+		        .definition("/admin/user/admin=user,roles[admin]")
+		        .definition("/admin/user/system=user,roles[system]")
+		        .definition("/admin/**=user")
 		        .definition("/admin/**=user")
 		        .definition("/=user")
 				.realm(new SimpleRealm());
