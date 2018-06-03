@@ -19,10 +19,8 @@ public class LogoutFilter extends AdviceFilter {
 	@Override
 	protected Mono<Boolean> preHandle(HttpServerRequest request, HttpServerResponse response) {
 		Subject subject = SecurityUtils.getSubject(request);
-		if (subject.getPrincipal() != null) {
-			subject.logout(request, response);
-		}
-		response.json().status(HttpResponseStatus.OK).buffer(Result.success().toJson());
-		return Mono.just(false);
+		return subject.logout(request, response).doOnSuccess(s ->{
+			response.json().status(HttpResponseStatus.OK).buffer(Result.success().toJson());
+		});
 	}
 }

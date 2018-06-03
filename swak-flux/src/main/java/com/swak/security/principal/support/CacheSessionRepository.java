@@ -95,9 +95,9 @@ public class CacheSessionRepository implements SessionRepository {
 	@Override
 	public Mono<Boolean> removeSession(Session session) {
 		if (session != null && StringUtils.hasText(session.getId())) {
-			return Mono.fromCompletionStage( _cache.delete(session.getId())).map(s -> true);
+			return Mono.fromCompletionStage( _cache.delete(session.getId())).map(s -> false);
 		}
-		return Mono.empty();
+		return Mono.just(false);
 	}
 
 	/**

@@ -178,7 +178,7 @@ public class DefaultSecurityManager implements SecurityManager {
 		subject.setPrincipal(principal);  subject.setAuthenticated(authenticated);
 		
 		// 创建身份
-		return principalStrategy.createPrincipal(subject, request, response).map(s -> true).doOnSuccess((v) ->{
+		return principalStrategy.createPrincipal(subject, request, response).map(s -> false).doOnSuccess((v) ->{
 			// 通知登录成功
 			this.onLoginSuccess(subject, request, response);
 		});

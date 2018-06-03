@@ -46,7 +46,7 @@ public class AuthenticatingFilter extends AuthenticationFilter {
 		Subject subject = SecurityUtils.getSubject(request);
 		return subject.login(request, response).doOnSuccess(v -> {
 			onLoginSuccess(subject, request, response);
-		}).map(s->false).onErrorResume(e->{
+		}).onErrorResume(e->{
 			if (e instanceof AuthenticationException) {
 				this.onLoginFailure((AuthenticationException)e, request, response);
 				return Mono.just(false);
