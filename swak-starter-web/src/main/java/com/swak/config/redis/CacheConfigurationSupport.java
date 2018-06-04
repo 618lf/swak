@@ -15,8 +15,8 @@ import com.swak.cache.redis.RedisLocalCache;
 import com.swak.cache.redis.RedisUtils;
 import com.swak.cache.redis.factory.RedisClientDecorator;
 import com.swak.cache.redis.factory.RedisConnectionPoolFactory;
-import com.swak.reactivex.server.HttpServerProperties;
-import com.swak.reactivex.server.TransportMode;
+import com.swak.reactivex.transport.HttpServerProperties;
+import com.swak.reactivex.transport.TransportMode;
 import com.swak.utils.Lists;
 
 import io.lettuce.core.RedisClient;

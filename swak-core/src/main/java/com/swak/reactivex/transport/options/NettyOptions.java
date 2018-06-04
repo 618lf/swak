@@ -1,13 +1,13 @@
-package com.swak.reactivex.server.options;
+package com.swak.reactivex.transport.options;
 
 import java.time.Duration;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import com.swak.reactivex.server.NettyContext;
-import com.swak.reactivex.server.TransportMode;
-import com.swak.reactivex.server.resources.LoopResources;
+import com.swak.reactivex.transport.NettyContext;
+import com.swak.reactivex.transport.TransportMode;
+import com.swak.reactivex.transport.resources.LoopResources;
 
 import io.netty.bootstrap.AbstractBootstrap;
 import io.netty.bootstrap.Bootstrap;

@@ -1,4 +1,4 @@
-package com.swak.reactivex.server;
+package com.swak.reactivex.transport;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

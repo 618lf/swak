@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Bean;
 
 import com.swak.http.HttpClientProperties;
 import com.swak.http.HttpClients;
-import com.swak.reactivex.server.HttpServerProperties;
-import com.swak.reactivex.server.TransportMode;
+import com.swak.reactivex.transport.HttpServerProperties;
+import com.swak.reactivex.transport.TransportMode;
 
 /**
  * 配置 http client

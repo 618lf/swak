@@ -1,4 +1,4 @@
-package com.swak.reactivex.server;
+package com.swak.reactivex.transport;
 
 /**
  * Constant for names used when adding/removing {@link io.netty.channel.ChannelHandler}.

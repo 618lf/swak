@@ -1,6 +1,6 @@
-package com.swak.reactivex.server;
+package com.swak.reactivex.transport;
 
-import com.swak.reactivex.server.channel.ContextHandler;
+import com.swak.reactivex.transport.channel.ContextHandler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

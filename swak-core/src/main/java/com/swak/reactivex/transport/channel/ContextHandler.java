@@ -1,4 +1,4 @@
-package com.swak.reactivex.server.channel;
+package com.swak.reactivex.transport.channel;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -6,11 +6,11 @@ import java.util.function.BiConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.swak.reactivex.server.ChannelHandler;
-import com.swak.reactivex.server.NettyContext;
-import com.swak.reactivex.server.NettyPipeline;
-import com.swak.reactivex.server.options.NettyOptions;
-import com.swak.reactivex.server.options.ServerOptions;
+import com.swak.reactivex.transport.ChannelHandler;
+import com.swak.reactivex.transport.NettyContext;
+import com.swak.reactivex.transport.NettyPipeline;
+import com.swak.reactivex.transport.options.NettyOptions;
+import com.swak.reactivex.transport.options.ServerOptions;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;

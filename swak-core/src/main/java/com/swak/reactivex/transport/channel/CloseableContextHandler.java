@@ -1,4 +1,4 @@
-package com.swak.reactivex.server.channel;
+package com.swak.reactivex.transport.channel;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -7,8 +7,8 @@ import java.util.function.BiFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.swak.reactivex.server.NettyContext;
-import com.swak.reactivex.server.options.NettyOptions;
+import com.swak.reactivex.transport.NettyContext;
+import com.swak.reactivex.transport.options.NettyOptions;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

@@ -1,6 +1,6 @@
 package com.swak.reactivex.context;
 
-import com.swak.reactivex.server.WebServer;
+import com.swak.reactivex.transport.WebServer;
 
 public class ReactiveWebServerInitializedEvent extends WebServerInitializedEvent {
 

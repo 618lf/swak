@@ -1,4 +1,4 @@
-package com.swak.reactivex.server;
+package com.swak.reactivex.transport;
 
 import java.io.File;
 import java.net.InetSocketAddress;
@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.server.WebServerException;
 
 import com.swak.reactivex.handler.HttpHandler;
-import com.swak.reactivex.server.channel.ContextHandler;
-import com.swak.reactivex.server.options.HttpServerOptions;
-import com.swak.reactivex.server.tcp.TcpServer;
+import com.swak.reactivex.transport.channel.ContextHandler;
+import com.swak.reactivex.transport.options.HttpServerOptions;
+import com.swak.reactivex.transport.tcp.TcpServer;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;

@@ -1,10 +1,10 @@
-package com.swak.reactivex.server.options;
+package com.swak.reactivex.transport.options;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import com.swak.reactivex.server.resources.LoopResources;
+import com.swak.reactivex.transport.resources.LoopResources;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;

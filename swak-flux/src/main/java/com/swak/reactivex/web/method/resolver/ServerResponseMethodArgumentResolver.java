@@ -6,7 +6,7 @@ import org.springframework.core.MethodParameter;
 
 import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.HttpServerResponse;
-import com.swak.reactivex.server.HttpServerOperations;
+import com.swak.reactivex.transport.HttpServerOperations;
 import com.swak.reactivex.web.method.HandlerMethodArgumentResolver;
 
 /**

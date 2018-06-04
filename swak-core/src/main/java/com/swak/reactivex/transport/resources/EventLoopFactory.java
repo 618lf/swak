@@ -1,4 +1,4 @@
-package com.swak.reactivex.server.resources;
+package com.swak.reactivex.transport.resources;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;

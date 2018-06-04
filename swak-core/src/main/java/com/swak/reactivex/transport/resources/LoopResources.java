@@ -1,7 +1,7 @@
-package com.swak.reactivex.server.resources;
+package com.swak.reactivex.transport.resources;
 
-import com.swak.reactivex.server.Disposable;
-import com.swak.reactivex.server.TransportMode;
+import com.swak.reactivex.transport.Disposable;
+import com.swak.reactivex.transport.TransportMode;
 
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;

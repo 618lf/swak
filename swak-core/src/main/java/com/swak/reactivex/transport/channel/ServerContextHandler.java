@@ -1,4 +1,4 @@
-package com.swak.reactivex.server.channel;
+package com.swak.reactivex.transport.channel;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -6,8 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import com.swak.reactivex.server.NettyContext;
-import com.swak.reactivex.server.options.ServerOptions;
+import com.swak.reactivex.transport.NettyContext;
+import com.swak.reactivex.transport.options.ServerOptions;
 
 import io.netty.channel.Channel;
 import io.netty.util.AsciiString;

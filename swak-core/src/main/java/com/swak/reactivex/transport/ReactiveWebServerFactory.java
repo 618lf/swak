@@ -1,4 +1,4 @@
-package com.swak.reactivex.server;
+package com.swak.reactivex.transport;
 
 /**
  * 还有一些属性每配置，在研究
