@@ -30,8 +30,8 @@ public abstract class CloseableContextHandler extends ContextHandler
 	boolean fired;
 	MonoSink<NettyContext> sink;
 	
-	CloseableContextHandler(NettyOptions options, MonoSink<NettyContext> sink, ChannelOperations.OnNew channelOpFactory) {
-		super(options, channelOpFactory);
+	CloseableContextHandler(NettyOptions options, MonoSink<NettyContext> sink) {
+		super(options);
 		this.sink = sink;
 	}
 	

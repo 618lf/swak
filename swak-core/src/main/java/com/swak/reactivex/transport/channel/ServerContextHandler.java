@@ -27,8 +27,8 @@ public class ServerContextHandler extends CloseableContextHandler implements Net
 
 	final ServerOptions options;
 
-	ServerContextHandler(ServerOptions serverOptions, MonoSink<NettyContext> sink, ChannelOperations.OnNew channelOpFactory) {
-		super(serverOptions, sink, channelOpFactory);
+	ServerContextHandler(ServerOptions serverOptions, MonoSink<NettyContext> sink) {
+		super(serverOptions, sink);
 		this.options = serverOptions;
 	}
 

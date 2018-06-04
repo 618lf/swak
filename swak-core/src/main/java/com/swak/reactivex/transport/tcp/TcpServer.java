@@ -2,11 +2,9 @@ package com.swak.reactivex.transport.tcp;
 
 import java.net.InetSocketAddress;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 
 import com.swak.reactivex.transport.NettyContext;
-import com.swak.reactivex.transport.NettyInbound;
-import com.swak.reactivex.transport.NettyOutbound;
+import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
 import com.swak.reactivex.transport.options.ServerOptions;
 
@@ -21,7 +19,7 @@ import reactor.core.publisher.MonoSink;
  * @author Stephane Maldini
  * @author Violeta Georgieva
  */
-public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHandler>{
+public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHandler>, ChannelOperations.OnNew {
 
 	/**
 	 * 配置 ServerOptions
@@ -40,9 +38,9 @@ public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHa
 	 * @param handler
 	 * @return
 	 */
-	protected final Mono<? extends NettyContext> asyncStart(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler) {
+	public final Mono<? extends NettyContext> start() {
 		return Mono.create(sink ->{
-			startWithSink(sink, handler);
+			startWithSink(sink);
 		});
 	}
 	
@@ -51,16 +49,13 @@ public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHa
 	 * @param sink
 	 * @param handler
 	 */
-	@SuppressWarnings("unchecked")
-	protected void startWithSink(MonoSink<NettyContext> sink, BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler) {
-		
-		BiFunction<NettyInbound, NettyOutbound, Mono<Void>> _handler = (BiFunction<NettyInbound, NettyOutbound, Mono<Void>>)handler;
+	protected void startWithSink(MonoSink<NettyContext> sink) {
 		
 		/**
 		 * init Handler
 		 */
-		ContextHandler contextHandler = this.newHandler(sink, _handler)
-				.onPipeline(this);
+		ContextHandler contextHandler = ContextHandler.newServerContext(options(), sink)
+				.onPipeline(this).onChannel(this);
 		
 		/**
 		 * start server
@@ -74,14 +69,6 @@ public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHa
 		 */
 		contextHandler.setFuture(b.bind());
 	}
-	
-	/**
-	 * 创建实际的 ContextHandler
-	 * @param sink
-	 * @return
-	 */
-	protected abstract ContextHandler newHandler(MonoSink<NettyContext> sink, BiFunction<NettyInbound, NettyOutbound, Mono<Void>> handler);
-	
 	
 	/**
 	 * 停止服务器

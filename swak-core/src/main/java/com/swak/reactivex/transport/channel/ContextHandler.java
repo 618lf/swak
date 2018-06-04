@@ -27,12 +27,11 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 
 	static final Logger log = LoggerFactory.getLogger(ContextHandler.class);
 	final NettyOptions options;
-	final ChannelOperations.OnNew channelOpFactory;
+	ChannelOperations.OnNew channelOpFactory;
 	BiConsumer<ChannelPipeline, ContextHandler> pipelineConfigurator;
 	
-	ContextHandler(NettyOptions options, ChannelOperations.OnNew channelOpFactory) {
+	ContextHandler(NettyOptions options) {
 		this.options = options;
-		this.channelOpFactory = channelOpFactory;
 	}
 
 	/**
@@ -133,6 +132,17 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	}
 	
 	/**
+	 * 设置请求处理器
+	 * @param pipelineConfigurator
+	 * @return
+	 */
+	public final ContextHandler onChannel(ChannelOperations.OnNew channelOpFactory) {
+		this.channelOpFactory =
+				Objects.requireNonNull(channelOpFactory, "channelOpFactory");
+		return this;
+	}
+	
+	/**
 	 * Create a new server context
 	 * @param sink
 	 * @param options
@@ -141,7 +151,7 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	 *
 	 * @return a new {@link ContextHandler} for servers
 	 */
-	public static ContextHandler newServerContext(ServerOptions options, MonoSink<NettyContext> sink, ChannelOperations.OnNew channelOpFactory) {
-		return new ServerContextHandler(options, sink, channelOpFactory);
+	public static ContextHandler newServerContext(ServerOptions options, MonoSink<NettyContext> sink) {
+		return new ServerContextHandler(options, sink);
 	}
 }

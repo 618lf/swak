@@ -13,10 +13,12 @@ import com.swak.reactivex.transport.NettyContext;
 import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.NettyOutbound;
 import com.swak.reactivex.transport.NettyPipeline;
+import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
 import com.swak.reactivex.transport.options.HttpServerOptions;
 import com.swak.reactivex.transport.tcp.TcpServer;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -27,7 +29,6 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoSink;
 import reactor.core.scheduler.Schedulers;
 
 /**
@@ -35,11 +36,12 @@ import reactor.core.scheduler.Schedulers;
  * 
  * @author lifeng
  */
-public class ReactiveWebServer extends TcpServer implements WebServer{
+public class ReactiveWebServer extends TcpServer implements WebServer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReactiveWebServer.class);
 
 	private final HttpServerProperties properties;
+	private BiFunction<NettyInbound, NettyOutbound, Mono<Void>> handler;
 	private HttpServerOptions options;
 	private String serverName; // 类似 http://127.0.0.1:8080
 	private NettyContext context;
@@ -52,24 +54,16 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 
 	// ------------------ 启动服务器 ---------------------
 	@Override
+	@SuppressWarnings("unchecked")
 	public void start(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler) {
 		try {
-			this.context = this.asyncStart(handler).subscribeOn(Schedulers.immediate()).doOnNext(ctx -> LOG.debug("Started {} on {}", "http-server", ctx.address()))
+			this.handler = (BiFunction<NettyInbound, NettyOutbound, Mono<Void>>)handler;
+			this.context = this.start().subscribeOn(Schedulers.immediate()).doOnNext(ctx -> LOG.debug("Started {} on {}", "http-server", ctx.address()))
 					.block();
 			this.startDaemonAwaitThread();
 		} catch (Exception ex) {
 			throw new WebServerException("Unable to start Netty", ex);
 		}
-	}
-
-	/**
-     * 创建实际的处理器, 以及实际的 OPERATIONS
-     */
-	@Override
-	protected ContextHandler newHandler(MonoSink<NettyContext> sink, BiFunction<NettyInbound, NettyOutbound, Mono<Void>> handler) {
-		return ContextHandler.newServerContext(options(), sink, (c, ch, request) -> {
-			return HttpServerOperations.bind(c, handler, ch, serverName, (FullHttpRequest) request);
-		});
 	}
 
 	/**
@@ -154,6 +148,14 @@ public class ReactiveWebServer extends TcpServer implements WebServer{
 		p.addLast(NettyPipeline.HttpAggregator, new HttpObjectAggregator(Integer.MAX_VALUE));
 		p.addLast(NettyPipeline.ChunkedWriter, new ChunkedWriteHandler());
 		p.addLast(NettyPipeline.HttpServerHandler,  new HttpServerHandler(ch));
+	}
+	
+	/**
+	 * 创建 Channel 处理器
+	 */
+	@Override
+	public ChannelOperations<?, ?> create(Channel c, ContextHandler ch, Object request) {
+		return HttpServerOperations.bind(c, handler, ch, serverName, (FullHttpRequest) request);
 	}
 
 	// ---------------------- 停止服务器 ---------------------
