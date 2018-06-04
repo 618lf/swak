@@ -1,8 +1,7 @@
 package com.swak.reactivex.handler;
 
-import com.swak.reactivex.HttpServerRequest;
-import com.swak.reactivex.HttpServerResponse;
-import com.swak.reactivex.transport.HttpServerOperations;
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerResponse;
 
 import reactor.core.publisher.Mono;
 
@@ -20,9 +19,7 @@ public class HttpWebHandlerAdapter extends WebHandlerDecorator implements HttpHa
 	 * 处理请求
 	 */
 	@Override
-	public Mono<Void> apply(HttpServerOperations httpServerOptions) {
-		HttpServerRequest request = httpServerOptions.getRequest();
-		HttpServerResponse response = httpServerOptions.getResponse();
+	public Mono<Void> apply(HttpServerRequest request, HttpServerResponse response) {
 		return this.getDelegate().handle(request, response);
 	}
 }

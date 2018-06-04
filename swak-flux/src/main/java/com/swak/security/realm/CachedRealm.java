@@ -4,8 +4,8 @@ import java.util.Set;
 
 import com.swak.cache.Cache;
 import com.swak.cache.CacheManager;
-import com.swak.reactivex.Principal;
-import com.swak.reactivex.Subject;
+import com.swak.reactivex.transport.http.Principal;
+import com.swak.reactivex.transport.http.Subject;
 import com.swak.security.context.AuthorizationInfo;
 
 import reactor.core.publisher.Mono;

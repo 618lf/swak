@@ -1,8 +1,9 @@
-package com.swak.reactivex.transport;
+package com.swak.reactivex.transport.http;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.swak.Constants;
+import com.swak.reactivex.transport.TransportMode;
 
 /**
  * 服务器的默认配置

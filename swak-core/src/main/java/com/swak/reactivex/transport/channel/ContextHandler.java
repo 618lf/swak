@@ -6,7 +6,6 @@ import java.util.function.BiConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.swak.reactivex.transport.ChannelHandler;
 import com.swak.reactivex.transport.NettyContext;
 import com.swak.reactivex.transport.NettyPipeline;
 import com.swak.reactivex.transport.options.NettyOptions;
@@ -28,11 +27,12 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 
 	static final Logger log = LoggerFactory.getLogger(ContextHandler.class);
 	final NettyOptions options;
+	final ChannelOperations.OnNew channelOpFactory;
 	BiConsumer<ChannelPipeline, ContextHandler> pipelineConfigurator;
-	ChannelHandler<Channel, Object> channelHandler;
 	
-	ContextHandler(NettyOptions options) {
+	ContextHandler(NettyOptions options, ChannelOperations.OnNew channelOpFactory) {
 		this.options = options;
+		this.channelOpFactory = channelOpFactory;
 	}
 
 	/**
@@ -106,20 +106,7 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	 * @param request
 	 */
 	public void doChannel(Channel channel, Object request) {
-		if (channelHandler != null) {
-			channelHandler.handleChannel(channel, request);
-		}
-	}
-	
-	/**
-	 * 错误
-	 * @param ctx
-	 * @param request
-	 */
-	public void doChannel(Channel channel, Throwable t) {
-		if (channelHandler != null) {
-			channelHandler.handleError(channel, t);
-		}
+		channelOpFactory.create(channel, this, request).onHandlerStart();
 	}
 	
 	/**
@@ -146,17 +133,6 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	}
 	
 	/**
-	 * 设置管道配置处理器
-	 * @param pipelineConfigurator
-	 * @return
-	 */
-	public final ContextHandler onChannel(ChannelHandler<Channel, Object> channelHandler) {
-		this.channelHandler =
-				Objects.requireNonNull(channelHandler, "channelHandler");
-		return this;
-	}
-	
-	/**
 	 * Create a new server context
 	 * @param sink
 	 * @param options
@@ -165,7 +141,7 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	 *
 	 * @return a new {@link ContextHandler} for servers
 	 */
-	public static ContextHandler newServerContext(ServerOptions options, MonoSink<NettyContext> sink) {
-		return new ServerContextHandler(options, sink);
+	public static ContextHandler newServerContext(ServerOptions options, MonoSink<NettyContext> sink, ChannelOperations.OnNew channelOpFactory) {
+		return new ServerContextHandler(options, sink, channelOpFactory);
 	}
 }

@@ -1,6 +1,9 @@
 package com.swak.reactivex.handler;
 
-import com.swak.reactivex.transport.HttpServerOperations;
+import java.util.function.BiFunction;
+
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerResponse;
 
 import reactor.core.publisher.Mono;
 
@@ -8,7 +11,7 @@ import reactor.core.publisher.Mono;
  * 处理 http 请求
  * @author lifeng
  */
-public interface HttpHandler {
+public interface HttpHandler extends BiFunction<HttpServerRequest, HttpServerResponse, Mono<Void>>{
 
 	/**
 	 * 处理请求返回可订阅对象
@@ -16,5 +19,5 @@ public interface HttpHandler {
 	 * @param response
 	 * @return
 	 */
-	Mono<Void> apply(HttpServerOperations httpServerOptions);
+	Mono<Void> apply(HttpServerRequest request, HttpServerResponse response);
 }

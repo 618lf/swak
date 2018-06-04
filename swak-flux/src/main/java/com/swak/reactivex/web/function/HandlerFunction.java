@@ -1,6 +1,6 @@
 package com.swak.reactivex.web.function;
 
-import com.swak.reactivex.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerRequest;
 import com.swak.reactivex.web.Handler;
 
 public interface HandlerFunction extends Handler {

@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 
-import com.swak.reactivex.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerRequest;
 import com.swak.reactivex.web.annotation.PathVariable;
 
 /**

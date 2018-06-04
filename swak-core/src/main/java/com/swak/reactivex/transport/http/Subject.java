@@ -1,4 +1,4 @@
-package com.swak.reactivex;
+package com.swak.reactivex.transport.http;
 
 import java.util.Set;
 

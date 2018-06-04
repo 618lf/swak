@@ -1,4 +1,4 @@
-package com.swak.reactivex;
+package com.swak.reactivex.transport.http;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -7,11 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.swak.reactivex.transport.NettyInbound;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.cookie.Cookie;
 
-public interface HttpServerRequest extends Closeable {
+public interface HttpServerRequest extends NettyInbound, Closeable {
 
 	/**
 	 * 获得身份

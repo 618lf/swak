@@ -1,10 +1,12 @@
-package com.swak.reactivex;
+package com.swak.reactivex.transport.http;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+
+import com.swak.reactivex.transport.NettyOutbound;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.cookie.Cookie;
@@ -13,7 +15,7 @@ import io.netty.handler.codec.http.cookie.Cookie;
  * 响应
  * @author lifeng
  */
-public interface HttpServerResponse extends Closeable {
+public interface HttpServerResponse extends NettyOutbound, Closeable {
 	
 	/**
 	 * 请求

@@ -5,8 +5,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.springframework.core.annotation.AnnotationUtils;
 
-import com.swak.reactivex.HttpServerRequest;
-import com.swak.reactivex.HttpServerResponse;
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerResponse;
 import com.swak.utils.JaxbMapper;
 
 /**

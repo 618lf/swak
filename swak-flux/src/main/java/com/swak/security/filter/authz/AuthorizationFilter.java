@@ -1,8 +1,8 @@
 package com.swak.security.filter.authz;
 
 import com.swak.exception.ErrorCode;
-import com.swak.reactivex.HttpServerRequest;
-import com.swak.reactivex.HttpServerResponse;
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerResponse;
 import com.swak.reactivex.web.Result;
 import com.swak.security.filter.AccessControllerFilter;
 

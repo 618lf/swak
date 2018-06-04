@@ -1,9 +1,9 @@
 package com.tmt.realm;
 
 import com.swak.exception.ErrorCode;
-import com.swak.reactivex.HttpServerRequest;
-import com.swak.reactivex.Principal;
-import com.swak.reactivex.Subject;
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.Principal;
+import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.web.WebUtils;
 import com.swak.security.context.AuthenticationToken;
 import com.swak.security.context.AuthorizationInfo;

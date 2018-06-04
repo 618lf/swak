@@ -1,4 +1,4 @@
-package com.swak.reactivex.transport;
+package com.swak.reactivex.transport.http;
 
 import com.swak.reactivex.transport.channel.ContextHandler;
 
@@ -43,10 +43,10 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	/**
-	 * 捕获异常
+	 * 捕获异常 -- 都异常的不用处理，直接关闭就好了
 	 */
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable t) {
-		context.doChannel(ctx.channel(), t);
+		ctx.channel().close();
 	}
 }

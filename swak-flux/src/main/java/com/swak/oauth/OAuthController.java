@@ -1,7 +1,7 @@
 package com.swak.oauth;
 
-import com.swak.reactivex.HttpServerRequest;
-import com.swak.reactivex.Principal;
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.Principal;
 
 /**
  * 针对第三方登录，或其他快捷登录提供的api

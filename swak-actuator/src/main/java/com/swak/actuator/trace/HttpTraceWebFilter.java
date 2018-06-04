@@ -2,10 +2,10 @@ package com.swak.actuator.trace;
 
 import org.springframework.core.Ordered;
 
-import com.swak.reactivex.HttpServerRequest;
-import com.swak.reactivex.HttpServerResponse;
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebFilterChain;
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerResponse;
 
 import reactor.core.publisher.Mono;
 

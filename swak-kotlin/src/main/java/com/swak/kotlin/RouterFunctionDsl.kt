@@ -1,13 +1,12 @@
 package com.swak.kotlin
 
-import com.swak.reactivex.HttpServerRequest
+import com.swak.reactivex.transport.http.HttpServerRequest
 import com.swak.reactivex.web.function.HandlerFunction
 import com.swak.reactivex.web.function.RequestPredicate
 import com.swak.reactivex.web.function.RequestPredicates
 import com.swak.reactivex.web.function.RouterFunction
 import com.swak.reactivex.web.function.RouterFunctions
 import io.netty.handler.codec.http.HttpMethod
-import java.util.function.Consumer
 
 /**
  *  Example:

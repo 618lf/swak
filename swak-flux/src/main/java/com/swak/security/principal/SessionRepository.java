@@ -1,7 +1,7 @@
 package com.swak.security.principal;
 
-import com.swak.reactivex.Principal;
-import com.swak.reactivex.Session;
+import com.swak.reactivex.transport.http.Principal;
+import com.swak.reactivex.transport.http.Session;
 
 import reactor.core.publisher.Mono;
 

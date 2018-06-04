@@ -23,8 +23,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.swak.reactivex.HttpConst;
-import com.swak.reactivex.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpConst;
+import com.swak.reactivex.transport.http.HttpServerRequest;
 import com.swak.reactivex.web.AbstractHandlerMapping;
 import com.swak.reactivex.web.HandlerMapping;
 import com.swak.reactivex.web.annotation.RequestMethod;

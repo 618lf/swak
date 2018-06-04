@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import com.swak.reactivex.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerRequest;
 
 public class UrlPathHelper {
 

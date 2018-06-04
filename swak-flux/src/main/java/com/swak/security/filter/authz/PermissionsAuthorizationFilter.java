@@ -1,8 +1,8 @@
 package com.swak.security.filter.authz;
 
-import com.swak.reactivex.HttpServerRequest;
-import com.swak.reactivex.HttpServerResponse;
-import com.swak.reactivex.Subject;
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerResponse;
+import com.swak.reactivex.transport.http.Subject;
 import com.swak.security.utils.SecurityUtils;
 
 import reactor.core.publisher.Mono;

@@ -1,4 +1,4 @@
-package com.swak.reactivex.transport;
+package com.swak.reactivex.transport.http;
 
 /**
  * 还有一些属性每配置，在研究

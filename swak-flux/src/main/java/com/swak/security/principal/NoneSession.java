@@ -3,8 +3,8 @@ package com.swak.security.principal;
 import java.util.Set;
 import java.util.Stack;
 
-import com.swak.reactivex.Principal;
-import com.swak.reactivex.Session;
+import com.swak.reactivex.transport.http.Principal;
+import com.swak.reactivex.transport.http.Session;
 
 /**
  * 无Session 

@@ -1,9 +1,9 @@
 package com.swak.security.principal.support;
 
-import com.swak.reactivex.HttpServerRequest;
-import com.swak.reactivex.HttpServerResponse;
-import com.swak.reactivex.Principal;
-import com.swak.reactivex.Subject;
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerResponse;
+import com.swak.reactivex.transport.http.Principal;
+import com.swak.reactivex.transport.http.Subject;
 import com.swak.security.principal.PrincipalStrategy;
 import com.swak.security.utils.TokenUtils;
 import com.swak.utils.Digests;

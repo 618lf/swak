@@ -3,11 +3,11 @@ package com.swak.security.subject;
 import java.util.Set;
 import java.util.Stack;
 
-import com.swak.reactivex.HttpServerRequest;
-import com.swak.reactivex.HttpServerResponse;
-import com.swak.reactivex.Principal;
-import com.swak.reactivex.Session;
-import com.swak.reactivex.Subject;
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerResponse;
+import com.swak.reactivex.transport.http.Principal;
+import com.swak.reactivex.transport.http.Session;
+import com.swak.reactivex.transport.http.Subject;
 import com.swak.security.exception.AuthenticationException;
 import com.swak.security.utils.SecurityUtils;
 import com.swak.utils.Sets;

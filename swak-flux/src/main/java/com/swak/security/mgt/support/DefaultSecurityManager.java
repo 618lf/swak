@@ -5,10 +5,10 @@ import java.util.Set;
 import org.springframework.util.CollectionUtils;
 
 import com.swak.eventbus.system.SystemEventPublisher;
-import com.swak.reactivex.HttpServerRequest;
-import com.swak.reactivex.HttpServerResponse;
-import com.swak.reactivex.Principal;
-import com.swak.reactivex.Subject;
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerResponse;
+import com.swak.reactivex.transport.http.Principal;
+import com.swak.reactivex.transport.http.Subject;
 import com.swak.security.exception.AuthenticationException;
 import com.swak.security.mgt.SecurityManager;
 import com.swak.security.principal.PrincipalStrategy;

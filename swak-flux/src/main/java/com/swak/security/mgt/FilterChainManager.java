@@ -1,8 +1,8 @@
 package com.swak.security.mgt;
 
-import com.swak.reactivex.HttpServerRequest;
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebFilterChain;
+import com.swak.reactivex.transport.http.HttpServerRequest;
 
 public interface FilterChainManager {
 

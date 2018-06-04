@@ -1,6 +1,6 @@
 package com.swak.security.utils;
 
-import com.swak.reactivex.Principal;
+import com.swak.reactivex.transport.http.Principal;
 import com.swak.security.jwt.JWT;
 import com.swak.security.jwt.JWTVerifier;
 import com.swak.security.jwt.algorithms.Algorithm;

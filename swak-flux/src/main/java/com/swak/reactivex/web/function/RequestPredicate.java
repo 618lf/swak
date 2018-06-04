@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.util.Assert;
 
-import com.swak.reactivex.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerRequest;
 
 /**
  * 请求的条件匹配

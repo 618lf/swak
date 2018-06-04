@@ -7,8 +7,8 @@ import java.util.List;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
-import com.swak.reactivex.HttpServerRequest;
-import com.swak.reactivex.HttpServerResponse;
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerResponse;
 
 import reactor.core.publisher.Mono;
 

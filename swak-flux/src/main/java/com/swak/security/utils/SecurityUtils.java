@@ -1,7 +1,7 @@
 package com.swak.security.utils;
 
-import com.swak.reactivex.HttpServerRequest;
-import com.swak.reactivex.Subject;
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.Subject;
 import com.swak.security.mgt.SecurityManager;
 /**
  * 主要是获取Subject

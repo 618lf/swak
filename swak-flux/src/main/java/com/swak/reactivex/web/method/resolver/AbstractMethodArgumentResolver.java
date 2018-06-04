@@ -4,7 +4,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
-import com.swak.reactivex.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerRequest;
 import com.swak.reactivex.web.method.HandlerMethodArgumentResolver;
 
 /**

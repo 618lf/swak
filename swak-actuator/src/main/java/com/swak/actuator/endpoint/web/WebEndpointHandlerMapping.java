@@ -11,7 +11,7 @@ import org.springframework.core.Ordered;
 
 import com.swak.Constants;
 import com.swak.actuator.endpoint.InvocationContext;
-import com.swak.reactivex.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerRequest;
 import com.swak.reactivex.web.annotation.RequestMethod;
 import com.swak.reactivex.web.method.AbstractRequestMappingHandlerMapping;
 import com.swak.reactivex.web.method.RequestMappingInfo;

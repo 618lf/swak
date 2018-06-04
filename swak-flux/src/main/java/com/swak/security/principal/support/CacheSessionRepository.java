@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.swak.cache.collection.AsyncMultiMap;
 import com.swak.executor.Workers;
-import com.swak.reactivex.Principal;
-import com.swak.reactivex.Session;
+import com.swak.reactivex.transport.http.Principal;
+import com.swak.reactivex.transport.http.Session;
 import com.swak.security.principal.NoneSession;
 import com.swak.security.principal.SessionRepository;
 import com.swak.utils.Maps;

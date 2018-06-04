@@ -3,8 +3,8 @@ package com.swak.reactivex.handler;
 import java.util.Arrays;
 import java.util.List;
 
-import com.swak.reactivex.HttpServerRequest;
-import com.swak.reactivex.HttpServerResponse;
+import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.HttpServerResponse;
 
 import reactor.core.publisher.Mono;
 

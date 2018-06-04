@@ -1,4 +1,4 @@
-package com.swak.reactivex;
+package com.swak.reactivex.transport.http;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
