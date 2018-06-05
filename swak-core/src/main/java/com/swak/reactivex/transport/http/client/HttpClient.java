@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import com.swak.reactivex.transport.NettyPipeline;
 import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
+import com.swak.reactivex.transport.resources.LoopResources;
 import com.swak.reactivex.transport.tcp.TcpClient;
 
 import io.netty.channel.Channel;
@@ -33,13 +34,13 @@ public class HttpClient extends TcpClient {
 	public HttpClientOptions options() {
 		if (this.options == null) {
 			this.options = this.options((options) -> {
-				options.serverName(properties.getName());
-				options.transportMode(properties.getMode());
+				options.loopResources(LoopResources.create(properties.getMode(), properties.getServerWorker(),
+						properties.getServerWorker(), properties.getName()));
 			});
 		}
 		return this.options;
 	}
-	
+
 	/**
 	 * 配置options
 	 */
@@ -48,7 +49,6 @@ public class HttpClient extends TcpClient {
 		options.accept(serverOptionsBuilder);
 		return serverOptionsBuilder.build();
 	}
-	
 
 	// ---------------------- 初始化管道 -- 处理数据 ---------------------
 	@Override

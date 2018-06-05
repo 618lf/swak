@@ -13,6 +13,7 @@ import com.swak.reactivex.transport.NettyOutbound;
 import com.swak.reactivex.transport.NettyPipeline;
 import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
+import com.swak.reactivex.transport.resources.LoopResources;
 import com.swak.reactivex.transport.tcp.TcpServer;
 
 import io.netty.channel.Channel;
@@ -50,11 +51,12 @@ public class HttpServer extends TcpServer {
 	@SuppressWarnings("unchecked")
 	public void start(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler) {
 		try {
-			this.handler = (BiFunction<NettyInbound, NettyOutbound, Mono<Void>>)handler;
-			this.context = this.connector().subscribeOn(Schedulers.immediate()).doOnNext(ctx -> LOG.debug("Started {} on {}", "http-server", ctx.address()))
-					.block();
+			this.handler = (BiFunction<NettyInbound, NettyOutbound, Mono<Void>>) handler;
+			this.context = this.connector().subscribeOn(Schedulers.immediate())
+					.doOnNext(ctx -> LOG.debug("Started {} on {}", "http-server", ctx.address())).block();
 			this.startDaemonAwaitThread();
 		} catch (Exception ex) {
+			this.stop();
 			throw new WebServerException("Unable to start Netty", ex);
 		}
 	}
@@ -78,7 +80,7 @@ public class HttpServer extends TcpServer {
 	}
 
 	// ----------------- 配置服务器 ----------------------
-	
+
 	/**
 	 * properties -> Options
 	 */
@@ -90,23 +92,23 @@ public class HttpServer extends TcpServer {
 				if (properties.isSslOn()) {
 					this.customizeSsl(options);
 				}
-				options.serverName(properties.getName());
-				options.transportMode(properties.getMode());
-				options.serverSelect(properties.getServerSelect());
-				options.serverWorker(properties.getServerWorker());
+				options.loopResources(LoopResources.create(properties.getMode(), properties.getServerSelect(),
+						properties.getServerWorker(), properties.getName()));
 				options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, properties.getConnectTimeout());
 				options.childOption(ChannelOption.SO_KEEPALIVE, properties.isSoKeepAlive());
 				options.childOption(ChannelOption.TCP_NODELAY, properties.isTcpNoDelay());
 			});
-			
-			this.serverName = new StringBuilder().append(this.options.sslContext() != null ? "https://": "http://")
+
+			this.serverName = new StringBuilder().append(this.options.sslContext() != null ? "https://" : "http://")
 					.append(this.options.getAddress().getHostString()).toString();
 			if (this.options.getAddress().getPort() != 80) {
-				this.serverName = new StringBuilder(this.serverName).append(":").append(this.options.getAddress().getPort()).toString();
+				this.serverName = new StringBuilder(this.serverName).append(":")
+						.append(this.options.getAddress().getPort()).toString();
 			}
 		}
 		return this.options;
 	}
+
 	private void customizeSsl(HttpServerOptions.Builder options) {
 		try {
 			SslContext sslCtx = SslContextBuilder.forServer(new File(properties.getCertFilePath()),
@@ -116,6 +118,7 @@ public class HttpServer extends TcpServer {
 			throw new IllegalStateException(ex);
 		}
 	}
+
 	private HttpServerOptions options(Consumer<? super HttpServerOptions.Builder> options) {
 		HttpServerOptions.Builder serverOptionsBuilder = HttpServerOptions.builder();
 		options.accept(serverOptionsBuilder);
@@ -134,9 +137,9 @@ public class HttpServer extends TcpServer {
 		p.addLast(NettyPipeline.HttpCodec, new HttpServerCodec(36192 * 2, 36192 * 8, 36192 * 16, false));
 		p.addLast(NettyPipeline.HttpAggregator, new HttpObjectAggregator(Integer.MAX_VALUE));
 		p.addLast(NettyPipeline.ChunkedWriter, new ChunkedWriteHandler());
-		p.addLast(NettyPipeline.HttpServerHandler,  new HttpServerHandler(ch));
+		p.addLast(NettyPipeline.HttpServerHandler, new HttpServerHandler(ch));
 	}
-	
+
 	/**
 	 * TcpServer.OnNew -> ContextHandler.onChannel(this)
 	 */
@@ -150,18 +153,19 @@ public class HttpServer extends TcpServer {
 	 * 停止服务器
 	 */
 	public void stop() {
-		if (context == null || context.isDisposed()) {
-			return;
-		}
-		removeShutdownHook();
-		context.dispose();
-		context.onClose()
-				.doOnError(e -> LOG.error("Stopped {} on {} with an error {}", properties.getName(), context.address(), e))
-				.doOnTerminate(() -> LOG.info("Stopped {} on {}", properties.getName(), context.address())).block();
-		context = null;
-		
+
 		// 关闭必要的资源
 		this.options.getLoopResources().dispose();
+
+		// 关闭链接
+		if (!(context == null || context.isDisposed())) {
+			removeShutdownHook();
+			context.dispose();
+			context.onClose().doOnError(
+					e -> LOG.error("Stopped {} on {} with an error {}", properties.getName(), context.address(), e))
+					.doOnTerminate(() -> LOG.info("Stopped {} on {}", properties.getName(), context.address())).block();
+			context = null;
+		}
 	}
 
 	// ---------------------- JVM ---------------------
@@ -176,6 +180,7 @@ public class HttpServer extends TcpServer {
 		this.shutdownHook = new Thread(this::shutdownFromJVM, "SWAK - ShutdownHook - jvm");
 		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
 	}
+
 	protected void shutdownFromJVM() {
 		if (context.isDisposed()) {
 			return;
@@ -186,10 +191,11 @@ public class HttpServer extends TcpServer {
 		context.onClose()
 				.doOnError(e -> LOG.error("Stopped {} on {} with an error {} from JVM hook {}", properties.getName(),
 						context.address(), e, hookDesc))
-				.doOnTerminate(
-						() -> LOG.info("Stopped {} on {} from JVM hook {}", properties.getName(), context.address(), hookDesc))
+				.doOnTerminate(() -> LOG.info("Stopped {} on {} from JVM hook {}", properties.getName(),
+						context.address(), hookDesc))
 				.block();
 	}
+
 	protected boolean removeShutdownHook() {
 		if (this.shutdownHook != null && Thread.currentThread() != this.shutdownHook) {
 			Thread sdh = this.shutdownHook;
@@ -204,7 +210,7 @@ public class HttpServer extends TcpServer {
 	public InetSocketAddress getAddress() {
 		return context.address();
 	}
-	
+
 	// ---------------------- 创建 http 服务器 ---------------------
 	/**
 	 * 创建 http 服务器

@@ -16,6 +16,15 @@ public class HttpClientProperties {
 	private String name = "SWAK-REACTIVE-SERVER";
 	private TransportMode mode = TransportMode.NIO;
 	
+	// 线程数量
+	private int serverWorker = -1; //  自动计算
+	
+	public int getServerWorker() {
+		return serverWorker;
+	}
+	public void setServerWorker(int serverWorker) {
+		this.serverWorker = serverWorker;
+	}
 	public String getName() {
 		return name;
 	}
