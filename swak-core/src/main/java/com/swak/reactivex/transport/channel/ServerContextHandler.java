@@ -53,4 +53,8 @@ public class ServerContextHandler extends CloseableContextHandler implements Net
 	public Channel channel() {
 		return f.channel();
 	}
+	
+	@Override
+	public final void fireContextActive(NettyContext context) {}
+	
 }

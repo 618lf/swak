@@ -1,4 +1,4 @@
-package com.swak.reactivex.transport.http;
+package com.swak.reactivex.transport.http.server;
 
 import com.swak.reactivex.transport.channel.ContextHandler;
 

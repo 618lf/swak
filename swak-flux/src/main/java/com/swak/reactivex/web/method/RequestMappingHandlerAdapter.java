@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 
-import com.swak.reactivex.transport.http.HttpServerRequest;
-import com.swak.reactivex.transport.http.HttpServerResponse;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.Handler;
 import com.swak.reactivex.web.HandlerAdapter;
 import com.swak.reactivex.web.method.resolver.HandlerMethodArgumentResolverComposite;

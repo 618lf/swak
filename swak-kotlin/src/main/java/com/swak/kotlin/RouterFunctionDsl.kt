@@ -1,6 +1,6 @@
 package com.swak.kotlin
 
-import com.swak.reactivex.transport.http.HttpServerRequest
+import com.swak.reactivex.transport.http.server.HttpServerRequest
 import com.swak.reactivex.web.function.HandlerFunction
 import com.swak.reactivex.web.function.RequestPredicate
 import com.swak.reactivex.web.function.RequestPredicates

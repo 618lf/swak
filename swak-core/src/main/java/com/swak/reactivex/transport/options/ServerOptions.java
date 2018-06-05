@@ -18,7 +18,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.AttributeKey;
 
-public class ServerOptions extends NettyOptions {
+public class ServerOptions extends NettyOptions<ServerBootstrap> {
 
 	private final InetSocketAddress localAddress;
 	private EventLoop dateServer;
@@ -64,7 +64,7 @@ public class ServerOptions extends NettyOptions {
 		dateServer = selectorGroup.next();
 	}
 
-	public static class Builder extends NettyOptions.Builder {
+	public static class Builder extends NettyOptions.Builder<ServerBootstrap> {
 
 		private String host;
 		private int port;

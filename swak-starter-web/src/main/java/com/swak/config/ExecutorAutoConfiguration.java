@@ -21,7 +21,7 @@ import org.springframework.core.annotation.Order;
 import com.swak.ApplicationProperties;
 import com.swak.Constants;
 import com.swak.executor.Workers;
-import com.swak.reactivex.transport.http.HttpServerProperties;
+import com.swak.reactivex.transport.http.server.HttpServerProperties;
 
 /**
  * Worker Executor 配置

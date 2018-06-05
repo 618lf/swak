@@ -1,7 +1,5 @@
 package com.swak.reactivex.context;
 
-import com.swak.reactivex.transport.http.WebServer;
-
 public class ReactiveWebServerInitializedEvent extends WebServerInitializedEvent {
 
 	private static final long serialVersionUID = 1L;

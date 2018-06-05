@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 import org.springframework.core.MethodParameter;
 
-import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.method.HandlerMethodArgumentResolver;
 
 /**

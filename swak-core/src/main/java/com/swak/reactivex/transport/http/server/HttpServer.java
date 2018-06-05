@@ -1,12 +1,10 @@
-package com.swak.reactivex.transport.http;
+package com.swak.reactivex.transport.http.server;
 
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.server.WebServerException;
 
 import com.swak.reactivex.transport.NettyContext;
@@ -15,7 +13,6 @@ import com.swak.reactivex.transport.NettyOutbound;
 import com.swak.reactivex.transport.NettyPipeline;
 import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
-import com.swak.reactivex.transport.options.HttpServerOptions;
 import com.swak.reactivex.transport.tcp.TcpServer;
 
 import io.netty.channel.Channel;
@@ -31,14 +28,7 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-/**
- * 响应式的 http 服务器
- * 
- * @author lifeng
- */
-public class ReactiveWebServer extends TcpServer implements WebServer {
-
-	private static final Logger LOG = LoggerFactory.getLogger(ReactiveWebServer.class);
+public class HttpServer extends TcpServer {
 
 	private final HttpServerProperties properties;
 	private BiFunction<NettyInbound, NettyOutbound, Mono<Void>> handler;
@@ -47,7 +37,7 @@ public class ReactiveWebServer extends TcpServer implements WebServer {
 	private NettyContext context;
 	private Thread shutdownHook;
 
-	private ReactiveWebServer(HttpServerProperties properties) {
+	public HttpServer(HttpServerProperties properties) {
 		this.properties = properties;
 		this.options = this.options();
 	}
@@ -58,7 +48,7 @@ public class ReactiveWebServer extends TcpServer implements WebServer {
 	public void start(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler) {
 		try {
 			this.handler = (BiFunction<NettyInbound, NettyOutbound, Mono<Void>>)handler;
-			this.context = this.start().subscribeOn(Schedulers.immediate()).doOnNext(ctx -> LOG.debug("Started {} on {}", "http-server", ctx.address()))
+			this.context = this.connector().subscribeOn(Schedulers.immediate()).doOnNext(ctx -> LOG.debug("Started {} on {}", "http-server", ctx.address()))
 					.block();
 			this.startDaemonAwaitThread();
 		} catch (Exception ex) {
@@ -233,11 +223,6 @@ public class ReactiveWebServer extends TcpServer implements WebServer {
 		return context.address();
 	}
 	
-	@Override
-	public int getPort() {
-		return getAddress().getPort();
-	}
-
 	// ---------------------- 创建 http 服务器 ---------------------
 	/**
 	 * 创建 http 服务器
@@ -245,7 +230,7 @@ public class ReactiveWebServer extends TcpServer implements WebServer {
 	 * @param options
 	 * @return
 	 */
-	public static ReactiveWebServer build(HttpServerProperties properties) {
-		return new ReactiveWebServer(properties);
+	public static HttpServer build(HttpServerProperties properties) {
+		return new HttpServer(properties);
 	}
 }

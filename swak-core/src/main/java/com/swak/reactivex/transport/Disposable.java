@@ -13,4 +13,12 @@ public interface Disposable {
 	 * Implementations are required to make this method idempotent.
 	 */
 	void dispose();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public default boolean isDisposed() {
+		return false;
+	}
 }

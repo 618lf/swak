@@ -2,7 +2,6 @@ package com.swak.reactivex.transport.channel;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.function.BiFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +12,6 @@ import com.swak.reactivex.transport.options.NettyOptions;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.util.concurrent.Future;
-import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoSink;
 
 /**
@@ -28,11 +26,9 @@ public abstract class CloseableContextHandler extends ContextHandler
 
 	ChannelFuture f;
 	boolean fired;
-	MonoSink<NettyContext> sink;
 	
-	CloseableContextHandler(NettyOptions options, MonoSink<NettyContext> sink) {
-		super(options);
-		this.sink = sink;
+	CloseableContextHandler(NettyOptions<?> options, MonoSink<NettyContext> sink) {
+		super(options, sink);
 	}
 	
 	/**
@@ -77,33 +73,5 @@ public abstract class CloseableContextHandler extends ContextHandler
 			return;
 		}
 		f.addListener(this);
-	}
-	
-	/**
-	 * Trigger {@link MonoSink#error(Throwable)} that will signal
-	 * {@link reactor.ipc.netty.NettyConnector#newHandler(BiFunction)} returned
-	 * {@link Mono} subscriber.
-	 *
-	 * @param t
-	 *            error to fail the associated {@link MonoSink}
-	 */
-	public void fireContextError(Throwable t) {
-		if (!fired) {
-			fired = true;
-			sink.error(t);
-		}  else {
-			log.error("Error cannot be forwarded to user-facing Mono", t);
-		}
-	}
-	
-	/**
-	 * Trigger {@link MonoSink#success(Object)} that will signal
-	 * {@link reactor.ipc.netty.NettyConnector#newHandler(BiFunction)} returned
-	 * {@link Mono} subscriber.
-	 *
-	 * @param context optional context to succeed the associated {@link MonoSink}
-	 */
-	public void fireContextActive(NettyContext context) {
-		
 	}
 }

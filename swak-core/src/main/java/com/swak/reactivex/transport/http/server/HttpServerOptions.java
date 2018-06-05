@@ -1,4 +1,6 @@
-package com.swak.reactivex.transport.options;
+package com.swak.reactivex.transport.http.server;
+
+import com.swak.reactivex.transport.options.ServerOptions;
 
 import io.netty.bootstrap.ServerBootstrap;
 

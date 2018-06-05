@@ -5,6 +5,7 @@ import java.util.function.BiFunction;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import com.swak.reactivex.transport.NettyContext;
 import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.NettyOutbound;
 
@@ -16,7 +17,7 @@ import reactor.core.publisher.Mono;
  * @author lifeng
  */
 public abstract class ChannelOperations<INBOUND extends NettyInbound, OUTBOUND extends NettyOutbound>
-		implements NettyInbound, NettyOutbound, Subscriber<Void> {
+		implements NettyInbound, NettyOutbound, Subscriber<Void>, NettyContext {
 
 	final protected BiFunction<? super INBOUND, ? super OUTBOUND, ? extends Mono<Void>> handler;
 	final Channel channel;
@@ -29,7 +30,7 @@ public abstract class ChannelOperations<INBOUND extends NettyInbound, OUTBOUND e
 		this.context = context;
 	}
 	
-	protected Channel channel() {
+	public Channel channel() {
 		return channel;
 	}
 
@@ -44,7 +45,9 @@ public abstract class ChannelOperations<INBOUND extends NettyInbound, OUTBOUND e
 	/**
 	 * 执行请求
 	 */
-	protected abstract void onHandlerStart();
+	protected void onHandlerStart() {
+		context.fireContextActive(this);
+	}
 
 	/**
 	 * A {@link ChannelOperations} factory

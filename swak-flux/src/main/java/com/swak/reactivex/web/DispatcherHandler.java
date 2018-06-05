@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.swak.reactivex.handler.WebHandler;
 import com.swak.reactivex.transport.http.HttpConst;
-import com.swak.reactivex.transport.http.HttpServerRequest;
-import com.swak.reactivex.transport.http.HttpServerResponse;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.result.HandlerResult;
 
 import reactor.core.publisher.Mono;

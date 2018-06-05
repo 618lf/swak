@@ -7,7 +7,7 @@ import org.springframework.util.PathMatcher;
 
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebFilterChain;
-import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.method.pattern.PathMatcherHelper;
 import com.swak.security.filter.NamedFilterList;
 import com.swak.security.filter.PathConfigProcessor;

@@ -1,13 +1,8 @@
-package com.swak.reactivex.transport.http;
-
-import java.util.function.BiFunction;
+package com.swak.reactivex.context;
 
 import org.springframework.boot.web.server.WebServerException;
 
-import com.swak.reactivex.transport.NettyInbound;
-import com.swak.reactivex.transport.NettyOutbound;
-
-import reactor.core.publisher.Mono;
+import com.swak.reactivex.handler.HttpHandler;
 
 /**
  * Simple interface that represents a fully configured web server (for example Tomcat,
@@ -25,7 +20,7 @@ public interface WebServer {
 	 * effect.
 	 * @throws WebServerException if the server cannot be started
 	 */
-	void start(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler) throws WebServerException;
+	void start(HttpHandler handler) throws WebServerException;
 
 	/**
 	 * Stops the web server. Calling this method on an already stopped server has no

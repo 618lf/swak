@@ -2,7 +2,7 @@ package com.swak.reactivex.web.result;
 
 import java.util.List;
 
-import com.swak.reactivex.transport.http.HttpServerResponse;
+import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.converter.HttpMessageConverter;
 
 /**

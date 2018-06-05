@@ -64,6 +64,31 @@ public interface LoopResources extends Disposable {
 	 * @return a new {@link EventLoopGroup}
 	 */
 	EventLoopGroup onServer();
+	
+	/**
+	 * Callback for server channel factory selection.
+	 *
+	 * @param group
+	 *            the source {@link EventLoopGroup} to assign a loop from
+	 *
+	 * @return a {@link Class} target for the underlying {@link ServerChannel}
+	 *         factory
+	 */
+	Class<? extends Channel> onChannel();
+
+	
+	/**
+	 * Callback for server {@link EventLoopGroup} creation.
+	 *
+	 * @param useNative
+	 *            should use native group if current {@link #preferNative()} is also
+	 *            true
+	 *
+	 * @return a new {@link EventLoopGroup}
+	 */
+	default EventLoopGroup onClient() {
+		return this.onServer();
+	}
 
 	/**
 	 * 关闭的时候释放资源

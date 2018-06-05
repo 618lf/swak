@@ -2,7 +2,7 @@ package com.swak.reactivex.web.method;
 
 import org.springframework.core.MethodParameter;
 
-import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
 
 /**
  * 实现参数的自动绑定

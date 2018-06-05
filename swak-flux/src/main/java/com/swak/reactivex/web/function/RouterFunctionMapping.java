@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import org.springframework.lang.Nullable;
 
-import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.Handler;
 import com.swak.reactivex.web.HandlerMapping;
 import com.swak.utils.Lists;

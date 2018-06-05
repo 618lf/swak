@@ -2,8 +2,8 @@ package com.tmt.shop.web;
 
 import com.swak.entity.Result;
 import com.swak.exception.ErrorCode;
-import com.swak.reactivex.transport.http.HttpServerRequest;
 import com.swak.reactivex.transport.http.Principal;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.PathVariable;
 import com.swak.reactivex.web.annotation.RestController;

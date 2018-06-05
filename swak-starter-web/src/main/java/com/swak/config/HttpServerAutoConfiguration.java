@@ -11,8 +11,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 import com.swak.config.flux.WebAutoConfiguration;
-import com.swak.reactivex.transport.http.HttpServerProperties;
-import com.swak.reactivex.transport.http.ReactiveWebServerFactory;
+import com.swak.reactivex.context.ReactiveWebServerFactory;
+import com.swak.reactivex.transport.http.server.HttpServerProperties;
 
 /**
  * 服务器配置

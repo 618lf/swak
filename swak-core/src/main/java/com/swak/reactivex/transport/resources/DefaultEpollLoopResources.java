@@ -1,9 +1,11 @@
 package com.swak.reactivex.transport.resources;
 
+import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
+import io.netty.channel.epoll.EpollSocketChannel;
 
 /**
  * EpollLoop
@@ -20,6 +22,11 @@ public class DefaultEpollLoopResources extends DefaultLoopResources {
 	@Override
 	public Class<? extends ServerChannel> onServerChannel() {
 		return EpollServerSocketChannel.class;
+	}
+	
+	@Override
+	public Class<? extends Channel> onChannel() {
+		return EpollSocketChannel.class;
 	}
 
 	@Override

@@ -11,7 +11,6 @@ import com.swak.reactivex.transport.resources.LoopResources;
 
 import io.netty.bootstrap.AbstractBootstrap;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -27,9 +26,9 @@ import reactor.util.function.Tuple2;
  * 
  * @author lifeng
  */
-public class NettyOptions {
+public class NettyOptions<BOOTSTRAP extends AbstractBootstrap<BOOTSTRAP, ?>> {
 
-	private final ServerBootstrap bootstrapTemplate;
+	private final BOOTSTRAP bootstrapTemplate;
 	private final String serverName;
 	private final TransportMode transportMode;
 	private final Integer serverSelect;
@@ -43,7 +42,7 @@ public class NettyOptions {
 	private final Predicate<? super Channel> onChannelInit;
     private final LoopResources loopResources;
 
-	protected NettyOptions(NettyOptions.Builder builder) {
+	protected NettyOptions(NettyOptions.Builder<BOOTSTRAP> builder) {
 		this.bootstrapTemplate = builder.bootstrapTemplate;
 		this.serverName = builder.serverName;
 		this.transportMode = builder.transportMode;
@@ -76,7 +75,7 @@ public class NettyOptions {
 	 * 
 	 * @return
 	 */
-	public ServerBootstrap get() {
+	public BOOTSTRAP get() {
 		return bootstrapTemplate.clone();
 	}
 
@@ -85,7 +84,7 @@ public class NettyOptions {
 	 * 
 	 * @return
 	 */
-	public ServerBootstrap getBootstrapTemplate() {
+	public BOOTSTRAP getBootstrapTemplate() {
 		return bootstrapTemplate;
 	}
 	
@@ -159,9 +158,9 @@ public class NettyOptions {
 		return sslHandler;
 	}
 
-	public static class Builder {
+	public static class Builder<BOOTSTRAP extends AbstractBootstrap<BOOTSTRAP, ?>> {
 
-		protected ServerBootstrap bootstrapTemplate;
+		protected BOOTSTRAP bootstrapTemplate;
 		private String serverName = "REACTOR";
 		private TransportMode transportMode = TransportMode.NIO;
 		private Integer serverSelect;
@@ -176,7 +175,7 @@ public class NettyOptions {
 		private Consumer<? super NettyContext> afterNettyContextInit = null;
 		private Predicate<? super Channel> onChannelInit = null;
 
-		protected Builder(ServerBootstrap bootstrapTemplate) {
+		protected Builder(BOOTSTRAP bootstrapTemplate) {
 			this.bootstrapTemplate = bootstrapTemplate;
 			defaultNettyOptions(this.bootstrapTemplate);
 		}
@@ -199,7 +198,7 @@ public class NettyOptions {
 		 * @return {@code this}
 		 * @see Bootstrap#attr(AttributeKey, Object)
 		 */
-		public <T> Builder attr(AttributeKey<T> key, T value) {
+		public <T> Builder<BOOTSTRAP> attr(AttributeKey<T> key, T value) {
 			this.bootstrapTemplate.attr(key, value);
 			return this;
 		}
@@ -218,7 +217,7 @@ public class NettyOptions {
 		 * @return {@code this}
 		 * @see Bootstrap#option(ChannelOption, Object)
 		 */
-		public <T> Builder option(ChannelOption<T> key, T value) {
+		public <T> Builder<BOOTSTRAP> option(ChannelOption<T> key, T value) {
 			this.bootstrapTemplate.option(key, value);
 			return this;
 		}
@@ -230,7 +229,7 @@ public class NettyOptions {
 		 *            Should the connector prefer native (epoll/kqueue) if available
 		 * @return {@code this}
 		 */
-		public final Builder serverName(String serverName) {
+		public final Builder<BOOTSTRAP> serverName(String serverName) {
 			this.serverName = serverName;
 			return this;
 		}
@@ -243,17 +242,17 @@ public class NettyOptions {
 		 *            Should the connector prefer native (epoll/kqueue) if available
 		 * @return {@code this}
 		 */
-		public final Builder transportMode(TransportMode transportMode) {
+		public final Builder<BOOTSTRAP> transportMode(TransportMode transportMode) {
 			this.transportMode = transportMode;
 			return this;
 		}
 		
-		public final Builder serverSelect(Integer serverSelect) {
+		public final Builder<BOOTSTRAP> serverSelect(Integer serverSelect) {
 			this.serverSelect = serverSelect;
 			return this;
 		}
 
-		public final Builder serverWorker(Integer serverWorker) {
+		public final Builder<BOOTSTRAP> serverWorker(Integer serverWorker) {
 			this.serverWorker = serverWorker;
 			return this;
 		}
@@ -266,7 +265,7 @@ public class NettyOptions {
 		 *            a {@link ChannelGroup} to monitor remote channel
 		 * @return {@code this}
 		 */
-		public final Builder channelGroup(ChannelGroup channelGroup) {
+		public final Builder<BOOTSTRAP> channelGroup(ChannelGroup channelGroup) {
 			this.channelGroup = Objects.requireNonNull(channelGroup, "channelGroup");
 			return this;
 		}
@@ -279,7 +278,7 @@ public class NettyOptions {
 		 *            The context to set when configuring SSL
 		 * @return {@code this}
 		 */
-		public final Builder sslContext(SslContext sslContext) {
+		public final Builder<BOOTSTRAP> sslContext(SslContext sslContext) {
 			this.sslContext = sslContext;
 			return this;
 		}
@@ -292,7 +291,7 @@ public class NettyOptions {
 		 *            The timeout {@link Duration}
 		 * @return {@code this}
 		 */
-		public final Builder sslHandshakeTimeout(Duration sslHandshakeTimeout) {
+		public final Builder<BOOTSTRAP> sslHandshakeTimeout(Duration sslHandshakeTimeout) {
 			Objects.requireNonNull(sslHandshakeTimeout, "sslHandshakeTimeout");
 			return sslHandshakeTimeoutMillis(sslHandshakeTimeout.toMillis());
 		}
@@ -305,7 +304,7 @@ public class NettyOptions {
 		 *            The timeout in milliseconds
 		 * @return {@code this}
 		 */
-		public final Builder sslHandshakeTimeoutMillis(long sslHandshakeTimeoutMillis) {
+		public final Builder<BOOTSTRAP> sslHandshakeTimeoutMillis(long sslHandshakeTimeoutMillis) {
 			if (sslHandshakeTimeoutMillis < 0L) {
 				throw new IllegalArgumentException(
 						"ssl handshake timeout must be positive," + " was: " + sslHandshakeTimeoutMillis);
@@ -323,7 +322,7 @@ public class NettyOptions {
 		 *
 		 * @return {@code this}
 		 */
-		public final Builder sslCloseNotifyFlushTimeout(Duration sslCloseNotifyFlushTimeout) {
+		public final Builder<BOOTSTRAP> sslCloseNotifyFlushTimeout(Duration sslCloseNotifyFlushTimeout) {
 			Objects.requireNonNull(sslCloseNotifyFlushTimeout, "sslCloseNotifyFlushTimeout");
 			return sslCloseNotifyFlushTimeoutMillis(sslCloseNotifyFlushTimeout.toMillis());
 		}
@@ -337,7 +336,7 @@ public class NettyOptions {
 		 *
 		 * @return {@code this}
 		 */
-		public final Builder sslCloseNotifyFlushTimeoutMillis(long sslCloseNotifyFlushTimeoutMillis) {
+		public final Builder<BOOTSTRAP> sslCloseNotifyFlushTimeoutMillis(long sslCloseNotifyFlushTimeoutMillis) {
 			if (sslCloseNotifyFlushTimeoutMillis < 0L) {
 				throw new IllegalArgumentException("ssl close_notify flush timeout must be positive," + " was: "
 						+ sslCloseNotifyFlushTimeoutMillis);
@@ -355,7 +354,7 @@ public class NettyOptions {
 		 *
 		 * @return {@code this}
 		 */
-		public final Builder sslCloseNotifyReadTimeout(Duration sslCloseNotifyReadTimeout) {
+		public final Builder<BOOTSTRAP> sslCloseNotifyReadTimeout(Duration sslCloseNotifyReadTimeout) {
 			Objects.requireNonNull(sslCloseNotifyReadTimeout, "sslCloseNotifyReadTimeout");
 			return sslCloseNotifyFlushTimeoutMillis(sslCloseNotifyReadTimeout.toMillis());
 		}
@@ -369,7 +368,7 @@ public class NettyOptions {
 		 *
 		 * @return {@code this}
 		 */
-		public final Builder sslCloseNotifyReadTimeoutMillis(long sslCloseNotifyReadTimeoutMillis) {
+		public final Builder<BOOTSTRAP> sslCloseNotifyReadTimeoutMillis(long sslCloseNotifyReadTimeoutMillis) {
 			if (sslCloseNotifyReadTimeoutMillis < 0L) {
 				throw new IllegalArgumentException(
 						"ssl close_notify read timeout must be positive," + " was: " + sslCloseNotifyReadTimeoutMillis);
@@ -388,7 +387,7 @@ public class NettyOptions {
 		 * @see #onChannelInit(Predicate)
 		 * @see #afterNettyContextInit(Consumer)
 		 */
-		public final Builder afterChannelInit(Consumer<? super Channel> afterChannelInit) {
+		public final Builder<BOOTSTRAP> afterChannelInit(Consumer<? super Channel> afterChannelInit) {
 			this.afterChannelInit = Objects.requireNonNull(afterChannelInit, "afterChannelInit");
 			return this;
 		}
@@ -403,7 +402,7 @@ public class NettyOptions {
 		 * @see #afterChannelInit(Consumer)
 		 * @see #afterNettyContextInit(Consumer)
 		 */
-		public final Builder onChannelInit(Predicate<? super Channel> onChannelInit) {
+		public final Builder<BOOTSTRAP> onChannelInit(Predicate<? super Channel> onChannelInit) {
 			this.onChannelInit = Objects.requireNonNull(onChannelInit, "onChannelInit");
 			return this;
 		}
@@ -419,7 +418,7 @@ public class NettyOptions {
 		 * @see #onChannelInit(Predicate)
 		 * @see #afterChannelInit(Consumer)
 		 */
-		public final Builder afterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit) {
+		public final Builder<BOOTSTRAP> afterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit) {
 			this.afterNettyContextInit = Objects.requireNonNull(afterNettyContextInit, "afterNettyContextInit");
 			return this;
 		}

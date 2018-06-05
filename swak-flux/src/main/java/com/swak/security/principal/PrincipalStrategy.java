@@ -1,8 +1,8 @@
 package com.swak.security.principal;
 
-import com.swak.reactivex.transport.http.HttpServerRequest;
-import com.swak.reactivex.transport.http.HttpServerResponse;
 import com.swak.reactivex.transport.http.Subject;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerResponse;
 
 import reactor.core.publisher.Mono;
 

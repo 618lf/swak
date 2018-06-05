@@ -5,10 +5,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.swak.reactor.publisher.FutureMono;
 
+import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.Future;
 import reactor.core.publisher.Mono;
 
@@ -38,6 +40,11 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 	@Override
 	public Class<? extends ServerChannel> onServerChannel() {
 		return NioServerSocketChannel.class;
+	}
+	
+	@Override
+	public Class<? extends Channel> onChannel() {
+		return NioSocketChannel.class;
 	}
 	
 	@Override

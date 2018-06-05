@@ -1,4 +1,4 @@
-package com.swak.reactivex.transport.http;
+package com.swak.reactivex.transport.http.server;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -20,6 +20,8 @@ import java.util.function.BiFunction;
 import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
 import com.swak.reactivex.transport.channel.ServerContextHandler;
+import com.swak.reactivex.transport.http.HttpConst;
+import com.swak.reactivex.transport.http.Subject;
 import com.swak.utils.IOUtils;
 import com.swak.utils.StringUtils;
 
@@ -760,7 +762,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		this.out();
 	}
 	
-	// ------------- 其他  ------------------
+	// ------------- 处理请求  ------------------
 	
 	/**
 	 * 处理请求

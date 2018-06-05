@@ -2,7 +2,7 @@ package com.swak.reactivex.web.result;
 
 import org.springframework.core.MethodParameter;
 
-import com.swak.reactivex.transport.http.HttpServerResponse;
+import com.swak.reactivex.transport.http.server.HttpServerResponse;
 
 public interface HandlerReturnValueResolver {
 

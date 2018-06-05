@@ -1,6 +1,6 @@
 package com.swak.actuator.metrics.web;
 
-import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
 
 import io.micrometer.core.instrument.Tag;
 

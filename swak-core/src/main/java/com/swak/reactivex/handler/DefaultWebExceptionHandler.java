@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import com.swak.exception.ErrorCode;
 import com.swak.reactivex.transport.http.HttpConst;
-import com.swak.reactivex.transport.http.HttpServerRequest;
-import com.swak.reactivex.transport.http.HttpServerResponse;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerResponse;
 
 import reactor.core.publisher.Mono;
 

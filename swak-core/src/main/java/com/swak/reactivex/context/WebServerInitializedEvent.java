@@ -2,8 +2,6 @@ package com.swak.reactivex.context;
 
 import org.springframework.context.ApplicationEvent;
 
-import com.swak.reactivex.transport.http.WebServer;
-
 public abstract class WebServerInitializedEvent extends ApplicationEvent {
 
 	private static final long serialVersionUID = 1L;

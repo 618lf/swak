@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 import com.swak.http.HttpClientProperties;
 import com.swak.http.HttpClients;
 import com.swak.reactivex.transport.TransportMode;
-import com.swak.reactivex.transport.http.HttpServerProperties;
+import com.swak.reactivex.transport.http.server.HttpServerProperties;
 
 /**
  * 配置 http client

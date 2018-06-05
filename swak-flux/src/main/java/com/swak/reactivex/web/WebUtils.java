@@ -3,7 +3,7 @@ package com.swak.reactivex.web;
 import java.util.List;
 import java.util.Map;
 
-import com.swak.reactivex.transport.http.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;

@@ -6,8 +6,8 @@ import java.util.Map;
 import org.springframework.util.PathMatcher;
 
 import com.swak.reactivex.handler.WebFilter;
-import com.swak.reactivex.transport.http.HttpServerRequest;
-import com.swak.reactivex.transport.http.HttpServerResponse;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.utils.StringUtils;
 
 import reactor.core.publisher.Mono;

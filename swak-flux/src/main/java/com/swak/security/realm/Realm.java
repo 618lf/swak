@@ -1,8 +1,8 @@
 package com.swak.security.realm;
 
-import com.swak.reactivex.transport.http.HttpServerRequest;
 import com.swak.reactivex.transport.http.Principal;
 import com.swak.reactivex.transport.http.Subject;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.security.context.AuthorizationInfo;
 import com.swak.security.exception.AuthenticationException;
 

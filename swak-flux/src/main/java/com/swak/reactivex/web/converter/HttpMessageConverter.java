@@ -2,8 +2,8 @@ package com.swak.reactivex.web.converter;
 
 import java.io.IOException;
 
-import com.swak.reactivex.transport.http.HttpServerRequest;
-import com.swak.reactivex.transport.http.HttpServerResponse;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerResponse;
 
 /**
  * 消息转换器

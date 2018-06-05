@@ -1,4 +1,6 @@
-package com.swak.reactivex.transport.http;
+package com.swak.reactivex.context;
+
+import com.swak.reactivex.transport.http.server.HttpServerProperties;
 
 /**
  * 还有一些属性每配置，在研究

@@ -1,10 +1,10 @@
 package com.swak.security.principal.support;
 
-import com.swak.reactivex.transport.http.HttpServerRequest;
-import com.swak.reactivex.transport.http.HttpServerResponse;
 import com.swak.reactivex.transport.http.Session;
 import com.swak.reactivex.transport.http.SimpleCookie;
 import com.swak.reactivex.transport.http.Subject;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.security.principal.NoneSession;
 import com.swak.security.principal.PrincipalStrategy;
 import com.swak.security.principal.SessionRepository;
