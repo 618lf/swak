@@ -2,7 +2,6 @@ package com.swak.reactivex.transport.channel;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,6 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
-import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoSink;
 
 /**
@@ -30,50 +28,73 @@ import reactor.core.publisher.MonoSink;
 public abstract class ContextHandler extends ChannelInitializer<Channel> {
 
 	static final Logger log = LoggerFactory.getLogger(ContextHandler.class);
-	final NettyOptions<?> options;
-	final MonoSink<NettyContext> sink;
-	ChannelOperations.OnNew channelOpFactory;
-	BiConsumer<ChannelPipeline, ContextHandler> pipelineConfigurator;
-	boolean fired;
+	protected final NettyOptions<?> options;
+	protected final MonoSink<NettyContext> sink;
+	protected ChannelOperations.OnNew channelOpFactory;
+	protected BiConsumer<ChannelPipeline, ContextHandler> pipelineConfigurator;
+	protected boolean fired;
 
-	ContextHandler(NettyOptions<?> options, MonoSink<NettyContext> sink) {
+	protected ContextHandler(NettyOptions<?> options, MonoSink<NettyContext> sink) {
 		this.options = options;
 		this.sink = sink;
 	}
 
+	//------------------ 接入服务相关 --------------------
 	/**
-	 * @param channel
-	 */
-	protected void doStarted(Channel channel) {
-		// ignore
-	}
-	
-	/**
-	 * One-time only future setter
+	 * 启动服务
 	 * @param future
 	 */
 	public abstract void setFuture(Future<?> future);
-	
 
 	/**
+	 * 启动服务
 	 * @param channel
 	 */
-	protected void doDropped(Channel channel) {
-		// ignore
+	protected void doStarted(Channel channel) {}
+	
+	
+	/**
+	 * 停止服务
+	 * @param channel
+	 */
+	protected void doDropped(Channel channel) {}
+	
+	//------------------ 配置处理器 --------------------
+	/**
+	 * 如何配置通道 -- accept
+	 * @param pipelineConfigurator
+	 * @return
+	 */
+	public final ContextHandler onPipeline(BiConsumer<ChannelPipeline, ContextHandler> pipelineConfigurator) {
+		this.pipelineConfigurator = Objects.requireNonNull(pipelineConfigurator, "pipelineConfigurator");
+		return this;
 	}
 
+	/**
+	 * 如何处理请求 -- doChannel
+	 * @param channelOpFactory
+	 * @return
+	 */
+	public final ContextHandler onChannel(ChannelOperations.OnNew channelOpFactory) {
+		this.channelOpFactory = Objects.requireNonNull(channelOpFactory, "channelOpFactory");
+		return this;
+	}
+	
+
+	//------------------ 初始化通道 --------------------
+	/**
+	 * 初始化通道
+	 */
 	@Override
 	protected void initChannel(Channel ch) throws Exception {
 		accept(ch);
 	}
-
+	
 	/**
-	 * Initialize pipeline and fire options event
-	 *
-	 * @param ch
-	 *            channel to initialize
+	 * 配置通道
+	 * @param channel
 	 */
-	public void accept(Channel channel) {
+	protected void accept(Channel channel) {
 		try {
 			doPipeline(channel);
 			if (options.onChannelInit() != null) {
@@ -94,49 +115,32 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 			}
 		}
 	}
-
-	/**
-	 * Trigger {@link MonoSink#success(Object)} that will signal
-	 * {@link reactor.ipc.netty.NettyConnector#newHandler(BiFunction)} returned
-	 * {@link Mono} subscriber.
-	 *
-	 * @param context
-	 *            optional context to succeed the associated {@link MonoSink}
-	 */
-	public abstract void fireContextActive(NettyContext context);
 	
 	/**
-	 * Trigger {@link MonoSink#error(Throwable)} that will signal
-	 * {@link reactor.ipc.netty.NettyConnector#newHandler(BiFunction)} returned
-	 * {@link Mono} subscriber.
-	 *
-	 * @param t
-	 *            error to fail the associated {@link MonoSink}
-	 */
-	public void fireContextError(Throwable t) {
-		if (!fired) {
-			fired = true;
-			sink.error(t);
-		} else {
-			log.error("Error cannot be forwarded to user-facing Mono", t);
-		}
-	}
-	
-	/**
-	 * Initialize pipeline
-	 *
+	 * 通用配置
 	 * @param ch
-	 *            channel to initialize
 	 */
 	protected void doPipeline(Channel ch) {
 		this.addSslHandler(ch.pipeline());
 	}
-
+	
 	/**
-	 * 执行
-	 * 
-	 * @param ctx
+	 * 添加 SSL
+	 * @param pipeline
+	 */
+	protected void addSslHandler(ChannelPipeline pipeline) {
+		SslHandler sslHandler = options.getSslHandler(pipeline.channel().alloc());
+		if (sslHandler != null) {
+			pipeline.addFirst(NettyPipeline.SslHandler, sslHandler);
+		}
+	}
+	
+	//------------------ 执行处理 --------------------
+	/**
+	 * 实际的执行代码
+	 * @param channel
 	 * @param request
+	 * @return
 	 */
 	public ChannelOperations<?,?> doChannel(Channel channel, Object request) {
 		ChannelOperations<?,?> ops = channelOpFactory.create(channel, this, request);
@@ -145,45 +149,23 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 		}
 		return ops;
 	}
-
+	
 	/**
-	 * 添加 ssl 的处理
-	 * 
-	 * @param secure
-	 * @param pipeline
+	 * 成功处理，例如 onHandlerStart
+	 * @param context
 	 */
-	public void addSslHandler(ChannelPipeline pipeline) {
-		SslHandler sslHandler = options.getSslHandler(pipeline.channel().alloc());
-		if (sslHandler != null) {
-			pipeline.addFirst(NettyPipeline.SslHandler, sslHandler);
-		}
-	}
-
+	public void fireContextActive(NettyContext context) {}
+	
 	/**
-	 * 设置管道配置处理器
-	 * 
-	 * @param pipelineConfigurator
-	 * @return
+	 * 失败处理， 例如 服务器启动失败
+	 * @param t
 	 */
-	public final ContextHandler onPipeline(BiConsumer<ChannelPipeline, ContextHandler> pipelineConfigurator) {
-		this.pipelineConfigurator = Objects.requireNonNull(pipelineConfigurator, "pipelineConfigurator");
-		return this;
-	}
+	public void fireContextError(Throwable t) {}
 
+	//------------------ 创建客户端 或 服务器 --------------------
+	
 	/**
-	 * 设置请求处理器
-	 * 
-	 * @param pipelineConfigurator
-	 * @return
-	 */
-	public final ContextHandler onChannel(ChannelOperations.OnNew channelOpFactory) {
-		this.channelOpFactory = Objects.requireNonNull(channelOpFactory, "channelOpFactory");
-		return this;
-	}
-
-	/**
-	 * Create a new server context
-	 * 
+	 * 服务器
 	 * @param options
 	 * @param sink
 	 * @return
@@ -193,8 +175,7 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	}
 
 	/**
-	 * Create a new client context with optional pool support
-	 * no pool
+	 * 客户端
 	 * @param options
 	 * @param sink
 	 * @return

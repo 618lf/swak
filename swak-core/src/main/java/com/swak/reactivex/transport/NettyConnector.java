@@ -21,5 +21,4 @@ public interface NettyConnector<INBOUND extends NettyInbound, OUTBOUND extends N
 	 * @return
 	 */
 	Mono<? extends NettyContext> connector();
-
 }

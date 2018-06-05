@@ -43,6 +43,9 @@ public class HttpServer extends TcpServer {
 	}
 
 	// ------------------ 启动服务器 ---------------------
+	/**
+	 * 启动服务器， 获取重要的 NettyContext
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public void start(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler) {
@@ -75,6 +78,10 @@ public class HttpServer extends TcpServer {
 	}
 
 	// ----------------- 配置服务器 ----------------------
+	
+	/**
+	 * properties -> Options
+	 */
 	@Override
 	public HttpServerOptions options() {
 		if (options == null) {
@@ -100,12 +107,6 @@ public class HttpServer extends TcpServer {
 		}
 		return this.options;
 	}
-
-	/**
-	 * 配置ssl
-	 * 
-	 * @param builder
-	 */
 	private void customizeSsl(HttpServerOptions.Builder options) {
 		try {
 			SslContext sslCtx = SslContextBuilder.forServer(new File(properties.getCertFilePath()),
@@ -115,10 +116,6 @@ public class HttpServer extends TcpServer {
 			throw new IllegalStateException(ex);
 		}
 	}
-
-	/**
-	 * 配置options
-	 */
 	private HttpServerOptions options(Consumer<? super HttpServerOptions.Builder> options) {
 		HttpServerOptions.Builder serverOptionsBuilder = HttpServerOptions.builder();
 		options.accept(serverOptionsBuilder);
@@ -127,7 +124,7 @@ public class HttpServer extends TcpServer {
 
 	// ---------------------- 初始化管道 -- 处理数据 ---------------------
 	/**
-	 * 管道初始化配置
+	 * TcpServer.BiConsumer -> ContextHandler.onPipeline(this)
 	 */
 	@Override
 	public void accept(ChannelPipeline p, ContextHandler ch) {
@@ -141,7 +138,7 @@ public class HttpServer extends TcpServer {
 	}
 	
 	/**
-	 * 创建 Channel 处理器
+	 * TcpServer.OnNew -> ContextHandler.onChannel(this)
 	 */
 	@Override
 	public ChannelOperations<?, ?> create(Channel c, ContextHandler ch, Object request) {
@@ -169,12 +166,7 @@ public class HttpServer extends TcpServer {
 
 	// ---------------------- JVM ---------------------
 	/**
-	 * Install a {@link Runtime#addShutdownHook(Thread) JVM shutdown hook} that will
-	 * shutdown this {@link BlockingNettyContext} if the JVM is terminated
-	 * externally.
-	 * <p>
-	 * The hook is removed if shutdown manually, and subsequent calls to this method
-	 * are no-op.
+	 * JVM Hook
 	 */
 	public void installShutdownHook() {
 		// don't return the hook to discourage uninstalling it externally
@@ -184,10 +176,6 @@ public class HttpServer extends TcpServer {
 		this.shutdownHook = new Thread(this::shutdownFromJVM, "SWAK - ShutdownHook - jvm");
 		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
 	}
-
-	/**
-	 * jvm 处罚关闭
-	 */
 	protected void shutdownFromJVM() {
 		if (context.isDisposed()) {
 			return;
@@ -202,13 +190,7 @@ public class HttpServer extends TcpServer {
 						() -> LOG.info("Stopped {} on {} from JVM hook {}", properties.getName(), context.address(), hookDesc))
 				.block();
 	}
-
-	/**
-	 * 程序触发关闭
-	 * 
-	 * @return
-	 */
-	public boolean removeShutdownHook() {
+	protected boolean removeShutdownHook() {
 		if (this.shutdownHook != null && Thread.currentThread() != this.shutdownHook) {
 			Thread sdh = this.shutdownHook;
 			this.shutdownHook = null;

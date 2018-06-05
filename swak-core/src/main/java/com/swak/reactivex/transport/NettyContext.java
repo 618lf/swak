@@ -11,63 +11,45 @@ import io.netty.channel.socket.SocketChannel;
 import reactor.core.publisher.Mono;
 
 /**
- * Hold contextual information for the underlying {@link Channel}
- *
- * @author Stephane Maldini
- * @since 0.6
+ * Netty 服务
+ * @author lifeng
  */
-public interface NettyContext {
+public interface NettyContext extends Disposable {
 
 	
 	/**
-	 * Return the underlying {@link Channel}. Direct interaction might be considered
-	 * insecure if that affects the
-	 * underlying IO processing such as read, write or close or state such as pipeline
-	 * handler addition/removal.
-	 *
-	 * @return the underlying {@link Channel}
+	 * 链接的通道，可以是服务器的通道，也可以是客户端的
+	 * @return
 	 */
 	Channel channel();
 	
 	
 	/**
-	 * Cancel or dispose the underlying task or resource.
-	 * <p>
-	 * Implementations are required to make this method idempotent.
+	 * 关闭通道
 	 */
 	default void dispose() {
 		channel().close();
 	}
 	
 	/**
-	 * Optionally return {@literal true} when the resource or task is disposed.
-	 * <p>
-	 * Implementations are not required to track disposition and as such may never
-	 * return {@literal true} even when disposed. However, they MUST only return true
-	 * when there's a guarantee the resource or task is disposed.
-	 *
-	 * @return {@literal true} when there's a guarantee the resource or task is disposed.
+	 * 是否关闭
+	 * @return
 	 */
 	default boolean isDisposed() {
 		return !channel().isActive();
 	}
 	
 	/**
-	 * Return an observing {@link Mono} terminating with success when shutdown
-	 * successfully
-	 * or error.
-	 *
-	 * @return a {@link Mono} terminating with success if shutdown successfully or error
+	 * 执行关闭
+	 * @return
 	 */
 	default Mono<Void> onClose(){
 		return FutureMono.from(channel().closeFuture());
 	}
 	
 	/**
-	 * Return remote address if remote channel {@link NettyContext} otherwise local
-	 * address if server selector channel.
-	 *
-	 * @return remote or local {@link InetSocketAddress}
+	 * 地址
+	 * @return
 	 */
 	default InetSocketAddress address(){
 		Channel c = channel();

@@ -8,14 +8,12 @@ public interface Disposable {
 
 
 	/**
-	 * Cancel or dispose the underlying task or resource.
-	 * <p>
-	 * Implementations are required to make this method idempotent.
+	 * 关闭
 	 */
 	void dispose();
 	
 	/**
-	 * 
+	 * 是否关闭
 	 * @return
 	 */
 	public default boolean isDisposed() {

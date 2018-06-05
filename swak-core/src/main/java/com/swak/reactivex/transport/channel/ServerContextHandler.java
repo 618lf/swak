@@ -25,9 +25,9 @@ public class ServerContextHandler extends CloseableContextHandler implements Net
 	public static volatile CharSequence date = new AsciiString(
 			GMT_FMT.format(LocalDateTime.now().atZone(ZoneId.of("GMT"))));
 
-	final ServerOptions options;
+	protected final ServerOptions options;
 
-	ServerContextHandler(ServerOptions serverOptions, MonoSink<NettyContext> sink) {
+	protected ServerContextHandler(ServerOptions serverOptions, MonoSink<NettyContext> sink) {
 		super(serverOptions, sink);
 		this.options = serverOptions;
 	}
@@ -53,8 +53,4 @@ public class ServerContextHandler extends CloseableContextHandler implements Net
 	public Channel channel() {
 		return f.channel();
 	}
-	
-	@Override
-	public final void fireContextActive(NettyContext context) {}
-	
 }

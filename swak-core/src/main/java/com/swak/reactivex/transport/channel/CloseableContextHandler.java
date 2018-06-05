@@ -3,9 +3,6 @@ package com.swak.reactivex.transport.channel;
 import java.io.IOException;
 import java.util.Objects;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.swak.reactivex.transport.NettyContext;
 import com.swak.reactivex.transport.options.NettyOptions;
 
@@ -22,17 +19,14 @@ import reactor.core.publisher.MonoSink;
 public abstract class CloseableContextHandler extends ContextHandler
 		implements ChannelFutureListener {
 
-	static final Logger log = LoggerFactory.getLogger(CloseableContextHandler.class);
-
-	ChannelFuture f;
-	boolean fired;
+	protected ChannelFuture f;
 	
-	CloseableContextHandler(NettyOptions<?> options, MonoSink<NettyContext> sink) {
+	protected CloseableContextHandler(NettyOptions<?> options, MonoSink<NettyContext> sink) {
 		super(options, sink);
 	}
 	
 	/**
-	 * 非常重要，用于通知服务器是否启动成功，或失败
+	 * 启动之后会回调这个方式，通过 sink 将启动消息通知到外面
 	 */
 	@Override
 	public void operationComplete(ChannelFuture f) throws Exception {
@@ -51,6 +45,9 @@ public abstract class CloseableContextHandler extends ContextHandler
 		}
 	}
 	
+	/**
+	 * 监听启动过程
+	 */
 	@Override
 	public final void setFuture(Future<?> future) {
 		Objects.requireNonNull(future, "future");
@@ -73,5 +70,18 @@ public abstract class CloseableContextHandler extends ContextHandler
 			return;
 		}
 		f.addListener(this);
+	}
+	
+	/**
+	 * 失败处理， 例如 服务器启动失败
+	 * @param t
+	 */
+	public void fireContextError(Throwable t) {
+		if (!fired) {
+			fired = true;
+			sink.error(t);
+		} else {
+			log.error("Error cannot be forwarded to user-facing Mono", t);
+		}
 	}
 }
