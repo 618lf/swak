@@ -79,9 +79,16 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 		this.channelOpFactory = Objects.requireNonNull(channelOpFactory, "channelOpFactory");
 		return this;
 	}
-	
 
 	//------------------ 初始化通道 --------------------
+	/**
+	 * 获得配置
+	 * @return
+	 */
+	public final NettyOptions<?> options() {
+		return this.options;
+	}
+	
 	/**
 	 * 初始化通道
 	 */

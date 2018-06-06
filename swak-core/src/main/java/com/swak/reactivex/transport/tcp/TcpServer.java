@@ -8,7 +8,6 @@ import com.swak.reactivex.transport.NettyConnector;
 import com.swak.reactivex.transport.NettyContext;
 import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.NettyOutbound;
-import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
 import com.swak.reactivex.transport.options.ServerOptions;
 
@@ -23,7 +22,7 @@ import reactor.core.publisher.Mono;
  * @author Violeta Georgieva
  */
 public abstract class TcpServer implements NettyConnector<NettyInbound, NettyOutbound>, 
-         BiConsumer<ChannelPipeline, ContextHandler>, ChannelOperations.OnNew {
+         BiConsumer<ChannelPipeline, ContextHandler> {
 
 	/**
 	 * 配置 ServerOptions
@@ -32,37 +31,33 @@ public abstract class TcpServer implements NettyConnector<NettyInbound, NettyOut
 	public abstract ServerOptions options();
 	
 	/**
-	 * 获得监听端口
-	 * @return
-	 */
-	public abstract InetSocketAddress getAddress();
-	
-	/**
-	 * 启动服务
-	 * @param handler
-	 */
-	public abstract void start(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler);
-	
-	/**
 	 * 异步启动服务器，并注册启动监听
 	 * @param handler
 	 * @return
 	 */
 	@Override
-	public Mono<? extends NettyContext> connector() {
+	@SuppressWarnings("unchecked")
+	public Mono<? extends NettyContext> connector(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> ioHandler, InetSocketAddress address) {
 		return Mono.create(sink -> {
+			
+			/**
+			 * 配置项
+			 */
+			ServerOptions options = options();
 			
 			/**
 			 * init Handler
 			 */
-			ContextHandler contextHandler = ContextHandler.newServerContext(options(), sink)
-					.onPipeline(this).onChannel(this);
+			ContextHandler contextHandler = ContextHandler.newServerContext(options, sink)
+					.onPipeline(this).onChannel((c, ch, request) -> {
+						return this.doHandler(c, ch, request, (BiFunction<NettyInbound, NettyOutbound, Mono<Void>>)ioHandler);
+					});
 			
 			/**
 			 * start server
 			 */
-			ServerBootstrap b = options().get()
-					.localAddress(options().getAddress())
+			ServerBootstrap b = options.get()
+					.localAddress(address)
 					.childHandler(contextHandler);
 			
 			/**
@@ -71,9 +66,4 @@ public abstract class TcpServer implements NettyConnector<NettyInbound, NettyOut
 			contextHandler.setFuture(b.bind());
 		});
 	}
-
-	/**
-	 * 停止服务器
-	 */
-	public abstract void stop();
 }

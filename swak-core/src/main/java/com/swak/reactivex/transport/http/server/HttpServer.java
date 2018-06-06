@@ -32,7 +32,6 @@ import reactor.core.scheduler.Schedulers;
 public class HttpServer extends TcpServer {
 
 	private final HttpServerProperties properties;
-	private BiFunction<NettyInbound, NettyOutbound, Mono<Void>> handler;
 	private HttpServerOptions options;
 	private String serverName; // 类似 http://127.0.0.1:8080
 	private NettyContext context;
@@ -47,12 +46,9 @@ public class HttpServer extends TcpServer {
 	/**
 	 * 启动服务器， 获取重要的 NettyContext
 	 */
-	@Override
-	@SuppressWarnings("unchecked")
 	public void start(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler) {
 		try {
-			this.handler = (BiFunction<NettyInbound, NettyOutbound, Mono<Void>>) handler;
-			this.context = this.connector().subscribeOn(Schedulers.immediate())
+			this.context = this.connector(handler, this.options.getAddress()).subscribeOn(Schedulers.immediate())
 					.doOnNext(ctx -> LOG.debug("Started {} on {}", "http-server", ctx.address())).block();
 			this.startDaemonAwaitThread();
 		} catch (Exception ex) {
@@ -144,8 +140,8 @@ public class HttpServer extends TcpServer {
 	 * TcpServer.OnNew -> ContextHandler.onChannel(this)
 	 */
 	@Override
-	public ChannelOperations<?, ?> create(Channel c, ContextHandler ch, Object request) {
-		return HttpServerOperations.bind(c, handler, ch, serverName, (FullHttpRequest) request);
+	public ChannelOperations<?, ?> doHandler(Channel c, ContextHandler contextHandler, Object request, BiFunction<NettyInbound, NettyOutbound, Mono<Void>> handler) {
+		return HttpServerOperations.bind(c, handler, contextHandler, serverName, (FullHttpRequest) request);
 	}
 
 	// ---------------------- 停止服务器 ---------------------
@@ -206,11 +202,9 @@ public class HttpServer extends TcpServer {
 	}
 
 	// ---------------------- 服务器地址 ---------------------
-	@Override
 	public InetSocketAddress getAddress() {
 		return context.address();
 	}
-
 	// ---------------------- 创建 http 服务器 ---------------------
 	/**
 	 * 创建 http 服务器

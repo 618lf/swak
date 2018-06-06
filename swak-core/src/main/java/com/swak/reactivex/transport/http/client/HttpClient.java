@@ -1,7 +1,10 @@
 package com.swak.reactivex.transport.http.client;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import com.swak.reactivex.transport.NettyInbound;
+import com.swak.reactivex.transport.NettyOutbound;
 import com.swak.reactivex.transport.NettyPipeline;
 import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
@@ -13,7 +16,12 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpContentDecompressor;
 import io.netty.handler.codec.http.HttpMethod;
+import reactor.core.publisher.Mono;
 
+/**
+ * http client
+ * @author lifeng
+ */
 public class HttpClient extends TcpClient {
 
 	static final HttpMethod WS = new HttpMethod("WS");
@@ -22,23 +30,21 @@ public class HttpClient extends TcpClient {
 	final static String HTTP_SCHEME = "http";
 	final static String HTTPS_SCHEME = "https";
 	private final HttpClientProperties properties;
-	private HttpClientOptions options;
+	private LoopResources loopResources;
 
 	public HttpClient(HttpClientProperties properties) {
 		this.properties = properties;
-		this.options = options();
+		this.loopResources = LoopResources.create(properties.getMode(), properties.getServerWorker(),
+				properties.getServerWorker(), properties.getName());
 	}
 
 	// ---------------------- 配置客户端 ---------------------
 	@Override
 	public HttpClientOptions options() {
-		if (this.options == null) {
-			this.options = this.options((options) -> {
-				options.loopResources(LoopResources.create(properties.getMode(), properties.getServerWorker(),
-						properties.getServerWorker(), properties.getName()));
-			});
-		}
-		return this.options;
+		return this.options((options) -> {
+			properties.getMode();
+			options.loopResources(loopResources);
+		});
 	}
 
 	/**
@@ -53,14 +59,23 @@ public class HttpClient extends TcpClient {
 	// ---------------------- 初始化管道 -- 处理数据 ---------------------
 	@Override
 	public void accept(ChannelPipeline pipeline, ContextHandler u) {
+		HttpClientOptions options = (HttpClientOptions)u.options();
 		pipeline.addLast(NettyPipeline.HttpCodec, new HttpClientCodec());
 		if (options.acceptGzip()) {
 			pipeline.addAfter(NettyPipeline.HttpCodec, NettyPipeline.HttpDecompressor, new HttpContentDecompressor());
 		}
 	}
-
+	
 	@Override
-	public ChannelOperations<?, ?> create(Channel c, ContextHandler contextHandler, Object msg) {
+	public ChannelOperations<?, ?> doHandler(Channel c, ContextHandler contextHandler, Object msg,
+			BiFunction<NettyInbound, NettyOutbound, Mono<Void>> ioHandler) {
 		return null;
+	}
+
+	/**
+	 * 关闭客户端
+	 */
+	public void close() {
+		this.loopResources.dispose();
 	}
 }
