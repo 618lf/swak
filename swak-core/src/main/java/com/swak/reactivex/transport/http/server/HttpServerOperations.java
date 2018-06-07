@@ -2,11 +2,12 @@ package com.swak.reactivex.transport.http.server;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import com.swak.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -51,6 +53,7 @@ import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
+import io.netty.util.internal.ObjectUtil;
 import reactor.core.publisher.Mono;
 
 /**
@@ -417,12 +420,12 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	
 	// -------------- 响应 -------------------
 	private ByteArrayOutputStream os;
-	private ByteBuffer buffer = null;
+	private byte[] buffer = null;
+	private File file = null;
 	private HttpHeaders responseHeaders = new DefaultHttpHeaders(false);
 	private Set<Cookie> responseCookies = new HashSet<>(4);
 	private HttpResponseStatus status = HttpResponseStatus.OK;
 	private CharSequence contentType = null;
-	private int contentSize;
 	private boolean closed;
 	
 	/**
@@ -580,14 +583,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 	
 	/**
-	 * 获得内容的大小
-	 * @return
-	 */
-	public int getContentSize() {
-		return contentSize;
-	}
-	
-	/**
 	 * 返回所有headers
 	 * 
 	 * @return
@@ -656,11 +651,15 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @throws UnsupportedEncodingException
 	 */
 	public <T> HttpServerResponse buffer(T content) {
-		if (buffer != null) {
-			buffer.clear();
+		ObjectUtil.checkNotNull(content, "content cannot null");
+		if (content instanceof File) {
+			file = (File) content;
+		} else {
+			if (buffer != null) {
+				buffer = null;
+			}
+			buffer = String.valueOf(content).getBytes(HttpConst.DEFAULT_CHARSET);
 		}
-		byte[] bytes = String.valueOf(content).getBytes(HttpConst.DEFAULT_CHARSET);
-		buffer = ByteBuffer.wrap(bytes);
 		return this;
 	}
 	
@@ -676,6 +675,23 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.buffer(content);
 		}
 		return this;
+	}
+	
+
+	/**
+	 * 优先获取输出流中的数据
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	private byte[] getContent() {
+		if (this.os != null) {
+			return this.os.toByteArray();
+		}
+		if (this.buffer != null) {
+			return this.buffer;
+		}
+		return null;
 	}
 
 	/**
@@ -695,7 +711,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		if (!responseHeaders.contains(HttpHeaderNames.CACHE_CONTROL)) {
 			responseHeaders.set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
 		}
-		contentSize = response.content().readableBytes();
+		int contentSize = response.content().readableBytes();
 		responseHeaders.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
 		responseHeaders.set(HttpHeaderNames.DATE, ServerContextHandler.date);
 		responseHeaders.set(HttpConst.X_POWER_BY, HttpConst.VERSION);
@@ -707,22 +723,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		}
 		response.headers().set(responseHeaders);
 		return response;
-	}
-
-	/**
-	 * 优先获取输出流中的数据
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	private byte[] getContent() {
-		if (this.os != null) {
-			return this.os.toByteArray();
-		}
-		if (this.buffer != null) {
-			return this.buffer.array();
-		}
-		return null;
 	}
 	
 	/**
@@ -741,6 +741,12 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			channel().close();
 		}
 		
+		// 直接输出文件
+		if (this.file != null) {
+			this.outFile();
+			return;
+		}
+		
 		HttpResponse _response = this.render();
 		boolean keepAlive = isKeepAlive();
 		if (!keepAlive) {
@@ -750,6 +756,26 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			_response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
 			channel().writeAndFlush(_response);
 		}
+	}
+	
+	/**
+	 * 输出 file -- 输出文件
+	 */
+	protected void outFile() {
+		RandomAccessFile raf = null;
+		long length = -1;
+		try {
+	        raf = new RandomAccessFile(file, "r");
+	        length = raf.length();
+	        channel().write(new DefaultFileRegion(raf.getChannel(), 0, length));
+	    } catch (Exception e) {
+	    	channel().writeAndFlush("ERR: " + e.getClass().getSimpleName() + ": " + e.getMessage() + '\n');
+	    	return;
+	    } finally {
+	        if (length < 0 && raf != null) {
+	            IOUtils.closeQuietly(raf);
+	        }
+	    }
 	}
 	
 	/**
@@ -843,10 +869,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			IOUtils.closeQuietly(os);
 			os = null;
 		}
-		if (buffer != null) {
-			buffer.clear();
-			buffer = null;
-		}
+		file = null; buffer = null;
 		if (responseHeaders != null) {
 			responseHeaders.clear();
 			responseHeaders = null;

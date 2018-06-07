@@ -19,6 +19,7 @@ import com.swak.reactivex.transport.tcp.TcpServer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.WriteBufferWaterMark;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
@@ -93,6 +94,7 @@ public class HttpServer extends TcpServer {
 				options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, properties.getConnectTimeout());
 				options.childOption(ChannelOption.SO_KEEPALIVE, properties.isSoKeepAlive());
 				options.childOption(ChannelOption.TCP_NODELAY, properties.isTcpNoDelay());
+				options.childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(1024 * 1024, 2048 * 1024));
 			});
 
 			this.serverName = new StringBuilder().append(this.options.sslContext() != null ? "https://" : "http://")

@@ -128,12 +128,6 @@ public interface HttpServerResponse extends NettyOutbound, Closeable {
 	String getContentType();
 	
 	/**
-	 * 获得内容的大小
-	 * @return
-	 */
-	public int getContentSize();
-	
-	/**
 	 * 返回所有headers
 	 * 
 	 * @return
