@@ -1,9 +1,5 @@
 package com.swak.reactivex.context;
 
-import org.springframework.boot.web.server.WebServerException;
-
-import com.swak.reactivex.handler.HttpHandler;
-
 /**
  * Simple interface that represents a fully configured web server (for example Tomcat,
  * Jetty, Netty). Allows the server to be {@link #start() started} and {@link #stop()
@@ -13,25 +9,25 @@ import com.swak.reactivex.handler.HttpHandler;
  * @author Dave Syer
  * @since 2.0.0
  */
-public interface WebServer {
+public interface Server {
 
 	/**
 	 * Starts the web server. Calling this method on an already started server has no
 	 * effect.
-	 * @throws WebServerException if the server cannot be started
+	 * @throws ServerException
 	 */
-	void start(HttpHandler handler) throws WebServerException;
+	void start() throws ServerException;
 
 	/**
 	 * Stops the web server. Calling this method on an already stopped server has no
 	 * effect.
-	 * @throws WebServerException if the server cannot be stopped
+	 * @throws ServerException
 	 */
-	void stop() throws WebServerException;
+	void stop() throws ServerException;
 
 	/**
 	 * Return the port this server is listening on.
-	 * @return the port (or -1 if none)
+	 * @return
 	 */
 	int getPort();
 }

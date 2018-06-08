@@ -11,7 +11,9 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 import com.swak.config.flux.WebAutoConfiguration;
-import com.swak.reactivex.context.ReactiveWebServerFactory;
+import com.swak.reactivex.context.ReactiveServer;
+import com.swak.reactivex.handler.HttpHandler;
+import com.swak.reactivex.transport.http.server.HttpServer;
 import com.swak.reactivex.transport.http.server.HttpServerProperties;
 
 /**
@@ -33,8 +35,15 @@ public class HttpServerAutoConfiguration {
 		APP_LOGGER.debug("Loading Http Server on http://" + properties.getHost() + ":" + properties.getPort());
 	}
 
+	/**
+	 * 构建 Reactive Server ，需要提供 HttpHandler 来处理 http 请求
+	 * @param handler
+	 * @return
+	 */
 	@Bean
-	public ReactiveWebServerFactory reactiveWebServerFactory() {
-		return new ReactiveWebServerFactory(properties);
+	public ReactiveServer reactiveServer(HttpHandler handler) {
+		// 真实的服务器，用于提供 http 服务
+		HttpServer httpServer = HttpServer.build(properties);
+		return new ReactiveServer(httpServer, handler);
 	}
 }

@@ -31,6 +31,12 @@ public abstract class TcpServer implements NettyConnector<NettyInbound, NettyOut
 	public abstract ServerOptions options();
 	
 	/**
+	 * 启动服务器
+	 * @param handler
+	 */
+	public abstract void start(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler);
+	
+	/**
 	 * 异步启动服务器，并注册启动监听
 	 * @param handler
 	 * @return
@@ -66,4 +72,15 @@ public abstract class TcpServer implements NettyConnector<NettyInbound, NettyOut
 			contextHandler.setFuture(b.bind());
 		});
 	}
+	
+	/**
+	 * 服务器的地址
+	 * @return
+	 */
+	public abstract InetSocketAddress getAddress();
+	
+	/**
+	 * 停止服务器
+	 */
+	public abstract void stop();
 }

@@ -6,7 +6,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import com.swak.reactivex.context.ReactiveWebServerApplicationContext;
+import com.swak.reactivex.context.ReactiveServerApplicationContext;
 
 /**
  * @ComponentScan("com.swak")
@@ -32,7 +32,7 @@ public class Application extends SpringApplication {
 	 */
 	@Override
 	protected ConfigurableApplicationContext createApplicationContext() {
-		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(ReactiveWebServerApplicationContext.class);
+		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(ReactiveServerApplicationContext.class);
 	}
 
 	/**

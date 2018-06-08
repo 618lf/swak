@@ -2,19 +2,19 @@ package com.swak.reactivex.context;
 
 import org.springframework.context.ApplicationEvent;
 
-public abstract class WebServerInitializedEvent extends ApplicationEvent {
+public abstract class ServerInitializedEvent extends ApplicationEvent {
 
 	private static final long serialVersionUID = 1L;
 
-	protected WebServerInitializedEvent(WebServer webServer) {
-		super(webServer);
+	protected ServerInitializedEvent(Server server) {
+		super(server);
 	}
 
 	/**
-	 * Access the {@link WebServer}.
+	 * Access the {@link Server}.
 	 * @return the embedded web server
 	 */
-	public WebServer getWebServer() {
+	public Server getServer() {
 		return getSource();
 	}
 
@@ -24,14 +24,14 @@ public abstract class WebServerInitializedEvent extends ApplicationEvent {
 	 * context) before acting on the server itself.
 	 * @return the applicationContext that the server was created from
 	 */
-	public abstract ReactiveWebServerApplicationContext getApplicationContext();
+	public abstract ReactiveServerApplicationContext getApplicationContext();
 
 	/**
-	 * Access the source of the event (an {@link WebServer}).
+	 * Access the source of the event (an {@link Server}).
 	 * @return the embedded web server
 	 */
 	@Override
-	public WebServer getSource() {
-		return (WebServer) super.getSource();
+	public Server getSource() {
+		return (Server) super.getSource();
 	}
 }
