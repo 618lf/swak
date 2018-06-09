@@ -1,19 +1,10 @@
-package com.swak.reactivex.transport.http.server;
+package com.swak.rpc.server;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import com.swak.Constants;
 import com.swak.reactivex.transport.TransportMode;
 
-/**
- * 服务器的默认配置
- * 
- * @author lifeng
- */
-@ConfigurationProperties(prefix = Constants.HTTP_SERVER_PREFIX)
-public class HttpServerProperties {
+public class RpcServerProperties {
 
-	private String name = "SWAK-HTTP-SERVER";
+	private String name = "SWAK-RPC-SERVER";
 	private TransportMode mode = TransportMode.NIO;
 	private int port = 8888;
 	private int connectTimeout = 30000;

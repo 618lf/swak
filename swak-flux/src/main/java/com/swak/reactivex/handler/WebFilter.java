@@ -7,8 +7,6 @@ import reactor.core.publisher.Mono;
 
 public interface WebFilter {
 	
-	
-
 	/**
 	 * filter 的顺序
 	 * @return

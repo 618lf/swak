@@ -13,7 +13,7 @@ public class RpcResponse implements NettyOutbound, Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private String requestId;
-    private Exception exception;
+    private Throwable exception;
     private Object result;
 
     public boolean hasException() {
@@ -32,7 +32,7 @@ public class RpcResponse implements NettyOutbound, Serializable{
         return exception;
     }
 
-    public void setException(Exception exception) {
+    public void setException(Throwable exception) {
         this.exception = exception;
     }
 

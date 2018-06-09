@@ -5,8 +5,7 @@ import java.net.InetSocketAddress;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-import org.springframework.boot.web.server.WebServerException;
-
+import com.swak.reactivex.context.ServerException;
 import com.swak.reactivex.transport.NettyContext;
 import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.NettyOutbound;
@@ -54,7 +53,7 @@ public class HttpServer extends TcpServer {
 			this.startDaemonAwaitThread();
 		} catch (Exception ex) {
 			this.stop();
-			throw new WebServerException("Unable to start Netty", ex);
+			throw new ServerException("Unable to start Netty", ex);
 		}
 	}
 

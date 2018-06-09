@@ -14,7 +14,7 @@ public class RpcRequest implements NettyInbound, Serializable {
 	private static final long serialVersionUID = 1L;
 	private String requestId;
 	private String interfaceName;
-	private String serviceVersion;
+	private String version;
 	private String methodName;
 	private Class<?>[] parameterTypes;
 	private Object[] parameters;
@@ -35,12 +35,12 @@ public class RpcRequest implements NettyInbound, Serializable {
 		this.interfaceName = className;
 	}
 
-	public String getServiceVersion() {
-		return serviceVersion;
+	public String getVersion() {
+		return version;
 	}
 
-	public void setServiceVersion(String serviceVersion) {
-		this.serviceVersion = serviceVersion;
+	public void setVersion(String version) {
+		this.version = version;
 	}
 
 	public String getMethodName() {
