@@ -59,8 +59,8 @@ public class RpcConfigurationSupport implements ApplicationContextAware {
 	
 	// ---------- registry - protocol ---------
 	@Bean
-	public Protocol registryProtocol(Protocol protocol, Registry rf) {
-		return new RegistryProtocol(protocol, rf);
+	public Protocol registryProtocol(Protocol protocol, Registry registry) {
+		return new RegistryProtocol(protocol, registry);
 	}
 	
 	// ---------- proxyFactory ---------

@@ -1,0 +1,9 @@
+# spring boot auto load Initializers and Application Listeners 
+# see all spring.factories
+
+# Auto Configuration, SWAK only load Auto Configuration 
+com.swak.ApplicationBoot=\
+com.swak.config.registry.RegistryAutoConfiguration,\
+com.swak.config.rpc.RpcHandlerAutoConfiguration,\
+com.swak.config.ExecutorAutoConfiguration,\
+com.swak.config.RpcServerAutoConfiguration
