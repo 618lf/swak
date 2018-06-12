@@ -1,7 +1,9 @@
 package com.swak.rpc.handler;
 
-import com.swak.rpc.protocol.RpcRequest;
-import com.swak.rpc.protocol.RpcResponse;
+import java.util.List;
+
+import com.swak.rpc.api.RpcRequest;
+import com.swak.rpc.api.RpcResponse;
 
 import reactor.core.publisher.Mono;
 
@@ -11,9 +13,9 @@ import reactor.core.publisher.Mono;
  */
 public abstract class FilteringRpcHandler {
 
-	private final RpcFilter[] filters;
+	private final List<RpcFilter> filters;
 	
-	public FilteringRpcHandler(RpcFilter[] filters) {
+	public FilteringRpcHandler(List<RpcFilter> filters) {
 		this.filters = filters;
 	}
 	
@@ -24,7 +26,7 @@ public abstract class FilteringRpcHandler {
 	 * @return
 	 */
 	public Mono<Void> doFilter(RpcRequest request, RpcResponse response) {
-		return this.filters.length != 0 ?
+		return this.filters.size() != 0 ?
 				new DefaultRpcFilterChain(this, this.filters).filter(request, response) :
 				this.doHandle(request, response);
 	}

@@ -1,13 +1,9 @@
 package com.swak.rpc.handler;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import org.springframework.util.ObjectUtils;
-
-import com.swak.rpc.protocol.RpcRequest;
-import com.swak.rpc.protocol.RpcResponse;
+import com.swak.rpc.api.RpcRequest;
+import com.swak.rpc.api.RpcResponse;
 
 import reactor.core.publisher.Mono;
 
@@ -22,8 +18,8 @@ public class DefaultRpcFilterChain implements RpcFilterChain {
 	private final List<RpcFilter> filters;
 	private int index;
 	
-	public DefaultRpcFilterChain(FilteringRpcHandler handler, RpcFilter ... filters) {
-		this.filters = ObjectUtils.isEmpty(filters) ? Collections.emptyList() : Arrays.asList(filters);
+	public DefaultRpcFilterChain(FilteringRpcHandler handler, List<RpcFilter> filters) {
+		this.filters = filters;
 		this.handler = handler;
 		this.index = 0;
 	}

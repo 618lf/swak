@@ -1,4 +1,4 @@
-package com.swak.rpc.protocol;
+package com.swak.rpc.api;
 
 import java.io.Serializable;
 

@@ -1,7 +1,7 @@
 package com.swak.rpc.handler;
 
-import com.swak.rpc.protocol.RpcRequest;
-import com.swak.rpc.protocol.RpcResponse;
+import com.swak.rpc.api.RpcRequest;
+import com.swak.rpc.api.RpcResponse;
 
 import reactor.core.publisher.Mono;
 

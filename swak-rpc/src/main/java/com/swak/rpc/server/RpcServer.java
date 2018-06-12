@@ -14,10 +14,10 @@ import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
 import com.swak.reactivex.transport.resources.LoopResources;
 import com.swak.reactivex.transport.tcp.TcpServer;
+import com.swak.rpc.api.RpcRequest;
+import com.swak.rpc.api.RpcResponse;
 import com.swak.rpc.codec.RpcDecoder;
 import com.swak.rpc.codec.RpcEncoder;
-import com.swak.rpc.protocol.RpcRequest;
-import com.swak.rpc.protocol.RpcResponse;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;

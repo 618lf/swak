@@ -1,23 +1,33 @@
-package com.swak.rpc.protocol;
+package com.swak.rpc.api;
 
 import java.io.Serializable;
 
 import com.swak.reactivex.transport.NettyInbound;
+import com.swak.rpc.api.Sequence;
 
 /**
  * 封装 RPC 请求
  * 
  * @author lifeng
  */
-public class RpcRequest implements NettyInbound, Serializable {
+public class RpcRequest implements Sequence, NettyInbound, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String requestId;
-	private String interfaceName;
+	private String serviceName;
 	private String version;
+	private String group;
 	private String methodName;
-	private Class<?>[] parameterTypes;
+	private String[] parameterTypes;
 	private Object[] parameters;
+
+	public String getGroup() {
+		return group;
+	}
+
+	public void setGroup(String group) {
+		this.group = group;
+	}
 
 	public String getRequestId() {
 		return requestId;
@@ -27,12 +37,12 @@ public class RpcRequest implements NettyInbound, Serializable {
 		this.requestId = requestId;
 	}
 
-	public String getInterfaceName() {
-		return interfaceName;
+	public String getServiceName() {
+		return serviceName;
 	}
 
-	public void setInterfaceName(String className) {
-		this.interfaceName = className;
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
 	}
 
 	public String getVersion() {
@@ -50,12 +60,12 @@ public class RpcRequest implements NettyInbound, Serializable {
 	public void setMethodName(String methodName) {
 		this.methodName = methodName;
 	}
-
-	public Class<?>[] getParameterTypes() {
+	
+	public String[] getParameterTypes() {
 		return parameterTypes;
 	}
 
-	public void setParameterTypes(Class<?>[] parameterTypes) {
+	public void setParameterTypes(String[] parameterTypes) {
 		this.parameterTypes = parameterTypes;
 	}
 

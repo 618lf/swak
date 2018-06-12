@@ -6,8 +6,8 @@ import java.util.function.BiFunction;
 
 import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
-import com.swak.rpc.protocol.RpcRequest;
-import com.swak.rpc.protocol.RpcResponse;
+import com.swak.rpc.api.RpcRequest;
+import com.swak.rpc.api.RpcResponse;
 import com.swak.utils.IOUtils;
 
 import io.netty.channel.Channel;

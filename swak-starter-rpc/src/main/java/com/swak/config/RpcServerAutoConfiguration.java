@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
-import com.swak.config.flux.WebHandlerAutoConfiguration;
+import com.swak.config.rpc.RpcHandlerAutoConfiguration;
 import com.swak.reactivex.context.ReactiveServer;
-import com.swak.reactivex.handler.HttpHandler;
-import com.swak.reactivex.transport.http.server.HttpServer;
-import com.swak.reactivex.transport.http.server.HttpServerProperties;
+import com.swak.rpc.handler.RpcHandler;
+import com.swak.rpc.server.RpcServer;
+import com.swak.rpc.server.RpcServerProperties;
 
 /**
  * 服务器配置
@@ -24,26 +24,26 @@ import com.swak.reactivex.transport.http.server.HttpServerProperties;
 @Configuration
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 100)
 @Order(Ordered.HIGHEST_PRECEDENCE + 100)
-@EnableConfigurationProperties(HttpServerProperties.class)
-@AutoConfigureAfter({ WebHandlerAutoConfiguration.class })
-public class HttpServerAutoConfiguration {
+@EnableConfigurationProperties(RpcServerProperties.class)
+@AutoConfigureAfter({ RpcHandlerAutoConfiguration.class })
+public class RpcServerAutoConfiguration {
 
-	private HttpServerProperties properties;
+	private RpcServerProperties properties;
 
-	public HttpServerAutoConfiguration(HttpServerProperties properties) {
+	public RpcServerAutoConfiguration(RpcServerProperties properties) {
 		this.properties = properties;
 		APP_LOGGER.debug("Loading Http Server on http://" + properties.getHost() + ":" + properties.getPort());
 	}
 
 	/**
-	 * 构建 Reactive Server ，需要提供 HttpHandler 来处理 http 请求
+	 * 构建 Reactive Server ，需要提供 RpcHandler 来处理 RPC 请求
 	 * @param handler
 	 * @return
 	 */
 	@Bean
-	public ReactiveServer reactiveServer(HttpHandler handler) {
+	public ReactiveServer reactiveServer(RpcHandler handler) {
 		// 真实的服务器，用于提供 http 服务
-		HttpServer httpServer = HttpServer.build(properties);
+		RpcServer httpServer = RpcServer.build(properties);
 		return new ReactiveServer(httpServer, handler);
 	}
 }
