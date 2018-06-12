@@ -8,6 +8,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.springframework.stereotype.Component;
+
 /**
  * 标识 RPC 服务类，用于接口上
  * 
@@ -18,6 +20,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RUNTIME)
 @Target({ TYPE, METHOD })
+@Component
 public @interface RpcService {
 	
 	public static final int DEFAULT_WEIGHT = 100;
@@ -32,7 +35,7 @@ public @interface RpcService {
 	 * 
 	 * @return
 	 */
-	String version();
+	String version() default DEFAULT_VERSION;
 
 	/**
 	 * for METHOD and TYPE, millseconds, 当等于-1时程序会自动处理为默认值5000<br>

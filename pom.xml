@@ -17,6 +17,7 @@
 		<module>swak-starter-web</module>
 		<module>swak-rpc</module>
 		<module>swak-starter-rpc</module>
+		<module>swak-sample-rpc</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.0.1.RELEASE</spring-boot.version>
