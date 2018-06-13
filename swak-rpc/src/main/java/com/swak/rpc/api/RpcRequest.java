@@ -3,14 +3,13 @@ package com.swak.rpc.api;
 import java.io.Serializable;
 
 import com.swak.reactivex.transport.NettyInbound;
-import com.swak.rpc.api.Sequence;
 
 /**
  * 封装 RPC 请求
  * 
  * @author lifeng
  */
-public class RpcRequest implements Sequence, NettyInbound, Serializable {
+public class RpcRequest implements NettyInbound, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String requestId;

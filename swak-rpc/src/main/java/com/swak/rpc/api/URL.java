@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.swak.rpc.annotation.RpcService;
 import com.swak.utils.StringUtils;
 
 /**
@@ -16,7 +17,7 @@ import com.swak.utils.StringUtils;
  * 
  * @author lifeng
  */
-public class URL implements Sequence, Serializable {
+public class URL implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -79,11 +80,6 @@ public class URL implements Sequence, Serializable {
 		return parameters;
 	}
 
-	@Override
-	public String getServiceName() {
-		return path;
-	}
-
 	public String getParameter(String key) {
 		String value = parameters.get(key);
 		if (value == null || value.length() == 0) {
@@ -108,22 +104,6 @@ public class URL implements Sequence, Serializable {
 		return value;
 	}
 
-	@Override
-	public String getMethodName() {
-		return getParameter(Constants.METHOD_KEY);
-	}
-
-	@Override
-	public String getVersion() {
-		return getParameter(Constants.VERSION_KEY);
-	}
-
-	@Override
-	public String getGroup() {
-		return getParameter(Constants.GROUP_KEY);
-	}
-
-	@Override
 	public String[] getParameterTypes() {
 		List<String> pts = parameters.keySet().stream()
 				.filter(k -> StringUtils.startsWith(k, Constants.METHOD_PARAM_KEY_PREFIX)).collect(Collectors.toList());
@@ -178,6 +158,25 @@ public class URL implements Sequence, Serializable {
 		} else if (!protocol.equals(other.protocol))
 			return false;
 		return true;
+	}
+	
+	public String getServiceKey() {
+		StringBuilder buf = new StringBuilder();
+		if (protocol != null && protocol.length() > 0) {
+			buf.append(protocol);
+			buf.append("://");
+		}
+		String path = getPath();
+		if (path != null && path.length() > 0) {
+			buf.append("/");
+			buf.append(path);
+		}
+		String method = getParameter(Constants.METHOD_KEY);
+		if (method != null && method.length() > 0) {
+			buf.append("?");
+			buf.append(Constants.METHOD_KEY).append("=").append(method);
+		}
+		return buf.toString();
 	}
 	
 	public String toString() {

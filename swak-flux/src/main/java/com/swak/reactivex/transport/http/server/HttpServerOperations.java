@@ -52,19 +52,20 @@ import io.netty.handler.codec.http.multipart.HttpDataFactory;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.util.CharsetUtil;
-import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.ObjectUtil;
 import reactor.core.publisher.Mono;
 
 /**
  * HttpServer http 操作
+ * 
+ * 关于资源释放这块还有些疑问
  * @author lifeng
  */
 public class HttpServerOperations extends ChannelOperations<HttpServerRequest, HttpServerResponse>
     implements HttpServerRequest, HttpServerResponse {
 
 	// 这块还需要研究下
-	private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk
+	private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
 	
 	// 初始化
 	final String serverName;
@@ -78,7 +79,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 	
 	//--------  请求 --------------------
-	private ByteBuf body;
+	private InputStream is;
 	private String remoteAddress;
 	private String uri;
 	private String url;
@@ -90,7 +91,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	private Map<String, List<String>> parameters;
 	private Map<String, Cookie> requestCookies;
 	private Map<String, String> pathVariables = null;
-	private InputStream is;
 	private Subject subject;
 	
 	/**
@@ -112,6 +112,9 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		this.parseHeaders(request);
 		this.parseCookies();
 		this.parseBody(request);
+		
+		// 释放引用 
+		request = null;
 	}
 	
 	/**
@@ -348,22 +351,16 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	public Cookie getCookie(String name) {
 		return this.requestCookies.get(name);
 	}
-
-	/**
-	 * 请求体
-	 * 
-	 * @return
-	 */
-	public ByteBuf body() {
-		return this.body;
-	}
 	
 	/**
 	 * 解析 body 数据
+	 * 先这样处理
 	 * @param request
 	 */
 	private void parseBody(FullHttpRequest request) {
-		body = request.content();
+		if (this.getRequestMethod() == HttpMethod.POST) {
+			is = new ByteArrayInputStream(request.content().array());
+		}
 	}
 
 	/**
@@ -372,7 +369,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @return
 	 */
 	public InputStream getInputStream() {
-		is =  new ByteArrayInputStream(this.body().array());
 		return is;
 	}
 	
@@ -789,9 +785,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 	
 	// ------------- 处理请求  ------------------
-	
 	/**
 	 * 处理请求
+	 * 请求可以分为两部分，请求解析部分，响应部分
+	 * 通过 onSubscribe 来分开，所以可以在  onSubscribe 做一些释放请求资源的事情（应该可以）
 	 */
 	@Override
 	protected void onHandlerStart() {
@@ -812,7 +809,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
         	this.out();
 		} finally {
 			IOUtils.closeQuietly(this);
-			ReferenceCountUtil.release(request);
 		}
 	}
 	
@@ -832,9 +828,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	public void close() throws IOException {
 		
 		// 关闭请求数据
-		if (this.body != null) {
-			this.body = null;
-		}
 		this.remoteAddress = null;
 		this.uri = null;
 		this.url = null;
@@ -859,16 +852,11 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.pathVariables.clear();
 			this.pathVariables = null;
 		}
-		if (is != null) {
-			IOUtils.closeQuietly(is);
-		}
+		IOUtils.closeQuietly(is);
 		
 		// 关闭响应数据
 		this.closed = true;
-		if (os != null) {
-			IOUtils.closeQuietly(os);
-			os = null;
-		}
+		IOUtils.closeQuietly(os);
 		file = null; buffer = null;
 		if (responseHeaders != null) {
 			responseHeaders.clear();

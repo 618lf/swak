@@ -10,7 +10,6 @@ import java.util.Map;
 import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.http.Subject;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.cookie.Cookie;
 
@@ -159,13 +158,6 @@ public interface HttpServerRequest extends NettyInbound, Closeable {
 	 */
 	Cookie getCookie(String name);
 
-	/**
-	 * 请求体
-	 * 
-	 * @return
-	 */
-	ByteBuf body();
-	
 	/**
 	 * 请求的输入流
 	 * 

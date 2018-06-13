@@ -16,6 +16,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.Future;
 import reactor.core.publisher.MonoSink;
 
@@ -150,11 +151,15 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	 * @return
 	 */
 	public ChannelOperations<?,?> doChannel(Channel channel, Object request) {
-		ChannelOperations<?,?> ops = channelOpFactory.create(channel, this, request);
-		if (ops != null) {
-			ops.onHandlerStart();
+		try {
+			ChannelOperations<?,?> ops = channelOpFactory.create(channel, this, request);
+			if (ops != null) {
+				ops.onHandlerStart();
+			}
+			return ops;
+		} finally {
+			ReferenceCountUtil.release(request);
 		}
-		return ops;
 	}
 	
 	/**
