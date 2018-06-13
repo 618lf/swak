@@ -32,7 +32,7 @@ public class RpcServerAutoConfiguration {
 
 	public RpcServerAutoConfiguration(RpcServerProperties properties) {
 		this.properties = properties;
-		APP_LOGGER.debug("Loading Http Server on http://" + properties.getHost() + ":" + properties.getPort());
+		APP_LOGGER.debug("Loading RPC Server on " + properties.getHost() + ":" + properties.getPort());
 	}
 
 	/**

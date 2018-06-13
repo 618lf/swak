@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -31,6 +32,7 @@ import io.lettuce.core.resource.DefaultClientResources;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableRedis", matchIfMissing = true)
+@EnableConfigurationProperties(CacheProperties.class)
 public class RegistryAutoConfiguration {
     
 	@Autowired
@@ -39,7 +41,7 @@ public class RegistryAutoConfiguration {
 	private RpcServerProperties serverProperties;
 	
 	public RegistryAutoConfiguration() {
-		APP_LOGGER.debug("Loading Redis Cache");
+		APP_LOGGER.debug("Loading Redis Registry");
 	}
 	
 	/**

@@ -11,6 +11,7 @@ public interface Constants {
 	
 	/**  配置项前缀 */
 	String APPLICATION_PREFIX = "spring.application";
+	String RPC_SERVER_PREFIX = "spring.rpc-server";
 	String HTTP_SERVER_PREFIX = "spring.http-server";
 	String CACHE_PREFIX = "spring.cache";
 	String HTTP_CLIENT_PREFIX = "spring.http-client";

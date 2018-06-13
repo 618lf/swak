@@ -3,6 +3,10 @@ package com.swak.rpc.invoker;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
 import com.swak.rpc.api.RpcRequest;
 import com.swak.rpc.protocol.Exporter;
 import com.swak.rpc.protocol.Protocol;
@@ -12,7 +16,7 @@ import com.swak.rpc.proxy.ProxyFactory;
  * 匹配请求，并执行请求
  * @author lifeng
  */
-public class ServiceInvokerMapping extends AbstractInvokerMapping {
+public class ServiceInvokerMapping extends AbstractInvokerMapping implements ApplicationContextAware {
 	
 	private final Protocol protocol;
 	private final ProxyFactory proxyFactory;
@@ -25,6 +29,16 @@ public class ServiceInvokerMapping extends AbstractInvokerMapping {
 	public ServiceInvokerMapping(Protocol protocol, ProxyFactory proxyFactory) {
 		this.protocol = protocol;
 		this.proxyFactory = proxyFactory;
+	}
+
+	/**
+	 * 初始化配置项
+	 * @param applicationContext
+	 * @throws BeansException
+	 */
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.initInvokerMapping(applicationContext);
 	}
 	
 	/**

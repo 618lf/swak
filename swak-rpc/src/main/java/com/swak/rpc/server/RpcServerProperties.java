@@ -1,7 +1,16 @@
 package com.swak.rpc.server;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import com.swak.Constants;
 import com.swak.reactivex.transport.TransportMode;
 
+/**
+ * 服务器的默认配置
+ * 
+ * @author lifeng
+ */
+@ConfigurationProperties(prefix = Constants.RPC_SERVER_PREFIX)
 public class RpcServerProperties {
 
 	private String name = "SWAK-RPC-SERVER";
