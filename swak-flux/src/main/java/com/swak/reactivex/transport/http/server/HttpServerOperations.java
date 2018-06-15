@@ -29,6 +29,7 @@ import com.swak.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
@@ -59,26 +60,28 @@ import reactor.core.publisher.Mono;
  * HttpServer http 操作
  * 
  * 关于资源释放这块还有些疑问
+ * 
  * @author lifeng
  */
 public class HttpServerOperations extends ChannelOperations<HttpServerRequest, HttpServerResponse>
-    implements HttpServerRequest, HttpServerResponse {
+		implements HttpServerRequest, HttpServerResponse {
 
 	// 这块还需要研究下
 	private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
-	
+
 	// 初始化
 	final String serverName;
 	final FullHttpRequest request;
-	
-	private HttpServerOperations(Channel channel, BiFunction<? super HttpServerRequest, ? super HttpServerResponse, 
-			Mono<Void>> handler, ContextHandler context, String serverName, FullHttpRequest request) {
+
+	private HttpServerOperations(Channel channel,
+			BiFunction<? super HttpServerRequest, ? super HttpServerResponse, Mono<Void>> handler,
+			ContextHandler context, String serverName, FullHttpRequest request) {
 		super(channel, handler, context);
 		this.serverName = serverName;
 		this.request = request;
 	}
-	
-	//--------  请求 --------------------
+
+	// -------- 请求 --------------------
 	private InputStream is;
 	private String remoteAddress;
 	private String uri;
@@ -92,9 +95,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	private Map<String, Cookie> requestCookies;
 	private Map<String, String> pathVariables = null;
 	private Subject subject;
-	
+
 	/**
 	 * 初始化
+	 * 
 	 * @param channel
 	 * @param fullHttpRequest
 	 */
@@ -106,51 +110,54 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		int pathEndPos = this.uri.indexOf('?');
 		this.url = pathEndPos < 0 ? this.uri : this.uri.substring(0, pathEndPos);
 		this.method = request.method();
-		
+
 		// 获取一些数据
 		this.parseParameter(request);
 		this.parseHeaders(request);
 		this.parseCookies();
 		this.parseBody(request);
-		
-		// 释放引用 
+
+		// 释放引用
 		request = null;
 	}
-	
+
 	/**
 	 * 获得身份
+	 * 
 	 * @return
 	 */
 	public Subject getSubject() {
 		return this.subject;
 	}
-	
+
 	/**
 	 * 设置身份
+	 * 
 	 * @param subject
 	 */
-    public void setSubject(Subject subject) {
+	public void setSubject(Subject subject) {
 		this.subject = subject;
 	}
-    
-    /**
+
+	/**
 	 * 服务地址
 	 */
 	public String getServerName() {
 		return serverName;
 	}
-    
+
 	/**
 	 * 获得响应
+	 * 
 	 * @return
 	 */
 	public HttpServerResponse getResponse() {
 		return this;
 	}
-    
+
 	/**
-	 * 获取请求的地址
-	 * 包含 请求的参数
+	 * 获取请求的地址 包含 请求的参数
+	 * 
 	 * @return
 	 */
 	public String getRequestURI() {
@@ -158,14 +165,14 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
-	 * 获取请求的地址
-	 * 不包含请求的参数
+	 * 获取请求的地址 不包含请求的参数
+	 * 
 	 * @return
 	 */
 	public String getRequestURL() {
 		return url;
 	}
-	
+
 	/**
 	 * 获取请求的方法
 	 * 
@@ -236,7 +243,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	public String getCharacterEncoding() {
 		return CharsetUtil.UTF_8.name();
 	}
-	
+
 	/**
 	 * 设置属性
 	 * 
@@ -293,7 +300,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	public String getRequestHeader(String name) {
 		return requestHeaders.get(name);
 	}
-	
+
 	/**
 	 * 指定名称的header
 	 * 
@@ -303,10 +310,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	public Map<String, String> getRequestHeaders() {
 		return requestHeaders;
 	}
-	
+
 	/**
-	 * 解析 headers
-	 * 最新的协议都是小写的
+	 * 解析 headers 最新的协议都是小写的
+	 * 
 	 * @param request
 	 */
 	private void parseHeaders(FullHttpRequest request) {
@@ -318,9 +325,9 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.requestHeaders = new HashMap<>();
 		}
 	}
-	
+
 	/**
-	 * 解析 Cookie 
+	 * 解析 Cookie
 	 */
 	private void parseCookies() {
 		String cookie = requestHeaders.getOrDefault(HttpHeaderNames.COOKIE.toString(), "");
@@ -351,10 +358,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	public Cookie getCookie(String name) {
 		return this.requestCookies.get(name);
 	}
-	
+
 	/**
-	 * 解析 body 数据
-	 * 先这样处理
+	 * 解析 body 数据 先这样处理
+	 * 
 	 * @param request
 	 */
 	private void parseBody(FullHttpRequest request) {
@@ -371,17 +378,19 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	public InputStream getInputStream() {
 		return is;
 	}
-	
+
 	/**
 	 * 路径的变量
+	 * 
 	 * @return
 	 */
 	public Map<String, String> getPathVariables() {
 		return pathVariables;
 	}
-	
+
 	/**
 	 * 路径的变量
+	 * 
 	 * @return
 	 */
 	public void addPathVariables(Map<String, String> pathVariables) {
@@ -413,7 +422,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	private void parseCookie(Cookie cookie) {
 		this.requestCookies.put(cookie.name(), cookie);
 	}
-	
+
 	// -------------- 响应 -------------------
 	private ByteArrayOutputStream os;
 	private byte[] buffer = null;
@@ -423,18 +432,19 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	private HttpResponseStatus status = HttpResponseStatus.OK;
 	private CharSequence contentType = null;
 	private boolean closed;
-	
+
 	/**
 	 * 获得请求
 	 */
 	public HttpServerRequest getRequest() {
 		return this;
 	}
-	
-    /**
-     * 状态码
-     * @return
-     */
+
+	/**
+	 * 状态码
+	 * 
+	 * @return
+	 */
 	public HttpResponseStatus getStatus() {
 		return status;
 	}
@@ -449,47 +459,52 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		this.status = status;
 		return this;
 	}
-	
+
 	/**
 	 * 500
+	 * 
 	 * @return
 	 */
 	public HttpServerResponse error() {
 		return this.status(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 	}
-	
+
 	/**
 	 * 404
+	 * 
 	 * @return
 	 */
 	public HttpServerResponse notFound() {
 		return this.status(HttpResponseStatus.NOT_FOUND);
 	}
-	
+
 	/**
 	 * 401
+	 * 
 	 * @return
 	 */
 	public HttpServerResponse unauthorized() {
 		return this.status(HttpResponseStatus.UNAUTHORIZED);
 	}
-	
+
 	/**
 	 * 301
+	 * 
 	 * @return
 	 */
 	public HttpServerResponse redirect() {
 		return this.status(HttpResponseStatus.MOVED_PERMANENTLY);
 	}
-	
+
 	/**
 	 * 301
+	 * 
 	 * @return
 	 */
 	public HttpServerResponse ok() {
 		return this.status(HttpResponseStatus.OK);
 	}
-	
+
 	/**
 	 * 设置输出格式
 	 * 
@@ -500,7 +515,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
 		return this;
 	}
-	
+
 	/**
 	 * 设置输出格式
 	 * 
@@ -511,7 +526,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
 		return this;
 	}
-	
+
 	/**
 	 * 设置输出格式
 	 * 
@@ -522,7 +537,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_HTML);
 		return this;
 	}
-	
+
 	/**
 	 * 设置输出格式
 	 * 
@@ -533,10 +548,9 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_XML);
 		return this;
 	}
-	
+
 	/**
-	 * 自动判断类型
-	 * 只判断这两种类型
+	 * 自动判断类型 只判断这两种类型
 	 */
 	@Override
 	public HttpServerResponse accept() {
@@ -551,10 +565,12 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 
 	/**
 	 * 设置浏览器缓存，默认是无缓存
+	 * 
 	 * @return
 	 */
 	public HttpServerResponse cache(int maxAge) {
-		responseHeaders.set(HttpHeaderNames.CACHE_CONTROL,StringUtils.format("%s:%s", HttpHeaderValues.MAX_AGE, maxAge));
+		responseHeaders.set(HttpHeaderNames.CACHE_CONTROL,
+				StringUtils.format("%s:%s", HttpHeaderValues.MAX_AGE, maxAge));
 		return this;
 	}
 
@@ -577,7 +593,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	public String getContentType() {
 		return null == this.contentType ? null : String.valueOf(this.contentType);
 	}
-	
+
 	/**
 	 * 返回所有headers
 	 * 
@@ -619,7 +635,8 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @return
 	 */
 	public HttpServerResponse removeCookie(String name) {
-		Optional<Cookie> cookieOpt = this.responseCookies.stream().filter(cookie -> cookie.name().equals(name)).findFirst();
+		Optional<Cookie> cookieOpt = this.responseCookies.stream().filter(cookie -> cookie.name().equals(name))
+				.findFirst();
 		cookieOpt.ifPresent(cookie -> {
 			cookie.setValue("");
 			cookie.setMaxAge(-1);
@@ -658,7 +675,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		}
 		return this;
 	}
-	
+
 	/**
 	 * 输出数据
 	 * 
@@ -672,7 +689,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		}
 		return this;
 	}
-	
 
 	/**
 	 * 优先获取输出流中的数据
@@ -696,11 +712,11 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @return
 	 * @throws IOException
 	 */
-	private HttpResponse render()  {
+	private HttpResponse render() {
 		byte[] _content = this.getContent();
-		ByteBuf buffer = _content== null? Unpooled.EMPTY_BUFFER : Unpooled.wrappedBuffer(_content);
+		ByteBuf buffer = _content == null ? Unpooled.EMPTY_BUFFER : Unpooled.wrappedBuffer(_content);
 		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, buffer);
-		
+
 		if (!responseHeaders.contains(HttpHeaderNames.CONTENT_TYPE)) {
 			responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
 		}
@@ -715,45 +731,45 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			responseHeaders.set(HttpHeaderNames.SERVER, HttpConst.VERSION);
 		}
 		if (this.responseCookies.size() > 0) {
-			this.responseCookies.forEach(cookie -> responseHeaders.add(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.LAX.encode(cookie)));
+			this.responseCookies.forEach(
+					cookie -> responseHeaders.add(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.LAX.encode(cookie)));
 		}
 		response.headers().set(responseHeaders);
 		return response;
 	}
-	
+
 	/**
-	 * 输出
-	 * 只能执行一次
+	 * 输出 只能执行一次
 	 */
 	protected void out() {
-		
+
 		// 只能执行一次
 		if (this.closed) {
 			return;
 		}
-		
+
 		// 通道已经关闭
 		if (!channel().isActive()) {
 			channel().close();
 		}
-		
+
 		// 直接输出文件
 		if (this.file != null) {
 			this.outFile();
 			return;
 		}
-		
+
 		HttpResponse _response = this.render();
 		boolean keepAlive = isKeepAlive();
 		if (!keepAlive) {
-			channel().writeAndFlush(_response);
-			channel().close();
+			channel().writeAndFlush(_response)
+			.addListener(ChannelFutureListener.CLOSE);
 		} else {
 			_response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
 			channel().writeAndFlush(_response);
 		}
 	}
-	
+
 	/**
 	 * 输出 file -- 输出文件
 	 */
@@ -761,21 +777,22 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		RandomAccessFile raf = null;
 		long length = -1;
 		try {
-	        raf = new RandomAccessFile(file, "r");
-	        length = raf.length();
-	        channel().write(new DefaultFileRegion(raf.getChannel(), 0, length));
-	    } catch (Exception e) {
-	    	channel().writeAndFlush("ERR: " + e.getClass().getSimpleName() + ": " + e.getMessage() + '\n');
-	    	return;
-	    } finally {
-	        if (length < 0 && raf != null) {
-	            IOUtils.closeQuietly(raf);
-	        }
-	    }
+			raf = new RandomAccessFile(file, "r");
+			length = raf.length();
+			channel().write(new DefaultFileRegion(raf.getChannel(), 0, length));
+		} catch (Exception e) {
+			channel().writeAndFlush("ERR: " + e.getClass().getSimpleName() + ": " + e.getMessage() + '\n');
+			return;
+		} finally {
+			if (length < 0 && raf != null) {
+				IOUtils.closeQuietly(raf);
+			}
+		}
 	}
-	
+
 	/**
 	 * 输出错误信息
+	 * 
 	 * @param code
 	 * @throws UnsupportedEncodingException
 	 */
@@ -783,12 +800,11 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		this.buffer(msg);
 		this.out();
 	}
-	
-	// ------------- 处理请求  ------------------
+
+	// ------------- 处理请求 ------------------
 	/**
-	 * 处理请求
-	 * 请求可以分为两部分，请求解析部分，响应部分
-	 * 通过 onSubscribe 来分开，所以可以在  onSubscribe 做一些释放请求资源的事情（应该可以）
+	 * 处理请求 请求可以分为两部分，请求解析部分，响应部分 通过 onSubscribe 来分开，所以可以在 onSubscribe
+	 * 做一些释放请求资源的事情（应该可以）
 	 */
 	@Override
 	protected void onHandlerStart() {
@@ -799,19 +815,19 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.onError(e);
 		}
 	}
-	
+
 	/**
 	 * 完成请求
 	 */
 	@Override
 	public void onComplete() {
-        try {
-        	this.out();
+		try {
+			this.out();
 		} finally {
 			IOUtils.closeQuietly(this);
 		}
 	}
-	
+
 	/**
 	 * 错误处理
 	 */
@@ -820,13 +836,13 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		this.getResponse().error().buffer(e);
 		this.onComplete();
 	}
-	
+
 	/**
 	 * 清除资源
 	 */
 	@Override
 	public void close() throws IOException {
-		
+
 		// 关闭请求数据
 		this.remoteAddress = null;
 		this.uri = null;
@@ -853,11 +869,12 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.pathVariables = null;
 		}
 		IOUtils.closeQuietly(is);
-		
+
 		// 关闭响应数据
 		this.closed = true;
 		IOUtils.closeQuietly(os);
-		file = null; buffer = null;
+		file = null;
+		buffer = null;
 		if (responseHeaders != null) {
 			responseHeaders.clear();
 			responseHeaders = null;
@@ -869,9 +886,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		contentType = null;
 	}
 
-	//--------------- 创建 ---------------------
-	public static HttpServerOperations bind(Channel channel, BiFunction<? super HttpServerRequest, ? super HttpServerResponse, 
-			Mono<Void>> handler, ContextHandler context, String serverName, FullHttpRequest request) {
+	// --------------- 创建 ---------------------
+	public static HttpServerOperations bind(Channel channel,
+			BiFunction<? super HttpServerRequest, ? super HttpServerResponse, Mono<Void>> handler,
+			ContextHandler context, String serverName, FullHttpRequest request) {
 		return new HttpServerOperations(channel, handler, context, serverName, (FullHttpRequest) request);
 	}
 }
