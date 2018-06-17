@@ -125,6 +125,7 @@ public class HttpServer extends TcpServer {
 	// ---------------------- 初始化管道 -- 处理数据 ---------------------
 	/**
 	 * TcpServer.BiConsumer -> ContextHandler.onPipeline(this)
+	 * 针对一次连接 Channel 只会初始化一次
 	 */
 	@Override
 	public void accept(ChannelPipeline p, ContextHandler ch) {
@@ -139,6 +140,8 @@ public class HttpServer extends TcpServer {
 
 	/**
 	 * TcpServer.OnNew -> ContextHandler.onChannel(this)
+	 * 多次 flush 数据，则调用多次， request 是已经封装好的数据,
+	 * 同一个channel 多次法送数据，是有序的。
 	 */
 	@Override
 	public ChannelOperations<?, ?> doHandler(Channel c, ContextHandler contextHandler, Object request, BiFunction<NettyInbound, NettyOutbound, Mono<Void>> handler) {

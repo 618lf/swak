@@ -1,5 +1,6 @@
 package com.tmt.shop.web;
 
+import java.io.ByteArrayInputStream;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -12,6 +13,7 @@ import com.swak.entity.Result;
 import com.swak.executor.Workers;
 import com.swak.http.builder.RequestBuilder;
 import com.swak.kotlin.MonosKt;
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.RestController;
 import com.tmt.shop.entity.Shop;
@@ -200,5 +202,18 @@ public class HelloController {
 			shopService.say();
 			return new Shop();
 		});
+	}
+	
+	
+	/**
+	 * 输出string 类型
+	 * @return
+	 */
+	@GetMapping("/say/compute")
+	public String sayCompute(HttpServerRequest request) {
+		ByteArrayInputStream is = (ByteArrayInputStream)request.getInputStream();
+		if (is != null) {
+		}
+		return "lifeng";
 	}
 }

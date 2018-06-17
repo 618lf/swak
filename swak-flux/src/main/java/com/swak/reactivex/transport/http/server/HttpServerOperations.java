@@ -1,7 +1,5 @@
 package com.swak.reactivex.transport.http.server;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+import com.swak.exception.BaseRuntimeException;
 import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
 import com.swak.reactivex.transport.channel.ServerContextHandler;
@@ -27,6 +26,8 @@ import com.swak.utils.IOUtils;
 import com.swak.utils.StringUtils;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
@@ -81,8 +82,11 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		this.request = request;
 	}
 
+	// 通用
+	private ByteBuf content;
+
 	// -------- 请求 --------------------
-	private InputStream is;
+	private ByteBufInputStream is;
 	private String remoteAddress;
 	private String uri;
 	private String url;
@@ -106,7 +110,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		this.keepAlive = HttpUtil.isKeepAlive(request);
 		String remoteAddress = channel.remoteAddress().toString();
 		this.remoteAddress = remoteAddress;
-		this.uri = request.uri();
+		this.uri = StringUtils.removeStart(request.uri(), this.getServerName());
 		int pathEndPos = this.uri.indexOf('?');
 		this.url = pathEndPos < 0 ? this.uri : this.uri.substring(0, pathEndPos);
 		this.method = request.method();
@@ -365,8 +369,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @param request
 	 */
 	private void parseBody(FullHttpRequest request) {
-		if (this.getRequestMethod() == HttpMethod.POST) {
-			is = new ByteArrayInputStream(request.content().array());
+		content = Unpooled.buffer();
+		ByteBuf _content = request.content();
+		if (_content.readableBytes() > 0) {
+			_content.readBytes(content, _content.readableBytes());
 		}
 	}
 
@@ -376,6 +382,9 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @return
 	 */
 	public InputStream getInputStream() {
+		if (is == null) {
+			is = new ByteBufInputStream(content);
+		}
 		return is;
 	}
 
@@ -424,8 +433,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	// -------------- 响应 -------------------
-	private ByteArrayOutputStream os;
-	private byte[] buffer = null;
+	private ByteBufOutputStream os;
 	private File file = null;
 	private HttpHeaders responseHeaders = new DefaultHttpHeaders(false);
 	private Set<Cookie> responseCookies = new HashSet<>(4);
@@ -653,7 +661,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @return
 	 */
 	public OutputStream getOutputStream() {
-		os = new ByteArrayOutputStream();
+		if (os == null) {
+			this.content.clear();
+			os = new ByteBufOutputStream(this.content);
+		}
 		return os;
 	}
 
@@ -661,17 +672,17 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * 输出数据
 	 * 
 	 * @param content
-	 * @throws UnsupportedEncodingException
 	 */
 	public <T> HttpServerResponse buffer(T content) {
 		ObjectUtil.checkNotNull(content, "content cannot null");
-		if (content instanceof File) {
-			file = (File) content;
-		} else {
-			if (buffer != null) {
-				buffer = null;
+		try {
+			if (content instanceof File) {
+				file = (File) content;
+			} else {
+				getOutputStream().write(String.valueOf(content).getBytes(HttpConst.DEFAULT_CHARSET));
 			}
-			buffer = String.valueOf(content).getBytes(HttpConst.DEFAULT_CHARSET);
+		} catch (Exception e) {
+			throw new BaseRuntimeException("write buffer error!");
 		}
 		return this;
 	}
@@ -691,32 +702,17 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
-	 * 优先获取输出流中的数据
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	private byte[] getContent() {
-		if (this.os != null) {
-			return this.os.toByteArray();
-		}
-		if (this.buffer != null) {
-			return this.buffer;
-		}
-		return null;
-	}
-
-	/**
 	 * 只能调用一次
 	 * 
 	 * @return
 	 * @throws IOException
 	 */
 	private HttpResponse render() {
-		byte[] _content = this.getContent();
-		ByteBuf buffer = _content == null ? Unpooled.EMPTY_BUFFER : Unpooled.wrappedBuffer(_content);
-		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, buffer);
 
+		// content
+		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, this.content);
+
+		// headers
 		if (!responseHeaders.contains(HttpHeaderNames.CONTENT_TYPE)) {
 			responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
 		}
@@ -762,8 +758,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		HttpResponse _response = this.render();
 		boolean keepAlive = isKeepAlive();
 		if (!keepAlive) {
-			channel().writeAndFlush(_response)
-			.addListener(ChannelFutureListener.CLOSE);
+			channel().writeAndFlush(_response).addListener(ChannelFutureListener.CLOSE);
 		} else {
 			_response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
 			channel().writeAndFlush(_response);
@@ -843,6 +838,11 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	@Override
 	public void close() throws IOException {
 
+		// 释放资源
+		if (this.content != null) {
+			this.content.release();
+		}
+
 		// 关闭请求数据
 		this.remoteAddress = null;
 		this.uri = null;
@@ -874,7 +874,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		this.closed = true;
 		IOUtils.closeQuietly(os);
 		file = null;
-		buffer = null;
 		if (responseHeaders != null) {
 			responseHeaders.clear();
 			responseHeaders = null;
