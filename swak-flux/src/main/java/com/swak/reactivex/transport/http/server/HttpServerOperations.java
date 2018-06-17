@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 
-import com.swak.exception.BaseRuntimeException;
 import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
 import com.swak.reactivex.transport.channel.ServerContextHandler;
@@ -369,10 +368,12 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @param request
 	 */
 	private void parseBody(FullHttpRequest request) {
-		content = Unpooled.buffer();
 		ByteBuf _content = request.content();
 		if (_content.readableBytes() > 0) {
+			content = Unpooled.buffer(_content.readableBytes());
 			_content.readBytes(content, _content.readableBytes());
+		} else {
+			content = Unpooled.buffer(0);
 		}
 	}
 
@@ -661,28 +662,30 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @return
 	 */
 	public OutputStream getOutputStream() {
-		if (os == null) {
+		if (os != null) {
 			this.content.clear();
-			os = new ByteBufOutputStream(this.content);
+			IOUtils.closeQuietly(os);
 		}
+		os = new ByteBufOutputStream(this.content);
 		return os;
 	}
 
 	/**
 	 * 输出数据
-	 * 
+	 * 数据会累计在一起
 	 * @param content
 	 */
 	public <T> HttpServerResponse buffer(T content) {
 		ObjectUtil.checkNotNull(content, "content cannot null");
-		try {
-			if (content instanceof File) {
-				file = (File) content;
-			} else {
-				getOutputStream().write(String.valueOf(content).getBytes(HttpConst.DEFAULT_CHARSET));
+		if (content instanceof File) {
+			file = (File) content;
+		} else {
+			this.content.clear();
+			byte[] buffer = String.valueOf(content).getBytes(HttpConst.DEFAULT_CHARSET);
+			if (this.content.capacity() < buffer.length) {
+				this.content.capacity(buffer.length - this.content.capacity());
 			}
-		} catch (Exception e) {
-			throw new BaseRuntimeException("write buffer error!");
+			this.content.writeBytes(buffer);
 		}
 		return this;
 	}
@@ -838,12 +841,8 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	@Override
 	public void close() throws IOException {
 
-		// 释放资源
-		if (this.content != null) {
-			this.content.release();
-		}
-
 		// 关闭请求数据
+		this.content = null;
 		this.remoteAddress = null;
 		this.uri = null;
 		this.url = null;

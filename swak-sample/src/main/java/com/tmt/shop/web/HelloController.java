@@ -1,6 +1,6 @@
 package com.tmt.shop.web;
 
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -14,8 +14,10 @@ import com.swak.executor.Workers;
 import com.swak.http.builder.RequestBuilder;
 import com.swak.kotlin.MonosKt;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.reactivex.web.WebUtils;
 import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.RestController;
+import com.swak.utils.StringUtils;
 import com.tmt.shop.entity.Shop;
 import com.tmt.shop.entity.ShopXml;
 import com.tmt.shop.service.ShopService;
@@ -208,12 +210,21 @@ public class HelloController {
 	/**
 	 * 输出string 类型
 	 * @return
+	 * @throws IOException 
 	 */
 	@GetMapping("/say/compute")
-	public String sayCompute(HttpServerRequest request) {
-		ByteArrayInputStream is = (ByteArrayInputStream)request.getInputStream();
-		if (is != null) {
+	public Mono<String> sayCompute(HttpServerRequest request) throws IOException {
+		String biaodashi = WebUtils.getCleanParam(request, "name");
+		if (StringUtils.isNotBlank(biaodashi) && biaodashi.equals("1 1")) {
+			return Workers.sink(() ->{
+				try {
+					Thread .sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				return "lifeng say 2";
+			});
 		}
-		return "lifeng";
+		return Mono.just("lifeng say 1");
 	}
 }
