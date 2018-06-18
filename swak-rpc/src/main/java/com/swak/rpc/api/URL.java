@@ -12,7 +12,11 @@ import com.swak.utils.StringUtils;
 
 /**
  * 用于暴露服务
- * 
+ * 1. 感觉如果暴露方法则需要的东西太多了，
+ * 2. 暴露接口，简单点，那应该创建的是一个接口的代理，这个地方还需要研究下。
+ *    那方法上不能配置版本，一般来说版本是针对实现而言的。
+ * 3. 所以还是先研究下别人的反射那块的代码，dubbo或turborpc的 反射执行的代码
+ *    这块研究透了之后再来做其他的
  * @author lifeng
  */
 public class URL implements Serializable {
