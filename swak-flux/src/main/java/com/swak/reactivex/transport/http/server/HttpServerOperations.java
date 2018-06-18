@@ -757,7 +757,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.outFile();
 			return;
 		}
-
 		HttpResponse _response = this.render();
 		boolean keepAlive = isKeepAlive();
 		if (!keepAlive) {

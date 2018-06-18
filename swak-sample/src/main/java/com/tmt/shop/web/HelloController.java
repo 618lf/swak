@@ -217,11 +217,6 @@ public class HelloController {
 		String biaodashi = WebUtils.getCleanParam(request, "name");
 		if (StringUtils.isNotBlank(biaodashi) && biaodashi.equals("1 1")) {
 			return Workers.sink(() ->{
-				try {
-					Thread .sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 				return "lifeng say 2";
 			});
 		}
