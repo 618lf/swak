@@ -60,7 +60,7 @@ public class ServiceInvokerMapping extends AbstractInvokerMapping implements App
 		/**
 		 * 存储
 		 */
-		// mappingLookup.put(exporter.getURL().getSequence(), exporter);
+		mappingLookup.put(exporter.getURL().getServiceKey(), exporter);
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class ServiceInvokerMapping extends AbstractInvokerMapping implements App
 	public <T> Invoker<CompletableFuture<T>> lookup(RpcRequest request) {
 		
 		// 获取暴露的服务
-		Exporter<?> exporter = null; //mappingLookup.get(request.getSequence());
+		Exporter<?> exporter = mappingLookup.get(request.getServiceKey());
 		
 		// 返回实际的调用 
 		return exporter == null ? null: (Invoker<CompletableFuture<T>>) exporter.getInvoker();

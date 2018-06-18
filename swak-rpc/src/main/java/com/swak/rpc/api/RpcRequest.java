@@ -13,6 +13,7 @@ public class RpcRequest implements NettyInbound, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String requestId;
+	private String protocol;
 	private String serviceName;
 	private String version;
 	private String group;
@@ -74,5 +75,31 @@ public class RpcRequest implements NettyInbound, Serializable {
 
 	public void setParameters(Object[] parameters) {
 		this.parameters = parameters;
+	}
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	/**
+	 * 直接暴露接口名称，省不少事情
+	 * 例如： swak://com.tmt.shop.ShopService
+	 * @return
+	 */
+	public String getServiceKey() {
+		StringBuilder buf = new StringBuilder();
+		if (protocol != null && protocol.length() > 0) {
+			buf.append(protocol);
+			buf.append("://");
+		}
+		String path = getServiceName();
+		if (path != null && path.length() > 0) {
+			buf.append("/");
+			buf.append(path);
+		}
+		return buf.toString();
 	}
 }

@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-
-import com.swak.rpc.annotation.RpcService;
 import com.swak.utils.StringUtils;
 
 /**
@@ -160,6 +158,11 @@ public class URL implements Serializable {
 		return true;
 	}
 	
+	/**
+	 * 直接暴露接口名称，省不少事情
+	 * 例如： swak://com.tmt.shop.ShopService/get?
+	 * @return
+	 */
 	public String getServiceKey() {
 		StringBuilder buf = new StringBuilder();
 		if (protocol != null && protocol.length() > 0) {
@@ -173,8 +176,8 @@ public class URL implements Serializable {
 		}
 		String method = getParameter(Constants.METHOD_KEY);
 		if (method != null && method.length() > 0) {
-			buf.append("?");
-			buf.append(Constants.METHOD_KEY).append("=").append(method);
+			buf.append("/");
+			buf.append(method);
 		}
 		return buf.toString();
 	}
