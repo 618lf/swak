@@ -129,11 +129,11 @@ public class HttpServer extends TcpServer {
 	 */
 	@Override
 	public void accept(ChannelPipeline p, ContextHandler ch) {
+		p.addLast(NettyPipeline.HttpCodec, new HttpServerCodec(36192 * 2, 36192 * 8, 36192 * 16, false));
+		p.addLast(NettyPipeline.HttpAggregator, new HttpObjectAggregator(Integer.MAX_VALUE));
 		if (options.enabledCompression()) {
 			p.addLast(NettyPipeline.HttpCompressor, new HttpContentCompressor());
 		}
-		p.addLast(NettyPipeline.HttpCodec, new HttpServerCodec(36192 * 2, 36192 * 8, 36192 * 16, false));
-		p.addLast(NettyPipeline.HttpAggregator, new HttpObjectAggregator(Integer.MAX_VALUE));
 		p.addLast(NettyPipeline.ChunkedWriter, new ChunkedWriteHandler());
 		p.addLast(NettyPipeline.HttpServerHandler, new HttpServerHandler(ch));
 	}
