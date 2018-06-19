@@ -12,6 +12,7 @@ import com.swak.reactivex.web.Handler;
 import com.swak.reactivex.web.HandlerAdapter;
 import com.swak.reactivex.web.method.resolver.HandlerMethodArgumentResolverComposite;
 import com.swak.reactivex.web.method.resolver.HttpCookieValueMethodArgumentResolver;
+import com.swak.reactivex.web.method.resolver.MultipartParamMethodArgumentResoler;
 import com.swak.reactivex.web.method.resolver.PathVariableMethodArgumentResolver;
 import com.swak.reactivex.web.method.resolver.RequestHeaderMethodArgumentResolver;
 import com.swak.reactivex.web.method.resolver.RequestParamMethodArgumentResolver;
@@ -39,6 +40,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 	public void initArgumentResolvers(ConversionService conversionService) {
 		List<HandlerMethodArgumentResolver> resolvers = new ArrayList<HandlerMethodArgumentResolver>();
 		resolvers.add(new PathVariableMethodArgumentResolver(conversionService));
+		resolvers.add(new MultipartParamMethodArgumentResoler(conversionService));
 		resolvers.add(new RequestHeaderMethodArgumentResolver(conversionService));
 		resolvers.add(new HttpCookieValueMethodArgumentResolver(conversionService));
 		resolvers.add(new RequestParamMethodArgumentResolver(conversionService));
