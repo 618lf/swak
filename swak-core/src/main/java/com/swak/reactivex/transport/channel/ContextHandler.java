@@ -151,15 +151,13 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	 * @return
 	 */
 	public ChannelOperations<?,?> doChannel(Channel channel, Object request) {
-		try {
-			ChannelOperations<?,?> ops = channelOpFactory.create(channel, this, request);
-			if (ops != null) {
-				ops.onHandlerStart();
-			}
-			return ops;
-		} finally {
+		ChannelOperations<?,?> ops = channelOpFactory.create(channel, this, request);
+		if (ops != null) {
+			ops.onHandlerStart();
+		} else {
 			ReferenceCountUtil.release(request);
 		}
+		return ops;
 	}
 	
 	/**

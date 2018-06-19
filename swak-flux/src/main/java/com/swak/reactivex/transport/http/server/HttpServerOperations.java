@@ -27,7 +27,6 @@ import com.swak.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.DefaultFileRegion;
@@ -368,13 +367,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @param request
 	 */
 	private void parseBody(FullHttpRequest request) {
-		ByteBuf _content = request.content();
-		if (_content.readableBytes() > 0) {
-			content = Unpooled.buffer(_content.readableBytes());
-			_content.readBytes(content, _content.readableBytes());
-		} else {
-			content = Unpooled.buffer(0);
-		}
+		this.content = request.content();
 	}
 
 	/**
@@ -802,6 +795,8 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	/**
 	 * 处理请求 请求可以分为两部分，请求解析部分，响应部分 通过 onSubscribe 来分开，所以可以在 onSubscribe
 	 * 做一些释放请求资源的事情（应该可以）
+	 * 
+	 * 目前使用 zore-copy 的方式使用共享资源，write 的时候会自动释放，不需要手动释放
 	 */
 	@Override
 	protected void onHandlerStart() {
