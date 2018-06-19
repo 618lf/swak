@@ -4,6 +4,8 @@ import java.util.function.BiFunction;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.swak.reactivex.transport.NettyContext;
 import com.swak.reactivex.transport.NettyInbound;
@@ -19,6 +21,7 @@ import reactor.core.publisher.Mono;
 public abstract class ChannelOperations<INBOUND extends NettyInbound, OUTBOUND extends NettyOutbound>
 		implements NettyInbound, NettyOutbound, Subscriber<Void>, NettyContext {
 
+	final protected Logger logger = LoggerFactory.getLogger(ChannelOperations.class);
 	final protected BiFunction<? super INBOUND, ? super OUTBOUND, ? extends Mono<Void>> handler;
 	final Channel channel;
 	final ContextHandler context;

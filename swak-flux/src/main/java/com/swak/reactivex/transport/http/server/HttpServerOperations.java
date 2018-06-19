@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.net.URLConnection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,12 +22,14 @@ import com.swak.reactivex.transport.channel.ContextHandler;
 import com.swak.reactivex.transport.channel.ServerContextHandler;
 import com.swak.reactivex.transport.http.HttpConst;
 import com.swak.reactivex.transport.http.Subject;
+import com.swak.reactivex.transport.http.multipart.MultipartFile;
 import com.swak.utils.IOUtils;
 import com.swak.utils.StringUtils;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.DefaultFileRegion;
@@ -48,6 +51,7 @@ import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import io.netty.handler.codec.http.multipart.Attribute;
 import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
+import io.netty.handler.codec.http.multipart.FileUpload;
 import io.netty.handler.codec.http.multipart.HttpDataFactory;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
@@ -65,7 +69,7 @@ import reactor.core.publisher.Mono;
 public class HttpServerOperations extends ChannelOperations<HttpServerRequest, HttpServerResponse>
 		implements HttpServerRequest, HttpServerResponse {
 
-	// 这块还需要研究下
+	// Disk if size exceed
 	private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
 
 	// 初始化
@@ -96,6 +100,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	private Map<String, List<String>> parameters;
 	private Map<String, Cookie> requestCookies;
 	private Map<String, String> pathVariables = null;
+	private Map<String, MultipartFile> files = null;
 	private Subject subject;
 
 	/**
@@ -381,6 +386,15 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		}
 		return is;
 	}
+	
+	/**
+	 * 上传的文件
+	 * 
+	 */
+	@Override
+	public Map<String, MultipartFile> getMultipartFiles() {
+		return this.files;
+	}
 
 	/**
 	 * 路径的变量
@@ -413,12 +427,42 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 				String value = attribute.getValue();
 				this.parameters.put(name, Collections.singletonList(value));
 				break;
+			case FileUpload:
+				FileUpload fileUpload = (FileUpload) data;
+				parseFileUpload(fileUpload);
+				break;
 			default:
 				break;
 			}
 		} catch (IOException e) {
+			logger.error("parse request parameter error", e);
 		} finally {
 			data.release();
+		}
+	}
+
+	private void parseFileUpload(FileUpload fileUpload) throws IOException {
+		if (this.files == null) {
+			this.files = new HashMap<>();
+		}
+		if (fileUpload.isCompleted()) {
+			CharSequence contentType = HttpConst.getMimeType(fileUpload.getFilename());
+			if (null == contentType) {
+				contentType = URLConnection.guessContentTypeFromName(fileUpload.getFilename());
+			}
+			if (fileUpload.isInMemory()) {
+				MultipartFile fileItem = new MultipartFile(fileUpload.getName(), fileUpload.getFilename(), contentType,
+						fileUpload.length());
+
+				ByteBuf byteBuf = fileUpload.getByteBuf();
+				fileItem.setData(ByteBufUtil.getBytes(byteBuf));
+				files.put(fileItem.getName(), fileItem);
+			} else {
+				MultipartFile fileItem = new MultipartFile(fileUpload.getName(), fileUpload.getFilename(), contentType,
+						fileUpload.length());
+				fileItem.setFile(fileUpload.getFile());
+				files.put(fileItem.getName(), fileItem);
+			}
 		}
 	}
 
@@ -664,8 +708,8 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
-	 * 输出数据
-	 * 数据会累计在一起
+	 * 输出数据 数据会累计在一起
+	 * 
 	 * @param content
 	 */
 	public <T> HttpServerResponse buffer(T content) {
@@ -836,6 +880,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	public void close() throws IOException {
 
 		// 关闭请求数据
+		if (this.files != null) {
+			this.files.clear();
+			this.files = null;
+		}
 		this.content = null;
 		this.remoteAddress = null;
 		this.uri = null;

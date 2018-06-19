@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.http.Subject;
+import com.swak.reactivex.transport.http.multipart.MultipartFile;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.cookie.Cookie;
@@ -164,6 +165,13 @@ public interface HttpServerRequest extends NettyInbound, Closeable {
 	 * @return
 	 */
 	InputStream getInputStream();
+	
+	/**
+	 * 上传的文件
+	 * 
+	 * @return
+	 */
+	Map<String, MultipartFile> getMultipartFiles();
 	
 	/**
 	 * 路径的变量

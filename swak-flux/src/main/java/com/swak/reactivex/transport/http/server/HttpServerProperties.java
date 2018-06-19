@@ -5,6 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import com.swak.Constants;
 import com.swak.reactivex.transport.TransportMode;
 
+import io.netty.handler.codec.http.multipart.DiskAttribute;
+import io.netty.handler.codec.http.multipart.DiskFileUpload;
+
 /**
  * 服务器的默认配置
  * 
@@ -23,10 +26,10 @@ public class HttpServerProperties {
 	private boolean startReport = false;
 	private boolean enableGzip = false; // 暂时不支持
 	private boolean enableCors = false; // 暂时不支持
-	
+
 	// 线程数量
-	private int serverSelect = -1; //  自动计算
-	private int serverWorker = -1; //  自动计算
+	private int serverSelect = -1; // 自动计算
+	private int serverWorker = -1; // 自动计算
 	private int workerThreads = 20; // 默认 20 和数据库连接池一样
 
 	// 支持ssl
@@ -34,6 +37,10 @@ public class HttpServerProperties {
 	private String certFilePath;
 	private String privateKeyPath;
 	private String privateKeyPassword;
+
+	// 文件上传
+	private boolean deleteOnExitTemporaryFile = true;
+	private String baseDirectory = null;
 
 	public int getServerSelect() {
 		return serverSelect;
@@ -66,7 +73,7 @@ public class HttpServerProperties {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public TransportMode getMode() {
 		return mode;
 	}
@@ -169,5 +176,25 @@ public class HttpServerProperties {
 
 	public void setPrivateKeyPassword(String privateKeyPassword) {
 		this.privateKeyPassword = privateKeyPassword;
+	}
+
+	public boolean isDeleteOnExitTemporaryFile() {
+		return deleteOnExitTemporaryFile;
+	}
+
+	public void setDeleteOnExitTemporaryFile(boolean deleteOnExitTemporaryFile) {
+		this.deleteOnExitTemporaryFile = deleteOnExitTemporaryFile;
+		DiskFileUpload.deleteOnExitTemporaryFile = true;
+		DiskAttribute.deleteOnExitTemporaryFile = true;
+	}
+
+	public String getBaseDirectory() {
+		return baseDirectory;
+	}
+
+	public void setBaseDirectory(String baseDirectory) {
+		this.baseDirectory = baseDirectory;
+		DiskFileUpload.baseDirectory = null;
+		DiskAttribute.baseDirectory = null;
 	}
 }
