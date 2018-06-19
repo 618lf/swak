@@ -22,6 +22,7 @@ import com.swak.reactivex.transport.channel.ContextHandler;
 import com.swak.reactivex.transport.channel.ServerContextHandler;
 import com.swak.reactivex.transport.http.HttpConst;
 import com.swak.reactivex.transport.http.Subject;
+import com.swak.reactivex.transport.http.multipart.MimeType;
 import com.swak.reactivex.transport.http.multipart.MultipartFile;
 import com.swak.utils.IOUtils;
 import com.swak.utils.StringUtils;
@@ -446,7 +447,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.files = new HashMap<>();
 		}
 		if (fileUpload.isCompleted()) {
-			CharSequence contentType = HttpConst.getMimeType(fileUpload.getFilename());
+			CharSequence contentType = MimeType.getMimeType(fileUpload.getFilename());
 			if (null == contentType) {
 				contentType = URLConnection.guessContentTypeFromName(fileUpload.getFilename());
 			}
