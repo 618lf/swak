@@ -16,7 +16,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.ssl.SslHandler;
-import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.Future;
 import reactor.core.publisher.MonoSink;
 
@@ -146,31 +145,20 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	//------------------ 执行处理 --------------------
 	/**
 	 * 实际的执行代码
+	 * 一般一个处理器同时只能处理一个请求，即使keepalive（http 请求来说）
 	 * @param channel
 	 * @param request
 	 * @return
 	 */
 	public ChannelOperations<?,?> doChannel(Channel channel, Object request) {
-		ChannelOperations<?,?> ops = channelOpFactory.create(channel, this, request);
-		if (ops != null) {
-			ops.onHandlerStart();
-		} else {
-			ReferenceCountUtil.release(request);
-		}
-		return ops;
+		return channelOpFactory.create(channel, this, request);
 	}
 	
 	/**
-	 * 成功处理，例如 onHandlerStart
-	 * @param context
+	 * 服务器： 关闭 inactive或出现异常的通道
+	 * @param channel
 	 */
-	public void fireContextActive(NettyContext context) {}
-	
-	/**
-	 * 失败处理， 例如 服务器启动失败
-	 * @param t
-	 */
-	public void fireContextError(Throwable t) {}
+	public void terminateChannel(Channel channel) {}
 
 	//------------------ 创建客户端 或 服务器 --------------------
 	

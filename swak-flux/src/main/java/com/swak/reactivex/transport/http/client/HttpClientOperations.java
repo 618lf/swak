@@ -10,6 +10,7 @@ import reactor.core.publisher.Mono;
 
 /**
  * http client ops
+ * 不支持 keeyAlive
  * 
  * @author lifeng
  */
@@ -27,7 +28,7 @@ public class HttpClientOperations extends ChannelOperations<HttpClientResponse, 
 	 * 处理请求
 	 */
 	@Override
-	protected void onHandlerStart() {
+	public void onHandlerStart() {
 		
 	}
 

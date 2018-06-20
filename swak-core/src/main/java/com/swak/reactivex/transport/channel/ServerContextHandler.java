@@ -53,4 +53,16 @@ public class ServerContextHandler extends CloseableContextHandler implements Net
 	public Channel channel() {
 		return f.channel();
 	}
+	
+	/**
+	 * 关闭 客户端连接
+	 */
+	@Override
+	public void terminateChannel(Channel channel) {
+		if (!f.channel()
+		     .isActive()) {
+			return;
+		}
+		channel.close();
+	}
 }

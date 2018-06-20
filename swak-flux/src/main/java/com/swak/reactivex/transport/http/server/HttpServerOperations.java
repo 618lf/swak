@@ -32,7 +32,6 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
@@ -57,6 +56,7 @@ import io.netty.handler.codec.http.multipart.HttpDataFactory;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.util.CharsetUtil;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.ObjectUtil;
 import reactor.core.publisher.Mono;
 
@@ -204,6 +204,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean isKeepAlive() {
 		return keepAlive;
 	}
@@ -387,7 +388,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		}
 		return is;
 	}
-	
+
 	/**
 	 * 上传的文件
 	 * 
@@ -784,10 +785,11 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		if (this.closed) {
 			return;
 		}
-
-		// 通道已经关闭
-		if (!channel().isActive()) {
-			channel().close();
+		
+		// 已经关闭 -- 直接释放资源即可
+		if (!this.channel().isActive()) {
+			ReferenceCountUtil.release(request);
+			return;
 		}
 
 		// 直接输出文件
@@ -795,14 +797,24 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.outFile();
 			return;
 		}
-		HttpResponse _response = this.render();
+		
+		// 普通的请求输出
+		HttpResponse response = this.render();
 		boolean keepAlive = isKeepAlive();
+		 
+		// see HttpServerHandler.write
+//		if (!keepAlive) {
+//			channel().writeAndFlush(_response).addListener(ChannelFutureListener.CLOSE);
+//		} else {
+//			_response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+//			channel().writeAndFlush(_response);
+//		}
+		
+		// 是否关闭有 HttpServerHandler.write 添加了判断
 		if (!keepAlive) {
-			channel().writeAndFlush(_response).addListener(ChannelFutureListener.CLOSE);
-		} else {
-			_response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-			channel().writeAndFlush(_response);
+			response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
 		}
+		channel().writeAndFlush(response);
 	}
 
 	/**
@@ -844,7 +856,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * 目前使用 zore-copy 的方式使用共享资源，write 的时候会自动释放，不需要手动释放
 	 */
 	@Override
-	protected void onHandlerStart() {
+	public void onHandlerStart() {
 		try {
 			this.initRequest(channel(), request);
 			this.handler.apply(this, this).subscribe(this);

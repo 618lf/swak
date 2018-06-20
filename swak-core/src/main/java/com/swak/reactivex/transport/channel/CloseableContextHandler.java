@@ -60,28 +60,15 @@ public abstract class CloseableContextHandler extends ContextHandler
 		}
 		this.f = (ChannelFuture) future;
 
-		if(future.isDone()){
+		if (future.isDone()){
 			try {
 				operationComplete((ChannelFuture) future);
 			}
 			catch (Exception e){
-				fireContextError(e);
+				log.error("Connection closed remotely", e);
 			}
 			return;
 		}
 		f.addListener(this);
-	}
-	
-	/**
-	 * 失败处理， 例如 服务器启动失败
-	 * @param t
-	 */
-	public void fireContextError(Throwable t) {
-		if (!fired) {
-			fired = true;
-			sink.error(t);
-		} else {
-			log.error("Error cannot be forwarded to user-facing Mono", t);
-		}
 	}
 }

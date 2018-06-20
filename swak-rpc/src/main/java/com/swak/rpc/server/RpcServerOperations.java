@@ -34,7 +34,7 @@ public class RpcServerOperations extends ChannelOperations<RpcRequest, RpcRespon
 	 * 处理请求
 	 */
 	@Override
-	protected void onHandlerStart() {
+	public void onHandlerStart() {
 		try {
 			this.handler.apply(request, response).subscribe(this);
 		} catch (Exception e) {

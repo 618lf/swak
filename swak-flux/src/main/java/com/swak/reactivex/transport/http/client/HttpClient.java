@@ -69,7 +69,7 @@ public class HttpClient extends TcpClient {
 	@Override
 	public ChannelOperations<?, ?> doHandler(Channel c, ContextHandler contextHandler, Object msg,
 			BiFunction<NettyInbound, NettyOutbound, Mono<Void>> ioHandler) {
-		return null;
+		return HttpClientOperations.bind(c, ioHandler, contextHandler);
 	}
 
 	/**

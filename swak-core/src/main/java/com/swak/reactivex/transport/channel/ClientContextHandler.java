@@ -23,19 +23,6 @@ public class ClientContextHandler extends CloseableContextHandler {
 	}
 	
 	@Override
-	public final void fireContextActive(NettyContext context) {
-		if(!fired) {
-			fired = true;
-			if(context != null) {
-				sink.success(context);
-			}
-			else {
-				sink.success();
-			}
-		}
-	}
-
-	@Override
 	protected void doDropped(Channel channel) {
 		channel.close();
 		if(!fired) {
