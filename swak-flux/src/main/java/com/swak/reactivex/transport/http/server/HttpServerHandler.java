@@ -4,7 +4,6 @@ import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
 
 import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -36,10 +35,10 @@ public class HttpServerHandler extends ChannelDuplexHandler {
 	 */
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		ChannelOperations<?,?> ops = ChannelOperations.get(ctx.channel());
-		if (ops != null) {
-			ops.onChannelClose();
-		}
+//		ChannelOperations<?,?> ops = ChannelOperations.get(ctx.channel());
+//		if (ops != null) {
+//			ops.onChannelClose();
+//		}
 		context.terminateChannel(ctx.channel());
 	}
 
@@ -51,13 +50,13 @@ public class HttpServerHandler extends ChannelDuplexHandler {
 		try {
 			ChannelOperations<?,?> ops = context.doChannel(ctx.channel(), msg);
 			if (ops != null) {
-				// 一般不会出现 old 在 http 协议里面
-				// 出现这种情况则不处理这个请求
-				ChannelOperations<?,?> old = ChannelOperations.tryGetAndSet(ctx.channel(), ops);
-				if (old != null) {
-					ReferenceCountUtil.release(msg);
-					return;
-				}
+//				// 一般不会出现 old 在 http 协议里面
+//				// 出现这种情况则不处理这个请求
+//				ChannelOperations<?,?> old = ChannelOperations.tryGetAndSet(ctx.channel(), ops);
+//				if (old != null) {
+//					ReferenceCountUtil.release(msg);
+//					return;
+//				}
 				ops.onHandlerStart();
 			} else {
 				ReferenceCountUtil.release(msg);
@@ -72,7 +71,7 @@ public class HttpServerHandler extends ChannelDuplexHandler {
 	 */
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-		promise.addListener(TERMINATE_CHANNEL);
+		promise.addListener(ChannelFutureListener.CLOSE);
 		super.write(ctx, msg, promise);
 	}
 
@@ -81,25 +80,25 @@ public class HttpServerHandler extends ChannelDuplexHandler {
 	 */
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable err) {
-		ChannelOperations<?,?> ops = ChannelOperations.get(ctx.channel());
-		if (ops != null) {
-			ops.onChannelError(err);
-		}
+//		ChannelOperations<?,?> ops = ChannelOperations.get(ctx.channel());
+//		if (ops != null) {
+//			ops.onChannelError(err);
+//		}
 		context.terminateChannel(ctx.channel());
 	}
-	
-    /**
-     * 用于清除资源
-     */
-    private static ChannelFutureListener TERMINATE_CHANNEL = new ChannelFutureListener() {
-        @Override
-        public void operationComplete(ChannelFuture future) {
-        	ChannelOperations<?,?> ops = ChannelOperations.get(future.channel());
-        	if (ops == null || !ops.isKeepAlive()) {
-        		future.channel().close();
-        	} else if(ops != null){
-        		ChannelOperations.remove(future.channel());
-        	}
-        }
-    };
+//	
+//    /**
+//     * 用于清除资源
+//     */
+//    private static ChannelFutureListener TERMINATE_CHANNEL = new ChannelFutureListener() {
+//        @Override
+//        public void operationComplete(ChannelFuture future) {
+//        	ChannelOperations<?,?> ops = ChannelOperations.get(future.channel());
+//        	if (ops == null || !ops.isKeepAlive()) {
+//        		future.channel().close();
+//        	} else if(ops != null){
+//        		ChannelOperations.remove(future.channel());
+//        	}
+//        }
+//    };
 }

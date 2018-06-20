@@ -217,6 +217,13 @@ public class HelloController {
 		String biaodashi = WebUtils.getCleanParam(request, "name");
 		if (StringUtils.isNotBlank(biaodashi) && biaodashi.equals("1 1")) {
 			return Workers.sink(() ->{
+				try {
+					// 模拟计算一分钟，其实和实际的计算是有差别的，sleep 之后这个线程不能做其他的事情了
+					// 如果是计算，还可以分出去做其他的事情。
+					Thread.sleep(60000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				return "lifeng say 2";
 			});
 		}

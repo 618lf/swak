@@ -12,8 +12,6 @@ import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.NettyOutbound;
 
 import io.netty.channel.Channel;
-import io.netty.util.Attribute;
-import io.netty.util.AttributeKey;
 import reactor.core.publisher.Mono;
 
 /**
@@ -62,21 +60,20 @@ public abstract class ChannelOperations<INBOUND extends NettyInbound, OUTBOUND e
 	@Override
 	public void onNext(Void t) {}
 	
-	/**
-	 * 主动关闭连接
-	 */
-	public void onChannelClose() {
-		ChannelOperations.remove(channel);
-		this.onComplete();
-	}
-	
-	/**
-	 * 读取过程中出现异常
-	 * @param err
-	 */
-	public void onChannelError(Throwable err) {
-		this.onError(err);
-	}
+//	/**
+//	 * channel 被关闭连接
+//	 */
+//	public void onChannelClose() {
+//		ChannelOperations.remove(channel);
+//	}
+//	
+//	/**
+//	 * channel 出现了异常
+//	 * @param err
+//	 */
+//	public void onChannelError(Throwable err) {
+//		ChannelOperations.remove(channel);
+//	}
 
 	/**
 	 * A {@link ChannelOperations} factory
@@ -93,28 +90,28 @@ public abstract class ChannelOperations<INBOUND extends NettyInbound, OUTBOUND e
 		 */
 		ChannelOperations<?, ?> create(Channel c, ContextHandler contextHandler, Object msg);
 	}
-	
-	// http 协议一个 channel 同时只能处理一个请求，即使是keepalive的，必须等这个请求处理完成后在处理下一个，
-	// 所以用这个来记录 request 的生命周期，channel 异常关闭时，正确的释放资源
-	protected static final AttributeKey<ChannelOperations<?,?>> OPERATIONS_KEY = AttributeKey
-			.newInstance("nettyOperations");
-	public static ChannelOperations<?,?> get(Channel ch) {
-		return ch.attr(OPERATIONS_KEY).get();
-	}
-	public static void remove(Channel ch) {
-		ch.attr(OPERATIONS_KEY).set(null);
-	}
-	public static ChannelOperations<?,?> tryGetAndSet(Channel ch, ChannelOperations<?,?> ops) {
-		Attribute<ChannelOperations<?,?>> attr = ch.attr(OPERATIONS_KEY);
-		for (;;) {
-			ChannelOperations<?,?> op = attr.get();
-			if (op != null) {
-				return op;
-			}
-
-			if (attr.compareAndSet(null, ops)) {
-				return null;
-			}
-		}
-	}
+//	
+//	// http 协议一个 channel 同时只能处理一个请求，即使是keepalive的，必须等这个请求处理完成后在处理下一个，
+//	// 所以用这个来记录 request 的生命周期，channel 异常关闭时，正确的释放资源
+//	protected static final AttributeKey<ChannelOperations<?,?>> OPERATIONS_KEY = AttributeKey
+//			.newInstance("nettyOperations");
+//	public static ChannelOperations<?,?> get(Channel ch) {
+//		return ch.attr(OPERATIONS_KEY).get();
+//	}
+//	public static void remove(Channel ch) {
+//		ch.attr(OPERATIONS_KEY).set(null);
+//	}
+//	public static ChannelOperations<?,?> tryGetAndSet(Channel ch, ChannelOperations<?,?> ops) {
+//		Attribute<ChannelOperations<?,?>> attr = ch.attr(OPERATIONS_KEY);
+//		for (;;) {
+//			ChannelOperations<?,?> op = attr.get();
+//			if (op != null) {
+//				return op;
+//			}
+//
+//			if (attr.compareAndSet(null, ops)) {
+//				return null;
+//			}
+//		}
+//	}
 }

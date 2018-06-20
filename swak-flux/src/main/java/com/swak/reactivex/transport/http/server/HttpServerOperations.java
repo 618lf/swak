@@ -778,6 +778,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 
 	/**
 	 * 输出 只能执行一次
+	 * 只能在 mono 的最后执行，不能中途调用
 	 */
 	protected void out() {
 
