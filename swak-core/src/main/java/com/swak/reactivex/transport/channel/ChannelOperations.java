@@ -7,7 +7,6 @@ import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.swak.reactivex.transport.NettyContext;
 import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.NettyOutbound;
 
@@ -15,11 +14,11 @@ import io.netty.channel.Channel;
 import reactor.core.publisher.Mono;
 
 /**
- * channel operations
+ * 提供基本的支持
  * @author lifeng
  */
 public abstract class ChannelOperations<INBOUND extends NettyInbound, OUTBOUND extends NettyOutbound>
-		implements NettyInbound, NettyOutbound, Subscriber<Void>, NettyContext {
+		implements NettyInbound, NettyOutbound, Subscriber<Void> {
 
 	final protected Logger logger = LoggerFactory.getLogger(ChannelOperations.class);
 	final protected BiFunction<? super INBOUND, ? super OUTBOUND, ? extends Mono<Void>> handler;
@@ -33,10 +32,25 @@ public abstract class ChannelOperations<INBOUND extends NettyInbound, OUTBOUND e
 		this.context = context;
 	}
 	
+	/**
+	 * 对应的连接处理器
+	 * @return
+	 */
+	public ContextHandler context() {
+		return context;
+	}
+	
+	/**
+	 * 对应的通道
+	 */
 	public Channel channel() {
 		return channel;
 	}
 	
+	/**
+	 * 是否保持连接
+	 * @return
+	 */
 	public boolean isKeepAlive() {
 		return false;
 	}
@@ -44,7 +58,7 @@ public abstract class ChannelOperations<INBOUND extends NettyInbound, OUTBOUND e
 	/**
 	 * 执行请求
 	 */
-	public void onHandlerStart() {}
+	public abstract void onHandlerStart();
 	
 	/**
 	 * 订阅
@@ -55,26 +69,23 @@ public abstract class ChannelOperations<INBOUND extends NettyInbound, OUTBOUND e
 	}
 
 	/**
-	 * 获取数据
+	 * 返回值是 void, 不会执行此方法
 	 */
 	@Override
 	public void onNext(Void t) {}
 	
-//	/**
-//	 * channel 被关闭连接
-//	 */
-//	public void onChannelClose() {
-//		ChannelOperations.remove(channel);
-//	}
-//	
-//	/**
-//	 * channel 出现了异常
-//	 * @param err
-//	 */
-//	public void onChannelError(Throwable err) {
-//		ChannelOperations.remove(channel);
-//	}
+	/**
+	 * 服务器才需要处理
+	 */
+	@Override
+	public void onError(Throwable t) {}
 
+	/**
+	 * 服务器才需要处理
+	 */
+	@Override
+	public void onComplete() {}
+	
 	/**
 	 * A {@link ChannelOperations} factory
 	 */
@@ -90,28 +101,4 @@ public abstract class ChannelOperations<INBOUND extends NettyInbound, OUTBOUND e
 		 */
 		ChannelOperations<?, ?> create(Channel c, ContextHandler contextHandler, Object msg);
 	}
-//	
-//	// http 协议一个 channel 同时只能处理一个请求，即使是keepalive的，必须等这个请求处理完成后在处理下一个，
-//	// 所以用这个来记录 request 的生命周期，channel 异常关闭时，正确的释放资源
-//	protected static final AttributeKey<ChannelOperations<?,?>> OPERATIONS_KEY = AttributeKey
-//			.newInstance("nettyOperations");
-//	public static ChannelOperations<?,?> get(Channel ch) {
-//		return ch.attr(OPERATIONS_KEY).get();
-//	}
-//	public static void remove(Channel ch) {
-//		ch.attr(OPERATIONS_KEY).set(null);
-//	}
-//	public static ChannelOperations<?,?> tryGetAndSet(Channel ch, ChannelOperations<?,?> ops) {
-//		Attribute<ChannelOperations<?,?>> attr = ch.attr(OPERATIONS_KEY);
-//		for (;;) {
-//			ChannelOperations<?,?> op = attr.get();
-//			if (op != null) {
-//				return op;
-//			}
-//
-//			if (attr.compareAndSet(null, ops)) {
-//				return null;
-//			}
-//		}
-//	}
 }

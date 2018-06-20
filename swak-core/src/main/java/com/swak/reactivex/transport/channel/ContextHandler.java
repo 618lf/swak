@@ -32,34 +32,14 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	protected final MonoSink<NettyContext> sink;
 	protected ChannelOperations.OnNew channelOpFactory;
 	protected BiConsumer<ChannelPipeline, ContextHandler> pipelineConfigurator;
-	protected boolean fired;
+	protected volatile boolean fire;
 
 	protected ContextHandler(NettyOptions<?> options, MonoSink<NettyContext> sink) {
 		this.options = options;
 		this.sink = sink;
 	}
-
-	//------------------ 接入服务相关 --------------------
-	/**
-	 * 启动服务
-	 * @param future
-	 */
-	public abstract void setFuture(Future<?> future);
-
-	/**
-	 * 启动服务
-	 * @param channel
-	 */
-	protected void doStarted(Channel channel) {}
 	
-	
-	/**
-	 * 停止服务
-	 * @param channel
-	 */
-	protected void doDropped(Channel channel) {}
-	
-	//------------------ 配置处理器 --------------------
+	//------------------ 配置 --------------------
 	/**
 	 * 如何配置通道 -- accept
 	 * @param pipelineConfigurator
@@ -80,7 +60,55 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 		return this;
 	}
 
-	//------------------ 初始化通道 --------------------
+	//------------------ 接入服务相关 (连接)--------------------
+	/**
+	 * 启动服务
+	 * @param future
+	 */
+	public abstract void setFuture(Future<?> future);
+
+	/**
+	 * 启动服务
+	 * @param channel
+	 */
+	protected void doStarted(Channel channel) {}
+	
+	/**
+	 * 停止服务
+	 * @param channel
+	 */
+	protected void doDropped(Channel channel) {}
+	
+	/**
+	 * 激活 NettyContext
+	 * 有两个类实现了NettyContext 
+	 * 服务器: ServerContextHandler ， 服务器启动成功就激活
+	 * 客户端: HttpClientOperations ， 收到数据后才激活
+	 * @param context
+	 */
+	public void fireContextActive(NettyContext context) {
+		if (!fire) {
+			fire = true;
+			sink.success(context);
+		}
+	}
+	
+	/**
+	 * 发送错误处理，和 NettyContext 对应
+	 * 服务器: ServerContextHandler， 启动错误则发送错误
+	 * 客户端: HttpClientOperations， 连接或发送数据过程中出错则发送错误
+	 * @param t
+	 */
+	public void fireContextError(Throwable t) {
+		if (!fire) {
+			fire = true;
+			sink.error(t);
+		} else {
+			log.error("Connection closed remotely", t);
+		}
+	}
+	
+	//------------------ 初始化通道（初始化） --------------------
 	/**
 	 * 获得配置
 	 * @return
@@ -142,7 +170,7 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 		}
 	}
 	
-	//------------------ 执行处理 --------------------
+	//------------------ 执行处理 （执行：响应请求，发送请求）--------------------
 	/**
 	 * 实际的执行代码
 	 * 一般一个处理器同时只能处理一个请求，即使keepalive（http 请求来说）
@@ -150,8 +178,9 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	 * @param request
 	 * @return
 	 */
-	public ChannelOperations<?,?> doChannel(Channel channel, Object request) {
-		return channelOpFactory.create(channel, this, request);
+	@SuppressWarnings("unchecked")
+	public <T extends ChannelOperations<?,?>> T doChannel(Channel channel, Object request) {
+		return (T) channelOpFactory.create(channel, this, request);
 	}
 	
 	/**

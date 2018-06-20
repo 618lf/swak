@@ -55,7 +55,7 @@ public abstract class CloseableContextHandler extends ContextHandler
 			future.cancel(true);
 			return;
 		}
-		if(log.isDebugEnabled()){
+		if (log.isDebugEnabled()){
 			log.debug("Connecting new channel: {}", future.toString());
 		}
 		this.f = (ChannelFuture) future;
@@ -65,7 +65,7 @@ public abstract class CloseableContextHandler extends ContextHandler
 				operationComplete((ChannelFuture) future);
 			}
 			catch (Exception e){
-				log.error("Connection closed remotely", e);
+				fireContextError(e);
 			}
 			return;
 		}

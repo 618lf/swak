@@ -14,7 +14,7 @@ import io.netty.util.AsciiString;
 import reactor.core.publisher.MonoSink;
 
 /**
- * 配置服务器Channel
+ * 代表服务端的连接
  * 
  * @author lifeng
  */
@@ -38,7 +38,8 @@ public class ServerContextHandler extends CloseableContextHandler implements Net
 	@Override
 	protected void doStarted(Channel channel) {
 		
-		sink.success(this);
+		// 激活 NettyContext
+		this.fireContextActive(this);
 
 		// 自动更新时间
 		options.dateServer().scheduleWithFixedDelay(

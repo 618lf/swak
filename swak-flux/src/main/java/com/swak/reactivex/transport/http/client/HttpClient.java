@@ -1,5 +1,7 @@
 package com.swak.reactivex.transport.http.client;
 
+import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -15,7 +17,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpContentDecompressor;
-import io.netty.handler.codec.http.HttpMethod;
 import reactor.core.publisher.Mono;
 
 /**
@@ -24,7 +25,6 @@ import reactor.core.publisher.Mono;
  */
 public class HttpClient extends TcpClient {
 
-	static final HttpMethod WS = new HttpMethod("WS");
 	final static String WS_SCHEME = "ws";
 	final static String WSS_SCHEME = "wss";
 	final static String HTTP_SCHEME = "http";
@@ -64,6 +64,7 @@ public class HttpClient extends TcpClient {
 		if (options.acceptGzip()) {
 			pipeline.addAfter(NettyPipeline.HttpCodec, NettyPipeline.HttpDecompressor, new HttpContentDecompressor());
 		}
+		pipeline.addLast(NettyPipeline.HttpClientHandler, new HttpClientHandler(u));
 	}
 	
 	@Override
@@ -77,5 +78,24 @@ public class HttpClient extends TcpClient {
 	 */
 	public void close() {
 		this.loopResources.dispose();
+	}
+	
+	// ---------------------- 发送请求数据 ---------------------
+	public final Mono<HttpClientResponse> request(InetSocketAddress address) {
+		return this.connector(new InnerClientHandler(), address)
+				.timeout(Duration.ofSeconds(30))// 连接时长
+				.cast(HttpClientOperations.class)
+                .flatMap(ops -> Mono.fromFuture(ops.getFuture()))
+                .timeout(Duration.ofSeconds(30));// 读取时长
+	}
+	
+	// 内部处理器，做一些简单的配置工作
+	private class InnerClientHandler implements BiFunction<HttpClientResponse, HttpClientRequest, Mono<Void>> {
+		
+		@Override
+		public Mono<Void> apply(HttpClientResponse response, HttpClientRequest request) {
+			HttpClientOperations operations = (HttpClientOperations)request;
+			return operations.send();
+		}
 	}
 }

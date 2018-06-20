@@ -8,7 +8,7 @@ import io.netty.channel.Channel;
 import reactor.core.publisher.MonoSink;
 
 /**
- * 客户端处理器
+ * 代表客户端的连接
  * @author lifeng
  */
 public class ClientContextHandler extends CloseableContextHandler {
@@ -25,14 +25,19 @@ public class ClientContextHandler extends CloseableContextHandler {
 	@Override
 	protected void doDropped(Channel channel) {
 		channel.close();
-		if(!fired) {
-			fired = true;
-			sink.error(new BaseRuntimeException("Channel has been dropped"));
-		}
+		this.fireContextError(new BaseRuntimeException("Channel has been dropped"));
 	}
 	
 	@Override
 	protected void doPipeline(Channel ch) {
 		this.addSslHandler(ch.pipeline());
+	}
+	
+	/**
+	 * 关闭 客户端连接
+	 */
+	@Override
+	public void terminateChannel(Channel channel) {
+		this.doDropped(channel);
 	}
 }

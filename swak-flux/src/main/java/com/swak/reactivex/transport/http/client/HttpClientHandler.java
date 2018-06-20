@@ -4,6 +4,7 @@ import com.swak.reactivex.transport.channel.ContextHandler;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.ReferenceCountUtil;
 
 /**
  * 激活就发送数据
@@ -11,29 +12,48 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class HttpClientHandler extends ChannelDuplexHandler {
 	
-	ContextHandler contextHandler;
+	ContextHandler context;
 	
 	public HttpClientHandler(ContextHandler contextHandler) {
-		this.contextHandler = contextHandler;
+		this.context = contextHandler;
 	}
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		contextHandler.doChannel(ctx.channel(), null);
+		HttpClientOperations ops = context.doChannel(ctx.channel(), null);
+		if (ops != null) {
+			HttpClientOperations old = HttpClientOperations.tryGetAndSet(ctx.channel(), ops);
+			if (old != null) {
+				return;
+			}
+			ops.onHandlerStart();
+		}
 	}
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		super.channelInactive(ctx);
+		HttpClientOperations ops = HttpClientOperations.get(ctx.channel());
+		if (ops != null) {
+			ops.onChannelClose();
+		}
+		context.terminateChannel(ctx.channel());
 	}
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		super.channelRead(ctx, msg);
+		HttpClientOperations ops = HttpClientOperations.get(ctx.channel());
+		if (ops != null) {
+			ops.onChannelRead(msg);
+		} else {
+			ReferenceCountUtil.release(msg);
+		}
 	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		super.exceptionCaught(ctx, cause);
+		HttpClientOperations ops = HttpClientOperations.get(ctx.channel());
+		if (ops != null) {
+			ops.onChannelError(cause);
+		}
 	}
 }
