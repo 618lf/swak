@@ -30,7 +30,6 @@ public abstract class Wrapper {
 	private static AtomicLong WRAPPER_CLASS_COUNTER = new AtomicLong(0);
 	private static final Map<Class<?>, Wrapper> WRAPPER_MAP = new ConcurrentHashMap<Class<?>, Wrapper>(); // class
 																											// wrapper
-																											// map
 	private static final String[] EMPTY_STRING_ARRAY = new String[0];
 	private static final String[] OBJECT_METHODS = new String[] { "getClass", "hashCode", "toString", "equals" };
 
