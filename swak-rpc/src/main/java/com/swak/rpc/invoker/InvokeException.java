@@ -11,4 +11,7 @@ public class InvokeException extends RuntimeException{
 	public InvokeException(String message) {
 		super(message);
 	}
+	public InvokeException(Exception e) {
+		super(e);
+	}
 }

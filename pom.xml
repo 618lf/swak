@@ -22,7 +22,8 @@
 	<properties>
 		<spring-boot.version>2.0.1.RELEASE</spring-boot.version>
 		<spring.version>5.0.5.RELEASE</spring.version>
-		<cglib.version>2.2.2</cglib.version>
+		<cglib.version>3.2.6</cglib.version>
+		<javassist.version>3.22.0-GA</javassist.version>
 		<fastjson.version>1.2.32</fastjson.version>
 		<logback.version>1.2.3</logback.version>
 		<slf4j.version>1.7.5</slf4j.version>
@@ -42,6 +43,7 @@
 		<HikariCP.version>3.1.0</HikariCP.version>
 		<reactor.version>3.1.7.RELEASE</reactor.version>
 		<async.httpclient.version>2.4.7</async.httpclient.version>
+		<guava.version>25.1-jre</guava.version>
 
 		<!-- test -->
 		<junit.version>4.12</junit.version>
