@@ -38,7 +38,8 @@ public abstract class Invoker<T> {
 		}
 		return invoker;
 	}
-
+    
+	// gen invoke 
 	private static Invoker<?> generateInvoker(Object service, Method method) {
 
 		long id = INVOKER_COUNTER.getAndIncrement();
