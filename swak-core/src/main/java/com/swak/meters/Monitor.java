@@ -10,12 +10,12 @@ import io.micrometer.core.instrument.binder.MeterBinder;
  * 用于统计系统指标 -- 只有加载了 actuator 才会生效
  * @author lifeng
  */
-public class MeterCenter implements MeterBinder{
+public class Monitor implements MeterBinder{
 
 	// 不需要其他地方来初始化
-	private static MeterCenter instance = null;
+	private static Monitor instance = null;
 	private MeterRegistry registry;
-	public MeterCenter() {
+	public Monitor() {
 		instance = this;
 	}
 	private MeterRegistry registry() {

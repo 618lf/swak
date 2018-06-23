@@ -18,6 +18,8 @@ import com.swak.utils.ClassHelper;
 import com.swak.utils.ReflectUtils;
 
 /**
+ * Object wrapper
+ * 
  * 快速的访问 service 中某个方法的高效方法
  * 
  * 通过 javassist 来创建一个类直接调用目标对象的相应方法 

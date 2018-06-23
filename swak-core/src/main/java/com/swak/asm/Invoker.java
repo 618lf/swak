@@ -52,9 +52,9 @@ public abstract class Invoker<T> {
 
 		StringBuilder methodBuilder = new StringBuilder();
 		StringBuilder resultBuilder = new StringBuilder();
-		methodBuilder.append("public Object invoke(Object[] params) {\r\n");
+		methodBuilder.append("public <T> T invoke(Object[] params) {\r\n");
 		methodBuilder.append("  return ");
-		resultBuilder.append("service.");
+		resultBuilder.append("(T)service.");
 		resultBuilder.append(method.getName());
 		resultBuilder.append("(");
 		Class<?>[] parameterTypes = method.getParameterTypes();
