@@ -40,6 +40,7 @@ public class DispatcherRcpHandler extends FilteringRpcHandler implements RpcHand
 			return Mono.error(new InvokeException("no invoker found"));
 		}
 		return Mono.fromCompletionStage(invoker.invoke(request)).flatMap(v ->{
+			response.setResult(v);
 			return Mono.empty();
 		});
 	}
@@ -63,6 +64,7 @@ public class DispatcherRcpHandler extends FilteringRpcHandler implements RpcHand
 	 */
 	protected Mono<Void> doError(RpcRequest request, RpcResponse response, Throwable e) {
 		logger.error("{}", request.toString(), e);
+		response.setException(e);
 		return Mono.empty();
 	}
 	

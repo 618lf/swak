@@ -1,5 +1,6 @@
 package com.swak.rpc.invoker;
 
+import com.swak.rpc.api.RpcRequest;
 import com.swak.rpc.api.URL;
 
 /**
@@ -20,5 +21,5 @@ public interface Invoker<T> {
 	 * @param params
 	 * @return
 	 */
-	T invoke(Object... params);
+	T invoke(RpcRequest request);
 }

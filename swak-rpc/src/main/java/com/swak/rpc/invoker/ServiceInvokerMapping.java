@@ -48,7 +48,7 @@ public class ServiceInvokerMapping extends AbstractInvokerMapping implements App
 	protected void register(Invocation invocation) {
 		
 		/**
-		 * 构建执行器， 基于方法的
+		 * 构建执行器， 基于对象
 		 */
 		Invoker<?> invoker = proxyFactory.getInvoker(invocation);
 		

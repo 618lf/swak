@@ -15,8 +15,6 @@ public class Invocation {
 	// 基本信息
 	private Class<?> serviceType;
 	private Object service;
-	private Method method;
-	private Class<?>[] parameterTypes;
 	private String version = null;
 	private String group = null;
 	
@@ -39,15 +37,7 @@ public class Invocation {
 	public void setService(Object service) {
 		this.service = service;
 	}
-
-	public Method getMethod() {
-		return method;
-	}
-
-	public void setMethod(Method method) {
-		this.method = method;
-	}
-
+	
 	public String getGroup() {
 		return group;
 	}
@@ -79,13 +69,6 @@ public class Invocation {
 	public void setIgnore(boolean ignore) {
 		this.ignore = ignore;
 	}
-	public Class<?>[] getParameterTypes() {
-		return parameterTypes;
-	}
-
-	public void setParameterTypes(Class<?>[] parameterTypes) {
-		this.parameterTypes = parameterTypes;
-	}
 
 	/**
 	 * 合并
@@ -104,8 +87,6 @@ public class Invocation {
 	public Invocation fixed(Class<?> serviceType, Object service, Method method) {
 		this.serviceType = serviceType;
 		this.service = service;
-		this.method = method;
-		this.parameterTypes = method.getParameterTypes();
 		if (!StringUtils.hasText(version)) {
 			version = RpcService.DEFAULT_VERSION;
 		}
@@ -117,11 +98,6 @@ public class Invocation {
 	}
 	
 	// ----------- 创建 Info ----------------
-	public static Invocation build(String version) {
-		Invocation info = new Invocation();
-		info.setVersion(version);
-		return info;
-	}
 	public static Invocation build(String version, long timeout, boolean ignore) {
 		Invocation info = new Invocation();
 		info.setVersion(version);

@@ -204,7 +204,7 @@ public abstract class FailbackRegistry implements Registry {
     
     // ==== Service Key ====
     protected String getServiceKey(URL url) {
-    	return ""; //url.getSequence();
+    	return url.getServiceKey();
     }
 	// ==== Template method ====
 	protected abstract CompletionStage<Boolean> doRegister(URL url);

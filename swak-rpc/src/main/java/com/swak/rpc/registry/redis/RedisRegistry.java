@@ -38,7 +38,7 @@ public class RedisRegistry extends FailbackRegistry {
 	 */
 	@Override
 	protected CompletionStage<Boolean> doRegister(URL url) {
-		String serviceKey = ""; // url.getSequence();
+		String serviceKey = url.getServiceKey();
 		String serviceUrl = url.toString();
 		String expire = String.valueOf(System.currentTimeMillis() + expirePeriod);
 		return asyncOperations.hSet(serviceKey, serviceUrl, SafeEncoder.encode(expire))
@@ -51,7 +51,7 @@ public class RedisRegistry extends FailbackRegistry {
 	 */
 	@Override
     public CompletionStage<Boolean> doUnregister(URL url) {
-		String serviceKey = ""; // url.getSequence();
+		String serviceKey = url.getServiceKey();
 		String serviceUrl = url.toString();
 		return asyncOperations.hDel(serviceKey, serviceUrl)
 				.thenCompose(s -> asyncOperations.publish(serviceKey, Constants.UNREGISTER))

@@ -18,7 +18,7 @@ public class RpcRequest implements NettyInbound, Serializable {
 	private String version;
 	private String group;
 	private String methodName;
-	private String[] parameterTypes;
+	private Class<?>[] parameterTypes;
 	private Object[] parameters;
 
 	public String getGroup() {
@@ -60,12 +60,11 @@ public class RpcRequest implements NettyInbound, Serializable {
 	public void setMethodName(String methodName) {
 		this.methodName = methodName;
 	}
-	
-	public String[] getParameterTypes() {
+	public Class<?>[] getParameterTypes() {
 		return parameterTypes;
 	}
 
-	public void setParameterTypes(String[] parameterTypes) {
+	public void setParameterTypes(Class<?>[] parameterTypes) {
 		this.parameterTypes = parameterTypes;
 	}
 

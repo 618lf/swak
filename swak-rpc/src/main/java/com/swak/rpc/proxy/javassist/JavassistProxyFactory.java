@@ -1,9 +1,11 @@
 package com.swak.rpc.proxy.javassist;
 
+import com.swak.asm.Wrapper;
+import com.swak.rpc.api.RpcRequest;
 import com.swak.rpc.exception.RpcException;
+import com.swak.rpc.invoker.AbstractInvoker;
 import com.swak.rpc.invoker.Invocation;
 import com.swak.rpc.invoker.Invoker;
-import com.swak.rpc.invoker.MethodInvoker;
 import com.swak.rpc.proxy.ProxyFactory;
 
 /**
@@ -18,8 +20,19 @@ public class JavassistProxyFactory implements ProxyFactory {
 	}
 
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> Invoker<T> getInvoker(Invocation invocation) throws RpcException {
-		return new MethodInvoker(invocation);
+		Wrapper wrapper = Wrapper.getWrapper(invocation.getServiceType());
+		return new AbstractInvoker<T>(invocation) {
+			@Override
+			@SuppressWarnings("unchecked")
+			public T invoke(RpcRequest request) {
+				try {
+					return (T) wrapper.invokeMethod(invocation.getService(), request.getMethodName(),
+							request.getParameterTypes(), request.getParameters());
+				} catch (Exception e) {
+					throw new RpcException(e);
+				}
+			}
+		};
 	}
 }

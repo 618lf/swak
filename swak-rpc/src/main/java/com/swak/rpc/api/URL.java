@@ -164,7 +164,7 @@ public class URL implements Serializable {
 	
 	/**
 	 * 直接暴露接口名称，省不少事情
-	 * 例如： swak://com.tmt.shop.ShopService/get?
+	 * 例如： swak://com.tmt.shop.ShopService
 	 * @return
 	 */
 	public String getServiceKey() {
@@ -177,11 +177,6 @@ public class URL implements Serializable {
 		if (path != null && path.length() > 0) {
 			buf.append("/");
 			buf.append(path);
-		}
-		String method = getParameter(Constants.METHOD_KEY);
-		if (method != null && method.length() > 0) {
-			buf.append("/");
-			buf.append(method);
 		}
 		return buf.toString();
 	}

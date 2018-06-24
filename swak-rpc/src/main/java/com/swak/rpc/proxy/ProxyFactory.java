@@ -22,9 +22,7 @@ public interface ProxyFactory {
 	
 	/**
 	 * 服务端使用
-	 * @param proxy
-	 * @param type
-	 * @param url
+	 * @param invocation
 	 * @return
 	 * @throws RpcException
 	 */
