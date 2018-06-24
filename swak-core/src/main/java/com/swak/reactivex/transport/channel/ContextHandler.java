@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import com.swak.reactivex.transport.NettyContext;
 import com.swak.reactivex.transport.NettyPipeline;
-import com.swak.reactivex.transport.options.ClientOptions;
 import com.swak.reactivex.transport.options.NettyOptions;
 import com.swak.reactivex.transport.options.ServerOptions;
 
@@ -199,15 +198,5 @@ public abstract class ContextHandler extends ChannelInitializer<Channel> {
 	 */
 	public static ContextHandler newServerContext(ServerOptions options, MonoSink<NettyContext> sink) {
 		return new ServerContextHandler(options, sink);
-	}
-
-	/**
-	 * 客户端
-	 * @param options
-	 * @param sink
-	 * @return
-	 */
-	public static ContextHandler newClientContext(ClientOptions options, MonoSink<NettyContext> sink) {
-		return new ClientContextHandler(options, sink, true);
 	}
 }
