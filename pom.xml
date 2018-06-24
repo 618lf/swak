@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.swak</groupId>
 	<artifactId>swak</artifactId>
-	<version>0.0.7_final</version>
+	<version>0.0.8_final</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>swak-core</module>
