@@ -15,13 +15,13 @@ import io.netty.channel.ChannelPipeline;
  * 客户端连接器 -- 用于客户端的处理场景
  * @author lifeng
  */
-public abstract class ClientConnector extends ChannelInitializer<Channel> implements Closeable {
+public abstract class TcpClient extends ChannelInitializer<Channel> implements Closeable {
 	
 	final InetSocketAddress address;
 	final int connectCount;
 	private volatile Channel[] channels;
 
-	public ClientConnector(InetSocketAddress address, int connectCount) {
+	public TcpClient(InetSocketAddress address, int connectCount) {
 		this.address = address;
 		this.connectCount = connectCount;
 	}

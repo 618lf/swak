@@ -49,7 +49,7 @@ public class RpcServer extends TcpServer {
 	@Override
 	public void start(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler) {
 		try {
-			this.context = this.connector(handler, this.options.getAddress()).subscribeOn(Schedulers.immediate())
+			this.context = this.connector(handler).subscribeOn(Schedulers.immediate())
 					.doOnNext(ctx -> LOG.debug("Started {} on {}", "http-server", ctx.address())).block();
 			this.startDaemonAwaitThread();
 		} catch (Exception ex) {
