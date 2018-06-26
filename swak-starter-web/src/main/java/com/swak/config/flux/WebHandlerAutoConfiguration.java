@@ -18,7 +18,7 @@ import org.springframework.core.annotation.Order;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 20)
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
 @ConditionalOnMissingBean(WebConfigurationSupport.class)
-@AutoConfigureAfter({ SecurityAutoConfiguration.class, SystemEventAutoConfiguration.class })
+@AutoConfigureAfter({SecurityAutoConfiguration.class})
 public class WebHandlerAutoConfiguration extends WebConfigurationSupport {
 	public WebHandlerAutoConfiguration() {
 		APP_LOGGER.debug("Loading Web Handler");

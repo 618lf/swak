@@ -4,7 +4,6 @@
 # Auto Configuration, SWAK only load Auto Configuration 
 com.swak.ApplicationBoot=\
 com.swak.config.flux.SecurityAutoConfiguration,\
-com.swak.config.flux.SystemEventAutoConfiguration,\
 com.swak.config.flux.WebHandlerAutoConfiguration,\
 com.swak.config.http.HttpClientAutoConfiguration,\
 com.swak.config.jdbc.DataBaseAutoConfiguration,\

@@ -16,7 +16,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.util.CollectionUtils;
 
 import com.swak.Constants;
-import com.swak.eventbus.system.SystemEventPublisher;
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.security.SecurityFilter;
 import com.swak.security.mgt.FilterChainManager;
@@ -64,10 +63,8 @@ public class SecurityAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public SecurityManager securityManager(PrincipalStrategy principalStrategy,
-			SystemEventPublisher eventPublisher) {
-		SecurityManager securityManager = new DefaultSecurityManager(securityConfig.getRealm(), principalStrategy,
-				eventPublisher);
+	public SecurityManager securityManager(PrincipalStrategy principalStrategy) {
+		SecurityManager securityManager = new DefaultSecurityManager(securityConfig.getRealm(), principalStrategy);
 		SecurityUtils.setSecurityManager(securityManager);
 		return securityManager;
 	}
