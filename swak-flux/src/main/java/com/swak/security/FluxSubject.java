@@ -1,4 +1,4 @@
-package com.swak.security.subject;
+package com.swak.security;
 
 import java.util.Set;
 import java.util.Stack;
@@ -14,7 +14,7 @@ import com.swak.utils.Sets;
 
 import reactor.core.publisher.Mono;
 
-public class DefaultSubject implements Subject {
+public class FluxSubject implements Subject {
 
 	private String sessionId; // 登录之后分配的会话ID
 	private Principal principal; // 当前用户的身份

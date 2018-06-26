@@ -10,8 +10,6 @@ import com.swak.utils.StringUtils;
 import com.swak.utils.time.DateUtils;
 
 /**
- * 创建token Jwts 依赖 fastxml 需要研究是否有替代的方案
- * 
  * @author lifeng
  */
 public class TokenUtils {

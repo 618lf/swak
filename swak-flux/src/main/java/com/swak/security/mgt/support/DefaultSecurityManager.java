@@ -9,11 +9,11 @@ import com.swak.reactivex.transport.http.Principal;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
+import com.swak.security.FluxSubject;
 import com.swak.security.exception.AuthenticationException;
 import com.swak.security.mgt.SecurityManager;
 import com.swak.security.principal.PrincipalStrategy;
 import com.swak.security.realm.Realm;
-import com.swak.security.subject.DefaultSubject;
 
 import reactor.core.publisher.Mono;
 
@@ -199,7 +199,7 @@ public class DefaultSecurityManager implements SecurityManager {
 	 */
 	@Override
 	public Mono<Subject> createSubject(HttpServerRequest request, HttpServerResponse response) {
-		return principalStrategy.resolvePrincipal(new DefaultSubject(), request, response);
+		return principalStrategy.resolvePrincipal(new FluxSubject(), request, response);
 	}
 	
 	/**
