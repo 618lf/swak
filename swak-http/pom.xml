@@ -51,6 +51,10 @@
 				</exclusion>
 				<exclusion>
 					<groupId>io.netty</groupId>
+					<artifactId>netty-codec-socks</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
 					<artifactId>netty-resolver</artifactId>
 				</exclusion>
 				<exclusion>
