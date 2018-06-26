@@ -9,7 +9,6 @@ import org.springframework.core.annotation.Order;
 
 import com.swak.ApplicationProperties;
 import com.swak.incrementer.IdGen;
-import com.swak.serializer.FSTSerializer;
 import com.swak.serializer.JavaSerializer;
 import com.swak.serializer.KryoPoolSerializer;
 import com.swak.serializer.KryoSerializer;
@@ -65,8 +64,6 @@ public class BaseFuntionAutoConfiguration {
 		Serializer g_ser = null;
 		if (ser.equals("java")) {
 			g_ser = new JavaSerializer();
-		} else if (ser.equals("fst")) {
-			g_ser = new FSTSerializer();
 		} else if (ser.equals("kryo")) {
 			g_ser = new KryoSerializer();
 		} else if (ser.equals("kryo_pool")) {
