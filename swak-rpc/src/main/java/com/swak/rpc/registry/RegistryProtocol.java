@@ -1,5 +1,7 @@
 package com.swak.rpc.registry;
 
+import java.util.List;
+
 import com.swak.rpc.api.URL;
 import com.swak.rpc.exception.RpcException;
 import com.swak.rpc.invoker.Invoker;
@@ -28,7 +30,9 @@ public class RegistryProtocol implements Protocol {
 	}
 
 	@Override
-	public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
-		return protocol.refer(type, url);
+	public <T> Invoker<T> refer(URL url) throws RpcException {
+		List<URL> urls = registry.lookup(url);
+		return null;
+		//return protocol.refer(type, url);
 	}
 }

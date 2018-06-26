@@ -44,6 +44,14 @@ public abstract class TcpClient extends ChannelInitializer<Channel> implements C
 	public abstract void accept(ChannelPipeline pipeline);
 	
 	/**
+	 * 返回已经连接上的通道
+	 * @return
+	 */
+	public Channel[] getChannels() {
+		return this.channels;
+	}
+	
+	/**
 	 * 建立连接
 	 * @throws InterruptedException
 	 */

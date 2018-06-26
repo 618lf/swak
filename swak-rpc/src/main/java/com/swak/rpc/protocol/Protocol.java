@@ -35,5 +35,5 @@ public interface Protocol {
      * @return invoker 服务的本地代理
      * @throws RpcException 当连接服务提供方失败时抛出
      */
-    <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException;
+    <T> Invoker<T> refer(URL url) throws RpcException;
 }
