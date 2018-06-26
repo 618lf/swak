@@ -181,6 +181,18 @@ public class URL implements Serializable {
 		return buf.toString();
 	}
 	
+	/**
+	 * 服务器key
+	 * @return
+	 */
+	public String getServerKey() {
+		StringBuilder buf = new StringBuilder();
+		buf.append(this.getHost());
+		buf.append(":");
+		buf.append(this.getPort());
+		return buf.toString();
+	}
+	
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		if (protocol != null && protocol.length() > 0) {
