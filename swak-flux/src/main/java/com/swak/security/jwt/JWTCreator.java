@@ -5,8 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
-
+import com.swak.codec.Encodes;
 import com.swak.security.jwt.algorithms.Algorithm;
 import com.swak.security.jwt.exceptions.JWTCreationException;
 import com.swak.security.jwt.exceptions.SignatureGenerationException;
@@ -313,12 +312,12 @@ public final class JWTCreator {
     }
 
     private String sign() throws SignatureGenerationException {
-        String header = Base64.encodeBase64URLSafeString(headerJson.getBytes(StandardCharsets.UTF_8));
-        String payload = Base64.encodeBase64URLSafeString(payloadJson.getBytes(StandardCharsets.UTF_8));
+        String header = Encodes.encodeBase64URLSafeString(headerJson.getBytes(StandardCharsets.UTF_8));
+        String payload = Encodes.encodeBase64URLSafeString(payloadJson.getBytes(StandardCharsets.UTF_8));
         String content = String.format("%s.%s", header, payload);
 
         byte[] signatureBytes = algorithm.sign(content.getBytes(StandardCharsets.UTF_8));
-        String signature = Base64.encodeBase64URLSafeString((signatureBytes));
+        String signature = Encodes.encodeBase64URLSafeString((signatureBytes));
 
         return String.format("%s.%s", content, signature);
     }

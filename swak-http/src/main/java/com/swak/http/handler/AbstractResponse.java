@@ -1,8 +1,8 @@
 package com.swak.http.handler;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.codec.Charsets;
 import org.asynchttpclient.AsyncCompletionHandler;
 
 /**
@@ -12,7 +12,7 @@ import org.asynchttpclient.AsyncCompletionHandler;
  */
 public abstract class AbstractResponse<T> extends AsyncCompletionHandler<T>{
 
-	protected Charset charset = Charsets.UTF_8;
+	protected Charset charset = StandardCharsets.UTF_8;
 	protected Class<T> clazz;
 	public <U extends AbstractResponse<T>> U use(Charset charset) {
 		this.charset = charset;

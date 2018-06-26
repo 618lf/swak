@@ -3,15 +3,16 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  */
-package com.swak.utils;
+package com.swak.codec;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
+import com.swak.codec.Base64;
+import com.swak.codec.DecoderException;
+import com.swak.codec.Hex;
 
 /**
  * 封装各种格式的编码解码工具类.
@@ -24,18 +25,11 @@ import org.apache.commons.codec.binary.Hex;
  */
 public class Encodes {
 
-	private static final char[] BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
-
-	/**
-	 * Hex编码.
-	 */
+	// Hex
+	//------------------------------------------
 	public static String encodeHex(byte[] input) {
 		return Hex.encodeHexString(input);
 	}
-
-	/**
-	 * Hex解码.
-	 */
 	public static byte[] decodeHex(String input) {
 		try {
 			return Hex.decodeHex(input.toCharArray());
@@ -44,30 +38,17 @@ public class Encodes {
 		}
 	}
 
-	/**
-	 * Base64编码.
-	 */
+	// Base64
+	//----------------------------------------------
 	public static String encodeBase64(byte[] input) {
 		return Base64.encodeBase64String(input);
 	}
-
-	/**
-	 * Base64编码, URL安全(将Base64中的URL非法字符'+'和'/'转为'-'和'_', 见RFC3548).
-	 */
-	public static String encodeUrlSafeBase64(byte[] input) {
+	public static String encodeBase64URLSafeString(byte[] input) {
 		return Base64.encodeBase64URLSafeString(input);
 	}
-
-	/**
-	 * Base64解码.
-	 */
 	public static byte[] decodeBase64(String input) {
 		return Base64.decodeBase64(input);
 	}
-	
-	/**
-	 * Base64解码.
-	 */
 	public static String decodeBase64(String input, String charsetName) {
 		try {
 			return new String(Base64.decodeBase64(input), charsetName);
@@ -75,46 +56,24 @@ public class Encodes {
 			return null;
 		}
 	}
-
-	/**
-	 * Base62编码。
-	 */
-	public static String encodeBase62(byte[] input) {
-		char[] chars = new char[input.length];
-		for (int i = 0; i < input.length; i++) {
-			chars[i] = BASE62[((input[i] & 0xFF) % BASE62.length)];
-		}
-		return new String(chars);
-	}
-
-	/**
-	 * URL 编码, Encode默认为UTF-8. 
-	 */
+	
+	// URL
+	//---------------------------------------
 	public static String urlEncode(String part) {
 		try {
-			return URLEncoder.encode(part, "utf-8");
+			return URLEncoder.encode(part, StandardCharsets.UTF_8.toString());
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
-	/**
-	 * URL 解码, Encode默认为UTF-8. 
-	 */
 	public static String urlDecode(String part) {
 
 		try {
-			return URLDecoder.decode(part, "utf-8");
+			return URLDecoder.decode(part, StandardCharsets.UTF_8.toString());
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	/**
-	 * 转为Unicode编码
-	 * @param input
-	 * @return
-	 */
 	public static String toUnicode(String input) {
 		StringBuilder builder = new StringBuilder();
 		char[] chars = input.toCharArray();

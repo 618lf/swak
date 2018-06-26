@@ -7,8 +7,7 @@ import java.security.SignatureException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 
-import org.apache.commons.codec.binary.Base64;
-
+import com.swak.codec.Encodes;
 import com.swak.security.jwt.exceptions.SignatureGenerationException;
 import com.swak.security.jwt.exceptions.SignatureVerificationException;
 import com.swak.security.jwt.interfaces.DecodedJWT;
@@ -38,7 +37,7 @@ class ECDSAAlgorithm extends Algorithm {
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
         byte[] contentBytes = String.format("%s.%s", jwt.getHeader(), jwt.getPayload()).getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
+        byte[] signatureBytes = Encodes.decodeBase64(jwt.getSignature());
 
         try {
             ECPublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());

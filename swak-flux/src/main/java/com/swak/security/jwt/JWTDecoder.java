@@ -4,15 +4,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.StringUtils;
-
+import com.swak.codec.Encodes;
 import com.swak.security.jwt.exceptions.JWTDecodeException;
 import com.swak.security.jwt.impl.JWTParser;
 import com.swak.security.jwt.interfaces.Claim;
 import com.swak.security.jwt.interfaces.DecodedJWT;
 import com.swak.security.jwt.interfaces.Header;
 import com.swak.security.jwt.interfaces.Payload;
+import com.swak.utils.StringUtils;
 
 /**
  * The JWTDecoder class holds the decode method to parse a given JWT token into it's JWT representation.
@@ -29,8 +28,8 @@ final class JWTDecoder implements DecodedJWT {
         String headerJson;
         String payloadJson;
         try {
-            headerJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[0]));
-            payloadJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[1]));
+            headerJson = StringUtils.newStringUtf8(Encodes.decodeBase64(parts[0]));
+            payloadJson = StringUtils.newStringUtf8(Encodes.decodeBase64(parts[1]));
         } catch (NullPointerException e) {
             throw new JWTDecodeException("The UTF-8 Charset isn't initialized.", e);
         }

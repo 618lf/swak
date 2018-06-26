@@ -1,5 +1,8 @@
 package com.swak;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 /**
  * 系统常量
  * @author lifeng
@@ -33,7 +36,7 @@ public interface Constants {
 	long INVALID_ID = -1;
 	
 	/** 默认编码 **/
-	String DEFAULT_ENCODING = "UTF-8";
+	Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
 	
 	/** 系统通道 **/
 	String LOCAL_CACHE_TOPIC = "LOCAL_CACHE_TOPIC";

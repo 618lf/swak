@@ -8,11 +8,13 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.codec.Charsets;
+import com.swak.Constants;
+
 
 /**
  * 
@@ -78,7 +80,7 @@ public class IOUtils {
      * @since 1.1
      */
     public static List<String> readLines(InputStream input) throws IOException {
-        return readLines(input, Charsets.UTF_8);
+        return readLines(input, StandardCharsets.UTF_8);
     }
     
 
@@ -103,7 +105,8 @@ public class IOUtils {
      * @since 1.1
      */
     public static List<String> readLines(InputStream input, String encoding) throws IOException {
-        return readLines(input, Charsets.toCharset(encoding));
+    	Charset charset = encoding == null ? Constants.DEFAULT_ENCODING : Charset.forName(encoding);
+        return readLines(input, charset);
     }
     
     /**
@@ -121,7 +124,8 @@ public class IOUtils {
      * @since 2.3
      */
     public static List<String> readLines(InputStream input, Charset encoding) throws IOException {
-        InputStreamReader reader = new InputStreamReader(input, Charsets.toCharset(encoding));
+    	Charset charset = encoding == null ? Constants.DEFAULT_ENCODING : encoding;
+        InputStreamReader reader = new InputStreamReader(input, charset);
         return readLines(reader);
     }
 

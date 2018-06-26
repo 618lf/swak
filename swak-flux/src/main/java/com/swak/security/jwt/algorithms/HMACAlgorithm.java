@@ -5,9 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.commons.codec.CharEncoding;
-import org.apache.commons.codec.binary.Base64;
-
+import com.swak.codec.Encodes;
 import com.swak.security.jwt.exceptions.SignatureGenerationException;
 import com.swak.security.jwt.exceptions.SignatureVerificationException;
 import com.swak.security.jwt.interfaces.DecodedJWT;
@@ -40,13 +38,13 @@ class HMACAlgorithm extends Algorithm {
         if (secret == null) {
             throw new IllegalArgumentException("The Secret cannot be null");
         }
-        return secret.getBytes(CharEncoding.UTF_8);
+        return secret.getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
         byte[] contentBytes = String.format("%s.%s", jwt.getHeader(), jwt.getPayload()).getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
+        byte[] signatureBytes = Encodes.decodeBase64(jwt.getSignature());
 
         try {
             boolean valid = crypto.verifySignatureFor(getDescription(), secret, contentBytes, signatureBytes);
