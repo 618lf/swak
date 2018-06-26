@@ -59,7 +59,7 @@ public class Lists {
 	}
 
 	public static <E> ArrayList<E> newArrayList(Iterable<? extends E> elements) {
-		return (elements instanceof Collection) ? new ArrayList<E>(Collections2.cast(elements))
+		return (elements instanceof Collection) ? new ArrayList<E>(CollectionUtils.cast(elements))
 				: newArrayList(elements.iterator());
 	}
 

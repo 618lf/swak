@@ -86,7 +86,7 @@ public abstract class BaseParentEntity<PK> extends BaseEntity<PK> implements Ser
 	 */
 	public void updateIdsByParent(BaseParentEntity<PK> parent, String oldParentIds, String oldPaths, Integer oldLevel) {
 		String _parentIds = (IDS_SEPARATE + this.getParentIds()).replace(IDS_SEPARATE + oldParentIds, IDS_SEPARATE + parent.getParentIds());
-		if (!StringUtils.hasText(_parentIds)) {
+		if (!StringUtils.isNotBlank(_parentIds)) {
 			_parentIds = String.valueOf(Constants.INVALID_ID);
 		}
 		if (StringUtils.startsWith(_parentIds, IDS_SEPARATE) ) {
@@ -99,9 +99,9 @@ public abstract class BaseParentEntity<PK> extends BaseEntity<PK> implements Ser
 		this.setLevel(this.getLevel() + changeLevel);
 		
 		//path
-		if (StringUtils.hasText(oldPaths)) {
+		if (StringUtils.isNotBlank(oldPaths)) {
 			String _paths = (this.getPath()).replace(oldPaths, parent.getPath());
-			if (!StringUtils.hasText(_paths)) {
+			if (!StringUtils.isNotBlank(_paths)) {
 				_paths = PATH_SEPARATE + this.getName();
 			}
 			this.setPath(_paths);

@@ -59,7 +59,7 @@ public class Sets {
 	@SuppressWarnings("unchecked")
 	public static <E> HashSet<E> newHashSet(Iterable<? extends E> elements) {
 	    return (HashSet<E>) ((elements instanceof Collection)
-	        ? new HashSet<E>(Collections2.cast(elements))
+	        ? new HashSet<E>(CollectionUtils.cast(elements))
 	        : newHashSet(elements.iterator()));
 	}
 	

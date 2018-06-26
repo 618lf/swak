@@ -8,7 +8,7 @@ import java.util.Collection;
  * @author lifeng
  * 
  */
-public final class Collections2 {
+public final class CollectionUtils extends org.springframework.util.CollectionUtils{
 
 	/**
 	 * 转换

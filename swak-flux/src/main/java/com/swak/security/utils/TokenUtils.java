@@ -5,9 +5,9 @@ import com.swak.security.jwt.JWT;
 import com.swak.security.jwt.JWTVerifier;
 import com.swak.security.jwt.algorithms.Algorithm;
 import com.swak.security.jwt.interfaces.DecodedJWT;
-import com.swak.utils.DateUtils;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.StringUtils;
+import com.swak.utils.time.DateUtils;
 
 /**
  * 创建token Jwts 依赖 fastxml 需要研究是否有替代的方案
@@ -52,12 +52,5 @@ public class TokenUtils {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	public static void main(String[] args) {
-		Principal principal = new Principal(1L, "lifeng");
-		String token = TokenUtils.getToken(principal, "secret");
-		principal = TokenUtils.getSubject(token, "secret");
-		System.out.println(JsonMapper.toJson(principal));
 	}
 }

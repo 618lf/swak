@@ -19,6 +19,7 @@ import com.swak.security.filter.authc.UserFilter;
 import com.swak.security.filter.authz.PermissionsAuthorizationFilter;
 import com.swak.security.filter.authz.RolesAuthorizationFilter;
 import com.swak.security.mgt.FilterChainManager;
+import com.swak.utils.CharSequenceUtils;
 import com.swak.utils.StringUtils;
 
 public class DefaultFilterChainManager implements FilterChainManager {
@@ -128,7 +129,7 @@ public class DefaultFilterChainManager implements FilterChainManager {
 	 * @return
 	 */
 	private String[] splitChainDefinition(String chainDefinition) {
-		return StringUtils.split(chainDefinition, StringUtils.DEFAULT_DELIMITER_CHAR, '[', ']', true, true);
+		return StringUtils.split(chainDefinition, CharSequenceUtils.DEFAULT_DELIMITER_CHAR, '[', ']', true, true);
 	}
 
 	/**

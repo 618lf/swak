@@ -1,19 +1,24 @@
-package com.swak.utils;
+package com.swak.utils.time;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import com.swak.utils.StringUtils;
 
 /**
  * 
  * @author TMT
  *
  */
-public class DateUtils extends org.apache.commons.lang3.time.DateUtils{
+public class DateUtils {
     
 	private static String[] parsePatterns = { "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", 
 		"yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm" };
@@ -28,11 +33,55 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils{
 			return null;
 		}
 		try {
-			return parseDate(str, parsePatterns);
+			return parseDateWithLeniency(str, null, parsePatterns, true);
 		} catch (ParseException e) {
 			return null;
 		}
 	}
+	
+	   /**
+     * <p>Parses a string representing a date by trying a variety of different parsers.</p>
+     *
+     * <p>The parse will try each parse pattern in turn.
+     * A parse is only deemed successful if it parses the whole of the input string.
+     * If no parse patterns match, a ParseException is thrown.</p>
+     *
+     * @param str  the date to parse, not null
+     * @param locale the locale to use when interpretting the pattern, can be null in which
+     * case the default system locale is used
+     * @param parsePatterns  the date format patterns to use, see SimpleDateFormat, not null
+     * @param lenient Specify whether or not date/time parsing is to be lenient.
+     * @return the parsed date
+     * @throws IllegalArgumentException if the date string or pattern array is null
+     * @throws ParseException if none of the date patterns were suitable
+     * @see java.util.Calendar#isLenient()
+     */
+    private static Date parseDateWithLeniency(
+            final String str, final Locale locale, final String[] parsePatterns, final boolean lenient) throws ParseException {
+        if (str == null || parsePatterns == null) {
+            throw new IllegalArgumentException("Date and Patterns must not be null");
+        }
+
+        final TimeZone tz = TimeZone.getDefault();
+        final Locale lcl = locale==null ?Locale.getDefault() : locale;
+        final ParsePosition pos = new ParsePosition(0);
+        final Calendar calendar = Calendar.getInstance(tz, lcl);
+        calendar.setLenient(lenient);
+
+        for (final String parsePattern : parsePatterns) {
+            final FastDateParser fdp = new FastDateParser(parsePattern, tz, lcl);
+            calendar.clear();
+            try {
+                if (fdp.parse(str, pos, calendar) && pos.getIndex()==str.length()) {
+                    return calendar.getTime();
+                }
+            } catch(final IllegalArgumentException ignore) {
+                // leniency is preventing calendar from being set
+            }
+            pos.setIndex(0);
+        }
+        throw new ParseException("Unable to parse the date: " + str, -1);
+    }
 
     /**
      * 根据传入的时间得到当前月第一天
