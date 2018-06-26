@@ -102,4 +102,12 @@ public class ReactiveServerApplicationContext extends AnnotationConfigApplicatio
 			}
 		}
 	}
+	
+	/**
+	 * 获得服务器
+	 * @return
+	 */
+	public Server getServer() {
+		return this.server;
+	}
 }

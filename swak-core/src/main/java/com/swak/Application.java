@@ -44,9 +44,9 @@ public class Application extends SpringApplication {
 	public static ConfigurableApplicationContext run(Class<?> primarySource,
 			String... args) {
 		long start = System.currentTimeMillis();
-		ConfigurableApplicationContext context = new Application(primarySource).run(args);
+		ReactiveServerApplicationContext context = (ReactiveServerApplicationContext) new Application(primarySource).run(args);
 		long end = System.currentTimeMillis();
-		APP_LOGGER.debug("Server start success in "  + (end - start)/ 1000 + "s");
+		APP_LOGGER.debug("Server start success in "  + (end - start)/ 1000 + "s" + ", listening on the port[" + context.getServer().getAddress().getPort() + "]");
 		return context;
 	}
 }

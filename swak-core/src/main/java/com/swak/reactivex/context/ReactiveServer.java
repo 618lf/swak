@@ -1,5 +1,6 @@
 package com.swak.reactivex.context;
 
+import java.net.InetSocketAddress;
 import java.util.function.BiFunction;
 
 import org.springframework.boot.web.server.WebServerException;
@@ -38,8 +39,8 @@ public class ReactiveServer implements Server {
 	 * 服务器监听的端口
 	 */
 	@Override
-	public int getPort() {
-		return realServer.getAddress().getPort();
+	public InetSocketAddress getAddress() {
+		return realServer.getAddress();
 	}
 
 	/**

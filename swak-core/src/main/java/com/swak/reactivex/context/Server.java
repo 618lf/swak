@@ -1,5 +1,7 @@
 package com.swak.reactivex.context;
 
+import java.net.InetSocketAddress;
+
 /**
  * Simple interface that represents a fully configured web server (for example Tomcat,
  * Jetty, Netty). Allows the server to be {@link #start() started} and {@link #stop()
@@ -26,8 +28,8 @@ public interface Server {
 	void stop() throws ServerException;
 
 	/**
-	 * Return the port this server is listening on.
+	 * Return the Address this server is listening on.
 	 * @return
 	 */
-	int getPort();
+	InetSocketAddress getAddress();
 }

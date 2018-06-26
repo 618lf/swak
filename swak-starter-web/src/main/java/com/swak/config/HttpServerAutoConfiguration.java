@@ -32,7 +32,7 @@ public class HttpServerAutoConfiguration {
 
 	public HttpServerAutoConfiguration(HttpServerProperties properties) {
 		this.properties = properties;
-		APP_LOGGER.debug("Loading Http Server on http://" + properties.getHost() + ":" + properties.getPort());
+		APP_LOGGER.debug("Loading Http Server");
 	}
 
 	/**
