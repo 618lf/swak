@@ -8953,4 +8953,15 @@ public class StringUtils {
          }
          return string.getBytes(StandardCharsets.UTF_8);
     }
+    
+	/**
+	 * 替换所有的空白
+	 * @return
+	 */
+	public static String removeZ(String text){
+		if (StringUtils.isNotBlank(text)) {
+		    return text.replaceAll("\\pZ", "");
+		}
+		return text;
+	}
 }
