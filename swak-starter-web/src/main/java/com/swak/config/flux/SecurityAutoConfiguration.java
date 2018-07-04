@@ -18,13 +18,13 @@ import org.springframework.util.CollectionUtils;
 import com.swak.Constants;
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.security.SecurityFilter;
+import com.swak.security.SecurityUtils;
 import com.swak.security.mgt.FilterChainManager;
 import com.swak.security.mgt.SecurityManager;
 import com.swak.security.mgt.support.DefaultFilterChainManager;
 import com.swak.security.mgt.support.DefaultSecurityManager;
 import com.swak.security.principal.PrincipalStrategy;
 import com.swak.security.principal.support.TokenPrincipalStrategy;
-import com.swak.security.utils.SecurityUtils;
 
 /**
  * 安全配置

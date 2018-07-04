@@ -1,10 +1,5 @@
 package com.swak.security.principal.support;
 
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
-import com.swak.cache.SafeEncoder;
-import com.swak.cache.redis.operations.AsyncOperations;
 import com.swak.codec.Digests;
 import com.swak.reactivex.transport.http.Principal;
 import com.swak.reactivex.transport.http.Subject;
@@ -17,15 +12,19 @@ import com.swak.utils.StringUtils;
 import reactor.core.publisher.Mono;
 
 /**
- * 基于 TOKEN 的身份管理方式
- * 一个星期不用就失效
+ * 基于 TOKEN 的身份管理方式 一个星期不用就失效
  * 
  * @author lifeng
  */
-public class TokenPrincipalStrategy implements PrincipalStrategy {
+public class SimpleTokenPrincipalStrategy implements PrincipalStrategy {
 
 	private String tokenName = "X-Token";
 	private Integer timeOut = 24 * 60 * 60 * 7; // 一个星期
+	private final String KEY;
+
+	public SimpleTokenPrincipalStrategy(String KEY) {
+		this.KEY = KEY;
+	}
 
 	public Integer getTimeOut() {
 		return timeOut;
@@ -48,13 +47,11 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	 */
 	@Override
 	public Mono<Subject> createPrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
-		String key = UUID.randomUUID().toString();
-		String token = TokenUtils.getToken(subject.getPrincipal(), key);
+		String token = TokenUtils.getToken(subject.getPrincipal(), KEY);
 		response.header(this.getTokenName(), token);
 		String sessionId = this.getKey(token);
 		subject.setSessionId(sessionId);
-		return Mono.fromCompletionStage(AsyncOperations.set(sessionId, SafeEncoder.encode(key), this.getTimeOut()))
-				.map(s -> subject);
+		return Mono.just(subject);
 	}
 
 	/**
@@ -73,32 +70,23 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	 */
 	@Override
 	public Mono<Subject> resolvePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
-		
+
 		// 获取token
 		String token = request.getRequestHeader(this.getTokenName());
 		if (!StringUtils.hasText(token)) {
 			return Mono.just(subject);
 		}
-		
+
 		// 获取加密的key 根据token 获取
 		String sessionId = this.getKey(token);
 		
-		// 获取用户
-		return Mono.fromCompletionStage(AsyncOperations.get(sessionId).thenCompose(bkey -> {
-			if (bkey == null) {
-				return CompletableFuture.completedFuture(subject);
-			}
-			String key = SafeEncoder.encode(bkey);
-			// 获取身份
-			Principal principal = TokenUtils.getSubject(token, key);
-			if (principal != null) {
-				subject.setPrincipal(principal);
-			}
-			subject.setSessionId(sessionId);
-			return AsyncOperations.expire(sessionId, this.getTimeOut()).thenApply(s -> {
-				return subject;
-			});
-		}));
+		// 获取身份
+		Principal principal = TokenUtils.getSubject(token, KEY);
+		if (principal != null) {
+			subject.setPrincipal(principal);
+		}
+		subject.setSessionId(sessionId);
+		return Mono.just(subject);
 	}
 
 	/**
