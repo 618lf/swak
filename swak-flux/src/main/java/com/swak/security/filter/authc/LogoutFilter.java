@@ -4,8 +4,8 @@ import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.Result;
+import com.swak.security.SecurityUtils;
 import com.swak.security.filter.AdviceFilter;
-import com.swak.security.utils.SecurityUtils;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import reactor.core.publisher.Mono;

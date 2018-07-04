@@ -1,4 +1,4 @@
-package com.swak.security.utils;
+package com.swak.security;
 
 import com.swak.reactivex.transport.http.Principal;
 import com.swak.security.jwt.JWT;

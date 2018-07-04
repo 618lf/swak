@@ -9,7 +9,6 @@ import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.security.exception.AuthenticationException;
-import com.swak.security.utils.SecurityUtils;
 import com.swak.utils.Sets;
 
 import reactor.core.publisher.Mono;

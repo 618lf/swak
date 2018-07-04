@@ -1,4 +1,4 @@
-package com.swak.security.utils;
+package com.swak.security;
 
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
@@ -23,7 +23,7 @@ public abstract class SecurityUtils {
 	public static Subject getSubject(HttpServerRequest request) {
 		return request.getSubject();
 	}
-
+	
 	/**
 	 * 直接返回默认的管理器
 	 * @return

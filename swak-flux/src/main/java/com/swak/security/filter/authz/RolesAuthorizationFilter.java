@@ -3,7 +3,7 @@ package com.swak.security.filter.authz;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
-import com.swak.security.utils.SecurityUtils;
+import com.swak.security.SecurityUtils;
 
 import reactor.core.publisher.Mono;
 
