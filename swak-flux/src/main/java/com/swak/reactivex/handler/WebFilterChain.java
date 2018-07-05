@@ -7,5 +7,11 @@ import reactor.core.publisher.Mono;
 
 public interface WebFilterChain {
 
+	/**
+	 * 执行后续的filter
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	Mono<Void> filter(HttpServerRequest request, HttpServerResponse response);
 }

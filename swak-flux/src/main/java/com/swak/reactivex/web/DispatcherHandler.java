@@ -62,9 +62,25 @@ public class DispatcherHandler implements WebHandler {
 	@Override
 	public Mono<Void> handle(HttpServerRequest request, HttpServerResponse response) {
 		ExecutionChain executionChain = handleMappering(request, response);
+		
+		/**
+		 *  没有可用的 Handler 
+		 */
 		if (executionChain == null) {
 			return Mono.error(HttpConst.HANDLER_NOT_FOUND_EXCEPTION);
 		}
+		
+		/**
+		 *  没有可用的 Interceptor
+		 */
+		else if(executionChain.getInterceptors() == null
+				|| executionChain.getInterceptors().size() == 0) {
+			return this.doHandler(request, response, executionChain.getHandler());
+		}
+		
+		/**
+		 *  有 handler 和 Interceptor
+		 */
 		return executionChain.applyPreHandle(request, response).flatMap(b -> {
 			if (b) {
 				return this.doHandler(request, response, executionChain.getHandler());
