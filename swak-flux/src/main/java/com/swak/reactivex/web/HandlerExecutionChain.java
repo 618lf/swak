@@ -8,6 +8,7 @@ import org.springframework.util.ObjectUtils;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.interceptor.HandlerInterceptor;
+import com.swak.reactor.publisher.MonoTrue;
 import com.swak.utils.Lists;
 
 import reactor.core.publisher.Mono;
@@ -57,7 +58,7 @@ public class HandlerExecutionChain implements ExecutionChain {
 		if (this.index < this.interceptorList.size()) {
 			return this.interceptorList.get(this.index++).preHandle(request, response, this);
 		}
-		return Mono.just(true);
+		return MonoTrue.instance();
 	}
 
 	/**

@@ -23,7 +23,7 @@ public interface HandlerInterceptor {
 	 * @throws Exception
 	 */
 	default Mono<Boolean> preHandle(HttpServerRequest request, HttpServerResponse response, ExecutionChain chain) {
-		return Mono.just(true);
+		return chain.applyPreHandle(request, response);
 	}
 
 	/**
