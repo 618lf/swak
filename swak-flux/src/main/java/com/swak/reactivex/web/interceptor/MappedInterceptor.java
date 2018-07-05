@@ -3,7 +3,8 @@ package com.swak.reactivex.web.interceptor;
 import org.springframework.util.PathMatcher;
 
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
-import com.swak.reactivex.transport.http.server.HttpServerResponse;
+import com.swak.reactivex.web.method.pattern.PathMatcherHelper;
+import com.swak.reactivex.web.method.pattern.UrlPathHelper;
 
 public class MappedInterceptor implements HandlerInterceptor {
 
@@ -59,14 +60,12 @@ public class MappedInterceptor implements HandlerInterceptor {
 
 	/**
 	 * Returns {@code true} if the interceptor applies to the given request path.
-	 * 
-	 * @param lookupPath
-	 *            the current request path
-	 * @param pathMatcher
-	 *            a path matcher for path pattern matching
+	 * @param request
+	 * @return
 	 */
 	public boolean matches(HttpServerRequest request) {
-		PathMatcher pathMatcherToUse = pathMatcher;
+		String lookupPath = UrlPathHelper.getLookupPathForRequest(request);
+		PathMatcher pathMatcherToUse = PathMatcherHelper.getMatcher();
 		if (this.excludePatterns != null) {
 			for (String pattern : this.excludePatterns) {
 				if (pathMatcherToUse.match(pattern, lookupPath)) {

@@ -2,6 +2,7 @@ package com.swak.reactivex.web.interceptor;
 
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
+import com.swak.reactivex.web.ExecutionChain;
 
 import reactor.core.publisher.Mono;
 
@@ -21,7 +22,7 @@ public interface HandlerInterceptor {
 	 * @return
 	 * @throws Exception
 	 */
-	default Mono<Boolean> preHandle(HttpServerRequest request, HttpServerResponse response, Object handler) {
+	default Mono<Boolean> preHandle(HttpServerRequest request, HttpServerResponse response, ExecutionChain chain) {
 		return Mono.just(true);
 	}
 
@@ -32,7 +33,7 @@ public interface HandlerInterceptor {
 	 * @param handler
 	 * @throws Exception
 	 */
-	default Mono<Void> postHandle(HttpServerRequest request, HttpServerResponse response, Object handler) {
-		return Mono.empty();
+	default Mono<Void> postHandle(HttpServerRequest request, HttpServerResponse response, ExecutionChain chain) {
+		return chain.applyPostHandle(request, response);
 	}
 }

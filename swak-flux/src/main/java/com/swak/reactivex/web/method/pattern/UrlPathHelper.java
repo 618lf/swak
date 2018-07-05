@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 
-public class UrlPathHelper {
+public abstract class UrlPathHelper {
 
 	/**
 	 * Return the mapping lookup path for the given request, within the current
@@ -23,7 +23,7 @@ public class UrlPathHelper {
 	 * @see #getPathWithinApplication
 	 * @see #getPathWithinServletMapping
 	 */
-	public String getLookupPathForRequest(HttpServerRequest request) {
+	public static String getLookupPathForRequest(HttpServerRequest request) {
 		return getPathWithinApplication(request);
 	}
 
@@ -34,7 +34,7 @@ public class UrlPathHelper {
 	 * @param request current HTTP request
 	 * @return the path within the web application
 	 */
-	public String getPathWithinApplication(HttpServerRequest request) {
+	public static String getPathWithinApplication(HttpServerRequest request) {
 		String requestUri = getRequestUri(request);
 		String path = getRemainingPath(requestUri, "", true);
 		if (path != null) {
@@ -52,7 +52,7 @@ public class UrlPathHelper {
 	 * context path and the servlet path returned by the HttpServerRequest are
 	 * stripped of semicolon content unlike the requesUri.
 	 */
-	private String getRemainingPath(String requestUri, String mapping, boolean ignoreCase) {
+	private static String getRemainingPath(String requestUri, String mapping, boolean ignoreCase) {
 		int index1 = 0;
 		int index2 = 0;
 		for (; (index1 < requestUri.length()) && (index2 < mapping.length()); index1++, index2++) {
@@ -96,11 +96,11 @@ public class UrlPathHelper {
 	 * @param request current HTTP request
 	 * @return the request URI
 	 */
-	public String getRequestUri(HttpServerRequest request) {
+	public static String getRequestUri(HttpServerRequest request) {
 		return request.getRequestURL();
 	}
 	
-	public Map<String, String> decodePathVariables(HttpServerRequest request, Map<String, String> vars) {
+	public static Map<String, String> decodePathVariables(HttpServerRequest request, Map<String, String> vars) {
 		Map<String, String> decodedVars = new LinkedHashMap<String, String>(vars.size());
 		for (Entry<String, String> entry : vars.entrySet()) {
 			decodedVars.put(entry.getKey(), decodeInternal(request, entry.getValue()));
@@ -108,7 +108,7 @@ public class UrlPathHelper {
 		return decodedVars;
 	}
 	
-	private String decodeInternal(HttpServerRequest request, String source) {
+	private static String decodeInternal(HttpServerRequest request, String source) {
 		String enc = determineEncoding(request);
 		try {
 			return decode(source, enc);
@@ -123,7 +123,7 @@ public class UrlPathHelper {
 		return null;
 	}
 	
-	protected String determineEncoding(HttpServerRequest request) {
+	protected static String determineEncoding(HttpServerRequest request) {
 		String enc = request.getCharacterEncoding();
 		if (enc == null) {
 			enc = "utf-8";

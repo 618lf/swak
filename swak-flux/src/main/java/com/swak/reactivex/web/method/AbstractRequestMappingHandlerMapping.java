@@ -28,6 +28,7 @@ import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.AbstractHandlerMapping;
 import com.swak.reactivex.web.HandlerMapping;
 import com.swak.reactivex.web.annotation.RequestMethod;
+import com.swak.reactivex.web.method.pattern.UrlPathHelper;
 import com.swak.utils.Maps;
 
 public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandlerMapping implements ApplicationContextAware, HandlerMapping {
@@ -90,7 +91,7 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 	 */
 	@Override
 	public HandlerMethod getHandler(HttpServerRequest request){
-		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
+		String lookupPath = UrlPathHelper.getLookupPathForRequest(request);
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking up handler method for path " + lookupPath);
 		}
@@ -170,7 +171,7 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 		if (patterns.size() == 1) {
 			Map<String, String> uriVariables = getPathMatcher().extractUriTemplateVariables(patterns.iterator().next(),
 					lookupPath);
-			Map<String, String> decodedUriVariables = getUrlPathHelper().decodePathVariables(request, uriVariables);
+			Map<String, String> decodedUriVariables = UrlPathHelper.decodePathVariables(request, uriVariables);
 			request.addPathVariables(decodedUriVariables);
 		} else {
 			Iterator<String> macths = patterns.iterator();
@@ -178,7 +179,7 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 			while (macths.hasNext()) {
 				Map<String, String> uriVariables = getPathMatcher().extractUriTemplateVariables(macths.next(),
 						lookupPath);
-				Map<String, String> decodedUriVariables = getUrlPathHelper().decodePathVariables(request, uriVariables);
+				Map<String, String> decodedUriVariables = UrlPathHelper.decodePathVariables(request, uriVariables);
 				all.putAll(decodedUriVariables);
 			}
 			request.addPathVariables(all);

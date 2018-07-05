@@ -48,7 +48,7 @@ public class HandlerExecutionChain implements ExecutionChain {
 	@Override
 	public Mono<Boolean> applyPreHandle(HttpServerRequest request, HttpServerResponse response) {
 		if (this.index < this.interceptorList.size()) {
-			return this.interceptorList.get(this.index++).preHandle(request, response, handler);
+			return this.interceptorList.get(this.index++).preHandle(request, response, this);
 		}
 		return Mono.just(true);
 	}
@@ -56,7 +56,7 @@ public class HandlerExecutionChain implements ExecutionChain {
 	@Override
 	public Mono<Void> applyPostHandle(HttpServerRequest request, HttpServerResponse response) {
 		if (this.index < this.interceptorList.size()) {
-			return this.interceptorList.get(this.index++).postHandle(request, response, handler);
+			return this.interceptorList.get(this.index++).postHandle(request, response, this);
 		}
 		return Mono.empty();
 	}
