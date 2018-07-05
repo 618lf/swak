@@ -25,4 +25,13 @@ public class CacheManagers {
 	public static <T> Cache<T> getCache(String key) {
 		return cacheManager.getCache(key);
 	}
+	
+	/**
+	 * 获得一个缓存， 内部会有一个缓存来存储
+	 * @param key
+	 * @return
+	 */
+	public static <T> Cache<T> getCache(String key, int timeToIdle) {
+		return cacheManager.getCache(key, timeToIdle);
+	}
 }

@@ -1,0 +1,38 @@
+package com.swak.reactivex.web.interceptor;
+
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerResponse;
+
+import reactor.core.publisher.Mono;
+
+/**
+ * 拦截器
+ * 
+ * @author lifeng
+ *
+ */
+public interface HandlerInterceptor {
+	
+	/**
+	 * 之前handler 之前
+	 * @param request
+	 * @param response
+	 * @param handler
+	 * @return
+	 * @throws Exception
+	 */
+	default Mono<Boolean> preHandle(HttpServerRequest request, HttpServerResponse response, Object handler) {
+		return Mono.just(true);
+	}
+
+	/**
+	 * 之前handler 之后
+	 * @param request
+	 * @param response
+	 * @param handler
+	 * @throws Exception
+	 */
+	default Mono<Void> postHandle(HttpServerRequest request, HttpServerResponse response, Object handler) {
+		return Mono.empty();
+	}
+}

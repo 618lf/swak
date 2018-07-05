@@ -49,4 +49,8 @@ public interface Constants {
 	int SIGN_IN = 1; // 登录
 	int SIGN_UP = 2; // 注册
 	int LOGOUT = 3;  // 退出
+	
+	/** 缓存 **/
+	int cookie_cache_times = 60 * 60 * 24;
+	String cookie_cache_name = "COOKIES";
 }

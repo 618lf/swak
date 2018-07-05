@@ -37,7 +37,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 	 * 初始化参数解析
 	 * @param conversionService
 	 */
-	public void initArgumentResolvers(ConversionService conversionService) {
+	private void initArgumentResolvers(ConversionService conversionService) {
 		List<HandlerMethodArgumentResolver> resolvers = new ArrayList<HandlerMethodArgumentResolver>();
 		resolvers.add(new PathVariableMethodArgumentResolver(conversionService));
 		resolvers.add(new MultipartParamMethodArgumentResoler(conversionService));
@@ -47,6 +47,11 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 		resolvers.add(new ServerRequestMethodArgumentResolver());
 		resolvers.add(new ServerResponseMethodArgumentResolver());
 		this.argumentResolver = new HandlerMethodArgumentResolverComposite().addResolvers(resolvers);
+	}
+	
+	@Override
+	public boolean supports(Handler handler) {
+		return handler instanceof HandlerMethod;
 	}
 
 	@Override
@@ -69,10 +74,5 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 			}
 		}
 		return args;
-	}
-
-	@Override
-	public boolean supports(Handler handler) {
-		return handler instanceof HandlerMethod;
 	}
 }
