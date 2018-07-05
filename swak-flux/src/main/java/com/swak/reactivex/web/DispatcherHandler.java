@@ -56,6 +56,9 @@ public class DispatcherHandler implements WebHandler {
 		this.resultHandlers = resultHandlers;
 	}
 
+	/**
+	 * 处理请求
+	 */
 	@Override
 	public Mono<Void> handle(HttpServerRequest request, HttpServerResponse response) {
 		ExecutionChain executionChain = handleMappering(request, response);
@@ -64,13 +67,18 @@ public class DispatcherHandler implements WebHandler {
 		}
 		return executionChain.applyPreHandle(request, response).flatMap(b -> {
 			if (b) {
-				HandlerResult result = this.invokeHandler(request, response, executionChain.getHandler());
-				return this.handleResult(request, response, result);
+				return this.doHandler(request, response, executionChain.getHandler());
 			}
 			return Mono.empty();
 		}).flatMap(result -> executionChain.applyPostHandle(request, response));
 	}
 
+	/**
+	 * 获得执行链
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	public ExecutionChain handleMappering(HttpServerRequest request, HttpServerResponse response) {
 		for (HandlerMapping mapping : mappings) {
 			ExecutionChain handler = getExecutionChain(mapping, request);
@@ -108,8 +116,19 @@ public class DispatcherHandler implements WebHandler {
 		}
 		return null;
 	}
-
-	public HandlerResult invokeHandler(HttpServerRequest request, HttpServerResponse response, Handler handler) {
+	
+	/**
+	 * 执行 handler
+	 * @param request
+	 * @param response
+	 * @param handler
+	 * @return
+	 */
+	public Mono<Void> doHandler(HttpServerRequest request, HttpServerResponse response, Handler handler) {
+		HandlerResult result = this.invokeHandler(request, response, handler);
+		return handleResult(request, response, result);
+	}
+	private HandlerResult invokeHandler(HttpServerRequest request, HttpServerResponse response, Handler handler) {
 		for (HandlerAdapter handlerAdapter : this.adapters) {
 			if (handlerAdapter.supports(handler)) {
 				return handlerAdapter.handle(request, response, handler);
@@ -117,8 +136,7 @@ public class DispatcherHandler implements WebHandler {
 		}
 		return null;
 	}
-
-	public Mono<Void> handleResult(HttpServerRequest request, HttpServerResponse response, HandlerResult result) {
+	private Mono<Void> handleResult(HttpServerRequest request, HttpServerResponse response, HandlerResult result) {
 		for (HandlerResultHandler resultHandler : this.resultHandlers) {
 			if (resultHandler.supports(result)) {
 				return resultHandler.handle(request, response, result);
