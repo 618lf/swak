@@ -1,5 +1,12 @@
 package com.swak.security.web.captcha;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.imageio.ImageIO;
+
+import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.security.web.captcha.builder.ABuilder;
 import com.swak.security.web.captcha.builder.BBuilder;
 import com.swak.security.web.captcha.builder.Builder;
@@ -11,6 +18,7 @@ import com.swak.security.web.captcha.builder.GBuilder;
 import com.swak.security.web.captcha.builder.HBuilder;
 import com.swak.security.web.captcha.builder.JBuilder;
 import com.swak.security.web.captcha.builder.KBuilder;
+import com.swak.security.web.cookie.CookieProvider;
 import com.swak.utils.Ints;
 
 /**
@@ -20,6 +28,8 @@ import com.swak.utils.Ints;
  */
 public class CaptchaManager {
 
+	private static String VALIDATE_CODE = "_VC";
+	private static String IMAGE_TYPE = "JPEG";
 	private static String TYPES = "ABCDEFGHJK";
 
 	/**
@@ -61,7 +71,40 @@ public class CaptchaManager {
 	}
 
 	/**
-	 * 校验验证码 验证码格式： A:XXX A： 类型 XXX： 实际的验证码
+	 * 将验证码输出
+	 * 
+	 * @param captcha
+	 * @param response
+	 */
+	public static void out(Captcha captcha, HttpServerRequest request, HttpServerResponse response) {
+		// 存储到 cookie 和 redis VALIDATE_CODE -> captcha
+		CookieProvider.setAttribute(request, response, VALIDATE_CODE, captcha.getResult());
+		OutputStream out = response.getOutputStream();
+		try {
+			ImageIO.write(captcha.getImage(), IMAGE_TYPE, out);
+		} catch (IOException e) {
+		}
+	}
+
+	/**
+	 * 将验证码输出
+	 * 
+	 * @param captcha
+	 * @param response
+	 */
+	public static void base64(Captcha captcha, HttpServerRequest request, HttpServerResponse response) {
+		// 存储到 cookie 和 redis VALIDATE_CODE -> captcha
+		CookieProvider.setAttribute(request, response, VALIDATE_CODE, captcha.getResult());
+		OutputStream out = response.getOutputStream();
+		try {
+			ImageIO.write(captcha.getImage(), IMAGE_TYPE, out);
+			response.base64();
+		} catch (IOException e) {
+		}
+	}
+
+	/**
+	 * 校验验证码
 	 * 
 	 * @param captcha
 	 * @param cCode
@@ -71,7 +114,6 @@ public class CaptchaManager {
 		if (captcha == null || cCode == null || captcha.isEmpty() || cCode.isEmpty() || captcha.length() <= 1) {
 			return false;
 		}
-		captcha = captcha.substring(1);
 		return captcha.equals(cCode);
 	}
 }

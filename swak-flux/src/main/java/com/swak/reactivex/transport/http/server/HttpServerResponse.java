@@ -100,6 +100,12 @@ public interface HttpServerResponse extends NettyOutbound, Closeable {
 	HttpServerResponse xml();
 	
 	/**
+	 * 输出base64数据
+	 * @return
+	 */
+	HttpServerResponse base64();
+	
+	/**
 	 * 根据 accept 判断接收的类型
 	 * 只有返回string 或抛出异常时才会使用
 	 * @return

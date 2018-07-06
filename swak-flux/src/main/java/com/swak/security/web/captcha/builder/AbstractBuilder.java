@@ -1,7 +1,7 @@
 package com.swak.security.web.captcha.builder;
 
 import java.awt.Font;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import com.swak.security.web.captcha.Captcha;
@@ -46,5 +46,5 @@ public abstract class AbstractBuilder implements Builder {
 	 * @param 输入的验证码。
 	 * @return 返回验证码图像。
 	 */
-	public abstract Image generateImage(Captcha captcha);
+	public abstract BufferedImage generateImage(Captcha captcha);
 }

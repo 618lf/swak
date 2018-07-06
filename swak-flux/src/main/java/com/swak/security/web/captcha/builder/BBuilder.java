@@ -2,7 +2,6 @@ package com.swak.security.web.captcha.builder;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import com.swak.security.web.captcha.Captcha;
@@ -29,7 +28,7 @@ public class BBuilder extends AbstractBuilder {
 	}
 
 	@Override
-	public Image generateImage(Captcha code) {
+	public BufferedImage generateImage(Captcha code) {
 		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Graphics gd = bi.getGraphics();
 		gd.setColor(Color.WHITE);

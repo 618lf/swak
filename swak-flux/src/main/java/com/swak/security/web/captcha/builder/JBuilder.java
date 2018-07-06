@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -302,7 +301,7 @@ public class JBuilder extends AbstractBuilder {
 	}
 
 	@Override
-	public Image generateImage(Captcha code) {
+	public BufferedImage generateImage(Captcha code) {
 		int verifySize = code.getCode().length();
 		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2 = bi.createGraphics();

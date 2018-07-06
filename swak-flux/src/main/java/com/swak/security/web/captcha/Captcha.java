@@ -1,6 +1,6 @@
 package com.swak.security.web.captcha;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 /**
  * 验证码接口
@@ -9,7 +9,7 @@ import java.awt.Image;
  */
 public class Captcha {
 
-	private Image image;
+	private BufferedImage image;
 	private String code;
 	private String result;
 
@@ -22,11 +22,11 @@ public class Captcha {
 		this.code = code;
 	}
 
-	public Image getImage() {
+	public BufferedImage getImage() {
 		return image;
 	}
 
-	public void setImage(Image image) {
+	public void setImage(BufferedImage image) {
 		this.image = image;
 	}
 

@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+import com.swak.codec.Encodes;
 import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
 import com.swak.reactivex.transport.channel.ServerContextHandler;
@@ -595,6 +596,18 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	public HttpServerResponse xml() {
 		responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_XML);
 		return this;
+	}
+	
+	/**
+	 * 将现有的数据已base64输出
+	 * 
+	 * @param status
+	 * @return
+	 */
+	public HttpServerResponse base64() {
+		responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
+		String base64 = Encodes.encodeBase64(this.content.array());
+		return this.buffer(base64);
 	}
 
 	/**
