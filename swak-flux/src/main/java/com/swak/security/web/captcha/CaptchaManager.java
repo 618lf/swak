@@ -76,8 +76,8 @@ public class CaptchaManager {
 	 * @param captcha
 	 * @param response
 	 */
-	public static void out(Captcha captcha, HttpServerRequest request, HttpServerResponse response) {
-		// 存储到 cookie 和 redis VALIDATE_CODE -> captcha
+	public static void image(HttpServerRequest request, HttpServerResponse response) {
+		Captcha captcha = build();
 		CookieProvider.setAttribute(request, response, VALIDATE_CODE, captcha.getResult());
 		OutputStream out = response.getOutputStream();
 		try {
@@ -92,15 +92,9 @@ public class CaptchaManager {
 	 * @param captcha
 	 * @param response
 	 */
-	public static void base64(Captcha captcha, HttpServerRequest request, HttpServerResponse response) {
-		// 存储到 cookie 和 redis VALIDATE_CODE -> captcha
-		CookieProvider.setAttribute(request, response, VALIDATE_CODE, captcha.getResult());
-		OutputStream out = response.getOutputStream();
-		try {
-			ImageIO.write(captcha.getImage(), IMAGE_TYPE, out);
-			response.base64();
-		} catch (IOException e) {
-		}
+	public static void base64(HttpServerRequest request, HttpServerResponse response) {
+		image(request, response);
+		response.base64();
 	}
 
 	/**

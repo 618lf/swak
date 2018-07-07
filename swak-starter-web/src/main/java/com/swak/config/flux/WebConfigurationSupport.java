@@ -32,6 +32,7 @@ import com.swak.reactivex.web.converter.StringEscapeFormatterConverter;
 import com.swak.reactivex.web.converter.StringHttpMessageConverter;
 import com.swak.reactivex.web.function.HandlerFunctionAdapter;
 import com.swak.reactivex.web.function.RouterFunctionMapping;
+import com.swak.reactivex.web.interceptor.HandlerInterceptor;
 import com.swak.reactivex.web.method.RequestMappingHandlerAdapter;
 import com.swak.reactivex.web.method.RequestMappingHandlerMapping;
 import com.swak.reactivex.web.result.RequestBodyHandlerResult;
@@ -131,6 +132,7 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		webHandler.setMappings(Collections.unmodifiableList(container.getMappings()));
 		webHandler.setAdapters(Collections.unmodifiableList(container.getAdapters()));
 		webHandler.setResultHandlers(Collections.unmodifiableList(container.getResultHandlers()));
+		webHandler.setInterceptors(Collections.unmodifiableList(container.getInterceptors()));
 		
 		// Http Handler
 		WebHandler delegate = new FilteringWebHandler(webHandler, container.getFilters());
@@ -146,6 +148,7 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		private List<HandlerResultHandler> resultHandlers = Collections.emptyList();
 		private List<WebFilter> filters = Collections.emptyList();
 		private List<WebExceptionHandler> exceptionHandlers = Collections.emptyList();
+		private List<HandlerInterceptor> interceptors = Collections.emptyList();
 		
 		@Autowired(required = false)
 		public void setFilters(List<WebFilter> filters) {
@@ -190,6 +193,15 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 		@Autowired(required = false)
 		public void setResultHandlers(List<HandlerResultHandler> resultHandlers) {
 			this.resultHandlers = resultHandlers;
+		}
+
+		public List<HandlerInterceptor> getInterceptors() {
+			return interceptors;
+		}
+		
+		@Autowired(required = false)
+		public void setInterceptors(List<HandlerInterceptor> interceptors) {
+			this.interceptors = interceptors;
 		}
 	}
 }
