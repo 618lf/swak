@@ -69,10 +69,14 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Mono<Void> disposeLater() {
-		serverSelectLoops.shutdownGracefully();
-		serverLoops.shutdownGracefully();
-		Mono<?> sslMono = FutureMono.from((Future)serverSelectLoops.terminationFuture());
-		Mono<?> slMono = FutureMono.from((Future)serverLoops.terminationFuture());
+		if (serverSelectLoops != null) {
+			serverSelectLoops.shutdownGracefully();
+		}
+		if (serverLoops != null) {
+			serverLoops.shutdownGracefully();
+		}
+		Mono<?> sslMono = serverSelectLoops != null ?FutureMono.from((Future)serverSelectLoops.terminationFuture()) : Mono.empty();
+		Mono<?> slMono = serverLoops != null ? FutureMono.from((Future)serverLoops.terminationFuture()) : Mono.empty();
 		return Mono.when(sslMono, slMono);
 	}
 	

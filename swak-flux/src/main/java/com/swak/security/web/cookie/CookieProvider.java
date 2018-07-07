@@ -1,12 +1,10 @@
 package com.swak.security.web.cookie;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.UUID;
 
 import com.swak.Constants;
 import com.swak.cache.CacheManagers;
+import com.swak.codec.Encodes;
 import com.swak.reactivex.transport.http.SimpleCookie;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
@@ -65,6 +63,7 @@ public class CookieProvider {
 
 	/**
 	 * 得到值，并清除相应值
+	 * 
 	 * @param request
 	 * @param response
 	 * @param key
@@ -78,6 +77,7 @@ public class CookieProvider {
 
 	/**
 	 * 删除属性
+	 * 
 	 * @param request
 	 * @param response
 	 * @param key
@@ -103,7 +103,7 @@ public class CookieProvider {
 	 */
 	public static void setCookie(HttpServerRequest request, HttpServerResponse response, String name, String value,
 			Integer maxAge, String path, String domain, Boolean secure) {
-		SimpleCookie cookie = new SimpleCookie(name, null);
+		SimpleCookie cookie = new SimpleCookie(name, Encodes.urlEncode(value));
 		if (maxAge != null)
 			cookie.setMaxAge(maxAge.intValue());
 		if (StringUtils.isNotEmpty(path))
@@ -112,11 +112,6 @@ public class CookieProvider {
 			cookie.setDomain(domain);
 		if (secure != null)
 			cookie.setSecure(secure);
-		try {
-			cookie.setValue(URLEncoder.encode(value, "UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
 		cookie.saveTo(request, response);
 	}
 
@@ -134,10 +129,7 @@ public class CookieProvider {
 		String value = null;
 		Cookie cookie = request.getCookie(name);
 		if (cookie != null) {
-			try {
-				value = URLDecoder.decode(cookie.value(), Constants.DEFAULT_ENCODING.name());
-			} catch (Exception e) {
-			}
+			value = Encodes.urlDecode(cookie.value());
 		}
 		if (isRemove) {
 			cookie.setMaxAge(0);
