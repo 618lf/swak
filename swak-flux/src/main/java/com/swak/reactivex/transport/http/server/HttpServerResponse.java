@@ -106,6 +106,13 @@ public interface HttpServerResponse extends NettyOutbound, Closeable {
 	HttpServerResponse base64();
 	
 	/**
+	 * 输出文件类型
+	 * @param mime
+	 * @return
+	 */
+	HttpServerResponse mime(CharSequence mime);
+	
+	/**
 	 * 根据 accept 判断接收的类型
 	 * 只有返回string 或抛出异常时才会使用
 	 * @return

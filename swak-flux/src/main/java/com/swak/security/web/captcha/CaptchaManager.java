@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
+import com.swak.reactivex.transport.http.multipart.MimeType;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.security.web.captcha.builder.ABuilder;
@@ -82,6 +83,7 @@ public class CaptchaManager {
 		OutputStream out = response.getOutputStream();
 		try {
 			ImageIO.write(captcha.getImage(), IMAGE_TYPE, out);
+			response.mime(MimeType.getMimeType(IMAGE_TYPE));
 		} catch (IOException e) {
 		}
 	}

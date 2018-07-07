@@ -6,6 +6,10 @@ import java.util.Map;
 import com.swak.reactivex.transport.http.HttpConst;
 import com.swak.utils.StringUtils;
 
+/**
+ * 文件类型
+ * @author lifeng
+ */
 public interface MimeType {
 
 	// 支持的文件类型
@@ -170,17 +174,18 @@ public interface MimeType {
 			put("vcf", "text/x-vcard");
 		}
 	};
-	
+
 	/**
 	 * Get MimeType by file name
+	 * 
 	 * @param fileName
 	 * @return
 	 */
-	static CharSequence getMimeType(String fileName) {
-		if (StringUtils.isBlank(fileName) || fileName.indexOf('.') == -1) {
+	public static CharSequence getMimeType(String fileName) {
+		if (StringUtils.isBlank(fileName)) {
 			return null;
 		}
-		String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
+		String ext = (fileName.substring(fileName.lastIndexOf('.') + 1)).toLowerCase();
 		if (MIME_TYPES.containsKey(ext)) {
 			return MIME_TYPES.get(ext);
 		} else {

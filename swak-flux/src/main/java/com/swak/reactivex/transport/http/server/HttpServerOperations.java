@@ -611,6 +611,14 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
+	 * 输出指定的文件类型
+	 */
+	public HttpServerResponse mime(CharSequence mime) {
+		responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, mime);
+		return this;
+	}
+
+	/**
 	 * 自动判断类型 只判断这两种类型
 	 */
 	@Override
