@@ -597,17 +597,23 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_XML);
 		return this;
 	}
-	
+
 	/**
-	 * 将现有的数据已base64输出
+	 * 将现有的数据已base64输出 必须先有数据
 	 * 
 	 * @param status
 	 * @return
 	 */
 	public HttpServerResponse base64() {
+		String mime = responseHeaders.get(HttpHeaderNames.CONTENT_TYPE);
+		if (StringUtils.isNotBlank(mime)) {
+			responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
+			StringBuilder base64 = new StringBuilder("data:");
+			base64.append(mime).append(";base64,").append(Encodes.encodeBase64(ByteBufUtil.getBytes(this.content)));
+			return this.buffer(base64);
+		}
 		responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
-		String base64 = Encodes.encodeBase64(this.content.array());
-		return this.buffer(base64);
+		return this.buffer(Encodes.encodeBase64(ByteBufUtil.getBytes(this.content)));
 	}
 
 	/**
@@ -798,8 +804,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
-	 * 输出 只能执行一次
-	 * 只能在 mono 的最后执行，不能中途调用
+	 * 输出 只能执行一次 只能在 mono 的最后执行，不能中途调用
 	 */
 	protected void out() {
 
@@ -807,7 +812,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		if (this.closed) {
 			return;
 		}
-		
+
 		// 已经关闭 -- 直接释放资源即可
 		if (!this.channel().isActive()) {
 			ReferenceCountUtil.release(request);
@@ -819,19 +824,20 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.outFile();
 			return;
 		}
-		
+
 		// 普通的请求输出
 		HttpResponse response = this.render();
 		boolean keepAlive = isKeepAlive();
-		 
+
 		// see HttpServerHandler.write
-//		if (!keepAlive) {
-//			channel().writeAndFlush(_response).addListener(ChannelFutureListener.CLOSE);
-//		} else {
-//			_response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-//			channel().writeAndFlush(_response);
-//		}
-		
+		// if (!keepAlive) {
+		// channel().writeAndFlush(_response).addListener(ChannelFutureListener.CLOSE);
+		// } else {
+		// _response.headers().set(HttpHeaderNames.CONNECTION,
+		// HttpHeaderValues.KEEP_ALIVE);
+		// channel().writeAndFlush(_response);
+		// }
+
 		// 是否关闭有 HttpServerHandler.write 添加了判断
 		if (!keepAlive) {
 			response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
