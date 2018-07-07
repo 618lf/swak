@@ -52,5 +52,5 @@ public interface Constants {
 	
 	/** 缓存 **/
 	int cookie_cache_times = 60 * 60 * 24;
-	String cookie_cache_name = "COOKIES";
+	String token_cache_name = "TOKENS";
 }

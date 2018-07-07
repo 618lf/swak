@@ -29,7 +29,7 @@ import com.swak.utils.Ints;
  */
 public class CaptchaManager {
 
-	private static String VALIDATE_CODE = "_VC";
+	private static String VALIDATE_CODE = "CAPTCHA-ETAG";
 	private static String IMAGE_TYPE = "JPEG";
 	private static String TYPES = "ABCDEFGHJK";
 

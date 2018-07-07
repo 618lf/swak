@@ -8,6 +8,7 @@ import com.swak.codec.Encodes;
 import com.swak.reactivex.transport.http.SimpleCookie;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
+import com.swak.security.web.token.TokenProvider;
 import com.swak.utils.StringUtils;
 
 import io.netty.handler.codec.http.cookie.Cookie;
@@ -34,8 +35,9 @@ public class CookieProvider {
 		if (StringUtils.isBlank(validateCodeKey)) {
 			validateCodeKey = UUID.randomUUID().toString();
 			CookieProvider.setCookie(request, response, key, validateCodeKey, -1, null, null, true);
+			TokenProvider.setHeader(request, response, key, validateCodeKey);
 		}
-		CacheManagers.getCache(Constants.cookie_cache_name, Constants.cookie_cache_times).putObject(validateCodeKey,
+		CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times).putObject(validateCodeKey,
 				value);
 	}
 
@@ -50,8 +52,11 @@ public class CookieProvider {
 	public static <T> T getAttribute(HttpServerRequest request, HttpServerResponse response, String key) {
 		try {
 			String _key = CookieProvider.getCookie(request, response, key, false);
+			if (StringUtils.isBlank(_key)) {
+				_key = TokenProvider.getHeader(request, response, key);
+			}
 			if (StringUtils.isNotBlank(_key)) {
-				Object obj = CacheManagers.getCache(Constants.cookie_cache_name, Constants.cookie_cache_times)
+				Object obj = CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times)
 						.getObject(_key);
 				return (T) (obj);
 			}
@@ -85,7 +90,7 @@ public class CookieProvider {
 	public static void removeAttribute(HttpServerRequest request, HttpServerResponse response, String key) {
 		String _key = CookieProvider.getCookie(request, response, key, true);
 		if (StringUtils.isNotBlank(_key)) {
-			CacheManagers.getCache(Constants.cookie_cache_name, Constants.cookie_cache_times).delete(_key);
+			CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times).delete(_key);
 		}
 	}
 
