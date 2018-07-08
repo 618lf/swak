@@ -30,7 +30,7 @@ public class SessionPrincipalStrategy implements PrincipalStrategy {
 	 */
 	@Override
 	public Mono<Subject> resolvePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
-		return sessionManager.getSession(request, response).map(session -> {
+		return sessionManager.getSession(false, request, response).map(session -> {
 			if (!(session instanceof NoneSession)) {
 				subject.setSession(session);
 			}

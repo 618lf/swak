@@ -37,7 +37,7 @@ public class HttpSessionManager {
 	 * @param request
 	 * @param response
 	 */
-	public Mono<Session> getSession(HttpServerRequest request, HttpServerResponse response) {
+	public Mono<Session> getSession(boolean create, HttpServerRequest request, HttpServerResponse response) {
 		Session session = request.getSubject().getSession();
 		if (session != null) {
 			return Mono.just(session);
@@ -48,7 +48,10 @@ public class HttpSessionManager {
 				if (session instanceof NoneSession) {
 					this.onInvalidateSession(request, response);
 				}
-				return session;
+				if (create) {
+					s = sessionRepository.createSession();
+				}
+				return s;
 			});
 		}
 		return Mono.just(NoneSession.NONE);

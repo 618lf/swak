@@ -18,6 +18,7 @@ import com.swak.reactivex.web.method.resolver.RequestHeaderMethodArgumentResolve
 import com.swak.reactivex.web.method.resolver.RequestParamMethodArgumentResolver;
 import com.swak.reactivex.web.method.resolver.ServerRequestMethodArgumentResolver;
 import com.swak.reactivex.web.method.resolver.ServerResponseMethodArgumentResolver;
+import com.swak.reactivex.web.method.resolver.ServerSessionMethodArgumentResolver;
 import com.swak.reactivex.web.result.HandlerResult;
 
 /**
@@ -46,6 +47,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 		resolvers.add(new RequestParamMethodArgumentResolver(conversionService));
 		resolvers.add(new ServerRequestMethodArgumentResolver());
 		resolvers.add(new ServerResponseMethodArgumentResolver());
+		resolvers.add(new ServerSessionMethodArgumentResolver());
 		this.argumentResolver = new HandlerMethodArgumentResolverComposite().addResolvers(resolvers);
 	}
 	
