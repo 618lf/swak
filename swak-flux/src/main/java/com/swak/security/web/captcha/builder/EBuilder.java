@@ -33,8 +33,8 @@ public class EBuilder extends AbstractBuilder {
 		StringBuilder sb = new StringBuilder();
 		// 随即数据
 		int result = 0;
-		int rand0 = random.nextInt(10) + 1;
-		int rand1 = random.nextInt(10) + 1;
+		int rand0 = random.nextInt(10);
+		int rand1 = random.nextInt(10);
 
 		// 是加法还是减法
 		int math = random.nextInt(3);

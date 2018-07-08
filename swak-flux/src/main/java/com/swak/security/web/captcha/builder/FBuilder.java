@@ -19,7 +19,7 @@ import com.swak.security.web.captcha.Captcha;
 public class FBuilder extends AbstractBuilder {
 
 	// 验证码数据源[?是否考虑将生成不同验证码类型的源数据统一放到一个map,key是验证码类型,value：是数据源]
-	private String captchaCodeSource = "零壹贰叁肆伍陆柒捌玖";
+	private String captchaCodeSource = "零壹贰叁肆伍陆柒捌玖拾";
 	// 验证码运算数据（使用 Java Unicode code，加减乘除）
 	private String captchaOperation = "加减乘";
 	// 验证码运算符等于
@@ -39,8 +39,8 @@ public class FBuilder extends AbstractBuilder {
 		StringBuilder sb = new StringBuilder();
 		// 随即数据
 		int result = 0;
-		int rand0 = random.nextInt(10) + 1;
-		int rand1 = random.nextInt(10) + 1;
+		int rand0 = random.nextInt(11);
+		int rand1 = random.nextInt(11);
 
 		// 是加法还是减法
 		int math = random.nextInt(3);

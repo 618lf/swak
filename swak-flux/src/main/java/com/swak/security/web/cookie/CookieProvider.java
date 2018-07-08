@@ -18,6 +18,9 @@ import io.netty.handler.codec.http.cookie.Cookie;
  * 
  * key 放入 cookie ，value 放入缓存 cookie 是与用户相关的信息
  * 
+ * cookie 的时间的误解： maxage 不能设置为 -1，必须大于等于 0。
+ * 
+ * Secure ： 这说明这个cookie 必须通过https 发送给服务器，通过http 则不能发送
  * @author root
  */
 public class CookieProvider {
@@ -34,9 +37,9 @@ public class CookieProvider {
 		String validateCodeKey = CookieProvider.getCookie(request, response, key, false);
 		if (StringUtils.isBlank(validateCodeKey)) {
 			validateCodeKey = UUID.randomUUID().toString();
-			CookieProvider.setCookie(request, response, key, validateCodeKey, -1, null, null, true);
-			TokenProvider.setHeader(request, response, key, validateCodeKey);
+			CookieProvider.setCookie(request, response, key, validateCodeKey, Long.MIN_VALUE, null, null, false);
 		}
+		TokenProvider.setHeader(request, response, key, validateCodeKey);
 		CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times).putObject(validateCodeKey,
 				value);
 	}
@@ -107,10 +110,10 @@ public class CookieProvider {
 	 * @param secure
 	 */
 	public static void setCookie(HttpServerRequest request, HttpServerResponse response, String name, String value,
-			Integer maxAge, String path, String domain, Boolean secure) {
+			Long maxAge, String path, String domain, Boolean secure) {
 		SimpleCookie cookie = new SimpleCookie(name, Encodes.urlEncode(value));
 		if (maxAge != null)
-			cookie.setMaxAge(maxAge.intValue());
+			cookie.setMaxAge(maxAge);
 		if (StringUtils.isNotEmpty(path))
 			cookie.setPath(path);
 		if (StringUtils.isNotEmpty(domain))
