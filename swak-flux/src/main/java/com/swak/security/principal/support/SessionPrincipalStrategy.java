@@ -1,5 +1,6 @@
 package com.swak.security.principal.support;
 
+import com.swak.reactivex.transport.http.Session;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
@@ -11,6 +12,8 @@ import reactor.core.publisher.Mono;
 
 /**
  * 基于 COOKIE 的身份管理方式
+ * 
+ * Redis 操作是否改为同步的是否更好
  * 
  * @author lifeng
  */
@@ -40,12 +43,11 @@ public class SessionPrincipalStrategy implements PrincipalStrategy {
 	 */
 	@Override
 	public Mono<Subject> createPrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
-		return sessionManager.createSession(request, response).map(session ->{
-			session.setPrincipal(subject.getPrincipal());
-			session.setAuthenticated(subject.isAuthenticated());
-			subject.setSession(session);
-			return subject;
-		});
+		Session session = sessionManager.createSession(request, response);
+		session.setPrincipal(subject.getPrincipal());
+		session.setAuthenticated(subject.isAuthenticated());
+		subject.setSession(session);
+		return Mono.just(subject);
 	}
 
 	/**

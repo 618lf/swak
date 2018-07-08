@@ -3,6 +3,8 @@ package com.swak.reactivex.transport.http;
 import java.util.Set;
 import java.util.Stack;
 
+import reactor.core.publisher.Mono;
+
 /**
  * 简单的session存储, 提供类似Session 的存储
  * @author lifeng
@@ -98,4 +100,10 @@ public interface Session {
 	 * 销毁 for gc 
 	 */
 	void destory();
+	
+	/**
+	 * session 执行提交
+	 * @return
+	 */
+	Mono<Void> onCommit();
 }

@@ -22,6 +22,7 @@ import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
 import com.swak.reactivex.transport.channel.ServerContextHandler;
 import com.swak.reactivex.transport.http.HttpConst;
+import com.swak.reactivex.transport.http.Session;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.multipart.MimeType;
 import com.swak.reactivex.transport.http.multipart.MultipartFile;
@@ -842,7 +843,16 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		if (!keepAlive) {
 			response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
 		}
-		channel().writeAndFlush(response);
+
+		// commit session
+		Session session = this.getSubject().getSession();
+		if (session != null) {
+			session.onCommit().doOnSuccessOrError((s, e) -> {
+				channel().writeAndFlush(response);
+			});
+		} else {
+			channel().writeAndFlush(response);
+		}
 	}
 
 	/**

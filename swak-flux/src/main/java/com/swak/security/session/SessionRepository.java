@@ -18,7 +18,7 @@ public interface SessionRepository {
 	 * @param response
 	 * @return
 	 */
-	Mono<Session> createSession();
+	Session createSession();
 	
 	/**
 	 * 返回一个Session

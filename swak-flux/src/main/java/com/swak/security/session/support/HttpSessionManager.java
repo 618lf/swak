@@ -57,11 +57,10 @@ public class HttpSessionManager {
 	/**
 	 * 创建session
 	 */
-	public Mono<Session> createSession(HttpServerRequest request, HttpServerResponse response) {
-		return sessionRepository.createSession().map(session -> {
-			this.writeCookie(request, response, session.getId());
-			return session;
-		});
+	public Session createSession(HttpServerRequest request, HttpServerResponse response) {
+		Session session = sessionRepository.createSession();
+		this.writeCookie(request, response, session.getId());
+		return session;
 	}
 	
 	/**

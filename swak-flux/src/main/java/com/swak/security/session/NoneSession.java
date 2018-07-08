@@ -6,6 +6,8 @@ import java.util.Stack;
 import com.swak.reactivex.transport.http.Principal;
 import com.swak.reactivex.transport.http.Session;
 
+import reactor.core.publisher.Mono;
+
 /**
  * 无Session 
  * @author lifeng
@@ -18,6 +20,7 @@ public class NoneSession implements Session {
 	public static final NoneSession NONE = new NoneSession();
 	
 	private NoneSession() {}
+	
 	@Override
 	public String getId() {
 		return null;
@@ -92,5 +95,10 @@ public class NoneSession implements Session {
 	public void destory() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Mono<Void> onCommit() {
+		return null;
 	}
 }
