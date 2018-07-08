@@ -155,7 +155,7 @@ public class CookieProvider {
 	 */
 	public static void remove(HttpServerRequest request, HttpServerResponse response, String name, String path,
 			String domain) {
-		SimpleCookie cookie = new SimpleCookie(name, null);
+		SimpleCookie cookie = new SimpleCookie(name, Constants.deleted_cookie_value);
 		if (StringUtils.isNotEmpty(path))
 			cookie.setPath(path);
 		if (StringUtils.isNotEmpty(domain))

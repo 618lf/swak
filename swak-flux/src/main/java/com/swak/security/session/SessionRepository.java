@@ -1,6 +1,5 @@
-package com.swak.security.principal;
+package com.swak.security.session;
 
-import com.swak.reactivex.transport.http.Principal;
 import com.swak.reactivex.transport.http.Session;
 
 import reactor.core.publisher.Mono;
@@ -14,10 +13,12 @@ public interface SessionRepository {
 	void setSessionTimeout(int sessionTimeout);
 	
 	/**
-	 * 创建一个Session， 指定身份
-	 * @param session
+	 * 创建一个Session
+	 * @param request
+	 * @param response
+	 * @return
 	 */
-	Mono<Session> createSession(Principal principal, boolean authenticated);
+	Mono<Session> createSession();
 	
 	/**
 	 * 返回一个Session

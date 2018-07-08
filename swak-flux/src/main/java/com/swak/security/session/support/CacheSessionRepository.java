@@ -1,4 +1,4 @@
-package com.swak.security.principal.support;
+package com.swak.security.session.support;
 
 import java.util.Map;
 import java.util.Set;
@@ -11,8 +11,8 @@ import com.swak.cache.collection.AsyncMultiMap;
 import com.swak.executor.Workers;
 import com.swak.reactivex.transport.http.Principal;
 import com.swak.reactivex.transport.http.Session;
-import com.swak.security.principal.NoneSession;
-import com.swak.security.principal.SessionRepository;
+import com.swak.security.session.NoneSession;
+import com.swak.security.session.SessionRepository;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 
@@ -23,7 +23,8 @@ import reactor.core.publisher.Mono;
  * @author lifeng
  */
 public class CacheSessionRepository implements SessionRepository {
-
+	
+	private final AsyncMultiMap<String, Object> _cache;
 	private String SESSION_ATTR_PREFIX = "attr:";
 	private String CREATION_TIME_ATTR = "ct";
 	private String LASTACCESSED_TIME_ATTR = "lat";
@@ -31,7 +32,6 @@ public class CacheSessionRepository implements SessionRepository {
 	private String AUTHENTICATED_ATTR = "authed";
 	private String RUNASPRINCIPALS_ATTR = "rps";
 	private int sessionTimeout = 1800;
-	private AsyncMultiMap<String, Object> _cache;
 	
 	public CacheSessionRepository(AsyncMultiMap<String, Object> _cache) {
 		this._cache = _cache.expire(sessionTimeout).complex();
@@ -45,13 +45,11 @@ public class CacheSessionRepository implements SessionRepository {
 	 * 创建session
 	 */
 	@Override
-	public Mono<Session> createSession(Principal principal, boolean authenticated) {
+	public Mono<Session> createSession() {
 		CacheSession session = new CacheSession(UUID.randomUUID().toString());
-		session.principal = principal;
-		session.authenticated = authenticated;
 		return session.saveDelta();
 	}
-
+	
 	/**
 	 * 获取session
 	 */

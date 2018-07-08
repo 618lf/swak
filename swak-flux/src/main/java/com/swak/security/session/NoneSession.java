@@ -1,4 +1,4 @@
-package com.swak.security.principal;
+package com.swak.security.session;
 
 import java.util.Set;
 import java.util.Stack;
