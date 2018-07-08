@@ -27,6 +27,7 @@ public class SessionProvider {
 
 	/**
 	 * 获取 session ， 如果 create 设置为 true ，则会创建一个session
+	 * 
 	 * @param create
 	 * @param request
 	 * @param response
@@ -36,7 +37,6 @@ public class SessionProvider {
 		Session session = SessionProvider.getSession(request, response);
 		if (session == null && create) {
 			session = sessionManager.createSession(request, response);
-			request.getSubject().setSession(session);
 		}
 		return session;
 	}

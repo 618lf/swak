@@ -62,6 +62,7 @@ public class HttpSessionManager {
 	 */
 	public Session createSession(HttpServerRequest request, HttpServerResponse response) {
 		Session session = sessionRepository.createSession();
+		request.getSubject().setSession(session);
 		this.writeCookie(request, response, session.getId());
 		return session;
 	}
