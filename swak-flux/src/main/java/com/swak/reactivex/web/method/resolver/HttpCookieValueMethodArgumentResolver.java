@@ -9,6 +9,7 @@ import org.springframework.core.convert.ConversionService;
 
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.annotation.CookieValue;
+import com.swak.utils.StringUtils;
 
 import io.netty.handler.codec.http.cookie.Cookie;
 
@@ -46,6 +47,8 @@ public class HttpCookieValueMethodArgumentResolver extends AbstractMethodArgumen
 			}
 			return result;
 		}
-		return webRequest.getCookie(parameter.getParameterName()).value();
+		CookieValue cookieValue = parameter.getParameterAnnotation(CookieValue.class);
+		Cookie cookie = webRequest.getCookie(StringUtils.defaultIfEmpty(cookieValue.value(), parameter.getParameterName()));
+		return cookie != null? cookie.value(): StringUtils.EMPTY;
 	}
 }

@@ -9,9 +9,11 @@ import org.springframework.core.convert.ConversionService;
 
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.annotation.RequestHeader;
+import com.swak.utils.StringUtils;
 
 /**
  * 支持方法中获取RequestHeader中的内容
+ * 
  * @author lifeng
  */
 public class RequestHeaderMethodArgumentResolver extends AbstractMethodArgumentResolver {
@@ -32,7 +34,7 @@ public class RequestHeaderMethodArgumentResolver extends AbstractMethodArgumentR
 	 * 如果是map 则直接返回所有的 header
 	 */
 	@Override
-	public Object resolveArgumentInternal(MethodParameter parameter, HttpServerRequest webRequest){
+	public Object resolveArgumentInternal(MethodParameter parameter, HttpServerRequest webRequest) {
 		if (Map.class.isAssignableFrom(parameter.getParameterType())) {
 			Map<String, String> result = new LinkedHashMap<String, String>();
 			for (Iterator<String> iterator = webRequest.getRequestHeaderNames(); iterator.hasNext();) {
@@ -44,7 +46,9 @@ public class RequestHeaderMethodArgumentResolver extends AbstractMethodArgumentR
 			}
 			return result;
 		} else {
-			return webRequest.getRequestHeader(parameter.getParameterName());
+			RequestHeader requestHeader = parameter.getParameterAnnotation(RequestHeader.class);
+			return webRequest
+					.getRequestHeader(StringUtils.defaultIfEmpty(requestHeader.value(), parameter.getParameterName()));
 		}
 	}
 }

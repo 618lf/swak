@@ -8,9 +8,11 @@ import org.springframework.core.convert.ConversionService;
 
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.annotation.PathVariable;
+import com.swak.utils.StringUtils;
 
 /**
  * PathVariable 的处理
+ * 
  * @author lifeng
  */
 public class PathVariableMethodArgumentResolver extends AbstractMethodArgumentResolver {
@@ -20,8 +22,7 @@ public class PathVariableMethodArgumentResolver extends AbstractMethodArgumentRe
 	}
 
 	/**
-	 * @PathVariable
-	 * 例如 /get/{name} == > @PathVariable String name
+	 * @PathVariable 例如 /get/{name} == > @PathVariable String name
 	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
@@ -32,11 +33,14 @@ public class PathVariableMethodArgumentResolver extends AbstractMethodArgumentRe
 	 * 解析出变量的值
 	 */
 	@Override
-	public Object resolveArgumentInternal(MethodParameter parameter, HttpServerRequest request){
+	public Object resolveArgumentInternal(MethodParameter parameter, HttpServerRequest request) {
 		Map<String, String> uriTemplateVars = request.getPathVariables();
 		if (Map.class.isAssignableFrom(parameter.getParameterType())) {
-			return uriTemplateVars != null? uriTemplateVars: Collections.emptyMap();
+			return uriTemplateVars != null ? uriTemplateVars : Collections.emptyMap();
 		}
-		return uriTemplateVars != null ? uriTemplateVars.get(parameter.getParameterName()) : Collections.emptyMap();
+		PathVariable pathVariable = parameter.getParameterAnnotation(PathVariable.class);
+		return uriTemplateVars != null
+				? uriTemplateVars.get(StringUtils.defaultIfEmpty(pathVariable.value(), parameter.getParameterName()))
+				: Collections.emptyMap();
 	}
 }

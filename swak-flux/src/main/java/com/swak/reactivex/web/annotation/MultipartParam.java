@@ -16,5 +16,9 @@ import java.lang.annotation.Target;
 @Documented
 public @interface MultipartParam {
 
+	/**
+	 * 默认的文件名称
+	 * @return
+	 */
     String value() default "file";
 }

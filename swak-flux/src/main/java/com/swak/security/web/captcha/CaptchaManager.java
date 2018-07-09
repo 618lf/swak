@@ -21,6 +21,7 @@ import com.swak.security.web.captcha.builder.JBuilder;
 import com.swak.security.web.captcha.builder.KBuilder;
 import com.swak.security.web.cookie.CookieProvider;
 import com.swak.utils.Ints;
+import com.swak.utils.StringUtils;
 
 /**
  * 验证码管理器
@@ -29,7 +30,7 @@ import com.swak.utils.Ints;
  */
 public class CaptchaManager {
 
-	private static String VALIDATE_CODE = "CAPTCHA-ETAG";
+	private static String VALIDATE_CODE = "captcha-etag";
 	private static String IMAGE_TYPE = "JPEG";
 	private static String TYPES = "ABCDEFGHJK";
 
@@ -106,10 +107,14 @@ public class CaptchaManager {
 	 * @param cCode
 	 * @return
 	 */
-	public static boolean check(String captcha, String cCode) {
-		if (captcha == null || cCode == null || captcha.isEmpty() || cCode.isEmpty() || captcha.length() <= 1) {
+	public static boolean check(HttpServerRequest request, HttpServerResponse response, String captcha) {
+		if (captcha == null || captcha.isEmpty() || captcha.length() <= 1) {
 			return false;
 		}
-		return captcha.equals(cCode);
+		String _captcha = CookieProvider.getAttribute(request, response, VALIDATE_CODE);
+		if (_captcha == null || _captcha.isEmpty() || _captcha.length() <= 1) {
+			return false;
+		}
+		return StringUtils.equalsIgnoreCase(captcha, _captcha);
 	}
 }

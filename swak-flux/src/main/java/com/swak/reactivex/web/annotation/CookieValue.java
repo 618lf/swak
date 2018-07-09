@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.swak.utils.StringUtils;
+
 /**
  * 参数级别
  * @author lifeng
@@ -13,4 +15,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface CookieValue {}
+public @interface CookieValue {
+	/**
+	 * 可以设置值
+	 * @return
+	 */
+	String value() default StringUtils.EMPTY;
+}
