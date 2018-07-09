@@ -724,15 +724,15 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
-	 * 输出流
+	 * 注意： 每次调用都会清空数据
 	 * 
 	 * @return
 	 */
 	public OutputStream getOutputStream() {
+		this.content.clear();
 		if (os != null) {
-			this.content.clear();
 			IOUtils.closeQuietly(os);
-		}
+		} 
 		os = new ByteBufOutputStream(this.content);
 		return os;
 	}
