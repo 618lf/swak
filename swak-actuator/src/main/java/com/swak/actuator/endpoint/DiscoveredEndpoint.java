@@ -1,7 +1,5 @@
 package com.swak.actuator.endpoint;
 
-import com.swak.actuator.endpoint.annotation.EndpointDiscoverer;
-
 public interface DiscoveredEndpoint<O extends Operation> extends ExposableEndpoint<O> {
 
 	/**

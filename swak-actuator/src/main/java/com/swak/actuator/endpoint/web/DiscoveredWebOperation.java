@@ -2,7 +2,7 @@ package com.swak.actuator.endpoint.web;
 
 import com.swak.Constants;
 import com.swak.actuator.endpoint.AbstractDiscoveredOperation;
-import com.swak.actuator.endpoint.annotation.EndpointDiscoverer.EndpointBean;
+import com.swak.actuator.endpoint.EndpointDiscoverer.EndpointBean;
 import com.swak.actuator.endpoint.invoke.OperationMethod;
 import com.swak.actuator.endpoint.invoke.ReflectiveOperationInvoker;
 import com.swak.utils.StringUtils;

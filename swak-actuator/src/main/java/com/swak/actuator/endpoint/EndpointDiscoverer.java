@@ -1,4 +1,4 @@
-package com.swak.actuator.endpoint.annotation;
+package com.swak.actuator.endpoint;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -23,9 +23,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.swak.actuator.endpoint.EndpointsSupplier;
-import com.swak.actuator.endpoint.ExposableEndpoint;
-import com.swak.actuator.endpoint.Operation;
+import com.swak.actuator.endpoint.annotation.Endpoint;
 import com.swak.actuator.endpoint.invoke.OperationMethod;
 import com.swak.actuator.endpoint.invoke.OperationParameterResoler;
 import com.swak.actuator.endpoint.invoke.ReflectiveOperationInvoker;

@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.springframework.context.ApplicationContext;
 
-import com.swak.actuator.endpoint.annotation.EndpointDiscoverer;
+import com.swak.actuator.endpoint.EndpointDiscoverer;
 import com.swak.actuator.endpoint.invoke.OperationParameterResoler;
 import com.swak.actuator.endpoint.invoke.ReflectiveOperationInvoker;
 

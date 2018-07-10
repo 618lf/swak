@@ -3,8 +3,8 @@ package com.swak.actuator.endpoint.web;
 import java.util.Collection;
 
 import com.swak.actuator.endpoint.AbstractDiscoveredEndpoint;
-import com.swak.actuator.endpoint.annotation.EndpointDiscoverer;
-import com.swak.actuator.endpoint.annotation.EndpointDiscoverer.EndpointBean;
+import com.swak.actuator.endpoint.EndpointDiscoverer;
+import com.swak.actuator.endpoint.EndpointDiscoverer.EndpointBean;
 
 public class DiscoveredWebEndpoint extends AbstractDiscoveredEndpoint<WebOperation> implements ExposableWebEndpoint {
 

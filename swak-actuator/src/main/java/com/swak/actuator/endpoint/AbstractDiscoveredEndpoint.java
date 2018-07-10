@@ -5,8 +5,7 @@ import java.util.Collection;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
-import com.swak.actuator.endpoint.annotation.EndpointDiscoverer;
-import com.swak.actuator.endpoint.annotation.EndpointDiscoverer.EndpointBean;
+import com.swak.actuator.endpoint.EndpointDiscoverer.EndpointBean;
 
 public abstract class AbstractDiscoveredEndpoint<O extends Operation> extends AbstractExposableEndpoint<O>
 		implements DiscoveredEndpoint<O> {
