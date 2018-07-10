@@ -377,7 +377,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 */
 	private void parseBody(FullHttpRequest request) {
 		// this.body = Unpooled.wrappedBuffer(ByteBufUtil.getBytes(request.content()));
-		this.body = request.content().copy();
+		this.body = request.content();
 	}
 
 	/**
@@ -909,8 +909,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.handler.apply(this, this).subscribe(this);
 		} catch (Exception e) {
 			this.onError(e);
-		} finally {
-			ReferenceCountUtil.release(request); 
 		}
 	}
 
