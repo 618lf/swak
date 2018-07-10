@@ -33,6 +33,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -87,11 +88,9 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		this.request = request;
 	}
 
-	// 通用
-	private ByteBuf content;
-
 	// -------- 请求 --------------------
 	private ByteBufInputStream is;
+	private ByteBuf body;
 	private String remoteAddress;
 	private String uri;
 	private String url;
@@ -372,11 +371,13 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 
 	/**
 	 * 解析 body 数据 先这样处理
+	 * 是否还有优化的方式
 	 * 
 	 * @param request
 	 */
 	private void parseBody(FullHttpRequest request) {
-		this.content = request.content();
+		// this.body = Unpooled.wrappedBuffer(ByteBufUtil.getBytes(request.content()));
+		this.body = request.content().copy();
 	}
 
 	/**
@@ -386,7 +387,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 */
 	public InputStream getInputStream() {
 		if (is == null) {
-			is = new ByteBufInputStream(content);
+			is = new ByteBufInputStream(body);
 		}
 		return is;
 	}
@@ -476,6 +477,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 
 	// -------------- 响应 -------------------
 	private ByteBufOutputStream os;
+	private ByteBuf content;
 	private File file = null;
 	private HttpHeaders responseHeaders = new DefaultHttpHeaders(false);
 	private Set<Cookie> responseCookies = new HashSet<>(4);
@@ -722,6 +724,16 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		this.responseCookies.add(nettyCookie);
 		return this;
 	}
+	
+	//********尝试这种方式是否可行**********
+	private void resetContent(int initialCapacity) {
+		if (this.content != null) {
+			ReferenceCountUtil.release(this.content); 
+			this.content = null;
+		}
+		this.content = PooledByteBufAllocator.DEFAULT.buffer(initialCapacity);
+	}
+	//************************
 
 	/**
 	 * 注意： 每次调用都会清空数据
@@ -729,7 +741,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @return
 	 */
 	public OutputStream getOutputStream() {
-		this.content.clear();
+		this.resetContent(256); // 取至netty 的默认值
 		if (os != null) {
 			IOUtils.closeQuietly(os);
 		} 
@@ -747,11 +759,8 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		if (content instanceof File) {
 			file = (File) content;
 		} else {
-			this.content.clear();
 			byte[] buffer = String.valueOf(content).getBytes(HttpConst.DEFAULT_CHARSET);
-			if (this.content.capacity() < buffer.length) {
-				this.content.capacity(buffer.length - this.content.capacity());
-			}
+			this.resetContent(buffer.length);
 			this.content.writeBytes(buffer);
 		}
 		return this;
@@ -900,6 +909,8 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.handler.apply(this, this).subscribe(this);
 		} catch (Exception e) {
 			this.onError(e);
+		} finally {
+			ReferenceCountUtil.release(request); 
 		}
 	}
 
@@ -935,7 +946,9 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.files.clear();
 			this.files = null;
 		}
-		this.content = null;
+		ReferenceCountUtil.release(this.body);
+		this.body = null;
+		this.content = null; // write to release
 		this.remoteAddress = null;
 		this.uri = null;
 		this.url = null;
