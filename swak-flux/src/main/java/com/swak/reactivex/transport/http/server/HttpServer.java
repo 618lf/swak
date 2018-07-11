@@ -88,6 +88,7 @@ public class HttpServer extends TcpServer {
 				if (properties.isSslOn()) {
 					this.customizeSsl(options);
 				}
+				options.logLevel(properties.getServerLogLevel());
 				options.loopResources(LoopResources.create(properties.getMode(), properties.getServerSelect(),
 						properties.getServerWorker(), properties.getName()));
 				options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, properties.getConnectTimeout());

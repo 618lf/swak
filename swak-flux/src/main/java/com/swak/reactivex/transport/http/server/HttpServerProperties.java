@@ -7,6 +7,7 @@ import com.swak.reactivex.transport.TransportMode;
 
 import io.netty.handler.codec.http.multipart.DiskAttribute;
 import io.netty.handler.codec.http.multipart.DiskFileUpload;
+import io.netty.handler.logging.LogLevel;
 
 /**
  * 服务器的默认配置
@@ -18,6 +19,7 @@ public class HttpServerProperties {
 
 	private String name = "SWAK-HTTP-SERVER";
 	private TransportMode mode = TransportMode.NIO;
+	private LogLevel serverLogLevel = LogLevel.ERROR;
 	private int port = 8888;
 	private int connectTimeout = 30000;
 	private String host = "localhost";
@@ -80,6 +82,14 @@ public class HttpServerProperties {
 
 	public void setMode(TransportMode mode) {
 		this.mode = mode;
+	}
+
+	public LogLevel getServerLogLevel() {
+		return serverLogLevel;
+	}
+
+	public void setServerLogLevel(LogLevel serverLogLevel) {
+		this.serverLogLevel = serverLogLevel;
 	}
 
 	public int getPort() {

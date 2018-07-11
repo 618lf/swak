@@ -13,6 +13,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
@@ -22,6 +24,7 @@ public class ServerOptions extends NettyOptions<ServerBootstrap> {
 
 	private final InetSocketAddress localAddress;
 	private EventLoop dateServer;
+	private LogLevel logLevel;
 
 	/**
 	 * Build a new {@link ServerOptions}.
@@ -33,6 +36,7 @@ public class ServerOptions extends NettyOptions<ServerBootstrap> {
 		} else {
 			this.localAddress = new InetSocketAddress(builder.host, builder.port);
 		}
+		this.logLevel = builder.logLevel;
 	}
 
 	public final InetSocketAddress getAddress() {
@@ -43,6 +47,10 @@ public class ServerOptions extends NettyOptions<ServerBootstrap> {
 		return dateServer;
 	}
 
+	public final LogLevel getLogLevel() {
+		return logLevel;
+	}
+
 	/**
 	 * 复制一份
 	 * 
@@ -50,8 +58,15 @@ public class ServerOptions extends NettyOptions<ServerBootstrap> {
 	 */
 	public ServerBootstrap get() {
 		ServerBootstrap b = super.get();
+		serverLoghandler(b);
 		groupAndChannel(b);
 		return b;
+	}
+
+	final void serverLoghandler(ServerBootstrap bootstrap) {
+		if (this.getLogLevel() != null) {
+			bootstrap.handler(new LoggingHandler(this.getLogLevel()));
+		}
 	}
 
 	final void groupAndChannel(ServerBootstrap bootstrap) {
@@ -68,6 +83,7 @@ public class ServerOptions extends NettyOptions<ServerBootstrap> {
 
 		private String host;
 		private int port;
+		private LogLevel logLevel;
 
 		protected Builder(ServerBootstrap bootstrapTemplate) {
 			super(bootstrapTemplate);
@@ -78,8 +94,7 @@ public class ServerOptions extends NettyOptions<ServerBootstrap> {
 			bootstrap.option(ChannelOption.SO_REUSEADDR, true).option(ChannelOption.SO_BACKLOG, 1000)
 					.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 					.childOption(ChannelOption.SO_RCVBUF, 1024 * 1024).childOption(ChannelOption.SO_SNDBUF, 1024 * 1024)
-					.childOption(ChannelOption.SO_KEEPALIVE, true)
-					.childOption(ChannelOption.TCP_NODELAY, true)
+					.childOption(ChannelOption.SO_KEEPALIVE, true).childOption(ChannelOption.TCP_NODELAY, true)
 					.childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, 30000);
 		}
 
@@ -109,6 +124,17 @@ public class ServerOptions extends NettyOptions<ServerBootstrap> {
 		 */
 		public final Builder port(int port) {
 			this.port = Objects.requireNonNull(port, "port");
+			return this;
+		}
+
+		/**
+		 * set server log level
+		 * 
+		 * @param logLevel
+		 * @return
+		 */
+		public final Builder logLevel(LogLevel logLevel) {
+			this.logLevel = Objects.requireNonNull(logLevel, "logLevel");
 			return this;
 		}
 
