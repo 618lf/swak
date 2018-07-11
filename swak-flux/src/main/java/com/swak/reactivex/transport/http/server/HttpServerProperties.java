@@ -20,6 +20,7 @@ public class HttpServerProperties {
 	private String name = "SWAK-HTTP-SERVER";
 	private TransportMode mode = TransportMode.NIO;
 	private LogLevel serverLogLevel = LogLevel.ERROR;
+	private boolean threadCache = true;
 	private int port = 8888;
 	private int connectTimeout = 30000;
 	private String host = "localhost";
@@ -90,6 +91,13 @@ public class HttpServerProperties {
 
 	public void setServerLogLevel(LogLevel serverLogLevel) {
 		this.serverLogLevel = serverLogLevel;
+	}
+	public boolean isThreadCache() {
+		return threadCache;
+	}
+
+	public void setThreadCache(boolean threadCache) {
+		this.threadCache = threadCache;
 	}
 
 	public int getPort() {

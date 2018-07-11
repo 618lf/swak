@@ -48,7 +48,7 @@ public class PoolAllocatorEndpoint {
 
 		return metrics;
 	}
-
+	
 	private Map<String, Object> metricsOfPoolArena(final PoolArenaMetric poolArenaMetric) {
 		final Map<String, Object> metrics = new HashMap<>();
 
@@ -304,5 +304,47 @@ public class PoolAllocatorEndpoint {
 
 	private int activeAllocationsInBytes(final PoolChunkMetric chunkMetric) {
 		return chunkMetric.chunkSize() - chunkMetric.freeBytes();
+	}
+	
+	/**
+	 * 只显示重要的指标
+	 * @return
+	 */
+	@Operation
+	public Map<String, Object> important_metrics() {
+		final PooledByteBufAllocatorMetric allocatorMetric = PooledByteBufAllocator.DEFAULT.metric();
+		final Map<String, Object> metrics = new HashMap<>();
+		{
+			int idx = 0;
+			for (PoolArenaMetric poolArenaMetric : allocatorMetric.directArenas()) {
+				metrics.put("1_DirectArena[" + idx++ + "]", important_metricsOfPoolArena(poolArenaMetric));
+			}
+		}
+		{
+			int idx = 0;
+			for (PoolArenaMetric poolArenaMetric : allocatorMetric.heapArenas()) {
+				metrics.put("2_HeapArena[" + idx++ + "]", important_metricsOfPoolArena(poolArenaMetric));
+			}
+		}
+
+		return metrics;
+	}
+	
+	private Map<String, Object> important_metricsOfPoolArena(final PoolArenaMetric poolArenaMetric) {
+		final Map<String, Object> metrics = new HashMap<>();
+		/**
+		 * Return the number of allocations done via the arena. This includes all sizes.
+		 */
+		metrics.put("2_0_numAllocations", poolArenaMetric.numAllocations());
+		/**
+		 * Return the number of deallocations done via the arena. This includes all
+		 * sizes.
+		 */
+		metrics.put("3_0_numDeallocations", poolArenaMetric.numDeallocations());
+		/**
+		 * Return the number of currently active allocations.
+		 */
+		metrics.put("4_0_numActiveAllocations", poolArenaMetric.numActiveAllocations());
+		return metrics;
 	}
 }

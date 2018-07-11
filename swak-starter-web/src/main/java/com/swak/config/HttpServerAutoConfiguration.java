@@ -42,6 +42,12 @@ public class HttpServerAutoConfiguration {
 	 */
 	@Bean
 	public ReactiveServer reactiveServer(HttpHandler handler) {
+		// threadCache
+		if (!properties.isThreadCache()) {
+			System.setProperty("io.netty.allocator.tinyCacheSize", "0");
+			System.setProperty("io.netty.allocator.smallCacheSize", "0");
+			System.setProperty("io.netty.allocator.normalCacheSize", "0");
+		}
 		// 真实的服务器，用于提供 http 服务
 		HttpServer httpServer = HttpServer.build(properties);
 		return new ReactiveServer(httpServer, handler);
