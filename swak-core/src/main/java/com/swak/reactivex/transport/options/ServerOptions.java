@@ -134,7 +134,7 @@ public class ServerOptions extends NettyOptions<ServerBootstrap> {
 		 * @return
 		 */
 		public final Builder logLevel(LogLevel logLevel) {
-			this.logLevel = Objects.requireNonNull(logLevel, "logLevel");
+			this.logLevel = logLevel;
 			return this;
 		}
 

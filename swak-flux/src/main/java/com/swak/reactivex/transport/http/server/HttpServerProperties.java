@@ -8,6 +8,7 @@ import com.swak.reactivex.transport.TransportMode;
 import io.netty.handler.codec.http.multipart.DiskAttribute;
 import io.netty.handler.codec.http.multipart.DiskFileUpload;
 import io.netty.handler.logging.LogLevel;
+import io.netty.util.ResourceLeakDetector.Level;
 
 /**
  * 服务器的默认配置
@@ -19,7 +20,8 @@ public class HttpServerProperties {
 
 	private String name = "SWAK-HTTP-SERVER";
 	private TransportMode mode = TransportMode.NIO;
-	private LogLevel serverLogLevel = LogLevel.ERROR;
+	private LogLevel serverLogLevel = null;
+	private Level leakDetectionLevel = Level.DISABLED;
 	private boolean threadCache = true;
 	private int port = 8888;
 	private int connectTimeout = 30000;
@@ -87,6 +89,14 @@ public class HttpServerProperties {
 
 	public LogLevel getServerLogLevel() {
 		return serverLogLevel;
+	}
+
+	public Level getLeakDetectionLevel() {
+		return leakDetectionLevel;
+	}
+
+	public void setLeakDetectionLevel(Level leakDetectionLevel) {
+		this.leakDetectionLevel = leakDetectionLevel;
 	}
 
 	public void setServerLogLevel(LogLevel serverLogLevel) {

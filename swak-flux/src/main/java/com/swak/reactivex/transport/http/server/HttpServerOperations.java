@@ -35,6 +35,8 @@ import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
@@ -835,32 +837,32 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			return;
 		}
 
-		// 普通的请求输出
+		// render response
 		HttpResponse response = this.render();
-		boolean keepAlive = isKeepAlive();
-
-		// see HttpServerHandler.write
-		// if (!keepAlive) {
-		// channel().writeAndFlush(_response).addListener(ChannelFutureListener.CLOSE);
-		// } else {
-		// _response.headers().set(HttpHeaderNames.CONNECTION,
-		// HttpHeaderValues.KEEP_ALIVE);
-		// channel().writeAndFlush(_response);
-		// }
-
-		// 是否关闭有 HttpServerHandler.write 添加了判断
-		if (!keepAlive) {
-			response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-		}
 
 		// commit session
 		Session session = this.getSubject().getSession();
 		if (session != null) {
 			session.onCommit().doOnSuccessOrError((s, e) -> {
-				channel().writeAndFlush(response);
+				this.write(response);
 			});
 		} else {
-			channel().writeAndFlush(response);
+			this.write(response);
+		}
+	}
+	
+	/**
+	 * 输出数据，并设置是否关闭连接
+	 * @param response
+	 */
+	protected void write(HttpResponse response) {
+		boolean isKeepAlive = isKeepAlive();
+		if (!!isKeepAlive) {
+			response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+		}
+		ChannelFuture future = channel().writeAndFlush(response);
+		if (!isKeepAlive) {
+			future.addListener(ChannelFutureListener.CLOSE);
 		}
 	}
 

@@ -4,7 +4,6 @@ import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
 
 import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.util.ReferenceCountUtil;
@@ -35,10 +34,6 @@ public class HttpServerHandler extends ChannelDuplexHandler {
 	 */
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-//		ChannelOperations<?,?> ops = ChannelOperations.get(ctx.channel());
-//		if (ops != null) {
-//			ops.onChannelClose();
-//		}
 		super.channelInactive(ctx);
 		context.terminateChannel(ctx.channel());
 	}
@@ -65,7 +60,7 @@ public class HttpServerHandler extends ChannelDuplexHandler {
 	 */
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-		promise.addListener(ChannelFutureListener.CLOSE);
+		// promise.addListener(ChannelFutureListener.CLOSE);
 		super.write(ctx, msg, promise);
 	}
 
