@@ -333,6 +333,10 @@ public class PoolAllocatorEndpoint {
 	private Map<String, Object> important_metricsOfPoolArena(final PoolArenaMetric poolArenaMetric) {
 		final Map<String, Object> metrics = new HashMap<>();
 		/**
+		 * Returns the number of thread caches backed by this arena.
+		 */
+		metrics.put("1_numThreadCaches", poolArenaMetric.numThreadCaches());
+		/**
 		 * Return the number of allocations done via the arena. This includes all sizes.
 		 */
 		metrics.put("2_0_numAllocations", poolArenaMetric.numAllocations());
