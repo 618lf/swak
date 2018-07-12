@@ -85,7 +85,7 @@ public class EBuilder extends AbstractBuilder {
 	 */
 	private void drawCodeString(Graphics g, String code) {
 		for (int i = 0; i < codeLength; i++) {
-			g.setColor(ColorUtil.randomColor());
+			g.setColor(this.getRandColor());
 			g.drawString(String.valueOf(code.charAt(i)), (i + 1) * 15, 16);
 		}
 	}

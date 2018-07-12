@@ -43,7 +43,7 @@ public class CaptchaManager {
 		return getBuilder().build();
 	}
 
-	private static Builder getBuilder() {
+	public static Builder getBuilder() {
 		int num = Ints.random(TYPES.length());
 		char type = TYPES.charAt(num);
 		switch (type) {

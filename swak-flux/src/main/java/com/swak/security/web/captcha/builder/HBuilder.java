@@ -2,8 +2,6 @@ package com.swak.security.web.captcha.builder;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 
 import com.swak.security.web.captcha.Captcha;
@@ -33,7 +31,7 @@ public class HBuilder extends AbstractBuilder {
 		Graphics g = bi.getGraphics();
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, width, height);
-		g.setColor(ColorUtil.randomColor());
+		g.setColor(this.getRandColor());
 		// 绘制波浪线
 		drawWave(g);
 		// 绘制随机字符
@@ -52,7 +50,7 @@ public class HBuilder extends AbstractBuilder {
 		g.setFont(font);
 		for (int i = 0; i < codeLength; i++) {
 			g.translate(random.nextInt(10), random.nextInt(4));
-			g.setColor(ColorUtil.randomColor());
+			g.setColor(this.getRandColor());
 			g.drawString(String.valueOf(code.charAt(i)), 13 * i, 16);
 		}
 	}
@@ -63,14 +61,14 @@ public class HBuilder extends AbstractBuilder {
 	 * @param g
 	 */
 	private void drawWave(Graphics g) {
-		GeneralPath gp = new GeneralPath();
-		gp.moveTo(0, height / 2);
-		Graphics2D g2d = (Graphics2D) g;
-		for (double i = 0; i <= 8 * Math.PI; i += 0.0001 * Math.PI) {
-			gp.lineTo(10 * i, height / 2 + 5 * Math.sin(2 * i));
+		// 加入干扰线条
+		for (int i = 0; i < 10; i++) {
+			g.setColor(getRandColor(40, 150));
+			int x = random.nextInt(width);
+			int y = random.nextInt(height);
+			int x1 = random.nextInt(width);
+			int y1 = random.nextInt(height);
+			g.drawLine(x, y, x1, y1);
 		}
-		g2d.draw(gp);
-		g2d.draw(gp);
 	}
-
 }

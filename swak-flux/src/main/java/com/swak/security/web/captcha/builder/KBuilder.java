@@ -3,7 +3,6 @@ package com.swak.security.web.captcha.builder;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 
 import com.swak.security.web.captcha.Captcha;
@@ -60,13 +59,15 @@ public class KBuilder extends AbstractBuilder {
 	 * @param g
 	 */
 	private void drawLines(Graphics g) {
-		GeneralPath gp = new GeneralPath();
-		gp.moveTo(0, height / 2);
-		Graphics2D g2d = (Graphics2D) g;
-		for (double i = 0; i <= 8 * Math.PI; i += 0.0001 * Math.PI) {
-			gp.lineTo(10 * i, height / 2 + 5 * Math.sin(2 * i));
+		// 加入干扰线条
+		for (int i = 0; i < 10; i++) {
+			g.setColor(getRandColor(40, 150));
+			int x = random.nextInt(width);
+			int y = random.nextInt(height);
+			int x1 = random.nextInt(width);
+			int y1 = random.nextInt(height);
+			g.drawLine(x, y, x1, y1);
 		}
-		g2d.draw(gp);
 	}
 
 	/**
@@ -87,7 +88,7 @@ public class KBuilder extends AbstractBuilder {
 			g2d.setColor(Color.green);
 			g2d.fillRect((i + 1) * 15, 5, 10, 12);
 			// 随机字体颜色
-			g2d.setColor(ColorUtil.randomColor());
+			g2d.setColor(this.getRandColor());
 			g2d.drawString(String.valueOf(code.charAt(i)), (i + 1) * 15, 20);
 			// 恢复角度
 			g2d.rotate(-rot, (i + 1) * 15, 10);

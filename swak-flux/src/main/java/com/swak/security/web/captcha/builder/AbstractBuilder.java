@@ -1,5 +1,6 @@
 package com.swak.security.web.captcha.builder;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.util.Random;
@@ -47,4 +48,30 @@ public abstract class AbstractBuilder implements Builder {
 	 * @return 返回验证码图像。
 	 */
 	public abstract BufferedImage generateImage(Captcha captcha);
+	
+	/**
+	 * 获得颜色
+	 * @param fc
+	 * @param bc
+	 * @return
+	 */
+	protected Color getRandColor(int fc, int bc) {
+		int f = fc;
+		int b = bc;
+		if (f > 255) {
+			f = 255;
+		}
+		if (b > 255) {
+			b = 255;
+		}
+		return new Color(f + random.nextInt(b - f), f + random.nextInt(b - f), f + random.nextInt(b - f));
+	}
+	
+	/**
+	 * 获得随即颜色
+	 * @return
+	 */
+	protected Color getRandColor() {
+        return new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+    }
 }

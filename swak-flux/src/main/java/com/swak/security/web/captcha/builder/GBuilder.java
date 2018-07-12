@@ -64,7 +64,7 @@ public class GBuilder extends AbstractBuilder {
 		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
 		Graphics g = bi.getGraphics();
 		g.fillRect(0, 0, width, height);
-		g.setColor(ColorUtil.randomColor());
+		g.setColor(this.getRandColor());
 		// 绘制随机字符
 		drawCodeString(g, code.getCode());
 		g.dispose();
@@ -84,7 +84,7 @@ public class GBuilder extends AbstractBuilder {
 		g.setFont(font);
 		for (int i = 0; i < codeLength; i++) {
 			g.translate(random.nextInt(3), random.nextInt(3));
-			g.setColor(ColorUtil.randomColor());
+			g.setColor(this.getRandColor());
 			g.drawString(String.valueOf(code.charAt(i)), 13 * i, 16);
 		}
 	}

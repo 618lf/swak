@@ -32,7 +32,7 @@ public class CBuilder extends AbstractBuilder {
 		Graphics g = bi.getGraphics();
 		g.setColor(Color.white);
 		g.fillRect(0, 0, width, height);
-		g.setColor(ColorUtil.randomColor());
+		g.setColor(this.getRandColor());
 		// 绘制随机字符
 		drawCodeString(g, code.getCode());
 		g.dispose();
@@ -46,7 +46,7 @@ public class CBuilder extends AbstractBuilder {
 		g.setFont(font);
 		for (int i = 0; i < codeLength; i++) {
 			g.translate(random.nextInt(10), random.nextInt(4));
-			g.setColor(ColorUtil.randomColor());
+			g.setColor(this.getRandColor());
 			g.drawString(String.valueOf(code.charAt(i)), 13 * i, 16);
 		}
 	}

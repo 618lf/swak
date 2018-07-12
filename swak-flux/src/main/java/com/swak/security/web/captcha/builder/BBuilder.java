@@ -42,7 +42,7 @@ public class BBuilder extends AbstractBuilder {
 
 	private void drawCodeString(Graphics gd, String code) {
 		for (int i = 0; i < codeLength; i++) {
-			gd.setColor(ColorUtil.randomColor());
+			gd.setColor(this.getRandColor());
 			gd.drawString(String.valueOf(code.charAt(i)), (i + 1) * 15, 16);
 		}
 	}
