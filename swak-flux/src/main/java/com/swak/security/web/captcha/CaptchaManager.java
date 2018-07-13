@@ -108,8 +108,9 @@ public class CaptchaManager {
 				IOUtils.closeQuietly(out);
 			}
 		});
-		return CookieProvider.setAttribute(request, response, VALIDATE_CODE, captcha.getResult())
-			   .thenCompose(v -> task);
+		return task.thenCompose(v ->{
+			return CookieProvider.setAttribute(request, response, VALIDATE_CODE, captcha.getResult());
+		});
 	}
 
 	/**
