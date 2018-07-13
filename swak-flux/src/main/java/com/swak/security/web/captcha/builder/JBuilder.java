@@ -18,6 +18,11 @@ import javax.imageio.ImageIO;
 
 import com.swak.security.web.captcha.Captcha;
 
+/**
+ * 效率慢
+ * @author lifeng
+ */
+@Deprecated
 public class JBuilder extends AbstractBuilder {
 
 	// 使用到Algerian字体，系统里没有的话需要安装字体，字体只显示大写，去掉了1,0,i,o几个容易混淆的字符

@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import com.swak.security.web.captcha.Captcha;
 
 /**
- *
+ * 效率慢
  * <pre>
  * 作者：张小八
  * 项目：SpringWind-CaptchaSystem
@@ -16,6 +16,7 @@ import com.swak.security.web.captcha.Captcha;
  * 备注：波浪线,背景色块,随机字符色块旋转
  * </pre>
  */
+@Deprecated
 public class KBuilder extends AbstractBuilder {
 
 	// 用于生产的母字符串
