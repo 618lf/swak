@@ -1,9 +1,10 @@
 package com.swak.security.web.cookie;
 
 import java.util.UUID;
+import java.util.concurrent.CompletionStage;
 
 import com.swak.Constants;
-import com.swak.cache.Cache;
+import com.swak.cache.AsyncCache;
 import com.swak.cache.CacheManagers;
 import com.swak.codec.Encodes;
 import com.swak.reactivex.transport.http.SimpleCookie;
@@ -27,11 +28,11 @@ import io.netty.handler.codec.http.cookie.Cookie;
 public class CookieProvider {
 	
 	
-	// 内部的一个引用,本身是线程安全的
-	private static Cache<Object> COOKIES_CACHE;
-	private static Cache<Object> getCache() {
+	// 异步操作
+	private static AsyncCache<Object> COOKIES_CACHE;
+	private static AsyncCache<Object> getCache() {
 	   if (COOKIES_CACHE == null) {
-		   COOKIES_CACHE = CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times);
+		   COOKIES_CACHE = CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times).async();
 	   }
 	   return COOKIES_CACHE;
 	}
@@ -44,14 +45,16 @@ public class CookieProvider {
 	 * @param key
 	 * @param value
 	 */
-	public static void setAttribute(HttpServerRequest request, HttpServerResponse response, String key, Object value) {
+	public static CompletionStage<Void> setAttribute(HttpServerRequest request, HttpServerResponse response, String key, Object value) {
 		String validateCodeKey = CookieProvider.getCookie(request, response, key, false);
 		if (StringUtils.isBlank(validateCodeKey)) {
 			validateCodeKey = UUID.randomUUID().toString();
-			CookieProvider.setCookie(request, response, key, validateCodeKey, Long.MIN_VALUE, null, null, false);
 		}
-		TokenProvider.setHeader(request, response, key, validateCodeKey);
-		getCache().putObject(validateCodeKey, value);
+		final String cacheKey = validateCodeKey;
+		return getCache().putObject(cacheKey, value).thenAccept(s -> {
+			TokenProvider.setHeader(request, response, key, cacheKey);
+			CookieProvider.setCookie(request, response, key, cacheKey, Long.MIN_VALUE, null, null, false);
+		});
 	}
 
 	/**
@@ -62,15 +65,14 @@ public class CookieProvider {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T getAttribute(HttpServerRequest request, HttpServerResponse response, String key) {
+	public static <T> CompletionStage<T> getAttribute(HttpServerRequest request, HttpServerResponse response, String key) {
 		try {
 			String _key = CookieProvider.getCookie(request, response, key, false);
 			if (StringUtils.isBlank(_key)) {
 				_key = TokenProvider.getHeader(request, response, key);
 			}
 			if (StringUtils.isNotBlank(_key)) {
-				Object obj = getCache().getObject(_key);
-				return (T) (obj);
+				return (CompletionStage<T>)getCache().getObject(_key);
 			}
 			return null;
 		} catch (Exception e) {
@@ -86,8 +88,8 @@ public class CookieProvider {
 	 * @param key
 	 * @return
 	 */
-	public static <T> T getAndClearAttribute(HttpServerRequest request, HttpServerResponse response, String key) {
-		T t = CookieProvider.getAttribute(request, response, key);
+	public static <T> CompletionStage<T> getAndClearAttribute(HttpServerRequest request, HttpServerResponse response, String key) {
+		CompletionStage<T> t = CookieProvider.getAttribute(request, response, key);
 		CookieProvider.removeAttribute(request, response, key);
 		return t;
 	}
