@@ -34,6 +34,7 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -479,7 +480,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 
 	// -------------- 响应 -------------------
 	private ByteBufOutputStream os;
-	private ByteBuf content;
+	private ByteBuf content = Unpooled.buffer(0);
 	private File file = null;
 	private HttpHeaders responseHeaders = new DefaultHttpHeaders(false);
 	private Set<Cookie> responseCookies = new HashSet<>(4);

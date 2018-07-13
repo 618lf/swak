@@ -3,6 +3,7 @@ package com.swak.cache.redis.operations;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
+import com.swak.cache.Cons;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.RedisUtils;
 
@@ -47,12 +48,9 @@ public class AsyncOperations {
 	 * @return
 	 */
 	public static CompletionStage<String> set(String key, byte[] value, int expire) {
-		return RedisUtils.async(connect -> {
-			byte[] _key = SafeEncoder.encode(key);
-			connect.set(_key, value);
-			connect.expire(_key, expire);
-			return null;
-		});
+		String script = Cons.PUT_LUA;
+		byte[][] values = new byte[][] {SafeEncoder.encode(key), value, SafeEncoder.encode(String.valueOf(expire))};
+		return AsyncOperations.runScript(script, ScriptOutputType.INTEGER, values).thenApply(s -> key);
 	}
 	
 	/**

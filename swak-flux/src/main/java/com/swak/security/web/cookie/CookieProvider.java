@@ -3,6 +3,7 @@ package com.swak.security.web.cookie;
 import java.util.UUID;
 
 import com.swak.Constants;
+import com.swak.cache.Cache;
 import com.swak.cache.CacheManagers;
 import com.swak.codec.Encodes;
 import com.swak.reactivex.transport.http.SimpleCookie;
@@ -24,6 +25,16 @@ import io.netty.handler.codec.http.cookie.Cookie;
  * @author root
  */
 public class CookieProvider {
+	
+	
+	// 内部的一个引用,本身是线程安全的
+	private static Cache<Object> COOKIES_CACHE;
+	private static Cache<Object> getCache() {
+	   if (COOKIES_CACHE == null) {
+		   COOKIES_CACHE = CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times);
+	   }
+	   return COOKIES_CACHE;
+	}
 
 	/**
 	 * 设置属性
@@ -40,8 +51,7 @@ public class CookieProvider {
 			CookieProvider.setCookie(request, response, key, validateCodeKey, Long.MIN_VALUE, null, null, false);
 		}
 		TokenProvider.setHeader(request, response, key, validateCodeKey);
-		CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times).putObject(validateCodeKey,
-				value);
+		getCache().putObject(validateCodeKey, value);
 	}
 
 	/**
@@ -59,8 +69,7 @@ public class CookieProvider {
 				_key = TokenProvider.getHeader(request, response, key);
 			}
 			if (StringUtils.isNotBlank(_key)) {
-				Object obj = CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times)
-						.getObject(_key);
+				Object obj = getCache().getObject(_key);
 				return (T) (obj);
 			}
 			return null;
@@ -93,7 +102,7 @@ public class CookieProvider {
 	public static void removeAttribute(HttpServerRequest request, HttpServerResponse response, String key) {
 		String _key = CookieProvider.getCookie(request, response, key, true);
 		if (StringUtils.isNotBlank(_key)) {
-			CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times).delete(_key);
+			getCache().delete(_key);
 		}
 	}
 

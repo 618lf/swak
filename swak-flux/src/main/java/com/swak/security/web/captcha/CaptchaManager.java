@@ -17,8 +17,6 @@ import com.swak.security.web.captcha.builder.EBuilder;
 import com.swak.security.web.captcha.builder.FBuilder;
 import com.swak.security.web.captcha.builder.GBuilder;
 import com.swak.security.web.captcha.builder.HBuilder;
-import com.swak.security.web.captcha.builder.JBuilder;
-import com.swak.security.web.captcha.builder.KBuilder;
 import com.swak.security.web.cookie.CookieProvider;
 import com.swak.utils.Ints;
 import com.swak.utils.StringUtils;
@@ -64,9 +62,9 @@ public class CaptchaManager {
 		case 'H':
 			return new HBuilder();
 		case 'J':
-			return new JBuilder();
+			return new HBuilder();
 		case 'K':
-			return new KBuilder();
+			return new HBuilder();
 		default:
 			return new ABuilder();
 		}

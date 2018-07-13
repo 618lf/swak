@@ -21,13 +21,6 @@ public interface CacheManager {
 	 */
 	<T> Cache<T> getCache(String name, int timeToIdle);
 	
-	/**
-	 * 创建一个缓存
-	 * @param name
-	 * @param timeToIdle
-	 * @return
-	 */
-	<T> Cache<T> createCache(String name, int timeToIdle);
 	
 	/**
 	 * 包括缓存

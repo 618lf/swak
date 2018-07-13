@@ -1,9 +1,5 @@
 package com.swak.cache;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.FutureTask;
-
 import com.swak.cache.redis.RedisCache;
 import com.swak.cache.redis.RedisCacheChannel;
 import com.swak.cache.redis.RedisLocalCache;
@@ -13,9 +9,6 @@ import com.swak.cache.redis.RedisLocalCache;
  * @author root
  */
 public abstract class AbstractCacheManager implements CacheManager {
-
-	@SuppressWarnings("rawtypes")
-	private final ConcurrentMap<String, FutureTask<Cache>> cacheMap = new ConcurrentHashMap<String, FutureTask<Cache>>(16);
 
 	/**
 	 * 获得本地缓存
@@ -34,26 +27,18 @@ public abstract class AbstractCacheManager implements CacheManager {
 	/**
 	 * 指定参数创建缓存
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public <T> Cache<T> getCache(String name, int timeToIdle) {
-		try {
-			FutureTask<Cache> fCache = cacheMap.get(name);
-			if (fCache != null) {
-				return fCache.get();
-			} else {
-				fCache = new FutureTask<Cache>(() -> this.createCache(name, timeToIdle));
-				FutureTask<Cache> _Cache = cacheMap.putIfAbsent(name, fCache);
-				if (_Cache == null) {
-					_Cache = fCache;
-					fCache.run();
-				}
-				return fCache.get();
-			}
-		}catch(Exception e) {
-			return null;
-		}
+		return this.createCache(name, timeToIdle);
 	}
+	
+	/**
+	 * 创建一个缓存
+	 * @param name
+	 * @param timeToIdle
+	 * @return
+	 */
+	protected abstract <T> Cache<T> createCache(String name, int timeToIdle);
 
 	/**
 	 * 将 cache 包裹为二级缓存

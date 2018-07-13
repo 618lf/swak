@@ -2,6 +2,7 @@ package com.swak.cache.redis.operations;
 
 import java.util.Map;
 
+import com.swak.cache.Cons;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.RedisUtils;
 
@@ -46,12 +47,10 @@ public class SyncOperations {
 	 * @return
 	 */
 	public static String set(String key, byte[] value, int expire) {
-		return RedisUtils.sync(connect -> {
-			byte[] _key = SafeEncoder.encode(key);
-			connect.set(_key, value);
-			connect.expire(_key, expire);
-			return null;
-		});
+		String script = Cons.PUT_LUA;
+		byte[][] values = new byte[][] {SafeEncoder.encode(key), value, SafeEncoder.encode(String.valueOf(expire))};
+		SyncOperations.runScript(script, ScriptOutputType.INTEGER, values);
+		return key;
 	}
 	
 	/**
@@ -64,7 +63,7 @@ public class SyncOperations {
 	}
 	
 	/**
-	 * del 
+	 * expire 
 	 * @param key
 	 * @return
 	 */
@@ -73,7 +72,7 @@ public class SyncOperations {
 	}
 	
 	/**
-	 * del 
+	 * exists 
 	 * @param key
 	 * @return
 	 */

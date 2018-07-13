@@ -7,6 +7,7 @@ package com.swak.cache;
 public class Cons {
 	
 	// 普通GET
+	public static String PUT_LUA = null;
 	public static String GET_LUA = null;
 	public static String LIST_GET_LUA = null;
 	public static String LIST_PUT_LUA = null;
@@ -19,6 +20,7 @@ public class Cons {
 	public static String EXISTS_LUA = null;
 	
 	static {
+		PUT_LUA = new StringBuilder().append("redis.call(\"SET\", KEYS[1], KEYS[2]); return redis.call(\"EXPIRE\", KEYS[1], KEYS[3]);").toString();
 		GET_LUA = new StringBuilder().append("redis.call(\"EXPIRE\", KEYS[1], KEYS[2]); return redis.call(\"GET\", KEYS[1]);").toString();
 		EXISTS_LUA = new StringBuilder().append("redis.call(\"EXPIRE\", KEYS[1], KEYS[2]); return redis.call(\"EXISTS\", KEYS[1]);").toString();
 	
