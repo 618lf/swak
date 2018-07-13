@@ -373,8 +373,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
-	 * 解析 body 数据 先这样处理
-	 * 是否还有优化的方式
+	 * 解析 body 数据 先这样处理 是否还有优化的方式
 	 * 
 	 * @param request
 	 */
@@ -480,7 +479,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 
 	// -------------- 响应 -------------------
 	private ByteBufOutputStream os;
-	private ByteBuf content = Unpooled.buffer(0);
+	private ByteBuf content = null;
 	private File file = null;
 	private HttpHeaders responseHeaders = new DefaultHttpHeaders(false);
 	private Set<Cookie> responseCookies = new HashSet<>(4);
@@ -727,16 +726,18 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		this.responseCookies.add(nettyCookie);
 		return this;
 	}
-	
-	//********尝试这种方式是否可行**********
+
+	// ********尝试这种方式是否可行**********
 	private void resetContent(int initialCapacity) {
 		if (this.content != null) {
-			ReferenceCountUtil.release(this.content); 
+			ReferenceCountUtil.release(this.content);
 			this.content = null;
 		}
-		this.content = PooledByteBufAllocator.DEFAULT.buffer(initialCapacity);
+		if (initialCapacity > 0) {
+			this.content = PooledByteBufAllocator.DEFAULT.buffer(initialCapacity);
+		}
 	}
-	//************************
+	// ************************
 
 	/**
 	 * 注意： 每次调用都会清空数据
@@ -744,10 +745,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @return
 	 */
 	public OutputStream getOutputStream() {
-		this.resetContent(256); // 取至netty 的默认值
+		this.resetContent(256);
 		if (os != null) {
 			IOUtils.closeQuietly(os);
-		} 
+		}
 		os = new ByteBufOutputStream(this.content);
 		return os;
 	}
@@ -761,6 +762,14 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		ObjectUtil.checkNotNull(content, "content cannot null");
 		if (content instanceof File) {
 			file = (File) content;
+		} else if (content instanceof ByteBuf) {
+			ByteBuf buffer = (ByteBuf) content;
+			this.resetContent(0); // 释放之前的资源
+			this.content = buffer;
+		} else if (content instanceof byte[]) {
+			byte[] buffer = (byte[]) content;
+			this.resetContent(buffer.length);
+			this.content.writeBytes(buffer);
 		} else {
 			byte[] buffer = String.valueOf(content).getBytes(HttpConst.DEFAULT_CHARSET);
 			this.resetContent(buffer.length);
@@ -792,6 +801,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	private HttpResponse render() {
 
 		// content
+		content = this.content == null ? Unpooled.EMPTY_BUFFER : this.content;
 		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, this.content);
 
 		// headers
@@ -851,9 +861,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.write(response);
 		}
 	}
-	
+
 	/**
 	 * 输出数据，并设置是否关闭连接
+	 * 
 	 * @param response
 	 */
 	protected void write(HttpResponse response) {

@@ -1,7 +1,6 @@
 package com.swak.security.web.captcha;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
@@ -18,22 +17,24 @@ import com.swak.security.web.captcha.builder.FBuilder;
 import com.swak.security.web.captcha.builder.GBuilder;
 import com.swak.security.web.captcha.builder.HBuilder;
 import com.swak.security.web.cookie.CookieProvider;
+import com.swak.utils.IOUtils;
 import com.swak.utils.Ints;
 import com.swak.utils.StringUtils;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
 
 /**
  * 验证码管理器
  * 
- * java 验证码的效率如下：
- * 生成：20w每秒
- * 存储：很慢5000/s
+ * java 验证码的效率如下： 生成：20w每秒 存储：很慢5000/s
  * 
- * 所以對於圖片的處理最好是使用lua 來做。
- * 如果堅持要用java来处理则，被列为耗时的api：
+ * 所以對於圖片的處理最好是使用lua 來做。 如果堅持要用java来处理则，被列为耗时的api：
  * 
- * 总结下lua下的图片处理：
- * 1. 验证码： 目前只有 lua-gd 这样一个lua 包，而且好久没更新.
- * 2. 图片处理到可以使用 imageMAGICK lua 或 im4java 这样的工具
+ * 总结下lua下的图片处理： 1. 验证码： 目前只有 lua-gd 这样一个lua 包，而且好久没更新. 2. 图片处理到可以使用 imageMAGICK
+ * lua 或 im4java 这样的工具
+ * 
  * @author lifeng
  */
 public class CaptchaManager {
@@ -89,11 +90,17 @@ public class CaptchaManager {
 	public static void image(HttpServerRequest request, HttpServerResponse response) {
 		Captcha captcha = build();
 		CookieProvider.setAttribute(request, response, VALIDATE_CODE, captcha.getResult());
-		OutputStream out = response.getOutputStream();
+
+		// 直接申请一个直接内存， OUT 的时候会释放
+		ByteBuf buf = Unpooled.directBuffer(1024);
+		ByteBufOutputStream out = new ByteBufOutputStream(buf);
 		try {
 			ImageIO.write(captcha.getImage(), IMAGE_TYPE, out);
+			response.buffer(buf);
 			response.mime(MimeType.getMimeType(IMAGE_TYPE));
 		} catch (IOException e) {
+		} finally {
+			IOUtils.closeQuietly(out);
 		}
 	}
 

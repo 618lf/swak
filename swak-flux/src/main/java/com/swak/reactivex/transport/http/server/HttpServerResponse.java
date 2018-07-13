@@ -174,7 +174,7 @@ public interface HttpServerResponse extends NettyOutbound, Closeable {
 
 	/**
 	 * 输出流
-	 * 
+	 * 暂时不支持这种写数据的方式，或者这种直接写道文件，然后通过文件做响应
 	 * @return
 	 */
 	OutputStream getOutputStream();
