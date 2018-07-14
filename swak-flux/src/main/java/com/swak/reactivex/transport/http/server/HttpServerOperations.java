@@ -635,9 +635,13 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	@Override
 	public HttpServerResponse accept() {
 		String acceptType = this.getRequestHeader(HttpHeaderNames.ACCEPT.toString());
-		if (!StringUtils.isBlank(acceptType) && StringUtils.contains(acceptType, "text/html")) {
+		if (StringUtils.isBlank(acceptType)) {
+			return this;
+		} else if (StringUtils.contains(acceptType, "application/json")) {
+			return this.json();
+		} else if (StringUtils.contains(acceptType, "text/html")) {
 			return this.html();
-		} else if (!StringUtils.isBlank(acceptType) && StringUtils.contains(acceptType, "text/plain")) {
+		} else if (StringUtils.contains(acceptType, "text/plain")) {
 			return this.text();
 		}
 		return this;
