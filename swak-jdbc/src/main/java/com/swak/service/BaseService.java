@@ -3,9 +3,15 @@ package com.swak.service;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.swak.entity.IdEntity;
 import com.swak.incrementer.IdGen;
@@ -24,10 +30,34 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	
 	protected static Logger logger = LoggerFactory.getLogger(BaseService.class);
     
+	/**
+	 * 用于提供编程式事务支持
+	 */
+	@Autowired
+	protected PlatformTransactionManager transactionManager;
+	
     /**
      * 在子类实现此函数,为下面的CRUD操作提供DAO.
      */
     protected abstract BaseDao<T, PK> getBaseDao();
+    
+    /**
+     * 提供事务支持 (加入的代码必须在一个线程中)
+     */
+    protected <U> U execute(Supplier<U> supplier) {
+    	DefaultTransactionDefinition def = new DefaultTransactionDefinition();  
+        def.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);  
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);  
+        TransactionStatus status = transactionManager.getTransaction(def);
+        try {
+        	U u = supplier.get();
+        	transactionManager.commit(status);
+        	return u;
+        } catch (RuntimeException e) {  
+        	transactionManager.rollback(status);  
+        	throw e;
+        }
+    }
     
     /**
      * 获取单个值
