@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jmx.export.MBeanExporter;
 
 import com.swak.actuator.pool.PoolAllocatorEndpoint;
+import com.swak.actuator.pool.ThreadPoolEndpoint;
 import com.swak.utils.Maps;
 
 /**
@@ -42,5 +43,16 @@ public class PoolEndpointAutoConfiguration {
 		beans.put("com.swak:name=pooledstats", endpoint);
 		mBeanExporter.setBeans(beans);
 		return mBeanExporter;
+	}
+	
+	/**
+	 * 通过 endpoint 来展示指标
+	 * 
+	 * @return
+	 */
+	@Bean
+	@ConditionalOnMissingBean
+	public ThreadPoolEndpoint threadPoolEndpoint() {
+		return new ThreadPoolEndpoint();
 	}
 }

@@ -82,4 +82,43 @@ public class ConfigableExecutor implements Executor {
 		}
 		return this;
 	}
+
+	// ------------------- 监控 --------------------------------
+	public Map<String, Object> metrics() {
+		Map<String, Object> metrics = Maps.newHashMap();
+		executors.keySet().stream().forEach(name -> {
+			Map<String, Object> one_metrics = Maps.newHashMap();
+			Executor executor = executors.get(name);
+			if (executor instanceof ThreadPoolExecutor) {
+				ThreadPoolExecutor _executor = (ThreadPoolExecutor) executor;
+				one_metrics.put("maxPoolSize", _executor.getMaximumPoolSize());
+				one_metrics.put("corePoolSize", _executor.getCorePoolSize());
+				one_metrics.put("poolSize", _executor.getPoolSize());
+				one_metrics.put("taskCount", _executor.getTaskCount());
+				one_metrics.put("activeCount", _executor.getActiveCount());
+				one_metrics.put("completedTaskCount", _executor.getCompletedTaskCount());
+				one_metrics.put("queueSize", _executor.getQueue().size());
+				one_metrics.put("largestPoolSize", _executor.getLargestPoolSize());
+			}
+			metrics.put(name, one_metrics);
+		});
+		return metrics;
+	}
+
+	public Map<String, Object> metrics(String name) {
+		Map<String, Object> one_metrics = Maps.newHashMap();
+		Executor executor = executors.get(name);
+		if (executor instanceof ThreadPoolExecutor) {
+			ThreadPoolExecutor _executor = (ThreadPoolExecutor) executor;
+			one_metrics.put("maxPoolSize", _executor.getMaximumPoolSize());
+			one_metrics.put("corePoolSize", _executor.getCorePoolSize());
+			one_metrics.put("poolSize", _executor.getPoolSize());
+			one_metrics.put("taskCount", _executor.getTaskCount());
+			one_metrics.put("activeCount", _executor.getActiveCount());
+			one_metrics.put("completedTaskCount", _executor.getCompletedTaskCount());
+			one_metrics.put("queueSize", _executor.getQueue().size());
+			one_metrics.put("largestPoolSize", _executor.getLargestPoolSize());
+		}
+		return one_metrics;
+	}
 }

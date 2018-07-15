@@ -39,7 +39,7 @@ import reactor.core.scheduler.Schedulers;
 public class Workers {
 
 	/** 线城池： 设置、获取 */
-	private static ConfigableExecutor executor;
+	public static ConfigableExecutor executor;
 	public static void executor(ConfigableExecutor executor) {
 		Workers.executor = executor;
 	}

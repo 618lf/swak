@@ -4,7 +4,6 @@ import static com.swak.Application.APP_LOGGER;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -60,13 +59,13 @@ public class ExecutorAutoConfiguration {
 
 		// 默认
 		if (properties.getWorkerThreads() != -1) {
-			ThreadPoolExecutor _executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(
-					properties.getWorkerThreads(), new NamedThreadFactory("SWAK-worker-default", true));
+			Executor _executor = Executors.newFixedThreadPool(properties.getWorkerThreads(),
+					new NamedThreadFactory("SWAK-worker-default", true));
 			executor.setExecutor(Constants.default_pool, _executor);
 		}
 
 		// 单个
-		Executor _executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("SWAK-worker-single", true));
+		Executor _executor = Executors.newFixedThreadPool(1, new NamedThreadFactory("SWAK-worker-single", true));
 		executor.setExecutor(Constants.single_pool, _executor);
 	}
 }
