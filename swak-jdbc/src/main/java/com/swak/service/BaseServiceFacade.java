@@ -1,7 +1,6 @@
 package com.swak.service;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import com.swak.persistence.Page;
 import com.swak.persistence.PageParameters;
@@ -21,14 +20,20 @@ public interface BaseServiceFacade<T, PK>{
 	 * @param id
 	 * @return
 	 */
-	public CompletableFuture<T> get(final PK id);
+	public T get(final PK id);
 	
+	/**
+	 * 获取所有值
+	 * @return
+	 */
+    public List<T> getAll();
+    
     /**
      * 条件查询
      * @param qc
      * @return
      */
-    public CompletableFuture<List<T>> queryByCondition(QueryCondition qc);
+    public List<T> queryByCondition(QueryCondition qc );
     
     /**
      * 分页查询
@@ -36,14 +41,14 @@ public interface BaseServiceFacade<T, PK>{
      * @param param
      * @return
      */
-    public CompletableFuture<Page> queryForPage(QueryCondition qc, PageParameters param);
+    public Page queryForPage(QueryCondition qc, PageParameters param);
     
     /**
      * 条件查询个数
      * @param qc
      * @return
      */
-    public CompletableFuture<Integer> countByCondition(QueryCondition qc);
+    public Integer countByCondition(QueryCondition qc);
     
     /**
      * 查询指定的页数
@@ -52,26 +57,26 @@ public interface BaseServiceFacade<T, PK>{
      * @param end
      * @return
      */
-    public CompletableFuture<List<T>> queryForLimitList(QueryCondition qc, int end);
+    public List<T> queryForLimitList(QueryCondition qc, int end);
     
     /**
      * 是否存在
      * @param id
      * @return
      */
-    public CompletableFuture<Boolean> exists(PK id);
+    public boolean exists(PK id);
     
     /**
      * 保存数据
      * @param t
      * @return
      */
-    public CompletableFuture<T> save(T entity);
+    public T save(T entity);
     
     /**
      * 保存数据
      * @param t
      * @return
      */
-    public CompletableFuture<Void> delete(List<T> entities);
+    public void delete(List<T> entities);
 }

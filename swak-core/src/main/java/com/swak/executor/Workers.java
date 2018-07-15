@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 
 import org.springframework.util.Assert;
 
+import com.swak.Constants;
+
 import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoSink;
@@ -17,6 +19,9 @@ import reactor.core.publisher.Operators;
 import reactor.core.scheduler.Schedulers;
 
 /**
+ * 
+ * 全局： 用来执行耗时的操作。例如：数据库、文件IO、耗时计算（生成图片）
+ * 
  * https://yq.aliyun.com/articles/591627
  * 
  * 通过线城池 executor来异步执行任务，提供不同的获取结果的方式
@@ -46,6 +51,19 @@ public class Workers {
 	public static Executor executor(String name) {
 		return executor.getExecutor(name);
 	}
+	// ----------------- 内置线程池执行代码 --------------------------
+    protected <U> CompletableFuture<U> execute(Supplier<U> supplier) {
+    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.default_pool));
+    }
+    protected <U> CompletableFuture<U> write(Supplier<U> supplier) {
+    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.write_pool));
+    }
+    protected <U> CompletableFuture<U> read(Supplier<U> supplier) {
+    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.read_pool));
+    }
+    protected <U> CompletableFuture<U> single(Supplier<U> supplier) {
+    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.single_pool));
+    }
 	// ----------------- 异步执行代码(命名线程池) --------------------------
 	/**
 	 * 异步执行代码 -- 有返回值

@@ -31,6 +31,7 @@ public class BaseDaoImpl<T, PK> implements BaseDao<T, PK>{
     protected final static String DELETE = "delete";
     protected final static String VERSION = "version";
     protected final static String GET = "get";
+    protected final static String GET_ALL = "getAll";
     protected final static String FIND_BY_CONDITION = "findByCondition";
     protected final static String COUNT_BY_CONDITION = "findByConditionStat";
     protected final static String BATCH_INSERT = "batchInsert";
@@ -168,6 +169,14 @@ public class BaseDaoImpl<T, PK> implements BaseDao<T, PK>{
     public boolean exists(PK id) {
     	Integer count = this.countByCondition(EXISTS, id);
     	return count != null && count==1;
+    }
+    
+    /**
+     * 查询所有数据
+     */
+    @Override
+    public List<T> getAll() {
+    	return this.getSqlRunner().selectList(getStatementName(GET_ALL));
     }
     
     /**

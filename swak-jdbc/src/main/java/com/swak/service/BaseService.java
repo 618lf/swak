@@ -3,15 +3,11 @@ package com.swak.service;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.swak.Constants;
 import com.swak.entity.IdEntity;
-import com.swak.executor.Workers;
 import com.swak.incrementer.IdGen;
 import com.swak.persistence.BaseDao;
 import com.swak.persistence.Page;
@@ -33,24 +29,21 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      */
     protected abstract BaseDao<T, PK> getBaseDao();
     
-    /** 异步执行指定的代码: 可以设置度读写在不同的线程池中 **/
-    protected <U> CompletableFuture<U> execute(Supplier<U> supplier) {
-    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.default_pool));
-    }
-    protected <U> CompletableFuture<U> write(Supplier<U> supplier) {
-    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.write_pool));
-    }
-    protected <U> CompletableFuture<U> read(Supplier<U> supplier) {
-    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.read_pool));
-    }
-    
     /**
      * 获取单个值
      * @param id
      * @return
      */
-    public CompletableFuture<T> get(final PK id) {
-    	return execute(() -> getBaseDao().get(id));
+    public T get(final PK id) {
+        return getBaseDao().get(id);
+    }
+    
+    /**
+     * 获取所有值
+     * @return
+     */
+    public List<T> getAll() {
+        return getBaseDao().getAll();
     }
     
     /**
@@ -58,8 +51,8 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param qc
      * @return
      */
-    public CompletableFuture<List<T>> queryByCondition(QueryCondition qc){
-    	return execute(() -> getBaseDao().queryByCondition(qc));
+    public List<T> queryByCondition(QueryCondition qc){
+    	return getBaseDao().queryByCondition(qc);
     }
     
     /**
@@ -68,8 +61,8 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param param
      * @return
      */
-    public CompletableFuture<Page> queryForPage(QueryCondition qc, PageParameters param) {
-    	return execute(() -> getBaseDao().queryForPage(qc, param));
+    public Page queryForPage(QueryCondition qc, PageParameters param) {
+    	return this.getBaseDao().queryForPage(qc, param);
     }
     
     /**
@@ -78,8 +71,8 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param param
      * @return
      */
-    public CompletableFuture<Integer> countByCondition(QueryCondition qc){
-   		return execute(() -> getBaseDao().countByCondition(qc));
+    public Integer countByCondition(QueryCondition qc){
+   		return this.getBaseDao().countByCondition(qc);
    	}
     
     /**
@@ -88,8 +81,8 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param param
      * @return
      */
-    public CompletableFuture<List<T>> queryForLimitList(QueryCondition qc, int size){
-		return execute(() -> getBaseDao().queryForLimitList(qc, size));
+    public List<T> queryForLimitList(QueryCondition qc, int size){
+		return this.getBaseDao().queryForLimitList(qc, size);
 	}
     
     /**
@@ -97,8 +90,8 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param id
      * @return
      */
-    public CompletableFuture<Boolean> exists(PK id) {
-    	return execute(() -> getBaseDao().exists(id));
+    public boolean exists(PK id) {
+    	return this.getBaseDao().exists(id);
     }
     
     /**
@@ -106,15 +99,13 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param entity
      * @return
      */
-    public CompletableFuture<T> save(T entity) {
-    	return execute(() -> {
-    		if (IdGen.isInvalidId(entity.getId())) {
-    			this.insert(entity);
-    		}else {
-    			this.update(entity);
-    		}
-    		return entity;
-    	});
+    public T save(T entity) {
+    	if (IdGen.isInvalidId(entity.getId())) {
+			this.insert(entity);
+		}else {
+			this.update(entity);
+		}
+		return entity;
     }
     
     /**
@@ -122,11 +113,8 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param entity
      * @return
      */
-    public CompletableFuture<Void> delete(List<T> entities) {
-    	return execute(() -> {
-    		this.batchDelete(entities);
-    		return null;
-    	});
+    public void delete(List<T> entities) {
+    	this.batchDelete(entities);
     }
     
     /**

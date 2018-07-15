@@ -150,7 +150,7 @@ public class HelloController {
 	@GetMapping("/say/future")
 	public Mono<Result> sayFuture(String name) {
 		Shop shop = new Shop(); shop.setName(name);
-		return Mono.fromFuture(shopService.saveAndGet(shop)).map(s -> Result.success(s));
+		return Mono.fromFuture(Workers.future(() -> shopService.save(shop))).map(s -> Result.success(s));
 	}
 	
 	/**
@@ -163,7 +163,7 @@ public class HelloController {
 			Shop shop = new Shop(); shop.setName(name);
 			return shop;
 		}).map(s -> {
-			return shopService.saveAndGet(s);
+			return Workers.future(() -> shopService.save(s));
 		});
 		return Workers.stream(optional).map(s -> Result.success(s));
 	}
