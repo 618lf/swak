@@ -38,19 +38,37 @@ import reactor.core.scheduler.Schedulers;
  */
 public class Workers {
 
-	/**
-	 * 线城池
-	 */
-	private static Executor executor;
-
-	public static void executor(Executor executor) {
+	/** 线城池： 设置、获取 */
+	private static ConfigableExecutor executor;
+	public static void executor(ConfigableExecutor executor) {
 		Workers.executor = executor;
 	}
-
-	public static Executor executor() {
-		return executor;
+	public static Executor executor(String name) {
+		return executor.getExecutor(name);
 	}
-
+	// ----------------- 异步执行代码(命名线程池) --------------------------
+	/**
+	 * 异步执行代码 -- 有返回值
+	 * 
+	 * @param supplier
+	 * @return
+	 */
+	public static <T> CompletableFuture<T> future(String name, Supplier<T> supplier) {
+		Assert.notNull(executor, "please init Worker Executor");
+		return CompletableFuture.supplyAsync(supplier, executor.getExecutor(name));
+	}
+	
+	/**
+	 * 异步执行代码 -- 无返回值
+	 * 
+	 * @param supplier
+	 * @return
+	 */
+	public static CompletableFuture<Void> future(String name, Runnable runnable) {
+		Assert.notNull(executor, "please init Worker Executor");
+		return CompletableFuture.runAsync(runnable, executor.getExecutor(name));
+	}
+	// ----------------- 异步执行代码(默认线程池) --------------------------
 	/**
 	 * 异步执行代码 -- 有返回值
 	 * 

@@ -4,7 +4,7 @@ import static com.swak.Application.APP_LOGGER;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -18,6 +18,7 @@ import org.springframework.core.annotation.Order;
 
 import com.swak.ApplicationProperties;
 import com.swak.Constants;
+import com.swak.executor.ConfigableExecutor;
 import com.swak.executor.NamedThreadFactory;
 import com.swak.executor.Workers;
 import com.swak.reactivex.transport.http.server.HttpServerProperties;
@@ -37,20 +38,35 @@ public class ExecutorAutoConfiguration {
 
 	@Autowired
 	private HttpServerProperties properties;
-	
+
 	public ExecutorAutoConfiguration() {
 		APP_LOGGER.debug("Loading Worker Executor");
 	}
-	
+
+	/**
+	 * 可配置化的线程池
+	 * 
+	 * @return
+	 */
 	@Bean
-	public Executor workerExecutor() {
-		Executor executor = null;
-		if (properties.getWorkerThreads() == -1) {
-			executor = ForkJoinPool.commonPool();
-		} else {
-			executor = Executors.newFixedThreadPool(properties.getWorkerThreads(), new NamedThreadFactory("SWAK-worker", true));
+	public ConfigableExecutor configableExecutor() {
+		ConfigableExecutor ce = new ConfigableExecutor();
+		this.configable(ce);
+		Workers.executor(ce);
+		return ce;
+	}
+
+	private void configable(ConfigableExecutor executor) {
+
+		// 默认
+		if (properties.getWorkerThreads() != -1) {
+			ThreadPoolExecutor _executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(
+					properties.getWorkerThreads(), new NamedThreadFactory("SWAK-worker-default", true));
+			executor.setExecutor(Constants.default_pool, _executor);
 		}
-		Workers.executor(executor);
-		return Workers.executor();
+
+		// 单个
+		Executor _executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("SWAK-worker-single", true));
+		executor.setExecutor(Constants.single_pool, _executor);
 	}
 }

@@ -55,4 +55,10 @@ public interface Constants {
 	String token_cache_name = "TOKENS";
 	String deleted_cookie_value = "deleteMe";
 	String session_name = "SESSION";
+
+	/** 线程池 **/
+	String default_pool = "default";
+	String write_pool = "write";
+	String read_pool = "read";
+	String single_pool = "single";
 }

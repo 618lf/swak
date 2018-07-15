@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.Constants;
 import com.swak.entity.IdEntity;
 import com.swak.executor.Workers;
 import com.swak.incrementer.IdGen;
@@ -32,13 +33,15 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      */
     protected abstract BaseDao<T, PK> getBaseDao();
     
-    /**
-     * 异步执行指定的代码
-     * @param supplier
-     * @return
-     */
+    /** 异步执行指定的代码: 可以设置度读写在不同的线程池中 **/
     protected <U> CompletableFuture<U> execute(Supplier<U> supplier) {
-    	return CompletableFuture.supplyAsync(supplier, Workers.executor());
+    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.default_pool));
+    }
+    protected <U> CompletableFuture<U> write(Supplier<U> supplier) {
+    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.write_pool));
+    }
+    protected <U> CompletableFuture<U> read(Supplier<U> supplier) {
+    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.read_pool));
     }
     
     /**
