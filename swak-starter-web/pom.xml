@@ -31,6 +31,11 @@
 			<artifactId>swak-http</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-storage</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

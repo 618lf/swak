@@ -25,6 +25,7 @@ public interface Constants {
 	String ACTUATOR_METRICS = "spring.metrics";
 	String ACTUATOR_ENDPOINT_WEB = "spring.endpoints.web";
 	String ACTUATOR_TRACE = "spring.trace";
+	String STORAGE_PREFIX = "spring.storage";
 
 	/** 用户密码加密 **/
 	String HASH_ALGORITHM = "SHA-1";

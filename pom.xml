@@ -19,6 +19,7 @@
 		<module>swak-starter-rpc</module>
 		<module>swak-sample-rpc</module>
 		<module>swak-groovy</module>
+		<module>swak-storage</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.0.1.RELEASE</spring-boot.version>
@@ -104,6 +105,11 @@
 			<dependency>
 				<groupId>com.swak</groupId>
 				<artifactId>swak-redis</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-storage</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

@@ -1,6 +1,7 @@
 package com.swak.security.web.captcha;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import javax.imageio.ImageIO;
@@ -9,7 +10,6 @@ import com.swak.executor.Workers;
 import com.swak.reactivex.transport.http.multipart.MimeType;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
-import com.swak.reactor.publisher.MonoFalse;
 import com.swak.security.web.captcha.builder.ABuilder;
 import com.swak.security.web.captcha.builder.BBuilder;
 import com.swak.security.web.captcha.builder.Builder;
@@ -27,7 +27,6 @@ import com.swak.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
-import reactor.core.publisher.Mono;
 
 /**
  * 验证码管理器
@@ -132,19 +131,19 @@ public class CaptchaManager {
 	 * @param cCode
 	 * @return
 	 */
-	public static Mono<Boolean> check(HttpServerRequest request, HttpServerResponse response, String captcha) {
+	public static CompletionStage<Boolean> check(HttpServerRequest request, HttpServerResponse response, String captcha) {
 		if (captcha == null || captcha.isEmpty() || captcha.length() <= 1) {
-			return MonoFalse.instance();
+			return CompletableFuture.completedFuture(false);
 		}
 		CompletionStage<String> _captcha = CookieProvider.getAttribute(request, response, VALIDATE_CODE);
 		if (_captcha != null) {
-			return Mono.fromCompletionStage(_captcha).map(s -> {
+			return _captcha.thenApply(s -> {
 				if (s == null || s.isEmpty() || s.length() <= 1) {
 					return false;
 				}
 				return StringUtils.equalsIgnoreCase(captcha, s);
 			});
 		}
-		return MonoFalse.instance();
+		return CompletableFuture.completedFuture(false);
 	}
 }

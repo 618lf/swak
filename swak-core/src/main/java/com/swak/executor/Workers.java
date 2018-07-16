@@ -52,16 +52,16 @@ public class Workers {
 		return executor.getExecutor(name);
 	}
 	// ----------------- 内置线程池执行代码 --------------------------
-    protected <U> CompletableFuture<U> execute(Supplier<U> supplier) {
+    public static <U> CompletableFuture<U> execute(Supplier<U> supplier) {
     	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.default_pool));
     }
-    protected <U> CompletableFuture<U> write(Supplier<U> supplier) {
+    public static <U> CompletableFuture<U> write(Supplier<U> supplier) {
     	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.write_pool));
     }
-    protected <U> CompletableFuture<U> read(Supplier<U> supplier) {
+    public static <U> CompletableFuture<U> read(Supplier<U> supplier) {
     	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.read_pool));
     }
-    protected <U> CompletableFuture<U> single(Supplier<U> supplier) {
+    public static <U> CompletableFuture<U> single(Supplier<U> supplier) {
     	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.single_pool));
     }
 	// ----------------- 异步执行代码(命名线程池) --------------------------
