@@ -4,6 +4,7 @@ import java.util.concurrent.CompletionStage;
 
 /**
  * 事件生产者
+ * 
  * @author lifeng
  */
 public interface EventProducer {
