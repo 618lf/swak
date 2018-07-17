@@ -118,7 +118,7 @@ public class DefaultSecurityManager implements SecurityManager {
 	private Mono<Set<String>> loadPermissions(Subject subject) {
 		Set<String> permissions = subject.getPermissions();
 		if (permissions == null) {
-			return realm.doGetAuthorizationInfo(subject.getPrincipal()).map(authorization ->{
+			return Mono.fromCompletionStage(realm.doGetAuthorizationInfo(subject.getPrincipal())).map(authorization ->{
 				subject.setPermissions(authorization.getPermissions());
 				subject.setRoles(authorization.getRoles());
 				return subject.getPermissions();
@@ -135,7 +135,7 @@ public class DefaultSecurityManager implements SecurityManager {
 	private Mono<Set<String>> loadRoles(Subject subject) {
 		Set<String> roles = subject.getRoles();
 		if (roles == null) {
-			return realm.doGetAuthorizationInfo(subject.getPrincipal()).map(authorization ->{
+			return Mono.fromCompletionStage(realm.doGetAuthorizationInfo(subject.getPrincipal())).map(authorization ->{
 				subject.setPermissions(authorization.getPermissions());
 				subject.setRoles(authorization.getRoles());
 				return authorization.getRoles();
@@ -146,7 +146,7 @@ public class DefaultSecurityManager implements SecurityManager {
 
 	@Override
 	public Mono<Boolean> login(Subject subject, HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
-		return realm.doAuthentication(request).doOnError((e) ->{
+		return Mono.fromCompletionStage(realm.doAuthentication(request)).doOnError((e) ->{
 			this.onLoginFailure(request, response);
 		}).flatMap(principal ->{
 			return this.login(subject, principal, request, response);

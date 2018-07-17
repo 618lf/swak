@@ -3,6 +3,7 @@ package com.swak.cache.redis;
 import java.util.List;
 
 import com.swak.cache.Cons;
+import com.swak.cache.Entity;
 import com.swak.cache.ReactiveCache;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.operations.ReactiveOperations;
@@ -78,13 +79,17 @@ public class ReactiveRedisCache<T> extends NameableCache implements ReactiveCach
 	}
 
 	@Override
-	public Mono<String> putObject(String key, T value) {
-		return this._set(key, SerializationUtils.serialize(value));
+	public Mono<Entity<T>> putObject(String key, T value) {
+		return this._set(key, SerializationUtils.serialize(value)).map(s ->{
+			return new Entity<T>(key, value);
+		});
 	}
 
 	@Override
-	public Mono<String> putString(String key, String value) {
-		return this._set(key, SafeEncoder.encode(value));
+	public Mono<Entity<String>> putString(String key, String value) {
+		return this._set(key, SafeEncoder.encode(value)).map(s ->{
+			return new Entity<String>(key, value);
+		});
 	}
 
 	@Override

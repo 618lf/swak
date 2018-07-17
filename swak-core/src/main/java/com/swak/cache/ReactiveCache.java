@@ -65,14 +65,14 @@ public interface ReactiveCache<T> {
 	 * @param key
 	 * @param value
 	 */
-	Mono<String> putObject(String key, T value);
+	Mono<Entity<T>> putObject(String key, T value);
 	
 	/**
 	 * 添加key， 使用默认定义的时间
 	 * @param key
 	 * @param value
 	 */
-	Mono<String> putString(String key, String value);
+	Mono<Entity<String>> putString(String key, String value);
 	
 	/**
 	 * 生存时间

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.DisposableBean;
 
 import com.swak.Constants;
 import com.swak.cache.Cache;
+import com.swak.cache.Entity;
 import com.swak.eventbus.Event;
 import com.swak.eventbus.EventConsumer;
 import com.swak.eventbus.EventProducer;
@@ -45,9 +46,9 @@ public class RedisLocalCache implements Cache<Object>, EventConsumer, Disposable
 	}
 
 	@Override
-	public String putObject(String key, Object value) {
+	public Entity<Object> putObject(String key, Object value) {
 		this.cache.put(new Element(key, value));
-		return key;
+		return new Entity<Object>(key, value);
 	}
 
 	@Override
@@ -82,9 +83,9 @@ public class RedisLocalCache implements Cache<Object>, EventConsumer, Disposable
 	}
 
 	@Override
-	public String putString(String key, String value) {
+	public Entity<String> putString(String key, String value) {
 		this.cache.put(new Element(key, value));
-		return key;
+		return new Entity<String>(key, value);
 	}
 
 	@Override

@@ -1,17 +1,19 @@
 package com.swak.security.realm;
 
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
+import com.swak.cache.AsyncCache;
 import com.swak.cache.Cache;
 import com.swak.cache.CacheManager;
 import com.swak.reactivex.transport.http.Principal;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.security.context.AuthorizationInfo;
 
-import reactor.core.publisher.Mono;
-
 /**
  * 提供缓存的支持
+ * 
  * @author lifeng
  */
 public abstract class CachedRealm implements Realm {
@@ -20,9 +22,10 @@ public abstract class CachedRealm implements Realm {
 	 * 缓存的名称
 	 */
 	protected String cacheName;
-	protected Cache<AuthorizationInfo> cache;
+	protected int timeOut = 1800;
+	protected AsyncCache<AuthorizationInfo> cache;
 	protected CacheManager cacheManager;
-	
+
 	public String getCacheName() {
 		return cacheName;
 	}
@@ -30,35 +33,48 @@ public abstract class CachedRealm implements Realm {
 	public void setCacheName(String cacheName) {
 		this.cacheName = cacheName;
 	}
-	
+
+	public int getTimeOut() {
+		return timeOut;
+	}
+
+	public void setTimeOut(int timeOut) {
+		this.timeOut = timeOut;
+	}
+
 	public CacheManager getCacheManager() {
 		return cacheManager;
 	}
 
 	public void setCacheManager(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
-		cache = this.cacheManager.getCache(this.getCacheName());
+		Cache<AuthorizationInfo> cache = this.cacheManager.getCache(this.getCacheName(), this.getTimeOut());
+		this.cache = cache.async();
 	}
 
 	/**
 	 * 优先获取缓存中的数据
 	 */
 	@Override
-	public Mono<AuthorizationInfo> doGetAuthorizationInfo(Principal principal) {
+	public CompletionStage<AuthorizationInfo> doGetAuthorizationInfo(Principal principal) {
 		String keyName = this.getCachedAuthorizationInfoName(principal);
-		AuthorizationInfo value = cache.getObject(keyName);
-		if (value == null) {
-			return this.getAuthorizationInfo(principal).doOnSuccess(authorization -> cache.putObject(keyName, authorization));
-		}
-		return Mono.just(value);
+		return cache.getObject(keyName).thenCompose(value -> {
+			if (value == null) {
+				return this.getAuthorizationInfo(principal)
+						.thenCompose(authorization -> cache.putObject(keyName, authorization))
+						.thenApply(entity -> entity.getValue());
+			}
+			return CompletableFuture.completedFuture(value);
+		});
 	}
-	
+
 	/**
 	 * 获取权限信息
+	 * 
 	 * @param principal
-	 * @return 
+	 * @return
 	 */
-	protected abstract Mono<AuthorizationInfo> getAuthorizationInfo(Principal principal);
+	protected abstract CompletionStage<AuthorizationInfo> getAuthorizationInfo(Principal principal);
 
 	/**
 	 * 删除单个用户的缓存
@@ -70,6 +86,7 @@ public abstract class CachedRealm implements Realm {
 
 	/**
 	 * 获得缓存名称
+	 * 
 	 * @param principal
 	 * @return
 	 */
@@ -83,7 +100,7 @@ public abstract class CachedRealm implements Realm {
 	@Override
 	public void onLogout(Subject subject) {
 		Set<Principal> principals = subject.getPrincipals();
-		for(Principal principal: principals) {
+		for (Principal principal : principals) {
 			this.clearCachedAuthorizationInfo(principal);
 		}
 	}

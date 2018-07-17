@@ -5,6 +5,7 @@ import java.util.List;
 import com.swak.cache.AsyncCache;
 import com.swak.cache.Cache;
 import com.swak.cache.Cons;
+import com.swak.cache.Entity;
 import com.swak.cache.ReactiveCache;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.operations.SyncOperations;
@@ -74,13 +75,15 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	}
 
 	@Override
-	public String putObject(String key, T value) {
-		return this._set(key, SerializationUtils.serialize(value));
+	public Entity<T> putObject(String key, T value) {
+		 this._set(key, SerializationUtils.serialize(value));
+		 return new Entity<T>(key, value);
 	}
 	
 	@Override
-	public String putString(String key, String value) {
-		return this._set(key, SafeEncoder.encode(value));
+	public Entity<String> putString(String key, String value) {
+		this._set(key, SafeEncoder.encode(value));
+		return new Entity<String>(key, value);
 	}
 
 	@Override

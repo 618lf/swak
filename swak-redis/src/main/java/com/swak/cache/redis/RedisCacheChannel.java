@@ -3,6 +3,7 @@ package com.swak.cache.redis;
 import java.util.List;
 
 import com.swak.cache.Cache;
+import com.swak.cache.Entity;
 import com.swak.utils.Lists;
 
 /**
@@ -96,7 +97,7 @@ public class RedisCacheChannel<T> implements Cache<T> {
 	}
 
 	@Override
-	public String putObject(String key, T value) {
+	public Entity<T> putObject(String key, T value) {
 		String localKey = this.getKeyName(key);
 		_sendEvictCmd(localKey);// 清除原有的一级缓存的内容
 		local.putObject(localKey, value);
@@ -104,7 +105,7 @@ public class RedisCacheChannel<T> implements Cache<T> {
 	}
 	
 	@Override
-	public String putString(String key, String value) {
+	public Entity<String> putString(String key, String value) {
 		String localKey = this.getKeyName(key);
 		_sendEvictCmd(localKey);// 清除原有的一级缓存的内容
 		local.putString(localKey, value);

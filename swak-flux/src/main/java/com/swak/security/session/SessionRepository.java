@@ -1,8 +1,8 @@
 package com.swak.security.session;
 
-import com.swak.reactivex.transport.http.Session;
+import java.util.concurrent.CompletionStage;
 
-import reactor.core.publisher.Mono;
+import com.swak.reactivex.transport.http.Session;
 
 public interface SessionRepository {
 
@@ -25,17 +25,17 @@ public interface SessionRepository {
 	 * @param sessionId
 	 * @return
 	 */
-	Mono<Session> getSession(String sessionId);
+	CompletionStage<Session> getSession(String sessionId);
 	
 	/**
 	 * 删除一个session
 	 * @param id
 	 */
-	Mono<Boolean> removeSession(Session session);
+	CompletionStage<Boolean> removeSession(Session session);
 	
 	/**
 	 * 删除一个session
 	 * @param sessionId
 	 */
-	Mono<Boolean> removeSession(String sessionId);
+	CompletionStage<Boolean> removeSession(String sessionId);
 }

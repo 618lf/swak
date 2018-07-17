@@ -5,6 +5,7 @@ import java.util.concurrent.CompletionStage;
 
 import com.swak.cache.AsyncCache;
 import com.swak.cache.Cons;
+import com.swak.cache.Entity;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.operations.AsyncOperations;
 import com.swak.serializer.SerializationUtils;
@@ -72,13 +73,17 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 	}
 
 	@Override
-	public CompletionStage<String> putObject(String key, T value) {
-		return this._set(key, SerializationUtils.serialize(value));
+	public CompletionStage<Entity<T>> putObject(String key, T value) {
+		return this._set(key, SerializationUtils.serialize(value)).thenApply(s ->{
+			return new Entity<T>(key, value);
+		});
 	}
 
 	@Override
-	public CompletionStage<String> putString(String key, String value) {
-		return this._set(key, SafeEncoder.encode(value));
+	public CompletionStage<Entity<String>> putString(String key, String value) {
+		return this._set(key, SafeEncoder.encode(value)).thenApply(s ->{
+			return new Entity<String>(key, value);
+		});
 	}
 
 	@Override

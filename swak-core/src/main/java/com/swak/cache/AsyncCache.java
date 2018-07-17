@@ -66,14 +66,14 @@ public interface AsyncCache<T> {
 	 * @param key
 	 * @param value
 	 */
-	CompletionStage<String> putObject(String key, T value);
+	CompletionStage<Entity<T>> putObject(String key, T value);
 	
 	/**
 	 * 添加key， 使用默认定义的时间
 	 * @param key
 	 * @param value
 	 */
-	CompletionStage<String> putString(String key, String value);
+	CompletionStage<Entity<String>> putString(String key, String value);
 	
 	/**
 	 * 生存时间

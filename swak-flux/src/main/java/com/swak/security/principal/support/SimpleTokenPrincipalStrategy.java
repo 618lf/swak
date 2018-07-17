@@ -5,6 +5,7 @@ import com.swak.reactivex.transport.http.Principal;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
+import com.swak.reactor.publisher.MonoTrue;
 import com.swak.security.TokenUtils;
 import com.swak.security.principal.PrincipalStrategy;
 import com.swak.utils.StringUtils;
@@ -94,7 +95,7 @@ public class SimpleTokenPrincipalStrategy implements PrincipalStrategy {
 	 */
 	@Override
 	public Mono<Boolean> invalidatePrincipal(String sessionId) {
-		return Mono.empty();
+		return MonoTrue.instance();
 	}
 
 	/**

@@ -44,7 +44,7 @@ public class HttpSessionManager {
 		}
 		String sessionId = this.readCookie(request);
 		if (StringUtils.isNotBlank(sessionId)) {
-			return sessionRepository.getSession(sessionId).map(s ->{
+			return Mono.fromCompletionStage(sessionRepository.getSession(sessionId)).map(s ->{
 				if (session instanceof NoneSession) {
 					this.onInvalidateSession(request, response);
 				}
@@ -71,7 +71,7 @@ public class HttpSessionManager {
 	 * 删除session
 	 */
 	public Mono<Boolean> removeSession(HttpServerRequest request, HttpServerResponse response) {
-		return sessionRepository.removeSession(request.getSubject().getSession()).doOnSuccess((v) -> {
+		return Mono.fromCompletionStage(sessionRepository.removeSession(request.getSubject().getSession())).doOnSuccess((v) -> {
 			this.onInvalidateSession(request, response);
 		});
 	}
@@ -80,7 +80,7 @@ public class HttpSessionManager {
 	 * 删除session
 	 */
 	public Mono<Boolean> removeSession(String sessionId) {
-		return sessionRepository.removeSession(sessionId);
+		return Mono.fromCompletionStage(sessionRepository.removeSession(sessionId));
 	}
 	
 	// 失效当前的session

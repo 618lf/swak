@@ -137,6 +137,7 @@ public class Workers {
 	 * @param supplier
 	 * @return
 	 */
+	@Deprecated
 	public static <T, R> Mono<R> sink(CompletionStage<T> future, Function<T, R> func) {
 		return Mono.create(sink -> {
 			future.whenComplete((v, e) -> {
@@ -164,6 +165,7 @@ public class Workers {
 	 * @param supplier
 	 * @return
 	 */
+	@Deprecated
 	public static <T> void sink(CompletionStage<T> future, MonoSink<T> sink) {
 		future.whenComplete((v, e) -> {
 			try {

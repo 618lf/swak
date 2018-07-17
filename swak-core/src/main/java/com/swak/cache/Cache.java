@@ -63,14 +63,14 @@ public interface Cache<T> {
 	 * @param key
 	 * @param value
 	 */
-	String putObject(String key, T value);
+	Entity<T> putObject(String key, T value);
 	
 	/**
 	 * 添加key， 使用默认定义的时间
 	 * @param key
 	 * @param value
 	 */
-	String putString(String key, String value);
+	Entity<String> putString(String key, String value);
 	
 	/**
 	 * 生存时间

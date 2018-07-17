@@ -4,11 +4,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.swak.cache.collection.AsyncMultiMap;
-import com.swak.executor.Workers;
 import com.swak.reactivex.transport.http.Principal;
 import com.swak.reactivex.transport.http.Session;
 import com.swak.security.session.NoneSession;
@@ -54,8 +55,8 @@ public class CacheSessionRepository implements SessionRepository {
 	 * 获取session
 	 */
 	@Override
-	public Mono<Session> getSession(String id) {
-		return Workers.sink(_cache.get(id), (entries) -> {
+	public CompletionStage<Session> getSession(String id) {
+		return _cache.get(id).thenApply(entries ->{
 			if (entries == null || entries.isEmpty()) {
 				return NoneSession.NONE;
 			}
@@ -87,22 +88,22 @@ public class CacheSessionRepository implements SessionRepository {
 	 * 删除session
 	 */
 	@Override
-	public Mono<Boolean> removeSession(Session session) {
+	public CompletionStage<Boolean> removeSession(Session session) {
 		if (session != null && StringUtils.hasText(session.getId())) {
-			return Mono.fromCompletionStage(_cache.delete(session.getId())).map(s -> false);
+			return _cache.delete(session.getId()).thenApply(s -> true);
 		}
-		return Mono.just(false);
+		return CompletableFuture.completedFuture(true);
 	}
 
 	/**
 	 * 删除session
 	 */
 	@Override
-	public Mono<Boolean> removeSession(String sessionId) {
+	public CompletionStage<Boolean> removeSession(String sessionId) {
 		if (StringUtils.hasText(sessionId)) {
-			return Mono.fromCompletionStage(_cache.delete(sessionId)).map(s -> true);
+			return _cache.delete(sessionId).thenApply(s -> true);
 		}
-		return Mono.empty();
+		return CompletableFuture.completedFuture(true);
 	}
 
 	/**
