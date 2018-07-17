@@ -224,6 +224,18 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
+	 * 请求的参数
+	 * 
+	 * @param name
+	 * @return
+	 */
+	@Override
+	public String getParameter(String name) {
+		List<String> values = this.getParameterValues(name);
+		return values != null && values.size() > 0 ? values.get(0) : null;
+	}
+
+	/**
 	 * 获取的请求的参数
 	 * 
 	 * @return

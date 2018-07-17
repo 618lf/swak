@@ -39,4 +39,14 @@ public class ShopService extends BaseService<Shop, Long>{
 	public String sayTransactional() {
 		return "say hello to hanqian";
 	}
+	
+	/**
+	 * 保存
+	 * @param shop
+	 * @return
+	 */
+	@Transactional
+	public Shop save(Shop shop) {
+		return shop;
+	}
 }

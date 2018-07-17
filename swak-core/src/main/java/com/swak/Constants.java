@@ -27,11 +27,6 @@ public interface Constants {
 	String ACTUATOR_TRACE = "spring.trace";
 	String STORAGE_PREFIX = "spring.storage";
 
-	/** 用户密码加密 **/
-	String HASH_ALGORITHM = "SHA-1";
-	int HASH_INTERATIONS = 1024;
-	int SALT_SIZE = 8;
-
 	/** 保留ID **/
 	long ROOT = 0L;
 	long INVALID_ID = -1;

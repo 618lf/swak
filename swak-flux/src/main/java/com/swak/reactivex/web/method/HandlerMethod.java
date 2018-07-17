@@ -7,6 +7,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.util.ClassUtils;
 
 import com.swak.reactivex.web.Handler;
+import com.swak.reactivex.web.annotation.Async;
 
 import reactor.core.publisher.Mono;
 
@@ -21,6 +22,7 @@ public class HandlerMethod implements Handler {
 	private final Method method;
 	private final Class<?> beanType;
 	private final MethodParameter[] parameters;
+	private final Async async;
 
 	/**
 	 * Create an instance from a bean instance and a method.
@@ -30,6 +32,7 @@ public class HandlerMethod implements Handler {
 		this.beanType = ClassUtils.getUserClass(bean);
 		this.method = method;
 		this.parameters = initMethodParameters();
+		this.async = this.method.getAnnotation(Async.class);
 	}
 
 	private MethodParameter[] initMethodParameters() {
@@ -61,6 +64,10 @@ public class HandlerMethod implements Handler {
 		return parameters;
 	}
 	
+	public Async getAsync() {
+		return async;
+	}
+
 	/**
 	 * 如果出错了，则输出 Mono.error(e) 对象
 	 * 

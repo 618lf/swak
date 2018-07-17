@@ -65,18 +65,4 @@ public interface BaseServiceFacade<T, PK>{
      * @return
      */
     public boolean exists(PK id);
-    
-    /**
-     * 保存数据
-     * @param t
-     * @return
-     */
-    public T save(T entity);
-    
-    /**
-     * 保存数据
-     * @param t
-     * @return
-     */
-    public void delete(List<T> entities);
 }

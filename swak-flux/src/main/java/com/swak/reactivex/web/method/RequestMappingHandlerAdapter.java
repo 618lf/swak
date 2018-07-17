@@ -6,10 +6,12 @@ import java.util.List;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 
+import com.swak.executor.Workers;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.Handler;
 import com.swak.reactivex.web.HandlerAdapter;
+import com.swak.reactivex.web.annotation.Async;
 import com.swak.reactivex.web.method.resolver.HandlerMethodArgumentResolverComposite;
 import com.swak.reactivex.web.method.resolver.HttpCookieValueMethodArgumentResolver;
 import com.swak.reactivex.web.method.resolver.MultipartParamMethodArgumentResoler;
@@ -30,12 +32,13 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 
 	private HandlerMethodArgumentResolver argumentResolver;
 
-	public RequestMappingHandlerAdapter(ConversionService conversionService){
+	public RequestMappingHandlerAdapter(ConversionService conversionService) {
 		initArgumentResolvers(conversionService);
 	}
-	
+
 	/**
 	 * 初始化参数解析
+	 * 
 	 * @param conversionService
 	 */
 	private void initArgumentResolvers(ConversionService conversionService) {
@@ -50,21 +53,40 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 		resolvers.add(new ServerSessionMethodArgumentResolver());
 		this.argumentResolver = new HandlerMethodArgumentResolverComposite().addResolvers(resolvers);
 	}
-	
+
 	@Override
 	public boolean supports(Handler handler) {
 		return handler instanceof HandlerMethod;
 	}
 
+	/**
+	 * 支持异步执行代码
+	 */
 	@Override
-	public HandlerResult handle(HttpServerRequest request, HttpServerResponse response, Handler handler){
-		HandlerMethod _handler = (HandlerMethod)handler;
+	public HandlerResult handle(HttpServerRequest request, HttpServerResponse response, Handler handler) {
+		HandlerMethod _handler = (HandlerMethod) handler;
 		Object[] args = getMethodArgumentValues(request, _handler);
-		Object returnValue = _handler.doInvoke(args);
-		return new HandlerResult(returnValue);
+		return new HandlerResult(this.doHandle(_handler, args));
 	}
-	
-	private Object[] getMethodArgumentValues(HttpServerRequest request, HandlerMethod handler){
+
+	/**
+	 * 如果添加注解 Async 则会异步执行代码
+	 * 
+	 * @param handler
+	 * @param args
+	 * @return
+	 */
+	protected Object doHandle(HandlerMethod handler, Object[] args) {
+		Async async = handler.getAsync();
+		if (async != null) {
+			return Workers.future(async.value(), () -> {
+				return handler.doInvoke(args);
+			});
+		}
+		return handler.doInvoke(args);
+	}
+
+	private Object[] getMethodArgumentValues(HttpServerRequest request, HandlerMethod handler) {
 		MethodParameter[] parameters = handler.getParameters();
 		Object[] args = new Object[parameters.length];
 		for (int i = 0; i < parameters.length; i++) {

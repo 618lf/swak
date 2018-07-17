@@ -82,6 +82,14 @@ public interface HttpServerRequest extends NettyInbound, Closeable {
 	 * @return
 	 */
 	List<String> getParameterValues(String name);
+	
+	/**
+	 * 请求的参数
+	 * 
+	 * @param name
+	 * @return
+	 */
+	String getParameter(String name);
 
 	/**
 	 * 获取的请求的参数

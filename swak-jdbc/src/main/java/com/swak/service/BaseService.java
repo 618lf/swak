@@ -14,7 +14,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.swak.entity.IdEntity;
-import com.swak.incrementer.IdGen;
 import com.swak.persistence.BaseDao;
 import com.swak.persistence.Page;
 import com.swak.persistence.PageParameters;
@@ -122,29 +121,6 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      */
     public boolean exists(PK id) {
     	return this.getBaseDao().exists(id);
-    }
-    
-    /**
-     * 执行保存
-     * @param entity
-     * @return
-     */
-    public T save(T entity) {
-    	if (IdGen.isInvalidId(entity.getId())) {
-			this.insert(entity);
-		}else {
-			this.update(entity);
-		}
-		return entity;
-    }
-    
-    /**
-     * 执行删除
-     * @param entity
-     * @return
-     */
-    public void delete(List<T> entities) {
-    	this.batchDelete(entities);
     }
     
 	/**
