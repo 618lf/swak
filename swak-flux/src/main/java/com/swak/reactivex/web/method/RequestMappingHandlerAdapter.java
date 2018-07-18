@@ -2,16 +2,22 @@ package com.swak.reactivex.web.method;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 
+import com.swak.entity.Result;
+import com.swak.exception.ErrorCode;
 import com.swak.executor.Workers;
+import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.Handler;
 import com.swak.reactivex.web.HandlerAdapter;
 import com.swak.reactivex.web.annotation.Async;
+import com.swak.reactivex.web.annotation.Auth;
 import com.swak.reactivex.web.method.resolver.HandlerMethodArgumentResolverComposite;
 import com.swak.reactivex.web.method.resolver.HttpCookieValueMethodArgumentResolver;
 import com.swak.reactivex.web.method.resolver.MultipartParamMethodArgumentResoler;
@@ -66,7 +72,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 	public HandlerResult handle(HttpServerRequest request, HttpServerResponse response, Handler handler) {
 		HandlerMethod _handler = (HandlerMethod) handler;
 		Object[] args = getMethodArgumentValues(request, _handler);
-		return new HandlerResult(this.doHandle(_handler, args));
+		return new HandlerResult(this.doHandle(request, _handler, args));
 	}
 
 	/**
@@ -76,14 +82,45 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 	 * @param args
 	 * @return
 	 */
-	protected Object doHandle(HandlerMethod handler, Object[] args) {
+	protected Object doHandle(HttpServerRequest request, HandlerMethod handler, Object[] args) {
+		Auth auth = handler.getAuth();
 		Async async = handler.getAsync();
-		if (async != null) {
+		if (auth != null && request.getSubject() != null) {
+           return doHandle(request.getSubject(), auth, async, handler, args);
+		} else if (async != null) {
 			return Workers.future(async.value(), () -> {
 				return handler.doInvoke(args);
 			});
 		}
 		return handler.doInvoke(args);
+	}
+
+	// 加入权限验证
+	protected Object doHandle(Subject subject, Auth auth, Async async, HandlerMethod handler, Object[] args) {
+		CompletionStage<Boolean> authFuture = null;
+		if (auth.roles().length > 0) {
+			authFuture = subject.hasAllRoles(auth.roles());
+		} else if (auth.permissions().length > 0) {
+			authFuture = subject.isPermittedAll(auth.permissions());
+		} else {
+			authFuture = CompletableFuture.completedFuture(true);
+		}
+		if (async != null) {
+			return authFuture.thenComposeAsync((b) -> {
+				if (b) {
+					return Workers.future(async.value(), () -> {
+						return handler.doInvoke(args);
+					});
+				}
+				return CompletableFuture.completedFuture(Result.error(ErrorCode.ACCESS_DENIED));
+			});
+		}
+		return authFuture.thenApply((b) -> {
+			if (b) {
+				return handler.doInvoke(args);
+			}
+			return Result.error(ErrorCode.ACCESS_DENIED);
+		});
 	}
 
 	private Object[] getMethodArgumentValues(HttpServerRequest request, HandlerMethod handler) {

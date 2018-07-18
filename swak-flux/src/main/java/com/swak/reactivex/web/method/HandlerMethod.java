@@ -8,6 +8,7 @@ import org.springframework.util.ClassUtils;
 
 import com.swak.reactivex.web.Handler;
 import com.swak.reactivex.web.annotation.Async;
+import com.swak.reactivex.web.annotation.Auth;
 
 import reactor.core.publisher.Mono;
 
@@ -23,6 +24,7 @@ public class HandlerMethod implements Handler {
 	private final Class<?> beanType;
 	private final MethodParameter[] parameters;
 	private final Async async;
+	private final Auth auth;
 
 	/**
 	 * Create an instance from a bean instance and a method.
@@ -33,6 +35,7 @@ public class HandlerMethod implements Handler {
 		this.method = method;
 		this.parameters = initMethodParameters();
 		this.async = this.method.getAnnotation(Async.class);
+		this.auth = this.method.getAnnotation(Auth.class);
 	}
 
 	private MethodParameter[] initMethodParameters() {
@@ -66,6 +69,10 @@ public class HandlerMethod implements Handler {
 	
 	public Async getAsync() {
 		return async;
+	}
+
+	public Auth getAuth() {
+		return auth;
 	}
 
 	/**

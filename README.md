@@ -46,6 +46,6 @@ WEB 服务器只需要启动4个线程就能提供高性能高并发服务，如
 mono             用作事件驱动，不用于耗时操作，不切线程，可能在不同的线程中执行后续代码
 构建事件执行链，通过fromFuture 将数据应用于执行链上，从而驱动 请求 -> 响应
 ComplableFuture  用作数据驱动，应用于耗时操作，切换线程，mono 通过 fromFuture 来和 ComplableFuture 对接上
-所以业务接口需要调用的地方，返回值是 ComplableFuture， 这样方便业务代码接入到 执行链中，如果返回的是mono，则后续需要
+所有业务接口需要调用的地方，返回值是 ComplableFuture， 这样方便业务代码接入到 执行链中，如果返回的是mono，则后续需要
 执行耗时操作还是需要使用 ComplableFuture，同时需要多次转换到 mono。
 尽量保证整个执行链中只需要一次 fromFuture 来转换
