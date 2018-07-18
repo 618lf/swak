@@ -1,6 +1,7 @@
 package com.swak.reactivex.transport.http;
 
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
@@ -77,42 +78,42 @@ public interface Subject {
 	 * @param permission
 	 * @return
 	 */
-	Mono<Boolean> isPermitted(String permission);
+	CompletionStage<Boolean> isPermitted(String permission);
 	
 	/**
 	 * 是否有权限
 	 * @param permissions
 	 * @return
 	 */
-	Mono<boolean[]> isPermitted(String... permissions);
+	CompletionStage<boolean[]> isPermitted(String... permissions);
 	
 	/**
 	 * 是否拥有所有的权限
 	 * @param permissions
 	 * @return
 	 */
-	Mono<Boolean> isPermittedAll(String... permissions);
+	CompletionStage<Boolean> isPermittedAll(String... permissions);
 	
 	/**
 	 * 是否拥有这个角色
 	 * @param role
 	 * @return
 	 */
-	Mono<Boolean> hasRole(String role);
+	CompletionStage<Boolean> hasRole(String role);
 	
 	/**
 	 * 是否拥有这个角色
 	 * @param role
 	 * @return
 	 */
-	Mono<boolean[]> hasRoles(String... permissions);
+	CompletionStage<boolean[]> hasRoles(String... permissions);
 	
 	/**
 	 * 是否拥有所有的角色
 	 * @param permissions
 	 * @return
 	 */
-	Mono<Boolean> hasAllRoles(String... permissions);
+	CompletionStage<Boolean> hasAllRoles(String... permissions);
 	
 	/**
 	 * 是否授权登录
@@ -136,7 +137,7 @@ public interface Subject {
 	 * 以其他的身份运行
 	 * @param principal
 	 */
-	Mono<Boolean> runAs(Principal principal);
+	CompletionStage<Boolean> runAs(Principal principal);
 	
 	/**
 	 * 是否是其他身份在运行
@@ -148,7 +149,7 @@ public interface Subject {
 	 * 返回原始身份
 	 * @return
 	 */
-	Mono<Principal> releaseRunAs();
+	CompletionStage<Principal> releaseRunAs();
 	
 	/**
 	 * 登录

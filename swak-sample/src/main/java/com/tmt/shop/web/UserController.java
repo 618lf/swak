@@ -1,5 +1,7 @@
 package com.tmt.shop.web;
 
+import java.util.concurrent.CompletionStage;
+
 import com.swak.entity.Result;
 import com.swak.exception.ErrorCode;
 import com.swak.reactivex.transport.http.Principal;
@@ -33,8 +35,8 @@ public class UserController {
 	 * @return
 	 */
 	@GetMapping("/check/{role}")
-	public Mono<Result> check(HttpServerRequest request, @PathVariable String role) {
-		return request.getSubject().hasRole(role).map(r -> {
+	public CompletionStage<Result> check(HttpServerRequest request, @PathVariable String role) {
+		return request.getSubject().hasRole(role).thenApply(r -> {
 			if (r) {
 				return Result.success(request.getSubject().getPrincipal());
 			}
@@ -68,9 +70,9 @@ public class UserController {
 	 * @return
 	 */
 	@GetMapping("/runas/root")
-	public Mono<Result> runas(HttpServerRequest request) {
+	public CompletionStage<Result> runas(HttpServerRequest request) {
 		Principal principal = new Principal(); principal.setId(0L); principal.setAccount("超级管理员");
-		return request.getSubject().runAs(principal).map(b ->{
+		return request.getSubject().runAs(principal).thenApply(b ->{
 			if (b) {
 				return Result.success(ErrorCode.OPERATE_SECCESS.toJson());
 			}
@@ -84,8 +86,8 @@ public class UserController {
 	 * @return
 	 */
 	@GetMapping("/runas/release")
-	public Mono<Result> release(HttpServerRequest request) {
-		return request.getSubject().releaseRunAs().map(b ->{
+	public CompletionStage<Result> release(HttpServerRequest request) {
+		return request.getSubject().releaseRunAs().thenApply(b ->{
 			return Result.success(ErrorCode.OPERATE_SECCESS.toJson());
 		});
 	}

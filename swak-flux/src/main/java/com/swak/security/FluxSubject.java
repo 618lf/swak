@@ -2,6 +2,8 @@ package com.swak.security;
 
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import com.swak.reactivex.transport.http.Principal;
 import com.swak.reactivex.transport.http.Session;
@@ -23,23 +25,28 @@ public class FluxSubject implements Subject {
 	private Set<String> permissions;
 	private Session session;
 	private String reason;
-	
+
 	public String getReason() {
 		return reason;
 	}
+
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
+
 	public String getSessionId() {
 		return sessionId;
 	}
+
 	public void setSessionId(String sessionId) {
 		this.sessionId = sessionId;
 	}
+
 	@Override
 	public Session getSession() {
 		return session;
 	}
+
 	@Override
 	public void setSession(Session session) {
 		this.session = session;
@@ -55,7 +62,7 @@ public class FluxSubject implements Subject {
 	public Principal getPrincipal() {
 		return getPrimaryPrincipal();
 	}
-	
+
 	@Override
 	public Set<Principal> getPrincipals() {
 		Set<Principal> principals = Sets.newHashSet();
@@ -93,32 +100,32 @@ public class FluxSubject implements Subject {
 	}
 
 	@Override
-	public Mono<Boolean> isPermitted(String permission) {
+	public CompletionStage<Boolean> isPermitted(String permission) {
 		return SecurityUtils.getSecurityManager().isPermitted(this, permission);
 	}
 
 	@Override
-	public Mono<boolean[]> isPermitted(String... permissions) {
+	public CompletionStage<boolean[]> isPermitted(String... permissions) {
 		return SecurityUtils.getSecurityManager().isPermitted(this, permissions);
 	}
 
 	@Override
-	public Mono<Boolean> isPermittedAll(String... permissions) {
+	public CompletionStage<Boolean> isPermittedAll(String... permissions) {
 		return SecurityUtils.getSecurityManager().isPermittedAll(this, permissions);
 	}
 
 	@Override
-	public Mono<Boolean> hasRole(String role) {
+	public CompletionStage<Boolean> hasRole(String role) {
 		return SecurityUtils.getSecurityManager().hasRole(this, role);
 	}
 
 	@Override
-	public Mono<boolean[]> hasRoles(String... permissions) {
+	public CompletionStage<boolean[]> hasRoles(String... permissions) {
 		return SecurityUtils.getSecurityManager().hasRoles(this, permissions);
 	}
 
 	@Override
-	public Mono<Boolean> hasAllRoles(String... permissions) {
+	public CompletionStage<Boolean> hasAllRoles(String... permissions) {
 		return SecurityUtils.getSecurityManager().hasAllRoles(this, permissions);
 	}
 
@@ -136,15 +143,16 @@ public class FluxSubject implements Subject {
 	public Mono<Boolean> login(HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
 		return SecurityUtils.getSecurityManager().login(this, request, response);
 	}
-	
+
 	@Override
-	public Mono<Boolean> login(Principal principal, HttpServerRequest request, HttpServerResponse response) throws AuthenticationException {
+	public Mono<Boolean> login(Principal principal, HttpServerRequest request, HttpServerResponse response)
+			throws AuthenticationException {
 		return SecurityUtils.getSecurityManager().login(this, principal, request, response);
 	}
 
 	@Override
 	public Mono<Boolean> logout(HttpServerRequest request, HttpServerResponse response) {
-		return SecurityUtils.getSecurityManager().logout(this, request, response).doOnSuccess((t) ->{
+		return SecurityUtils.getSecurityManager().logout(this, request, response).doOnSuccess((t) -> {
 			this.authenticated = false;
 			this.roles = null;
 			this.permissions = null;
@@ -160,7 +168,7 @@ public class FluxSubject implements Subject {
 	public Set<String> getPermissions() {
 		return permissions;
 	}
-	
+
 	@Override
 	public void setRoles(Set<String> roles) {
 		this.roles = roles;
@@ -172,23 +180,24 @@ public class FluxSubject implements Subject {
 	}
 
 	@Override
-	public Mono<Boolean> runAs(Principal principal) {
-		if (this.getPrincipal() == null || principal == null
-				|| this.getPrincipal().equals(principal)) {
-            return Mono.just(false);
-		}
-		
-		// 创建 runAsPrincipals
-		if (runAsPrincipals == null) {
-			runAsPrincipals = new Stack<Principal>();
-		}
-		
-		// 添加到顶部
-		runAsPrincipals.push(principal);
-		this.getSession().setRunAsPrincipals(runAsPrincipals);
-		return Mono.just(true);
+	public CompletionStage<Boolean> runAs(Principal principal) {
+		return CompletableFuture.supplyAsync(() ->{
+			if (this.getPrincipal() == null || principal == null || this.getPrincipal().equals(principal)) {
+				return false;
+			}
+
+			// 创建 runAsPrincipals
+			if (runAsPrincipals == null) {
+				runAsPrincipals = new Stack<Principal>();
+			}
+
+			// 添加到顶部
+			runAsPrincipals.push(principal);
+			this.getSession().setRunAsPrincipals(runAsPrincipals);
+			return true;
+		});
 	}
-	
+
 	/**
 	 * 如果 runAsPrincipals 有身份信息则是以其他的身份在运行
 	 */
@@ -197,16 +206,19 @@ public class FluxSubject implements Subject {
 		return runAsPrincipals != null && !runAsPrincipals.isEmpty();
 	}
 
+	/**
+	 * 不是耗时间的操作可以使用 内置的 common-pool
+	 */
 	@Override
-	public Mono<Principal> releaseRunAs() {
-		return Mono.fromCallable(() ->{
+	public CompletionStage<Principal> releaseRunAs() {
+		return CompletableFuture.supplyAsync(() ->{
 			if (this.isRunAs()) {
 				Principal principal = runAsPrincipals.pop();
 				if (runAsPrincipals.isEmpty()) {
 					runAsPrincipals = null;
 				}
 				this.getSession().setRunAsPrincipals(runAsPrincipals);
-			    return principal;
+				return principal;
 			}
 			return this.getPrimaryPrincipal();
 		});
