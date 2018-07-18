@@ -2,6 +2,7 @@ package com.swak.executor;
 
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -102,6 +103,20 @@ public class ConfigableExecutor implements Executor {
 			}
 			metrics.put(name, one_metrics);
 		});
+		
+		// 默认的线程池 (参数名称需要修改)
+		ForkJoinPool commonPool = ForkJoinPool.commonPool();
+		Map<String, Object> one_metrics = Maps.newHashMap();
+		one_metrics.put("maxPoolSize", commonPool.getParallelism());
+		one_metrics.put("corePoolSize", ForkJoinPool.getCommonPoolParallelism());
+		one_metrics.put("poolSize", commonPool.getPoolSize());
+		one_metrics.put("taskCount", commonPool.getStealCount());
+		one_metrics.put("activeCount", commonPool.getActiveThreadCount());
+		one_metrics.put("completedTaskCount", commonPool.getQueuedSubmissionCount());
+		one_metrics.put("queueSize", commonPool.getQueuedTaskCount());
+		one_metrics.put("largestPoolSize", commonPool.getRunningThreadCount());
+		metrics.put("forkjoinpool", one_metrics);
+		
 		return metrics;
 	}
 
