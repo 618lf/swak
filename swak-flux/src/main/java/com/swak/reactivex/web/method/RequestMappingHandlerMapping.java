@@ -33,6 +33,11 @@ public class RequestMappingHandlerMapping extends AbstractRequestMappingHandlerM
 					logger.debug("Could not resolve target class for bean with name '" + beanName + "'", ex);
 				}
 			}
+			// 校验 handler
+		    if (handler == null) {
+		    	throw new IllegalStateException(
+						"Invalid mapping on handler class [" + beanName  + "]");
+		    }
 			this.registryMapping(handler);
 		}
 	}
