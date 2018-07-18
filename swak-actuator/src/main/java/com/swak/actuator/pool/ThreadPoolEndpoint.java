@@ -23,7 +23,7 @@ public class ThreadPoolEndpoint {
 	 */
 	@Operation
 	public Map<String, Object> metrics() {
-		return Workers.executor.metrics();
+		return Workers.DEFAULT.metrics();
 	}
 	
 	/**
@@ -32,7 +32,7 @@ public class ThreadPoolEndpoint {
 	 */
 	@Operation
 	public Map<String, Object> metrics(@Selector String name) {
-		return Workers.executor.metrics(name);
+		return Workers.DEFAULT.metrics(name);
 	}
 	
 	/**
@@ -41,7 +41,7 @@ public class ThreadPoolEndpoint {
 	 */
 	@Operation
 	public void poolSize(String name, int maxSize) {
-		Workers.executor.poolSize(name, maxSize);
+		Workers.DEFAULT.poolSize(name, maxSize);
 	}
 	
 	/**
@@ -50,7 +50,7 @@ public class ThreadPoolEndpoint {
 	 */
 	@Operation
 	public void coreSize(String name, int maxSize) {
-		Workers.executor.coreSize(name, maxSize);
+		Workers.DEFAULT.coreSize(name, maxSize);
 	}
 	
 	/**
@@ -59,6 +59,6 @@ public class ThreadPoolEndpoint {
 	 */
 	@Operation
 	public void timeSeconds(String name, int maxSize) {
-		Workers.executor.timeSeconds(name, maxSize);
+		Workers.DEFAULT.timeSeconds(name, maxSize);
 	}
 }

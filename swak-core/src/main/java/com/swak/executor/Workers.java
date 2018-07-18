@@ -44,25 +44,31 @@ import reactor.core.scheduler.Schedulers;
 public class Workers {
 
 	/** 线城池： 设置、获取 */
-	public static ConfigableExecutor executor;
+	public static ConfigableExecutor DEFAULT;
+	public static Executor WRITE;
+	public static Executor READ;
+	public static Executor SINGLE;
 	public static void executor(ConfigableExecutor executor) {
-		Workers.executor = executor;
+		Workers.DEFAULT = executor;
+		Workers.WRITE = executor.getExecutor(Constants.write_pool);
+		Workers.READ = executor.getExecutor(Constants.read_pool);
+		Workers.SINGLE = executor.getExecutor(Constants.single_pool);
 	}
 	public static Executor executor(String name) {
-		return executor.getExecutor(name);
+		return DEFAULT.getExecutor(name);
 	}
 	// ----------------- 内置线程池执行代码 --------------------------
     public static <U> CompletableFuture<U> execute(Supplier<U> supplier) {
-    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.default_pool));
+    	return CompletableFuture.supplyAsync(supplier, DEFAULT);
     }
     public static <U> CompletableFuture<U> write(Supplier<U> supplier) {
-    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.write_pool));
+    	return CompletableFuture.supplyAsync(supplier, WRITE);
     }
     public static <U> CompletableFuture<U> read(Supplier<U> supplier) {
-    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.read_pool));
+    	return CompletableFuture.supplyAsync(supplier, READ);
     }
     public static <U> CompletableFuture<U> single(Supplier<U> supplier) {
-    	return CompletableFuture.supplyAsync(supplier, Workers.executor(Constants.single_pool));
+    	return CompletableFuture.supplyAsync(supplier, SINGLE);
     }
 	// ----------------- 异步执行代码(命名线程池) --------------------------
 	/**
@@ -72,8 +78,8 @@ public class Workers {
 	 * @return
 	 */
 	public static <T> CompletableFuture<T> future(String name, Supplier<T> supplier) {
-		Assert.notNull(executor, "please init Worker Executor");
-		return CompletableFuture.supplyAsync(supplier, executor.getExecutor(name));
+		Assert.notNull(DEFAULT, "please init Worker Executor");
+		return CompletableFuture.supplyAsync(supplier, DEFAULT.getExecutor(name));
 	}
 	
 	/**
@@ -83,8 +89,8 @@ public class Workers {
 	 * @return
 	 */
 	public static CompletableFuture<Void> future(String name, Runnable runnable) {
-		Assert.notNull(executor, "please init Worker Executor");
-		return CompletableFuture.runAsync(runnable, executor.getExecutor(name));
+		Assert.notNull(DEFAULT, "please init Worker Executor");
+		return CompletableFuture.runAsync(runnable, DEFAULT.getExecutor(name));
 	}
 	// ----------------- 异步执行代码(默认线程池) --------------------------
 	/**
@@ -94,8 +100,8 @@ public class Workers {
 	 * @return
 	 */
 	public static <T> CompletableFuture<T> future(Supplier<T> supplier) {
-		Assert.notNull(executor, "please init Worker Executor");
-		return CompletableFuture.supplyAsync(supplier, executor);
+		Assert.notNull(DEFAULT, "please init Worker Executor");
+		return CompletableFuture.supplyAsync(supplier, DEFAULT);
 	}
 
 	/**
@@ -105,8 +111,8 @@ public class Workers {
 	 * @return
 	 */
 	public static CompletableFuture<Void> future(Runnable runnable) {
-		Assert.notNull(executor, "please init Worker Executor");
-		return CompletableFuture.runAsync(runnable, executor);
+		Assert.notNull(DEFAULT, "please init Worker Executor");
+		return CompletableFuture.runAsync(runnable, DEFAULT);
 	}
 
 	/**
@@ -117,8 +123,8 @@ public class Workers {
 	 */
 	@Deprecated
 	public static <T> Mono<T> reactive(Supplier<T> supplier) {
-		Assert.notNull(executor, "please init Worker Executor");
-		return Mono.fromCompletionStage(CompletableFuture.supplyAsync(supplier, executor));
+		Assert.notNull(DEFAULT, "please init Worker Executor");
+		return Mono.fromCompletionStage(CompletableFuture.supplyAsync(supplier, DEFAULT));
 	}
 
 	/**
@@ -129,8 +135,8 @@ public class Workers {
 	 */
 	@Deprecated
 	public static Mono<Void> reactive(Runnable runnable) {
-		Assert.notNull(executor, "please init Worker Executor");
-		return Mono.fromCompletionStage(CompletableFuture.runAsync(runnable, executor));
+		Assert.notNull(DEFAULT, "please init Worker Executor");
+		return Mono.fromCompletionStage(CompletableFuture.runAsync(runnable, DEFAULT));
 	}
 
 	/**
@@ -193,9 +199,9 @@ public class Workers {
 	 */
 	@Deprecated
 	public static <T> Mono<T> sink(Supplier<T> supplier) {
-		Assert.notNull(executor, "please init Worker Executor");
+		Assert.notNull(DEFAULT, "please init Worker Executor");
 		return Mono.create((sink) -> {
-			CompletableFuture.supplyAsync(supplier, executor).whenComplete((v, e) -> {
+			CompletableFuture.supplyAsync(supplier, DEFAULT).whenComplete((v, e) -> {
 				try {
 					if (e != null) {
 						sink.error(e);
@@ -220,9 +226,9 @@ public class Workers {
 	 */
 	@Deprecated
 	public static Mono<Void> sink(Runnable runnable) {
-		Assert.notNull(executor, "please init Worker Executor");
+		Assert.notNull(DEFAULT, "please init Worker Executor");
 		return Mono.create((sink) -> {
-			CompletableFuture.runAsync(runnable, executor).whenComplete((v, e) -> {
+			CompletableFuture.runAsync(runnable, DEFAULT).whenComplete((v, e) -> {
 				try {
 					if (e != null) {
 						sink.error(e);
@@ -275,6 +281,6 @@ public class Workers {
 	 */
 	@Deprecated
 	public static <T> Mono<T> mono(Mono<T> mono) {
-		return mono.subscribeOn(Schedulers.fromExecutor(executor));
+		return mono.subscribeOn(Schedulers.fromExecutor(DEFAULT));
 	}
 }
