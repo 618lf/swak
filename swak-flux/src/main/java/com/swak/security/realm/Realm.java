@@ -6,7 +6,6 @@ import com.swak.reactivex.transport.http.Principal;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.security.context.AuthorizationInfo;
-import com.swak.security.exception.AuthenticationException;
 
 public interface Realm {
 
@@ -15,7 +14,6 @@ public interface Realm {
 	 * 你想怎么验证就怎么验证
 	 * @param token
 	 * @return
-	 * @throws AuthenticationException
 	 */
 	CompletionStage<Principal> doAuthentication(HttpServerRequest request);
 	

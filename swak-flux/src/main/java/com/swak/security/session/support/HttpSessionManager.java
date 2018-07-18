@@ -30,7 +30,7 @@ public class HttpSessionManager {
 	public void setSessionTimeout(int sessionTimeout) {
 		this.sessionRepository.setSessionTimeout(sessionTimeout);
 	}
-	
+
 	/**
 	 * 获得 session
 	 * 
@@ -44,19 +44,17 @@ public class HttpSessionManager {
 		}
 		String sessionId = this.readCookie(request);
 		if (StringUtils.isNotBlank(sessionId)) {
-			return Mono.fromCompletionStage(sessionRepository.getSession(sessionId)).map(s ->{
+			return Mono.fromCompletionStage(sessionRepository.getSession(sessionId)).map(s -> {
 				if (session instanceof NoneSession) {
 					this.onInvalidateSession(request, response);
-				}
-				if (create) {
-					s = sessionRepository.createSession();
+					s = create ? sessionRepository.createSession() : s;
 				}
 				return s;
 			});
 		}
 		return Mono.just(NoneSession.NONE);
 	}
-	
+
 	/**
 	 * 创建session
 	 */
@@ -66,38 +64,41 @@ public class HttpSessionManager {
 		this.writeCookie(request, response, session.getId());
 		return session;
 	}
-	
+
 	/**
 	 * 删除session
 	 */
 	public Mono<Boolean> removeSession(HttpServerRequest request, HttpServerResponse response) {
-		return Mono.fromCompletionStage(sessionRepository.removeSession(request.getSubject().getSession())).doOnSuccess((v) -> {
-			this.onInvalidateSession(request, response);
-		});
+		return Mono.fromCompletionStage(sessionRepository.removeSession(request.getSubject().getSession()))
+				.doOnSuccess((v) -> {
+					this.onInvalidateSession(request, response);
+				});
 	}
-	
+
 	/**
 	 * 删除session
 	 */
 	public Mono<Boolean> removeSession(String sessionId) {
 		return Mono.fromCompletionStage(sessionRepository.removeSession(sessionId));
 	}
-	
+
 	// 失效当前的session
 	protected void onInvalidateSession(HttpServerRequest request, HttpServerResponse response) {
 		this.removeCookie(request, response);
 	}
-	
+
 	// cookie 相关的操作
 	public String readCookie(HttpServerRequest request) {
 		Cookie cookie = request.getCookie(this.sessionName);
-		String sessionId = cookie != null ? cookie.value(): null;
-		return Constants.deleted_cookie_value.equals(sessionId) ? null: sessionId;
+		String sessionId = cookie != null ? cookie.value() : null;
+		return Constants.deleted_cookie_value.equals(sessionId) ? null : sessionId;
 	}
+
 	public void writeCookie(HttpServerRequest request, HttpServerResponse response, String cookieValue) {
 		SimpleCookie sessionCookie = new SimpleCookie(this.sessionName, cookieValue);
 		sessionCookie.saveTo(request, response);
 	}
+
 	public void removeCookie(HttpServerRequest request, HttpServerResponse response) {
 		SimpleCookie sessionCookie = new SimpleCookie(this.sessionName, Constants.deleted_cookie_value);
 		sessionCookie.removeFrom(request, response);
