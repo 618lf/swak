@@ -86,7 +86,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 		Auth auth = handler.getAuth();
 		Async async = handler.getAsync();
 		if (auth != null && request.getSubject() != null) {
-           return doHandle(request.getSubject(), auth, async, handler, args);
+			return doHandle(request.getSubject(), auth, async, handler, args);
 		} else if (async != null) {
 			return Workers.future(async.value(), () -> {
 				return handler.doInvoke(args);
@@ -106,14 +106,12 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 			authFuture = CompletableFuture.completedFuture(true);
 		}
 		if (async != null) {
-			return authFuture.thenComposeAsync((b) -> {
+			return authFuture.thenApplyAsync((b) -> {
 				if (b) {
-					return Workers.future(async.value(), () -> {
-						return handler.doInvoke(args);
-					});
+					return handler.doInvoke(args);
 				}
-				return CompletableFuture.completedFuture(Result.error(ErrorCode.ACCESS_DENIED));
-			});
+				return Result.error(ErrorCode.ACCESS_DENIED);
+			}, Workers.executor(async.value()));
 		}
 		return authFuture.thenApply((b) -> {
 			if (b) {
