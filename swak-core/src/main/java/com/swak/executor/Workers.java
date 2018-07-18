@@ -115,6 +115,7 @@ public class Workers {
 	 * @param supplier
 	 * @return
 	 */
+	@Deprecated
 	public static <T> Mono<T> reactive(Supplier<T> supplier) {
 		Assert.notNull(executor, "please init Worker Executor");
 		return Mono.fromCompletionStage(CompletableFuture.supplyAsync(supplier, executor));
@@ -126,6 +127,7 @@ public class Workers {
 	 * @param supplier
 	 * @return
 	 */
+	@Deprecated
 	public static Mono<Void> reactive(Runnable runnable) {
 		Assert.notNull(executor, "please init Worker Executor");
 		return Mono.fromCompletionStage(CompletableFuture.runAsync(runnable, executor));
@@ -189,6 +191,7 @@ public class Workers {
 	 * @param supplier
 	 * @return
 	 */
+	@Deprecated
 	public static <T> Mono<T> sink(Supplier<T> supplier) {
 		Assert.notNull(executor, "please init Worker Executor");
 		return Mono.create((sink) -> {
@@ -215,6 +218,7 @@ public class Workers {
 	 * @param supplier
 	 * @return
 	 */
+	@Deprecated
 	public static Mono<Void> sink(Runnable runnable) {
 		Assert.notNull(executor, "please init Worker Executor");
 		return Mono.create((sink) -> {
@@ -241,6 +245,7 @@ public class Workers {
 	 * @param supplier
 	 * @return
 	 */
+	@Deprecated
 	public static <T> Mono<T> optional(Optional<T> optional) {
 		return sink(() -> {
 			return optional.get();
@@ -255,6 +260,7 @@ public class Workers {
 	 * @param supplier
 	 * @return
 	 */
+	@Deprecated
 	public static <T> Mono<T> stream(Stream<T> stream) {
 		return sink(() -> {
 			return stream.findFirst().get();
@@ -267,6 +273,7 @@ public class Workers {
 	 * @param mono
 	 * @return
 	 */
+	@Deprecated
 	public static <T> Mono<T> mono(Mono<T> mono) {
 		return mono.subscribeOn(Schedulers.fromExecutor(executor));
 	}

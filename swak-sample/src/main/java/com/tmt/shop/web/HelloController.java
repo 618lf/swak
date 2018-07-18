@@ -64,6 +64,7 @@ public class HelloController {
 	 * from async apis
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	@GetMapping("/say/async_api")
 	public Mono<Result> sayAsync_api() {
 		return Workers.sink(() ->{
@@ -157,6 +158,7 @@ public class HelloController {
 	 * 返回 mono 对象
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	@GetMapping("/say/stream")
 	public Mono<Result> sayStream(String name) {
 		Stream<CompletableFuture<Shop>> optional = Stream.of(name).map(s -> {
@@ -212,6 +214,7 @@ public class HelloController {
 	 * @return
 	 * @throws IOException 
 	 */
+	@SuppressWarnings("deprecation")
 	@GetMapping("/say/compute")
 	public Mono<String> sayCompute(HttpServerRequest request) throws IOException {
 		String biaodashi = WebUtils.getCleanParam(request, "name");
@@ -219,7 +222,6 @@ public class HelloController {
 			return Workers.sink(() ->{
 				try {
 					// 模拟计算一分钟，其实和实际的计算是有差别的，sleep 之后这个线程不能做其他的事情了
-					// 如果是计算，还可以分出去做其他的事情。
 					Thread.sleep(60000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
