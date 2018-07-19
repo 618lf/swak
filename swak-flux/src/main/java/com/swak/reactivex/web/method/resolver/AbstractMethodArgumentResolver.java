@@ -39,7 +39,7 @@ public abstract class AbstractMethodArgumentResolver implements HandlerMethodArg
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private <T> T doConvert(Object value, Class<T> targetType) {
+	protected <T> T doConvert(Object value, Class<T> targetType) {
 		TypeDescriptor sourceTypeDesc = TypeDescriptor.forObject(value);
 		TypeDescriptor targetDescriptor = TypeDescriptor.valueOf(targetType);
 		if (conversionService.canConvert(sourceTypeDesc, targetDescriptor)) {

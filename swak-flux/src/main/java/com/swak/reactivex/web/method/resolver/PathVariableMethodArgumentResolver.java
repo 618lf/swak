@@ -28,6 +28,18 @@ public class PathVariableMethodArgumentResolver extends AbstractMethodArgumentRe
 	public boolean supportsParameter(MethodParameter parameter) {
 		return parameter.getParameterAnnotation(PathVariable.class) != null;
 	}
+	
+	/**
+	 * 1. 解析出参数
+	 * 2. 通过属性转换器转换成对应的类型
+	 */
+	@Override
+	public Object resolveArgument(MethodParameter parameter, HttpServerRequest webRequest){
+		// 获取子类的参数
+		Object arg = this.resolveArgumentInternal(parameter, webRequest);
+		// 转换类型描述
+		return this.doConvert(arg, parameter.getParameterType());
+	}
 
 	/**
 	 * 解析出变量的值

@@ -9,6 +9,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.utils.StringUtils;
 
 /**
  * 处理基本的参数 支持最基本的类型和Map类型
@@ -52,7 +53,7 @@ public class RequestParamMethodArgumentResolver extends AbstractMethodArgumentRe
 			if (paramValues != null) {
 				arg = (paramValues.size() == 1 ? paramValues.get(0) : paramValues);
 			}
-			return arg == null ? new String() : arg;
+			return arg == null ? StringUtils.EMPTY : arg;
 		}
 	}
 }
