@@ -32,7 +32,6 @@ import com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler;
  * @author calvin
  * @version 2013-01-15
  */
-@SuppressWarnings("restriction")
 public class JaxbMapper {
 
 	private static ConcurrentMap<Class<?>, JAXBContext> CONTEXT = null;

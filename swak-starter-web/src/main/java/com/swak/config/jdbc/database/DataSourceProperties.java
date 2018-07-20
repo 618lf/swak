@@ -15,7 +15,7 @@ public class DataSourceProperties {
 	private String url;
     private String username;
     private String password;
-    private String driverClassName = "com.mysql.jdbc.Driver";
+    private String driverClassName = "com.mysql.cj.jdbc.Driver";
     private Integer initialSize = 10;
     private Integer minIdle = 10;
     private Integer maxActive = 20; // 连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
