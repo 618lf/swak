@@ -22,7 +22,8 @@ public class SimpleRealm implements Realm {
 	 */	
 	@Override
 	public CompletableFuture<Principal> doAuthentication(HttpServerRequest request) throws AuthenticationException {
-		return null;
+		Principal principal = new Principal(0, "lifeng");
+		return CompletableFuture.completedFuture(principal);
 	}
 
 	/**
