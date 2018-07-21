@@ -17,6 +17,7 @@ public class MotanProperties {
 	private boolean protocolDefault = true;
 	private String protocolName = "motan";
 	private int protocolMaxContentLength = 1048576;
+	
 	private String registryProtocol = "direct";
 	private String registryAddress;
 
