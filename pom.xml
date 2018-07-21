@@ -20,6 +20,7 @@
 		<module>swak-sample-rpc</module>
 		<module>swak-groovy</module>
 		<module>swak-storage</module>
+		<module>swak-motan</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.0.3.RELEASE</spring-boot.version>
@@ -43,7 +44,8 @@
 		<HikariCP.version>3.2.0</HikariCP.version>
 		<reactor.version>3.1.8.RELEASE</reactor.version>
 		<async.httpclient.version>2.5.2</async.httpclient.version>
-
+        <motan.version>1.1.1</motan.version>
+        
 		<!-- test -->
 		<junit.version>4.12</junit.version>
 
@@ -120,6 +122,11 @@
 			<dependency>
 				<groupId>com.swak</groupId>
 				<artifactId>swak-rpc</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-motan</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

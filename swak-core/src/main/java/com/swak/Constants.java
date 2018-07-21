@@ -26,6 +26,7 @@ public interface Constants {
 	String ACTUATOR_ENDPOINT_WEB = "spring.endpoints.web";
 	String ACTUATOR_TRACE = "spring.trace";
 	String STORAGE_PREFIX = "spring.storage";
+	String MOTAN_PREFIX = "spring.motan";
 
 	/** 保留ID **/
 	long ROOT = 0L;
