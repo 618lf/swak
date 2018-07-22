@@ -12,15 +12,12 @@ import com.swak.Constants;
 @ConfigurationProperties(prefix = Constants.MOTAN_PREFIX)
 public class MotanProperties {
 
-	// 扫描的包
-	private String annotationPackage;
+	private String annotationPackage="com.tmt.*.service";
 	private boolean protocolDefault = true;
 	private String protocolName = "motan";
 	private int protocolMaxContentLength = 1048576;
-	
 	private String registryProtocol = "direct";
 	private String registryAddress;
-
 	private String refererProtocol = "motan";
 	private String refererGroup = "motan-rpc";
 	private String refererModule = "motan-rpc";
@@ -30,6 +27,7 @@ public class MotanProperties {
 	private boolean refererAccessLog = true;
 	private int refererRetries = 2;
 	private boolean refererThrowException = true;
+	
 	public String getAnnotationPackage() {
 		return annotationPackage;
 	}

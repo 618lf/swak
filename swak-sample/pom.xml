@@ -38,6 +38,10 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-actuator</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-motan</artifactId>
+		</dependency>
 
 		<!-- 项目的特定配置 -->
 		<dependency>

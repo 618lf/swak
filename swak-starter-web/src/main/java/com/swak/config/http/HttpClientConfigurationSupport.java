@@ -8,7 +8,6 @@ import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 
 import com.swak.http.HttpClientProperties;
@@ -20,7 +19,6 @@ import com.swak.reactivex.transport.http.server.HttpServerProperties;
  * 配置 http client
  * @author lifeng
  */
-@ConditionalOnClass(AsyncHttpClientConfig.class)
 public class HttpClientConfigurationSupport {
 	
 	@Autowired

@@ -1,6 +1,7 @@
-package com.swak.config.rpc.motan;
+package com.swak.config.motan;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import static com.swak.Application.APP_LOGGER;
+
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -23,15 +24,16 @@ import com.weibo.api.motan.config.springsupport.RegistryConfigBean;
  * @author lifeng
  */
 @Configuration
-@ConditionalOnClass(MotanProperties.class)
+@ConditionalOnClass({ MotanProperties.class })
+@EnableConfigurationProperties(MotanProperties.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMotan", matchIfMissing = true)
-@EnableConfigurationProperties(MotanProperties.class)
-public class RpcClientAutoConfiguration {
+public class MotanAutoConfiguration {
 
-	@Autowired
-	private MotanProperties motanProperties;
+	public MotanAutoConfiguration() {
+		APP_LOGGER.debug("Loading Motan");
+	}
 
 	/**
 	 * 扫描的包
@@ -39,7 +41,7 @@ public class RpcClientAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public AnnotationBean motanAnnotationBean() {
+	public AnnotationBean motanAnnotationBean(MotanProperties motanProperties) {
 		AnnotationBean motanAnnotationBean = new AnnotationBean();
 		motanAnnotationBean.setPackage(motanProperties.getAnnotationPackage());
 		return motanAnnotationBean;
@@ -51,7 +53,7 @@ public class RpcClientAutoConfiguration {
 	 * @return
 	 */
 	@Bean(name = "motan")
-	public ProtocolConfigBean protocolConfig1() {
+	public ProtocolConfigBean protocolConfig(MotanProperties motanProperties) {
 		ProtocolConfigBean config = new ProtocolConfigBean();
 		config.setDefault(motanProperties.isProtocolDefault());
 		config.setName(motanProperties.getProtocolName());
@@ -64,7 +66,7 @@ public class RpcClientAutoConfiguration {
 	 * @return
 	 */
 	@Bean(name = "registry")
-	public RegistryConfigBean registryConfig() {
+	public RegistryConfigBean registryConfig(MotanProperties motanProperties) {
 		RegistryConfigBean config = new RegistryConfigBean();
 		config.setRegProtocol(motanProperties.getRegistryProtocol());
 		config.setAddress(motanProperties.getRegistryAddress());
@@ -75,8 +77,8 @@ public class RpcClientAutoConfiguration {
 	 * 依赖配置
 	 * @return
 	 */
-    @Bean(name = "refererConfig")
-    public BasicRefererConfigBean baseRefererConfig() {
+    @Bean
+    public BasicRefererConfigBean refererConfig(MotanProperties motanProperties) {
         BasicRefererConfigBean config = new BasicRefererConfigBean();
         config.setProtocol("motan");
         config.setGroup("motan-rpc");

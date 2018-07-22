@@ -49,3 +49,8 @@ ComplableFuture  用作数据驱动，应用于耗时操作，切换线程，mon
 所有业务接口需要调用的地方，返回值是 ComplableFuture， 这样方便业务代码接入到 执行链中，如果返回的是mono，则后续需要
 执行耗时操作还是需要使用 ComplableFuture，同时需要多次转换到 mono。
 尽量保证整个执行链中只需要一次 fromFuture 来转换
+
+遇到一个问题： 如果自动配置中有bean 实现了 BeanFactoryPostProcessor, BeanPostProcessor 等接口，那么这个自动配置的优先级
+就会很高。高度在内中定义的如下代码都不能正常实例化。所以记住这个，花了好长的时间才调试出来
+@Autowired
+private MotanProperties properties;

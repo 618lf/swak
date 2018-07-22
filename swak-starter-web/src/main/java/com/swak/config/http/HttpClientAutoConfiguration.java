@@ -1,5 +1,6 @@
 package com.swak.config.http;
 
+import org.asynchttpclient.AsyncHttpClientConfig;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -15,13 +16,14 @@ import com.swak.http.HttpClients;
 
 /**
  * HttpClient 服务配置
+ * 
  * @author lifeng
  */
 @Configuration
-@ConditionalOnClass(HttpClients.class)
+@ConditionalOnClass({ HttpClients.class, AsyncHttpClientConfig.class })
 @ConditionalOnMissingBean(HttpClientConfigurationSupport.class)
 @EnableConfigurationProperties(HttpClientProperties.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 150)
 @Order(Ordered.HIGHEST_PRECEDENCE + 150)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableHttpClient", matchIfMissing = true)
-public class HttpClientAutoConfiguration extends HttpClientConfigurationSupport{}
+public class HttpClientAutoConfiguration extends HttpClientConfigurationSupport {}

@@ -60,6 +60,7 @@ import com.swak.utils.StringUtils;
  * @author lifeng
  */
 @org.springframework.context.annotation.Configuration
+@ConditionalOnClass(JdbcTemplate.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableDataBase", matchIfMissing = true)
@@ -73,7 +74,7 @@ public class DataBaseAutoConfiguration {
 	@org.springframework.context.annotation.Configuration
 	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
-	@ConditionalOnClass(DataSource.class)
+	@ConditionalOnClass(JdbcTemplate.class)
 	@ConditionalOnMissingBean(DataSource.class)
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@Import({
@@ -88,7 +89,7 @@ public class DataBaseAutoConfiguration {
 	 * @author lifeng
 	 */
 	@org.springframework.context.annotation.Configuration
-	@ConditionalOnClass({ DataSource.class, JdbcTemplate.class })
+	@ConditionalOnClass(JdbcTemplate.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	@AutoConfigureAfter(DataSourceAutoConfiguration.class)
 	@EnableConfigurationProperties(JdbcProperties.class)
