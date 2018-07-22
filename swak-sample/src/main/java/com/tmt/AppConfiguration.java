@@ -72,7 +72,7 @@ public class AppConfiguration {
 	@Bean
 	public SecurityConfigurationSupport securityConfigurationSupport() {
 		SecurityConfigurationSupport securityConfig = new SecurityConfigurationSupport();
-		securityConfig.definition("/admin/hello/**=anon").definition("/admin/login=authc")
+		securityConfig.definition("/admin/hello/**=anon").definition("/admin/motan/**=anon").definition("/admin/login=authc")
 				.definition("/admin/logout=logout").definition("/admin/user/get=user")
 				.definition("/admin/user/admin=user,roles[admin]").definition("/admin/user/system=user,roles[system]")
 				.definition("/admin/**=user").definition("/admin/**=user").definition("/=user")

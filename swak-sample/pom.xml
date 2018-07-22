@@ -42,6 +42,10 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-motan</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-sample-api</artifactId>
+		</dependency>
 
 		<!-- 项目的特定配置 -->
 		<dependency>

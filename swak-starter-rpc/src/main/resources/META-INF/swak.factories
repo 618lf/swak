@@ -3,7 +3,5 @@
 
 # Auto Configuration, SWAK only load Auto Configuration 
 com.swak.ApplicationBoot=\
-com.swak.config.registry.RegistryAutoConfiguration,\
-com.swak.config.rpc.RpcHandlerAutoConfiguration,\
-com.swak.config.ExecutorAutoConfiguration,\
-com.swak.config.RpcServerAutoConfiguration
+com.swak.config.MotanAutoConfiguration,\
+com.swak.config.MotanCommandLineRunner

@@ -48,9 +48,6 @@ public class SecurityFilter implements WebFilter, Ordered {
 	protected WebFilterChain getExecutionChain(Subject subject, HttpServerRequest request, HttpServerResponse response,
 			WebFilterChain origChain) {
 		
-		// 当前的主体
-		request.setSubject(subject);
-		
 		// 构建请求
 		WebFilterChain chain = origChain;
 		if (this.filterChainManager == null || !this.filterChainManager.hasChains()) {

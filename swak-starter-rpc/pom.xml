@@ -10,11 +10,13 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.swak</groupId>
-			<artifactId>swak-core</artifactId>
+			<artifactId>swak-rpc</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>
-			<artifactId>swak-rpc</artifactId>
+			<artifactId>swak-motan</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

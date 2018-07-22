@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.swak.config.motan;
+package com.swak.config;
 
 import static com.swak.Application.APP_LOGGER;
 
@@ -29,11 +29,13 @@ import org.springframework.util.StringUtils;
 
 import com.swak.motan.properties.AnnotationBeanConfigProperties;
 import com.swak.motan.properties.BasicRefererConfigProperties;
+import com.swak.motan.properties.BasicServiceConfigProperties;
 import com.swak.motan.properties.ProtocolConfigProperties;
 import com.swak.motan.properties.RegistryConfigProperties;
 import com.weibo.api.motan.config.ExtConfig;
 import com.weibo.api.motan.config.springsupport.AnnotationBean;
 import com.weibo.api.motan.config.springsupport.BasicRefererConfigBean;
+import com.weibo.api.motan.config.springsupport.BasicServiceConfigBean;
 import com.weibo.api.motan.config.springsupport.ProtocolConfigBean;
 import com.weibo.api.motan.config.springsupport.RegistryConfigBean;
 
@@ -43,8 +45,8 @@ import com.weibo.api.motan.config.springsupport.RegistryConfigBean;
  * @author lifeng
  */
 @Configuration
-@ConditionalOnClass({ BasicRefererConfigProperties.class })
-@EnableConfigurationProperties({ AnnotationBeanConfigProperties.class, BasicRefererConfigProperties.class,
+@ConditionalOnClass({ BasicServiceConfigProperties.class })
+@EnableConfigurationProperties({ AnnotationBeanConfigProperties.class, BasicServiceConfigProperties.class, BasicRefererConfigProperties.class,
 		ProtocolConfigProperties.class, RegistryConfigProperties.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
@@ -56,7 +58,7 @@ public class MotanAutoConfiguration {
 	private static final String PROTOCOL_CONFIG_BEAN_NAME = "_spring-boot-starter-motan-protocol_";
 
 	public MotanAutoConfiguration() {
-		APP_LOGGER.debug("Loading Motan Client");
+		APP_LOGGER.debug("Loading Motan Server");
 	}
 	
 	/**
@@ -215,88 +217,85 @@ public class MotanAutoConfiguration {
 	}
 
 	/**
-	 * 客户端不需要配置这个
+	 * define BasicServiceConfigBean
+	 * 
+	 * 属性来自Motan的配置文档
+	 * 
+	 * @see https://github.com/weibocom/motan/blob/master/docs/wiki/zh_configuration.md
+	 * 
+	 *      挑了一些属性，不全，后续补全
 	 */
-//	/**
-//	 * define BasicServiceConfigBean
-//	 * 
-//	 * 属性来自Motan的配置文档
-//	 * 
-//	 * @see https://github.com/weibocom/motan/blob/master/docs/wiki/zh_configuration.md
-//	 * 
-//	 *      挑了一些属性，不全，后续补全
-//	 */
-//	@Bean
-//	public BasicServiceConfigBean baseServiceConfig(BasicServiceConfigProperties basicServiceConfig,
-//			RegistryConfigBean registryConfigBean) {
-//		BasicServiceConfigBean config = new BasicServiceConfigBean();
-//
-//		if (!StringUtils.isEmpty(basicServiceConfig.getExport())) {
-//			config.setExport(basicServiceConfig.getExport());
-//		} else {
-//			// 未设置export，使用ProtocolConfigBeanName : port暴露
-//			if (StringUtils.isEmpty(basicServiceConfig.getExportPort())) {
-//				throw new RuntimeException("need service export port...");
-//			}
-//			config.setExport(PROTOCOL_CONFIG_BEAN_NAME + ":" + basicServiceConfig.getExportPort());
-//		}
-//
-//		if (!StringUtils.isEmpty(basicServiceConfig.getExtConfigId())) {
-//			ExtConfig extConfig = new ExtConfig();
-//			extConfig.setId(basicServiceConfig.getExtConfigId());
-//			config.setExtConfig(extConfig);
-//		}
-//		if (!StringUtils.isEmpty(basicServiceConfig.getProxy())) {
-//			config.setProxy(basicServiceConfig.getProxy());
-//		}
-//		if (!StringUtils.isEmpty(basicServiceConfig.getGroup())) {
-//			config.setGroup(basicServiceConfig.getGroup());
-//		}
-//		if (!StringUtils.isEmpty(basicServiceConfig.getVersion())) {
-//			config.setVersion(basicServiceConfig.getVersion());
-//		}
-//		if (!StringUtils.isEmpty(basicServiceConfig.getThrowException())) {
-//			config.setThrowException(basicServiceConfig.getThrowException());
-//		}
-//		if (!StringUtils.isEmpty(basicServiceConfig.getApplication())) {
-//			config.setApplication(basicServiceConfig.getApplication());
-//		}
-//		if (!StringUtils.isEmpty(basicServiceConfig.getShareChannel())) {
-//			config.setShareChannel(basicServiceConfig.getShareChannel());
-//		}
-//		if (!StringUtils.isEmpty(basicServiceConfig.getRegistry())) {
-//			// 追加内部的注册配置bean
-//			config.setRegistry(REGISTRY_CONFIG_BEAN_NAME + "," + basicServiceConfig.getRegistry());
-//		} else {
-//			config.setRegistry(REGISTRY_CONFIG_BEAN_NAME);
-//		}
-//		if (!StringUtils.isEmpty(basicServiceConfig.getAccessLog())) {
-//			config.setAccessLog(basicServiceConfig.getAccessLog());
-//		}
-//		if (!StringUtils.isEmpty(basicServiceConfig.getUsegz())) {
-//			config.setUsegz(basicServiceConfig.getUsegz());
-//		}
-//		if (!StringUtils.isEmpty(basicServiceConfig.getMingzSize())) {
-//			config.setMingzSize(basicServiceConfig.getMingzSize());
-//		}
-//		if (!StringUtils.isEmpty(basicServiceConfig.getCodec())) {
-//			config.setCodec(basicServiceConfig.getCodec());
-//		}
-//		if (!StringUtils.isEmpty(basicServiceConfig.getFilter())) {
-//			config.setFilter(basicServiceConfig.getFilter());
-//		}
-//		if (!StringUtils.isEmpty(basicServiceConfig.getModule())) {
-//			config.setModule(basicServiceConfig.getModule());
-//		}
-//		if (basicServiceConfig.getActives() != null) {
-//			config.setActives(basicServiceConfig.getActives());
-//		}
-//		if (basicServiceConfig.getRegister() != null) {
-//			config.setRegister(basicServiceConfig.getRegister());
-//		}
-//
-//		return config;
-//	}
+	@Bean
+	public BasicServiceConfigBean baseServiceConfig(BasicServiceConfigProperties basicServiceConfig,
+			RegistryConfigBean registryConfigBean) {
+		BasicServiceConfigBean config = new BasicServiceConfigBean();
+
+		if (!StringUtils.isEmpty(basicServiceConfig.getExport())) {
+			config.setExport(basicServiceConfig.getExport());
+		} else {
+			// 未设置export，使用ProtocolConfigBeanName : port暴露
+			if (StringUtils.isEmpty(basicServiceConfig.getExportPort())) {
+				throw new RuntimeException("need service export port...");
+			}
+			config.setExport(PROTOCOL_CONFIG_BEAN_NAME + ":" + basicServiceConfig.getExportPort());
+		}
+
+		if (!StringUtils.isEmpty(basicServiceConfig.getExtConfigId())) {
+			ExtConfig extConfig = new ExtConfig();
+			extConfig.setId(basicServiceConfig.getExtConfigId());
+			config.setExtConfig(extConfig);
+		}
+		if (!StringUtils.isEmpty(basicServiceConfig.getProxy())) {
+			config.setProxy(basicServiceConfig.getProxy());
+		}
+		if (!StringUtils.isEmpty(basicServiceConfig.getGroup())) {
+			config.setGroup(basicServiceConfig.getGroup());
+		}
+		if (!StringUtils.isEmpty(basicServiceConfig.getVersion())) {
+			config.setVersion(basicServiceConfig.getVersion());
+		}
+		if (!StringUtils.isEmpty(basicServiceConfig.getThrowException())) {
+			config.setThrowException(basicServiceConfig.getThrowException());
+		}
+		if (!StringUtils.isEmpty(basicServiceConfig.getApplication())) {
+			config.setApplication(basicServiceConfig.getApplication());
+		}
+		if (!StringUtils.isEmpty(basicServiceConfig.getShareChannel())) {
+			config.setShareChannel(basicServiceConfig.getShareChannel());
+		}
+		if (!StringUtils.isEmpty(basicServiceConfig.getRegistry())) {
+			// 追加内部的注册配置bean
+			config.setRegistry(REGISTRY_CONFIG_BEAN_NAME + "," + basicServiceConfig.getRegistry());
+		} else {
+			config.setRegistry(REGISTRY_CONFIG_BEAN_NAME);
+		}
+		if (!StringUtils.isEmpty(basicServiceConfig.getAccessLog())) {
+			config.setAccessLog(basicServiceConfig.getAccessLog());
+		}
+		if (!StringUtils.isEmpty(basicServiceConfig.getUsegz())) {
+			config.setUsegz(basicServiceConfig.getUsegz());
+		}
+		if (!StringUtils.isEmpty(basicServiceConfig.getMingzSize())) {
+			config.setMingzSize(basicServiceConfig.getMingzSize());
+		}
+		if (!StringUtils.isEmpty(basicServiceConfig.getCodec())) {
+			config.setCodec(basicServiceConfig.getCodec());
+		}
+		if (!StringUtils.isEmpty(basicServiceConfig.getFilter())) {
+			config.setFilter(basicServiceConfig.getFilter());
+		}
+		if (!StringUtils.isEmpty(basicServiceConfig.getModule())) {
+			config.setModule(basicServiceConfig.getModule());
+		}
+		if (basicServiceConfig.getActives() != null) {
+			config.setActives(basicServiceConfig.getActives());
+		}
+		if (basicServiceConfig.getRegister() != null) {
+			config.setRegister(basicServiceConfig.getRegister());
+		}
+
+		return config;
+	}
 
 	/**
 	 * define BasicRefererConfigBean

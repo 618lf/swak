@@ -205,7 +205,15 @@ public class DefaultSecurityManager implements SecurityManager {
 	 */
 	@Override
 	public Mono<Subject> createSubject(HttpServerRequest request, HttpServerResponse response) {
-		return principalStrategy.resolvePrincipal(new FluxSubject(), request, response);
+		
+		// 创建一个默认的 subject
+		Subject subject = new FluxSubject();
+		
+		// 设置到当前的 request 中
+		request.setSubject(subject);
+		
+		// 获取身份
+		return principalStrategy.resolvePrincipal(subject, request, response);
 	}
 
 	/**
