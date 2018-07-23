@@ -76,7 +76,6 @@ public class HelloController {
 	 * 返回 null 的问题
 	 * @return
 	 */
-	@GetMapping("/say/void")
 	public void sayVoid() {
 		try {
 			Thread.sleep(10000L);
