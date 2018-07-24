@@ -50,7 +50,20 @@ ComplableFuture  用作数据驱动，应用于耗时操作，切换线程，mon
 执行耗时操作还是需要使用 ComplableFuture，同时需要多次转换到 mono。
 尽量保证整个执行链中只需要一次 fromFuture 来转换
 
+最近注意力不是很集中，也遇到了不少没碰到过的问题：
+
+问题1：
 遇到一个问题： 如果自动配置中有bean 实现了 BeanFactoryPostProcessor, BeanPostProcessor 等接口，那么这个自动配置的优先级
 就会很高。高度在内中定义的如下代码都不能正常实例化。所以记住这个，花了好长的时间才调试出来
 @Autowired
 private MotanProperties properties;
+
+问题2：
+javac 的 process，这个对我来说是一个比较新的概念，如果不是motan中用到了这种技术，估计还没了解过，其实也很简单，因为是javac 的标准功能，所以不会有问题。但在配置eclipse，idea等使用时不好看到效果。但配置maven 使用就很简单，
+基本上执行mvn compile 就可以执行process，生成的代码会放到 target/generated-sources/annotations 这个目录，如果需要使用到这部分代码，需要使用一个maven 插件将 这个目录作为源码包，或者手动添加。
+之前一致卡在 mvn compile 这个地方。 @see swak-sample-api
+
+
+
+
+
