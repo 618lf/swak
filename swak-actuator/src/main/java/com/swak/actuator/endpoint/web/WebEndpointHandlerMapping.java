@@ -75,7 +75,7 @@ public class WebEndpointHandlerMapping extends AbstractRequestMappingHandlerMapp
 		@Override
 		public Object handle(HttpServerRequest request) {
 			Map<String, Object> arguments = getArguments(request);
-			return this.operation.invoke(new InvocationContext(arguments));
+			return this.operation.invoke(new InvocationContext(request, arguments));
 		}
 		
 		private Map<String, Object> getArguments(HttpServerRequest request) {

@@ -5,6 +5,7 @@ import java.util.List;
 import com.alibaba.fastjson.JSONObject;
 import com.swak.actuator.endpoint.annotation.Endpoint;
 import com.swak.actuator.endpoint.annotation.Operation;
+import com.swak.actuator.endpoint.annotation.Selector;
 import com.swak.motan.manager.RegistryService;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
@@ -37,7 +38,7 @@ public class ServerEndpoint {
 	 * @return
 	 */
 	@Operation
-	public List<String> services(String group) {
+	public List<String> services(@Selector String group) {
 		if (StringUtils.isBlank(group)) {
 			return Lists.newArrayList();
 		}
@@ -51,7 +52,7 @@ public class ServerEndpoint {
 	 * @return
 	 */
 	@Operation
-	public List<JSONObject> nodes(String group) {
+	public List<JSONObject> nodes(@Selector String group) {
 		if (StringUtils.isEmpty(group)) {
 			return Lists.newArrayList();
         }
@@ -65,7 +66,7 @@ public class ServerEndpoint {
 	 * @return
 	 */
 	@Operation
-	public List<JSONObject> nodes(String group, String service, String nodeType) {
+	public List<JSONObject> nodes(@Selector String group, @Selector String service, @Selector String nodeType) {
 		if (StringUtils.isEmpty(group) || StringUtils.isEmpty(service)) {
 			return Lists.newArrayList();
         }

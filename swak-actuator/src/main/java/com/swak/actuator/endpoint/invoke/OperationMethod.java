@@ -36,8 +36,8 @@ public class OperationMethod {
 	}
 	
 	private OperationParameter createParameter(String name, Parameter parameter) {
-		boolean addPath = AnnotatedElementUtils.hasAnnotation(parameter, Selector.class);
-		return new OperationParameter(name, parameter, addPath);
+		boolean selector = AnnotatedElementUtils.hasAnnotation(parameter, Selector.class);
+		return new OperationParameter(name, parameter, selector);
 	}
 	
 	public Method getMethod() {

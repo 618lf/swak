@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.swak.actuator.endpoint.annotation.Endpoint;
 import com.swak.actuator.endpoint.annotation.Operation;
+import com.swak.actuator.endpoint.annotation.Selector;
 import com.swak.motan.manager.CommandService;
 import com.swak.utils.StringUtils;
 import com.weibo.api.motan.registry.support.command.RpcCommand.ClientCommand;
@@ -40,7 +41,7 @@ public class CommandEndpoint {
 	 * @return
 	 */
 	@Operation
-	public String commands(String group) {
+	public String commands(@Selector String group) {
 		if (StringUtils.isEmpty(group)) {
 			return StringUtils.EMPTY;
 		}
@@ -55,7 +56,7 @@ public class CommandEndpoint {
 	 * @return
 	 */
 	@Operation
-	public Boolean addCommand(String group, ClientCommand clientCommand) {
+	public Boolean addCommand(@Selector String group, ClientCommand clientCommand) {
 		if (StringUtils.isEmpty(group) || clientCommand == null) {
 			return Boolean.FALSE;
 		}
@@ -70,7 +71,7 @@ public class CommandEndpoint {
 	 * @return
 	 */
 	@Operation
-	public Boolean updateCommand(String group, ClientCommand clientCommand) {
+	public Boolean updateCommand(@Selector String group, ClientCommand clientCommand) {
 		if (StringUtils.isEmpty(group) || clientCommand == null) {
 			return Boolean.FALSE;
 		}
@@ -85,7 +86,7 @@ public class CommandEndpoint {
 	 * @return
 	 */
 	@Operation
-	public Boolean deleteCommand(String group, int index) {
+	public Boolean deleteCommand(@Selector String group, int index) {
 		if (StringUtils.isEmpty(group)) {
 			return Boolean.FALSE;
 		}
@@ -100,7 +101,7 @@ public class CommandEndpoint {
 	 * @return
 	 */
 	@Operation
-	public List<JSONObject> previewCommand(String group, String previewIP, ClientCommand clientCommand) {
+	public List<JSONObject> previewCommand(@Selector String group, @Selector String previewIP, ClientCommand clientCommand) {
 		if (StringUtils.isEmpty(group) || clientCommand == null) {
 			return Lists.newArrayList();
 		}
