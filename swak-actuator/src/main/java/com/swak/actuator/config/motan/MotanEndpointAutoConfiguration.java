@@ -2,6 +2,7 @@ package com.swak.actuator.config.motan;
 
 import org.apache.zookeeper.ZooKeeper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +13,7 @@ import com.swak.motan.manager.RegistryService;
 import com.swak.motan.manager.ZkClientWrapper;
 import com.swak.motan.manager.impl.ZookeeperCommandService;
 import com.swak.motan.manager.impl.ZookeeperRegistryService;
+import com.swak.motan.properties.RegistryConfigProperties;
 
 /**
  * motan 监控 自动化配置
@@ -20,6 +22,7 @@ import com.swak.motan.manager.impl.ZookeeperRegistryService;
  */
 @Configuration
 @ConditionalOnClass({RegistryService.class, CommandService.class, ZooKeeper.class})
+@ConditionalOnProperty(prefix = "spring.motan.registry", name = "regProtocol", havingValue="zookeeper")
 public class MotanEndpointAutoConfiguration {
 
 	/**
@@ -27,8 +30,9 @@ public class MotanEndpointAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public ZkClientWrapper zkClientWrapper() {
-		return new ZkClientWrapper();
+	public ZkClientWrapper zkClientWrapper(RegistryConfigProperties properties) {
+		String address = new StringBuilder(properties.getAddress()).append(":").append(properties.getPort()).toString();
+		return new ZkClientWrapper(address);
 	}
 	
 	/**

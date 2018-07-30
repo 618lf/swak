@@ -4,31 +4,33 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.I0Itec.zkclient.ZkClient;
-import org.springframework.beans.factory.annotation.Value;
 
 import com.weibo.api.motan.exception.MotanFrameworkException;
 
 public class ZkClientWrapper {
 
-    @Value("${registry.url}")
-    private String registryUrl;
-    private ZkClient zkClient;
+	private final String registryUrl;
+	private ZkClient zkClient;
 
-    @PostConstruct
-    void init() {
-        try {
-            zkClient = new ZkClient(registryUrl, 10000);
-        } catch (Exception e) {
-            throw new MotanFrameworkException("Fail to connect zookeeper, cause: " + e.getMessage());
-        }
-    }
+	public ZkClientWrapper(String registryUrl) {
+		this.registryUrl = registryUrl;
+	}
 
-    @PreDestroy
-    void destory() {
-        zkClient = null;
-    }
+	@PostConstruct
+	void init() {
+		try {
+			zkClient = new ZkClient(registryUrl, 10000);
+		} catch (Exception e) {
+			throw new MotanFrameworkException("Fail to connect zookeeper, cause: " + e.getMessage());
+		}
+	}
 
-    public ZkClient getZkClient() {
-        return zkClient;
-    }
+	@PreDestroy
+	void destory() {
+		zkClient = null;
+	}
+
+	public ZkClient getZkClient() {
+		return zkClient;
+	}
 }
