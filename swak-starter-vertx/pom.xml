@@ -10,6 +10,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.swak</groupId>
+			<artifactId>swak-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
 			<artifactId>swak-vertx</artifactId>
 		</dependency>
 	</dependencies>

@@ -6,21 +6,11 @@
 		<artifactId>swak</artifactId>
 		<version>0.1.0_final</version>
 	</parent>
-	<artifactId>swak-starter-rpc</artifactId>
+	<artifactId>swak-starter</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>com.swak</groupId>
-			<artifactId>swak-starter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.swak</groupId>
-			<artifactId>swak-rpc</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.swak</groupId>
-			<artifactId>swak-motan</artifactId>
-			<scope>provided</scope>
+			<artifactId>swak-core</artifactId>
 		</dependency>
 	</dependencies>
 </project>

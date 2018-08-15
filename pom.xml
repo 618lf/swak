@@ -24,6 +24,7 @@
 		<module>swak-sample-api</module>
 		<module>swak-vertx</module>
 		<module>swak-starter-vertx</module>
+		<module>swak-starter</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.0.3.RELEASE</spring-boot.version>
@@ -146,6 +147,12 @@
 			<dependency>
 				<groupId>com.swak</groupId>
 				<artifactId>swak-starter-vertx</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-starter</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
