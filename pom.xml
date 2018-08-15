@@ -22,6 +22,8 @@
 		<module>swak-storage</module>
 		<module>swak-motan</module>
 		<module>swak-sample-api</module>
+		<module>swak-vertx</module>
+		<module>swak-starter-vertx</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.0.3.RELEASE</spring-boot.version>
@@ -46,7 +48,8 @@
 		<reactor.version>3.1.8.RELEASE</reactor.version>
 		<async.httpclient.version>2.5.2</async.httpclient.version>
 		<motan.version>1.1.1</motan.version>
-
+        <vertx.version>3.5.3</vertx.version>
+        
 		<!-- test -->
 		<junit.version>4.12</junit.version>
 
@@ -133,6 +136,16 @@
 			<dependency>
 				<groupId>com.swak</groupId>
 				<artifactId>swak-starter-rpc</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-vertx</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-starter-vertx</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
