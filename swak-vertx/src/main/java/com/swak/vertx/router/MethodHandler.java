@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.ClassUtils;
 
+import com.swak.vertx.utils.RouterUtils;
+
 /**
  * 基于 method 的执行器
  * 
@@ -32,7 +34,7 @@ public class MethodHandler {
 		MethodParameter[] result = new MethodParameter[count];
 		for (int i = 0; i < count; i++) {
 			MethodParameter parameter = new MethodParameter(this.method, i);
-			parameter.initParameterNameDiscovery(ParameterNameResolver.parameterNameDiscoverer);
+			parameter.initParameterNameDiscovery(RouterUtils.getParameterNameDiscoverer());
 			result[i] = parameter;
 		}
 		return result;

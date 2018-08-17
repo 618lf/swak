@@ -1,10 +1,10 @@
-package com.swak.reactivex.context;
+package com.swak.reactivex.transport.http.server;
 
-import java.net.InetSocketAddress;
 import java.util.function.BiFunction;
 
 import org.springframework.boot.web.server.WebServerException;
 
+import com.swak.reactivex.context.Server;
 import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.NettyOutbound;
 import com.swak.reactivex.transport.tcp.TcpServer;
@@ -39,8 +39,8 @@ public class ReactiveServer implements Server {
 	 * 服务器监听的端口
 	 */
 	@Override
-	public InetSocketAddress getAddress() {
-		return realServer.getAddress();
+	public String getAddresses() {
+		return String.valueOf(realServer.getAddress().getPort());
 	}
 
 	/**

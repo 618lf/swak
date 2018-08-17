@@ -27,7 +27,8 @@ public class Application extends SpringApplication {
 	/**
 	 * 是否是 WEB 环境
 	 */
-	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "com.swak.reactivex.web.DispatcherHandler";
+	private static final String REACTIVE_FLUX_ENVIRONMENT_CLASS = "com.swak.reactivex.transport.http.server.ReactiveServer";
+	private static final String REACTIVE_VERT_ENVIRONMENT_CLASS = "com.swak.vertx.transport.ReactiveServer";
 
 	/**
 	 * 初始化
@@ -45,7 +46,8 @@ public class Application extends SpringApplication {
 	 * @return
 	 */
 	private WebApplicationType deduceWebApplicationType() {
-		if (ClassUtils.isPresent(REACTIVE_WEB_ENVIRONMENT_CLASS, null)) {
+		if (ClassUtils.isPresent(REACTIVE_FLUX_ENVIRONMENT_CLASS, null)
+				|| ClassUtils.isPresent(REACTIVE_VERT_ENVIRONMENT_CLASS, null)) {
 			return WebApplicationType.REACTIVE;
 		}
 		return WebApplicationType.NONE;
@@ -77,7 +79,7 @@ public class Application extends SpringApplication {
 		long end = System.currentTimeMillis();
 		if (context instanceof ReactiveServerApplicationContext) {
 			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s" + ", listening on the port["
-					+ ((ReactiveServerApplicationContext)context).getServer().getAddress().getPort() + "]");
+					+ ((ReactiveServerApplicationContext)context).getServer().getAddresses() + "]");
 		} else {
 			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s");
 		}

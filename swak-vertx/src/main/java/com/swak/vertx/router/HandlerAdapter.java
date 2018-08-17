@@ -15,7 +15,7 @@ import io.vertx.ext.web.RoutingContext;
  * 
  * @author lifeng
  */
-public class RequestMappingRouterAdapter {
+public class HandlerAdapter {
 
 	@Autowired
 	private ConversionService conversionService;

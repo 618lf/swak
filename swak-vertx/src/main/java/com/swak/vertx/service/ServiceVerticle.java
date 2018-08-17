@@ -1,7 +1,5 @@
 package com.swak.vertx.service;
 
-import com.swak.vertx.utils.Lifecycle;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.Message;
@@ -27,7 +25,7 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
     @Override
     public void start() throws Exception {
         super.start();
-        Lifecycle.vertx.eventBus().<String>consumer(address).handler(this);
+        this.getVertx().eventBus().<String>consumer(address).handler(this);
     }
 
     /**

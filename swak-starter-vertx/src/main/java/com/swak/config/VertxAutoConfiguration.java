@@ -1,32 +1,26 @@
 package com.swak.config;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
-import org.springframework.lang.Nullable;
 
+import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.converter.DateFormatterConverter;
 import com.swak.vertx.converter.StringEscapeFormatterConverter;
 import com.swak.vertx.properties.VertxProperties;
-import com.swak.vertx.router.RequestMappingRouterAdapter;
-import com.swak.vertx.router.RequestMappingRouterMapping;
-import com.swak.vertx.transport.HttpServer;
-import com.swak.vertx.utils.Lifecycle;
+import com.swak.vertx.router.HandlerAdapter;
+import com.swak.vertx.transport.MainVerticle;
+import com.swak.vertx.transport.ReactiveServer;
 
 import io.vertx.core.Vertx;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.ResponseContentTypeHandler;
 
 /**
  * vertx 服务器配置
@@ -38,74 +32,44 @@ import io.vertx.ext.web.handler.ResponseContentTypeHandler;
 @EnableConfigurationProperties(VertxProperties.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
-public class VertxAutoConfiguration implements ApplicationContextAware{
+public class VertxAutoConfiguration {
 
-	@Nullable
-	private ApplicationContext applicationContext;
-	
-	@Override
-	public void setApplicationContext(@Nullable ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-	}
-	
-	@Nullable
-	public final ApplicationContext getApplicationContext() {
-		return this.applicationContext;
-	}
-	
 	/**
-	 * 创建 唯一的 Vertx
+	 * 创建 Vertx
 	 * 
 	 * @return
 	 */
 	@Bean
 	public Vertx vertx() {
-		
-		// vertx
-		Vertx vertx = Vertx.vertx();
-		Lifecycle.vertx = vertx;
-		
-		// router
-		Router router = Router.router(vertx);
-		router.route().handler(ResponseContentTypeHandler.create());
-		Lifecycle.router = router;
-		
-		
-		// routers and services
-		SortedBeanContainer container = new SortedBeanContainer();
-		applicationContext.getAutowireCapableBeanFactory().autowireBean(container);
-		
-		
-		// back vertx
-		return vertx;
+		return Vertx.vertx();
 	}
-	
+
 	/**
-	 * 属性编辑器
-	 * @return
-	 */
-	@Bean
-	public FormattingConversionService conversionService() {
-		FormattingConversionService service = new DefaultFormattingConversionService();
-		addFormatters(service);
-		return service;
-	}
-	
-	protected void addFormatters(FormatterRegistry registry) {
-		registry.addConverter(new DateFormatterConverter());
-		registry.addConverter(new StringEscapeFormatterConverter());
-	}
-	
-	/**
-	 * 请求映射器
+	 * 加载注解
 	 * 
 	 * @return
 	 */
 	@Bean
-	public RequestMappingRouterAdapter routerAdapter() {
-		return new RequestMappingRouterAdapter();
+	public AnnotationBean annotationBean(Vertx vertx) {
+		return new AnnotationBean(vertx);
 	}
-	
+
+	/**
+	 * 属性编辑器
+	 * 
+	 * @return
+	 */
+	@Bean
+	public ConversionService conversionService() {
+		FormattingConversionService service = new DefaultFormattingConversionService();
+		addFormatters(service);
+		return service;
+	}
+
+	protected void addFormatters(FormatterRegistry registry) {
+		registry.addConverter(new DateFormatterConverter());
+		registry.addConverter(new StringEscapeFormatterConverter());
+	}
 
 	/**
 	 * 请求映射器
@@ -113,8 +77,8 @@ public class VertxAutoConfiguration implements ApplicationContextAware{
 	 * @return
 	 */
 	@Bean
-	public RequestMappingRouterMapping requestMapping() {
-		return new RequestMappingRouterMapping();
+	public HandlerAdapter routerAdapter() {
+		return new HandlerAdapter();
 	}
 
 	/**
@@ -123,13 +87,8 @@ public class VertxAutoConfiguration implements ApplicationContextAware{
 	 * @return
 	 */
 	@Bean
-	public HttpServer httpServer() {
-		return new HttpServer();
-	}
-
-	// Autowire lists for @Bean + @Order
-	private static class SortedBeanContainer {
-		@Autowired(required = false)
-		public void setRouterMapping(RequestMappingRouterMapping routerMapping) {}
+	public ReactiveServer httpServer(AnnotationBean annotationBean, HandlerAdapter handlerAdapter, VertxProperties properties) {
+		MainVerticle mainVerticle = new MainVerticle(annotationBean, handlerAdapter, properties);
+		return new ReactiveServer(annotationBean, mainVerticle);
 	}
 }

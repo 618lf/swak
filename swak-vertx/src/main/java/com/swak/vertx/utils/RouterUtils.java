@@ -1,5 +1,7 @@
 package com.swak.vertx.utils;
 
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.util.StringUtils;
 
 /**
@@ -12,6 +14,7 @@ public class RouterUtils {
 	private static String pathSeparator = "/";
 	private static String pathSeparatorPattern = "/*";
 	private static String pathSeparatorDoublePattern = "/**";
+	private static ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
 
 	/**
 	 * Combine two patterns into a new pattern.
@@ -157,5 +160,13 @@ public class RouterUtils {
 		} else {
 			return path1 + pathSeparator + path2;
 		}
+	}
+
+	/**
+	 * 属性名称
+	 * @return
+	 */
+	public static ParameterNameDiscoverer getParameterNameDiscoverer() {
+		return parameterNameDiscoverer;
 	}
 }

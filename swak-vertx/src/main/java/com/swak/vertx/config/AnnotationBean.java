@@ -23,6 +23,9 @@ import com.swak.vertx.annotation.ServiceMapping;
 import com.swak.vertx.annotation.ServiceReferer;
 import com.swak.vertx.utils.RouterUtils;
 
+import io.vertx.core.Vertx;
+import io.vertx.ext.web.Router;
+
 /**
  * 自动化配置bean
  * 
@@ -33,6 +36,30 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 	private final Set<ServiceBean> services = new ConcurrentHashSet<ServiceBean>();
 	private final Set<RouterBean> routers = new ConcurrentHashSet<RouterBean>();
 	private final ConcurrentMap<String, ReferenceBean> references = new ConcurrentHashMap<String, ReferenceBean>();
+
+	private final Vertx vertx;
+	private final Router router;
+
+	public AnnotationBean(Vertx vertx) {
+		this.vertx = vertx;
+		this.router = Router.router(vertx);
+	}
+	
+	public Vertx getVertx() {
+		return vertx;
+	}
+
+	public Router getRouter() {
+		return router;
+	}
+
+	// 需要注册的服务或路由
+	public Set<ServiceBean> getServices() {
+		return services;
+	}
+	public Set<RouterBean> getRouters() {
+		return routers;
+	}
 
 	@Override
 	public int getOrder() {

@@ -10,23 +10,23 @@ import java.util.Set;
 import org.springframework.util.StringUtils;
 
 import com.swak.vertx.annotation.RequestMethod;
+import com.swak.vertx.router.MethodHandler;
 
 /**
  * 路由 bean
+ * 
  * @author lifeng
  */
 public class RouterBean {
 
 	private final Set<String> patterns;
 	private final RequestMethod requestMethod;
-	private final Object bean;
-	private final Method method;
+	private final MethodHandler methodHandler;
 
 	public RouterBean(Object bean, Method method, List<String> patterns, RequestMethod requestMethod) {
 		this.patterns = prependLeadingSlash(patterns);
 		this.requestMethod = requestMethod;
-		this.bean = bean;
-		this.method = method;
+		this.methodHandler = new MethodHandler(bean, method);
 	}
 
 	private Set<String> prependLeadingSlash(Collection<String> patterns) {
@@ -41,5 +41,16 @@ public class RouterBean {
 			result.add(pattern);
 		}
 		return result;
+	}
+
+	public Set<String> getPatterns() {
+		return patterns;
+	}
+
+	public RequestMethod getRequestMethod() {
+		return requestMethod;
+	}
+	public MethodHandler getHandler() {
+		return methodHandler;
 	}
 }

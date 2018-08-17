@@ -6,8 +6,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.util.StringUtils;
 
 /**
- * 只是一个基本的web服务
- * 但提供了服务的启动任务
+ * 响应式服务的启动器
+ * flux、vertx 需要使用这个来启动
  * @author lifeng
  */
 public class ReactiveServerApplicationContext extends AnnotationConfigApplicationContext{
@@ -64,10 +64,10 @@ public class ReactiveServerApplicationContext extends AnnotationConfigApplicatio
 	 * 获得实际的 ReactiveServer
 	 * @return
 	 */
-	protected ReactiveServer getReactiveServer() {
+	protected Server getReactiveServer() {
 		// Use bean names so that we don't consider the hierarchy
 		String[] beanNames = getBeanFactory()
-				.getBeanNamesForType(ReactiveServer.class);
+				.getBeanNamesForType(Server.class);
 		if (beanNames.length == 0) {
 			throw new ApplicationContextException(
 					"Unable to start ReactiveWebApplicationContext due to missing "
@@ -79,7 +79,7 @@ public class ReactiveServerApplicationContext extends AnnotationConfigApplicatio
 							+ "ReactiveServer beans : "
 							+ StringUtils.arrayToCommaDelimitedString(beanNames));
 		}
-		return getBeanFactory().getBean(beanNames[0], ReactiveServer.class);
+		return getBeanFactory().getBean(beanNames[0], Server.class);
 	}
 
 	private Server startReactiveServer() {
