@@ -10,4 +10,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.vertx")
 public class VertxProperties {
 
+	/**
+	 * 默认的端口
+	 */
+	private int port = 8080;
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
 }

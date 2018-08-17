@@ -1,20 +1,32 @@
 package com.swak.config;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.format.support.DefaultFormattingConversionService;
+import org.springframework.format.support.FormattingConversionService;
+import org.springframework.lang.Nullable;
 
+import com.swak.vertx.converter.DateFormatterConverter;
+import com.swak.vertx.converter.StringEscapeFormatterConverter;
 import com.swak.vertx.properties.VertxProperties;
+import com.swak.vertx.router.RequestMappingRouterAdapter;
+import com.swak.vertx.router.RequestMappingRouterMapping;
+import com.swak.vertx.transport.HttpServer;
 import com.swak.vertx.utils.Lifecycle;
 
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.CookieHandler;
+import io.vertx.ext.web.handler.ResponseContentTypeHandler;
 
 /**
  * vertx 服务器配置
@@ -26,38 +38,98 @@ import io.vertx.ext.web.handler.CookieHandler;
 @EnableConfigurationProperties(VertxProperties.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
-public class VertxAutoConfiguration {
+public class VertxAutoConfiguration implements ApplicationContextAware{
 
+	@Nullable
+	private ApplicationContext applicationContext;
+	
+	@Override
+	public void setApplicationContext(@Nullable ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+	
+	@Nullable
+	public final ApplicationContext getApplicationContext() {
+		return this.applicationContext;
+	}
+	
 	/**
-	 * 创建 唯一的 Vertx 
+	 * 创建 唯一的 Vertx
+	 * 
 	 * @return
 	 */
-    @Bean
-    public Vertx vertx() {
-        Vertx vertx = Vertx.vertx();
-        Lifecycle.vertx = vertx;
-        return vertx;
-    }
-    
-    /**
-     * 创建 路由对象
-     * @return
-     */
-    @Bean
-    public Router router() {
-        Vertx vertx = Lifecycle.vertx;
-        Router router = Router.router(vertx);
-        router.route().handler(CookieHandler.create());
-        Lifecycle.router = router;
-        return router;
-    }
-    
-    /**
-     * 启动一个 http 服务器
-     * @return
-     */
-    @Bean
-    public HttpServer httpServer() {
-        return Lifecycle.vertx.createHttpServer();
-    }
+	@Bean
+	public Vertx vertx() {
+		
+		// vertx
+		Vertx vertx = Vertx.vertx();
+		Lifecycle.vertx = vertx;
+		
+		// router
+		Router router = Router.router(vertx);
+		router.route().handler(ResponseContentTypeHandler.create());
+		Lifecycle.router = router;
+		
+		
+		// routers and services
+		SortedBeanContainer container = new SortedBeanContainer();
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(container);
+		
+		
+		// back vertx
+		return vertx;
+	}
+	
+	/**
+	 * 属性编辑器
+	 * @return
+	 */
+	@Bean
+	public FormattingConversionService conversionService() {
+		FormattingConversionService service = new DefaultFormattingConversionService();
+		addFormatters(service);
+		return service;
+	}
+	
+	protected void addFormatters(FormatterRegistry registry) {
+		registry.addConverter(new DateFormatterConverter());
+		registry.addConverter(new StringEscapeFormatterConverter());
+	}
+	
+	/**
+	 * 请求映射器
+	 * 
+	 * @return
+	 */
+	@Bean
+	public RequestMappingRouterAdapter routerAdapter() {
+		return new RequestMappingRouterAdapter();
+	}
+	
+
+	/**
+	 * 请求映射器
+	 * 
+	 * @return
+	 */
+	@Bean
+	public RequestMappingRouterMapping requestMapping() {
+		return new RequestMappingRouterMapping();
+	}
+
+	/**
+	 * 启动一个 http 服务器, 通过前面的路由信息启动服务
+	 * 
+	 * @return
+	 */
+	@Bean
+	public HttpServer httpServer() {
+		return new HttpServer();
+	}
+
+	// Autowire lists for @Bean + @Order
+	private static class SortedBeanContainer {
+		@Autowired(required = false)
+		public void setRouterMapping(RequestMappingRouterMapping routerMapping) {}
+	}
 }
