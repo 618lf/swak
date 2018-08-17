@@ -1,10 +1,11 @@
-package com.swak.vertx.router;
+package com.swak.vertx.handler;
 
 import java.lang.reflect.Method;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.util.ClassUtils;
 
+import com.swak.exception.BaseRuntimeException;
 import com.swak.vertx.utils.RouterUtils;
 
 /**
@@ -66,7 +67,7 @@ public class MethodHandler {
 		try {
 			return this.getMethod().invoke(this.getBean(), args);
 		} catch (Exception e) {
-			return null;
+			throw new BaseRuntimeException("invoke method error");
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package com.swak.vertx.properties;
+package com.swak.vertx.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

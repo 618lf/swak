@@ -13,6 +13,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.util.ClassUtils;
 
 import com.swak.utils.ConcurrentHashSet;
 import com.swak.utils.Lists;
@@ -44,7 +45,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		this.vertx = vertx;
 		this.router = Router.router(vertx);
 	}
-	
+
 	public Vertx getVertx() {
 		return vertx;
 	}
@@ -57,6 +58,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 	public Set<ServiceBean> getServices() {
 		return services;
 	}
+
 	public Set<RouterBean> getRouters() {
 		return routers;
 	}
@@ -92,7 +94,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 					continue;
 				}
 
-				RouterBean routerBean = this.router(classMapping, methodMapping, beanName, method);
+				RouterBean routerBean = this.router(classMapping, methodMapping, bean, method);
 				if (routerBean != null) {
 					routers.add(routerBean);
 				}
@@ -114,7 +116,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 					}
 				}
 			} catch (Exception e) {
-				throw new BeanInitializationException("Failed to init remote service reference at filed "
+				throw new BeanInitializationException("Failed to init service reference at filed "
 						+ field.getName() + " in class " + bean.getClass().getName(), e);
 			}
 		}
@@ -152,7 +154,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 			referenceBean = new ReferenceBean(interfaceType);
 			references.put(interfaceType.getName(), referenceBean);
 		}
-		return referenceBean.getRefer();
+		return referenceBean.getRefer(this.getVertx());
 	}
 
 	/**
@@ -171,8 +173,15 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		}
 		ServiceMapping serviceMapping = clazz.getAnnotation(ServiceMapping.class);
 		if (serviceMapping != null) {
-			ServiceBean serviceBean = new ServiceBean(bean);
-			services.add(serviceBean);
+			Class<?>[] classes = ClassUtils.getAllInterfaces(bean);
+			if (classes == null || classes.length == 0) {
+				throw new BeanInitializationException("Failed to init service "
+						+ beanName + " in class " + bean.getClass().getName() + ", that need realize one interface");
+			}
+			for (Class<?> inter : classes) {
+				ServiceBean serviceBean = new ServiceBean(bean, inter);
+				services.add(serviceBean);
+			}
 		}
 		return bean;
 	}

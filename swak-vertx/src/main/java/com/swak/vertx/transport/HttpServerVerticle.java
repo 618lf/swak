@@ -24,7 +24,6 @@ public class HttpServerVerticle extends AbstractVerticle {
 
 	@Override
 	public void start(Future<Void> startFuture) throws Exception {
-		super.start(startFuture);
 		vertx.createHttpServer().requestHandler(router::accept).listen(port, res ->{
 			startFuture.complete();
 		});

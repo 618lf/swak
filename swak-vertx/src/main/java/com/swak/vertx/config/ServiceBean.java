@@ -7,13 +7,19 @@ package com.swak.vertx.config;
  */
 public class ServiceBean {
 
-	private final Object bean;
+	private final Object service;
+	private final Class<?> type;
 
-	public ServiceBean(Object bean) {
-		this.bean = bean;
+	public ServiceBean(Object service, Class<?> type) {
+		this.service = service;
+		this.type = type;
 	}
 
 	public Object getService() {
-		return bean;
+		return service;
+	}
+
+	public Class<?> getServiceType() {
+		return type;
 	}
 }

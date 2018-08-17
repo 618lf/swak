@@ -10,7 +10,7 @@ import java.util.Set;
 import org.springframework.util.StringUtils;
 
 import com.swak.vertx.annotation.RequestMethod;
-import com.swak.vertx.router.MethodHandler;
+import com.swak.vertx.handler.MethodHandler;
 
 /**
  * 路由 bean

@@ -13,10 +13,10 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 
 import com.swak.vertx.config.AnnotationBean;
+import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.converter.DateFormatterConverter;
 import com.swak.vertx.converter.StringEscapeFormatterConverter;
-import com.swak.vertx.properties.VertxProperties;
-import com.swak.vertx.router.HandlerAdapter;
+import com.swak.vertx.handler.HandlerAdapter;
 import com.swak.vertx.transport.MainVerticle;
 import com.swak.vertx.transport.ReactiveServer;
 

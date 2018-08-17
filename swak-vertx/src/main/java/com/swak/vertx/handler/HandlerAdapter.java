@@ -1,4 +1,4 @@
-package com.swak.vertx.router;
+package com.swak.vertx.handler;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +20,18 @@ public class HandlerAdapter {
 	@Autowired
 	private ConversionService conversionService;
 
+	/**
+	 * 处理请求
+	 * 
+	 * @param context
+	 * @param handler
+	 */
 	public void handle(RoutingContext context, MethodHandler handler) {
 		try {
 			Object[] params = this.parseParameters(context, handler);
 			handler.doInvoke(params);
 		} catch (Exception e) {
-			e.printStackTrace();
+			context.response().end("Some Error Happen");
 		}
 	}
 

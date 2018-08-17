@@ -9,10 +9,9 @@ import com.swak.vertx.annotation.RequestMethod;
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.RouterBean;
 import com.swak.vertx.config.ServiceBean;
-import com.swak.vertx.properties.VertxProperties;
-import com.swak.vertx.router.HandlerAdapter;
-import com.swak.vertx.service.ServiceVerticle;
-import com.swak.vertx.utils.Lifecycle;
+import com.swak.vertx.config.VertxProperties;
+import com.swak.vertx.handler.HandlerAdapter;
+import com.swak.vertx.handler.ServiceHandler;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
@@ -53,8 +52,6 @@ public class MainVerticle extends AbstractVerticle {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public void start(Future<Void> startFuture) throws Exception {
-		super.start(startFuture);
-
 		List<Future> futures = Lists.newArrayList();
 		
 		// 启动http服务器
@@ -84,9 +81,9 @@ public class MainVerticle extends AbstractVerticle {
 			for (String path : paths) {
 				Route route = null;
 				if (StringUtils.contains(path, "*")) {
-					route = Lifecycle.router.patchWithRegex(path);
+					route = annotation.getRouter().patchWithRegex(path);
 				} else {
-					route = Lifecycle.router.patch(path);
+					route = annotation.getRouter().patch(path);
 				}
 				if (rb.getRequestMethod() == RequestMethod.GET) {
 					route.method(HttpMethod.GET);
@@ -119,7 +116,7 @@ public class MainVerticle extends AbstractVerticle {
 		Set<ServiceBean> services = annotation.getServices();
 		for (ServiceBean service : services) {
 			futures.add(Future.<String>future(s -> {
-				annotation.getVertx().deployVerticle(new ServiceVerticle(service.getService()), new DeploymentOptions(),
+				annotation.getVertx().deployVerticle(new ServiceHandler(service.getService(), service.getServiceType()), new DeploymentOptions(),
 						s);
 			}));
 		}
