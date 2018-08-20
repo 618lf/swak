@@ -2,6 +2,7 @@ package com.swak.vertx.handler;
 
 import java.util.List;
 
+import com.swak.exception.ErrorCode;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.handler.converter.HttpMessageConverter;
@@ -36,6 +37,11 @@ public class ResultHandler {
 	 */
 	public void handlResult(Object result, Throwable e, RoutingContext context) {
 
+		// 已经输出数据
+		if (context.response().ended()) {
+			return;
+		}
+
 		// 通过转换器输出
 		if (result != null) {
 			for (HttpMessageConverter converter : converters) {
@@ -57,6 +63,13 @@ public class ResultHandler {
 	 * @return
 	 */
 	public void handlError(Throwable e, RoutingContext context) {
-		context.response().end(e.getMessage());
+
+		// 已经输出数据
+		if (context.response().ended()) {
+			return;
+		}
+
+		// 输出错误信息
+		context.response().end(ErrorCode.OPERATE_FAILURE.toJson());
 	}
 }

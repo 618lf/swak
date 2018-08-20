@@ -21,4 +21,10 @@ public @interface ServiceMapping {
 
 	@AliasFor(annotation = Service.class)
 	String value() default "";
+	
+	/**
+	 * 可以设置在哪个 pool 中运行
+	 * @return
+	 */
+	String use_pool() default "";
 }

@@ -106,12 +106,17 @@ public class MainVerticle extends AbstractVerticle {
 				});
 			}
 		}
+
+		// 启动 eventloop 数量的 http 处理器
+		DeploymentOptions options = new DeploymentOptions();
 		List<Future<String>> futures = Lists.newArrayList();
-		futures.add(Future.<String>future(s -> {
-			annotation.getVertx().deployVerticle(
-					new HttpServerVerticle(annotation.getVertx(), annotation.getRouter(), properties.getPort()),
-					new DeploymentOptions(), s);
-		}));
+		for (int i = 1; i <= properties.getEventLoopPoolSize(); i++) {
+			futures.add(Future.<String>future(s -> {
+				annotation.getVertx().deployVerticle(
+						new HttpServerVerticle(annotation.getVertx(), annotation.getRouter(), properties.getPort()),
+						options, s);
+			}));
+		}
 		return futures;
 	}
 
@@ -121,14 +126,24 @@ public class MainVerticle extends AbstractVerticle {
 	 * @return
 	 */
 	private List<Future<String>> startServices() {
-
-		// 以worker 的方式发布
-		DeploymentOptions options = new DeploymentOptions().setWorker(true);
-
 		// 开始发布
 		List<Future<String>> futures = Lists.newArrayList();
 		Set<ServiceBean> services = annotation.getServices();
 		for (ServiceBean service : services) {
+			
+			// 以worker 的方式发布
+			DeploymentOptions options = new DeploymentOptions().setWorker(true);
+			
+			// 设置了运行的线程池
+			String usePool = service.getUse_pool();
+			Integer poolSize = properties.getWorkers().get(usePool);
+			if (StringUtils.isNotBlank(usePool) && poolSize != null && poolSize > 0) {
+				options.setWorkerPoolName(HttpConst.workerPrex + usePool);
+				options.setWorkerPoolSize(poolSize);
+			} else {
+				options.setWorkerPoolSize(properties.getWorkerThreads());
+			}
+			
 			futures.add(Future.<String>future(s -> {
 				annotation.getVertx().deployVerticle(new ServiceHandler(service.getService(), service.getServiceType()),
 						options, s);

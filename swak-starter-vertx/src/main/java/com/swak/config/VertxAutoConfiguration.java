@@ -12,6 +12,7 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 
+import com.swak.reactivex.transport.TransportMode;
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.handler.HandlerAdapter;
@@ -25,6 +26,7 @@ import com.swak.vertx.transport.MainVerticle;
 import com.swak.vertx.transport.ReactiveServer;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 
 /**
  * vertx 服务器配置
@@ -44,8 +46,14 @@ public class VertxAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public Vertx vertx() {
-		return Vertx.vertx();
+	public Vertx vertx(VertxProperties properties) {
+		VertxOptions vertxOptions = new VertxOptions();
+		// pool config
+		if (properties.getMode() == TransportMode.EPOLL) {
+			vertxOptions.setPreferNativeTransport(true);
+		}
+		vertxOptions.setEventLoopPoolSize(properties.getEventLoopPoolSize());
+		return Vertx.vertx(vertxOptions);
 	}
 
 	/**
@@ -74,7 +82,7 @@ public class VertxAutoConfiguration {
 		registry.addConverter(new DateFormatter());
 		registry.addConverter(new StringEscapeFormatter());
 	}
-	
+
 	/**
 	 * 请求映射器
 	 * 
@@ -86,7 +94,7 @@ public class VertxAutoConfiguration {
 		addConverters(resultHandler);
 		return resultHandler;
 	}
-	
+
 	protected void addConverters(ResultHandler registry) {
 		registry.addConverter(new Jaxb2RootElementHttpMessageConverter());
 		registry.addConverter(new StringHttpMessageConverter());
@@ -109,7 +117,8 @@ public class VertxAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public ReactiveServer httpServer(AnnotationBean annotationBean, HandlerAdapter handlerAdapter, VertxProperties properties) {
+	public ReactiveServer httpServer(AnnotationBean annotationBean, HandlerAdapter handlerAdapter,
+			VertxProperties properties) {
 		MainVerticle mainVerticle = new MainVerticle(annotationBean, handlerAdapter, properties);
 		return new ReactiveServer(annotationBean, mainVerticle);
 	}

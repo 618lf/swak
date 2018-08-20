@@ -32,4 +32,7 @@ public interface HttpConst {
 
 	// 某些 key
 	String ATTRIBUTE_FOR_PATH = "base.matched.pattern.path";
+
+	// 线程的前缀
+	String workerPrex = "vert.x-workers-";
 }

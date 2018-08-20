@@ -2,6 +2,9 @@ package com.swak.vertx.transport;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.swak.reactivex.context.Server;
 import com.swak.reactivex.context.ServerException;
 import com.swak.vertx.config.AnnotationBean;
@@ -15,6 +18,7 @@ import io.vertx.core.Vertx;
  */
 public class ReactiveServer implements Server {
 
+	private static Logger Logger = LoggerFactory.getLogger(ReactiveServer.class);
 	private final MainVerticle mainVerticle;
 	private final Vertx vertx;
 
@@ -37,10 +41,11 @@ public class ReactiveServer implements Server {
 		// 监听状态
 		startFuture.whenComplete((s, v) -> {
 			if (v != null) {
+				Logger.error("start server error", v);
 				throw new RuntimeException(v);
 			}
 		});
-		
+
 		// 应该会阻塞在这里
 		try {
 			startFuture.get();

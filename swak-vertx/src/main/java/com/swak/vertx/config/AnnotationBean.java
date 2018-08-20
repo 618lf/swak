@@ -179,7 +179,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 						+ beanName + " in class " + bean.getClass().getName() + ", that need realize one interface");
 			}
 			for (Class<?> inter : classes) {
-				ServiceBean serviceBean = new ServiceBean(bean, inter);
+				ServiceBean serviceBean = new ServiceBean(bean, serviceMapping.use_pool(), inter);
 				services.add(serviceBean);
 			}
 		}

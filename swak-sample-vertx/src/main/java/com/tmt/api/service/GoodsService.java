@@ -9,12 +9,12 @@ import com.tmt.api.facade.GoodsServiceFacade;
  * 商品服务
  * @author lifeng
  */
-@ServiceMapping
+@ServiceMapping(use_pool="write_pool")
 public class GoodsService implements GoodsServiceFacade {
 
 	@Override
 	public CompletableFuture<String> sayHello() {
-		System.out.println("I am a service");
+		System.out.println("service:" + Thread.currentThread());
 		return CompletableFuture.completedFuture("Hello World!");
 	}
 }

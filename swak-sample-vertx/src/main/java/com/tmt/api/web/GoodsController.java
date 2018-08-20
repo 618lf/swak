@@ -11,17 +11,18 @@ import io.vertx.ext.web.RoutingContext;
 
 /**
  * 商品 api
+ * 
  * @author lifeng
  */
 @RestController("/api/goods")
 public class GoodsController {
-	
+
 	@ServiceReferer
 	private GoodsServiceFacade goodsService;
 
 	@GetMapping("/get")
-	public void get(RoutingContext context) {
-		CompletableFuture<String> result = goodsService.sayHello();
-		context.response().end("111");
+	public CompletableFuture<String> get(RoutingContext context) {
+		System.out.println(Thread.currentThread());
+		return goodsService.sayHello();
 	}
 }
