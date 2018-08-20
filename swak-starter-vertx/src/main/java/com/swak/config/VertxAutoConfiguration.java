@@ -14,9 +14,13 @@ import org.springframework.format.support.FormattingConversionService;
 
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.converter.DateFormatterConverter;
-import com.swak.vertx.converter.StringEscapeFormatterConverter;
 import com.swak.vertx.handler.HandlerAdapter;
+import com.swak.vertx.handler.ResultHandler;
+import com.swak.vertx.handler.converter.Jaxb2RootElementHttpMessageConverter;
+import com.swak.vertx.handler.converter.JsonHttpMessageConverter;
+import com.swak.vertx.handler.converter.StringHttpMessageConverter;
+import com.swak.vertx.handler.formatter.DateFormatter;
+import com.swak.vertx.handler.formatter.StringEscapeFormatter;
 import com.swak.vertx.transport.MainVerticle;
 import com.swak.vertx.transport.ReactiveServer;
 
@@ -67,8 +71,26 @@ public class VertxAutoConfiguration {
 	}
 
 	protected void addFormatters(FormatterRegistry registry) {
-		registry.addConverter(new DateFormatterConverter());
-		registry.addConverter(new StringEscapeFormatterConverter());
+		registry.addConverter(new DateFormatter());
+		registry.addConverter(new StringEscapeFormatter());
+	}
+	
+	/**
+	 * 请求映射器
+	 * 
+	 * @return
+	 */
+	@Bean
+	public ResultHandler resultHandler() {
+		ResultHandler resultHandler = new ResultHandler();
+		addConverters(resultHandler);
+		return resultHandler;
+	}
+	
+	protected void addConverters(ResultHandler registry) {
+		registry.addConverter(new Jaxb2RootElementHttpMessageConverter());
+		registry.addConverter(new StringHttpMessageConverter());
+		registry.addConverter(new JsonHttpMessageConverter());
 	}
 
 	/**
@@ -77,7 +99,7 @@ public class VertxAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public HandlerAdapter routerAdapter() {
+	public HandlerAdapter handlerAdapter() {
 		return new HandlerAdapter();
 	}
 

@@ -1,10 +1,11 @@
 package com.swak.vertx.transport;
 
+import java.util.concurrent.CompletableFuture;
+
 import com.swak.reactivex.context.Server;
 import com.swak.reactivex.context.ServerException;
 import com.swak.vertx.config.AnnotationBean;
 
-import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
 /**
@@ -24,24 +25,47 @@ public class ReactiveServer implements Server {
 
 	@Override
 	public void start() throws ServerException {
-		Future<Void> startFuture = Future.future();
+		CompletableFuture<Void> startFuture = new CompletableFuture<>();
 		vertx.deployVerticle(mainVerticle, res -> {
-			startFuture.complete();
+			if (res.succeeded()) {
+				startFuture.complete(null);
+			} else {
+				startFuture.completeExceptionally(res.cause());
+			}
 		});
 
+		// 监听状态
+		startFuture.whenComplete((s, v) -> {
+			if (v != null) {
+				throw new RuntimeException(v);
+			}
+		});
+		
 		// 应该会阻塞在这里
-		startFuture.result();
+		try {
+			startFuture.get();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
 	public void stop() throws ServerException {
-		Future<Void> stopFuture = Future.future();
+		CompletableFuture<Void> stopFuture = new CompletableFuture<>();
 		vertx.undeploy(mainVerticle.deploymentID(), res -> {
-			stopFuture.complete();
+			if (res.succeeded()) {
+				stopFuture.complete(null);
+			} else {
+				stopFuture.completeExceptionally(res.cause());
+			}
 		});
 
 		// 应该会阻塞在这里
-		stopFuture.result();
+		try {
+			stopFuture.get();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package com.swak.vertx.handler;
 
+import java.util.concurrent.CompletionStage;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
@@ -19,6 +21,8 @@ public class HandlerAdapter {
 
 	@Autowired
 	private ConversionService conversionService;
+	@Autowired
+	private ResultHandler resultHandler;
 
 	/**
 	 * 处理请求
@@ -26,12 +30,21 @@ public class HandlerAdapter {
 	 * @param context
 	 * @param handler
 	 */
+	@SuppressWarnings("unchecked")
 	public void handle(RoutingContext context, MethodHandler handler) {
 		try {
 			Object[] params = this.parseParameters(context, handler);
-			handler.doInvoke(params);
+			Object result = handler.doInvoke(params);
+			if (result != null && result instanceof CompletionStage) {
+				CompletionStage<Object> resultFuture = (CompletionStage<Object>) result;
+				resultFuture.whenComplete((v, e) -> {
+					resultHandler.handlResult(v, e, context);
+				});
+			} else {
+				resultHandler.handlResult(result, null, context);
+			}
 		} catch (Exception e) {
-			context.response().end("Some Error Happen");
+			resultHandler.handlError(e, context);
 		}
 	}
 

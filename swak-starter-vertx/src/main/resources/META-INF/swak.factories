@@ -3,4 +3,5 @@
 
 # Auto Configuration, SWAK only load Auto Configuration 
 com.swak.ApplicationBoot=\
+com.swak.config.BaseFuntionAutoConfiguration,\
 com.swak.config.VertxAutoConfiguration

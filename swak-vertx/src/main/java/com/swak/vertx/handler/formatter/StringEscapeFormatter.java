@@ -1,9 +1,9 @@
-package com.swak.vertx.converter;
+package com.swak.vertx.handler.formatter;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.StringUtils;
 
-public class StringEscapeFormatterConverter implements Converter<String, String>{
+public class StringEscapeFormatter implements Converter<String, String>{
 	
 	/**
 	 * 格式化(不需要这么严格，直接去掉脚本就行了)

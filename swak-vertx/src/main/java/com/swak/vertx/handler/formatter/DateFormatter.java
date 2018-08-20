@@ -1,4 +1,4 @@
-package com.swak.vertx.converter;
+package com.swak.vertx.handler.formatter;
 
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -9,14 +9,14 @@ import java.util.Locale;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.StringUtils;
 
-public class DateFormatterConverter implements Converter<String, Date>{
+public class DateFormatter implements Converter<String, Date>{
 
 	public static final String[] DATE_PATTERNS = {"yyyy-MM-dd",  "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd HH", "yyyy-MM", "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy", "yyyyMM", "yyyy/MM", "yyyyMMddHHmmss", "yyyyMMdd"};
 	private static final String DEFAULT_DATE_FPRMAT = "yyyy-MM-dd HH:mm:ss";
 	private String dateFormat = DEFAULT_DATE_FPRMAT;
 	private String[] dateFormats = null;
 	
-	public DateFormatterConverter() {
+	public DateFormatter() {
 		initDateFormats();
 	}
 	

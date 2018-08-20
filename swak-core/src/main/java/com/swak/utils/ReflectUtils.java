@@ -50,6 +50,9 @@ import javassist.NotFoundException;
  */
 public final class ReflectUtils {
 
+	public static final String PARAM_CLASS_SPLIT = ",";
+	public static final String EMPTY_PARAM = "void";
+
 	/**
 	 * void(V).
 	 */
@@ -1066,7 +1069,7 @@ public final class ReflectUtils {
 
 		return properties;
 	}
-	
+
 	public static String forceCast(Class<?> clazz) {
 		if (int.class.equals(clazz)) {
 			return Integer.class.getName();
@@ -1173,6 +1176,54 @@ public final class ReflectUtils {
 		}
 
 		return "";
+	}
+
+	/**
+	 * 获取方法的标示 : method_name + "(" + paramDesc + ")"
+	 *
+	 * @param method
+	 * @return
+	 */
+	public static String getMethodDesc(Method method) {
+		String methodParamDesc = getMethodParamDesc(method);
+		return getMethodDesc(method.getName(), methodParamDesc);
+	}
+
+	/**
+	 * 获取method方式的接口参数，以逗号分割，拼接clz列表。 如果没有参数，那么void表示
+	 *
+	 * @param method
+	 * @return
+	 */
+	public static String getMethodParamDesc(Method method) {
+		if (method.getParameterTypes() == null || method.getParameterTypes().length == 0) {
+			return EMPTY_PARAM;
+		}
+
+		StringBuilder builder = new StringBuilder();
+
+		Class<?>[] clzs = method.getParameterTypes();
+
+		for (Class<?> clz : clzs) {
+			String className = getName(clz);
+			builder.append(className).append(PARAM_CLASS_SPLIT);
+		}
+
+		return builder.substring(0, builder.length() - 1);
+	}
+
+	/**
+	 * 获取方法的标示 : method_name + "(" + paramDesc + ")"
+	 *
+	 * @param
+	 * @return
+	 */
+	public static String getMethodDesc(String methodName, String paramDesc) {
+		if (paramDesc == null) {
+			return methodName + "()";
+		} else {
+			return methodName + "(" + paramDesc + ")";
+		}
 	}
 
 	private ReflectUtils() {

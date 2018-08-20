@@ -12,6 +12,8 @@ import com.swak.vertx.config.ServiceBean;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.handler.HandlerAdapter;
 import com.swak.vertx.handler.ServiceHandler;
+import com.swak.vertx.handler.codec.Msg;
+import com.swak.vertx.handler.codec.MsgCodec;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
@@ -53,13 +55,16 @@ public class MainVerticle extends AbstractVerticle {
 	@SuppressWarnings("rawtypes")
 	public void start(Future<Void> startFuture) throws Exception {
 		List<Future> futures = Lists.newArrayList();
-		
+
+		// 自定义一些配置
+		this.customConfig();
+
 		// 启动http服务器
 		futures.addAll(this.startHttpServer());
-		
+
 		// 启动服务组件
 		futures.addAll(this.startServices());
-		
+
 		CompositeFuture.all(futures).setHandler(res -> {
 			if (res.succeeded()) {
 				startFuture.complete();
@@ -67,6 +72,10 @@ public class MainVerticle extends AbstractVerticle {
 				startFuture.fail(res.cause());
 			}
 		});
+	}
+
+	private void customConfig() {
+		vertx.eventBus().registerDefaultCodec(Msg.class, new MsgCodec());
 	}
 
 	/**
@@ -112,12 +121,17 @@ public class MainVerticle extends AbstractVerticle {
 	 * @return
 	 */
 	private List<Future<String>> startServices() {
+
+		// 以worker 的方式发布
+		DeploymentOptions options = new DeploymentOptions().setWorker(true);
+
+		// 开始发布
 		List<Future<String>> futures = Lists.newArrayList();
 		Set<ServiceBean> services = annotation.getServices();
 		for (ServiceBean service : services) {
 			futures.add(Future.<String>future(s -> {
-				annotation.getVertx().deployVerticle(new ServiceHandler(service.getService(), service.getServiceType()), new DeploymentOptions(),
-						s);
+				annotation.getVertx().deployVerticle(new ServiceHandler(service.getService(), service.getServiceType()),
+						options, s);
 			}));
 		}
 		return futures;

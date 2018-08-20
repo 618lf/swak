@@ -1,5 +1,7 @@
 package com.tmt.api.web;
 
+import java.util.concurrent.CompletableFuture;
+
 import com.swak.vertx.annotation.GetMapping;
 import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.annotation.ServiceReferer;
@@ -19,7 +21,7 @@ public class GoodsController {
 
 	@GetMapping("/get")
 	public void get(RoutingContext context) {
-		goodsService.sayHello();
+		CompletableFuture<String> result = goodsService.sayHello();
 		context.response().end("111");
 	}
 }
