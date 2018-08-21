@@ -72,5 +72,10 @@
 			<artifactId>vertx-web</artifactId>
 			<version>${vertx.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-dropwizard-metrics</artifactId>
+			<version>${vertx.version}</version>
+		</dependency>
 	</dependencies>
 </project>
