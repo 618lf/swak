@@ -41,10 +41,11 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 	private final Set<IRouterSupplier> routerSuppliers = new ConcurrentHashSet<IRouterSupplier>();
 
 	private final Vertx vertx;
-	private Router router;
+	private final Router router;
 
-	public AnnotationBean(Vertx vertx) {
+	public AnnotationBean(Vertx vertx, Router router) {
 		this.vertx = vertx;
+		this.router = router;
 	}
 
 	public Vertx getVertx() {
@@ -52,9 +53,6 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 	}
 
 	public Router getRouter() {
-		if (this.router == null) {
-			this.router = Router.router(vertx);
-		}
 		return router;
 	}
 

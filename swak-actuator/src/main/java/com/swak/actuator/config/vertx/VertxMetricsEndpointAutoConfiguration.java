@@ -9,6 +9,7 @@ import com.swak.actuator.vertx.VertxEndpoint;
 
 import io.vertx.core.Vertx;
 import io.vertx.ext.dropwizard.MetricsService;
+import io.vertx.ext.web.Router;
 
 @Configuration
 @ConditionalOnClass(MetricsService.class)
@@ -21,7 +22,7 @@ public class VertxMetricsEndpointAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public VertxEndpoint vertxEndpoint(Vertx vertx) {
-		return new VertxEndpoint(vertx);
+	public VertxEndpoint vertxEndpoint(Vertx vertx, Router mainRouter) {
+		return new VertxEndpoint(vertx, mainRouter);
 	}
 }

@@ -54,8 +54,7 @@ public class VertxAutoConfiguration {
 		// Dropwizard Metrics
 		if (properties.isMetricAble()) {
 			vertxOptions.setMetricsOptions(
-					new DropwizardMetricsOptions().setEnabled(true).setJmxEnabled(true)
-					.setJmxDomain("vertx-metrics"));
+					new DropwizardMetricsOptions().setEnabled(true).setJmxEnabled(true).setJmxDomain("vertx-metrics"));
 		}
 
 		// pool config
@@ -67,15 +66,16 @@ public class VertxAutoConfiguration {
 	}
 
 	/**
-	 * 加载注解
+	 * main router
 	 * 
+	 * @param vertx
 	 * @return
 	 */
 	@Bean
-	public AnnotationBean annotationBean(Vertx vertx) {
-		AnnotationBean annotationBean = new AnnotationBean(vertx);
-		this.configRouter(annotationBean.getRouter());
-		return new AnnotationBean(vertx);
+	public Router mainRouter(Vertx vertx) {
+		Router mainRouter = Router.router(vertx);
+		this.configRouter(mainRouter);
+		return mainRouter;
 	}
 
 	/**
@@ -84,7 +84,17 @@ public class VertxAutoConfiguration {
 	 * @param Router
 	 */
 	protected void configRouter(Router Router) {
+	}
 
+	/**
+	 * 加载注解
+	 * 
+	 * @return
+	 */
+	@Bean
+	public AnnotationBean annotationBean(Vertx vertx, Router router) {
+		AnnotationBean annotationBean = new AnnotationBean(vertx, router);
+		return annotationBean;
 	}
 
 	/**
