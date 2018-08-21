@@ -1,5 +1,8 @@
 package com.swak.vertx.handler;
 
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
 import org.springframework.beans.BeanUtils;
@@ -8,6 +11,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
+import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
@@ -59,18 +63,54 @@ public class HandlerAdapter {
 	}
 
 	private Object parseParameter(MethodParameter parameter, RoutingContext context) {
-		Object value = null;
 		Class<?> parameterType = parameter.getNestedParameterType();
 		if (parameterType == HttpServerRequest.class) {
-			value = context.request();
+			return context.request();
 		} else if (parameterType == HttpServerResponse.class) {
-			value = context.response();
+			return context.response();
 		} else if (parameterType == RoutingContext.class) {
-			value = context;
+			return context;
 		} else if (BeanUtils.isSimpleProperty(parameterType)) {
-			value = context.request().getParam(parameter.getParameterName());
+			return this.doConvert(context.request().getParam(parameter.getParameterName()), parameterType);
 		}
-		return this.doConvert(value, parameterType);
+		return this.resolveObject(parameterType, context);
+	}
+	
+	/**
+	 * 直接解析对象参数
+	 * @param type
+	 * @param arguments
+	 * @return
+	 */
+	private Object resolveObject(Class<?> paramtype, RoutingContext context) {
+		try {
+			Map<String, Object> arguments = this.getArguments(context);
+			Object obj = paramtype.newInstance();
+			if (!arguments.isEmpty()) {
+				Field[] fields = paramtype.getDeclaredFields();
+				for (Field field : fields) {
+					field.setAccessible(true);
+					if ("serialVersionUID".equals(field.getName())) {
+						continue;
+					}
+					Object value = arguments.get(field.getName());
+					if (value != null) {
+						field.set(obj, this.doConvert(value, field.getType()));
+					}
+				}
+			}
+			return obj;
+		}catch (Exception e) {}
+		return null;
+	}
+	
+	private Map<String, Object> getArguments(RoutingContext request) {
+		MultiMap maps = request.request().params();
+		Map<String, Object> arguments = new LinkedHashMap<>();
+		maps.forEach(entry -> {
+			arguments.put(entry.getKey(), entry.getValue());
+		});
+		return arguments;
 	}
 
 	/**

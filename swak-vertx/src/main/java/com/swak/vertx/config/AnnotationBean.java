@@ -3,9 +3,8 @@ package com.swak.vertx.config;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
@@ -15,8 +14,9 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.ClassUtils;
 
-import com.swak.utils.ConcurrentHashSet;
 import com.swak.utils.Lists;
+import com.swak.utils.Maps;
+import com.swak.utils.Sets;
 import com.swak.vertx.annotation.RequestMapping;
 import com.swak.vertx.annotation.RequestMethod;
 import com.swak.vertx.annotation.RestController;
@@ -35,10 +35,10 @@ import io.vertx.ext.web.Router;
  */
 public class AnnotationBean implements BeanPostProcessor, Ordered {
 
-	private final Set<ServiceBean> services = new ConcurrentHashSet<ServiceBean>();
-	private final Set<RouterBean> routers = new ConcurrentHashSet<RouterBean>();
-	private final ConcurrentMap<String, ReferenceBean> references = new ConcurrentHashMap<String, ReferenceBean>();
-	private final Set<IRouterSupplier> routerSuppliers = new ConcurrentHashSet<IRouterSupplier>();
+	private final Set<ServiceBean> services = Sets.newOrderSet();
+	private final Set<RouterBean> routers = Sets.newOrderSet();
+	private final Map<String, ReferenceBean> references = Maps.newOrderMap();
+	private final Set<IRouterSupplier> routerSuppliers = Sets.newOrderSet();
 
 	private final Vertx vertx;
 	private final Router router;
