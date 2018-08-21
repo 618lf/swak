@@ -96,10 +96,10 @@ public class MainVerticle extends AbstractVerticle {
 				} else {
 					route = annotation.getRouter().patch(path);
 				}
-				if (rb.getRequestMethod() == RequestMethod.GET) {
-					route.method(HttpMethod.GET);
-				} else if (rb.getRequestMethod() == RequestMethod.POST) {
+				if (rb.getRequestMethod() == RequestMethod.POST) {
 					route.method(HttpMethod.POST);
+				} else {
+					route.method(HttpMethod.GET);
 				}
 
 				// 添加一个匿名的处理器
