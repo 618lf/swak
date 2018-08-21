@@ -20,8 +20,10 @@ import com.swak.utils.Lists;
 import com.swak.vertx.annotation.RequestMapping;
 import com.swak.vertx.annotation.RequestMethod;
 import com.swak.vertx.annotation.RestController;
+import com.swak.vertx.annotation.RouterSupplier;
 import com.swak.vertx.annotation.ServiceMapping;
 import com.swak.vertx.annotation.ServiceReferer;
+import com.swak.vertx.handler.IRouterSupplier;
 import com.swak.vertx.utils.RouterUtils;
 
 import io.vertx.core.Vertx;
@@ -101,6 +103,16 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 			}
 		}
 
+		// registry sub routers
+		RouterSupplier routerSupplier = clazz.getAnnotation(RouterSupplier.class);
+		if (routerSupplier != null && bean instanceof IRouterSupplier) {
+			IRouterSupplier rs = (IRouterSupplier) bean;
+			Router subRouter = rs.get(vertx);
+			if (subRouter != null) {
+				router.mountSubRouter(rs.path(), subRouter);
+			}
+		}
+
 		// fill the reference
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
@@ -116,8 +128,8 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 					}
 				}
 			} catch (Exception e) {
-				throw new BeanInitializationException("Failed to init service reference at filed "
-						+ field.getName() + " in class " + bean.getClass().getName(), e);
+				throw new BeanInitializationException("Failed to init service reference at filed " + field.getName()
+						+ " in class " + bean.getClass().getName(), e);
 			}
 		}
 		return bean;
@@ -175,8 +187,8 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		if (serviceMapping != null) {
 			Class<?>[] classes = ClassUtils.getAllInterfaces(bean);
 			if (classes == null || classes.length == 0) {
-				throw new BeanInitializationException("Failed to init service "
-						+ beanName + " in class " + bean.getClass().getName() + ", that need realize one interface");
+				throw new BeanInitializationException("Failed to init service " + beanName + " in class "
+						+ bean.getClass().getName() + ", that need realize one interface");
 			}
 			for (Class<?> inter : classes) {
 				ServiceBean serviceBean = new ServiceBean(bean, serviceMapping.use_pool(), inter);

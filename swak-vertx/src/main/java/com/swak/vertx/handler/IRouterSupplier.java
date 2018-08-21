@@ -7,7 +7,7 @@ import io.vertx.ext.web.Router;
  * 提供子router
  * @author lifeng
  */
-public interface RouterSupplier {
+public interface IRouterSupplier {
 
 	/**
 	 * Router

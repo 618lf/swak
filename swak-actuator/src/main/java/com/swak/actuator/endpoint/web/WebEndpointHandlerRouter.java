@@ -6,9 +6,10 @@ import java.util.Map;
 
 import com.swak.Constants;
 import com.swak.actuator.endpoint.InvocationContext;
+import com.swak.vertx.annotation.RouterSupplier;
 import com.swak.vertx.handler.HandlerAdapter;
+import com.swak.vertx.handler.IRouterSupplier;
 import com.swak.vertx.handler.MethodHandler;
-import com.swak.vertx.handler.RouterSupplier;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
@@ -20,7 +21,8 @@ import io.vertx.ext.web.RoutingContext;
  * 
  * @author lifeng
  */
-public class WebEndpointHandlerRouter implements RouterSupplier {
+@RouterSupplier
+public class WebEndpointHandlerRouter implements IRouterSupplier {
 
 	final WebEndpointsSupplier webEndpointsSupplier;
 	final HandlerAdapter handlerAdapter;
