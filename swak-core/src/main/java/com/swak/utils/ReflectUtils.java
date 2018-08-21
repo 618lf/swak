@@ -36,8 +36,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.swak.utils.StringUtils;
-
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtMethod;

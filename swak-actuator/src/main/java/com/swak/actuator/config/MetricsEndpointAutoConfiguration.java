@@ -14,12 +14,16 @@ import com.swak.actuator.metrics.MetricsEndpoint;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 
+/**
+ * 将 MeterRegistry 中的内容通过 endpoint 的方式输出
+ * 
+ * @author lifeng
+ */
 @Configuration
 @ConditionalOnClass(Timed.class)
-@AutoConfigureAfter({ MetricsAutoConfiguration.class, 
-	SimpleMetricsExportAutoConfiguration.class})
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 public class MetricsEndpointAutoConfiguration {
-	
+
 	public MetricsEndpointAutoConfiguration() {
 		APP_LOGGER.debug("Loading Metrics Endpoint");
 	}

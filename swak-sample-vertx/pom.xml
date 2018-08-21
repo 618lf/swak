@@ -12,5 +12,9 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-starter-vertx</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-actuator</artifactId>
+		</dependency>
 	</dependencies>
 </project>

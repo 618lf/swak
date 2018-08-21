@@ -13,7 +13,7 @@ import com.swak.vertx.utils.RouterUtils;
  * 
  * @author lifeng
  */
-public class MethodHandler {
+public class MethodHandler{
 
 	private final Object bean;
 	private final Method method;

@@ -9,7 +9,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import com.swak.actuator.endpoint.InvocationContext;
-import com.swak.reactivex.transport.http.server.HttpServerRequest;
 
 public class ReflectiveOperationInvoker implements OperationInvoker {
 
@@ -58,7 +57,7 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	 */
 	private Object resolveArguments(OperationParameter parameter, InvocationContext context) {
 		Class<?> type = parameter.getType();
-		if (type == HttpServerRequest.class) {
+		if (type == context.getClass()) {
 			return context.getRequest();
 		} else if (BeanUtils.isSimpleProperty(type)) {
 			Object value = context.getArguments().get(parameter.getName());

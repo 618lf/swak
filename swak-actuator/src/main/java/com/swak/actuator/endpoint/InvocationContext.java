@@ -2,8 +2,6 @@ package com.swak.actuator.endpoint;
 
 import java.util.Map;
 
-import com.swak.reactivex.transport.http.server.HttpServerRequest;
-
 /**
  * 调用的上下文
  * 
@@ -12,9 +10,9 @@ import com.swak.reactivex.transport.http.server.HttpServerRequest;
 public class InvocationContext {
 
 	private final Map<String, Object> arguments;
-	private final HttpServerRequest request;
+	private final Object request;
 
-	public InvocationContext(HttpServerRequest request, Map<String, Object> arguments) {
+	public InvocationContext(Object request, Map<String, Object> arguments) {
 		this.request = request;
 		this.arguments = arguments;
 	}
@@ -22,7 +20,7 @@ public class InvocationContext {
 	public Map<String, Object> getArguments() {
 		return this.arguments;
 	}
-	public HttpServerRequest getRequest() {
+	public Object getRequest() {
 		return request;
 	}
 }

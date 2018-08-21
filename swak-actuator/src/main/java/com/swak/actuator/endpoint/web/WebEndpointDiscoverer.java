@@ -23,6 +23,11 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 	}
 
 	@Override
+	public String getRootPath() {
+		return this.rootPath;
+	}
+
+	@Override
 	protected ExposableWebEndpoint createEndpoint(EndpointBean endpointBean, Collection<WebOperation> operations) {
 		return new DiscoveredWebEndpoint(this, endpointBean, rootPath,  operations);
 	}

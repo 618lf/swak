@@ -1,5 +1,6 @@
 package com.swak.vertx.handler;
 
+import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;
 
 /**
@@ -9,8 +10,14 @@ import io.vertx.ext.web.Router;
 public interface RouterSupplier {
 
 	/**
-	 * 提供 Router
+	 * Router
 	 * @return
 	 */
-	Router get();
+	Router get(Vertx vertx);
+	
+	/**
+	 * 路径
+	 * @return
+	 */
+	String path();
 }

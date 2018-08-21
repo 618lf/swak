@@ -9,8 +9,8 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import com.swak.Constants;
 import com.swak.actuator.endpoint.annotation.Selector;
-import com.swak.reactivex.web.method.ParameterNameResolver;
 import com.swak.utils.Lists;
+import com.swak.utils.ParameterNameResolver;
 
 public class OperationMethod {
 

@@ -26,6 +26,13 @@ import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 
+/**
+ * 这个配置想的作用是将
+ * 
+ * 配置 MeterRegistry 和 提供一些默认的指标MeterBinder
+ * 
+ * @author lifeng
+ */
 @Configuration
 @ConditionalOnClass(Timed.class)
 @EnableConfigurationProperties(MetricsProperties.class)
