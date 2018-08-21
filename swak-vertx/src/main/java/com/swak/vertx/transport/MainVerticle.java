@@ -7,6 +7,7 @@ import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.annotation.RequestMethod;
 import com.swak.vertx.config.AnnotationBean;
+import com.swak.vertx.config.IRouterSupplier;
 import com.swak.vertx.config.RouterBean;
 import com.swak.vertx.config.ServiceBean;
 import com.swak.vertx.config.VertxProperties;
@@ -21,6 +22,7 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Route;
+import io.vertx.ext.web.Router;
 
 /**
  * 响应式服务的启动，对于 vertx 来说， 所有的 Verticle 都在这个服务中发布
@@ -106,14 +108,20 @@ public class MainVerticle extends AbstractVerticle {
 				});
 			}
 		}
+		Set<IRouterSupplier> rses = annotation.getRouterSuppliers();
+		for (IRouterSupplier rs : rses) {
+			Router router = rs.get(vertx);
+			if (router != null) {
+				annotation.getRouter().mountSubRouter(rs.path(), router);
+			}
+		}
 
 		// 启动 eventloop 数量的 http 处理器
 		DeploymentOptions options = new DeploymentOptions();
 		List<Future<String>> futures = Lists.newArrayList();
 		for (int i = 1; i <= properties.getEventLoopPoolSize(); i++) {
 			futures.add(Future.<String>future(s -> {
-				annotation.getVertx().deployVerticle(
-						new HttpServerVerticle(annotation.getVertx(), annotation.getRouter(), properties.getPort()),
+				vertx.deployVerticle(new HttpServerVerticle(vertx, annotation.getRouter(), properties.getPort()),
 						options, s);
 			}));
 		}
@@ -130,10 +138,10 @@ public class MainVerticle extends AbstractVerticle {
 		List<Future<String>> futures = Lists.newArrayList();
 		Set<ServiceBean> services = annotation.getServices();
 		for (ServiceBean service : services) {
-			
+
 			// 以worker 的方式发布
 			DeploymentOptions options = new DeploymentOptions().setWorker(true);
-			
+
 			// 设置了运行的线程池
 			String usePool = service.getUse_pool();
 			Integer poolSize = properties.getWorkers().get(usePool);
@@ -143,10 +151,9 @@ public class MainVerticle extends AbstractVerticle {
 			} else {
 				options.setWorkerPoolSize(properties.getWorkerThreads());
 			}
-			
+
 			futures.add(Future.<String>future(s -> {
-				annotation.getVertx().deployVerticle(new ServiceHandler(service.getService(), service.getServiceType()),
-						options, s);
+				vertx.deployVerticle(new ServiceHandler(service.getService(), service.getServiceType()), options, s);
 			}));
 		}
 		return futures;

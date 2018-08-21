@@ -23,7 +23,6 @@ import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.annotation.RouterSupplier;
 import com.swak.vertx.annotation.ServiceMapping;
 import com.swak.vertx.annotation.ServiceReferer;
-import com.swak.vertx.handler.IRouterSupplier;
 import com.swak.vertx.utils.RouterUtils;
 
 import io.vertx.core.Vertx;
@@ -39,13 +38,13 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 	private final Set<ServiceBean> services = new ConcurrentHashSet<ServiceBean>();
 	private final Set<RouterBean> routers = new ConcurrentHashSet<RouterBean>();
 	private final ConcurrentMap<String, ReferenceBean> references = new ConcurrentHashMap<String, ReferenceBean>();
+	private final Set<IRouterSupplier> routerSuppliers = new ConcurrentHashSet<IRouterSupplier>();
 
 	private final Vertx vertx;
-	private final Router router;
+	private Router router;
 
 	public AnnotationBean(Vertx vertx) {
 		this.vertx = vertx;
-		this.router = Router.router(vertx);
 	}
 
 	public Vertx getVertx() {
@@ -53,6 +52,9 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 	}
 
 	public Router getRouter() {
+		if (this.router == null) {
+			this.router = Router.router(vertx);
+		}
 		return router;
 	}
 
@@ -63,6 +65,10 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 
 	public Set<RouterBean> getRouters() {
 		return routers;
+	}
+
+	public Set<IRouterSupplier> getRouterSuppliers() {
+		return routerSuppliers;
 	}
 
 	@Override
@@ -107,10 +113,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		RouterSupplier routerSupplier = clazz.getAnnotation(RouterSupplier.class);
 		if (routerSupplier != null && bean instanceof IRouterSupplier) {
 			IRouterSupplier rs = (IRouterSupplier) bean;
-			Router subRouter = rs.get(vertx);
-			if (subRouter != null) {
-				router.mountSubRouter(rs.path(), subRouter);
-			}
+			routerSuppliers.add(rs);
 		}
 
 		// fill the reference

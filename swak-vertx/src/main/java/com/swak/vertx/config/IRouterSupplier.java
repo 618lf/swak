@@ -1,4 +1,4 @@
-package com.swak.vertx.handler;
+package com.swak.vertx.config;
 
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;
