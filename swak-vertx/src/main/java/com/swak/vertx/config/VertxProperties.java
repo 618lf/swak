@@ -22,6 +22,15 @@ public class VertxProperties {
 	private int eventLoopPoolSize = 2 * CpuCoreSensor.availableProcessors();
 	private int workerThreads = 20;
 	private Map<String, Integer> workers = Maps.newHashMap();
+	private boolean metricAble = true;
+
+	public boolean isMetricAble() {
+		return metricAble;
+	}
+
+	public void setMetricAble(boolean metricAble) {
+		this.metricAble = metricAble;
+	}
 
 	public Map<String, Integer> getWorkers() {
 		return workers;

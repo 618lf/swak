@@ -12,7 +12,11 @@ public interface Constants {
 
 	/** url path separate */
 	String URL_PATH_SEPARATE = "/";
-
+	String URL_PATH_VARIABLE_PRE = "{";
+	String URL_PATH_VARIABLE_SUFFIX = "}";
+	String _URL_PATH_VARIABLE_PRE = ":";
+	String _URL_PATH_VARIABLE_SUFFIX = "";
+	
 	/** 配置项前缀 */
 	String APPLICATION_PREFIX = "spring.application";
 	String RPC_SERVER_PREFIX = "spring.rpc-server";

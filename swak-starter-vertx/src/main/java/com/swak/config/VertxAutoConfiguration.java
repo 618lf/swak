@@ -27,6 +27,7 @@ import com.swak.vertx.transport.ReactiveServer;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 import io.vertx.ext.web.Router;
 
 /**
@@ -49,6 +50,14 @@ public class VertxAutoConfiguration {
 	@Bean
 	public Vertx vertx(VertxProperties properties) {
 		VertxOptions vertxOptions = new VertxOptions();
+
+		// Dropwizard Metrics
+		if (properties.isMetricAble()) {
+			vertxOptions.setMetricsOptions(
+					new DropwizardMetricsOptions().setEnabled(true).setJmxEnabled(true)
+					.setJmxDomain("vertx-metrics"));
+		}
+
 		// pool config
 		if (properties.getMode() == TransportMode.EPOLL) {
 			vertxOptions.setPreferNativeTransport(true);
@@ -65,16 +74,17 @@ public class VertxAutoConfiguration {
 	@Bean
 	public AnnotationBean annotationBean(Vertx vertx) {
 		AnnotationBean annotationBean = new AnnotationBean(vertx);
-	    this.configRouter(annotationBean.getRouter());
+		this.configRouter(annotationBean.getRouter());
 		return new AnnotationBean(vertx);
 	}
-	
+
 	/**
 	 * 配置这个,也可以使用 来配置RouterConfig
+	 * 
 	 * @param Router
 	 */
 	protected void configRouter(Router Router) {
-		
+
 	}
 
 	/**

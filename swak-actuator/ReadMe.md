@@ -12,3 +12,4 @@
 /actuator/sessions/getSession/{sessionId}
 /actuator/sessions/deleteSession/{sessionId}
 /actuator/mappings
+/actuator/vertx/metricsNames -- 对 vertx 的监控

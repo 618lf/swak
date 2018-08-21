@@ -17,10 +17,11 @@ public class DiscoveredWebOperation extends AbstractDiscoveredOperation implemen
 	}
 	
 	private String getId(String endpointId, OperationMethod operationMethod) {
-		if (StringUtils.equalsIgnoreCase(operationMethod.getPath(), endpointId)) {
-			return operationMethod.getPath();
+		String path = operationMethod.getPath();
+		if (StringUtils.equalsIgnoreCase(path, endpointId)) {
+			return path;
 		}
-		return new StringBuilder(endpointId).append(Constants.URL_PATH_SEPARATE).append(operationMethod.getPath()).toString();
+		return new StringBuilder(endpointId).append(Constants.URL_PATH_SEPARATE).append(path).toString();
 	}
 	
 	public String getId() {

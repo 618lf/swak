@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.util.ClassUtils;
 
 import com.swak.Constants;
 import com.swak.actuator.endpoint.annotation.Selector;
@@ -17,13 +18,13 @@ public class OperationMethod {
 	private final Object target;
 	private final Method method;
 	private final List<OperationParameter> parameters;
-	
+
 	public OperationMethod(Object target, Method method) {
 		this.target = target;
 		this.method = method;
 		this.parameters = initMethodParameters();
 	}
-	
+
 	private List<OperationParameter> initMethodParameters() {
 		int count = this.method.getParameterTypes().length;
 		String[] pnames = ParameterNameResolver.resolveParameterName(this.method);
@@ -34,12 +35,12 @@ public class OperationMethod {
 		}
 		return result;
 	}
-	
+
 	private OperationParameter createParameter(String name, Parameter parameter) {
 		boolean selector = AnnotatedElementUtils.hasAnnotation(parameter, Selector.class);
 		return new OperationParameter(name, parameter, selector);
 	}
-	
+
 	public Method getMethod() {
 		return method;
 	}
@@ -52,13 +53,24 @@ public class OperationMethod {
 		return parameters;
 	}
 
+	/**
+	 * web flux 和 vertx 的处理方式不一样
+	 * 
+	 * @return
+	 */
 	public String getPath() {
 		return new StringBuilder().append(method.getName())
 				.append(parameters.stream().filter(parameter -> parameter.isSelector())
-				.map(parameter -> this.parsePath(parameter.getName())).collect(Collectors.joining())).toString();
+						.map(parameter -> this.parsePath(parameter.getName())).collect(Collectors.joining()))
+				.toString();
 	}
-	
+
 	private String parsePath(String name) {
-		return new StringBuilder(Constants.URL_PATH_SEPARATE).append("{").append(name).append("}").toString();
+		if (!ClassUtils.isPresent("com.swak.vertx.transport.ReactiveServer", null)) {
+			return new StringBuilder(Constants.URL_PATH_SEPARATE).append(Constants.URL_PATH_VARIABLE_PRE).append(name)
+					.append(Constants.URL_PATH_VARIABLE_SUFFIX).toString();
+		}
+		return new StringBuilder(Constants.URL_PATH_SEPARATE).append(Constants._URL_PATH_VARIABLE_PRE).append(name)
+				.append(Constants._URL_PATH_VARIABLE_SUFFIX).toString();
 	}
 }
