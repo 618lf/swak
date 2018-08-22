@@ -25,7 +25,7 @@ import com.swak.persistence.QueryCondition;
  * 目的是不让子类外部直接传入sql就可以查询，应在子类内部实现一个sql的方法，在方法中
  * 调用基础的方式来查询数据
  */
-public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializable> implements BaseServiceFacade<T, PK> {
+public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializable> {
 	
 	protected static Logger logger = LoggerFactory.getLogger(BaseService.class);
     
