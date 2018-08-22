@@ -16,5 +16,15 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-vertx</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-jdbc</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-redis</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 </project>
