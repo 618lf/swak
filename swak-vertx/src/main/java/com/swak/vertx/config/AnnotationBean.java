@@ -186,7 +186,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		}
 		ServiceMapping serviceMapping = clazz.getAnnotation(ServiceMapping.class);
 		if (serviceMapping != null) {
-			Class<?>[] classes = ClassUtils.getAllInterfaces(bean);
+			Class<?>[] classes = ClassUtils.getAllInterfacesForClass(clazz);
 			if (classes == null || classes.length == 0) {
 				throw new BeanInitializationException("Failed to init service " + beanName + " in class "
 						+ bean.getClass().getName() + ", that need realize one interface");

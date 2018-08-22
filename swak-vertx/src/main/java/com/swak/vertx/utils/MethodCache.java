@@ -21,7 +21,8 @@ public class MethodCache {
 	 * @param method
 	 */
 	public static MethodMeta set(Method method) {
-		return CACHES.putIfAbsent(method, new MethodMeta(method));
+		CACHES.putIfAbsent(method, new MethodMeta(method));
+		return CACHES.get(method);
 	}
 
 	/**
