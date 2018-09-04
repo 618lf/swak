@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
+import com.swak.config.options.MetricsOptionsAutoConfiguration;
+import com.swak.config.options.StandardOptionsAutoConfiguration;
 import com.swak.config.vertx.ClusterVertxAutoConfiguration;
 import com.swak.config.vertx.StandardVerxAutoConfiguration;
 import com.swak.vertx.config.AnnotationBean;
@@ -26,7 +28,8 @@ import com.swak.vertx.transport.ReactiveServer;
 @EnableConfigurationProperties(VertxProperties.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
-@Import({ ClusterVertxAutoConfiguration.class, StandardVerxAutoConfiguration.class})
+@Import({ MetricsOptionsAutoConfiguration.class, StandardOptionsAutoConfiguration.class,
+		ClusterVertxAutoConfiguration.class, StandardVerxAutoConfiguration.class })
 public class VertxAutoConfiguration {
 
 	/**

@@ -44,7 +44,6 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
     public AnnotationBean(VertxHandler vertx) {
     	this.vertx = vertx;
     }
-	
 	public VertxHandler getVertx() {
 		return vertx;
 	}

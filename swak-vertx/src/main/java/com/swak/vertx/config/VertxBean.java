@@ -3,7 +3,6 @@ package com.swak.vertx.config;
 import java.util.function.Consumer;
 
 import com.swak.exception.BaseRuntimeException;
-import com.swak.reactivex.transport.TransportMode;
 import com.swak.vertx.handler.VertxHandler;
 import com.swak.vertx.handler.codec.Msg;
 
@@ -12,7 +11,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.Message;
-import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 
 /**
  * vertx 的配置 bean
@@ -21,36 +19,14 @@ import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
  */
 public class VertxBean implements VertxHandler {
 
-	protected VertxProperties properties;
+	protected VertxOptions vertxOptions;
 	protected boolean inited;
 	protected Vertx vertx;
 
-	public VertxBean(VertxProperties properties) {
-		this.properties = properties;
+	public VertxBean(VertxOptions vertxOptions) {
+		this.vertxOptions = vertxOptions;
 	}
-
-	/**
-	 * 初始化配置项目
-	 * 
-	 * @return
-	 */
-	protected VertxOptions init() {
-		VertxOptions vertxOptions = new VertxOptions();
-
-		// Dropwizard Metrics
-		if (properties.isMetricAble()) {
-			vertxOptions.setMetricsOptions(
-					new DropwizardMetricsOptions().setEnabled(true).setJmxEnabled(true).setJmxDomain("vertx-metrics"));
-		}
-
-		// pool config
-		if (properties.getMode() == TransportMode.EPOLL) {
-			vertxOptions.setPreferNativeTransport(true);
-		}
-		vertxOptions.setEventLoopPoolSize(properties.getEventLoopPoolSize());
-		return vertxOptions;
-	}
-
+	
 	/**
 	 * 启动服务器
 	 * 
@@ -58,10 +34,6 @@ public class VertxBean implements VertxHandler {
 	 */
 	@Override
 	public void apply(Consumer<Vertx> apply) {
-
-		// init vertx Options
-		VertxOptions vertxOptions = this.init();
-
 		// build standard vertx
 		Vertx vertx = Vertx.vertx(vertxOptions);
 		apply.accept(vertx);

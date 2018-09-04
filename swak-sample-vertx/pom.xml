@@ -13,8 +13,15 @@
 			<artifactId>swak-starter-vertx</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.swak</groupId>
-			<artifactId>swak-actuator</artifactId>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-dropwizard-metrics</artifactId>
+			<version>${vertx.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.vertx</groupId>
+					<artifactId>vertx-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 </project>
