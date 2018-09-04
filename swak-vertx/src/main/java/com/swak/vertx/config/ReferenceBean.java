@@ -3,8 +3,7 @@ package com.swak.vertx.config;
 import java.lang.reflect.Proxy;
 
 import com.swak.vertx.handler.InvokerHandler;
-
-import io.vertx.core.Vertx;
+import com.swak.vertx.handler.VertxHandler;
 
 /**
  * 依赖配置
@@ -25,7 +24,7 @@ public class ReferenceBean {
 	 * 
 	 * @return
 	 */
-	public Object getRefer(Vertx vertx) {
+	public Object getRefer(VertxHandler vertx) {
 		if (refer == null) {
 			refer = Proxy.newProxyInstance(this.type.getClassLoader(), new Class[] { this.type },
 					new InvokerHandler(vertx, type));

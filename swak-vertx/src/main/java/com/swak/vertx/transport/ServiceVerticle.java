@@ -1,4 +1,4 @@
-package com.swak.vertx.handler;
+package com.swak.vertx.transport;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -20,7 +20,7 @@ import io.vertx.core.eventbus.Message;
  * 
  * @author lifeng
  */
-public class ServiceHandler extends AbstractVerticle implements Handler<Message<Msg>> {
+public class ServiceVerticle extends AbstractVerticle implements Handler<Message<Msg>> {
 
 	private final Object service;
 	private final String address;
@@ -28,7 +28,7 @@ public class ServiceHandler extends AbstractVerticle implements Handler<Message<
 	private final Wrapper wrapper;
 	private final Map<String, MethodMeta> methods;
 
-	public ServiceHandler(Object service, Class<?> type) {
+	public ServiceVerticle(Object service, Class<?> type) {
 		this.service = service;
 		this.type = type;
 		this.address = type.getName();

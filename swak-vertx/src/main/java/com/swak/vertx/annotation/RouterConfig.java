@@ -17,4 +17,4 @@ import org.springframework.stereotype.Controller;
 @Documented
 @Controller
 @RequestMapping
-public @interface RouterSupplier {}
+public @interface RouterConfig {}

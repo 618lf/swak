@@ -11,17 +11,21 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
+import com.swak.vertx.annotation.ServiceMapping;
+
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
 /**
- * 请求执行器
+ * 
+ * 请求执行器, 定义为 http 服务入口
  * 
  * @author lifeng
  */
-public class HandlerAdapter {
+@ServiceMapping(value = "handlerAdapter", httpServer = true, instances = -1)
+public class HandlerAdapter implements RouterHandler {
 
 	@Autowired
 	private ConversionService conversionService;
@@ -75,9 +79,10 @@ public class HandlerAdapter {
 		}
 		return this.resolveObject(parameterType, context);
 	}
-	
+
 	/**
 	 * 直接解析对象参数
+	 * 
 	 * @param type
 	 * @param arguments
 	 * @return
@@ -100,10 +105,11 @@ public class HandlerAdapter {
 				}
 			}
 			return obj;
-		}catch (Exception e) {}
+		} catch (Exception e) {
+		}
 		return null;
 	}
-	
+
 	private Map<String, Object> getArguments(RoutingContext request) {
 		MultiMap maps = request.request().params();
 		Map<String, Object> arguments = new LinkedHashMap<>();

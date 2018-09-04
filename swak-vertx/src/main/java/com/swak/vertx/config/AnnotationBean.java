@@ -20,13 +20,12 @@ import com.swak.utils.Sets;
 import com.swak.vertx.annotation.RequestMapping;
 import com.swak.vertx.annotation.RequestMethod;
 import com.swak.vertx.annotation.RestController;
+import com.swak.vertx.annotation.RouterConfig;
 import com.swak.vertx.annotation.RouterSupplier;
 import com.swak.vertx.annotation.ServiceMapping;
 import com.swak.vertx.annotation.ServiceReferer;
+import com.swak.vertx.handler.VertxHandler;
 import com.swak.vertx.utils.RouterUtils;
-
-import io.vertx.core.Vertx;
-import io.vertx.ext.web.Router;
 
 /**
  * 自动化配置bean
@@ -39,34 +38,27 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 	private final Set<RouterBean> routers = Sets.newOrderSet();
 	private final Map<String, ReferenceBean> references = Maps.newOrderMap();
 	private final Set<IRouterSupplier> routerSuppliers = Sets.newOrderSet();
-
-	private final Vertx vertx;
-	private final Router router;
-
-	public AnnotationBean(Vertx vertx, Router router) {
-		this.vertx = vertx;
-		this.router = router;
-	}
-
-	public Vertx getVertx() {
+	private final Set<IRouterConfig> routerConfigs = Sets.newOrderSet();
+    private final VertxHandler vertx;
+	
+    public AnnotationBean(VertxHandler vertx) {
+    	this.vertx = vertx;
+    }
+	
+	public VertxHandler getVertx() {
 		return vertx;
 	}
-
-	public Router getRouter() {
-		return router;
-	}
-
-	// 需要注册的服务或路由
 	public Set<ServiceBean> getServices() {
 		return services;
 	}
-
 	public Set<RouterBean> getRouters() {
 		return routers;
 	}
-
 	public Set<IRouterSupplier> getRouterSuppliers() {
 		return routerSuppliers;
+	}
+	public Set<IRouterConfig> getRouterConfigs() {
+		return routerConfigs;
 	}
 
 	@Override
@@ -112,6 +104,13 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		if (routerSupplier != null && bean instanceof IRouterSupplier) {
 			IRouterSupplier rs = (IRouterSupplier) bean;
 			routerSuppliers.add(rs);
+		}
+		
+		// registry config routers
+		RouterConfig routerConfig = clazz.getAnnotation(RouterConfig.class);
+		if (routerConfig != null && bean instanceof IRouterConfig) {
+			IRouterConfig rs = (IRouterConfig) bean;
+			routerConfigs.add(rs);
 		}
 
 		// fill the reference
@@ -192,7 +191,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 						+ bean.getClass().getName() + ", that need realize one interface");
 			}
 			for (Class<?> inter : classes) {
-				ServiceBean serviceBean = new ServiceBean(bean, serviceMapping.use_pool(), inter);
+				ServiceBean serviceBean = new ServiceBean(bean, serviceMapping.httpServer(), serviceMapping.instances(), serviceMapping.use_pool(), inter);
 				services.add(serviceBean);
 			}
 		}

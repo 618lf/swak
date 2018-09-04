@@ -17,12 +17,21 @@ import io.vertx.core.impl.cpu.CpuCoreSensor;
 @ConfigurationProperties(prefix = "spring.vertx")
 public class VertxProperties {
 
+	private String host = "127.0.0.1";
 	private int port = 8080;
 	private TransportMode mode = TransportMode.NIO;
 	private int eventLoopPoolSize = 2 * CpuCoreSensor.availableProcessors();
 	private int workerThreads = 20;
 	private Map<String, Integer> workers = Maps.newHashMap();
 	private boolean metricAble = true;
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
 
 	public boolean isMetricAble() {
 		return metricAble;

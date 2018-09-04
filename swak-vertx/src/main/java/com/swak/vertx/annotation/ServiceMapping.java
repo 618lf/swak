@@ -19,8 +19,24 @@ import org.springframework.stereotype.Service;
 @Service
 public @interface ServiceMapping {
 
+	/**
+	 * 实例化的名称
+	 * @return
+	 */
 	@AliasFor(annotation = Service.class)
 	String value() default "";
+	
+	/**
+	 * 是否是http
+	 * @return
+	 */
+	boolean httpServer() default false;
+	
+	/**
+	 * 发布服务的个数
+	 * @return
+	 */
+	int instances() default 1;
 	
 	/**
 	 * 可以设置在哪个 pool 中运行
