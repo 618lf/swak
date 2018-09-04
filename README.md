@@ -66,7 +66,8 @@ javac 的 process，这个对我来说是一个比较新的概念，如果不是
 问题2：
 maven-resources-plugin 问题，如果war 项目一直提示这个插件文件，则需要在pom 文件中加入这个插件war 的pom 
 
-
+# 版本0.1.1
+升级一个新的版本,这个版本支持了 vertx。
 
 
 
