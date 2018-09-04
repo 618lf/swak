@@ -25,6 +25,147 @@ public class VertxProperties {
 	private Map<String, Integer> workers = Maps.newHashMap();
 	private boolean metricAble = true;
 
+	// 集群配置
+	private boolean clusterable = false;
+	private String clusterHost = "127.0.0.1";
+	private int clusterPort = 8472;
+	private int clusterPingInterval = 1000;
+	private int clusterPingIntervalReply = 1000;
+	private String zookeeperHosts = "127.0.0.1";
+	private String rootPath = "io.vertx";
+	private int sessionTimeout = 20000;
+	private int connectTimeout = 3000;
+
+	// 重试
+	private int retryInitialSleepTime = 1000;
+	private int retryIntervalTimes = 10000;
+	private int retryMaxTimes = 5;
+	
+	// 高可用
+	private boolean haEnabled = true;
+	private String haGroup = "_VERTX_GROUP_";
+	private int quorumSize = 1;
+
+	public String getRootPath() {
+		return rootPath;
+	}
+
+	public void setRootPath(String rootPath) {
+		this.rootPath = rootPath;
+	}
+
+	public int getSessionTimeout() {
+		return sessionTimeout;
+	}
+
+	public void setSessionTimeout(int sessionTimeout) {
+		this.sessionTimeout = sessionTimeout;
+	}
+
+	public int getConnectTimeout() {
+		return connectTimeout;
+	}
+
+	public void setConnectTimeout(int connectTimeout) {
+		this.connectTimeout = connectTimeout;
+	}
+
+	public int getRetryInitialSleepTime() {
+		return retryInitialSleepTime;
+	}
+
+	public void setRetryInitialSleepTime(int retryInitialSleepTime) {
+		this.retryInitialSleepTime = retryInitialSleepTime;
+	}
+
+	public int getRetryIntervalTimes() {
+		return retryIntervalTimes;
+	}
+
+	public void setRetryIntervalTimes(int retryIntervalTimes) {
+		this.retryIntervalTimes = retryIntervalTimes;
+	}
+
+	public int getRetryMaxTimes() {
+		return retryMaxTimes;
+	}
+
+	public void setRetryMaxTimes(int retryMaxTimes) {
+		this.retryMaxTimes = retryMaxTimes;
+	}
+
+	public boolean isClusterable() {
+		return clusterable;
+	}
+
+	public void setClusterable(boolean clusterable) {
+		this.clusterable = clusterable;
+	}
+
+	public String getClusterHost() {
+		return clusterHost;
+	}
+
+	public void setClusterHost(String clusterHost) {
+		this.clusterHost = clusterHost;
+	}
+
+	public int getClusterPort() {
+		return clusterPort;
+	}
+
+	public void setClusterPort(int clusterPort) {
+		this.clusterPort = clusterPort;
+	}
+
+	public int getClusterPingInterval() {
+		return clusterPingInterval;
+	}
+
+	public void setClusterPingInterval(int clusterPingInterval) {
+		this.clusterPingInterval = clusterPingInterval;
+	}
+
+	public int getClusterPingIntervalReply() {
+		return clusterPingIntervalReply;
+	}
+
+	public void setClusterPingIntervalReply(int clusterPingIntervalReply) {
+		this.clusterPingIntervalReply = clusterPingIntervalReply;
+	}
+
+	public String getZookeeperHosts() {
+		return zookeeperHosts;
+	}
+
+	public void setZookeeperHosts(String zookeeperHosts) {
+		this.zookeeperHosts = zookeeperHosts;
+	}
+
+	public boolean isHaEnabled() {
+		return haEnabled;
+	}
+
+	public void setHaEnabled(boolean haEnabled) {
+		this.haEnabled = haEnabled;
+	}
+
+	public String getHaGroup() {
+		return haGroup;
+	}
+
+	public void setHaGroup(String haGroup) {
+		this.haGroup = haGroup;
+	}
+
+	public int getQuorumSize() {
+		return quorumSize;
+	}
+
+	public void setQuorumSize(int quorumSize) {
+		this.quorumSize = quorumSize;
+	}
+
 	public String getHost() {
 		return host;
 	}
