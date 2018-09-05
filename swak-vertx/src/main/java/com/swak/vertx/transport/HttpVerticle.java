@@ -7,6 +7,7 @@ import com.swak.vertx.annotation.RequestMethod;
 import com.swak.vertx.config.IRouterConfig;
 import com.swak.vertx.config.IRouterSupplier;
 import com.swak.vertx.config.RouterBean;
+import com.swak.vertx.handler.MethodHandler;
 import com.swak.vertx.handler.RouterHandler;
 
 import io.vertx.core.AbstractVerticle;
@@ -64,10 +65,16 @@ public class HttpVerticle extends AbstractVerticle {
 					} else {
 						route.method(HttpMethod.GET);
 					}
+					
+					// 具体的处理器
+					MethodHandler handler = rb.getHandler();
+					
+					// 初始化处理器
+					routerHandler.initHandler(handler);
 
-					// 添加一个匿名的处理器
+					// 绑定处理器
 					route.handler(ctx -> {
-						routerHandler.handle(ctx, rb.getHandler());
+						routerHandler.handle(ctx, handler);
 					});
 				}
 			}

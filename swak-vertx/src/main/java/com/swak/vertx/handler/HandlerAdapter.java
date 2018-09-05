@@ -12,6 +12,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
 import com.swak.vertx.annotation.ServiceMapping;
+import com.swak.vertx.utils.FieldCache;
+import com.swak.vertx.utils.FieldCache.FieldMeta;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
@@ -31,6 +33,26 @@ public class HandlerAdapter implements RouterHandler {
 	private ConversionService conversionService;
 	@Autowired
 	private ResultHandler resultHandler;
+	
+    /**
+     * 初始化处理器
+     */
+	@Override
+	public void initHandler(MethodHandler handler) {
+		MethodParameter[] parameters = handler.getParameters();
+		for (int i = 0; i < parameters.length; i++) {
+			MethodParameter parameter = parameters[i];
+			Class<?> parameterType = parameter.getNestedParameterType();
+			if (!(parameterType == HttpServerRequest.class
+					|| parameterType == HttpServerResponse.class
+					|| parameterType == RoutingContext.class
+					|| BeanUtils.isSimpleProperty(parameterType))) {
+				
+				// 预加载需要解析的类型
+				FieldCache.set(parameterType);
+			}
+		}
+	}
 
 	/**
 	 * 处理请求
@@ -38,6 +60,7 @@ public class HandlerAdapter implements RouterHandler {
 	 * @param context
 	 * @param handler
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public void handle(RoutingContext context, MethodHandler handler) {
 		try {
@@ -92,24 +115,29 @@ public class HandlerAdapter implements RouterHandler {
 			Map<String, Object> arguments = this.getArguments(context);
 			Object obj = paramtype.newInstance();
 			if (!arguments.isEmpty()) {
-				Field[] fields = paramtype.getFields();
-				for (Field field : fields) {
-					field.setAccessible(true);
-					if ("serialVersionUID".equals(field.getName())) {
-						continue;
-					}
-					Object value = arguments.get(field.getName());
-					if (value != null) {
-						field.set(obj, this.doConvert(value, field.getType()));
-					}
-				}
+				FieldMeta fieldMeta = FieldCache.get(paramtype);
+				this.fillObjectValue(obj, fieldMeta.getDeclares(), arguments);
+				this.fillObjectValue(obj, fieldMeta.getSupers(), arguments);
 			}
 			return obj;
 		} catch (Exception e) {
 		}
 		return null;
 	}
-
+	
+	private void fillObjectValue(Object obj, Field[] fields, Map<String, Object> arguments) throws IllegalArgumentException, IllegalAccessException {
+		for (Field field : fields) {
+			field.setAccessible(true);
+			if ("serialVersionUID".equals(field.getName())) {
+				continue;
+			}
+			Object value = arguments.get(field.getName());
+			if (value != null) {
+				field.set(obj, this.doConvert(value, field.getType()));
+			}
+		}
+	}
+	
 	private Map<String, Object> getArguments(RoutingContext request) {
 		MultiMap maps = request.request().params();
 		Map<String, Object> arguments = new LinkedHashMap<>();

@@ -10,6 +10,14 @@ import io.vertx.ext.web.RoutingContext;
 public interface RouterHandler {
 
 	/**
+	 * 做一些初始化的操作
+	 * 
+	 * @param handler
+	 */
+	default void initHandler(MethodHandler handler) {
+	}
+
+	/**
 	 * 路由处理器
 	 * 
 	 * @param context

@@ -4,6 +4,9 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.swak.asm.Wrapper;
 import com.swak.utils.Maps;
 import com.swak.vertx.handler.codec.Msg;
@@ -22,6 +25,8 @@ import io.vertx.core.eventbus.Message;
  */
 public class ServiceVerticle extends AbstractVerticle implements Handler<Message<Msg>> {
 
+	private static Logger logger = LoggerFactory.getLogger(ServiceVerticle.class);
+	
 	private final Object service;
 	private final String address;
 	private final Class<?> type;
@@ -74,10 +79,10 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 					request.getArguments());
 		} catch (Exception e) {
 			error = e;
+			logger.error("执行service错误", e);
 		}
 		Msg response = request.reset();
 		if (error != null) {
-			response.setError(error.getMessage());
 			event.reply(response);
 		} else if (result != null && result instanceof CompletionStage) {
 			CompletionStage<Object> resultFuture = (CompletionStage<Object>) result;

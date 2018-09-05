@@ -166,6 +166,9 @@ public class MybatisProperties {
 				}
 			}
 		}
+		
+		// 默认添加一层配置
+		resources.add(resourceResolver.getResource("classpath*:com/swak/persistence/confg/*.Mapper.xml"));
 		return resources.toArray(new Resource[resources.size()]);
 	}
 }

@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.swak.utils.ReflectUtils;
 
 /**
- * method 还存
+ * method cache
  * 
  * @author lifeng
  */
