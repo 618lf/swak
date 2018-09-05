@@ -1,4 +1,4 @@
-package com.swak.config.jdbc.database;
+package com.swak.config;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class MybatisProperties {
 	/**
 	 * Locations of MyBatis mapper files.
 	 */
-	private String[] mapperLocations = new String[] {"classpath*:com/tmt/**/dao/*.Mapper.xml"};
+	private String[] mapperLocations = new String[] { "classpath*:com/tmt/**/dao/*.Mapper.xml" };
 
 	/**
 	 * Packages to search type aliases. (Package delimiters are ",; \t\n")
@@ -166,9 +166,14 @@ public class MybatisProperties {
 				}
 			}
 		}
-		
+
 		// 默认添加一层配置
-		resources.add(resourceResolver.getResource("classpath*:com/swak/persistence/confg/*.Mapper.xml"));
+		try {
+			resources.addAll(Arrays
+					.asList(resourceResolver.getResources("classpath*:com/swak/persistence/config/*.Mapper.xml")));
+		} catch (IOException e) {
+			// ignore
+		}
 		return resources.toArray(new Resource[resources.size()]);
 	}
 }

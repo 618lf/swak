@@ -12,5 +12,15 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-starter-vertx</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-jdbc</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.alibaba</groupId>
+					<artifactId>druid</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 </project>
