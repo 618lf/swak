@@ -92,7 +92,7 @@ public class HandlerAdapter implements RouterHandler {
 			Map<String, Object> arguments = this.getArguments(context);
 			Object obj = paramtype.newInstance();
 			if (!arguments.isEmpty()) {
-				Field[] fields = paramtype.getDeclaredFields();
+				Field[] fields = paramtype.getFields();
 				for (Field field : fields) {
 					field.setAccessible(true);
 					if ("serialVersionUID".equals(field.getName())) {
