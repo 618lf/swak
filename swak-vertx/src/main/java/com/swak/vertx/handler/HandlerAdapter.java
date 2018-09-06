@@ -1,7 +1,7 @@
 package com.swak.vertx.handler;
 
-import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
@@ -13,6 +13,7 @@ import org.springframework.core.convert.TypeDescriptor;
 
 import com.swak.vertx.annotation.ServiceMapping;
 import com.swak.vertx.utils.FieldCache;
+import com.swak.vertx.utils.FieldCache.ClassMeta;
 import com.swak.vertx.utils.FieldCache.FieldMeta;
 
 import io.vertx.core.MultiMap;
@@ -115,9 +116,8 @@ public class HandlerAdapter implements RouterHandler {
 			Map<String, Object> arguments = this.getArguments(context);
 			Object obj = paramtype.newInstance();
 			if (!arguments.isEmpty()) {
-				FieldMeta fieldMeta = FieldCache.get(paramtype);
-				this.fillObjectValue(obj, fieldMeta.getDeclares(), arguments);
-				this.fillObjectValue(obj, fieldMeta.getSupers(), arguments);
+				ClassMeta classMeta = FieldCache.get(paramtype);
+				this.fillObjectValue(obj, classMeta.getFields(), arguments);
 			}
 			return obj;
 		} catch (Exception e) {
@@ -125,15 +125,15 @@ public class HandlerAdapter implements RouterHandler {
 		return null;
 	}
 	
-	private void fillObjectValue(Object obj, Field[] fields, Map<String, Object> arguments) throws IllegalArgumentException, IllegalAccessException {
-		for (Field field : fields) {
-			field.setAccessible(true);
-			if ("serialVersionUID".equals(field.getName())) {
+	private void fillObjectValue(Object obj, List<FieldMeta> fields, Map<String, Object> arguments) throws IllegalArgumentException, IllegalAccessException {
+		for (FieldMeta field : fields) {
+			field.getField().setAccessible(true);
+			if ("serialVersionUID".equals(field.getPropertyName())) {
 				continue;
 			}
-			Object value = arguments.get(field.getName());
+			Object value = arguments.get(field.getPropertyName());
 			if (value != null) {
-				field.set(obj, this.doConvert(value, field.getType()));
+				field.getField().set(obj, this.doConvert(value, field.getFieldClass()));
 			}
 		}
 	}

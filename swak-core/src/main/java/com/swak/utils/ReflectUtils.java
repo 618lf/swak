@@ -22,6 +22,9 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
@@ -1223,6 +1226,112 @@ public final class ReflectUtils {
 			return methodName + "(" + paramDesc + ")";
 		}
 	}
+
+	/**
+	 * 标准的属性名称
+	 * @param name
+	 * @return
+	 */
+	public static String propertyName(String name) {
+		if (name == null || name.length() == 0) {
+			return name;
+		}
+		if (name.length() > 1 && Character.isUpperCase(name.charAt(1)) && Character.isUpperCase(name.charAt(0))) {
+			return name;
+		}
+		char chars[] = name.toCharArray();
+		chars[0] = Character.toLowerCase(chars[0]);
+		return new String(chars);
+	}
+	
+	/**
+	 * 获得 指定类型的指定名称的字段
+	 * @param clazz
+	 * @param fieldName
+	 * @param declaredFields
+	 * @return
+	 */
+    public static Field getField(Class<?> clazz, String fieldName, Field[] declaredFields){
+        for(Field field : declaredFields){
+            String itemName = field.getName();
+            if(fieldName.equals(itemName)){
+                return field;
+            }
+
+            char c0, c1;
+            if (fieldName.length() > 2
+                    && (c0 = fieldName.charAt(0)) >= 'a' && c0 <= 'z'
+                    && (c1 = fieldName.charAt(1)) >= 'A' && c1 <= 'Z'
+                    && fieldName.equalsIgnoreCase(itemName)) {
+                return field;
+            }
+        }
+        Class<?> superClass = clazz.getSuperclass();
+        if(superClass != null && superClass != Object.class){
+            return getField(superClass, fieldName, superClass.getDeclaredFields());
+        }
+        return null;
+    }
+    
+    /**
+     * 得到实际的类型
+     * @param type
+     * @return
+     */
+    public static Class<?> getClass(Type type){
+        if(type.getClass() == Class.class){
+            return (Class<?>) type;
+        }
+
+        if(type instanceof ParameterizedType){
+            return getClass(((ParameterizedType) type).getRawType());
+        }
+
+        if(type instanceof TypeVariable){
+            Type boundType = ((TypeVariable<?>) type).getBounds()[0];
+            return (Class<?>) boundType;
+        }
+
+        if(type instanceof WildcardType){
+            Type[] upperBounds = ((WildcardType) type).getUpperBounds();
+            if (upperBounds.length == 1) {
+                return getClass(upperBounds[0]);
+            }
+        }
+
+        return Object.class;
+    }
+    
+    /**
+     * 是否范型类型
+     * @param type
+     * @return
+     */
+    public static boolean isGenericParamType(Type type){
+        if(type instanceof ParameterizedType){
+            return true;
+        }
+        if(type instanceof Class) {
+            Type superType = ((Class<?>) type).getGenericSuperclass();
+            return superType != Object.class && isGenericParamType(superType);
+        }
+        return false;
+    }
+
+    /**
+     * 得到范型类型
+     * @param type
+     * @return
+     */
+    public static Type getGenericParamType(Type type){
+        if(type instanceof ParameterizedType){
+            return type;
+        }
+        if(type instanceof Class){
+            return getGenericParamType(((Class<?>) type).getGenericSuperclass());
+        }
+        return type;
+    }
 
 	private ReflectUtils() {
 	}
