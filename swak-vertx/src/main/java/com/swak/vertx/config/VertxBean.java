@@ -29,7 +29,7 @@ public class VertxBean implements VertxHandler {
 		this.vertxOptions = vertxOptions;
 		this.deliveryOptions = deliveryOptions;
 	}
-	
+
 	/**
 	 * 启动服务器
 	 * 
@@ -43,7 +43,7 @@ public class VertxBean implements VertxHandler {
 
 		// 初始化完成标志
 		this.inited = true;
-	    this.vertx = vertx;
+		this.vertx = vertx;
 	}
 
 	/**
@@ -62,9 +62,16 @@ public class VertxBean implements VertxHandler {
 	 * 发送消息服务
 	 */
 	@Override
-	public void sentMessage(String address, Msg request) {
+	public void sentMessage(String address, Msg request, int timeout) {
 		if (!this.inited) {
 			throw new BaseRuntimeException("vertx doesn't inited");
+		}
+
+		// 默认的配置
+		DeliveryOptions deliveryOptions = this.deliveryOptions;
+		if (timeout >= 1) {
+			deliveryOptions = new DeliveryOptions();
+			deliveryOptions.setSendTimeout(timeout);
 		}
 
 		// 发送消息
@@ -75,11 +82,18 @@ public class VertxBean implements VertxHandler {
 	 * 发送消息服务
 	 */
 	@Override
-	public void sentMessage(String address, Msg request, Handler<AsyncResult<Message<Msg>>> replyHandler) {
+	public void sentMessage(String address, Msg request, int timeout, Handler<AsyncResult<Message<Msg>>> replyHandler) {
 		if (!this.inited) {
 			throw new BaseRuntimeException("vertx doesn't inited");
 		}
 		
+		// 默认的配置
+		DeliveryOptions deliveryOptions = this.deliveryOptions;
+		if (timeout >= 1) {
+			deliveryOptions = new DeliveryOptions();
+			deliveryOptions.setSendTimeout(timeout);
+		}
+
 		// 发送消息
 		vertx.eventBus().send(address, request, deliveryOptions, replyHandler);
 	}

@@ -60,7 +60,7 @@ public class InvokerHandler implements InvocationHandler {
 		MethodMeta meta = MethodCache.get(method);
 		CompletableFuture<Object> future = new CompletableFuture<Object>();
 		Msg request = new Msg(meta, args);
-		vertx.sentMessage(this.address, request, res -> {
+		vertx.sentMessage(this.address, request, meta.getTimeOut(), res -> {
 			Msg result = (Msg) res.result().body();
 			future.complete(result.getResult());
 		});

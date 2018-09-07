@@ -33,12 +33,12 @@ public interface VertxHandler {
 	 * @param address
 	 * @param request
 	 */
-	void sentMessage(String address, Msg request);
+	void sentMessage(String address, Msg request, int timeout);
 	
 	/**
 	 * 发送消息
 	 * @param address
 	 * @param request
 	 */
-	void sentMessage(String address, Msg request, Handler<AsyncResult<Message<Msg>>> replyHandler);
+	void sentMessage(String address, Msg request, int timeout, Handler<AsyncResult<Message<Msg>>> replyHandler);
 }
