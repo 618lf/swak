@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.eventbus.DeliveryOptions;
 
 /**
  * 集群化的 vertx bean
@@ -14,8 +15,8 @@ import io.vertx.core.VertxOptions;
  */
 public class ClusterVertxBean extends VertxBean {
 
-	public ClusterVertxBean(VertxOptions vertxOptions) {
-		super(vertxOptions);
+	public ClusterVertxBean(VertxOptions vertxOptions, DeliveryOptions deliveryOptions) {
+		super(vertxOptions, deliveryOptions);
 	}
 
 	@Override

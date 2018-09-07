@@ -9,6 +9,7 @@ import com.swak.reactivex.transport.TransportMode;
 import com.swak.vertx.config.VertxProperties;
 
 import io.vertx.core.VertxOptions;
+import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 
 /**
@@ -41,5 +42,17 @@ public class MetricsOptionsAutoConfiguration {
 		}
 		vertxOptions.setEventLoopPoolSize(properties.getEventLoopPoolSize());
 		return vertxOptions;
+	}
+	
+	/**
+	 * 构建配置
+	 * @param properties
+	 * @return
+	 */
+	@Bean
+	public DeliveryOptions deliveryOptions(VertxProperties properties) {
+		DeliveryOptions deliveryOptions = new DeliveryOptions();
+		deliveryOptions.setSendTimeout(properties.getSendTimeout());
+		return deliveryOptions;
 	}
 }

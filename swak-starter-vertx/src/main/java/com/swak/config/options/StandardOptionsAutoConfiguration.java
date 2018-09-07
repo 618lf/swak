@@ -8,6 +8,7 @@ import com.swak.reactivex.transport.TransportMode;
 import com.swak.vertx.config.VertxProperties;
 
 import io.vertx.core.VertxOptions;
+import io.vertx.core.eventbus.DeliveryOptions;
 
 /**
  * 基础的 options
@@ -32,5 +33,17 @@ public class StandardOptionsAutoConfiguration {
 		}
 		vertxOptions.setEventLoopPoolSize(properties.getEventLoopPoolSize());
 		return vertxOptions;
+	}
+	
+	/**
+	 * 构建配置
+	 * @param properties
+	 * @return
+	 */
+	@Bean
+	public DeliveryOptions deliveryOptions(VertxProperties properties) {
+		DeliveryOptions deliveryOptions = new DeliveryOptions();
+		deliveryOptions.setSendTimeout(properties.getSendTimeout());
+		return deliveryOptions;
 	}
 }

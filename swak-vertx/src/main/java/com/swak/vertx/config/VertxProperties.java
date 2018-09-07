@@ -24,6 +24,9 @@ public class VertxProperties {
 	private int workerThreads = 20;
 	private Map<String, Integer> workers = Maps.newHashMap();
 	private boolean metricAble = true;
+	
+	// event bus 的超时时间默认
+	private int sendTimeout = 5 * 60 * 1000; // 5min
 
 	// 集群配置
 	private boolean clusterable = false;
@@ -46,178 +49,141 @@ public class VertxProperties {
 	private String haGroup = "_VERTX_GROUP_";
 	private int quorumSize = 1;
 
+	public int getSendTimeout() {
+		return sendTimeout;
+	}
+	public void setSendTimeout(int sendTimeout) {
+		this.sendTimeout = sendTimeout;
+	}
 	public String getRootPath() {
 		return rootPath;
 	}
-
 	public void setRootPath(String rootPath) {
 		this.rootPath = rootPath;
 	}
-
 	public int getSessionTimeout() {
 		return sessionTimeout;
 	}
-
 	public void setSessionTimeout(int sessionTimeout) {
 		this.sessionTimeout = sessionTimeout;
 	}
-
 	public int getConnectTimeout() {
 		return connectTimeout;
 	}
-
 	public void setConnectTimeout(int connectTimeout) {
 		this.connectTimeout = connectTimeout;
 	}
-
 	public int getRetryInitialSleepTime() {
 		return retryInitialSleepTime;
 	}
-
 	public void setRetryInitialSleepTime(int retryInitialSleepTime) {
 		this.retryInitialSleepTime = retryInitialSleepTime;
 	}
-
 	public int getRetryIntervalTimes() {
 		return retryIntervalTimes;
 	}
-
 	public void setRetryIntervalTimes(int retryIntervalTimes) {
 		this.retryIntervalTimes = retryIntervalTimes;
 	}
-
 	public int getRetryMaxTimes() {
 		return retryMaxTimes;
 	}
-
 	public void setRetryMaxTimes(int retryMaxTimes) {
 		this.retryMaxTimes = retryMaxTimes;
 	}
-
 	public boolean isClusterable() {
 		return clusterable;
 	}
-
 	public void setClusterable(boolean clusterable) {
 		this.clusterable = clusterable;
 	}
-
 	public String getClusterHost() {
 		return clusterHost;
 	}
-
 	public void setClusterHost(String clusterHost) {
 		this.clusterHost = clusterHost;
 	}
-
 	public int getClusterPort() {
 		return clusterPort;
 	}
-
 	public void setClusterPort(int clusterPort) {
 		this.clusterPort = clusterPort;
 	}
-
 	public int getClusterPingInterval() {
 		return clusterPingInterval;
 	}
-
 	public void setClusterPingInterval(int clusterPingInterval) {
 		this.clusterPingInterval = clusterPingInterval;
 	}
-
 	public int getClusterPingIntervalReply() {
 		return clusterPingIntervalReply;
 	}
-
 	public void setClusterPingIntervalReply(int clusterPingIntervalReply) {
 		this.clusterPingIntervalReply = clusterPingIntervalReply;
 	}
-
 	public String getZookeeperHosts() {
 		return zookeeperHosts;
 	}
-
 	public void setZookeeperHosts(String zookeeperHosts) {
 		this.zookeeperHosts = zookeeperHosts;
 	}
-
 	public boolean isHaEnabled() {
 		return haEnabled;
 	}
-
 	public void setHaEnabled(boolean haEnabled) {
 		this.haEnabled = haEnabled;
 	}
-
 	public String getHaGroup() {
 		return haGroup;
 	}
-
 	public void setHaGroup(String haGroup) {
 		this.haGroup = haGroup;
 	}
-
 	public int getQuorumSize() {
 		return quorumSize;
 	}
-
 	public void setQuorumSize(int quorumSize) {
 		this.quorumSize = quorumSize;
 	}
-
 	public String getHost() {
 		return host;
 	}
-
 	public void setHost(String host) {
 		this.host = host;
 	}
-
 	public boolean isMetricAble() {
 		return metricAble;
 	}
-
 	public void setMetricAble(boolean metricAble) {
 		this.metricAble = metricAble;
 	}
-
 	public Map<String, Integer> getWorkers() {
 		return workers;
 	}
-
 	public void setWorkers(Map<String, Integer> workers) {
 		this.workers = workers;
 	}
-
 	public int getEventLoopPoolSize() {
 		return eventLoopPoolSize;
 	}
-
 	public void setEventLoopPoolSize(int eventLoopPoolSize) {
 		this.eventLoopPoolSize = eventLoopPoolSize;
 	}
-
 	public TransportMode getMode() {
 		return mode;
 	}
-
 	public void setMode(TransportMode mode) {
 		this.mode = mode;
 	}
-
 	public int getWorkerThreads() {
 		return workerThreads;
 	}
-
 	public void setWorkerThreads(int workerThreads) {
 		this.workerThreads = workerThreads;
 	}
-
 	public int getPort() {
 		return port;
 	}
-
 	public void setPort(int port) {
 		this.port = port;
 	}

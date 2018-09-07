@@ -10,6 +10,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 
 /**
@@ -20,11 +21,13 @@ import io.vertx.core.eventbus.Message;
 public class VertxBean implements VertxHandler {
 
 	protected VertxOptions vertxOptions;
+	protected DeliveryOptions deliveryOptions;
 	protected boolean inited;
 	protected Vertx vertx;
 
-	public VertxBean(VertxOptions vertxOptions) {
+	public VertxBean(VertxOptions vertxOptions, DeliveryOptions deliveryOptions) {
 		this.vertxOptions = vertxOptions;
+		this.deliveryOptions = deliveryOptions;
 	}
 	
 	/**
@@ -65,7 +68,7 @@ public class VertxBean implements VertxHandler {
 		}
 
 		// 发送消息
-		vertx.eventBus().send(address, request);
+		vertx.eventBus().send(address, request, deliveryOptions);
 	}
 
 	/**
@@ -76,8 +79,8 @@ public class VertxBean implements VertxHandler {
 		if (!this.inited) {
 			throw new BaseRuntimeException("vertx doesn't inited");
 		}
-
+		
 		// 发送消息
-		vertx.eventBus().send(address, request, replyHandler);
+		vertx.eventBus().send(address, request, deliveryOptions, replyHandler);
 	}
 }

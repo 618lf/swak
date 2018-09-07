@@ -19,6 +19,7 @@ import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.handler.VertxHandler;
 
 import io.vertx.core.VertxOptions;
+import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.spi.cluster.ClusterManager;
 
 /**
@@ -37,7 +38,7 @@ public class ClusterVertxAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public VertxHandler vertxBean(VertxOptions vertxOptions, VertxProperties properties) {
+	public VertxHandler vertxBean(VertxOptions vertxOptions, DeliveryOptions deliveryOptions, VertxProperties properties) {
 
 		// 配置在zookeeper
 		RetryPolicy retryPolicy = new ExponentialBackoffRetry(properties.getRetryInitialSleepTime(),
@@ -61,7 +62,7 @@ public class ClusterVertxAutoConfiguration {
 		vertxOptions.setHAEnabled(properties.isHaEnabled());
 		vertxOptions.setHAGroup(properties.getHaGroup());
 		vertxOptions.setQuorumSize(properties.getQuorumSize());
-		return new ClusterVertxBean(vertxOptions);
+		return new ClusterVertxBean(vertxOptions, deliveryOptions);
 	}
 
 	private String getHost(VertxProperties properties) {
