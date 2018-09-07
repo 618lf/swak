@@ -30,7 +30,6 @@ public class GoodsController {
 	 */
 	@GetMapping("/get")
 	public CompletableFuture<String> get(RoutingContext context) {
-		System.out.println(Thread.currentThread());
 		return goodsService.sayHello();
 	}
 	

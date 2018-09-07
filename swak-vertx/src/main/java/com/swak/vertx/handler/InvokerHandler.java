@@ -29,7 +29,7 @@ public class InvokerHandler implements InvocationHandler {
 	
 	private String initAddress() {
 		String name = type.getName();
-		return StringUtils.substringAfterLast(name, "Async");
+		return StringUtils.substringBeforeLast(name, "Async");
 	}
 
 	private void initMethods() {
