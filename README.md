@@ -75,5 +75,8 @@ maven-resources-plugin 问题，如果war 项目一直提示这个插件文件�
 
 好吧，先不做自动生成
 
-
+问题1：
+使用新版本的mysql驱动导致时区问题。再驱动链接字符串中添加如下设置
+?characterEncoding=utf8&useSSL=true&serverTimezone=UTC&nullNamePatternMatchesAll=true
+serverTimezone=GMT%2B8
 

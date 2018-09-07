@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 
 import com.swak.utils.StringUtils;
+import com.swak.vertx.annotation.InvokerAddress;
 import com.swak.vertx.handler.codec.Msg;
 import com.swak.vertx.utils.MethodCache;
 import com.swak.vertx.utils.MethodCache.MethodMeta;
@@ -26,10 +27,25 @@ public class InvokerHandler implements InvocationHandler {
 		this.address = this.initAddress();
 		this.initMethods();
 	}
-	
+
 	private String initAddress() {
-		String name = type.getName();
-		return StringUtils.substringBeforeLast(name, "Async");
+
+		// 访问的地址
+		String address = StringUtils.EMPTY;
+
+		// 定义的访问的地址
+		InvokerAddress invokerAddress = type.getAnnotation(InvokerAddress.class);
+		if (invokerAddress != null) {
+			address = invokerAddress.value();
+		}
+
+		// 默认使用接口的全额限定名称
+		if (StringUtils.isBlank(address)) {
+			address = type.getName();
+		}
+
+		// 约定去掉后面的 Async
+		return StringUtils.substringBeforeLast(address, "Async");
 	}
 
 	private void initMethods() {

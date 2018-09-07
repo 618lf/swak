@@ -205,26 +205,6 @@ public class DateUtils {
     }
     
     /**
-     * 得到往前推offset个月的时间
-     * @param date
-     * @param offset
-     * @return
-     */
-    public static Date getDateByMonthOffset(Date date, int offset) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int months = offset%12;
-        int years = offset/12;
-        //年
-        if(years > 0){
-        	cal.set(Calendar.YEAR, cal.get(Calendar.YEAR)-years);
-        }
-        //月
-        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH)-months);
-        return cal.getTime();
-    }
-    
-    /**
      * 得到相差offset年的时间
      * @param date
      * @param offset
