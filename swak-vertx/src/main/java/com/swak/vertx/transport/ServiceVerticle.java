@@ -82,9 +82,14 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 			logger.error("执行service错误", e);
 		}
 		Msg response = request.reset();
+		
+		// 错误消息
 		if (error != null) {
 			event.reply(response);
-		} else if (result != null && result instanceof CompletionStage) {
+		} 
+		
+		// 实现了异步接口,异步代码执行完成之后再回复
+		else if (result != null && result instanceof CompletionStage) {
 			CompletionStage<Object> resultFuture = (CompletionStage<Object>) result;
 			resultFuture.whenComplete((r, e) -> {
 				if (e == null) {
@@ -94,8 +99,16 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 				}
 				event.reply(response);
 			});
-		} else {
-			response.setError("please return CompletionStage");
+		}
+		
+        // 可以不用异步接口
+		else if(result != null) {
+			response.setResult(result);
+			event.reply(response);
+		} 
+		
+		// 回复空消息
+		else {
 			event.reply(response);
 		}
 	}

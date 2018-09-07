@@ -6,7 +6,7 @@ import com.swak.vertx.annotation.GetMapping;
 import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.annotation.ServiceReferer;
 import com.tmt.api.entity.Goods;
-import com.tmt.api.facade.GoodsServiceFacade;
+import com.tmt.api.facade.GoodsServiceFacadeAsync;
 
 import io.vertx.ext.web.RoutingContext;
 
@@ -19,7 +19,7 @@ import io.vertx.ext.web.RoutingContext;
 public class GoodsController {
 
 	@ServiceReferer
-	private GoodsServiceFacade goodsService;
+	private GoodsServiceFacadeAsync goodsService;
 
 	/**
 	 * get参数或 post 参数

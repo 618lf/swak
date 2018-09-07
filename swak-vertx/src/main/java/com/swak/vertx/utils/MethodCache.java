@@ -35,7 +35,13 @@ public class MethodCache {
 		return CACHES.get(method);
 	}
 
+	/**
+	 * 这里的返回类型应该获取范型的类型
+	 * 
+	 * @author lifeng
+	 */
 	public static class MethodMeta {
+		
 		private final String methodName;
 		private final String methodDesc;
 		private final Class<?> returnType;
@@ -51,15 +57,12 @@ public class MethodCache {
 		public String getMethodName() {
 			return methodName;
 		}
-
 		public String getMethodDesc() {
 			return methodDesc;
 		}
-
 		public Class<?> getReturnType() {
 			return returnType;
 		}
-
 		public Class<?>[] getParameterTypes() {
 			return parameterTypes;
 		}
