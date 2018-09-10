@@ -1,16 +1,19 @@
 package com.swak.vertx.handler;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
+import com.swak.utils.Lists;
 import com.swak.vertx.annotation.ServiceMapping;
 import com.swak.vertx.utils.FieldCache;
 import com.swak.vertx.utils.FieldCache.ClassMeta;
@@ -34,25 +37,31 @@ public class HandlerAdapter implements RouterHandler {
 	private ConversionService conversionService;
 	@Autowired
 	private ResultHandler resultHandler;
-	
-    /**
-     * 初始化处理器
-     */
+
+	/**
+	 * 初始化处理器
+	 */
 	@Override
 	public void initHandler(MethodHandler handler) {
 		MethodParameter[] parameters = handler.getParameters();
 		for (int i = 0; i < parameters.length; i++) {
 			MethodParameter parameter = parameters[i];
+
+			// 实际的类型
 			Class<?> parameterType = parameter.getNestedParameterType();
-			if (!(parameterType == HttpServerRequest.class
-					|| parameterType == HttpServerResponse.class
-					|| parameterType == RoutingContext.class
-					|| BeanUtils.isSimpleProperty(parameterType))) {
-				
-				// 预加载需要解析的类型
-				FieldCache.set(parameterType);
-			}
+
+			// 对于集合类型支持第一层
+			this.initField(parameterType);
 		}
+	}
+
+	private void initField(Class<?> parameterType) {
+		if (parameterType == HttpServerRequest.class || parameterType == HttpServerResponse.class
+				|| parameterType == RoutingContext.class || BeanUtils.isSimpleProperty(parameterType)
+				|| parameterType.isAssignableFrom(Collection.class) || parameterType.isAssignableFrom(Map.class)) {
+			return;
+		}
+		FieldCache.set(parameterType);
 	}
 
 	/**
@@ -91,7 +100,7 @@ public class HandlerAdapter implements RouterHandler {
 	}
 
 	private Object parseParameter(MethodParameter parameter, RoutingContext context) {
-		Class<?> parameterType = parameter.getNestedParameterType();
+		Class<?> parameterType = parameter.getParameterType();
 		if (parameterType == HttpServerRequest.class) {
 			return context.request();
 		} else if (parameterType == HttpServerResponse.class) {
@@ -100,8 +109,39 @@ public class HandlerAdapter implements RouterHandler {
 			return context;
 		} else if (BeanUtils.isSimpleProperty(parameterType)) {
 			return this.doConvert(context.request().getParam(parameter.getParameterName()), parameterType);
+		} else if (parameterType.isAssignableFrom(List.class)) {
+			return this.resolveList(parameter, context);
 		}
 		return this.resolveObject(parameterType, context);
+	}
+
+	/**
+	 * 解析集合 xxx[0] xxx[1] xxx[2] xxx[3]
+	 * 先写一部分，后面的再研究
+	 * 
+	 * @param paramtype
+	 * @param context
+	 * @return
+	 */
+	private Object resolveList(MethodParameter parameter, RoutingContext context) {
+		Class<?> parameterType = parameter.getNestedParameterType();
+		// xxx[0] xxx[1] xxx[2] xxx[3]
+		if (BeanUtils.isSimpleProperty(parameterType)) {
+			Pattern pattern = Pattern.compile(new StringBuilder(parameter.getParameterName()).append("\\[").append("\\d+").append("\\]").toString());
+			Map<String, Object> arguments = this.getArguments(context);
+			List<Object> oList = Lists.newArrayList();
+			for (String key : arguments.keySet()) {
+				if (pattern.matcher(key).find()) {
+					oList.add(arguments.get(key));
+				}
+			}
+		} 
+		// xxx[0][yyy] xxx[0][yyy] xxx[0][yyy] xxx[0][yyy]
+		// 这部分比较复杂
+		else if(FieldCache.get(parameterType) != null) {
+			
+		}
+		return Lists.newArrayList();
 	}
 
 	/**
@@ -112,11 +152,15 @@ public class HandlerAdapter implements RouterHandler {
 	 * @return
 	 */
 	private Object resolveObject(Class<?> paramtype, RoutingContext context) {
+		ClassMeta classMeta = FieldCache.get(paramtype);
+		if (classMeta == null) {
+			return null;
+		}
 		try {
 			Map<String, Object> arguments = this.getArguments(context);
 			Object obj = paramtype.newInstance();
 			if (!arguments.isEmpty()) {
-				ClassMeta classMeta = FieldCache.get(paramtype);
+				classMeta = FieldCache.get(paramtype);
 				this.fillObjectValue(obj, classMeta.getFields(), arguments);
 			}
 			return obj;
@@ -124,20 +168,21 @@ public class HandlerAdapter implements RouterHandler {
 		}
 		return null;
 	}
-	
-	private void fillObjectValue(Object obj, List<FieldMeta> fields, Map<String, Object> arguments) throws IllegalArgumentException, IllegalAccessException {
-		for (FieldMeta field : fields) {
-			field.getField().setAccessible(true);
-			if ("serialVersionUID".equals(field.getPropertyName())) {
-				continue;
-			}
-			Object value = arguments.get(field.getPropertyName());
-			if (value != null) {
+
+	// 循环 arguments 更好一点
+	private void fillObjectValue(Object obj, Map<String, FieldMeta> fields, Map<String, Object> arguments)
+			throws IllegalArgumentException, IllegalAccessException {
+		Iterator<String> it = arguments.keySet().iterator();
+		while (it.hasNext()) {
+			String key = it.next();
+			Object value = arguments.get(key);
+			FieldMeta field = fields.get(key);
+			if (field != null && value != null) {
 				field.getField().set(obj, this.doConvert(value, field.getFieldClass()));
 			}
 		}
 	}
-	
+
 	private Map<String, Object> getArguments(RoutingContext request) {
 		MultiMap maps = request.request().params();
 		Map<String, Object> arguments = new LinkedHashMap<>();

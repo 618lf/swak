@@ -2,11 +2,9 @@ package com.swak.vertx.handler;
 
 import java.lang.reflect.Method;
 
-import org.springframework.core.MethodParameter;
 import org.springframework.util.ClassUtils;
 
 import com.swak.exception.BaseRuntimeException;
-import com.swak.vertx.utils.RouterUtils;
 
 /**
  * 基于 method 的执行器
@@ -34,9 +32,7 @@ public class MethodHandler{
 		int count = this.method.getParameterTypes().length;
 		MethodParameter[] result = new MethodParameter[count];
 		for (int i = 0; i < count; i++) {
-			MethodParameter parameter = new MethodParameter(this.method, i);
-			parameter.initParameterNameDiscovery(RouterUtils.getParameterNameDiscoverer());
-			result[i] = parameter;
+			result[i] = new MethodParameter(this.beanType, this.method, i);
 		}
 		return result;
 	}

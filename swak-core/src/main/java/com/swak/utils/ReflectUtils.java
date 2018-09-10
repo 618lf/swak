@@ -19,6 +19,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -38,6 +39,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.alibaba.fastjson.util.ParameterizedTypeImpl;
 
 import javassist.CtClass;
 import javassist.CtConstructor;
@@ -1229,6 +1232,7 @@ public final class ReflectUtils {
 
 	/**
 	 * 标准的属性名称
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -1243,96 +1247,253 @@ public final class ReflectUtils {
 		chars[0] = Character.toLowerCase(chars[0]);
 		return new String(chars);
 	}
-	
+
 	/**
 	 * 获得 指定类型的指定名称的字段
+	 * 
 	 * @param clazz
 	 * @param fieldName
 	 * @param declaredFields
 	 * @return
 	 */
-    public static Field getField(Class<?> clazz, String fieldName, Field[] declaredFields){
-        for(Field field : declaredFields){
-            String itemName = field.getName();
-            if(fieldName.equals(itemName)){
-                return field;
-            }
+	public static Field getField(Class<?> clazz, String fieldName, Field[] declaredFields) {
+		for (Field field : declaredFields) {
+			String itemName = field.getName();
+			if (fieldName.equals(itemName)) {
+				return field;
+			}
 
-            char c0, c1;
-            if (fieldName.length() > 2
-                    && (c0 = fieldName.charAt(0)) >= 'a' && c0 <= 'z'
-                    && (c1 = fieldName.charAt(1)) >= 'A' && c1 <= 'Z'
-                    && fieldName.equalsIgnoreCase(itemName)) {
-                return field;
-            }
-        }
-        Class<?> superClass = clazz.getSuperclass();
-        if(superClass != null && superClass != Object.class){
-            return getField(superClass, fieldName, superClass.getDeclaredFields());
-        }
-        return null;
-    }
-    
-    /**
-     * 得到实际的类型
-     * @param type
-     * @return
-     */
-    public static Class<?> getClass(Type type){
-        if(type.getClass() == Class.class){
-            return (Class<?>) type;
-        }
+			char c0, c1;
+			if (fieldName.length() > 2 && (c0 = fieldName.charAt(0)) >= 'a' && c0 <= 'z'
+					&& (c1 = fieldName.charAt(1)) >= 'A' && c1 <= 'Z' && fieldName.equalsIgnoreCase(itemName)) {
+				return field;
+			}
+		}
+		Class<?> superClass = clazz.getSuperclass();
+		if (superClass != null && superClass != Object.class) {
+			return getField(superClass, fieldName, superClass.getDeclaredFields());
+		}
+		return null;
+	}
 
-        if(type instanceof ParameterizedType){
-            return getClass(((ParameterizedType) type).getRawType());
-        }
+	/**
+	 * 得到实际的类型
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static Class<?> getClass(Type type) {
+		if (type.getClass() == Class.class) {
+			return (Class<?>) type;
+		}
 
-        if(type instanceof TypeVariable){
-            Type boundType = ((TypeVariable<?>) type).getBounds()[0];
-            return (Class<?>) boundType;
-        }
+		if (type instanceof ParameterizedType) {
+			return getClass(((ParameterizedType) type).getRawType());
+		}
 
-        if(type instanceof WildcardType){
-            Type[] upperBounds = ((WildcardType) type).getUpperBounds();
-            if (upperBounds.length == 1) {
-                return getClass(upperBounds[0]);
-            }
-        }
+		if (type instanceof TypeVariable) {
+			Type boundType = ((TypeVariable<?>) type).getBounds()[0];
+			return (Class<?>) boundType;
+		}
 
-        return Object.class;
-    }
-    
-    /**
-     * 是否范型类型
-     * @param type
-     * @return
-     */
-    public static boolean isGenericParamType(Type type){
-        if(type instanceof ParameterizedType){
-            return true;
-        }
-        if(type instanceof Class) {
-            Type superType = ((Class<?>) type).getGenericSuperclass();
-            return superType != Object.class && isGenericParamType(superType);
-        }
-        return false;
-    }
+		if (type instanceof WildcardType) {
+			Type[] upperBounds = ((WildcardType) type).getUpperBounds();
+			if (upperBounds.length == 1) {
+				return getClass(upperBounds[0]);
+			}
+		}
 
-    /**
-     * 得到范型类型
-     * @param type
-     * @return
-     */
-    public static Type getGenericParamType(Type type){
-        if(type instanceof ParameterizedType){
-            return type;
-        }
-        if(type instanceof Class){
-            return getGenericParamType(((Class<?>) type).getGenericSuperclass());
-        }
-        return type;
-    }
+		return Object.class;
+	}
 
+	/**
+	 * 是否范型类型
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isGenericParamType(Type type) {
+		if (type instanceof ParameterizedType) {
+			return true;
+		}
+		if (type instanceof Class) {
+			Type superType = ((Class<?>) type).getGenericSuperclass();
+			return superType != Object.class && isGenericParamType(superType);
+		}
+		return false;
+	}
+
+	/**
+	 * 得到范型类型
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static Type getGenericParamType(Type type) {
+		if (type instanceof ParameterizedType) {
+			return type;
+		}
+		if (type instanceof Class) {
+			return getGenericParamType(((Class<?>) type).getGenericSuperclass());
+		}
+		return type;
+	}
+	
+	/**
+	 * 获得字段的的类型
+	 * @param clazz
+	 * @param type
+	 * @param fieldType
+	 * @return
+	 */
+	public static Type getFieldType(final Class<?> clazz, Type fieldType) {
+		if (clazz == null) {
+			return fieldType;
+		}
+
+		if (fieldType instanceof GenericArrayType) {
+			GenericArrayType genericArrayType = (GenericArrayType) fieldType;
+			Type componentType = genericArrayType.getGenericComponentType();
+			Type componentTypeX = getFieldType(clazz, componentType);
+			if (componentType != componentTypeX) {
+				Type fieldTypeX = Array.newInstance(ReflectUtils.getClass(componentTypeX), 0).getClass();
+				return fieldTypeX;
+			}
+
+			return fieldType;
+		}
+
+		Type type = (Type)clazz;
+		if (!ReflectUtils.isGenericParamType(type)) {
+			return fieldType;
+		}
+
+		if (fieldType instanceof TypeVariable) {
+			ParameterizedType paramType = (ParameterizedType) ReflectUtils.getGenericParamType(type);
+			Class<?> parameterizedClass = ReflectUtils.getClass(paramType);
+			final TypeVariable<?> typeVar = (TypeVariable<?>) fieldType;
+
+			TypeVariable<?>[] typeVariables = parameterizedClass.getTypeParameters();
+			for (int i = 0; i < typeVariables.length; ++i) {
+				if (typeVariables[i].getName().equals(typeVar.getName())) {
+					fieldType = paramType.getActualTypeArguments()[i];
+					return fieldType;
+				}
+			}
+		}
+
+		if (fieldType instanceof ParameterizedType) {
+			ParameterizedType parameterizedFieldType = (ParameterizedType) fieldType;
+
+			Type[] arguments = parameterizedFieldType.getActualTypeArguments();
+			TypeVariable<?>[] typeVariables;
+			ParameterizedType paramType;
+			if (type instanceof ParameterizedType) {
+				paramType = (ParameterizedType) type;
+				typeVariables = clazz.getTypeParameters();
+			} else if (clazz.getGenericSuperclass() instanceof ParameterizedType) {
+				paramType = (ParameterizedType) clazz.getGenericSuperclass();
+				typeVariables = clazz.getSuperclass().getTypeParameters();
+			} else {
+				paramType = parameterizedFieldType;
+				typeVariables = type.getClass().getTypeParameters();
+			}
+
+			boolean changed = getArgument(arguments, typeVariables, paramType.getActualTypeArguments());
+			if (changed) {
+				fieldType = new ParameterizedTypeImpl(arguments, parameterizedFieldType.getOwnerType(),
+						parameterizedFieldType.getRawType());
+				return fieldType;
+			}
+		}
+
+		return fieldType;
+	}
+	
+	/**
+	 * tv    : getGenericType, getGenericReturnType, getGenericParameterTypes 
+	 * clazz : 所属的类型
+	 * 
+	 * 感觉 getFieldType 就可以获得实际的类型
+	 * 
+	 * 获得类型变量的实际类型
+	 * 
+	 * BaseEntity<Long> 中 id 的实际类型
+	 */
+	public static Type getInheritGenericType(Class<?> clazz, TypeVariable<?> tv) {
+		GenericDeclaration gd = tv.getGenericDeclaration();
+
+		Class<?> class_gd = null;
+		if (gd instanceof Class) {
+			class_gd = (Class<?>) tv.getGenericDeclaration();
+		}
+
+		Type type = clazz;
+		Type[] arguments = null;
+		if (class_gd == clazz) {
+			if (type instanceof ParameterizedType) {
+				ParameterizedType ptype = (ParameterizedType) type;
+				arguments = ptype.getActualTypeArguments();
+			}
+		} else {
+			for (Class<?> c = clazz; c != null && c != Object.class && c != class_gd; c = c.getSuperclass()) {
+				Type superType = c.getGenericSuperclass();
+
+				if (superType instanceof ParameterizedType) {
+					ParameterizedType p_superType = (ParameterizedType) superType;
+					Type[] p_superType_args = p_superType.getActualTypeArguments();
+					getArgument(p_superType_args, c.getTypeParameters(), arguments);
+					arguments = p_superType_args;
+				}
+			}
+		}
+
+		if (arguments == null || class_gd == null) {
+			return null;
+		}
+
+		Type actualType = null;
+		TypeVariable<?>[] typeVariables = class_gd.getTypeParameters();
+		for (int j = 0; j < typeVariables.length; ++j) {
+			if (tv.equals(typeVariables[j])) {
+				actualType = arguments[j];
+				break;
+			}
+		}
+
+		return actualType;
+	}
+
+	public static boolean getArgument(Type[] typeArgs, TypeVariable<?>[] typeVariables, Type[] arguments) {
+		if (arguments == null || typeVariables.length == 0) {
+			return false;
+		}
+
+		boolean changed = false;
+		for (int i = 0; i < typeArgs.length; ++i) {
+			Type typeArg = typeArgs[i];
+			if (typeArg instanceof ParameterizedType) {
+				ParameterizedType p_typeArg = (ParameterizedType) typeArg;
+				Type[] p_typeArg_args = p_typeArg.getActualTypeArguments();
+				boolean p_changed = getArgument(p_typeArg_args, typeVariables, arguments);
+				if (p_changed) {
+					typeArgs[i] = new ParameterizedTypeImpl(p_typeArg_args, p_typeArg.getOwnerType(),
+							p_typeArg.getRawType());
+					changed = true;
+				}
+			} else if (typeArg instanceof TypeVariable) {
+				for (int j = 0; j < typeVariables.length; ++j) {
+					if (typeArg.equals(typeVariables[j])) {
+						typeArgs[i] = arguments[j];
+						changed = true;
+					}
+				}
+			}
+		}
+
+		return changed;
+	}
+	
 	private ReflectUtils() {
 	}
 }

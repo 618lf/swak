@@ -69,14 +69,17 @@ maven-resources-plugin 问题，如果war 项目一直提示这个插件文件�
 # 版本0.1.1
 升级一个新的版本,这个版本支持了 vertx。
 
-下次改进，但忍不住想改
+待改进1：
 应该可以想motan一样通过注解自动生成异步接口，只需要定义同步接口，这样通用性好一点。因为后端实现都是同步的，只有前端才需要异步。
 所以这块是一个改进的点
 
-好吧，先不做自动生成
+待改进2：
+前端传入的参数包含子对象的改进，可以支持到第二层级
 
 问题1：
 使用新版本的mysql驱动导致时区问题。再驱动链接字符串中添加如下设置
 ?characterEncoding=utf8&useSSL=true&serverTimezone=UTC&nullNamePatternMatchesAll=true
 serverTimezone=GMT%2B8
+
+
 
