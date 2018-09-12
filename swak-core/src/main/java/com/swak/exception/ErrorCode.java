@@ -40,6 +40,8 @@ public class ErrorCode implements Serializable, Cloneable {
 	public static ErrorCode NO_SUBSCRIBE_WX = new ErrorCode(40009,"操作受限,必须是关注微信");
 	//访问受限 ---请重新发起登录操作（一般页面收到这个请求后重新发起请求）
 	public static ErrorCode REDIRECT_LOGIN = new ErrorCode(40010,"重新发起登录操作");
+	//Token 错误
+	public static ErrorCode TOKEN_ERROR = new ErrorCode(40011,"token 错误");
 	
 	/**
 	 * 错误code

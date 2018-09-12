@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.entity.Result;
 import com.swak.exception.ErrorCode;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
@@ -69,7 +70,7 @@ public class ResultHandler {
 		}
 
 		// 托底输出
-		context.response().end(StringUtils.EMPTY);
+		context.response().end(Result.error(StringUtils.EMPTY).toJson());
 	}
 
 	/**
@@ -86,7 +87,7 @@ public class ResultHandler {
 		}
 
 		// 输出错误信息
-		context.response().end(ErrorCode.OPERATE_FAILURE.toJson());
+		context.response().end(Result.error(ErrorCode.OPERATE_FAILURE).toJson());
 
 		// 打印错误信息
 		logger.error("输出结果异常:", e);

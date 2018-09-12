@@ -1,8 +1,12 @@
 package com.swak.vertx.security;
 
+import com.swak.entity.Result;
+import com.swak.exception.ErrorCode;
 import com.swak.vertx.security.filter.Filter;
 import com.swak.vertx.security.jwt.JWTPayload;
+import com.swak.vertx.transport.HttpConst;
 
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
@@ -30,24 +34,30 @@ public class JwtAuthHandler implements Handler<RoutingContext> {
 	@Override
 	public void handle(RoutingContext context) {
 
-		// 获取 token 名称
-		String token = context.request().getHeader(tokenName);
-		
-		// 获取 JWTPayload
-		JWTPayload payload = jwtAuthProvider.verifyToken(token);
-		
-		// 放入请求中,就是一个 Map 对象
-		if (payload != null) {
-			context.request().params().add("authPayload", payload.encode());
+		try {
+			// 获取 token 名称
+			String token = context.request().getHeader(tokenName);
+
+			// 获取 JWTPayload
+			JWTPayload payload = jwtAuthProvider.verifyToken(token);
+
+			// 放入请求中,就是一个 Map 对象
+			if (payload != null) {
+				context.request().params().add("authPayload", payload.encode());
+			}
+		} catch (Exception e) {
+			context.response().putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
+			context.response().end(Result.error(ErrorCode.TOKEN_ERROR).toJson());
+			return;
 		}
 
-		// 返回false 不需要后面的处理
-		// 返回true  需要继续后面的处理
+		// filter 中判断是否需要后续的处理
 		filter.doFilter(context).whenComplete((v, e) -> {
 			if (v) {
 				context.next();
 			}
 		});
+
 	}
 
 	/**
