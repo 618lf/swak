@@ -10,7 +10,9 @@ import com.swak.exception.ErrorCode;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.handler.converter.HttpMessageConverter;
+import com.swak.vertx.transport.HttpConst;
 
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.vertx.ext.web.RoutingContext;
 
 /**
@@ -70,6 +72,7 @@ public class ResultHandler {
 		}
 
 		// 托底输出
+		context.response().putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
 		context.response().end(Result.success(StringUtils.EMPTY).toJson());
 	}
 
@@ -87,6 +90,7 @@ public class ResultHandler {
 		}
 
 		// 输出错误信息
+		context.response().putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
 		context.response().end(Result.error(ErrorCode.SERVER_ERROR).toJson());
 
 		// 打印错误信息

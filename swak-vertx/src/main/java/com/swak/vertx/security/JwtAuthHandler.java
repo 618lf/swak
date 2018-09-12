@@ -1,12 +1,8 @@
 package com.swak.vertx.security;
 
-import com.swak.entity.Result;
-import com.swak.exception.ErrorCode;
 import com.swak.vertx.security.filter.Filter;
 import com.swak.vertx.security.jwt.JWTPayload;
-import com.swak.vertx.transport.HttpConst;
 
-import io.netty.handler.codec.http.HttpHeaderNames;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
@@ -45,11 +41,7 @@ public class JwtAuthHandler implements Handler<RoutingContext> {
 			if (payload != null) {
 				context.request().params().add("authPayload", payload.encode());
 			}
-		} catch (Exception e) {
-			context.response().putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
-			context.response().end(Result.error(ErrorCode.TOKEN_ERROR).toJson());
-			return;
-		}
+		} catch (Exception e) {}
 
 		// filter 中判断是否需要后续的处理
 		filter.doFilter(context).whenComplete((v, e) -> {
