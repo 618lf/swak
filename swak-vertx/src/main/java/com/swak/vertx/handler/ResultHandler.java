@@ -70,7 +70,7 @@ public class ResultHandler {
 		}
 
 		// 托底输出
-		context.response().end(Result.error(StringUtils.EMPTY).toJson());
+		context.response().end(Result.success(StringUtils.EMPTY).toJson());
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class ResultHandler {
 		}
 
 		// 输出错误信息
-		context.response().end(Result.error(ErrorCode.OPERATE_FAILURE).toJson());
+		context.response().end(Result.error(ErrorCode.SERVER_ERROR).toJson());
 
 		// 打印错误信息
 		logger.error("输出结果异常:", e);
