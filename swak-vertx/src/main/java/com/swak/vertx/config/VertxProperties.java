@@ -52,7 +52,7 @@ public class VertxProperties {
 	// 授权
 	private String keyStorePath; // keyStore 的路径
 	private String keyStorePass = "secret"; // keyStore 的密码
-	private String jwtTokenName = "X_TOKEN";
+	private String jwtTokenName = "X-Token";
 
 	public String getJwtTokenName() {
 		return jwtTokenName;
