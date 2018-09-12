@@ -69,7 +69,10 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 
 	@Override
 	public CompletionStage<Long> exists(String key) {
-		return this.exists(key);
+		if (!isValid()) {
+			return _exists(key);
+		}
+		return _hexists(key);
 	}
 
 	@Override
@@ -159,6 +162,6 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 	protected CompletionStage<Long> _hexists(String key) {
 		String script = Cons.EXISTS_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		return AsyncOperations.runScript(script, ScriptOutputType.VALUE, values);
+		return AsyncOperations.runScript(script, ScriptOutputType.INTEGER, values);
 	}
 }

@@ -75,7 +75,10 @@ public class ReactiveRedisCache<T> extends NameableCache implements ReactiveCach
 
 	@Override
 	public Mono<Long> exists(String key) {
-		return this.exists(key);
+		if (!isValid()) {
+			return _exists(key);
+		}
+		return _hexists(key);
 	}
 
 	@Override
@@ -165,6 +168,6 @@ public class ReactiveRedisCache<T> extends NameableCache implements ReactiveCach
 	protected Mono<Long> _hexists(String key) {
 		String script = Cons.EXISTS_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		return Mono.from(ReactiveOperations.runScript(script, ScriptOutputType.VALUE, values));
+		return Mono.from(ReactiveOperations.runScript(script, ScriptOutputType.INTEGER, values));
 	}
 }

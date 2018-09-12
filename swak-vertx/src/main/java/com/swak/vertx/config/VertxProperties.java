@@ -48,7 +48,30 @@ public class VertxProperties {
 	private boolean haEnabled = true;
 	private String haGroup = "_VERTX_GROUP_";
 	private int quorumSize = 1;
+	
+	// 授权
+	private String keyStorePath; // keyStore 的路径
+	private String keyStorePass = "secret"; // keyStore 的密码
+	private String jwtTokenName = "X_TOKEN";
 
+	public String getJwtTokenName() {
+		return jwtTokenName;
+	}
+	public void setJwtTokenName(String jwtTokenName) {
+		this.jwtTokenName = jwtTokenName;
+	}
+	public String getKeyStorePath() {
+		return keyStorePath;
+	}
+	public void setKeyStorePath(String keyStorePath) {
+		this.keyStorePath = keyStorePath;
+	}
+	public String getKeyStorePass() {
+		return keyStorePass;
+	}
+	public void setKeyStorePass(String keyStorePass) {
+		this.keyStorePass = keyStorePass;
+	}
 	public int getSendTimeout() {
 		return sendTimeout;
 	}

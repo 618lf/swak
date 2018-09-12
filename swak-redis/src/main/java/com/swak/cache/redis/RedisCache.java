@@ -160,7 +160,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	protected Boolean _hexists(String key) {
 		String script = Cons.EXISTS_LUA;
 		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
-		Long count = SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
+		Long count = SyncOperations.runScript(script, ScriptOutputType.INTEGER, values);
 		return count != null && count >0;
 	}
 	

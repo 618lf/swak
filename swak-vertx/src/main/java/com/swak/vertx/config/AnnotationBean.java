@@ -20,7 +20,6 @@ import com.swak.utils.Sets;
 import com.swak.vertx.annotation.RequestMapping;
 import com.swak.vertx.annotation.RequestMethod;
 import com.swak.vertx.annotation.RestController;
-import com.swak.vertx.annotation.RouterConfig;
 import com.swak.vertx.annotation.RouterSupplier;
 import com.swak.vertx.annotation.ServiceMapping;
 import com.swak.vertx.annotation.ServiceReferer;
@@ -106,8 +105,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		}
 		
 		// registry config routers
-		RouterConfig routerConfig = clazz.getAnnotation(RouterConfig.class);
-		if (routerConfig != null && bean instanceof IRouterConfig) {
+		if (bean instanceof IRouterConfig) {
 			IRouterConfig rs = (IRouterConfig) bean;
 			routerConfigs.add(rs);
 		}
