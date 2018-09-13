@@ -15,7 +15,7 @@ import io.vertx.ext.web.RoutingContext;
  * 
  * @author lifeng
  */
-@RestController("/api/goods")
+@RestController(path="/api/goods")
 public class GoodsController {
 
 	@ServiceReferer

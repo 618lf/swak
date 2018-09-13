@@ -14,9 +14,11 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.ClassUtils;
 
+import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 import com.swak.utils.Sets;
+import com.swak.utils.StringUtils;
 import com.swak.vertx.annotation.RequestMapping;
 import com.swak.vertx.annotation.RequestMethod;
 import com.swak.vertx.annotation.RestController;
@@ -82,6 +84,12 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		// registry router
 		RestController controller = clazz.getAnnotation(RestController.class);
 		if (controller != null) {
+			
+			// 定义错误
+			if (StringUtils.contains(beanName, "/")) {
+				throw new BaseRuntimeException("Use @RestController like this: @RestController(path='/api/goods', value='goodsApi') or @RestController(path='/api/goods')");
+			}
+			
 			RequestMapping classMapping = AnnotatedElementUtils.findMergedAnnotation(clazz, RequestMapping.class);
 			Method[] methods = clazz.getDeclaredMethods();
 			for (Method method : methods) {
