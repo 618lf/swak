@@ -111,13 +111,13 @@ public class SecurityFilter implements Filter, InitializingBean {
 			String[] filters = filter.split(",");
 			for (String f : filters) {
 				
-				String name = f;
+				String name = StringUtils.clean(f);
 				String param = null;
 
 				// 权限判断
-				if (f.contains("[")) {
-					name = StringUtils.substringBefore(f, "[");
-					param = StringUtils.substringBetween(f, "[", "]");
+				if (name.contains("[")) {
+					param = StringUtils.clean(StringUtils.substringBetween(name, "[", "]"));
+					name = StringUtils.clean(StringUtils.substringBefore(name, "["));
 				}
 
 				// 处理器
