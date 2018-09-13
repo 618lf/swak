@@ -24,7 +24,7 @@ import io.vertx.ext.web.Router;
 public class HttpVerticle extends AbstractVerticle {
 
 	// 系统唯一的 router
-	private static Router router;
+	private static volatile Router router;
 
 	// 通用的配置
 	private Set<RouterBean> routers;
