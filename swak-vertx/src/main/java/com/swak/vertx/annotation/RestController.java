@@ -33,4 +33,11 @@ public @interface RestController {
 	 */
 	@AliasFor(annotation = RequestMapping.class)
 	RequestMethod method() default RequestMethod.ALL;
+	
+	/**
+	 * 设置 bean name
+	 * @return
+	 */
+	@AliasFor(annotation = Controller.class, value="value")
+	String name() default "";
 }
