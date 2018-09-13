@@ -17,6 +17,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.annotation.ServiceMapping;
+import com.swak.vertx.security.Subject;
 import com.swak.vertx.utils.FieldCache;
 import com.swak.vertx.utils.FieldCache.ClassMeta;
 import com.swak.vertx.utils.FieldCache.FieldMeta;
@@ -60,7 +61,7 @@ public class HandlerAdapter implements RouterHandler {
 
 	private void initField(Class<?> parameterType) {
 		if (parameterType == HttpServerRequest.class || parameterType == HttpServerResponse.class
-				|| parameterType == RoutingContext.class || BeanUtils.isSimpleProperty(parameterType)
+				|| parameterType == RoutingContext.class || parameterType == Subject.class || BeanUtils.isSimpleProperty(parameterType)
 				|| parameterType.isAssignableFrom(Collection.class) || parameterType.isAssignableFrom(Map.class)) {
 			return;
 		}
@@ -110,7 +111,14 @@ public class HandlerAdapter implements RouterHandler {
 			return context.response();
 		} else if (parameterType == RoutingContext.class) {
 			return context;
-		} else if (BeanUtils.isSimpleProperty(parameterType)) {
+		} else if (parameterType == Subject.class) {
+			Subject subject = context.get(Subject.SUBJECT_NAME);
+			if (subject == null) {
+				subject = new Subject();
+				context.put(Subject.SUBJECT_NAME, subject);
+			}
+			return subject;
+		}else if (BeanUtils.isSimpleProperty(parameterType)) {
 			return this.doConvert(context.request().getParam(parameter.getParameterName()), parameterType);
 		} else if (parameterType.isAssignableFrom(List.class)) {
 			return Lists.newArrayList();

@@ -38,7 +38,7 @@ public class JwtAuthProvider {
 		
 		// 设置tokenName
 		tokenName = properties.getJwtTokenName();
-
+		
 		// 默认的配置
 		options = new JWTOptions();
 	}
@@ -105,7 +105,6 @@ public class JwtAuthProvider {
 	public JWTOptions getOptions() {
 		return options;
 	}
-
 	public String getTokenName() {
 		return tokenName;
 	}

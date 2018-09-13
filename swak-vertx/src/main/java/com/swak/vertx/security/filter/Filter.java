@@ -2,6 +2,8 @@ package com.swak.vertx.security.filter;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.swak.vertx.security.Subject;
+
 import io.vertx.ext.web.RoutingContext;
 
 /**
@@ -15,5 +17,5 @@ public interface Filter {
 	 * @param context
 	 * @return
 	 */
-	CompletableFuture<Boolean> doFilter(RoutingContext context);
+	CompletableFuture<Boolean> doFilter(RoutingContext context, Subject subject);
 }

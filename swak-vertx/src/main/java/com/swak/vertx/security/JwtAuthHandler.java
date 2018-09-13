@@ -16,12 +16,10 @@ public class JwtAuthHandler implements Handler<RoutingContext> {
 	// 授权服务
 	private final JwtAuthProvider jwtAuthProvider;
 	private final Filter filter;
-	private final String tokenName;
 
 	public JwtAuthHandler(JwtAuthProvider jwtAuthProvider, Filter filter) {
 		this.jwtAuthProvider = jwtAuthProvider;
 		this.filter = filter;
-		this.tokenName = jwtAuthProvider.getTokenName();
 	}
 
 	/**
@@ -30,26 +28,36 @@ public class JwtAuthHandler implements Handler<RoutingContext> {
 	@Override
 	public void handle(RoutingContext context) {
 
+		// 主体信息
+		Subject subject = null;
+		
 		try {
+			
 			// 获取 token 名称
-			String token = context.request().getHeader(tokenName);
+			String token = context.request().getHeader(jwtAuthProvider.getTokenName());
 
 			// 获取 JWTPayload
 			JWTPayload payload = jwtAuthProvider.verifyToken(token);
 
-			// 放入请求中,就是一个 Map 对象
-			if (payload != null) {
-				context.request().params().add("authPayload", payload.encode());
-			}
+			// 创建主体
+			subject = new Subject(payload);
+			
 		} catch (Exception e) {}
+		
+		// 空实现
+		if (subject == null) {
+			subject = new Subject();
+		}
+		
+		// 绑定当前请求
+		context.put(Subject.SUBJECT_NAME, subject);
 
 		// filter 中判断是否需要后续的处理
-		filter.doFilter(context).whenComplete((v, e) -> {
+		filter.doFilter(context, subject).whenComplete((v, e) -> {
 			if (v) {
 				context.next();
 			}
 		});
-
 	}
 
 	/**
