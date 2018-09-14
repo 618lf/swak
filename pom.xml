@@ -52,7 +52,7 @@
 		<motan.version>1.1.1</motan.version>
         <vertx.version>3.5.3</vertx.version>
         <qrcode.version>3.3.3</qrcode.version>
-        <javapoet.version>1.11.1</javapoet.version>
+        <javapoet.version>1.8.0</javapoet.version>
         
 		<!-- test -->
 		<junit.version>4.12</junit.version>

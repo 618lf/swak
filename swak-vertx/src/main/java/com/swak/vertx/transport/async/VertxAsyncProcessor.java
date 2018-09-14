@@ -32,7 +32,6 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
-import com.swak.entity.Result;
 import com.swak.vertx.Constants;
 
 /**
@@ -131,7 +130,9 @@ public class VertxAsyncProcessor extends AbstractProcessor {
 					ExecutableElement method = (ExecutableElement) e;
 					MethodSpec.Builder methodBuilder = MethodSpec
 							.methodBuilder(method.getSimpleName().toString())
-							.addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT).returns(ParameterizedTypeName.get(ClassName.get(CompletableFuture.class), ClassName.get(Result.class)))
+							.addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+							.returns(ParameterizedTypeName.get(ClassName.get(CompletableFuture.class), 
+									TypeName.get(method.getReturnType())))
 							.addTypeVariables(getTypeNames(method.getTypeParameters()));
 					// add method params
 					List<? extends VariableElement> vars = method.getParameters();
