@@ -62,6 +62,7 @@ private MotanProperties properties;
 javac 的 process，这个对我来说是一个比较新的概念，如果不是motan中用到了这种技术，估计还没了解过，其实也很简单，因为是javac 的标准功能，所以不会有问题。但在配置eclipse，idea等使用时不好看到效果。但配置maven 使用就很简单，
 基本上执行mvn compile 就可以执行process，生成的代码会放到 target/generated-sources/annotations 这个目录，如果需要使用到这部分代码，需要使用一个maven 插件将 这个目录作为源码包，或者手动添加。
 之前一致卡在 mvn compile 这个地方。 @see swak-sample-api
+如果 mvn compile  也不自动生成代码，把 target 目录删除后再次执行就好了
 
 问题2：
 maven-resources-plugin 问题，如果war 项目一直提示这个插件文件，则需要在pom 文件中加入这个插件war 的pom 
