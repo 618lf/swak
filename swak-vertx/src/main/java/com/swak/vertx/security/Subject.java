@@ -15,9 +15,6 @@ import com.swak.vertx.security.jwt.JWTPayload;
  */
 public class Subject extends JWTObject {
 
-	// 设置名称
-	public static String SUBJECT_NAME = "X-Subject";
-
 	private static String ID_ATTR = "id";
 	private static String NAME_ATTR = "name";
 	private static String ROLE_ATTR = "roles";

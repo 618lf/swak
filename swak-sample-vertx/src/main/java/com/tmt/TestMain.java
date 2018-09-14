@@ -3,10 +3,6 @@ package com.tmt;
 import java.util.List;
 
 import com.swak.entity.BaseEntity;
-import com.swak.utils.JsonMapper;
-import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.security.JwtAuthProvider;
-import com.swak.vertx.security.jwt.JWTPayload;
 
 /**
  * 范型的研究
@@ -98,16 +94,19 @@ public class TestMain {
 //		System.out.println(matcher.find());
 		
 		// JWT 的测试
-		VertxProperties properties = new VertxProperties();
-		JwtAuthProvider provider = new JwtAuthProvider(properties);
+//		VertxProperties properties = new VertxProperties();
+//		JwtAuthProvider provider = new JwtAuthProvider(properties);
+//		
+//		JWTPayload payload = new JWTPayload();
+//		payload.put("id", "123");
+//		String token = provider.generateToken(payload);
+//		System.out.println(token);
+//		
+//		payload = provider.verifyToken(token);
+//		System.out.println(JsonMapper.toJson(payload));
 		
-		JWTPayload payload = new JWTPayload();
-		payload.put("id", "123");
-		String token = provider.generateToken(payload);
-		System.out.println(token);
 		
-		payload = provider.verifyToken(token);
-		System.out.println(JsonMapper.toJson(payload));
+		// 自动身成类 AreaServiceFacade 生成 AreaServiceFacadeAsync
 	}
 }
 

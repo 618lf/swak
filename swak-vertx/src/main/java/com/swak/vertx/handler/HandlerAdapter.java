@@ -16,6 +16,7 @@ import org.springframework.core.convert.TypeDescriptor;
 
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
+import com.swak.vertx.Constants;
 import com.swak.vertx.annotation.ServiceMapping;
 import com.swak.vertx.security.Subject;
 import com.swak.vertx.utils.FieldCache;
@@ -112,10 +113,10 @@ public class HandlerAdapter implements RouterHandler {
 		} else if (parameterType == RoutingContext.class) {
 			return context;
 		} else if (parameterType == Subject.class) {
-			Subject subject = context.get(Subject.SUBJECT_NAME);
+			Subject subject = context.get(Constants.SUBJECT_NAME);
 			if (subject == null) {
 				subject = new Subject();
-				context.put(Subject.SUBJECT_NAME, subject);
+				context.put(Constants.SUBJECT_NAME, subject);
 			}
 			return subject;
 		}else if (BeanUtils.isSimpleProperty(parameterType)) {

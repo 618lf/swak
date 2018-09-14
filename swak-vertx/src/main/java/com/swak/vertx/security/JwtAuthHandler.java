@@ -1,5 +1,6 @@
 package com.swak.vertx.security;
 
+import com.swak.vertx.Constants;
 import com.swak.vertx.security.filter.Filter;
 import com.swak.vertx.security.jwt.JWTPayload;
 
@@ -50,7 +51,7 @@ public class JwtAuthHandler implements Handler<RoutingContext> {
 		}
 		
 		// 绑定当前请求
-		context.put(Subject.SUBJECT_NAME, subject);
+		context.put(Constants.SUBJECT_NAME, subject);
 
 		// filter 中判断是否需要后续的处理
 		filter.doFilter(context, subject).whenComplete((v, e) -> {
