@@ -3,6 +3,9 @@ package com.swak.persistence;
 import java.util.List;
 import java.util.Map;
 
+import com.swak.entity.Page;
+import com.swak.entity.PageParameters;
+
 /**
  * 基础Dao
  * 

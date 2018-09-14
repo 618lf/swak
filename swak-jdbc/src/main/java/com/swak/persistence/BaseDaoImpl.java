@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.swak.entity.BaseEntity;
 import com.swak.entity.IdEntity;
+import com.swak.entity.Page;
+import com.swak.entity.PageParameters;
 import com.swak.exception.StaleObjectStateException;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;

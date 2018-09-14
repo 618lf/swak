@@ -14,9 +14,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.swak.entity.IdEntity;
+import com.swak.entity.Page;
+import com.swak.entity.PageParameters;
 import com.swak.persistence.BaseDao;
-import com.swak.persistence.Page;
-import com.swak.persistence.PageParameters;
 import com.swak.persistence.QueryCondition;
 
 /**

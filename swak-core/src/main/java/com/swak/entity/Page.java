@@ -1,4 +1,4 @@
-package com.swak.persistence;
+package com.swak.entity;
 
 import java.io.Serializable;
 import java.util.List;

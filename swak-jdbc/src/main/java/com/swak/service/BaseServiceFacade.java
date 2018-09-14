@@ -2,8 +2,8 @@ package com.swak.service;
 
 import java.util.List;
 
-import com.swak.persistence.Page;
-import com.swak.persistence.PageParameters;
+import com.swak.entity.Page;
+import com.swak.entity.PageParameters;
 import com.swak.persistence.QueryCondition;
 
 /**
