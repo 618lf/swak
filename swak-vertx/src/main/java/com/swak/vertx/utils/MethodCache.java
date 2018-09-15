@@ -66,7 +66,7 @@ public class MethodCache {
 			Type type = method.getGenericReturnType();
 			if (type instanceof ParameterizedType) {
 				ParameterizedType pType = (ParameterizedType)type;
-				return ReflectUtils.getClass(pType);
+				return ReflectUtils.getClass(pType.getActualTypeArguments()[0]);
 			}
 			return returnType;
 		}
