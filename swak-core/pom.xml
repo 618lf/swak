@@ -102,11 +102,5 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>com.google.zxing</groupId>
-			<artifactId>core</artifactId>
-			<version>${qrcode.version}</version>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
 </project>
