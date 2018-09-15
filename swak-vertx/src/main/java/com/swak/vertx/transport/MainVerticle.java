@@ -9,8 +9,8 @@ import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.ServiceBean;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.handler.RouterHandler;
-import com.swak.vertx.handler.codec.Msg;
-import com.swak.vertx.handler.codec.MsgCodec;
+import com.swak.vertx.transport.codec.Msg;
+import com.swak.vertx.transport.codec.MsgCodec;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;

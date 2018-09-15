@@ -1,4 +1,4 @@
-package com.swak.vertx.handler.codec;
+package com.swak.vertx.transport.codec;
 
 import com.swak.serializer.SerializationUtils;
 

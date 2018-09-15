@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.swak.utils.StringUtils;
 import com.swak.vertx.annotation.InvokerAddress;
-import com.swak.vertx.handler.codec.Msg;
+import com.swak.vertx.transport.codec.Msg;
 import com.swak.vertx.utils.MethodCache;
 import com.swak.vertx.utils.MethodCache.MethodMeta;
 

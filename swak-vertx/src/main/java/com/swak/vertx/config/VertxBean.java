@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 import com.swak.exception.BaseRuntimeException;
 import com.swak.vertx.handler.VertxHandler;
-import com.swak.vertx.handler.codec.Msg;
+import com.swak.vertx.transport.codec.Msg;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;

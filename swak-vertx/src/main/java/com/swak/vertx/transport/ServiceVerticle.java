@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.swak.asm.Wrapper;
 import com.swak.utils.Maps;
-import com.swak.vertx.handler.codec.Msg;
+import com.swak.vertx.transport.codec.Msg;
 import com.swak.vertx.utils.MethodCache;
 import com.swak.vertx.utils.MethodCache.MethodMeta;
 
