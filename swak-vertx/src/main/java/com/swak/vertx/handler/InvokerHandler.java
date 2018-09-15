@@ -55,15 +55,34 @@ public class InvokerHandler implements InvocationHandler {
 		}
 	}
 
+	/**
+	 * 只支持异步接口的调用
+	 */
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		MethodMeta meta = MethodCache.get(method);
+		
+		// 异步future
 		CompletableFuture<Object> future = new CompletableFuture<Object>();
+		
+		// 构建请求消息
 		Msg request = new Msg(meta, args);
+		
+		// 发送消息，处理相应结果
 		vertx.sentMessage(this.address, request, meta.getTimeOut(), res -> {
 			Msg result = (Msg) res.result().body();
-			future.complete(result.getResult());
+			
+			// 自动生成异步接口返回值
+			if (meta.getNestedReturnType() == Msg.class) {
+				future.complete(result);
+			} 
+			// 手动生成异步接口的返回值
+			else {
+				future.complete(result.getResult());
+			}
 		});
+		
+		// 返回异步future， futrue收到消息后会触发下一步的操作
 		return future;
 	}
 }

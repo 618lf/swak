@@ -1,6 +1,8 @@
 package com.swak.vertx.utils;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -47,15 +49,26 @@ public class MethodCache {
 		private final String methodDesc;
 		private final Class<?> returnType;
 		private final Class<?>[] parameterTypes;
+		private final Class<?> nestedReturnType;
 		private final int timeOut;
 
 		private MethodMeta(Method method) {
 			this.methodDesc = ReflectUtils.getMethodDesc(method);
 			this.methodName = method.getName();
 			this.returnType = method.getReturnType();
+			this.nestedReturnType = initNestedReturnType(method);
 			this.parameterTypes = method.getParameterTypes();
 			TimeOut timeOut = method.getAnnotation(TimeOut.class);
 			this.timeOut = timeOut != null ? timeOut.value() : -1;
+		}
+		
+		private Class<?> initNestedReturnType(Method method) {
+			Type type = method.getGenericReturnType();
+			if (type instanceof ParameterizedType) {
+				ParameterizedType pType = (ParameterizedType)type;
+				return (Class<?>)pType.getActualTypeArguments()[0];
+			}
+			return returnType;
 		}
 
 		public String getMethodName() {
@@ -76,6 +89,10 @@ public class MethodCache {
 
 		public int getTimeOut() {
 			return timeOut;
+		}
+
+		public Class<?> getNestedReturnType() {
+			return nestedReturnType;
 		}
 	}
 }
