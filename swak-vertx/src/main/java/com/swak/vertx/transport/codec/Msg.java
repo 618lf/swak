@@ -37,8 +37,9 @@ public class Msg implements Serializable {
 		this.error = error;
 	}
 
-	public Object getResult() {
-		return result;
+	@SuppressWarnings("unchecked")
+	public <T> T getResult() {
+		return (T)result;
 	}
 
 	public void setResult(Object result) {
