@@ -10,7 +10,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 import com.swak.Constants;
-import com.swak.reactivex.booter.AppBooter;
+import com.swak.booter.AppBooter;
 
 /**
  * 系统配置

@@ -1,4 +1,4 @@
-package com.swak.reactivex.booter;
+package com.swak.booter;
 
 import static com.swak.Application.APP_LOGGER;
 

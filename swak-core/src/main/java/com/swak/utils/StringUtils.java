@@ -888,6 +888,8 @@ public class StringUtils {
 
 	// Equals
 	// -----------------------------------------------------------------------
+    // Null-safe equals/hashCode
+    //-----------------------------------------------------------------------
 	/**
 	 * <p>
 	 * Compares two CharSequences, returning {@code true} if they represent equal
