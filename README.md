@@ -74,7 +74,7 @@ maven-resources-plugin 问题，如果war 项目一直提示这个插件文件�
 应该可以想motan一样通过注解自动生成异步接口，只需要定义同步接口，这样通用性好一点。因为后端实现都是同步的，只有前端才需要异步。
 所以这块是一个改进的点
 
-获取返回类型有问题，暂时无法实现，只能统一是 object, 以后再研究
+获取返回类型有问题，暂时无法实现，只能统一是 Msg, 以后再研究
 
 待改进2：
 前端传入的参数包含子对象的改进，可以支持到第二层级
@@ -84,5 +84,11 @@ maven-resources-plugin 问题，如果war 项目一直提示这个插件文件�
 ?characterEncoding=utf8&useSSL=true&serverTimezone=UTC&nullNamePatternMatchesAll=true
 serverTimezone=GMT%2B8
 
+已经改进： 
+1. 参考 motan 自动生成异步接口，但只能支持生成 Msg 的范型，到这一步就可以了。
+
+2. 加入了 motan 的源码，定制化的motan
+
+这个版本将待改进2和motan定制版实现且用起来之后就可以升级为新版本。
 
 
