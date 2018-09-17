@@ -90,5 +90,3 @@ serverTimezone=GMT%2B8
 2. 加入了 motan 的源码，定制化的motan
 
 这个版本将待改进2和motan定制版实现且用起来之后就可以升级为新版本。
-
-

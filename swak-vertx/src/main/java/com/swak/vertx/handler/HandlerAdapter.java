@@ -35,7 +35,7 @@ import io.vertx.ext.web.RoutingContext;
  * @author lifeng
  */
 @ServiceMapping(value = "handlerAdapter", httpServer = true, instances = -1)
-public class HandlerAdapter implements RouterHandler {
+public class HandlerAdapter extends AbstractRouterHandler {
 
 	@Autowired
 	private ConversionService conversionService;

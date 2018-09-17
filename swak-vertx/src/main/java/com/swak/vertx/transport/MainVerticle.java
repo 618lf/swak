@@ -89,13 +89,20 @@ public class MainVerticle extends AbstractVerticle {
 
 	// 发布为Http 服务
 	private List<Future<String>> startHttp(ServiceBean service) {
+		
+		// Router 处理器
+		RouterHandler routerHandler = (RouterHandler)service.getService();
+		
+		// 初始化 router
+		routerHandler.initRouter(vertx, annotation);
+		
+		// 启动监听服务
 		List<Future<String>> futures = Lists.newArrayList();
 		DeploymentOptions options = new DeploymentOptions();
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
 			futures.add(Future.<String>future(s -> {
-				RouterHandler routerHandler = (RouterHandler)service.getService();
-				vertx.deployVerticle(new HttpVerticle(annotation.getRouterConfigs(), annotation.getRouters(), annotation.getRouterSuppliers(), routerHandler, properties.getPort()), options, s);
+				vertx.deployVerticle(new HttpVerticle(routerHandler, properties.getPort()), options, s);
 			}));
 		}
 		return futures;
