@@ -85,6 +85,7 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 		
 		// 错误消息
 		if (error != null) {
+			response.setResult(error.getMessage());
 			event.reply(response);
 		} 
 		

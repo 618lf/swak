@@ -16,5 +16,5 @@ public interface EventConsumer {
 	 * 消费消息
 	 * @param message
 	 */
-	void onMessge(Event event);
+	void onMessge(byte[] data);
 }

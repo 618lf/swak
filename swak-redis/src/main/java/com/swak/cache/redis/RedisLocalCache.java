@@ -7,7 +7,6 @@ import org.springframework.beans.factory.DisposableBean;
 import com.swak.Constants;
 import com.swak.cache.Cache;
 import com.swak.cache.Entity;
-import com.swak.eventbus.Event;
 import com.swak.eventbus.EventConsumer;
 import com.swak.eventbus.EventProducer;
 import com.swak.utils.Lists;
@@ -115,9 +114,7 @@ public class RedisLocalCache implements Cache<Object>, EventConsumer, Disposable
 	 * 获取订阅的消息
 	 */
 	@Override
-	public void onMessge(Event event) {
-
-		byte[] message = event.getMessage();
+	public void onMessge(byte[] message) {
 
 		// 无效消息
 		if (message != null && message.length <= 0) {

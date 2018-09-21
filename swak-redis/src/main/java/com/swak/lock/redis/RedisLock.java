@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.swak.Constants;
 import com.swak.cache.SafeEncoder;
-import com.swak.eventbus.Event;
 import com.swak.eventbus.EventConsumer;
 import com.swak.eventbus.EventProducer;
 import com.swak.lock.LockEntity;
@@ -103,8 +102,8 @@ public class RedisLock implements EventConsumer {
 	 * 激活 entitys 中的 sink
 	 */
 	@Override
-	public void onMessge(Event event) {
-		String resource = event.getMessage();
+	public void onMessge(byte[] message) {
+		String resource = new String(message);
 		entitys.keySet().stream().filter(s -> s.startsWith(resource)).forEach(s ->{
 			// LockEntity<?> entity = entitys.get(s);
 			// this.tryLock(entity.sink(), entity);

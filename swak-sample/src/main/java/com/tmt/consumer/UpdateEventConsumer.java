@@ -1,7 +1,6 @@
 package com.tmt.consumer;
 
 import com.swak.Constants;
-import com.swak.eventbus.Event;
 import com.swak.eventbus.EventConsumer;
 
 /**
@@ -16,7 +15,7 @@ public class UpdateEventConsumer implements EventConsumer{
 	}
 
 	@Override
-	public void onMessge(Event event) {
+	public void onMessge(byte[] data) {
 		// System.out.println("收到消息");
 	}
 }

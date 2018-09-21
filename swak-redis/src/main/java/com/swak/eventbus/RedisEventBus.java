@@ -42,8 +42,7 @@ public class RedisEventBus implements RedisPubSubListener<byte[], byte[]>, Event
 	 */
 	@Override
 	public void onMessage(String channel, byte[] message) {
-		Event event = new Event(message);
-		consumers.get(channel).stream().forEach(consumer -> consumer.onMessge(event));
+		consumers.get(channel).stream().forEach(consumer -> consumer.onMessge(message));
 	}
 	
 	/**
