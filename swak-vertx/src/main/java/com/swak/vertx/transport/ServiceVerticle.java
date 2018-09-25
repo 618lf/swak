@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.swak.asm.Wrapper;
+import com.swak.utils.ExceptionUtils;
 import com.swak.utils.Maps;
 import com.swak.vertx.transport.codec.Msg;
 import com.swak.vertx.utils.MethodCache;
@@ -85,7 +86,7 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 		
 		// 错误消息
 		if (error != null) {
-			response.setResult(error.getMessage());
+			response.setError(ExceptionUtils.causedMessage(error));
 			event.reply(response);
 		} 
 		

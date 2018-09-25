@@ -4,9 +4,12 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.RandomAccess;
+
+import com.swak.entity.SortAble;
 
 /**
  * list 相关
@@ -131,5 +134,39 @@ public class Lists {
 		public boolean isEmpty() {
 			return list.isEmpty();
 		}
+	}
+
+	/**
+	 * 排序
+	 * 
+	 * @param list
+	 */
+	public static <T extends Comparable<? super T>> void sort(List<T> list) {
+		list.sort(null);
+	}
+
+	/**
+	 * 如果实现了 SortAble 可以通过一个sort 来排序
+	 * 
+	 * @param list
+	 */
+	public static <T extends SortAble> void sortAble(List<T> list) {
+
+		list.sort(new Comparator<SortAble>() {
+			@Override
+			public int compare(SortAble o1, SortAble o2) {
+				return o1.getSort().compareTo(o2.getSort());
+			}
+		});
+	}
+
+	/**
+	 * 排序
+	 * 
+	 * @param list
+	 * @param c
+	 */
+	public static <T> void sort(List<T> list, Comparator<? super T> c) {
+		list.sort(c);
 	}
 }
