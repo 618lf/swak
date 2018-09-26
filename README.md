@@ -1,3 +1,8 @@
+#swak
+发布当前版本：
+cd /home/lifeng/git/swak
+mvn deploy
+
 # swak
 一款參照 SPRINGBOOT 和 WEBFLUX 實現的响应式 http 服务器，主要功能如下：
 swak-code : reactivex netty server
