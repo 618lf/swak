@@ -70,10 +70,12 @@ public class ResultHandler {
 			this.handlError(ex, context);
 			return;
 		}
-
-		// 托底输出
-		context.response().putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
-		context.response().end(Result.success(StringUtils.EMPTY).toJson());
+		
+		// 允许返回 void 但需自己实现输出
+		if (!context.response().ended()) {
+			context.response().putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
+			context.response().end(Result.success(StringUtils.EMPTY).toJson());
+		}
 	}
 
 	/**
