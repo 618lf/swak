@@ -3,11 +3,11 @@ package com.swak.actuator.motan;
 import java.util.List;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
 import com.swak.actuator.endpoint.annotation.Endpoint;
 import com.swak.actuator.endpoint.annotation.Operation;
 import com.swak.actuator.endpoint.annotation.Selector;
 import com.swak.motan.manager.CommandService;
+import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.weibo.api.motan.registry.support.command.RpcCommand.ClientCommand;
 
