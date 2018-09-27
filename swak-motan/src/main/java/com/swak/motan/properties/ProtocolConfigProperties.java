@@ -30,7 +30,7 @@ public class ProtocolConfigProperties {
 	/** 服务协议名 */
 	private String name;
 	
-	/** 序列化方式, default hessian2 */
+	/** 序列化方式, default kryo */
 	private String serialization;
 	
 	/** 最大请求数据长度 */
