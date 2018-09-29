@@ -27,6 +27,11 @@ public class VertxProperties {
 	
 	// event bus 的超时时间默认
 	private int sendTimeout = 5 * 60 * 1000; // 5min
+	
+	// 上传文件的设置
+	private String uploadDirectory = "upload-files";
+	private int bodyLimit = -1; // 无限制
+	private boolean deleteUploadedFilesOnEnd = false; // 是否删除
 
 	// 集群配置
 	private boolean clusterable = false;
@@ -54,6 +59,24 @@ public class VertxProperties {
 	private String keyStorePass = "secret"; // keyStore 的密码
 	private String jwtTokenName = "X-Token";
 
+	public String getUploadDirectory() {
+		return uploadDirectory;
+	}
+	public void setUploadDirectory(String uploadDirectory) {
+		this.uploadDirectory = uploadDirectory;
+	}
+	public int getBodyLimit() {
+		return bodyLimit;
+	}
+	public void setBodyLimit(int bodyLimit) {
+		this.bodyLimit = bodyLimit;
+	}
+	public boolean isDeleteUploadedFilesOnEnd() {
+		return deleteUploadedFilesOnEnd;
+	}
+	public void setDeleteUploadedFilesOnEnd(boolean deleteUploadedFilesOnEnd) {
+		this.deleteUploadedFilesOnEnd = deleteUploadedFilesOnEnd;
+	}
 	public String getJwtTokenName() {
 		return jwtTokenName;
 	}
