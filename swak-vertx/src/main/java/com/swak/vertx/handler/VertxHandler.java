@@ -8,6 +8,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.file.FileSystem;
 
 /**
  * 代理处理 vertx 的 相关服务
@@ -41,4 +42,10 @@ public interface VertxHandler {
 	 * @param request
 	 */
 	void sentMessage(String address, Msg request, int timeout, Handler<AsyncResult<Message<Msg>>> replyHandler);
+	
+	/**
+	 * 文件系统
+	 * @return
+	 */
+	FileSystem fileSystem();
 }

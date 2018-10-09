@@ -12,6 +12,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.file.FileSystem;
 
 /**
  * vertx 的配置 bean
@@ -96,5 +97,13 @@ public class VertxBean implements VertxHandler {
 
 		// 发送消息
 		vertx.eventBus().send(address, request, deliveryOptions, replyHandler);
+	}
+
+	/**
+	 * 获取文件系统
+	 */
+	@Override
+	public FileSystem fileSystem() {
+		return vertx.fileSystem();
 	}
 }
