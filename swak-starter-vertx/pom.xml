@@ -27,6 +27,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-quartz</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>io.vertx</groupId>
 			<artifactId>vertx-dropwizard-metrics</artifactId>
 			<version>${vertx.version}</version>

@@ -27,6 +27,7 @@
 		<module>swak-starter</module>
 		<module>swak-sample-vertx</module>
 		<module>swak-qrcode</module>
+		<module>swak-quartz</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.0.3.RELEASE</spring-boot.version>
@@ -57,7 +58,8 @@
 		<zookeeper.version>3.4.8</zookeeper.version>
 		<zkclient.version>0.10</zkclient.version>
 		<metrics.version>4.0.2</metrics.version>
-
+        <quartz.version>2.2.3</quartz.version>
+         
 		<!-- test -->
 		<junit.version>4.12</junit.version>
 
@@ -138,7 +140,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.swak</groupId>
-				<artifactId>swak-motan-core</artifactId>
+				<artifactId>swak-quartz</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
