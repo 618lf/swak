@@ -38,6 +38,44 @@ public class FileUtils {
 	 * 
 	 * @param file
 	 */
+	public static byte[] read(File file) {
+		ByteBuffer dst = ByteBuffer.allocateDirect(512);
+		FileChannel channel = null;
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(file);
+			channel = fis.getChannel();
+			channel.read(dst);
+		} catch (Exception e) {
+		} finally {
+			IOUtils.closeQuietly(fis);
+			IOUtils.closeQuietly(channel);
+		}
+		dst.flip();
+		return conver(dst);
+	}
+
+	/**
+	 * @param byteBuffer
+	 * @return
+	 */
+	private static byte[] conver(ByteBuffer byteBuffer) {
+		int len = byteBuffer.limit() - byteBuffer.position();
+		byte[] bytes = new byte[len];
+
+		if (byteBuffer.isReadOnly()) {
+			return null;
+		} else {
+			byteBuffer.get(bytes);
+		}
+		return bytes;
+	}
+
+	/**
+	 * 打开这个文件
+	 * 
+	 * @param file
+	 */
 	public static FileInputStream open(File file) {
 		FileInputStream fis = null;
 		try {
@@ -46,18 +84,20 @@ public class FileUtils {
 		}
 		return fis;
 	}
-	
+
 	/**
 	 * 得到文件的名称，不包括扩展名
+	 * 
 	 * @param file
 	 * @return
 	 */
 	public static String getFileName(String fileUrl) {
 		return StringUtils.removeStart(StringUtils.substringAfterLast(fileUrl, "/"), ".");
 	}
-	
+
 	/**
 	 * 得到文件的扩展名, 大写
+	 * 
 	 * @param file
 	 * @return
 	 */

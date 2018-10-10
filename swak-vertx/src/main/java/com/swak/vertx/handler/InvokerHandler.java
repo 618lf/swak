@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 
+import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.annotation.InvokerAddress;
 import com.swak.vertx.transport.codec.Msg;
@@ -70,15 +71,27 @@ public class InvokerHandler implements InvocationHandler {
 		
 		// 发送消息，处理相应结果
 		vertx.sentMessage(this.address, request, meta.getTimeOut(), res -> {
+			
+			// 约定的通讯协议
 			Msg result = (Msg) res.result().body();
+			
+			// 错误处理 - 结果返回
+			String result_error = result.getError();
+			Object result_result = result.getResult();
 			
 			// 自动生成异步接口返回值
 			if (meta.getNestedReturnType() == Msg.class) {
-				future.complete(result);
-			} 
-			// 手动生成异步接口的返回值
+				result_result = result;
+			}
+			
+			// 优先错误处理
+			if (StringUtils.isNotBlank(result_error)) {
+				future.completeExceptionally(new BaseRuntimeException(result_error));
+			}
+			
+			// 结果返回
 			else {
-				future.complete(result.getResult());
+				future.complete(result_result);
 			}
 		});
 		
