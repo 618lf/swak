@@ -1,5 +1,6 @@
 package com.swak.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -39,38 +40,25 @@ public class FileUtils {
 	 * @param file
 	 */
 	public static byte[] read(File file) {
-		ByteBuffer dst = ByteBuffer.allocateDirect(512);
-		FileChannel channel = null;
 		FileInputStream fis = null;
+		ByteArrayOutputStream out = null;
 		try {
 			fis = new FileInputStream(file);
-			channel = fis.getChannel();
-			channel.read(dst);
+			out = new ByteArrayOutputStream();
+			byte[] buffer = new byte[512];
+			int n = 0;
+			while ((n = fis.read(buffer)) != -1) {
+				out.write(buffer, 0, n);
+			}
+			return out.toByteArray();
 		} catch (Exception e) {
+			return null;
 		} finally {
 			IOUtils.closeQuietly(fis);
-			IOUtils.closeQuietly(channel);
+			IOUtils.closeQuietly(out);
 		}
-		dst.flip();
-		return conver(dst);
 	}
-
-	/**
-	 * @param byteBuffer
-	 * @return
-	 */
-	private static byte[] conver(ByteBuffer byteBuffer) {
-		int len = byteBuffer.limit() - byteBuffer.position();
-		byte[] bytes = new byte[len];
-
-		if (byteBuffer.isReadOnly()) {
-			return null;
-		} else {
-			byteBuffer.get(bytes);
-		}
-		return bytes;
-	}
-
+	
 	/**
 	 * 打开这个文件
 	 * 
