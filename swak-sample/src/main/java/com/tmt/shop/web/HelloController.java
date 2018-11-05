@@ -12,7 +12,6 @@ import com.swak.cache.CacheManager;
 import com.swak.entity.Result;
 import com.swak.executor.Workers;
 import com.swak.http.builder.RequestBuilder;
-import com.swak.kotlin.MonosKt;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.WebUtils;
 import com.swak.reactivex.web.annotation.GetMapping;
@@ -199,13 +198,13 @@ public class HelloController {
 	 * @param id
 	 * @return
 	 */
-	@GetMapping("/say/xc")
-	public Mono<Shop> sayXc() {
-		return MonosKt.create(() -> {
-			shopService.say();
-			return new Shop();
-		});
-	}
+//	@GetMapping("/say/xc")
+//	public Mono<Shop> sayXc() {
+//		return MonosKt.create(() -> {
+//			shopService.say();
+//			return new Shop();
+//		});
+//	}
 	
 	
 	/**

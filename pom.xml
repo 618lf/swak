@@ -214,14 +214,30 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<includes>
-					<include>**/*</include>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+					<include>**/*.tld</include>
+					<include>**/*.ftl</include>
+					<include>**/*.dic</include>
+					<include>**/*.conf</include>
+					<include>**/*.groovy</include>
+					<include>**/*.png</include>
 				</includes>
 				<filtering>false</filtering>
 			</resource>
 			<resource>
 				<directory>src/main/java</directory>
 				<includes>
-					<include>**/*</include>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+					<include>**/*.tld</include>
+					<include>**/*.ftl</include>
+					<include>**/*.js</include>
+					<include>**/*.json</include>
+					<include>**/*.dic</include>
+					<include>**/*.conf</include>
+					<include>**/*.groovy</include>
+					<include>**/*.png</include>
 				</includes>
 				<filtering>false</filtering>
 			</resource>
