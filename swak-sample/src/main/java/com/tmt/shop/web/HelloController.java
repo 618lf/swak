@@ -13,6 +13,7 @@ import com.swak.cache.CacheManager;
 import com.swak.entity.Result;
 import com.swak.executor.Workers;
 import com.swak.http.builder.RequestBuilder;
+import com.swak.persistence.QueryCondition;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.WebUtils;
 import com.swak.reactivex.web.annotation.GetMapping;
@@ -139,7 +140,8 @@ public class HelloController {
 	@GetMapping("/say/mono")
 	public Mono<String> sayMono() {
 		return Mono.fromSupplier(() -> {
-			List<Shop> shops = shopService.getAll();
+			QueryCondition qc = new QueryCondition();
+			List<Shop> shops = shopService.queryForLimitList(qc, 10);
 			System.out.println("数据：" + shops.size());
 			return shopService.say();
 		});

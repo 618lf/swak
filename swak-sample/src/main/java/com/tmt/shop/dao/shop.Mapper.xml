@@ -15,6 +15,10 @@
   <select id="getAll" resultMap="BaseResult" parameterType="LONG">
    SELECT ID, NAME FROM SHOP
   </select>
+  
+  <select id="findByCondition" resultMap="BaseResult" parameterType="queryCondition">
+   SELECT ID, NAME FROM SHOP
+  </select>
  
   <insert id="insert" parameterType="com.tmt.shop.entity.Shop">
    INSERT INTO SHOP (ID, NAME)
