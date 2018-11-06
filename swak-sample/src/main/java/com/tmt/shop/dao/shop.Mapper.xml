@@ -11,6 +11,10 @@
      FROM SHOP
     WHERE ID = #{id}
   </select>
+  
+  <select id="getAll" resultMap="BaseResult" parameterType="LONG">
+   SELECT ID, NAME FROM SHOP
+  </select>
  
   <insert id="insert" parameterType="com.tmt.shop.entity.Shop">
    INSERT INTO SHOP (ID, NAME)

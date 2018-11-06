@@ -222,6 +222,8 @@
 					<include>**/*.conf</include>
 					<include>**/*.groovy</include>
 					<include>**/*.png</include>
+					<include>**/*.factories</include>
+					<include>**/*.db</include>
 				</includes>
 				<filtering>false</filtering>
 			</resource>
@@ -238,6 +240,8 @@
 					<include>**/*.conf</include>
 					<include>**/*.groovy</include>
 					<include>**/*.png</include>
+					<include>**/*.factories</include>
+					<include>**/*.db</include>
 				</includes>
 				<filtering>false</filtering>
 			</resource>

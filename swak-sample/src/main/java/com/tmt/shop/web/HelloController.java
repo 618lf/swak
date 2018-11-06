@@ -1,6 +1,7 @@
 package com.tmt.shop.web;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -138,6 +139,8 @@ public class HelloController {
 	@GetMapping("/say/mono")
 	public Mono<String> sayMono() {
 		return Mono.fromSupplier(() -> {
+			List<Shop> shops = shopService.getAll();
+			System.out.println("数据：" + shops.size());
 			return shopService.say();
 		});
 	}

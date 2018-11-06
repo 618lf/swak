@@ -32,7 +32,12 @@ public class SqlLiteDataSourceAutoConfiguration {
 	@Bean(destroyMethod = "")
 	public DataSource sqlLiteDataSource() {
 		SQLiteDataSource dataSource = new SQLiteDataSource();
-		dataSource.setUrl("jdbc:sqlite::" + properties.getUrl());
+		dataSource.setUrl("jdbc:sqlite:" + properties.getUrl());
 		return dataSource;
+	}
+	
+	@Bean
+	public SqlLiteDataSourcePoolMetadata sqlLiteDataSourcePoolMetadata(SQLiteDataSource dataSource) {
+		return new SqlLiteDataSourcePoolMetadata(dataSource);
 	}
 }
