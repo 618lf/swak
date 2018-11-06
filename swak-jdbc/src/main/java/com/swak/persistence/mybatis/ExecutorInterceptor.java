@@ -1,5 +1,6 @@
 package com.swak.persistence.mybatis;
 
+import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -24,7 +25,10 @@ import com.swak.persistence.dialect.Dialect;
  * @author Hill
  * @version 2014-10-13
  */
-@Intercepts({@Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class})})
+@Intercepts({
+    @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
+    @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class})
+})
 public class ExecutorInterceptor extends AbstractInterceptor {
 	
 	private final static Logger logger = LoggerFactory.getLogger(ExecutorInterceptor.class);

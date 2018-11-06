@@ -63,10 +63,10 @@
 		<!-- test -->
 		<junit.version>4.12</junit.version>
 
-		<!-- mysql driver setting -->
-		<jdbc.driver.groupId>mysql</jdbc.driver.groupId>
-		<jdbc.driver.artifactId>mysql-connector-java</jdbc.driver.artifactId>
-		<jdbc.driver.version>6.0.6</jdbc.driver.version>
+		<!-- db driver -->
+		<mysql-jdbc.version>6.0.6</mysql-jdbc.version>
+		<h2-jdbc.version>1.4.197</h2-jdbc.version>
+		<sqlite-jdbc.version>3.25.2</sqlite-jdbc.version>
 
 		<!-- other setting -->
 		<jdk.version>1.8</jdk.version>
