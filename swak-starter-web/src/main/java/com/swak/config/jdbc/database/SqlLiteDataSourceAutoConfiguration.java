@@ -26,13 +26,13 @@ public class SqlLiteDataSourceAutoConfiguration {
 
 	/**
 	 * 构建 sqlLiteDataSource
-	 * 
+	 * 可配置在 resource:
 	 * @return
 	 */
 	@Bean(destroyMethod = "")
 	public DataSource sqlLiteDataSource() {
 		SQLiteDataSource dataSource = new SQLiteDataSource();
-		dataSource.setUrl("jdbc:sqlite::resource:" + properties.getEmbeddedDataBaseName());
+		dataSource.setUrl("jdbc:sqlite::" + properties.getUrl());
 		return dataSource;
 	}
 }

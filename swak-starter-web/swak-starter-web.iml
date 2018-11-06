@@ -46,6 +46,8 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.alibaba:druid:1.1.6" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.zaxxer:HikariCP:3.2.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: mysql:mysql-connector-java:6.0.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.h2database:h2:1.4.197" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.xerial:sqlite-jdbc:3.25.2" level="project" />
     <orderEntry type="module" module-name="swak-redis" scope="PROVIDED" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.sf.ehcache:ehcache:2.10.5" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: io.lettuce:lettuce-core:5.0.5.RELEASE" level="project" />

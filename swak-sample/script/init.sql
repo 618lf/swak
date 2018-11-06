@@ -1,0 +1,4 @@
+CREATE TABLE SHOP(
+  ID   BIGINT(20),
+  name VARCHAR
+)
