@@ -224,6 +224,7 @@
 					<include>**/*.png</include>
 					<include>**/*.factories</include>
 					<include>**/*.db</include>
+					<include>**/*.jceks</include>
 				</includes>
 				<filtering>false</filtering>
 			</resource>
@@ -242,6 +243,7 @@
 					<include>**/*.png</include>
 					<include>**/*.factories</include>
 					<include>**/*.db</include>
+					<include>**/*.jceks</include>
 				</includes>
 				<filtering>false</filtering>
 			</resource>
