@@ -3,6 +3,7 @@ package com.swak.config.jdbc.database;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.swak.Constants;
+import com.swak.utils.StringUtils;
 
 /**
  * 数据库的配置
@@ -17,7 +18,7 @@ public class DataSourceProperties {
 	private String url;
 	private String username;
 	private String password;
-	private String driverClassName = "com.mysql.cj.jdbc.Driver";
+	private String driverClassName;
 	private Integer initialSize = 10;
 	private Integer minIdle = 10;
 	private Integer maxActive = 20; // 连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
@@ -43,7 +44,7 @@ public class DataSourceProperties {
 	public void setDb(Database db) {
 		this.db = db;
 	}
-	
+
 	public Integer getMaxLifetime() {
 		return maxLifetime;
 	}
@@ -100,8 +101,25 @@ public class DataSourceProperties {
 		this.password = password;
 	}
 
+	/**
+	 * 自动适配驱动
+	 * 
+	 * @return
+	 */
 	public String getDriverClassName() {
+		this.driverFit();
 		return driverClassName;
+	}
+
+	public void driverFit() {
+		if (!StringUtils.isBlank(driverClassName) || db == null) {
+			return;
+		}
+		if (db == Database.mysql) {
+			this.driverClassName = "com.mysql.cj.jdbc.Driver";
+		} else if (db == Database.h2) {
+			this.driverClassName = "org.h2.Driver";
+		}
 	}
 
 	public void setDriverClassName(String driverClassName) {
