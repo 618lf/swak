@@ -28,6 +28,7 @@
 		<module>swak-sample-vertx</module>
 		<module>swak-qrcode</module>
 		<module>swak-quartz</module>
+		<module>swak-swt</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.0.3.RELEASE</spring-boot.version>
@@ -59,6 +60,7 @@
 		<zkclient.version>0.10</zkclient.version>
 		<metrics.version>4.0.2</metrics.version>
         <quartz.version>2.2.3</quartz.version>
+        <swt.version>1.0</swt.version>
          
 		<!-- test -->
 		<junit.version>4.12</junit.version>
@@ -75,6 +77,11 @@
 		<project.version>${project.version}</project.version>
 	</properties>
 	<repositories>
+	    <repository>
+			<id>nexus-repos</id>
+			<name>Team Nexus Repository</name>
+			<url>http://192.168.0.222:7001/nexus/content/groups/public</url>
+		</repository>
 		<repository>
 			<id>oschina-repos</id>
 			<name>Oschina Releases</name>
