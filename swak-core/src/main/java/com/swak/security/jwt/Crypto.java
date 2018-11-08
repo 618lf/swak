@@ -13,7 +13,7 @@
  *
  *  You may elect to redistribute this code under either of these licenses.
  */
-package com.swak.vertx.security.jwt;
+package com.swak.security.jwt;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -27,7 +27,7 @@ import java.util.UUID;
 
 import javax.crypto.Mac;
 
-import com.swak.vertx.security.jwt.impl.SignatureHelper;
+import com.swak.security.jwt.impl.SignatureHelper;
 
 /**
  * Internal common interface for all crypto algorithms.

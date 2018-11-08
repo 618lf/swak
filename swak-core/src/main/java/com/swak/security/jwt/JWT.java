@@ -13,7 +13,7 @@
  *
  *  You may elect to redistribute this code under either of these licenses.
  */
-package com.swak.vertx.security.jwt;
+package com.swak.security.jwt;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

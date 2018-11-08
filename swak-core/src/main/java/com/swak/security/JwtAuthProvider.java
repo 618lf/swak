@@ -1,4 +1,4 @@
-package com.swak.vertx.security;
+package com.swak.security;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,12 +9,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
 import com.swak.exception.BaseRuntimeException;
+import com.swak.security.jwt.JWT;
+import com.swak.security.jwt.JWTOptions;
+import com.swak.security.jwt.JWTPayload;
 import com.swak.utils.IOUtils;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.security.jwt.JWT;
-import com.swak.vertx.security.jwt.JWTOptions;
-import com.swak.vertx.security.jwt.JWTPayload;
 
 /**
  * jwt 的授权实现
@@ -27,17 +26,17 @@ public class JwtAuthProvider {
 	private final JWTOptions options;
 	private final String tokenName;
 
-	public JwtAuthProvider(VertxProperties properties) {
+	public JwtAuthProvider(String keyStorePath, String keyStorePass, String tokenName) {
 		try {
-			KeyStore keyStore = this.loadKeyStore(properties.getKeyStorePath(), properties.getKeyStorePass());
+			KeyStore keyStore = this.loadKeyStore(keyStorePath, keyStorePass);
 
-			jwt = new JWT(keyStore, properties.getKeyStorePass().toCharArray());
+			jwt = new JWT(keyStore, keyStorePass.toCharArray());
 		} catch (Exception e) {
 			throw new BaseRuntimeException(e);
 		}
 		
 		// 设置tokenName
-		tokenName = properties.getJwtTokenName();
+		this.tokenName = tokenName;
 		
 		// 默认的配置
 		options = new JWTOptions();

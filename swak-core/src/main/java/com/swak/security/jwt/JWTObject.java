@@ -1,4 +1,4 @@
-package com.swak.vertx.security.jwt;
+package com.swak.security.jwt;
 
 import java.util.Map;
 

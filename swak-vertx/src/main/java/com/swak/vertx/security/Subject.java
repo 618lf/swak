@@ -2,11 +2,11 @@ package com.swak.vertx.security;
 
 import java.util.HashMap;
 
+import com.swak.security.jwt.JWTObject;
+import com.swak.security.jwt.JWTPayload;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.security.jwt.JWTObject;
-import com.swak.vertx.security.jwt.JWTPayload;
 
 /**
  * 授权主体

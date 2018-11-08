@@ -13,7 +13,7 @@
  *
  *  You may elect to redistribute this code under either of these licenses.
  */
-package com.swak.vertx.security.jwt.impl;
+package com.swak.security.jwt.impl;
 
 /**
  * Helper functions to convert from DER to JWS and vice versa.
