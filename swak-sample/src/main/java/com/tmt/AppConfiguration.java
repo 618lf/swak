@@ -8,7 +8,7 @@ import com.swak.cache.collection.AsyncMultiMap;
 import com.swak.cache.collection.AsyncMultiMapCache;
 import com.swak.config.flux.SecurityConfigurationSupport;
 import com.swak.security.principal.PrincipalStrategy;
-import com.swak.security.principal.support.SessionPrincipalStrategy;
+import com.swak.security.principal.support.CookiePrincipalStrategy;
 import com.swak.security.session.SessionRepository;
 import com.swak.security.session.support.CacheSessionRepository;
 import com.swak.security.session.support.HttpSessionManager;
@@ -61,7 +61,7 @@ public class AppConfiguration {
 	 */
 	@Bean
 	public PrincipalStrategy principalStrategy(HttpSessionManager sessionManager) {
-		return new SessionPrincipalStrategy(sessionManager);
+		return new CookiePrincipalStrategy(sessionManager);
 	}
 
 	/**

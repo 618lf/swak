@@ -1,25 +1,22 @@
 package com.swak.security.principal.support;
 
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import java.io.Serializable;
 
-import com.swak.cache.SafeEncoder;
-import com.swak.cache.redis.operations.AsyncOperations;
 import com.swak.codec.Digests;
 import com.swak.reactivex.transport.http.Principal;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactor.publisher.MonoTrue;
-import com.swak.security.TokenUtils;
+import com.swak.security.JwtAuthProvider;
+import com.swak.security.jwt.JWTPayload;
 import com.swak.security.principal.PrincipalStrategy;
 import com.swak.utils.StringUtils;
 
 import reactor.core.publisher.Mono;
 
 /**
- * 基于 TOKEN 的身份管理方式
- * 一个星期不用就失效
+ * 基于 TOKEN 的身份管理方式 一个星期不用就失效
  * 
  * @author lifeng
  */
@@ -27,6 +24,11 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 
 	private String tokenName = "X-Token";
 	private Integer timeOut = 24 * 60 * 60 * 7; // 一个星期
+	private final JwtAuthProvider jwt;
+
+	public TokenPrincipalStrategy(JwtAuthProvider jwt) {
+		this.jwt = jwt;
+	}
 
 	public Integer getTimeOut() {
 		return timeOut;
@@ -49,13 +51,14 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	 */
 	@Override
 	public Mono<Subject> createPrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
-		String key = UUID.randomUUID().toString();
-		String token = TokenUtils.getToken(subject.getPrincipal(), key);
+		JWTPayload payload = new JWTPayload();
+		payload.put("id", subject.getPrincipal().getId());
+		payload.put("account", subject.getPrincipal().getAccount());
+		String token = jwt.generateToken(payload);
 		response.header(this.getTokenName(), token);
 		String sessionId = this.getKey(token);
 		subject.setSessionId(sessionId);
-		return Mono.fromCompletionStage(AsyncOperations.set(sessionId, SafeEncoder.encode(key), this.getTimeOut()))
-				.map(s -> subject);
+		return Mono.just(subject);
 	}
 
 	/**
@@ -74,32 +77,26 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	 */
 	@Override
 	public Mono<Subject> resolvePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response) {
-		
+
 		// 获取token
 		String token = request.getRequestHeader(this.getTokenName());
 		if (!StringUtils.hasText(token)) {
 			return Mono.just(subject);
 		}
-		
+
 		// 获取加密的key 根据token 获取
 		String sessionId = this.getKey(token);
 		
-		// 获取用户
-		return Mono.fromCompletionStage(AsyncOperations.get(sessionId).thenCompose(bkey -> {
-			if (bkey == null) {
-				return CompletableFuture.completedFuture(subject);
-			}
-			String key = SafeEncoder.encode(bkey);
-			// 获取身份
-			Principal principal = TokenUtils.getSubject(token, key);
-			if (principal != null) {
-				subject.setPrincipal(principal);
-			}
-			subject.setSessionId(sessionId);
-			return AsyncOperations.expire(sessionId, this.getTimeOut()).thenApply(s -> {
-				return subject;
-			});
-		}));
+		// 获取身份,解析错误会抛出异常
+		JWTPayload payload = jwt.verifyToken(token);
+		Serializable id = payload.getValue("id");
+		String account = payload.getValue("account");
+		Principal principal = new Principal();
+		principal.setAccount(account);
+		principal.setId(id);
+		subject.setPrincipal(principal);
+		subject.setSessionId(sessionId);
+		return Mono.just(subject);
 	}
 
 	/**

@@ -17,6 +17,8 @@ import org.springframework.util.CollectionUtils;
 
 import com.swak.Constants;
 import com.swak.reactivex.handler.WebFilter;
+import com.swak.reactivex.transport.http.server.HttpServerProperties;
+import com.swak.security.JwtAuthProvider;
 import com.swak.security.SecurityFilter;
 import com.swak.security.SecurityUtils;
 import com.swak.security.mgt.FilterChainManager;
@@ -45,14 +47,15 @@ public class SecurityAutoConfiguration {
 	}
 	
 	/**
-	 * 默认的 身份管理策略 项目中可以覆盖
+	 * 默认的 身份管理策略 项目中可以覆盖， 统一使用默认的
 	 * 
 	 * @return
 	 */
 	@Bean
 	@ConditionalOnMissingBean(PrincipalStrategy.class)
-	public PrincipalStrategy principalStrategy() {
-		return new TokenPrincipalStrategy();
+	public PrincipalStrategy principalStrategy(HttpServerProperties properties) {
+		JwtAuthProvider jwt = new JwtAuthProvider(properties.getKeyStorePath(), properties.getKeyStorePass(), properties.getJwtTokenName());
+		return new TokenPrincipalStrategy(jwt);
 	}
 
 	/**

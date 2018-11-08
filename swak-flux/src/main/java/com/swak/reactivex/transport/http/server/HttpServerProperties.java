@@ -46,6 +46,35 @@ public class HttpServerProperties {
 	// 文件上传
 	private boolean deleteOnExitTemporaryFile = true;
 	private String baseDirectory = null;
+	
+	// 授权
+	private String keyStorePath; // keyStore 的路径
+	private String keyStorePass = "secret"; // keyStore 的密码
+	private String jwtTokenName = "X-Token";
+
+	public String getKeyStorePath() {
+		return keyStorePath;
+	}
+
+	public void setKeyStorePath(String keyStorePath) {
+		this.keyStorePath = keyStorePath;
+	}
+
+	public String getKeyStorePass() {
+		return keyStorePass;
+	}
+
+	public void setKeyStorePass(String keyStorePass) {
+		this.keyStorePass = keyStorePass;
+	}
+
+	public String getJwtTokenName() {
+		return jwtTokenName;
+	}
+
+	public void setJwtTokenName(String jwtTokenName) {
+		this.jwtTokenName = jwtTokenName;
+	}
 
 	public int getServerSelect() {
 		return serverSelect;

@@ -25,7 +25,7 @@ public class JwtAuthProvider {
 	private final JWT jwt;
 	private final JWTOptions options;
 	private final String tokenName;
-
+	
 	public JwtAuthProvider(String keyStorePath, String keyStorePass, String tokenName) {
 		try {
 			KeyStore keyStore = this.loadKeyStore(keyStorePath, keyStorePass);
@@ -41,7 +41,7 @@ public class JwtAuthProvider {
 		// 默认的配置
 		options = new JWTOptions();
 	}
-
+	
 	private synchronized KeyStore loadKeyStore(String path, String pass)
 			throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		InputStream ksPath = null;

@@ -17,11 +17,11 @@ import reactor.core.publisher.Mono;
  * 
  * @author lifeng
  */
-public class SessionPrincipalStrategy implements PrincipalStrategy {
+public class CookiePrincipalStrategy implements PrincipalStrategy {
 
 	private final HttpSessionManager sessionManager;
 
-	public SessionPrincipalStrategy(HttpSessionManager sessionManager) {
+	public CookiePrincipalStrategy(HttpSessionManager sessionManager) {
 		this.sessionManager = sessionManager;
 	}
 	
