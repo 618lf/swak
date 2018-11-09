@@ -71,29 +71,31 @@ public class Settings {
 	private String basePath;
 	private String configPath;
 	private String serverName;
+	private String serverPage;
 
 	public String getBasePath() {
 		return basePath;
 	}
-
 	public void setBasePath(String basePath) {
 		this.basePath = basePath;
 	}
-
 	public String getConfigPath() {
 		return configPath;
 	}
-
 	public void setConfigPath(String configPath) {
 		this.configPath = configPath;
 	}
-
 	public String getServerName() {
 		return serverName;
 	}
-
 	public void setServerName(String serverName) {
 		this.serverName = serverName;
+	}
+	public String getServerPage() {
+		return serverPage;
+	}
+	public void setServerPage(String serverPage) {
+		this.serverPage = serverPage;
 	}
 
 	protected void handleOs() {
@@ -139,6 +141,7 @@ public class Settings {
 			properties.load(is);
 			is.close();
 			this.serverName = properties.getProperty("server.name");
+			this.serverPage =  properties.getProperty("server.page");
 		} catch (Exception e) {
 		}
 	}
