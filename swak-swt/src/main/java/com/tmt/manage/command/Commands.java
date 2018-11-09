@@ -80,7 +80,7 @@ public class Commands {
 	 * @author lifeng
 	 */
 	public static enum Cmd {
-		init("初始化"), task("任务"), start("开始"), stop("结束"), Deactivated("非激活"), Deiconified("非最小化"), Iconified("最小化");
+		init("初始化"), task("任务"), start("开始"), stop("结束"), Dispose("释放"),Deactivated("非激活"), Deiconified("非最小化"), Iconified("最小化");
 		
 		private String name;
 		

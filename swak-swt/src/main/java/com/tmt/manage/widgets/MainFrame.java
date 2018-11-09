@@ -126,6 +126,10 @@ public class MainFrame extends ApplicationWindow {
 				Commands.nameCommand(Cmd.Iconified).exec();
 			}
 		});
+		// 释放资源
+		newShell.addDisposeListener(e ->{
+			Commands.nameCommand(Cmd.Dispose).exec();
+		});
 	}
 
 	/**

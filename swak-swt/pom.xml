@@ -9,48 +9,73 @@
 	<artifactId>swak-swt</artifactId>
 	<dependencies>
 		<dependency>
-			<groupId>com.tmt</groupId>
-			<artifactId>jface-core</artifactId>
+			<groupId>org.swt</groupId>
+			<artifactId>com.ibm.icu_62.1.0.v20180727</artifactId>
 			<version>${swt.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tmt</groupId>
-			<artifactId>jface-text</artifactId>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.core.commands_3.9.200.v20180827</artifactId>
 			<version>${swt.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tmt</groupId>
-			<artifactId>swing2swt</artifactId>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.core.runtime_3.15.0.v20180817</artifactId>
 			<version>${swt.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tmt</groupId>
-			<artifactId>eclipse-commands</artifactId>
+			<groupId>org.swt</groupId>
+			 <artifactId>org.eclipse.equinox.common_3.10.100.v20180827</artifactId>
 			<version>${swt.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tmt</groupId>
-			<artifactId>eclipse-runtimes</artifactId>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.equinox.registry_3.8.100.v20180827</artifactId>
 			<version>${swt.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tmt</groupId>
-			<artifactId>eclipse-equinox-common</artifactId>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.jface.text_3.14.0.v20180824</artifactId>
 			<version>${swt.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tmt</groupId>
-			<artifactId>eclipse-text</artifactId>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.jface_3.14.100.v20180828</artifactId>
 			<version>${swt.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tmt</groupId>
-			<artifactId>swt-linux64</artifactId>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.osgi_3.13.100.v20180827</artifactId>
 			<version>${swt.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tmt</groupId>
-			<artifactId>swt-win64</artifactId>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.swt.gtk.linux.x86_64_3.108.0.v20180904</artifactId>
+			<version>${swt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.swt.win32.win32.x86_64_3.108.0.v20180904</artifactId>
+			<version>${swt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.swt_3.108.0.v20180904</artifactId>
+			<version>${swt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.swt</groupId>
+			 <artifactId>org.eclipse.text_3.7.0.v20180822</artifactId>
+			<version>${swt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.ui.forms_3.7.300.v20180828</artifactId>
+			<version>${swt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.ui.workbench_3.112.0.v20180906</artifactId>
 			<version>${swt.version}</version>
 		</dependency>
 		<dependency>
