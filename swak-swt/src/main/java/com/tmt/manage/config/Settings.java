@@ -140,8 +140,8 @@ public class Settings {
 			Properties properties = new Properties();
 			properties.load(is);
 			is.close();
-			this.serverName = properties.getProperty("server.name");
-			this.serverPage =  properties.getProperty("server.page");
+			this.serverName = properties.getProperty("app.name");
+			this.serverPage =  properties.getProperty("app.page");
 		} catch (Exception e) {
 		}
 	}
