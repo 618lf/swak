@@ -41,14 +41,14 @@ public abstract class BaseFrame {
 		
 		// 全屏
 		if (point == FULL_POINT) {
-			shell.setBounds(Display.getDefault().getClientArea());
+			shell.setBounds(Display.getDefault().getPrimaryMonitor().getClientArea());
 		} else {
 			// 设置窗口大小
 			shell.setSize(point.x, point.y);
 
 			// 整个窗口大小
-			int width = Display.getDefault().getClientArea().width;
-			int height = Display.getDefault().getClientArea().height;
+			int width = Display.getDefault().getPrimaryMonitor().getClientArea().width;
+			int height = Display.getDefault().getPrimaryMonitor().getClientArea().height;
 
 			int x = shell.getSize().x;
 			int y = shell.getSize().y;
