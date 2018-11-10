@@ -9,6 +9,5 @@ import com.tmt.manage.command.TaskCommand;
 public class TouchCommand extends TaskCommand{
 	@Override
 	public void exec() {
-		
 	}
 }

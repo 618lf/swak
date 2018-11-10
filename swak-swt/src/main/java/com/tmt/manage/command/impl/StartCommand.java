@@ -1,17 +1,8 @@
 package com.tmt.manage.command.impl;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.TitleEvent;
-import org.eclipse.swt.browser.TitleListener;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.tmt.manage.App;
 import com.tmt.manage.command.Command;
+import com.tmt.manage.command.Commands.Sign;
+import com.tmt.manage.command.Commands.Signal;
 import com.tmt.manage.config.Settings;
 
 /**
@@ -20,31 +11,25 @@ import com.tmt.manage.config.Settings;
  * @author lifeng
  */
 public class StartCommand implements Command {
-	private Logger Logger = LoggerFactory.getLogger(App.class);
-
+	
 	@Override
 	public void exec() {
-		Logger.info("服务器启动中");
-		openBrowser();
+		this.log("系统启动中...");
+		this.sendSignal(Signal.newSignal(Sign.starting));
+		this.startSystem();
 	}
-
+	
 	/**
-	 * 这是一种方式，最简单的默认方式， 99%的支持ele，有一点样式不支持
+	 * 启动服务
 	 */
-	private void openBrowser() {
-		final Shell shell = new Shell(Display.getDefault(), SWT.SHELL_TRIM);
-		shell.setText(Settings.getSettings().getServerName());
-		shell.setBounds(Display.getDefault().getPrimaryMonitor().getBounds());
-		FillLayout layout = new FillLayout();
-		shell.setLayout(layout);
-		Browser browser = new Browser(shell, SWT.NONE);
-		browser.setBounds(Display.getDefault().getPrimaryMonitor().getBounds());
-		browser.addTitleListener(new TitleListener() {
-			public void changed(TitleEvent event) {
-				shell.setText(event.title);
-			}
-		});
-		browser.setUrl(Settings.getSettings().getServerPage());
-		shell.open();
+	private void startSystem() {
+		new Thread(() -> {
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {}
+			this.log("系统启动成功");
+			this.sendSignal(Signal.newSignal(Sign.started));
+			this.log("系统主页：" + Settings.getSettings().getServerPage());
+		}).start();
 	}
 }

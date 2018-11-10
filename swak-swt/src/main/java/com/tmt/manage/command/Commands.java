@@ -2,8 +2,12 @@ package com.tmt.manage.command;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
+import com.tmt.manage.command.impl.ExitCommand;
 import com.tmt.manage.command.impl.InitCommand;
+import com.tmt.manage.command.impl.OpenCommand;
 import com.tmt.manage.command.impl.StartCommand;
 import com.tmt.manage.command.impl.StopCommand;
 import com.tmt.manage.command.impl.TouchCommand;
@@ -18,6 +22,9 @@ public class Commands {
 	// 存储所有的命令
 	private static Map<Cmd, Command> commands = new HashMap<>();
 
+	// 存储的信号
+	private static BlockingQueue<Signal> signals = new LinkedBlockingQueue<Signal>();
+
 	/**
 	 * 注册命令
 	 * 
@@ -27,7 +34,7 @@ public class Commands {
 	public static void register(Cmd cmd, Command command) {
 		commands.put(cmd, command);
 	}
-	
+
 	/**
 	 * 注册默认命令
 	 */
@@ -36,8 +43,10 @@ public class Commands {
 		commands.put(Cmd.start, new StartCommand());
 		commands.put(Cmd.stop, new StopCommand());
 		commands.put(Cmd.task, new TouchCommand());
+		commands.put(Cmd.open, new OpenCommand());
+		commands.put(Cmd.exit, new ExitCommand());
 	}
-	
+
 	/**
 	 * 约定使用指定的命令
 	 * 
@@ -46,6 +55,31 @@ public class Commands {
 	 */
 	public static Command nameCommand(Cmd name) {
 		return new NamedCommand(name);
+	}
+
+	/**
+	 * 发送信号
+	 * 
+	 * @param signal
+	 */
+	public static void sendSignal(Signal signal) {
+		try {
+			signals.put(signal);
+		} catch (InterruptedException e) {
+		}
+	}
+
+	/**
+	 * 获得信号
+	 * 
+	 * @param signal
+	 */
+	public static Signal receiveSignal() {
+		try {
+			return signals.take();
+		} catch (InterruptedException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -73,17 +107,58 @@ public class Commands {
 			return name.getName();
 		}
 	}
-	
+
+	/**
+	 * 信号
+	 * 
+	 * @author lifeng
+	 */
+	public static class Signal {
+
+		private Sign sign;
+		private String remarks;
+
+		public Sign getSign() {
+			return sign;
+		}
+
+		public void setSign(Sign sign) {
+			this.sign = sign;
+		}
+
+		public String getRemarks() {
+			return remarks;
+		}
+
+		public void setRemarks(String remarks) {
+			this.remarks = remarks;
+		}
+
+		public static Signal newSignal(Sign sign) {
+			Signal signal = new Signal();
+			signal.setSign(sign);
+			return signal;
+		}
+
+		public static Signal newSignal(Sign sign, String remarks) {
+			Signal signal = new Signal();
+			signal.setSign(sign);
+			signal.setRemarks(remarks);
+			return signal;
+		}
+	}
+
 	/**
 	 * 支持的命令
 	 * 
 	 * @author lifeng
 	 */
 	public static enum Cmd {
-		init("初始化"), task("任务"), start("开始"), stop("结束"), Dispose("释放"),Deactivated("非激活"), Deiconified("非最小化"), Iconified("最小化");
-		
+		init("初始化"), task("任务"), start("启动"), open("主页"), stop("停止"), exit("退出"),Dispose("释放"), Deactivated("非激活"), Deiconified(
+				"非最小化"), Iconified("最小化");
+
 		private String name;
-		
+
 		private Cmd(String name) {
 			this.name = name;
 		}
@@ -95,5 +170,14 @@ public class Commands {
 		public void setName(String name) {
 			this.name = name;
 		}
+	}
+
+	/**
+	 * 支持的信号
+	 * 
+	 * @author lifeng
+	 */
+	public static enum Sign {
+		starting, started, stoping, stoped, log, opened, closed, exit
 	}
 }

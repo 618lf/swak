@@ -13,28 +13,19 @@ import com.tmt.manage.widgets.MainFrame;
  */
 public class App {
 	
-	public static App APP = new App();
+	private static App APP = new App();
+	public static App getDefault() {
+		return APP;
+	}
 	
 	private MainFrame window;
 	
 	/**
 	 * 打开主窗口
 	 */
-	private void openMain() {
+	private void open() {
 		window = new MainFrame();
-		window.setBlockOnOpen(true);
 		window.open();
-	}
-	
-	/**
-	 * 打印日志
-	 * 
-	 * @param text
-	 */
-	public void log(String text) {
-		Display.getDefault().asyncExec(() ->{
-			window.log(text);
-		});
 	}
 	
 	/**
@@ -52,10 +43,10 @@ public class App {
 			Commands.registers();
 
 			// 启动主界面
-			APP.openMain();
+			App.getDefault().open();
 			
 			// 结束
-			Display.getCurrent().dispose();
+			Display.getDefault().dispose();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

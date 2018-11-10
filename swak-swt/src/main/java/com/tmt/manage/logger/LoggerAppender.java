@@ -1,6 +1,8 @@
 package com.tmt.manage.logger;
 
-import com.tmt.manage.App;
+import com.tmt.manage.command.Commands;
+import com.tmt.manage.command.Commands.Sign;
+import com.tmt.manage.command.Commands.Signal;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
@@ -17,7 +19,7 @@ public class LoggerAppender extends AppenderBase<ILoggingEvent>{
 	
 	@Override
 	protected void append(ILoggingEvent event) {
-		App.APP.log(layout.doLayout(event));
+		Commands.sendSignal(Signal.newSignal(Sign.log, layout.doLayout(event)));
 	}
 	public Layout<ILoggingEvent> getLayout() {
 		return layout;
