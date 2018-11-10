@@ -64,4 +64,24 @@
 			<version>1.9.2</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${spring-boot.version}</version>
+				<configuration>
+					<fork>true</fork>
+					<mainClass>com.hituan.AppRunner</mainClass>
+				</configuration>
+				<executions>
+                    <execution>
+                      <goals>
+                        <goal>repackage</goal>
+                      </goals>
+                    </execution>
+                </executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
