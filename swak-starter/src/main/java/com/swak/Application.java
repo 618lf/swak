@@ -31,6 +31,11 @@ public class Application extends SpringApplication {
 	private static final String REACTIVE_VERT_ENVIRONMENT_CLASS = "com.swak.vertx.transport.ReactiveServer";
 
 	/**
+	 * 全局的 context
+	 */
+	private static ConfigurableApplicationContext applicationContext;
+
+	/**
 	 * 初始化
 	 */
 	public Application(Class<?>... primarySources) {
@@ -79,10 +84,22 @@ public class Application extends SpringApplication {
 		long end = System.currentTimeMillis();
 		if (context instanceof ReactiveServerApplicationContext) {
 			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s" + ", listening on the port["
-					+ ((ReactiveServerApplicationContext)context).getServer().getAddresses() + "]");
+					+ ((ReactiveServerApplicationContext) context).getServer().getAddresses() + "]");
 		} else {
 			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s");
 		}
+		// 存储此context
+		applicationContext = context;
 		return context;
+	}
+
+	/**
+	 * 停止服务
+	 */
+	public static void stop() {
+		if (applicationContext != null) {
+			applicationContext.close();
+			applicationContext = null;
+		}
 	}
 }
