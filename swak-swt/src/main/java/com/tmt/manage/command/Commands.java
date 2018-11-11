@@ -5,12 +5,8 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.tmt.manage.command.impl.ExitCommand;
 import com.tmt.manage.command.impl.InitCommand;
 import com.tmt.manage.command.impl.OpenCommand;
-import com.tmt.manage.command.impl.StartCommand;
-import com.tmt.manage.command.impl.StopCommand;
-import com.tmt.manage.command.impl.TouchCommand;
 
 /**
  * 管理命令
@@ -40,11 +36,7 @@ public class Commands {
 	 */
 	public static void registers() {
 		commands.put(Cmd.init, new InitCommand());
-		commands.put(Cmd.start, new StartCommand());
-		commands.put(Cmd.stop, new StopCommand());
-		commands.put(Cmd.task, new TouchCommand());
 		commands.put(Cmd.open, new OpenCommand());
-		commands.put(Cmd.exit, new ExitCommand());
 	}
 
 	/**

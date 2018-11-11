@@ -3,6 +3,7 @@ package com.tmt.manage.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Properties;
 
@@ -21,9 +22,14 @@ public class Settings {
 
 	private static volatile Settings context;
 
-	public static Settings getSettings() {
+	public static Settings me() {
+		return context;
+	}
+
+	public static Settings intSettings(String args[]) {
 		if (context == null) {
-			context = Settings.init();
+			String mainClass = args != null && args.length > 0 ? args[0] : "com/tmt/manage/App.class";
+			context = Settings.init(mainClass);
 		}
 		return context;
 	}
@@ -33,26 +39,30 @@ public class Settings {
 	 * 
 	 * @return
 	 */
-	public static Settings init() {
+	public static Settings init(String mainClass) {
+		URL classPathUrl = Settings.class.getClassLoader().getResource(mainClass);
+		if (classPathUrl == null) {
+			throw new RuntimeException("解析配置文件错误：" + mainClass);
+		}
 		try {
-			String main_class = "com/tmt/manage/App.class";
-			String classPath = ClassLoader.getSystemResource(main_class).getPath();
+			String classPath = classPathUrl.getPath();
 			classPath = URLDecoder.decode(classPath, "UTF-8");
 			String basePath = "", configPath = "";
-			if (classPath != null && classPath.indexOf("!") != -1) {
-				if (classPath.indexOf("file:/") != -1) {
-					basePath = classPath.substring(6, classPath.indexOf("!"));
-				} else {
-					basePath = classPath.substring(0, classPath.indexOf("!"));
-				}
-				basePath = basePath.substring(0, basePath.lastIndexOf("/manage/"));
+			
+			// 结合 springboot 一起发布
+			if (classPath.indexOf("/BOOT-INF/") !=-1) {
+				basePath = classPath.substring(classPath.indexOf("file:/") + 6, classPath.indexOf("!"));
+				basePath = basePath.substring(0, basePath.lastIndexOf("/"));
 				configPath = basePath + "/config/";
-			} else if (classPath != null) {
-				if (classPath.indexOf("file:/") != -1) {
-					basePath = classPath.substring(6, classPath.indexOf(main_class));
-				} else {
-					basePath = classPath.substring(1, classPath.indexOf(main_class));
-				}
+			} 
+			// 开发环境中,作为jar包发布
+			else if(classPath.indexOf("!") != -1) {
+				basePath = classPath.substring(classPath.indexOf("file:/")+ 6, classPath.indexOf("!"));
+				configPath = basePath + "/config/";
+			} 
+			// 开发环境中
+			else {
+				basePath = classPath.substring(0, classPath.indexOf(mainClass));
 				configPath = basePath;
 			}
 			Settings settings = new Settings();
@@ -64,8 +74,9 @@ public class Settings {
 			settings.handleProperties();
 			return settings;
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		throw new RuntimeException("解析配置文件错误");
+		throw new RuntimeException("解析配置文件错误:" + mainClass);
 	}
 
 	private String basePath;
@@ -76,24 +87,31 @@ public class Settings {
 	public String getBasePath() {
 		return basePath;
 	}
+
 	public void setBasePath(String basePath) {
 		this.basePath = basePath;
 	}
+
 	public String getConfigPath() {
 		return configPath;
 	}
+
 	public void setConfigPath(String configPath) {
 		this.configPath = configPath;
 	}
+
 	public String getServerName() {
 		return serverName;
 	}
+
 	public void setServerName(String serverName) {
 		this.serverName = serverName;
 	}
+
 	public String getServerPage() {
 		return serverPage;
 	}
+
 	public void setServerPage(String serverPage) {
 		this.serverPage = serverPage;
 	}
@@ -141,7 +159,7 @@ public class Settings {
 			properties.load(is);
 			is.close();
 			this.serverName = properties.getProperty("app.name");
-			this.serverPage =  properties.getProperty("app.page");
+			this.serverPage = properties.getProperty("app.page");
 		} catch (Exception e) {
 		}
 	}

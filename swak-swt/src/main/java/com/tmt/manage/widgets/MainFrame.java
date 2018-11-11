@@ -42,7 +42,7 @@ public class MainFrame extends BaseFrame implements Receiver {
 	@Override
 	protected void createContents() {
 		shell.setLayout(new FillLayout());
-		shell.setText(Settings.getSettings().getServerName());
+		shell.setText(Settings.me().getServerName());
 		Composite container = new Composite(shell, SWT.NONE);
 		container.setLayout(new GridLayout(1, false));
 

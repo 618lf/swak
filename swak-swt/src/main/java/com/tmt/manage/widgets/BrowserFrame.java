@@ -34,7 +34,7 @@ public class BrowserFrame extends BaseFrame{
 				shell.setText(event.title);
 			}
 		});
-		browser.setUrl(Settings.getSettings().getServerPage());
+		browser.setUrl(Settings.me().getServerPage());
 	}
 
 	@Override

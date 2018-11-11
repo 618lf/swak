@@ -2,7 +2,6 @@ package com.tmt.manage;
 
 import org.eclipse.swt.widgets.Display;
 
-import com.tmt.manage.command.Commands;
 import com.tmt.manage.config.Settings;
 import com.tmt.manage.widgets.MainFrame;
 
@@ -11,44 +10,40 @@ import com.tmt.manage.widgets.MainFrame;
  * 
  * @author lifeng
  */
-public class App {
-	
-	private static App APP = new App();
-	public static App getDefault() {
-		return APP;
-	}
+public abstract class App {
 	
 	private MainFrame window;
 	
 	/**
 	 * 打开主窗口
 	 */
-	private void open() {
+	protected void open() {
 		window = new MainFrame();
 		window.open();
 	}
 	
 	/**
-	 * Launch the application.
+	 * 启动服务
 	 * 
 	 * @param args
 	 */
-	public static void main(String args[]) {
-		try {
-			
-			// 加载配置
-			Settings.getSettings();
-			
-			// 注册默认的命令
-			Commands.registers();
-
-			// 启动主界面
-			App.getDefault().open();
-			
-			// 结束
-			Display.getDefault().dispose();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void run(String args[]) {
+		
+		// 加载配置
+		Settings.intSettings(args);
+		
+		// 注册命令
+		commands();
+		
+		//启动主界面
+		this.open();
+		
+		// 结束
+		Display.getDefault().dispose();
 	}
+	
+	/**
+	 * 注册命令
+	 */
+	protected abstract void commands();
 }
