@@ -30,7 +30,7 @@ public class HttpServerProperties {
 	private boolean soKeepAlive = true;
 	private boolean startReport = false;
 	private boolean enableGzip = false; // 暂时不支持
-	private boolean enableCors = false; // 暂时不支持
+	private boolean enableCors = false;
 
 	// 线程数量
 	private int serverSelect = -1; // 自动计算

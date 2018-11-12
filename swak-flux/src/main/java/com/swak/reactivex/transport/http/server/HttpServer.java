@@ -23,6 +23,9 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
+import io.netty.handler.codec.http.cors.CorsConfigBuilder;
+import io.netty.handler.codec.http.cors.CorsHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.stream.ChunkedWriteHandler;
@@ -88,6 +91,7 @@ public class HttpServer extends TcpServer {
 				if (properties.isSslOn()) {
 					this.customizeSsl(options);
 				}
+				options.enableCors(properties.isEnableCors());
 				options.logLevel(properties.getServerLogLevel());
 				options.loopResources(LoopResources.create(properties.getMode(), properties.getServerSelect(),
 						properties.getServerWorker(), properties.getName()));
@@ -96,7 +100,8 @@ public class HttpServer extends TcpServer {
 				options.childOption(ChannelOption.SO_REUSEADDR, true);
 				options.childOption(ChannelOption.SO_KEEPALIVE, properties.isSoKeepAlive());
 				options.childOption(ChannelOption.TCP_NODELAY, properties.isTcpNoDelay());
-				options.childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(1024 * 1024, 2048 * 1024));
+				options.childOption(ChannelOption.WRITE_BUFFER_WATER_MARK,
+						new WriteBufferWaterMark(1024 * 1024, 2048 * 1024));
 			});
 
 			this.serverName = new StringBuilder().append(this.options.sslContext() != null ? "https://" : "http://")
@@ -127,28 +132,32 @@ public class HttpServer extends TcpServer {
 
 	// ---------------------- 初始化管道 -- 处理数据 ---------------------
 	/**
-	 * TcpServer.BiConsumer -> ContextHandler.onPipeline(this)
-	 * 针对一次连接 Channel 只会初始化一次
+	 * TcpServer.BiConsumer -> ContextHandler.onPipeline(this) 针对一次连接 Channel
+	 * 只会初始化一次
 	 */
 	@Override
 	public void accept(ChannelPipeline p, ContextHandler ch) {
 		p.addLast(NettyPipeline.HttpCodec, new HttpServerCodec(36192 * 2, 36192 * 8, 36192 * 16, false));
 		p.addLast(NettyPipeline.HttpAggregator, new HttpObjectAggregator(Integer.MAX_VALUE));
-		// p.addLast(new HttpServerExpectContinueHandler());
+		p.addLast(NettyPipeline.ExpectContinueHandler, new HttpServerExpectContinueHandler());
 		if (options.enabledCompression()) {
 			p.addLast(NettyPipeline.HttpCompressor, new HttpContentCompressor());
 		}
 		p.addLast(NettyPipeline.ChunkedWriter, new ChunkedWriteHandler());
+		if (options.enableCors()) {
+			p.addLast(NettyPipeline.HttpCors,
+					new CorsHandler(CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build()));
+		}
 		p.addLast(NettyPipeline.HttpServerHandler, new HttpServerHandler(ch));
 	}
 
 	/**
-	 * TcpServer.OnNew -> ContextHandler.onChannel(this)
-	 * 多次 flush 数据，则调用多次， request 是已经封装好的数据,
-	 * 同一个channel 多次法送数据，是有序的。
+	 * TcpServer.OnNew -> ContextHandler.onChannel(this) 多次 flush 数据，则调用多次， request
+	 * 是已经封装好的数据, 同一个channel 多次法送数据，是有序的。
 	 */
 	@Override
-	public ChannelOperations<?, ?> doHandler(Channel c, ContextHandler contextHandler, Object request, BiFunction<NettyInbound, NettyOutbound, Mono<Void>> handler) {
+	public ChannelOperations<?, ?> doHandler(Channel c, ContextHandler contextHandler, Object request,
+			BiFunction<NettyInbound, NettyOutbound, Mono<Void>> handler) {
 		return HttpServerOperations.bind(c, handler, contextHandler, serverName, (FullHttpRequest) request);
 	}
 
@@ -213,6 +222,7 @@ public class HttpServer extends TcpServer {
 	public InetSocketAddress getAddress() {
 		return context.address();
 	}
+
 	// ---------------------- 创建 http 服务器 ---------------------
 	/**
 	 * 创建 http 服务器

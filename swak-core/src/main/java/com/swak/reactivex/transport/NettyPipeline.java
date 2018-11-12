@@ -44,4 +44,6 @@ public interface NettyPipeline {
 	String ChunkedWriter      = LEFT + "chunkedWriter";
 	String LoggingHandler     = LEFT + "loggingHandler";
 	String CompressionHandler = LEFT + "compressionHandler";
+	String HttpCors          = LEFT + "httpCors";
+	String ExpectContinueHandler  = LEFT + "httpExpectContinue";
 }

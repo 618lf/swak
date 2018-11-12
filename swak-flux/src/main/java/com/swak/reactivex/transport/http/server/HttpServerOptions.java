@@ -17,6 +17,7 @@ public class HttpServerOptions extends ServerOptions {
 	private final int maxChunkSize;
 	private final int initialBufferSize;
 	private final boolean validateHeaders;
+	private final boolean enableCors;
 
 	private HttpServerOptions(HttpServerOptions.Builder builder) {
 		super(builder);
@@ -26,6 +27,7 @@ public class HttpServerOptions extends ServerOptions {
 		this.maxChunkSize = builder.maxChunkSize;
 		this.validateHeaders = builder.validateHeaders;
 		this.initialBufferSize = builder.initialBufferSize;
+		this.enableCors = builder.enableCors;
 	}
 
 	/**
@@ -44,6 +46,14 @@ public class HttpServerOptions extends ServerOptions {
 	 */
 	public boolean enabledCompression() {
 		return minCompressionResponseSize >= 0;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean enableCors() {
+		return enableCors;
 	}
 
 	/**
@@ -112,6 +122,7 @@ public class HttpServerOptions extends ServerOptions {
 		public static final int DEFAULT_MAX_CHUNK_SIZE = 8192;
 		public static final boolean DEFAULT_VALIDATE_HEADERS = true;
 		public static final int DEFAULT_INITIAL_BUFFER_SIZE = 128;
+		public static final boolean DEFAULT_ENABLE_CORS = false;
 
 		private int minCompressionResponseSize = -1;
 		private int maxInitialLineLength = DEFAULT_MAX_INITIAL_LINE_LENGTH;
@@ -119,6 +130,7 @@ public class HttpServerOptions extends ServerOptions {
 		private int maxChunkSize = DEFAULT_MAX_CHUNK_SIZE;
 		private boolean validateHeaders = DEFAULT_VALIDATE_HEADERS;
 		private int initialBufferSize = DEFAULT_INITIAL_BUFFER_SIZE;
+		private boolean enableCors = DEFAULT_ENABLE_CORS;
 
 		protected Builder() {
 			super(new ServerBootstrap());
@@ -228,6 +240,18 @@ public class HttpServerOptions extends ServerOptions {
 				throw new IllegalArgumentException("initialBufferSize must be strictly positive");
 			}
 			this.initialBufferSize = value;
+			return this;
+		}
+		
+		/**
+		 * enableCors
+		 *
+		 * @param validate
+		 *            true to validate headers, false otherwise
+		 * @return this option builder for further configuration
+		 */
+		public final Builder enableCors(boolean enableCors) {
+			this.enableCors = enableCors;
 			return this;
 		}
 
