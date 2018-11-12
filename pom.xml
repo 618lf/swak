@@ -233,17 +233,7 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<includes>
-					<include>**/*.properties</include>
-					<include>**/*.xml</include>
-					<include>**/*.tld</include>
-					<include>**/*.ftl</include>
-					<include>**/*.dic</include>
-					<include>**/*.conf</include>
-					<include>**/*.groovy</include>
-					<include>**/*.png</include>
-					<include>**/*.factories</include>
-					<include>**/*.db</include>
-					<include>**/*.jceks</include>
+					<include>**/*</include>
 				</includes>
 				<filtering>false</filtering>
 			</resource>

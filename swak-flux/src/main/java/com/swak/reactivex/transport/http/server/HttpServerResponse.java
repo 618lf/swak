@@ -126,28 +126,13 @@ public interface HttpServerResponse extends NettyOutbound, Closeable {
 	HttpServerResponse cache(long maxAgeSeconds, long lastModifiedTime);
 
 	/**
-	 * 设置内容类型
-	 * 
-	 * @param contentType
-	 * @return
-	 */
-	HttpServerResponse contentType(CharSequence contentType);
-	
-	/**
 	 * 设置跨域
 	 * 
 	 * @param contentType
 	 * @return
 	 */
-	HttpServerResponse allow(CharSequence contentType);
+	HttpServerResponse allow(CharSequence headers);
 
-	/**
-	 * 获得内容类型
-	 * 
-	 * @return
-	 */
-	String getContentType();
-	
 	/**
 	 * 返回所有headers
 	 * 

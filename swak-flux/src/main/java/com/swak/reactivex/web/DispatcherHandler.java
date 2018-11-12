@@ -67,7 +67,7 @@ public class DispatcherHandler implements WebHandler {
 		 *  没有可用的 Handler 
 		 */
 		if (executionChain == null) {
-			return Mono.error(HttpConst.HANDLER_NOT_FOUND_EXCEPTION);
+			return Mono.error(HttpConst.NOT_FOUND_EXCEPTION);
 		}
 		
 		/**
@@ -158,6 +158,6 @@ public class DispatcherHandler implements WebHandler {
 				return resultHandler.handle(request, response, result);
 			}
 		}
-		return Mono.error(HttpConst.HANDLER_NOT_FOUND_EXCEPTION);
+		return Mono.error(HttpConst.NOT_FOUND_EXCEPTION);
 	}
 }

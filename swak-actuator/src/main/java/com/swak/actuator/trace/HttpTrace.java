@@ -52,7 +52,7 @@ public class HttpTrace {
 		private final String method;
 		private final String uri;
 		private final String remoteAddress;
-		private final Map<CharSequence, String> headers;
+		private final Map<String, String> headers;
 		private Request(HttpServerRequest request) {
 			this.method = request.getRequestMethod().name();
 			this.uri = request.getRequestURI();
@@ -68,7 +68,7 @@ public class HttpTrace {
 		public String getRemoteAddress() {
 			return remoteAddress;
 		}
-		public Map<CharSequence, String> getHeaders() {
+		public Map<String, String> getHeaders() {
 			return headers;
 		}
 	}

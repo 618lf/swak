@@ -142,7 +142,7 @@ public interface HttpServerRequest extends NettyInbound, Closeable {
 	 * 
 	 * @return
 	 */
-	Iterator<CharSequence> getRequestHeaderNames();
+	Iterator<String> getRequestHeaderNames();
 
 	/**
 	 * 指定名称的header
@@ -150,7 +150,7 @@ public interface HttpServerRequest extends NettyInbound, Closeable {
 	 * @param name
 	 * @return
 	 */
-	String getRequestHeader(CharSequence name);
+	String getRequestHeader(String name);
 	
 	/**
 	 * 指定名称的header
@@ -158,7 +158,7 @@ public interface HttpServerRequest extends NettyInbound, Closeable {
 	 * @param name
 	 * @return
 	 */
-	Map<CharSequence, String> getRequestHeaders();
+	Map<String, String> getRequestHeaders();
 	
 	/**
 	 * 说的所有的cookie

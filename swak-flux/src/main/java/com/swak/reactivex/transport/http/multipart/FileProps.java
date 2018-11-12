@@ -14,10 +14,11 @@ import java.nio.file.attribute.BasicFileAttributes;
  */
 public class FileProps {
 
-	private long creationTime;
-	private long lastModifiedTime;
-	private long size;
-	private Path path;
+	private final long creationTime;
+	private final long lastModifiedTime;
+	private final long size;
+	private final String name;
+	private final Path path;
 
 	private FileProps(Path path) throws IOException {
 		this.path = path;
@@ -25,6 +26,7 @@ public class FileProps {
 		this.creationTime = basicAttribs.creationTime().toMillis();
 		this.lastModifiedTime = basicAttribs.lastModifiedTime().toMillis();
 		this.size = basicAttribs.size();
+		this.name = path.getFileName().toString();
 	}
 	
 	/**
@@ -34,6 +36,13 @@ public class FileProps {
 	 */
 	public Path file() {
 		return path;
+	}
+	
+	/**
+	 * The name of the file
+	 */
+	public String name() {
+		return this.name;
 	}
 
 	/**

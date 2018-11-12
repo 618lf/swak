@@ -41,11 +41,13 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelProgressiveFuture;
+import io.netty.channel.ChannelProgressiveFutureListener;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -54,6 +56,7 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
@@ -103,7 +106,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	private HttpMethod method;
 	private boolean keepAlive;
 
-	private Map<CharSequence, String> requestHeaders = null;
+	private Map<String, String> requestHeaders = null;
 	private Map<String, Object> attributes = null;
 	private Map<String, List<String>> parameters;
 	private Map<String, Cookie> requestCookies;
@@ -221,15 +224,21 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 */
 	@Override
 	public boolean ifModified(FileProps fileProps) {
-		String ifModifiedSince = this.getRequestHeader(HttpConst.IF_MODIFIED_SINCE);
+		String ifModifiedSince = this.getRequestHeader(HttpConst.IF_MODIFIED_SINCE.toString());
 		if (StringUtils.isNotBlank(ifModifiedSince)) {
 			Date ifModifiedSinceDate = GmtDateKit.format(ifModifiedSince);
 			long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
 			if (ifModifiedSinceDateSeconds == fileProps.lastModifiedTime() / 1000) {
+
+				// type
+				this.mime(MimeType.getMimeType(fileProps.name()));
+				
+				// 304
+				this.status(HttpResponseStatus.NOT_MODIFIED);
 				
 				// 设置头部
 				this.header(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(fileProps.size()));
-				
+
 				// 返回
 				return true;
 			}
@@ -336,7 +345,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * 
 	 * @return
 	 */
-	public Iterator<CharSequence> getRequestHeaderNames() {
+	public Iterator<String> getRequestHeaderNames() {
 		return requestHeaders.keySet().iterator();
 	}
 
@@ -346,7 +355,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @param name
 	 * @return
 	 */
-	public String getRequestHeader(CharSequence name) {
+	public String getRequestHeader(String name) {
 		return requestHeaders.get(name);
 	}
 
@@ -356,7 +365,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @param name
 	 * @return
 	 */
-	public Map<CharSequence, String> getRequestHeaders() {
+	public Map<String, String> getRequestHeaders() {
 		return requestHeaders;
 	}
 
@@ -519,7 +528,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	private HttpHeaders responseHeaders = new DefaultHttpHeaders(false);
 	private Set<Cookie> responseCookies = new HashSet<>(4);
 	private HttpResponseStatus status = HttpResponseStatus.OK;
-	private CharSequence contentType = null;
 	private boolean closed;
 
 	/**
@@ -707,26 +715,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
-	 * 设置内容类型
-	 * 
-	 * @param contentType
-	 * @return
-	 */
-	public HttpServerResponse contentType(CharSequence contentType) {
-		this.contentType = contentType;
-		return this;
-	}
-
-	/**
-	 * 获得内容类型
-	 * 
-	 * @return
-	 */
-	public String getContentType() {
-		return null == this.contentType ? null : String.valueOf(this.contentType);
-	}
-
-	/**
 	 * 返回所有headers
 	 * 
 	 * @return
@@ -851,27 +839,35 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @throws IOException
 	 */
 	private HttpResponse render() {
-
-		// content
-		content = this.content == null ? Unpooled.EMPTY_BUFFER : this.content;
-		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, this.content);
-
-		// headers
+		
+		// 返回的响应
+		HttpResponse response = null;
+		
+		// 根据是否需要设置内容返回不通的响应
+		if (this.fileProps != null) {
+			response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
+		} else {
+			// content
+			content = this.content == null ? Unpooled.EMPTY_BUFFER : this.content;
+			response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, this.content);
+			int contentSize = content.readableBytes();
+			if (contentSize > 0) {
+				responseHeaders.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
+			}
+		}
+		
+		// 缓存控制
+		if (!responseHeaders.contains(HttpHeaderNames.CACHE_CONTROL) && status == HttpResponseStatus.OK) {
+			responseHeaders.set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
+		}
+		
+		// Public Headers
 		if (!responseHeaders.contains(HttpHeaderNames.CONTENT_TYPE)) {
 			responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
 		}
-		if (!responseHeaders.contains(HttpHeaderNames.CACHE_CONTROL)) {
-			responseHeaders.set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
-		}
-		int contentSize = response.content().readableBytes();
-		if (contentSize > 0) {
-			responseHeaders.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
-		}
 		responseHeaders.set(HttpHeaderNames.DATE, ServerContextHandler.DATE);
 		responseHeaders.set(HttpConst.X_POWER_BY, HttpConst.VERSION);
-		if (!responseHeaders.contains(HttpHeaderNames.SERVER)) {
-			responseHeaders.set(HttpHeaderNames.SERVER, HttpConst.VERSION);
-		}
+		responseHeaders.set(HttpHeaderNames.SERVER, HttpConst.VERSION);
 		if (this.responseCookies.size() > 0) {
 			this.responseCookies.forEach(
 					cookie -> responseHeaders.add(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.LAX.encode(cookie)));
@@ -936,20 +932,52 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			if (!!isKeepAlive) {
 				response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
 			}
-			
+
 			// Write file size
 			response.headers().set(HttpHeaderNames.CONTENT_LENGTH, fileProps.size());
-
+			// Write file type
+			response.headers().set(HttpHeaderNames.CONTENT_TYPE, MimeType.getMimeType(fileProps.name()));
+			
 			// Write the initial line and the header.
 			channel().write(response);
 
+			// send file
+			FileChannel channel = FileChannel.open(fileProps.file(), StandardOpenOption.READ);
+			
 			// Write the content.
-			ChannelFuture future = channel()
-					.writeAndFlush(new DefaultFileRegion(FileChannel.open(fileProps.file(), StandardOpenOption.READ), 0, fileProps.size()));
+			ChannelFuture sendFileFuture = channel()
+					.write(new DefaultFileRegion(channel, 0, fileProps.size()), channel().newProgressivePromise());
+			
+			// Write the end marker.
+			ChannelFuture lastContentFuture = channel().writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+			
+			// Listener Send Progressive
+			sendFileFuture.addListener(new ChannelProgressiveFutureListener() {
+				
+				@Override
+				public void operationProgressed(ChannelProgressiveFuture future, long progress, long total)
+						throws Exception {
+					if (total < 0) { // total unknown
+						logger.debug("{} Transfer progress: {}", future.channel(), progress);
+			        } else {
+			        	logger.debug("{} Transfer progress: {}/{}", future.channel(), progress, total);
+			        }
+				}
 
+				@Override
+				public void operationComplete(ChannelProgressiveFuture future) throws Exception {
+					try {
+						channel.close();
+						logger.debug("{} Transfer complete.", future.channel());
+			        } catch (Exception e) {
+			        	logger.error("FileChannel close error", e);
+			        }
+				}
+			});
+			
 			// 如果不是 keepalive 则关闭
 			if (!isKeepAlive) {
-				future.addListener(ChannelFutureListener.CLOSE);
+				lastContentFuture.addListener(ChannelFutureListener.CLOSE);
 			}
 		} catch (Exception e) {
 			ChannelFuture future = channel().writeAndFlush("ERR: Send File Error." + '\n');
@@ -1074,7 +1102,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			responseCookies.clear();
 			responseCookies = null;
 		}
-		contentType = null;
+		// contentType = null;
 	}
 
 	// --------------- 创建 ---------------------

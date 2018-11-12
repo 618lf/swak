@@ -92,6 +92,8 @@ public class HttpServer extends TcpServer {
 				options.loopResources(LoopResources.create(properties.getMode(), properties.getServerSelect(),
 						properties.getServerWorker(), properties.getName()));
 				options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, properties.getConnectTimeout());
+				options.option(ChannelOption.SO_REUSEADDR, true);
+				options.childOption(ChannelOption.SO_REUSEADDR, true);
 				options.childOption(ChannelOption.SO_KEEPALIVE, properties.isSoKeepAlive());
 				options.childOption(ChannelOption.TCP_NODELAY, properties.isTcpNoDelay());
 				options.childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(1024 * 1024, 2048 * 1024));
@@ -132,6 +134,7 @@ public class HttpServer extends TcpServer {
 	public void accept(ChannelPipeline p, ContextHandler ch) {
 		p.addLast(NettyPipeline.HttpCodec, new HttpServerCodec(36192 * 2, 36192 * 8, 36192 * 16, false));
 		p.addLast(NettyPipeline.HttpAggregator, new HttpObjectAggregator(Integer.MAX_VALUE));
+		// p.addLast(new HttpServerExpectContinueHandler());
 		if (options.enabledCompression()) {
 			p.addLast(NettyPipeline.HttpCompressor, new HttpContentCompressor());
 		}

@@ -9,10 +9,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import com.swak.Constants;
-import com.swak.exception.BaseRuntimeException;
 import com.swak.reactivex.transport.http.HttpConst;
 import com.swak.reactivex.transport.http.multipart.FileProps;
-import com.swak.reactivex.transport.http.multipart.MimeType;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.Handler;
@@ -22,6 +20,8 @@ import com.swak.utils.StringUtils;
 /**
  * 静态资源处理
  * 
+ * @see ResourceWebHandler
+ * 
  * @author lifeng
  */
 public class StaticHandler implements Handler, InitializingBean {
@@ -29,7 +29,8 @@ public class StaticHandler implements Handler, InitializingBean {
 	// 目前只支持这三个目录,可以是jar或者jar外
 	private ResourceLoader resourceLoader;
 	private PathResourceResolver pathResourceResolver;
-	private final Set<String> locationsValues = Sets.newHashSet("/static/", "/files/", "/META-INF/resources/");
+	private final Set<String> locationsValues = Sets.newHashSet("classpath:/static/", "classpath:/files/",
+			"classpath:/META-INF/resources/");
 	private final Set<Resource> locations = Sets.newHashSet();
 	private long HTTP_CACHE_SECONDS = 86400 * 30; // 30 day
 	private String INDEX_PAGE = "index.html";
@@ -37,7 +38,7 @@ public class StaticHandler implements Handler, InitializingBean {
 	public StaticHandler(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
-	
+
 	/**
 	 * index
 	 */
@@ -67,11 +68,11 @@ public class StaticHandler implements Handler, InitializingBean {
 
 		// 查找的路径
 		String requestPath = request.getRequestURL();
-		
+
 		// 设置首页
-	    if (StringUtils.isBlank(requestPath) || requestPath.equals(Constants.URL_PATH_SEPARATE)) {
-	    	requestPath = INDEX_PAGE;
-	    }
+		if (StringUtils.isBlank(requestPath) || requestPath.equals(Constants.URL_PATH_SEPARATE)) {
+			requestPath = INDEX_PAGE;
+		}
 
 		// 处理请求
 		try {
@@ -86,7 +87,7 @@ public class StaticHandler implements Handler, InitializingBean {
 			if (resource != null && (fileProps = FileProps.props(Paths.get(resource.getURI()))) != null) {
 
 				// 304 NotModified
-				if (HTTP_CACHE_SECONDS >0 && request.ifModified(fileProps)) {
+				if (HTTP_CACHE_SECONDS > 0 && request.ifModified(fileProps)) {
 					return;
 				}
 
@@ -103,16 +104,11 @@ public class StaticHandler implements Handler, InitializingBean {
 		}
 
 		// 返回404错误， 让默认的错误处理器来处理
-		throw new BaseRuntimeException(requestPath);
+		throw HttpConst.NOT_FOUND_EXCEPTION;
 	}
 
 	// 输出头部
 	private void writeHeaders(String url, HttpServerResponse response, FileProps fileProps) {
-		CharSequence mime = MimeType.getMimeType(url);
-		if (mime.equals(HttpConst.APPLICATION_STREAM)) {
-			mime = HttpConst.APPLICATION_HTML;
-		}
-		response.mime(mime);
 		response.cache(HTTP_CACHE_SECONDS, fileProps.lastModifiedTime());
 	}
 
@@ -136,11 +132,11 @@ public class StaticHandler implements Handler, InitializingBean {
 			this.locations.add(resource);
 		}
 	}
-	
+
 	/**
 	 * 清空缓存
 	 */
 	public void close() {
-		
+
 	}
 }

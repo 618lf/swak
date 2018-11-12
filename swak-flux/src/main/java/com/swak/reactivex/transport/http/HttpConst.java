@@ -2,9 +2,10 @@ package com.swak.reactivex.transport.http;
 
 import java.nio.charset.Charset;
 
-import com.swak.exception.BaseRuntimeException;
+import com.swak.reactivex.transport.http.server.ResponseStatusException;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.AsciiString;
 
 /**
@@ -15,7 +16,7 @@ import io.netty.util.AsciiString;
 public interface HttpConst {
 
 	// 错误
-	Exception HANDLER_NOT_FOUND_EXCEPTION = new BaseRuntimeException("No matching handler");
+	RuntimeException NOT_FOUND_EXCEPTION = new ResponseStatusException(HttpResponseStatus.NOT_FOUND);
 
 	// 系统级别
 	CharSequence X_POWER_BY = AsciiString.cached("X-Powered-By");
