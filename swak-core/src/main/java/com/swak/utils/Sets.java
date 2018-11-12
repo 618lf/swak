@@ -29,6 +29,15 @@ public class Sets {
 	public static <E> HashSet<E> newHashSet() {
 		return new HashSet<E>();
 	}
+	
+	/**
+	 * Hash Set
+	 * 
+	 * @return
+	 */
+	public static <E> HashSet<E> newHashSet(int size) {
+		return new HashSet<E>(size);
+	}
 
 	/**
 	 * arrays -》 set 

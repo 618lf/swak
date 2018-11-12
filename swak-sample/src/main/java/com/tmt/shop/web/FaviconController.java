@@ -13,7 +13,6 @@ public class FaviconController {
 	
 	@GetMapping("favicon.ico")
 	public String icon(HttpServerResponse response) {
-		response.cache(2592000);
 		return "123";
 	}
 }

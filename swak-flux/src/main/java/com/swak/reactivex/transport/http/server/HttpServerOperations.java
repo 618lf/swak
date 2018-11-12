@@ -1,13 +1,14 @@
 package com.swak.reactivex.transport.http.server;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
+import java.nio.channels.FileChannel;
+import java.nio.file.StandardOpenOption;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,10 +21,12 @@ import java.util.function.BiFunction;
 import com.swak.codec.Encodes;
 import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
+import com.swak.reactivex.transport.channel.GmtDateKit;
 import com.swak.reactivex.transport.channel.ServerContextHandler;
 import com.swak.reactivex.transport.http.HttpConst;
 import com.swak.reactivex.transport.http.Session;
 import com.swak.reactivex.transport.http.Subject;
+import com.swak.reactivex.transport.http.multipart.FileProps;
 import com.swak.reactivex.transport.http.multipart.MimeType;
 import com.swak.reactivex.transport.http.multipart.MultipartFile;
 import com.swak.utils.IOUtils;
@@ -100,7 +103,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	private HttpMethod method;
 	private boolean keepAlive;
 
-	private Map<String, String> requestHeaders = null;
+	private Map<CharSequence, String> requestHeaders = null;
 	private Map<String, Object> attributes = null;
 	private Map<String, List<String>> parameters;
 	private Map<String, Cookie> requestCookies;
@@ -214,6 +217,27 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
+	 * 是否有修改
+	 */
+	@Override
+	public boolean ifModified(FileProps fileProps) {
+		String ifModifiedSince = this.getRequestHeader(HttpConst.IF_MODIFIED_SINCE);
+		if (StringUtils.isNotBlank(ifModifiedSince)) {
+			Date ifModifiedSinceDate = GmtDateKit.format(ifModifiedSince);
+			long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
+			if (ifModifiedSinceDateSeconds == fileProps.lastModifiedTime() / 1000) {
+				
+				// 设置头部
+				this.header(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(fileProps.size()));
+				
+				// 返回
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * 请求的参数
 	 * 
 	 * @param name
@@ -312,7 +336,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * 
 	 * @return
 	 */
-	public Iterator<String> getRequestHeaderNames() {
+	public Iterator<CharSequence> getRequestHeaderNames() {
 		return requestHeaders.keySet().iterator();
 	}
 
@@ -322,7 +346,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @param name
 	 * @return
 	 */
-	public String getRequestHeader(String name) {
+	public String getRequestHeader(CharSequence name) {
 		return requestHeaders.get(name);
 	}
 
@@ -332,7 +356,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @param name
 	 * @return
 	 */
-	public Map<String, String> getRequestHeaders() {
+	public Map<CharSequence, String> getRequestHeaders() {
 		return requestHeaders;
 	}
 
@@ -390,7 +414,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @param request
 	 */
 	private void parseBody(FullHttpRequest request) {
-		// this.body = Unpooled.wrappedBuffer(ByteBufUtil.getBytes(request.content()));
 		this.body = request.content();
 	}
 
@@ -492,7 +515,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	// -------------- 响应 -------------------
 	private ByteBufOutputStream os;
 	private ByteBuf content = null;
-	private File file = null;
+	private FileProps fileProps = null;
 	private HttpHeaders responseHeaders = new DefaultHttpHeaders(false);
 	private Set<Cookie> responseCookies = new HashSet<>(4);
 	private HttpResponseStatus status = HttpResponseStatus.OK;
@@ -660,13 +683,26 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
+	 * 跨域
+	 */
+	@Override
+	public HttpServerResponse allow(CharSequence contentType) {
+		return null;
+	}
+
+	/**
 	 * 设置浏览器缓存，默认是无缓存
 	 * 
 	 * @return
 	 */
-	public HttpServerResponse cache(int maxAge) {
-		responseHeaders.set(HttpHeaderNames.CACHE_CONTROL,
-				StringUtils.format("%s:%s", HttpHeaderValues.MAX_AGE, maxAge));
+	public HttpServerResponse cache(long maxAgeSeconds, long lastModifiedTime) {
+		if (maxAgeSeconds > 0) {
+			responseHeaders.set(HttpHeaderNames.CACHE_CONTROL,
+					StringUtils.format("public, %s=%s", HttpHeaderValues.MAX_AGE, maxAgeSeconds));
+		}
+		if (lastModifiedTime > 0) {
+			responseHeaders.set(HttpHeaderNames.LAST_MODIFIED, GmtDateKit.format(new Date(lastModifiedTime)));
+		}
 		return this;
 	}
 
@@ -776,8 +812,8 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 */
 	public <T> HttpServerResponse buffer(T content) {
 		ObjectUtil.checkNotNull(content, "content cannot null");
-		if (content instanceof File) {
-			file = (File) content;
+		if (content instanceof FileProps) {
+			fileProps = (FileProps) content;
 		} else if (content instanceof ByteBuf) {
 			ByteBuf buffer = (ByteBuf) content;
 			this.resetContent(0); // 释放之前的资源
@@ -828,8 +864,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			responseHeaders.set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
 		}
 		int contentSize = response.content().readableBytes();
-		responseHeaders.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
-		responseHeaders.set(HttpHeaderNames.DATE, ServerContextHandler.date);
+		if (contentSize > 0) {
+			responseHeaders.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
+		}
+		responseHeaders.set(HttpHeaderNames.DATE, ServerContextHandler.DATE);
 		responseHeaders.set(HttpConst.X_POWER_BY, HttpConst.VERSION);
 		if (!responseHeaders.contains(HttpHeaderNames.SERVER)) {
 			responseHeaders.set(HttpHeaderNames.SERVER, HttpConst.VERSION);
@@ -858,15 +896,23 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			return;
 		}
 
-		// 直接输出文件
-		if (this.file != null) {
-			this.outFile();
-			return;
-		}
-
 		// render response
 		HttpResponse response = this.render();
 
+		// 直接输出文件
+		if (this.fileProps != null) {
+			this.sendFile(response);
+		} else {
+			this.sendData(response);
+		}
+	}
+
+	/**
+	 * 输出数据
+	 * 
+	 * @param response
+	 */
+	protected void sendData(HttpResponse response) {
 		// commit session
 		Session session = this.getSubject().getSession();
 		if (session != null) {
@@ -875,6 +921,39 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			});
 		} else {
 			this.write(response);
+		}
+	}
+
+	/**
+	 * 输出 file -- 输出文件
+	 * 
+	 * 可以 ChunkedFile https://blog.csdn.net/kenhins/article/details/45486301
+	 */
+	protected void sendFile(HttpResponse response) {
+		try {
+			// 是否 keeplive
+			boolean isKeepAlive = isKeepAlive();
+			if (!!isKeepAlive) {
+				response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+			}
+			
+			// Write file size
+			response.headers().set(HttpHeaderNames.CONTENT_LENGTH, fileProps.size());
+
+			// Write the initial line and the header.
+			channel().write(response);
+
+			// Write the content.
+			ChannelFuture future = channel()
+					.writeAndFlush(new DefaultFileRegion(FileChannel.open(fileProps.file(), StandardOpenOption.READ), 0, fileProps.size()));
+
+			// 如果不是 keepalive 则关闭
+			if (!isKeepAlive) {
+				future.addListener(ChannelFutureListener.CLOSE);
+			}
+		} catch (Exception e) {
+			ChannelFuture future = channel().writeAndFlush("ERR: Send File Error." + '\n');
+			future.addListener(ChannelFutureListener.CLOSE);
 		}
 	}
 
@@ -891,26 +970,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		ChannelFuture future = channel().writeAndFlush(response);
 		if (!isKeepAlive) {
 			future.addListener(ChannelFutureListener.CLOSE);
-		}
-	}
-
-	/**
-	 * 输出 file -- 输出文件
-	 */
-	protected void outFile() {
-		RandomAccessFile raf = null;
-		long length = -1;
-		try {
-			raf = new RandomAccessFile(file, "r");
-			length = raf.length();
-			channel().write(new DefaultFileRegion(raf.getChannel(), 0, length));
-		} catch (Exception e) {
-			channel().writeAndFlush("ERR: " + e.getClass().getSimpleName() + ": " + e.getMessage() + '\n');
-			return;
-		} finally {
-			if (length < 0 && raf != null) {
-				IOUtils.closeQuietly(raf);
-			}
 		}
 	}
 
@@ -1006,7 +1065,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		// 关闭响应数据
 		this.closed = true;
 		IOUtils.closeQuietly(os);
-		file = null;
+		fileProps = null;
 		if (responseHeaders != null) {
 			responseHeaders.clear();
 			responseHeaders = null;

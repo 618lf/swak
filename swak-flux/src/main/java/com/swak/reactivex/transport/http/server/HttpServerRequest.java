@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.http.Subject;
+import com.swak.reactivex.transport.http.multipart.FileProps;
 import com.swak.reactivex.transport.http.multipart.MultipartFile;
 
 import io.netty.handler.codec.http.HttpMethod;
@@ -74,6 +75,13 @@ public interface HttpServerRequest extends NettyInbound, Closeable {
 	 * @return
 	 */
 	boolean isKeepAlive();
+	
+	/**
+	 * 是否修改， 针对静态资源
+	 * 
+	 * @return
+	 */
+	boolean ifModified(FileProps fileProps);
 
 	/**
 	 * 请求的参数
@@ -134,7 +142,7 @@ public interface HttpServerRequest extends NettyInbound, Closeable {
 	 * 
 	 * @return
 	 */
-	Iterator<String> getRequestHeaderNames();
+	Iterator<CharSequence> getRequestHeaderNames();
 
 	/**
 	 * 指定名称的header
@@ -142,7 +150,7 @@ public interface HttpServerRequest extends NettyInbound, Closeable {
 	 * @param name
 	 * @return
 	 */
-	String getRequestHeader(String name);
+	String getRequestHeader(CharSequence name);
 	
 	/**
 	 * 指定名称的header
@@ -150,7 +158,7 @@ public interface HttpServerRequest extends NettyInbound, Closeable {
 	 * @param name
 	 * @return
 	 */
-	Map<String, String> getRequestHeaders();
+	Map<CharSequence, String> getRequestHeaders();
 	
 	/**
 	 * 说的所有的cookie

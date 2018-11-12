@@ -123,7 +123,7 @@ public interface HttpServerResponse extends NettyOutbound, Closeable {
 	 * 设置浏览器缓存，默认是无缓存
 	 * @return
 	 */
-	HttpServerResponse cache(int maxAge);
+	HttpServerResponse cache(long maxAgeSeconds, long lastModifiedTime);
 
 	/**
 	 * 设置内容类型
@@ -132,6 +132,14 @@ public interface HttpServerResponse extends NettyOutbound, Closeable {
 	 * @return
 	 */
 	HttpServerResponse contentType(CharSequence contentType);
+	
+	/**
+	 * 设置跨域
+	 * 
+	 * @param contentType
+	 * @return
+	 */
+	HttpServerResponse allow(CharSequence contentType);
 
 	/**
 	 * 获得内容类型

@@ -21,6 +21,6 @@ import org.springframework.core.annotation.Order;
 @AutoConfigureAfter({SecurityAutoConfiguration.class})
 public class WebHandlerAutoConfiguration extends WebConfigurationSupport {
 	public WebHandlerAutoConfiguration() {
-		APP_LOGGER.debug("Loading Web Handler");
+		APP_LOGGER.debug("Loading Web Flux");
 	}
 }
