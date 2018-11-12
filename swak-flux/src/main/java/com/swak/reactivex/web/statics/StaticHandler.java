@@ -8,6 +8,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
+import com.swak.Constants;
 import com.swak.exception.BaseRuntimeException;
 import com.swak.reactivex.transport.http.HttpConst;
 import com.swak.reactivex.transport.http.multipart.FileProps;
@@ -16,6 +17,7 @@ import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.Handler;
 import com.swak.utils.Sets;
+import com.swak.utils.StringUtils;
 
 /**
  * 静态资源处理
@@ -30,9 +32,17 @@ public class StaticHandler implements Handler, InitializingBean {
 	private final Set<String> locationsValues = Sets.newHashSet("/static/", "/files/", "/META-INF/resources/");
 	private final Set<Resource> locations = Sets.newHashSet();
 	private long HTTP_CACHE_SECONDS = 86400 * 30; // 30 day
+	private String INDEX_PAGE = "index.html";
 
 	public StaticHandler(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
+	}
+	
+	/**
+	 * index
+	 */
+	public void setIndexPage(String indexPage) {
+		this.INDEX_PAGE = indexPage;
 	}
 
 	/**
@@ -57,6 +67,11 @@ public class StaticHandler implements Handler, InitializingBean {
 
 		// 查找的路径
 		String requestPath = request.getRequestURL();
+		
+		// 设置首页
+	    if (StringUtils.isBlank(requestPath) || requestPath.equals(Constants.URL_PATH_SEPARATE)) {
+	    	requestPath = INDEX_PAGE;
+	    }
 
 		// 处理请求
 		try {
