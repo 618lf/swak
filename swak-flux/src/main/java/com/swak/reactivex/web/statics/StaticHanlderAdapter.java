@@ -24,7 +24,7 @@ public class StaticHanlderAdapter implements HandlerAdapter{
 	}
 
 	/**
-	 * 处理请求
+	 * 处理请求， 可以启用单独的线程来处理静态资源
 	 */
 	@Override
 	public HandlerResult handle(HttpServerRequest request, HttpServerResponse response, Handler handler) {
