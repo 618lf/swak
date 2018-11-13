@@ -83,6 +83,7 @@ public class Settings {
 	private String configPath;
 	private String serverName;
 	private String serverPage;
+	private String serverVersion;
 
 	public String getBasePath() {
 		return basePath;
@@ -114,6 +115,14 @@ public class Settings {
 
 	public void setServerPage(String serverPage) {
 		this.serverPage = serverPage;
+	}
+
+	public String getServerVersion() {
+		return serverVersion;
+	}
+
+	public void setServerVersion(String serverVersion) {
+		this.serverVersion = serverVersion;
 	}
 
 	protected void handleOs() {
@@ -160,6 +169,7 @@ public class Settings {
 			is.close();
 			this.serverName = properties.getProperty("app.name");
 			this.serverPage = properties.getProperty("app.page");
+			this.serverVersion = properties.getProperty("app.version");
 		} catch (Exception e) {
 		}
 	}

@@ -93,6 +93,13 @@ public class Commands {
 				commands.get(name).exec();
 			}
 		}
+		
+		@Override
+		public void exec(Object param) {
+			if (commands.get(name) != null) {
+				commands.get(name).exec(param);
+			}
+		}
 
 		@Override
 		public String name() {
@@ -146,7 +153,7 @@ public class Commands {
 	 * @author lifeng
 	 */
 	public static enum Cmd {
-		init("初始化"), task("任务"), start("启动"), open("主页"), stop("停止"), exit("退出"),Dispose("释放"), Deactivated("非激活"), Deiconified(
+		init("初始化"), task("任务"), start("启动"), open("主页"), url("打开地址"), stop("停止"), exit("退出"),Dispose("释放"), Deactivated("非激活"), Deiconified(
 				"非最小化"), Iconified("最小化");
 
 		private String name;
@@ -170,6 +177,6 @@ public class Commands {
 	 * @author lifeng
 	 */
 	public static enum Sign {
-		starting, started, stoping, stoped, log, opened, closed, exit
+		starting, started, stoping, stoped, log, opened, closed, exit, browser
 	}
 }

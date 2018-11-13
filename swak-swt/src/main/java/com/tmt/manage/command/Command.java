@@ -20,6 +20,14 @@ public interface Command {
 	void exec();
 	
 	/**
+	 * 待参数执行
+	 * 
+	 * @param param
+	 */
+	default void exec(Object param) {
+	}
+	
+	/**
 	 * 名称
 	 * @return
 	 */

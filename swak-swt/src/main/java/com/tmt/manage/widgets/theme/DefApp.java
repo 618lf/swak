@@ -1,4 +1,4 @@
-package com.tmt.manage.widgets;
+package com.tmt.manage.widgets.theme;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -19,6 +19,10 @@ import com.tmt.manage.command.Commands.Cmd;
 import com.tmt.manage.command.Commands.Signal;
 import com.tmt.manage.command.Receiver;
 import com.tmt.manage.config.Settings;
+import com.tmt.manage.widgets.BaseFrame;
+import com.tmt.manage.widgets.CommandButton;
+import com.tmt.manage.widgets.ConfirmCommandButton;
+import com.tmt.manage.widgets.Progress;
 
 /**
  * 
@@ -26,7 +30,7 @@ import com.tmt.manage.config.Settings;
  * 
  * @author lifeng
  */
-public class MainFrame extends BaseFrame implements Receiver {
+public class DefApp extends BaseFrame implements Receiver {
 
 	private StyledText logText;
 	private Button startButton;
@@ -204,6 +208,10 @@ public class MainFrame extends BaseFrame implements Receiver {
 			openButton.setEnabled(true);
 			break;
 		case exit:
+			this.status = Status.exit;
+			this.close();
+			break;
+		case browser:
 			this.status = Status.exit;
 			this.close();
 			break;

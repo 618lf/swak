@@ -38,7 +38,7 @@ public abstract class BaseFrame {
 	protected Shell newShell() {
 		shell = new Shell(Display.getDefault(), getShellStyle());
 		Point point = getInitialSize();
-		
+
 		// 全屏
 		if (point == FULL_POINT) {
 			shell.setBounds(Display.getDefault().getPrimaryMonitor().getClientArea());
@@ -71,13 +71,14 @@ public abstract class BaseFrame {
 	public void close() {
 		shell.close();
 		shell.dispose();
+		ResourceManager.dispose();
 	}
 
 	/**
 	 * get Shell Style, Default
 	 */
 	protected int getShellStyle() {
-		return SWT.MIN | SWT.CLOSE | SWT.RESIZE;
+		return SWT.SHELL_TRIM;
 	}
 
 	/**
