@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
-import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -232,10 +231,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 
 				// type
 				this.mime(MimeType.getMimeType(fileProps.name()));
-				
+
 				// 304
 				this.status(HttpResponseStatus.NOT_MODIFIED);
-				
+
 				// 设置头部
 				this.header(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(fileProps.size()));
 
@@ -838,16 +837,20 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @return
 	 * @throws IOException
 	 */
-	private HttpResponse render() {
-		
+	private HttpResponse render() throws IOException {
+
 		// 返回的响应
 		HttpResponse response = null;
-		
+
 		// 根据是否需要设置内容返回不通的响应
-		if (this.fileProps != null) {
+		if (this.fileProps != null && this.fileProps.isFile()) {
 			response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
 		} else {
-			// content
+			// jar 中的资源只能作为二进制数据输出
+			if (this.fileProps != null) {
+				this.resetContent(-1);
+				this.content = this.fileProps.bytes();
+			}
 			content = this.content == null ? Unpooled.EMPTY_BUFFER : this.content;
 			response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, this.content);
 			int contentSize = content.readableBytes();
@@ -855,12 +858,12 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 				responseHeaders.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
 			}
 		}
-		
+
 		// 缓存控制
 		if (!responseHeaders.contains(HttpHeaderNames.CACHE_CONTROL) && status == HttpResponseStatus.OK) {
 			responseHeaders.set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
 		}
-		
+
 		// Public Headers
 		if (!responseHeaders.contains(HttpHeaderNames.CONTENT_TYPE)) {
 			responseHeaders.set(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
@@ -878,8 +881,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 
 	/**
 	 * 输出 只能执行一次 只能在 mono 的最后执行，不能中途调用
+	 * 
+	 * @throws IOException
 	 */
-	protected void out() {
+	protected void out() throws IOException {
 
 		// 只能执行一次
 		if (this.closed) {
@@ -896,7 +901,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		HttpResponse response = this.render();
 
 		// 直接输出文件
-		if (this.fileProps != null) {
+		if (this.fileProps != null && this.fileProps.isFile()) {
 			this.sendFile(response);
 		} else {
 			this.sendData(response);
@@ -937,31 +942,31 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			response.headers().set(HttpHeaderNames.CONTENT_LENGTH, fileProps.size());
 			// Write file type
 			response.headers().set(HttpHeaderNames.CONTENT_TYPE, MimeType.getMimeType(fileProps.name()));
-			
+
 			// Write the initial line and the header.
 			channel().write(response);
 
 			// send file
-			FileChannel channel = FileChannel.open(fileProps.file(), StandardOpenOption.READ);
-			
+			FileChannel channel = fileProps.channel();
+
 			// Write the content.
-			ChannelFuture sendFileFuture = channel()
-					.write(new DefaultFileRegion(channel, 0, fileProps.size()), channel().newProgressivePromise());
-			
+			ChannelFuture sendFileFuture = channel().write(new DefaultFileRegion(channel, 0, fileProps.size()),
+					channel().newProgressivePromise());
+
 			// Write the end marker.
 			ChannelFuture lastContentFuture = channel().writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
-			
+
 			// Listener Send Progressive
 			sendFileFuture.addListener(new ChannelProgressiveFutureListener() {
-				
+
 				@Override
 				public void operationProgressed(ChannelProgressiveFuture future, long progress, long total)
 						throws Exception {
 					if (total < 0) { // total unknown
 						logger.debug("{} Transfer progress: {}", future.channel(), progress);
-			        } else {
-			        	logger.debug("{} Transfer progress: {}/{}", future.channel(), progress, total);
-			        }
+					} else {
+						logger.debug("{} Transfer progress: {}/{}", future.channel(), progress, total);
+					}
 				}
 
 				@Override
@@ -969,12 +974,12 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 					try {
 						channel.close();
 						logger.debug("{} Transfer complete.", future.channel());
-			        } catch (Exception e) {
-			        	logger.error("FileChannel close error", e);
-			        }
+					} catch (Exception e) {
+						logger.error("FileChannel close error", e);
+					}
 				}
 			});
-			
+
 			// 如果不是 keepalive 则关闭
 			if (!isKeepAlive) {
 				lastContentFuture.addListener(ChannelFutureListener.CLOSE);
@@ -1001,17 +1006,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		}
 	}
 
-	/**
-	 * 输出错误信息
-	 * 
-	 * @param code
-	 * @throws UnsupportedEncodingException
-	 */
-	protected void out(String msg) {
-		this.buffer(msg);
-		this.out();
-	}
-
 	// ------------- 处理请求 ------------------
 	/**
 	 * 处理请求 请求可以分为两部分，请求解析部分，响应部分 通过 onSubscribe 来分开，所以可以在 onSubscribe
@@ -1036,6 +1030,8 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	public void onComplete() {
 		try {
 			this.out();
+		} catch (Exception e) {
+			this.getResponse().error().buffer(e);
 		} finally {
 			IOUtils.closeQuietly(this);
 		}

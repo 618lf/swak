@@ -1,9 +1,10 @@
 package com.swak.reactivex.web.statics;
 
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -26,6 +27,8 @@ import com.swak.utils.StringUtils;
  */
 public class StaticHandler implements Handler, InitializingBean {
 
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	// 目前只支持这三个目录,可以是jar或者jar外
 	private ResourceLoader resourceLoader;
 	private PathResourceResolver pathResourceResolver;
@@ -82,10 +85,10 @@ public class StaticHandler implements Handler, InitializingBean {
 
 			// 静态的文件
 			FileProps fileProps = null;
-
+			
 			// 资源存在, 处理输出
-			if (resource != null && (fileProps = FileProps.props(Paths.get(resource.getURI()))) != null) {
-
+			if (resource != null && (fileProps = FileProps.props(resource)) != null) {
+				
 				// 304 NotModified
 				if (HTTP_CACHE_SECONDS > 0 && request.ifModified(fileProps)) {
 					return;
@@ -101,6 +104,7 @@ public class StaticHandler implements Handler, InitializingBean {
 				return;
 			}
 		} catch (Exception e) {
+			logger.error("5:", e);
 		}
 
 		// 返回404错误， 让默认的错误处理器来处理

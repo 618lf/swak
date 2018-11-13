@@ -43,6 +43,7 @@
     <!-- 默认是错误级别 -->
 	<root level="ERROR">
 	    <appender-ref ref="STDOUT"/>
+	    <appender-ref ref="ERROR"/>
 	</root>
 	
 	<!-- 访问日志 -->

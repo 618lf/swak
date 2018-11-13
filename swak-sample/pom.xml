@@ -72,7 +72,7 @@
 				<version>${spring-boot.version}</version>
 				<configuration>
 					<fork>true</fork>
-					<mainClass>com.hituan.AppRunner</mainClass>
+					<mainClass>com.tmt.AppRunner</mainClass>
 				</configuration>
 				<executions>
                     <execution>

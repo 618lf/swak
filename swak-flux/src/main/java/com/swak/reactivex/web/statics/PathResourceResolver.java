@@ -51,8 +51,8 @@ public class PathResourceResolver {
 			if (resource.isReadable()) {
 				if (checkResource(resource, location)) {
 					return resource;
-				} else if (logger.isWarnEnabled()) {
-					logger.warn("Resource path \"" + resourcePath + "\" was successfully resolved " + "but resource \""
+				} else if (logger.isDebugEnabled()) {
+					logger.debug("Resource path \"" + resourcePath + "\" was successfully resolved " + "but resource \""
 							+ resource.getURL() + "\" is neither under the " + "current location \""
 							+ location.getURL());
 				}

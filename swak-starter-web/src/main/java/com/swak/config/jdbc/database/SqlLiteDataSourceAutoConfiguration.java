@@ -26,8 +26,9 @@ public class SqlLiteDataSourceAutoConfiguration {
 
 	/**
 	 * 构建 sqlLiteDataSource
-	 * 可配置在 resource:
-	 * @return
+	 * 可配置在 resource: 在资源目录下获取db文件，这种方式有一定的问题
+	 * 如果填写的是相对路径，则获取 jar 中当前目录下的当前目录。
+	 * 可以研究下spring 的 resource
 	 */
 	@Bean(destroyMethod = "")
 	public DataSource sqlLiteDataSource() {
