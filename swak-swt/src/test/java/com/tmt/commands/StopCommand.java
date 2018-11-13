@@ -13,7 +13,7 @@ public class StopCommand implements Command {
 
 	@Override
 	public void exec() {
-		this.sendSignal(Signal.newSignal(Sign.stoping));
+		this.sendSignal(Signal.newSignal(Sign.server_stoping));
 		this.log("系统停止中,请稍等...");
 		this.stopSystem();
 	}
@@ -27,7 +27,7 @@ public class StopCommand implements Command {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
 			}
-			this.sendSignal(Signal.newSignal(Sign.stoped));
+			this.sendSignal(Signal.newSignal(Sign.server_stoped));
 			this.log("系统已停止");
 			this.stoped();
 		});

@@ -5,8 +5,9 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.tmt.manage.command.impl.BrowserOpenedCommand;
+import com.tmt.manage.command.impl.CloseCommand;
 import com.tmt.manage.command.impl.InitCommand;
-import com.tmt.manage.command.impl.OpenCommand;
 
 /**
  * 管理命令
@@ -36,7 +37,8 @@ public class Commands {
 	 */
 	public static void registers() {
 		commands.put(Cmd.init, new InitCommand());
-		commands.put(Cmd.open, new OpenCommand());
+		commands.put(Cmd.open, new BrowserOpenedCommand());
+		commands.put(Cmd.close, new CloseCommand());
 	}
 
 	/**
@@ -93,7 +95,7 @@ public class Commands {
 				commands.get(name).exec();
 			}
 		}
-		
+
 		@Override
 		public void exec(Object param) {
 			if (commands.get(name) != null) {
@@ -153,8 +155,8 @@ public class Commands {
 	 * @author lifeng
 	 */
 	public static enum Cmd {
-		init("初始化"), task("任务"), start("启动"), open("主页"), url("打开地址"), stop("停止"), exit("退出"),Dispose("释放"), Deactivated("非激活"), Deiconified(
-				"非最小化"), Iconified("最小化");
+		init("初始化"), task("任务"), start("启动"), open("主页"), url("打开地址"), stop("停止"), close("关闭"), exit("退出"), Dispose(
+				"释放"), Deactivated("非激活"), Deiconified("非最小化"), Iconified("最小化");
 
 		private String name;
 
@@ -177,6 +179,13 @@ public class Commands {
 	 * @author lifeng
 	 */
 	public static enum Sign {
-		starting, started, stoping, stoped, log, opened, closed, exit, browser
+		/** Netty */
+		server_starting, server_started, server_stoping, server_stoped,
+		/** 日志 */
+		log,
+		/** 浏览器 */
+		browser_opened, browser_closed, browser,
+		/** SWT */
+		window_close, window_exit
 	}
 }

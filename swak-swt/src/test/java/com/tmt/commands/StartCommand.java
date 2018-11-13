@@ -16,7 +16,7 @@ public class StartCommand implements Command {
 	@Override
 	public void exec() {
 		this.log("系统启动中...");
-		this.sendSignal(Signal.newSignal(Sign.starting));
+		this.sendSignal(Signal.newSignal(Sign.server_starting));
 		this.startSystem();
 	}
 	
@@ -30,7 +30,7 @@ public class StartCommand implements Command {
 			} catch (InterruptedException e) {
 			}
 			this.log("系统启动成功");
-			this.sendSignal(Signal.newSignal(Sign.started));
+			this.sendSignal(Signal.newSignal(Sign.server_started));
 			this.log("系统2秒后将打开默认主页");
 			try {
 				Thread.sleep(2000);

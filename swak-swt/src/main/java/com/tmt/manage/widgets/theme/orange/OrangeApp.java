@@ -24,6 +24,7 @@ import com.tmt.manage.widgets.BaseFrame;
 import com.tmt.manage.widgets.ImageButton;
 import com.tmt.manage.widgets.Progress;
 import com.tmt.manage.widgets.ResourceManager;
+import com.tmt.manage.widgets.theme.Theme.Action;
 
 /**
  * 橙子主题的系统界面
@@ -32,7 +33,6 @@ import com.tmt.manage.widgets.ResourceManager;
  */
 public class OrangeApp extends BaseFrame implements Receiver {
 
-	private String shell_bg = "shell_bg.png";
 	private StackLayout contentStack;
 	private Composite content;
 	private Composite logComposite;
@@ -48,9 +48,10 @@ public class OrangeApp extends BaseFrame implements Receiver {
 
 	@Override
 	protected void createContents() {
+		OrangeTheme theme = (OrangeTheme) this.theme;
 		shell.setText(Settings.me().getServerName());
-		shell.setImage(ResourceManager.getImage(OrangeApp.class, "logo.png"));
-		shell.setBackgroundImage(ResourceManager.getImage(OrangeApp.class, shell_bg));
+		shell.setImage(theme.logo().image());
+		shell.setBackgroundImage(theme.background().image());
 		GridLayout gl_shell = new GridLayout(1, false);
 		gl_shell.marginWidth = 15;
 		gl_shell.horizontalSpacing = 0;
@@ -132,11 +133,15 @@ public class OrangeApp extends BaseFrame implements Receiver {
 		gl_tools.marginHeight = 0;
 		tools.setLayout(gl_tools);
 
+		// 主题
+		OrangeTheme theme = (OrangeTheme) this.theme;
+
 		// logo
 		GridData gd_logo = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		gd_logo.widthHint = height_tools;
 		gd_logo.heightHint = height_tools;
-		ImageButton.builder(tools).image(ResourceManager.getImage(OrangeApp.class, "logo.png")).layout(gd_logo).build();
+		ImageButton.builder(tools).image(theme.logo().image()).hover(theme.logo().imageOn()).layout(gd_logo)
+				.click(theme.logo().click()).build();
 
 		// 子部快捷菜单
 		Composite childTools = new Composite(tools, SWT.TRANSPARENCY_ALPHA);
@@ -147,67 +152,24 @@ public class OrangeApp extends BaseFrame implements Receiver {
 
 		// 按钮的大小
 		int height_button = 64;
+		int size = theme.actions().size();
 
 		// 子部快捷菜单 - 布局
-		GridLayout gl_childTools = new GridLayout(6, false);
+		GridLayout gl_childTools = new GridLayout(size, false);
 		gl_childTools.horizontalSpacing = 10;
 		gl_childTools.marginWidth = 40;
 		gl_childTools.marginHeight = 8;
 		childTools.setLayout(gl_childTools);
 
-		// index
-		GridData gd_index = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-		gd_index.widthHint = height_button;
-		gd_index.heightHint = height_button;
-		ImageButton.builder(childTools).image(ResourceManager.getImage(OrangeApp.class, "首页.png"))
-				.hover(ResourceManager.getImage(OrangeApp.class, "首页-on.png")).layout(gd_index).click(() -> {
-					Commands.nameCommand(Cmd.url).exec("b1");
-				}).build();
-
-		// order
-		GridData gd_order = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-		gd_order.widthHint = height_button;
-		gd_order.heightHint = height_button;
-		ImageButton.builder(childTools).image(ResourceManager.getImage(OrangeApp.class, "综合.png"))
-				.hover(ResourceManager.getImage(OrangeApp.class, "综合-on.png")).layout(gd_order).click(() -> {
-					Commands.nameCommand(Cmd.url).exec("b2");
-				}).build();
-
-		// member
-		GridData gd_member = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-		gd_member.widthHint = height_button;
-		gd_member.heightHint = height_button;
-		ImageButton.builder(childTools).image(ResourceManager.getImage(OrangeApp.class, "个人.png"))
-				.hover(ResourceManager.getImage(OrangeApp.class, "个人-on.png")).layout(gd_member).click(() -> {
-					Commands.nameCommand(Cmd.url).exec("b3");
-				}).build();
-
-		// notice
-		GridData gd_notice = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-		gd_notice.widthHint = height_button;
-		gd_notice.heightHint = height_button;
-		ImageButton.builder(childTools).image(ResourceManager.getImage(OrangeApp.class, "提醒.png"))
-				.hover(ResourceManager.getImage(OrangeApp.class, "提醒-on.png")).layout(gd_notice).click(() -> {
-					Commands.nameCommand(Cmd.url).exec("b4");
-				}).build();
-
-		// settings
-		GridData gd_settings = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-		gd_settings.widthHint = height_button;
-		gd_settings.heightHint = height_button;
-		ImageButton.builder(childTools).image(ResourceManager.getImage(OrangeApp.class, "设置.png"))
-				.hover(ResourceManager.getImage(OrangeApp.class, "设置-on.png")).layout(gd_settings).click(() -> {
-					Commands.nameCommand(Cmd.url).exec("b5");
-				}).build();
-
-		// exit
-		GridData gd_exit = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-		gd_exit.widthHint = height_button;
-		gd_exit.heightHint = height_button;
-		ImageButton.builder(childTools).image(ResourceManager.getImage(OrangeApp.class, "导航.png"))
-				.hover(ResourceManager.getImage(OrangeApp.class, "导航-on.png")).layout(gd_exit).click(() -> {
-					Commands.nameCommand(Cmd.url).exec("exit");
-				}).build();
+		// 按钮
+		for (int i = 0; i < size; i++) {
+			Action action = theme.actions().get(i);
+			GridData gd_index = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+			gd_index.widthHint = height_button;
+			gd_index.heightHint = height_button;
+			ImageButton.builder(childTools).image(action.image()).hover(action.imageOn()).layout(gd_index)
+					.click(action.click()).build();
+		}
 	}
 
 	// 控制按钮的配置
@@ -364,27 +326,30 @@ public class OrangeApp extends BaseFrame implements Receiver {
 			return;
 		}
 		switch (signal.getSign()) {
-		case starting:
+		case server_starting:
 			this.showLog();
 			progress.start();
 			break;
-		case started:
+		case server_started:
 			this.status = Status.start;
 			progress.stop();
 			break;
-		case stoping:
+		case server_stoping:
 			this.showLog();
 			progress.start();
 			break;
-		case stoped:
+		case server_stoped:
 			this.status = Status.stop;
 			progress.stop();
 			break;
-		case opened:
+		case browser_opened:
 			break;
-		case closed:
+		case browser_closed:
 			break;
-		case exit:
+		case window_close:
+			shell.close();
+			break;
+		case window_exit:
 			this.status = Status.exit;
 			this.close();
 			break;

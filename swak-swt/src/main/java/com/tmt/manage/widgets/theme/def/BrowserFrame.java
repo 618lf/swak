@@ -1,4 +1,4 @@
-package com.tmt.manage.widgets;
+package com.tmt.manage.widgets.theme.def;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -10,6 +10,7 @@ import com.tmt.manage.command.Commands;
 import com.tmt.manage.command.Commands.Sign;
 import com.tmt.manage.command.Commands.Signal;
 import com.tmt.manage.config.Settings;
+import com.tmt.manage.widgets.BaseFrame;
 
 /**
  * 浏览器窗口
@@ -40,7 +41,7 @@ public class BrowserFrame extends BaseFrame{
 	@Override
 	protected void configureShell() {
 		shell.addDisposeListener(e -> {
-			Commands.sendSignal(Signal.newSignal(Sign.closed));
+			Commands.sendSignal(Signal.newSignal(Sign.browser_closed));
 		});
 	}
 }

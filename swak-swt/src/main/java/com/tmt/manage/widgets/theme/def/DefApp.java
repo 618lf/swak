@@ -1,4 +1,4 @@
-package com.tmt.manage.widgets.theme;
+package com.tmt.manage.widgets.theme.def;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -179,35 +179,38 @@ public class DefApp extends BaseFrame implements Receiver {
 			return;
 		}
 		switch (signal.getSign()) {
-		case starting:
+		case server_starting:
 			startButton.setEnabled(false);
 			stopButton.setEnabled(false);
 			progress.start();
 			break;
-		case started:
+		case server_started:
 			this.status = Status.start;
 			startButton.setEnabled(false);
 			stopButton.setEnabled(true);
 			progress.stop();
 			break;
-		case stoping:
+		case server_stoping:
 			startButton.setEnabled(false);
 			stopButton.setEnabled(false);
 			progress.start();
 			break;
-		case stoped:
+		case server_stoped:
 			this.status = Status.stop;
 			stopButton.setEnabled(false);
 			startButton.setEnabled(true);
 			progress.stop();
 			break;
-		case opened:
+		case browser_opened:
 			openButton.setEnabled(false);
 			break;
-		case closed:
+		case browser_closed:
 			openButton.setEnabled(true);
 			break;
-		case exit:
+		case window_close:
+			shell.close();
+			break;
+		case window_exit:
 			this.status = Status.exit;
 			this.close();
 			break;

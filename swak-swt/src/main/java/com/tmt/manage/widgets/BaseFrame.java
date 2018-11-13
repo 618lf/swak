@@ -5,6 +5,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import com.tmt.manage.widgets.theme.Theme;
+
 /**
  * 基本的frame
  * 
@@ -12,9 +14,17 @@ import org.eclipse.swt.widgets.Shell;
  */
 public abstract class BaseFrame {
 
+	protected Theme theme;
 	protected Shell shell;
 	protected Point FULL_POINT = new Point(-1, -1);
 
+	/**
+	 * Configure the theme.
+	 */
+	public void setTheme(Theme theme) {
+		this.theme = theme;
+	}
+	
 	/**
 	 * open the window
 	 */
@@ -89,6 +99,7 @@ public abstract class BaseFrame {
 	protected Point getInitialSize() {
 		return FULL_POINT;
 	}
+	
 
 	/**
 	 * Create contents of the window.

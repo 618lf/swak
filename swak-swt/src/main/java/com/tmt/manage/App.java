@@ -4,6 +4,8 @@ import org.eclipse.swt.widgets.Display;
 
 import com.tmt.manage.config.Settings;
 import com.tmt.manage.widgets.BaseFrame;
+import com.tmt.manage.widgets.theme.Theme;
+import com.tmt.manage.widgets.theme.def.DefTheme;
 
 /**
  * 整个项目
@@ -24,11 +26,14 @@ public abstract class App {
 
 		// 加载主题
 		try {
-			String windowClass = "com.tmt.manage.widgets.theme." + theme.getPath();
+			String windowClass = "com.tmt.manage.widgets.theme." + theme.path();
 			window = (BaseFrame) (App.class.getClassLoader().loadClass(windowClass).newInstance());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		// 设置主题
+		window.setTheme(theme);
 
 		// 打开界面
 		window.open();
@@ -65,30 +70,6 @@ public abstract class App {
 	 * @return
 	 */
 	protected Theme theme() {
-		return Theme.Def;
-	}
-
-	/**
-	 * 支持的主题
-	 * 
-	 * @author lifeng
-	 */
-	public static enum Theme {
-		
-		Def("DefApp"), Orange("orange.OrangeApp");
-
-		private String path;
-
-		private Theme(String path) {
-			this.path = path;
-		}
-
-		public String getPath() {
-			return path;
-		}
-
-		public void setPath(String path) {
-			this.path = path;
-		}
+		return new DefTheme();
 	}
 }

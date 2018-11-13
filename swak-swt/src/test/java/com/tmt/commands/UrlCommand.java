@@ -1,8 +1,6 @@
 package com.tmt.commands;
 
 import com.tmt.manage.command.Command;
-import com.tmt.manage.command.Commands;
-import com.tmt.manage.command.Commands.Cmd;
 import com.tmt.manage.command.Commands.Sign;
 import com.tmt.manage.command.Commands.Signal;
 
@@ -30,19 +28,14 @@ public class UrlCommand implements Command {
 		String url = "http://www.baidu.com";
 		if ("index".equals(cmd)) {
 			url = "https://www.baidu.com";
-		} else if ("b1".equals(cmd)) {
+		} else if ("member".equals(cmd)) {
 			url = "https://www.jd.com";
-		} else if ("b2".equals(cmd)) {
+		} else if ("order".equals(cmd)) {
 			url = "https://www.taobao.com";
-		} else if ("b3".equals(cmd)) {
+		} else if ("notice".equals(cmd)) {
 			url = "https://www.2345.com";
-		} else if ("b4".equals(cmd)) {
-			url = "https://v.6.cn/?src=z9weij1204";
-		} else if ("b5".equals(cmd)) {
+		} else if ("settings".equals(cmd)) {
 			url = "https://dianying.2345.com/";
-		} else if ("exit".equals(cmd)) {
-			Commands.nameCommand(Cmd.exit).exec();
-			return;
 		}
         
 		// 发送打开页面的信号

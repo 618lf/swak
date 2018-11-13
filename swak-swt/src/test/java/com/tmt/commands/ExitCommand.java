@@ -12,6 +12,6 @@ public class ExitCommand extends StopCommand {
 
 	@Override
 	protected void stoped() {
-		this.sendSignal(Signal.newSignal(Sign.exit));
+		this.sendSignal(Signal.newSignal(Sign.window_exit));
 	}
 }
