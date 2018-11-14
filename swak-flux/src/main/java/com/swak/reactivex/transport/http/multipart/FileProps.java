@@ -141,6 +141,7 @@ public class FileProps {
 				sink.success(this);
 			} else {
 				File out = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+				out.createNewFile();
 				ReadableByteChannel src = resource.readableChannel();
 				AsynchronousFileChannel dist = AsynchronousFileChannel.open(out.toPath(), StandardOpenOption.WRITE);
 				ByteBuffer bytebuf = ByteBuffer.allocate(1024);
@@ -164,22 +165,24 @@ public class FileProps {
 			sink.error(e);
 		}
 	}
-	
+
 	/**
 	 * 打开链接
+	 * 
 	 * @return
 	 */
 	public Mono<FileProps> open() {
-		return Mono.create((sink) ->{
+		return Mono.create((sink) -> {
 			this.resourceSink(sink);
 		});
 	}
 
 	/**
 	 * 创建 FileProps
+	 * 
 	 * @param resource
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static FileProps props(Resource resource) throws IOException {
 		return new FileProps(resource);
