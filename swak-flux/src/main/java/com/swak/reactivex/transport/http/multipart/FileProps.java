@@ -1,16 +1,23 @@
 package com.swak.reactivex.transport.http.multipart;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.UUID;
 
 import org.springframework.core.io.Resource;
 
-import io.netty.buffer.ByteBuf;
+import com.swak.utils.FileUtils;
+import com.swak.utils.IOUtils;
+
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoSink;
 
 /**
  * 
@@ -24,9 +31,22 @@ public class FileProps {
 	private final long size;
 	private final String name;
 	private final Resource resource;
+	private final FileChannel channel;
+	private File deleteFile;
 
-	private FileProps(Resource resource) throws IOException {
+	/**
+	 * 创建 FileProps
+	 */
+	private FileProps(Resource resource, FileChannel channel) throws IOException {
+		this(resource, channel, null);
+	}
+
+	/**
+	 * 创建 FileProps
+	 */
+	private FileProps(Resource resource, FileChannel channel, File deleteFile) throws IOException {
 		this.resource = resource;
+		this.channel = channel;
 		this.lastModifiedTime = resource.lastModified();
 		this.size = resource.contentLength();
 		this.name = resource.getFilename();
@@ -39,15 +59,6 @@ public class FileProps {
 	 */
 	public Resource resource() {
 		return resource;
-	}
-
-	/**
-	 * 是否文件 （jar 中的只能流输出）
-	 * 
-	 * @return
-	 */
-	public boolean isFile() {
-		return resource.isFile();
 	}
 
 	/**
@@ -77,23 +88,88 @@ public class FileProps {
 	 * @return
 	 */
 	public FileChannel channel() throws IOException {
-		Path path = Paths.get(this.resource.getURI());
-		return FileChannel.open(path, StandardOpenOption.READ);
+		return this.channel;
 	}
 
 	/**
-	 * jar 中执行二进制输出 研究下 nio 怎么读取流
+	 * 释放资源
 	 * 
-	 * @return
+	 * @throws IOException
 	 */
-	public ByteBuf bytes() throws IOException {
-		ReadableByteChannel channel = this.resource.readableChannel();
-		ByteBuffer bytebuf = ByteBuffer.allocate(1024);
-		int read;
-		if ((read = channel.read(bytebuf)) >= 0) {
-
+	public void close() throws IOException {
+		if (this.channel != null) {
+			this.channel.close();
 		}
-		return null;
+		if (this.deleteFile != null) {
+			this.deleteFile.delete();
+		}
+	}
+
+	// /**
+	// * jar 中执行二进制输出 研究下 nio 怎么读取流
+	// *
+	// * @return
+	// */
+	// public ByteBuf bytes() throws IOException {
+	//
+	// // 分配的缓冲区
+	// ByteBuf byteBuf = Unpooled.buffer();
+	//
+	// // 读取数据
+	// ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	// ReadableByteChannel channel = this.resource.readableChannel();
+	// ByteBuffer bytebuf = ByteBuffer.allocate(1024);
+	// while (channel.read(bytebuf) >= 0) {
+	// bytebuf.flip();
+	// baos.write(bytebuf.array(), 0, bytebuf.limit());
+	// bytebuf.clear();
+	// }
+	//
+	// // 设置缓冲数据
+	// byteBuf.writeBytes(baos.toByteArray());
+	//
+	// // 关闭资源
+	// baos.close();
+	// bytebuf.clear();
+	//
+	// // 返回数据
+	// return byteBuf;
+	// }
+
+	/**
+	 * 创建文件流
+	 * 
+	 * @param sink
+	 */
+	private static void resourceSink(Resource resource, MonoSink<FileProps> sink) {
+		try {
+			if (resource.isFile()) {
+				Path path = Paths.get(resource.getURI());
+				FileChannel channel = FileChannel.open(path, StandardOpenOption.READ);
+				sink.success(new FileProps(resource, channel));
+			} else {
+				File out = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+				ReadableByteChannel src = resource.readableChannel();
+				AsynchronousFileChannel dist = AsynchronousFileChannel.open(out.toPath(), StandardOpenOption.WRITE);
+				ByteBuffer bytebuf = ByteBuffer.allocate(1024);
+				FileUtils.asyncWrite(src, dist, bytebuf, () -> {
+					try {
+						Path path = out.toPath();
+						FileChannel channel = FileChannel.open(path, StandardOpenOption.READ);
+						sink.success(new FileProps(resource, channel, out));
+					} catch (Exception e) {
+						out.delete();
+						sink.error(e);
+					} finally {
+						IOUtils.closeQuietly(src);
+						IOUtils.closeQuietly(dist);
+						bytebuf.clear();
+					}
+				});
+			}
+		} catch (Exception e) {
+			sink.error(e);
+		}
 	}
 
 	/**
@@ -101,7 +177,9 @@ public class FileProps {
 	 * @return
 	 * @throws IOException
 	 */
-	public static FileProps props(Resource resource) throws IOException {
-		return new FileProps(resource);
+	public static Mono<FileProps> props(Resource resource) {
+		return Mono.create((sink) -> {
+			resourceSink(resource, sink);
+		});
 	}
 }

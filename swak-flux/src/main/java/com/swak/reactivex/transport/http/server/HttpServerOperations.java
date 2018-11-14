@@ -843,14 +843,9 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		HttpResponse response = null;
 
 		// 根据是否需要设置内容返回不通的响应
-		if (this.fileProps != null && this.fileProps.isFile()) {
+		if (this.fileProps != null) {
 			response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
 		} else {
-			// jar 中的资源只能作为二进制数据输出
-			if (this.fileProps != null) {
-				this.resetContent(-1);
-				this.content = this.fileProps.bytes();
-			}
 			content = this.content == null ? Unpooled.EMPTY_BUFFER : this.content;
 			response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, this.content);
 			int contentSize = content.readableBytes();
@@ -901,7 +896,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		HttpResponse response = this.render();
 
 		// 直接输出文件
-		if (this.fileProps != null && this.fileProps.isFile()) {
+		if (this.fileProps != null) {
 			this.sendFile(response);
 		} else {
 			this.sendData(response);
@@ -972,7 +967,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 				@Override
 				public void operationComplete(ChannelProgressiveFuture future) throws Exception {
 					try {
-						channel.close();
+						fileProps.close();
 						logger.debug("{} Transfer complete.", future.channel());
 					} catch (Exception e) {
 						logger.error("FileChannel close error", e);
