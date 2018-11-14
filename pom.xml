@@ -29,6 +29,7 @@
 		<module>swak-qrcode</module>
 		<module>swak-quartz</module>
 		<module>swak-swt</module>
+		<module>swak-package</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.1.0.RELEASE</spring-boot.version>
