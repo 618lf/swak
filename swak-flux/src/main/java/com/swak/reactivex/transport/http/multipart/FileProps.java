@@ -140,7 +140,7 @@ public class FileProps {
 				this.channel = FileChannel.open(path, StandardOpenOption.READ);
 				sink.success(this);
 			} else {
-				File out = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+				File out = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".tmp");
 				out.createNewFile();
 				ReadableByteChannel src = resource.readableChannel();
 				AsynchronousFileChannel dist = AsynchronousFileChannel.open(out.toPath(), StandardOpenOption.WRITE);
