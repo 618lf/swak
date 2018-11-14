@@ -20,15 +20,15 @@ public class AppBooter implements ApplicationListener<ContextRefreshedEvent> {
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		ApplicationContext context = event.getApplicationContext();
-
-		// 启动项
-		APP_LOGGER.debug("========= system startup loading ====================");
 		String[] boots = context.getBeanNamesForType(Boot.class);
-		Arrays.stream(boots).forEach(s -> {
-			Boot boot = context.getBean(s, Boot.class);
-			APP_LOGGER.debug("Async loading - {}", boot.describe());
-			boot.start();
-		});
-		APP_LOGGER.debug("========= system startup loaded ====================");
+		if (boots != null && boots.length > 0) {
+			APP_LOGGER.debug("========= system startup loading ====================");
+			Arrays.stream(boots).forEach(s -> {
+				Boot boot = context.getBean(s, Boot.class);
+				APP_LOGGER.debug("Async loading - {}", boot.describe());
+				boot.start();
+			});
+			APP_LOGGER.debug("========= system startup loaded ====================");
+		}
 	}
 }

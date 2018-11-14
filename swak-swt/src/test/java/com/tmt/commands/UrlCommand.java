@@ -19,9 +19,6 @@ public class UrlCommand implements Command {
 		this.exec("index");
 	}
 
-	/**
-	 * 
-	 */
 	@Override
 	public void exec(Object param) {
 		String cmd = param != null ? param.toString() : "index";
