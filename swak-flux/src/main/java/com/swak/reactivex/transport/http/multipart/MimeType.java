@@ -51,8 +51,8 @@ public interface MimeType {
 			put("cur", "image/x-icon");
 			put("jng", "image/x-jng");
 
-			put("js", "application/javascript");
-			put("json", "application/json");
+			put("js", "application/javascript; charset=UTF-8");
+			put("json", "application/json; charset=UTF-8");
 
 			put("webapp", "application/x-web-app-manifest+json");
 			put("manifest", "text/cache-manifest");
@@ -87,10 +87,10 @@ public interface MimeType {
 			put("wmv", "video/x-ms-wmv");
 			put("avi", "video/x-msvideo");
 
-			put("atom", "application/xml");
-			put("rdf", "application/xml");
-			put("rss", "application/xml");
-			put("xml", "application/xml");
+			put("atom", "application/xml; charset=UTF-8");
+			put("rdf", "application/xml; charset=UTF-8");
+			put("rss", "application/xml; charset=UTF-8");
+			put("xml", "application/xml; charset=UTF-8");
 
 			put("woff", "application/font-woff");
 			put("woff2", "application/font-woff2");
@@ -160,13 +160,13 @@ public interface MimeType {
 
 			put("safariextz", "application/octet-stream");
 
-			put("css", "text/css");
-			put("html", "text/html");
-			put("htm", "text/html");
-			put("shtml", "text/html");
+			put("css", "text/css; charset=UTF-8");
+			put("html", "text/html; charset=UTF-8");
+			put("htm", "text/html; charset=UTF-8");
+			put("shtml", "text/html; charset=UTF-8");
 
 			put("mml", "text/mathml");
-			put("txt", "text/plain");
+			put("txt", "text/plain; charset=UTF-8");
 			put("jad", "text/vnd.sun.j2me.app-descriptor");
 			put("wml", "text/vnd.wap.wml");
 			put("vtt", "text/vtt");

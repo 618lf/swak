@@ -223,7 +223,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 */
 	@Override
 	public boolean ifModified(FileProps fileProps) {
-		String ifModifiedSince = this.getRequestHeader(HttpConst.IF_MODIFIED_SINCE.toString());
+		String ifModifiedSince = this.getRequestHeader(HttpHeaderNames.IF_MODIFIED_SINCE.toString());
 		if (StringUtils.isNotBlank(ifModifiedSince)) {
 			Date ifModifiedSinceDate = GmtDateKit.format(ifModifiedSince);
 			long ifModifiedSinceDateSeconds = ifModifiedSinceDate.getTime() / 1000;
