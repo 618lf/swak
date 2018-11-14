@@ -26,14 +26,20 @@ public class Settings {
 		return context;
 	}
 
+	/**
+	 * 默认取这个文件的路径： application.properties
+	 * 
+	 * @param args
+	 * @return
+	 */
 	public static Settings intSettings(String args[]) {
 		if (context == null) {
-			String mainClass = args != null && args.length > 0 ? args[0] : "com/tmt/manage/App.class";
+			String mainClass = args != null && args.length > 0 ? args[0] : "application.properties";
 			context = Settings.init(mainClass);
 		}
 		return context;
 	}
-	
+
 	/**
 	 * 初始化
 	 * 
@@ -48,21 +54,25 @@ public class Settings {
 			String classPath = classPathUrl.getPath();
 			classPath = URLDecoder.decode(classPath, "UTF-8");
 			String basePath = "", configPath = "";
-			
+
 			// 结合 springboot 一起发布
-			if (classPath.indexOf("/BOOT-INF/") !=-1) {
+			if (classPath.indexOf("/BOOT-INF/") != -1) {
 				basePath = classPath.substring(classPath.indexOf("file:/") + 6, classPath.indexOf("!"));
 				basePath = basePath.substring(0, basePath.lastIndexOf("/"));
 				configPath = basePath + "/config/";
-			} 
+			}
 			// 开发环境中,作为jar包发布
-			else if(classPath.indexOf("!") != -1) {
-				basePath = classPath.substring(classPath.indexOf("file:/")+ 6, classPath.indexOf("!"));
+			else if (classPath.indexOf("!") != -1) {
+				basePath = classPath.substring(classPath.indexOf("file:/") + 6, classPath.indexOf("!"));
+				basePath = basePath.substring(0, basePath.lastIndexOf("/"));
 				configPath = basePath + "/config/";
-			} 
+			}
 			// 开发环境中
 			else {
-				basePath = classPath.substring(0, classPath.indexOf(mainClass));
+				basePath = classPath;
+				if (mainClass != null && !"".equals(mainClass)) {
+					basePath = basePath.substring(0, basePath.indexOf(mainClass));
+				}
 				configPath = basePath;
 			}
 			Settings settings = new Settings();
