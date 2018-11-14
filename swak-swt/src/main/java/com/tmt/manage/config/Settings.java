@@ -33,7 +33,7 @@ public class Settings {
 		}
 		return context;
 	}
-
+	
 	/**
 	 * 初始化
 	 * 
