@@ -47,10 +47,21 @@ public class HttpServerProperties {
 	private boolean deleteOnExitTemporaryFile = true;
 	private String baseDirectory = null;
 	
+	// 静态资源
+	private String[] statics;
+	
 	// 授权
 	private String keyStorePath; // keyStore 的路径
 	private String keyStorePass = "secret"; // keyStore 的密码
 	private String jwtTokenName = "X-Token";
+
+	public String[] getStatics() {
+		return statics;
+	}
+
+	public void setStatics(String[] statics) {
+		this.statics = statics;
+	}
 
 	public String getKeyStorePath() {
 		return keyStorePath;

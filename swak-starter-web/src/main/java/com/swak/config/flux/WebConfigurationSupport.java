@@ -15,6 +15,7 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.lang.Nullable;
 
+import com.swak.exception.BaseRuntimeException;
 import com.swak.reactivex.handler.DefaultWebExceptionHandler;
 import com.swak.reactivex.handler.ExceptionHandlingWebHandler;
 import com.swak.reactivex.handler.FilteringWebHandler;
@@ -22,6 +23,7 @@ import com.swak.reactivex.handler.HttpWebHandlerAdapter;
 import com.swak.reactivex.handler.WebExceptionHandler;
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.handler.WebHandler;
+import com.swak.reactivex.transport.http.server.HttpServerProperties;
 import com.swak.reactivex.web.DispatcherHandler;
 import com.swak.reactivex.web.HandlerAdapter;
 import com.swak.reactivex.web.HandlerMapping;
@@ -40,6 +42,7 @@ import com.swak.reactivex.web.result.RequestBodyHandlerResult;
 import com.swak.reactivex.web.statics.StaticHandler;
 import com.swak.reactivex.web.statics.StaticHandlerMapping;
 import com.swak.reactivex.web.statics.StaticHanlderAdapter;
+import com.swak.utils.Lists;
 
 /**
  * web 相关的服务配置
@@ -102,12 +105,19 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 
 	// ---------- staticMapping ---------
 	@Bean
-	public StaticHandlerMapping staticHandlerMapping() {
+	public StaticHandlerMapping staticHandlerMapping(HttpServerProperties properties) {
 		ResourceLoader resourceLoader = this.applicationContext;
 		StaticHandler staticHandler = new StaticHandler(resourceLoader);
 		try {
+
+			// 注册静态资源
+			if (properties.getStatics() != null && properties.getStatics().length > 0) {
+				staticHandler.setLocationValues(Lists.newArrayList(properties.getStatics()));
+			}
+
 			staticHandler.afterPropertiesSet();
 		} catch (Exception e) {
+			throw new BaseRuntimeException(e);
 		}
 		StaticHandlerMapping mapping = new StaticHandlerMapping();
 		mapping.setStaticHandler(staticHandler);

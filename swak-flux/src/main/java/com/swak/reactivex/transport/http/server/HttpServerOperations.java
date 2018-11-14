@@ -40,8 +40,6 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelProgressiveFuture;
-import io.netty.channel.ChannelProgressiveFutureListener;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
@@ -81,7 +79,6 @@ import reactor.core.publisher.Mono;
 public class HttpServerOperations extends ChannelOperations<HttpServerRequest, HttpServerResponse>
 		implements HttpServerRequest, HttpServerResponse {
 
-	// Disk if size exceed
 	private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
 
 	// 初始化
@@ -527,7 +524,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	private HttpHeaders responseHeaders = new DefaultHttpHeaders(false);
 	private Set<Cookie> responseCookies = new HashSet<>(4);
 	private HttpResponseStatus status = HttpResponseStatus.OK;
-	private boolean closed;
 
 	/**
 	 * 获得请求
@@ -831,13 +827,34 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		return this;
 	}
 
+	// ------------- 发送数据 ------------------
+
+	/**
+	 * 输出 只能执行一次 只能在 mono 的最后执行，不能中途调用
+	 * 
+	 * @throws IOException
+	 */
+	protected void send() {
+		if (!this.channel().isActive()) {
+			ReferenceCountUtil.release(request);
+			IOUtils.closeQuietly(this);
+			return;
+		}
+		HttpResponse response = this.render();
+		if (this.fileProps != null) {
+			this.sendFile(response);
+		} else {
+			this.sendData(response);
+		}
+	}
+
 	/**
 	 * 只能调用一次
 	 * 
 	 * @return
 	 * @throws IOException
 	 */
-	private HttpResponse render() throws IOException {
+	protected HttpResponse render() {
 
 		// 返回的响应
 		HttpResponse response = null;
@@ -852,6 +869,11 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			if (contentSize > 0) {
 				responseHeaders.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
 			}
+		}
+		
+		// 长链接
+		if (isKeepAlive()) {
+			responseHeaders.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
 		}
 
 		// 缓存控制
@@ -875,113 +897,18 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
-	 * 输出 只能执行一次 只能在 mono 的最后执行，不能中途调用
-	 * 
-	 * @throws IOException
-	 */
-	protected void out() throws IOException {
-
-		// 只能执行一次
-		if (this.closed) {
-			return;
-		}
-
-		// 已经关闭 -- 直接释放资源即可
-		if (!this.channel().isActive()) {
-			ReferenceCountUtil.release(request);
-			return;
-		}
-
-		// render response
-		HttpResponse response = this.render();
-
-		// 直接输出文件
-		if (this.fileProps != null) {
-			this.sendFile(response);
-		} else {
-			this.sendData(response);
-		}
-	}
-
-	/**
 	 * 输出数据
 	 * 
 	 * @param response
 	 */
 	protected void sendData(HttpResponse response) {
-		// commit session
 		Session session = this.getSubject().getSession();
 		if (session != null) {
 			session.onCommit().doOnSuccessOrError((s, e) -> {
-				this.write(response);
+				this._sendData(response);
 			});
 		} else {
-			this.write(response);
-		}
-	}
-
-	/**
-	 * 输出 file -- 输出文件
-	 * 
-	 * 可以 ChunkedFile https://blog.csdn.net/kenhins/article/details/45486301
-	 */
-	protected void sendFile(HttpResponse response) {
-		try {
-			// 是否 keeplive
-			boolean isKeepAlive = isKeepAlive();
-			if (!!isKeepAlive) {
-				response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-			}
-
-			// Write file size
-			response.headers().set(HttpHeaderNames.CONTENT_LENGTH, fileProps.size());
-			// Write file type
-			response.headers().set(HttpHeaderNames.CONTENT_TYPE, MimeType.getMimeType(fileProps.name()));
-
-			// Write the initial line and the header.
-			channel().write(response);
-
-			// send file
-			FileChannel channel = fileProps.channel();
-
-			// Write the content.
-			ChannelFuture sendFileFuture = channel().write(new DefaultFileRegion(channel, 0, fileProps.size()),
-					channel().newProgressivePromise());
-
-			// Write the end marker.
-			ChannelFuture lastContentFuture = channel().writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
-
-			// Listener Send Progressive
-			sendFileFuture.addListener(new ChannelProgressiveFutureListener() {
-
-				@Override
-				public void operationProgressed(ChannelProgressiveFuture future, long progress, long total)
-						throws Exception {
-					if (total < 0) { // total unknown
-						logger.debug("{} Transfer progress: {}", future.channel(), progress);
-					} else {
-						logger.debug("{} Transfer progress: {}/{}", future.channel(), progress, total);
-					}
-				}
-
-				@Override
-				public void operationComplete(ChannelProgressiveFuture future) throws Exception {
-					try {
-						fileProps.close();
-						logger.debug("{} Transfer complete.", future.channel());
-					} catch (Exception e) {
-						logger.error("FileChannel close error", e);
-					}
-				}
-			});
-
-			// 如果不是 keepalive 则关闭
-			if (!isKeepAlive) {
-				lastContentFuture.addListener(ChannelFutureListener.CLOSE);
-			}
-		} catch (Exception e) {
-			ChannelFuture future = channel().writeAndFlush("ERR: Send File Error." + '\n');
-			future.addListener(ChannelFutureListener.CLOSE);
+			this._sendData(response);
 		}
 	}
 
@@ -990,15 +917,44 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * 
 	 * @param response
 	 */
-	protected void write(HttpResponse response) {
-		boolean isKeepAlive = isKeepAlive();
-		if (!!isKeepAlive) {
-			response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-		}
+	protected void _sendData(HttpResponse response) {
 		ChannelFuture future = channel().writeAndFlush(response);
-		if (!isKeepAlive) {
-			future.addListener(ChannelFutureListener.CLOSE);
+		future.addListener(new ChannelFutureListener() {
+			@Override
+			public void operationComplete(ChannelFuture complete) {
+				sendComplete(complete);
+			}
+		});
+	}
+
+	/**
+	 * 输出 file -- 输出文件
+	 * 
+	 * 可以 ChunkedFile https://blog.csdn.net/kenhins/article/details/45486301
+	 */
+	protected void sendFile(HttpResponse response) {
+		response.headers().set(HttpHeaderNames.CONTENT_LENGTH, fileProps.size());
+		response.headers().set(HttpHeaderNames.CONTENT_TYPE, MimeType.getMimeType(fileProps.name()));
+		channel().write(response);
+		FileChannel channel = fileProps.channel();
+		channel().write(new DefaultFileRegion(channel, 0, fileProps.size()), channel().newProgressivePromise());
+		ChannelFuture lastContentFuture = channel().writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+		lastContentFuture.addListener(new ChannelFutureListener() {
+			@Override
+			public void operationComplete(ChannelFuture complete) {
+				sendComplete(complete);
+			}
+		});
+	}
+
+	/**
+	 * 发送结束
+	 */
+	protected void sendComplete(ChannelFuture complete) {
+		if (!this.isKeepAlive()) {
+			complete.channel().close();
 		}
+		IOUtils.closeQuietly(this);
 	}
 
 	// ------------- 处理请求 ------------------
@@ -1019,17 +975,11 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
-	 * 完成请求
+	 * 完成请求, 发送消息完成后在关闭
 	 */
 	@Override
 	public void onComplete() {
-		try {
-			this.out();
-		} catch (Exception e) {
-			this.getResponse().error().buffer(e);
-		} finally {
-			IOUtils.closeQuietly(this);
-		}
+		this.send();
 	}
 
 	/**
@@ -1079,12 +1029,9 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.pathVariables.clear();
 			this.pathVariables = null;
 		}
+		IOUtils.closeQuietly(fileProps);
 		IOUtils.closeQuietly(is);
-
-		// 关闭响应数据
-		this.closed = true;
 		IOUtils.closeQuietly(os);
-		fileProps = null;
 		if (responseHeaders != null) {
 			responseHeaders.clear();
 			responseHeaders = null;
@@ -1093,7 +1040,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			responseCookies.clear();
 			responseCookies = null;
 		}
-		// contentType = null;
 	}
 
 	// --------------- 创建 ---------------------

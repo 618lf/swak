@@ -1,5 +1,6 @@
 package com.swak.reactivex.transport.http.multipart;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -25,7 +26,7 @@ import reactor.core.publisher.MonoSink;
  * 
  * @author lifeng
  */
-public class FileProps {
+public class FileProps implements Closeable{
 
 	private final long lastModifiedTime;
 	private final long size;
@@ -79,7 +80,7 @@ public class FileProps {
 	 * 
 	 * @return
 	 */
-	public FileChannel channel() throws IOException {
+	public FileChannel channel(){
 		return this.channel;
 	}
 
@@ -88,6 +89,7 @@ public class FileProps {
 	 * 
 	 * @throws IOException
 	 */
+	@Override
 	public void close() throws IOException {
 		if (this.channel != null) {
 			this.channel.close();
