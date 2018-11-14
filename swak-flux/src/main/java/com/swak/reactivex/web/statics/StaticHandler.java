@@ -115,6 +115,14 @@ public class StaticHandler implements Handler, InitializingBean {
 
 	/**
 	 * 初始化
+	 * 
+	 * 一般会用到： classpath: 和 file: 这两种方式
+	 * 
+	 * @see DefaultResourceLoader, ResourceUtils
+	 * 1. start with /, not(2,3,4)  ClassPathContextResource 从classPath 路径下获取数据，相对路径
+	 * 2. start with classpath:     ClassPathResource 从classPath 路径下获取数据，相对路径
+	 * 3. start with file:          FileUrlResource 从文件系统中获取数据，要么写绝对路径，要么写相对路径（打包之后可以用）
+	 * 4. start with jar:, war:     UrlResource
 	 */
 	@Override
 	public void afterPropertiesSet() throws Exception {

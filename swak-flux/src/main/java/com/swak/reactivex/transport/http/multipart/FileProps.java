@@ -132,13 +132,14 @@ public class FileProps implements Closeable{
 
 	/**
 	 * 创建文件流
+	 * 如果是相对目录getURL, getURI 都获取不到路径
 	 * 
 	 * @param sink
 	 */
 	private void resourceSink(MonoSink<FileProps> sink) {
 		try {
 			if (resource.isFile()) {
-				Path path = Paths.get(resource.getURI());
+				Path path = Paths.get(resource.getFile().getPath());
 				this.channel = FileChannel.open(path, StandardOpenOption.READ);
 				sink.success(this);
 			} else {
