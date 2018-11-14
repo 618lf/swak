@@ -6,6 +6,8 @@ import com.swak.reactivex.web.Handler;
 import com.swak.reactivex.web.HandlerAdapter;
 import com.swak.reactivex.web.result.HandlerResult;
 
+import reactor.core.publisher.Mono;
+
 /**
  * 静态资源适配器
  * 
@@ -13,8 +15,6 @@ import com.swak.reactivex.web.result.HandlerResult;
  */
 public class StaticHanlderAdapter implements HandlerAdapter{
 
-	private HandlerResult DEFAULT_RESULT = new HandlerResult(null);
-	
 	/**
 	 * 支持 StaticHandler
 	 */
@@ -28,7 +28,7 @@ public class StaticHanlderAdapter implements HandlerAdapter{
 	 */
 	@Override
 	public HandlerResult handle(HttpServerRequest request, HttpServerResponse response, Handler handler) {
-		((StaticHandler)handler).handle(request);
-		return DEFAULT_RESULT;
+		Mono<Void> empty = ((StaticHandler)handler).handle(request);
+		return new HandlerResult(empty);
 	}
 }

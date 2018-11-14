@@ -12,6 +12,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.StringUtils;
 
+import com.swak.reactivex.transport.http.HttpConst;
+
+import reactor.core.publisher.Mono;
+
 /**
  * 借助
  * 
@@ -28,14 +32,14 @@ public class PathResourceResolver {
 	 * @param locations
 	 * @return
 	 */
-	public Resource resolveResource(String resourcePath, Set<? extends Resource> locations) {
+	public Mono<Resource> resolveResource(String resourcePath, Set<? extends Resource> locations) {
 		for (Resource location : locations) {
 			Resource resource = getResource(resourcePath, location);
 			if (resource != null) {
-				return resource;
+				return Mono.just(resource);
 			}
 		}
-		return null;
+		return Mono.error(HttpConst.NOT_FOUND_EXCEPTION);
 	}
 
 	/**

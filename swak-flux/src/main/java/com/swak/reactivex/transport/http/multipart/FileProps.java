@@ -31,22 +31,14 @@ public class FileProps {
 	private final long size;
 	private final String name;
 	private final Resource resource;
-	private final FileChannel channel;
+	private FileChannel channel;
 	private File deleteFile;
 
 	/**
 	 * 创建 FileProps
 	 */
-	private FileProps(Resource resource, FileChannel channel) throws IOException {
-		this(resource, channel, null);
-	}
-
-	/**
-	 * 创建 FileProps
-	 */
-	private FileProps(Resource resource, FileChannel channel, File deleteFile) throws IOException {
+	private FileProps(Resource resource) throws IOException {
 		this.resource = resource;
-		this.channel = channel;
 		this.lastModifiedTime = resource.lastModified();
 		this.size = resource.contentLength();
 		this.name = resource.getFilename();
@@ -141,12 +133,12 @@ public class FileProps {
 	 * 
 	 * @param sink
 	 */
-	private static void resourceSink(Resource resource, MonoSink<FileProps> sink) {
+	private void resourceSink(MonoSink<FileProps> sink) {
 		try {
 			if (resource.isFile()) {
 				Path path = Paths.get(resource.getURI());
-				FileChannel channel = FileChannel.open(path, StandardOpenOption.READ);
-				sink.success(new FileProps(resource, channel));
+				this.channel = FileChannel.open(path, StandardOpenOption.READ);
+				sink.success(this);
 			} else {
 				File out = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
 				ReadableByteChannel src = resource.readableChannel();
@@ -155,8 +147,9 @@ public class FileProps {
 				FileUtils.asyncWrite(src, dist, bytebuf, () -> {
 					try {
 						Path path = out.toPath();
-						FileChannel channel = FileChannel.open(path, StandardOpenOption.READ);
-						sink.success(new FileProps(resource, channel, out));
+						this.channel = FileChannel.open(path, StandardOpenOption.READ);
+						this.deleteFile = out;
+						sink.success(this);
 					} catch (Exception e) {
 						out.delete();
 						sink.error(e);
@@ -171,15 +164,24 @@ public class FileProps {
 			sink.error(e);
 		}
 	}
+	
+	/**
+	 * 打开链接
+	 * @return
+	 */
+	public Mono<FileProps> open() {
+		return Mono.create((sink) ->{
+			this.resourceSink(sink);
+		});
+	}
 
 	/**
+	 * 创建 FileProps
 	 * @param resource
 	 * @return
-	 * @throws IOException
+	 * @throws IOException 
 	 */
-	public static Mono<FileProps> props(Resource resource) {
-		return Mono.create((sink) -> {
-			resourceSink(resource, sink);
-		});
+	public static FileProps props(Resource resource) throws IOException {
+		return new FileProps(resource);
 	}
 }

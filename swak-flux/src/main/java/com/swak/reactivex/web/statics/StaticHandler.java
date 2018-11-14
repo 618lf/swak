@@ -1,5 +1,6 @@
 package com.swak.reactivex.web.statics;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -82,24 +83,25 @@ public class StaticHandler implements Handler, InitializingBean {
 		}
 
 		// 获取资源
-		Resource resource = pathResourceResolver.resolveResource(requestPath, locations);
-		
-		// 404 NOT FOUND
-		if (resource == null) {
-			return Mono.error(HttpConst.NOT_FOUND_EXCEPTION);
-		}
-		
-		// 主要是创建 FileProps，并链接到执行链上
-		return FileProps.props(resource).onErrorResume(e -> {
-			// 404 NOT FOUND
-			return Mono.error(HttpConst.NOT_FOUND_EXCEPTION);
-		}).flatMap(fileProps -> {
+		return pathResourceResolver.resolveResource(requestPath, locations).flatMap(resource -> {
+
+			// 转换资源
+			FileProps fileProps = null;
+			try {
+				fileProps = FileProps.props(resource);
+			} catch (IOException e) {
+				// 404 not found
+				return Mono.error(HttpConst.NOT_FOUND_EXCEPTION);
+			}
 
 			// 304 NotModified
 			if (HTTP_CACHE_SECONDS > 0 && request.ifModified(fileProps)) {
 				return Mono.empty();
 			}
 
+			// 打开
+			return fileProps.open();
+		}).flatMap(fileProps -> {
 			// 输出头部,缓存
 			request.getResponse().cache(HTTP_CACHE_SECONDS, fileProps.lastModifiedTime());
 
