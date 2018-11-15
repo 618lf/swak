@@ -22,6 +22,7 @@ public class ImageButton implements PaintListener {
 	private Object layout;
 	private Image image;
 	private Image hoverImage;
+	private String tip;
 	private Runnable click;
 	private volatile boolean on = false;
 
@@ -68,6 +69,17 @@ public class ImageButton implements PaintListener {
 			return hoverImage;
 		}
 		return image;
+	}
+
+	/**
+	 * 设置提示
+	 * 
+	 * @param tip
+	 * @return
+	 */
+	public ImageButton tip(String tip) {
+		this.tip = tip;
+		return this;
 	}
 
 	/**
@@ -119,8 +131,16 @@ public class ImageButton implements PaintListener {
 	 */
 	public void build() {
 		this.label.setLayoutData(layout);
-		this.label.addPaintListener(this);
 		
+		// 显示的图片
+		if (this.image != null) {
+			this.label.addPaintListener(this);
+		}
+		
+		// 提示
+		if (this.tip != null) {
+			this.label.setToolTipText(this.tip);
+		}
 		// hover 事件
 		if (this.hoverImage != null) {
 			this.label.addMouseTrackListener(new MouseTrackListener() {

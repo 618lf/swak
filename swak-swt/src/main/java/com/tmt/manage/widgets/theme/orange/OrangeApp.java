@@ -48,7 +48,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 	private Thread signalThread;
 	private volatile Status status = Status.stop;
 
-	private int height_top = 25;
+	private int height_top = 32;
 	private int height_tools = 90;
 	private int height_bottom = 25;
 
@@ -111,7 +111,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 
 	// 控制按钮的配置
 	protected void configureTops(Composite top) {
-		GridLayout gl_top = new GridLayout(2, false);
+		GridLayout gl_top = new GridLayout(4, false);
 		gl_top.marginWidth = 0;
 		gl_top.horizontalSpacing = 0;
 		gl_top.marginHeight = 0;
@@ -123,15 +123,30 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 
 		left.addMouseListener(this);
 		left.addMouseMoveListener(this);
+		
+		// min
+		GridData gd_min = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+		gd_min.widthHint = 32;
+		gd_min.heightHint = 32;
+		ImageButton.builder(top).image(ResourceManager.getImage(OrangeApp.class, "最小化.png")).layout(gd_min)
+				.click(() -> {
+					shell.setMinimized(true);
+				}).tip("最小化").build();
+		
+		// min
+		GridData gd_span = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+		gd_span.widthHint = 10;
+		gd_span.heightHint = 32;
+		ImageButton.builder(top).layout(gd_span).build();
 
 		// close
 		GridData gd_close = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-		gd_close.widthHint = 20;
-		gd_close.heightHint = 20;
+		gd_close.widthHint = 32;
+		gd_close.heightHint = 32;
 		ImageButton.builder(top).image(ResourceManager.getImage(OrangeApp.class, "关闭.png")).layout(gd_close)
 				.click(() -> {
 					shell.close();
-				}).build();
+				}).tip("关闭").build();
 	}
 
 	// 工具栏的配置
