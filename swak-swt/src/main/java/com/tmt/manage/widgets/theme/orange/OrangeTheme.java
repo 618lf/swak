@@ -52,4 +52,11 @@ public abstract class OrangeTheme implements Theme {
 	 * @return
 	 */
 	public abstract Action logo();
+	
+	/**
+	 * close
+	 * 
+	 * @return
+	 */
+	public abstract Action close();
 }

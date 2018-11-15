@@ -1,5 +1,7 @@
 package com.tmt.manage.widgets.theme.orange;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.StackLayout;
@@ -51,32 +53,53 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 	private int height_top = 32;
 	private int height_tools = 90;
 	private int height_bottom = 25;
+	private int margin_width = 15;
+
+	// 清除默认样式
+	private void clearGridLayout(GridLayout gridLayout) {
+		gridLayout.marginWidth = 0;
+		gridLayout.marginHeight = 0;
+		gridLayout.horizontalSpacing = 0;
+		gridLayout.verticalSpacing = 0;
+	}
 
 	@Override
 	protected void createContents() {
 		OrangeTheme theme = (OrangeTheme) this.theme;
 		shell.setText(Settings.me().getServerName());
-		shell.setImage(theme.logo().image());
-		shell.setBackgroundImage(theme.background().image());
+		if (theme.logo() != null) {
+			shell.setImage(theme.logo().image());
+		}
+		if (theme.background() != null) {
+			shell.setBackgroundImage(theme.background().image());
+		}
 		GridLayout gl_shell = new GridLayout(1, false);
-		gl_shell.marginWidth = 15;
-		gl_shell.horizontalSpacing = 0;
+		this.clearGridLayout(gl_shell);
 		shell.setLayout(gl_shell);
 		shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
 
-		// 控制按钮
-		Composite top = new Composite(shell, SWT.TRANSPARENCY_ALPHA);
-		GridData gd_top = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-		gd_top.heightHint = height_top;
-		top.setLayoutData(gd_top);
-		this.configureTops(top);
+		// shell 样式
+		int shellStyle = this.getShellStyle();
+
+		// 使用系统默认的控制按钮
+		if (shellStyle == SWT.NONE) {
+			// 控制按钮
+			Composite top = new Composite(shell, SWT.TRANSPARENCY_ALPHA);
+			GridData gd_top = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+			gd_top.heightHint = height_top;
+			top.setLayoutData(gd_top);
+			this.configureTops(top);
+		}
 
 		// 快捷菜单
-		Composite tools = new Composite(shell, SWT.TRANSPARENCY_ALPHA);
-		GridData gd_tools = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-		gd_tools.heightHint = height_tools;
-		tools.setLayoutData(gd_tools);
-		this.configureTools(tools);
+		List<Action> actions = theme.actions();
+		if (actions != null && actions.size() > 0 && theme.logo() != null) {
+			Composite tools = new Composite(shell, SWT.TRANSPARENCY_ALPHA);
+			GridData gd_tools = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+			gd_tools.heightHint = height_tools;
+			tools.setLayoutData(gd_tools);
+			this.configureTools(tools);
+		}
 
 		// 内容展示
 		content = new Composite(shell, SWT.NONE);
@@ -111,50 +134,33 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 
 	// 控制按钮的配置
 	protected void configureTops(Composite top) {
-		GridLayout gl_top = new GridLayout(4, false);
-		gl_top.marginWidth = 0;
-		gl_top.horizontalSpacing = 0;
-		gl_top.marginHeight = 0;
+		OrangeTheme theme = (OrangeTheme) this.theme;
+		GridLayout gl_top = new GridLayout(2, false);
+		this.clearGridLayout(gl_top);
 		top.setLayout(gl_top);
 
 		// left
 		Label left = new Label(top, SWT.NONE);
 		left.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
 		left.addMouseListener(this);
 		left.addMouseMoveListener(this);
-		
-		// min
-		GridData gd_min = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-		gd_min.widthHint = 32;
-		gd_min.heightHint = 32;
-		ImageButton.builder(top).image(ResourceManager.getImage(OrangeApp.class, "最小化.png")).layout(gd_min)
-				.click(() -> {
-					shell.setMinimized(true);
-				}).tip("最小化").build();
-		
-		// min
-		GridData gd_span = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-		gd_span.widthHint = 10;
-		gd_span.heightHint = 32;
-		ImageButton.builder(top).layout(gd_span).build();
 
 		// close
-		GridData gd_close = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-		gd_close.widthHint = 32;
-		gd_close.heightHint = 32;
-		ImageButton.builder(top).image(ResourceManager.getImage(OrangeApp.class, "关闭.png")).layout(gd_close)
-				.click(() -> {
-					shell.close();
-				}).tip("关闭").build();
+		if (theme.close() != null) {
+			GridData gd_close = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+			gd_close.widthHint = 32;
+			gd_close.heightHint = 32;
+			ImageButton.builder(top).image(theme.close().image()).layout(gd_close).click(() -> {
+				shell.close();
+			}).tip("关闭").build();
+		}
 	}
 
 	// 工具栏的配置
 	protected void configureTools(Composite tools) {
 		GridLayout gl_tools = new GridLayout(2, false);
-		gl_tools.horizontalSpacing = 0;
-		gl_tools.marginWidth = 0;
-		gl_tools.marginHeight = 0;
+		this.clearGridLayout(gl_tools);
+		gl_tools.marginWidth = margin_width;
 		tools.setLayout(gl_tools);
 
 		// 主题
@@ -233,9 +239,8 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 	// 底部版权
 	protected void configureBottoms(Composite bottom) {
 		GridLayout gl_bottom = new GridLayout(1, false);
-		gl_bottom.marginWidth = 0;
-		gl_bottom.horizontalSpacing = 0;
-		gl_bottom.marginHeight = 0;
+		this.clearGridLayout(gl_bottom);
+		gl_bottom.marginWidth = margin_width;
 		bottom.setLayout(gl_bottom);
 
 		// left
@@ -271,7 +276,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 					int style = SWT.APPLICATION_MODAL | SWT.YES;
 					MessageBox messageBox = new MessageBox(shell, style);
 					messageBox.setText("提示");
-					messageBox.setMessage("系统停止成功,点击“Yes”关闭小工具！");
+					messageBox.setMessage("系统停止成功,点击“Yes”关闭界面！");
 					event.doit = messageBox.open() == SWT.YES;
 				}
 			}
