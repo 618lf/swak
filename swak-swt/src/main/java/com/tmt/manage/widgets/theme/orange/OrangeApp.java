@@ -4,6 +4,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Point;
@@ -12,7 +15,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ProgressBar;
 
@@ -32,7 +37,7 @@ import com.tmt.manage.widgets.theme.Theme.Action;
  * 
  * @author lifeng
  */
-public class OrangeApp extends BaseApp implements Receiver {
+public class OrangeApp extends BaseApp implements Receiver, MouseListener, MouseMoveListener, Listener {
 
 	private StackLayout contentStack;
 	private Composite content;
@@ -115,6 +120,9 @@ public class OrangeApp extends BaseApp implements Receiver {
 		// left
 		Label left = new Label(top, SWT.NONE);
 		left.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+		left.addMouseListener(this);
+		left.addMouseMoveListener(this);
 
 		// close
 		GridData gd_close = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
@@ -374,4 +382,57 @@ public class OrangeApp extends BaseApp implements Receiver {
 	public static enum Status {
 		start, stop, exit
 	}
+
+	// ----------- 拖动 ------------
+	private volatile boolean isDraw = false;
+	private volatile Point drawPoint = new Point(0, 0);
+
+	@Override
+	public void mouseDown(MouseEvent arg0) {
+		isDraw = true;
+		drawPoint.x = arg0.x;
+		drawPoint.y = arg0.y;
+		this.shell.setCursor(ResourceManager.getCursor(SWT.CURSOR_HAND));
+	}
+
+	/**
+	 * 处理 tracker 的事件
+	 * 
+	 */
+	@Override
+	public void handleEvent(Event event) {
+		switch (event.type) {
+		case SWT.MouseDown:
+			System.out.println("down");
+			break;
+		case SWT.MouseMove:
+			System.out.println("move");
+			break;
+		case SWT.MouseUp:
+			System.out.println("up");
+			break;
+		}
+	}
+
+	@Override
+	public void mouseMove(MouseEvent arg0) {
+		if (isDraw) {
+			int shell_x = this.shell.getLocation().x + arg0.x - drawPoint.x;
+			int shell_y = this.shell.getLocation().y + arg0.y - drawPoint.y;
+			this.shell.setLocation(shell_x, shell_y);
+			this.shell.redraw();
+		}
+	}
+
+	@Override
+	public void mouseUp(MouseEvent arg0) {
+		isDraw = false;
+		this.shell.setCursor(ResourceManager.getCursor(SWT.CURSOR_ARROW));
+	}
+
+	@Override
+	public void mouseDoubleClick(MouseEvent arg0) {
+
+	}
+
 }

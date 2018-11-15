@@ -1,6 +1,8 @@
 package com.tmt.manage.widgets;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Image;
@@ -118,19 +120,32 @@ public class ImageButton implements PaintListener {
 	public void build() {
 		this.label.setLayoutData(layout);
 		this.label.addPaintListener(this);
+		
+		// hover 事件
 		if (this.hoverImage != null) {
-			this.label.addListener(SWT.MouseDown, (e) -> {
-				on = true;
-				this.label.setText("");
-			});
-			this.label.addListener(SWT.MouseUp, (e) -> {
-				on = false;
-				this.label.setText("");
-				if (click != null) {
-					this.click.run();
+			this.label.addMouseTrackListener(new MouseTrackListener() {
+				@Override
+				public void mouseEnter(MouseEvent arg0) {
+					on = true;
+					label.redraw();
+					label.getShell().setCursor(ResourceManager.getCursor(SWT.CURSOR_HAND));
+				}
+
+				@Override
+				public void mouseExit(MouseEvent arg0) {
+					on = false;
+					label.redraw();
+					label.getShell().setCursor(ResourceManager.getCursor(SWT.CURSOR_ARROW));
+				}
+
+				@Override
+				public void mouseHover(MouseEvent arg0) {
 				}
 			});
-		} else if (this.click != null) {
+		}
+
+		// 点击事件
+		if (this.click != null) {
 			this.label.addListener(SWT.MouseUp, (e) -> {
 				this.click.run();
 			});

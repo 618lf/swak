@@ -36,7 +36,7 @@ public abstract class OrangeTheme implements Theme {
 	 * @return
 	 */
 	public int getShellStyle() {
-		return SWT.NONE;
+		return SWT.NONE ;
 	}
 
 	/**

@@ -50,14 +50,15 @@ public abstract class BaseApp {
 		shell = new Shell(Display.getDefault(), getShellStyle());
 		
 		// 屏幕分辨率
-		Rectangle clientArea = Display.getDefault().getPrimaryMonitor().getBounds();
+		Rectangle windowArea = Display.getDefault().getPrimaryMonitor().getBounds();
+		Rectangle clientArea = Display.getDefault().getPrimaryMonitor().getClientArea();
 		
 		// 根据可视区域自定义窗口大小
-		Point point = getShellSize(clientArea);
+		Point point = getShellSize(windowArea);
 
 		// 默认全屏
 		if (point == null || point == FULL_POINT) {
-			shell.setBounds(Display.getDefault().getPrimaryMonitor().getClientArea());
+			shell.setBounds(clientArea);
 		}
 		
 		// 居中显示
@@ -66,8 +67,8 @@ public abstract class BaseApp {
 			shell.setSize(point.x, point.y);
 
 			// 整个窗口大小
-			int width = Display.getDefault().getPrimaryMonitor().getClientArea().width;
-			int height = Display.getDefault().getPrimaryMonitor().getClientArea().height;
+			int width = clientArea.width;
+			int height = clientArea.height;
 
 			int x = shell.getSize().x;
 			int y = shell.getSize().y;
