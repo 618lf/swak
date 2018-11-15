@@ -24,8 +24,6 @@ import com.swak.config.flux.SecurityAutoConfiguration;
  */
 @Configuration
 @ConditionalOnClass(RedisCacheManager.class)
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableRedis", matchIfMissing = true)
 @AutoConfigureBefore(SecurityAutoConfiguration.class)
 public class CacheModuleAutoConfiguration {

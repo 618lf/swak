@@ -18,14 +18,11 @@ package com.swak.config.motan;
 
 import static com.swak.Application.APP_LOGGER;
 
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
 
 import com.swak.Constants;
@@ -48,8 +45,6 @@ import com.weibo.api.motan.config.springsupport.RegistryConfigBean;
 @ConditionalOnClass({ BasicRefererConfigProperties.class })
 @EnableConfigurationProperties({ AnnotationBeanConfigProperties.class, BasicRefererConfigProperties.class,
 		ProtocolConfigProperties.class, RegistryConfigProperties.class })
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMotan", matchIfMissing = true)
 public class MotanAutoConfiguration {
 

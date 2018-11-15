@@ -3,11 +3,11 @@ package com.swak.config.flux;
 import static com.swak.Application.APP_LOGGER;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
+
+import com.swak.config.jdbc.DataBaseAutoConfiguration;
+import com.swak.config.motan.MotanAutoConfiguration;
 
 /**
  * Web 服务配置
@@ -15,10 +15,8 @@ import org.springframework.core.annotation.Order;
  * @author lifeng
  */
 @Configuration
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 20)
-@Order(Ordered.HIGHEST_PRECEDENCE + 20)
 @ConditionalOnMissingBean(WebConfigurationSupport.class)
-@AutoConfigureAfter({SecurityAutoConfiguration.class})
+@AutoConfigureAfter({SecurityAutoConfiguration.class, DataBaseAutoConfiguration.class, MotanAutoConfiguration.class})
 public class WebHandlerAutoConfiguration extends WebConfigurationSupport {
 	public WebHandlerAutoConfiguration() {
 		APP_LOGGER.debug("Loading Web Flux");

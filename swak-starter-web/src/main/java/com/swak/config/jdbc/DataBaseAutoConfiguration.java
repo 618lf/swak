@@ -67,8 +67,6 @@ import com.swak.utils.StringUtils;
  */
 @org.springframework.context.annotation.Configuration
 @ConditionalOnClass(JdbcTemplate.class)
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableDataBase", matchIfMissing = true)
 public class DataBaseAutoConfiguration {
 

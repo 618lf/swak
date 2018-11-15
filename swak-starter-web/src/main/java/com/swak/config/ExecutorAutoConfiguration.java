@@ -6,14 +6,11 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 
 import com.swak.ApplicationProperties;
 import com.swak.Constants;
@@ -28,8 +25,6 @@ import com.swak.reactivex.transport.http.server.HttpServerProperties;
  * @author lifeng
  */
 @Configuration
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 150)
-@Order(Ordered.HIGHEST_PRECEDENCE + 150)
 @ConditionalOnMissingBean(Executor.class)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableWorkers", matchIfMissing = true)
 @EnableConfigurationProperties(ApplicationProperties.class)

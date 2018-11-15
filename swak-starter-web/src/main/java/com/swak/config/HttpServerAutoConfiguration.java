@@ -3,12 +3,9 @@ package com.swak.config;
 import static com.swak.Application.APP_LOGGER;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 
 import com.swak.config.flux.WebHandlerAutoConfiguration;
 import com.swak.reactivex.handler.HttpHandler;
@@ -22,8 +19,6 @@ import com.swak.reactivex.transport.http.server.ReactiveServer;
  * @author lifeng
  */
 @Configuration
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 100)
-@Order(Ordered.HIGHEST_PRECEDENCE + 100)
 @EnableConfigurationProperties(HttpServerProperties.class)
 @AutoConfigureAfter({ WebHandlerAutoConfiguration.class })
 public class HttpServerAutoConfiguration {

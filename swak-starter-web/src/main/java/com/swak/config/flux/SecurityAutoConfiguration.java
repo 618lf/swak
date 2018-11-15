@@ -5,14 +5,11 @@ import static com.swak.Application.APP_LOGGER;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.util.CollectionUtils;
 
 import com.swak.Constants;
@@ -33,8 +30,6 @@ import com.swak.security.principal.support.TokenPrincipalStrategy;
  * @author lifeng
  */
 @Configuration
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @ConditionalOnBean({ SecurityConfigurationSupport.class })
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSecurity", matchIfMissing = true)
 public class SecurityAutoConfiguration {
