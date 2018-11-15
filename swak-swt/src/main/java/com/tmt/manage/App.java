@@ -3,7 +3,7 @@ package com.tmt.manage;
 import org.eclipse.swt.widgets.Display;
 
 import com.tmt.manage.config.Settings;
-import com.tmt.manage.widgets.BaseFrame;
+import com.tmt.manage.widgets.BaseApp;
 import com.tmt.manage.widgets.theme.Theme;
 import com.tmt.manage.widgets.theme.def.DefTheme;
 
@@ -14,7 +14,7 @@ import com.tmt.manage.widgets.theme.def.DefTheme;
  */
 public abstract class App {
 
-	private BaseFrame window;
+	private BaseApp window;
 
 	/**
 	 * 打开主窗口
@@ -27,7 +27,7 @@ public abstract class App {
 		// 加载主题
 		try {
 			String windowClass = "com.tmt.manage.widgets.theme." + theme.path();
-			window = (BaseFrame) (App.class.getClassLoader().loadClass(windowClass).newInstance());
+			window = (BaseApp) (App.class.getClassLoader().loadClass(windowClass).newInstance());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

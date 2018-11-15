@@ -2,6 +2,7 @@ package com.tmt.manage.widgets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -12,7 +13,7 @@ import com.tmt.manage.widgets.theme.Theme;
  * 
  * @author lifeng
  */
-public abstract class BaseFrame {
+public abstract class BaseApp {
 
 	protected Theme theme;
 	protected Shell shell;
@@ -47,12 +48,20 @@ public abstract class BaseFrame {
 	 */
 	protected Shell newShell() {
 		shell = new Shell(Display.getDefault(), getShellStyle());
-		Point point = getInitialSize();
+		
+		// 屏幕分辨率
+		Rectangle clientArea = Display.getDefault().getPrimaryMonitor().getBounds();
+		
+		// 根据可视区域自定义窗口大小
+		Point point = getShellSize(clientArea);
 
-		// 全屏
-		if (point == FULL_POINT) {
+		// 默认全屏
+		if (point == null || point == FULL_POINT) {
 			shell.setBounds(Display.getDefault().getPrimaryMonitor().getClientArea());
-		} else {
+		}
+		
+		// 居中显示
+		else {
 			// 设置窗口大小
 			shell.setSize(point.x, point.y);
 
@@ -96,10 +105,9 @@ public abstract class BaseFrame {
 	 * 
 	 * @return
 	 */
-	protected Point getInitialSize() {
+	protected Point getShellSize(Rectangle clientArea) {
 		return FULL_POINT;
 	}
-	
 
 	/**
 	 * Create contents of the window.

@@ -7,6 +7,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -20,7 +21,7 @@ import com.tmt.manage.command.Commands.Cmd;
 import com.tmt.manage.command.Commands.Signal;
 import com.tmt.manage.command.Receiver;
 import com.tmt.manage.config.Settings;
-import com.tmt.manage.widgets.BaseFrame;
+import com.tmt.manage.widgets.BaseApp;
 import com.tmt.manage.widgets.ImageButton;
 import com.tmt.manage.widgets.Progress;
 import com.tmt.manage.widgets.ResourceManager;
@@ -31,7 +32,7 @@ import com.tmt.manage.widgets.theme.Theme.Action;
  * 
  * @author lifeng
  */
-public class OrangeApp extends BaseFrame implements Receiver {
+public class OrangeApp extends BaseApp implements Receiver {
 
 	private StackLayout contentStack;
 	private Composite content;
@@ -277,8 +278,9 @@ public class OrangeApp extends BaseFrame implements Receiver {
 	 * shell 大小
 	 */
 	@Override
-	protected Point getInitialSize() {
-		return new Point(1024, 768);
+	protected Point getShellSize(Rectangle clientArea) {
+		OrangeTheme theme = (OrangeTheme) this.theme;
+		return theme.getShellSize(clientArea);
 	}
 
 	/**
@@ -286,7 +288,8 @@ public class OrangeApp extends BaseFrame implements Receiver {
 	 */
 	@Override
 	protected int getShellStyle() {
-		return SWT.BORDER;
+		OrangeTheme theme = (OrangeTheme) this.theme;
+		return theme.getShellStyle();
 	}
 
 	/**

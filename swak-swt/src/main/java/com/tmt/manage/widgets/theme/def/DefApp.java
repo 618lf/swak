@@ -5,6 +5,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -19,7 +20,7 @@ import com.tmt.manage.command.Commands.Cmd;
 import com.tmt.manage.command.Commands.Signal;
 import com.tmt.manage.command.Receiver;
 import com.tmt.manage.config.Settings;
-import com.tmt.manage.widgets.BaseFrame;
+import com.tmt.manage.widgets.BaseApp;
 import com.tmt.manage.widgets.CommandButton;
 import com.tmt.manage.widgets.ConfirmCommandButton;
 import com.tmt.manage.widgets.Progress;
@@ -30,7 +31,7 @@ import com.tmt.manage.widgets.Progress;
  * 
  * @author lifeng
  */
-public class DefApp extends BaseFrame implements Receiver {
+public class DefApp extends BaseApp implements Receiver {
 
 	private StyledText logText;
 	private Button startButton;
@@ -147,7 +148,7 @@ public class DefApp extends BaseFrame implements Receiver {
 	 * shell 大小
 	 */
 	@Override
-	protected Point getInitialSize() {
+	protected Point getShellSize(Rectangle clientArea) {
 		return new Point(425, 525);
 	}
 

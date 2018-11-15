@@ -10,14 +10,14 @@ import com.tmt.manage.command.Commands;
 import com.tmt.manage.command.Commands.Sign;
 import com.tmt.manage.command.Commands.Signal;
 import com.tmt.manage.config.Settings;
-import com.tmt.manage.widgets.BaseFrame;
+import com.tmt.manage.widgets.BaseApp;
 
 /**
  * 浏览器窗口
  * 
  * @author lifeng
  */
-public class BrowserFrame extends BaseFrame{
+public class BrowserFrame extends BaseApp{
 
 	private Browser browser;
 	

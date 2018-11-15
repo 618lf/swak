@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 
 import com.tmt.commands.ExitCommand;
 import com.tmt.commands.StartCommand;
@@ -54,11 +56,24 @@ public class Starter extends App {
 			}
 
 			/**
-			 * 背景图
+			 * 背景图， 确定一个比例就好： 16：9的比例
 			 */
 			@Override
 			public Action background() {
 				return Action.me().image(this.load("背景.png"));
+			}
+
+			/**
+			 * 10-12英寸（上网本）1024×600、1366×768 13.3-15.6英寸大部分是1366×768 13英寸有1280×800、1600×900
+			 * 14英寸也有1024×768（已淘汰）、1440×900、1600×900的高分屏 15英寸有1600×900、1920×1080（单屏最高分辨率）
+			 * 还有18、19英寸的，分辨率也是1920×1080
+			 */
+			@Override
+			public Point getShellSize(Rectangle clientArea) {
+				int height = clientArea.height;
+				int shellHeight = (int) (height * 0.85);
+				int shellWight = shellHeight / 10 * 14;
+				return new Point(shellWight, shellHeight);
 			}
 
 			/**
@@ -95,7 +110,7 @@ public class Starter extends App {
 			 * @return
 			 */
 			private Image load(String path) {
-				return ResourceManager.getImage(Starter.class, "theme/"+path);
+				return ResourceManager.getImage(Starter.class, "theme/" + path);
 			}
 		};
 	}
