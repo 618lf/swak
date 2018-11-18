@@ -106,11 +106,7 @@ public class ServerOptions extends NettyOptions<ServerBootstrap> {
 		 * @return {@code this}
 		 */
 		public final Builder host(String host) {
-			if (Objects.isNull(host)) {
-				this.host = "localhost";
-			} else {
-				this.host = host;
-			}
+			this.host = host;
 			return this;
 		}
 

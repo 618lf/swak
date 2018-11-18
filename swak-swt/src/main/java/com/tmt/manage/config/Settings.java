@@ -178,7 +178,6 @@ public class Settings {
 			properties.load(is);
 			is.close();
 			this.serverName = properties.getProperty("app.name");
-			this.serverPage = properties.getProperty("app.page");
 			this.serverVersion = properties.getProperty("app.version");
 		} catch (Exception e) {
 		}

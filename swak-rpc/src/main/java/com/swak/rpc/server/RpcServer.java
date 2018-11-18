@@ -189,6 +189,10 @@ public class RpcServer extends TcpServer {
 	}
 	
 	// ---------------------- 服务器地址 ---------------------
+	@Override
+	public String getProtocol() {
+		return "RPC";
+	}
 	public InetSocketAddress getAddress() {
 		return context.address();
 	}

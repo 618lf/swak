@@ -25,7 +25,7 @@ public class HttpServerProperties {
 	private boolean threadCache = true;
 	private int port = 8888;
 	private int connectTimeout = 30000;
-	private String host = "localhost";
+	private String host = null; // 设置这个回导致只能通过网卡IP或本机IP访问 或 0.0.0.0
 	private boolean tcpNoDelay = true;
 	private boolean soKeepAlive = true;
 	private boolean startReport = false;

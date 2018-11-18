@@ -84,6 +84,13 @@ public abstract class TcpServer implements BiConsumer<ChannelPipeline, ContextHa
 	public abstract ChannelOperations<?, ?> doHandler(Channel c, ContextHandler contextHandler, Object msg, BiFunction<NettyInbound, NettyOutbound, Mono<Void>> ioHandler);
 	
 	/**
+	 * 协议
+	 * 
+	 * @return
+	 */
+	public abstract String getProtocol();
+	
+	/**
 	 * 服务器的地址
 	 * @return
 	 */

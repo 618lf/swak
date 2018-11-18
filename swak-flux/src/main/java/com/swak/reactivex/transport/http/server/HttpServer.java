@@ -87,7 +87,8 @@ public class HttpServer extends TcpServer {
 	public HttpServerOptions options() {
 		if (options == null) {
 			this.options = this.options((options) -> {
-				options.host(properties.getHost()).port(properties.getPort());
+				options.host(properties.getHost());
+				options.port(properties.getPort());
 				if (properties.isSslOn()) {
 					this.customizeSsl(options);
 				}
@@ -219,6 +220,15 @@ public class HttpServer extends TcpServer {
 	}
 
 	// ---------------------- 服务器地址 ---------------------
+	@Override
+	public String getProtocol() {
+		if (properties.isSslOn()) {
+			return "https";
+		}
+		return "http";
+	}
+	
+	@Override
 	public InetSocketAddress getAddress() {
 		return context.address();
 	}

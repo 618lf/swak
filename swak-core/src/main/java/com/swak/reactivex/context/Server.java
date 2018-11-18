@@ -24,7 +24,7 @@ public interface Server {
 	 * @throws ServerException
 	 */
 	void stop() throws ServerException;
-
+	
 	/**
 	 * 可能会启动多个服务
 	 * @return

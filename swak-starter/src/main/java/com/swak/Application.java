@@ -10,6 +10,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.util.ClassUtils;
 
 import com.swak.reactivex.context.ReactiveServerApplicationContext;
+import com.swak.reactivex.context.Server;
 
 /**
  * @ComponentScan("com.swak")
@@ -83,7 +84,7 @@ public class Application extends SpringApplication {
 				.run(args);
 		long end = System.currentTimeMillis();
 		if (context instanceof ReactiveServerApplicationContext) {
-			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s" + ", listening on the port["
+			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s" + ", listening on ["
 					+ ((ReactiveServerApplicationContext) context).getServer().getAddresses() + "]");
 		} else {
 			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s");
@@ -91,6 +92,25 @@ public class Application extends SpringApplication {
 		// 存储此context
 		applicationContext = context;
 		return context;
+	}
+
+	/**
+	 * 返回发布的地址
+	 * 
+	 * @return
+	 */
+	public static String getAddresses() {
+		if (applicationContext instanceof ReactiveServerApplicationContext) {
+
+			// 获取服务
+			Server server = ((ReactiveServerApplicationContext) applicationContext).getServer();
+
+			// 服务地址
+			return server.getAddresses();
+		}
+
+		// 其他的情况再说
+		return null;
 	}
 
 	/**
