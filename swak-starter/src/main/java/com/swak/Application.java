@@ -100,7 +100,7 @@ public class Application extends SpringApplication {
 	 * @return
 	 */
 	public static String getAddresses() {
-		if (applicationContext instanceof ReactiveServerApplicationContext) {
+		if (applicationContext != null && applicationContext instanceof ReactiveServerApplicationContext) {
 
 			// 获取服务
 			Server server = ((ReactiveServerApplicationContext) applicationContext).getServer();
