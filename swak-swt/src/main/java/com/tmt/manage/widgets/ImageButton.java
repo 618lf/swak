@@ -1,14 +1,17 @@
 package com.tmt.manage.widgets;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Control;
 
 /**
  * image button
@@ -18,13 +21,19 @@ import org.eclipse.swt.widgets.Label;
 public class ImageButton implements PaintListener {
 
 	// 元素组件
-	private Label label;
+	private Control control;
 	private Object layout;
 	private Image image;
 	private Image hoverImage;
+	private Color blurColor;
+	private String text;
 	private String tip;
 	private Runnable click;
+	private Rectangle bounds;
+	private boolean label = true;
 	private volatile boolean on = false;
+	private volatile boolean hoverOn = false;
+	private ImageButtonGroup group;
 
 	/**
 	 * 创建一个图片按钮
@@ -32,7 +41,21 @@ public class ImageButton implements PaintListener {
 	 * @param parent
 	 */
 	private ImageButton(Composite parent) {
-		this.label = new Label(parent, SWT.NONE);
+		if (label) {
+			this.control = new CLabel(parent, SWT.SHADOW_NONE);
+		} else {
+			this.control = new Button(parent, SWT.SHADOW_NONE);
+		}
+	}
+
+	/**
+	 * 返回控制器
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends Control> T control() {
+		return (T) this.control;
 	}
 
 	/**
@@ -44,19 +67,29 @@ public class ImageButton implements PaintListener {
 		// 绘制的图片
 		Image image = this.drawable();
 
-		// 绘制
-		final Rectangle ibounds = image.getBounds();
-		int iwidth = ibounds.width; // 图片宽
-		int iheight = ibounds.height; // 图片高
+		// 绘制图片
+		if (image != null) {
+			final Rectangle ibounds = image.getBounds();
+			int iwidth = ibounds.width; // 图片宽
+			int iheight = ibounds.height; // 图片高
 
-		final Rectangle lbounds = label.getBounds();
-		int lwidth = lbounds.width; // 图片宽
-		int lheight = lbounds.height; // 图片高
-		double ratio = 1; // 缩放比率
-		double r1 = lwidth * ratio / iwidth;
-		double r2 = lheight * ratio / iheight;
-		ratio = Math.min(r1, r2);
-		pe.gc.drawImage(image, 0, 0, iwidth, iheight, 0, 0, (int) (iwidth * ratio), (int) (iheight * ratio));
+			final Rectangle lbounds = control.getBounds();
+			int lwidth = lbounds.width; // 图片宽
+			int lheight = lbounds.height; // 图片高
+			double ratio = 1; // 缩放比率
+			double r1 = lwidth * ratio / iwidth;
+			double r2 = lheight * ratio / iheight;
+			ratio = Math.min(r1, r2);
+			pe.gc.drawImage(image, 0, 0, iwidth, iheight, 0, 0, (int) (iwidth * ratio), (int) (iheight * ratio));
+		}
+
+		// 切换颜色
+		Color color = this.drawColor();
+
+		// 显示底色
+		if (color != null) {
+			this.control.setBackground(color);
+		}
 	}
 
 	/**
@@ -65,10 +98,45 @@ public class ImageButton implements PaintListener {
 	 * @return
 	 */
 	private Image drawable() {
-		if (this.on && hoverImage != null) {
+		if ((this.on || this.hoverOn) && hoverImage != null) {
 			return hoverImage;
 		}
 		return image;
+	}
+
+	/**
+	 * 获得需要绘制的图片, 选中是白色
+	 * 
+	 * @return
+	 */
+	private Color drawColor() {
+		if ((this.on || this.hoverOn) && this.blurColor != null) {
+			return ResourceManager.getColor(SWT.COLOR_WHITE);
+		}
+		return blurColor;
+	}
+
+	/**
+	 * 设置组
+	 * 
+	 * @param tip
+	 * @return
+	 */
+	public ImageButton group(ImageButtonGroup group) {
+		this.group = group;
+		this.group.addImageButton(this);
+		return this;
+	}
+
+	/**
+	 * 设置文本
+	 * 
+	 * @param tip
+	 * @return
+	 */
+	public ImageButton text(String text) {
+		this.text = text;
+		return this;
 	}
 
 	/**
@@ -105,6 +173,17 @@ public class ImageButton implements PaintListener {
 	}
 
 	/**
+	 * 设置大小和位置
+	 * 
+	 * @param tip
+	 * @return
+	 */
+	public ImageButton bounds(Rectangle bounds) {
+		this.bounds = bounds;
+		return this;
+	}
+
+	/**
 	 * hover
 	 * 
 	 * @param layout
@@ -112,6 +191,17 @@ public class ImageButton implements PaintListener {
 	 */
 	public ImageButton hover(Image image) {
 		this.hoverImage = image;
+		return this;
+	}
+
+	/**
+	 * hover
+	 * 
+	 * @param layout
+	 * @return
+	 */
+	public ImageButton blur(Color color) {
+		this.blurColor = color;
 		return this;
 	}
 
@@ -127,35 +217,89 @@ public class ImageButton implements PaintListener {
 	}
 
 	/**
+	 * 点亮
+	 */
+	public void on() {
+		this.on = true;
+		control.redraw();
+	}
+
+	/**
+	 * 取消点亮
+	 */
+	public void off() {
+		this.on = false;
+		control.redraw();
+	}
+
+	/**
+	 * 点亮
+	 */
+	private void hoverOn() {
+		this.hoverOn = true;
+		control.redraw();
+		control.getShell().setCursor(ResourceManager.getCursor(SWT.CURSOR_HAND));
+	}
+
+	/**
+	 * 取消点亮
+	 */
+	private void hoverOff() {
+		this.hoverOn = false;
+		control.redraw();
+		control.getShell().setCursor(ResourceManager.getCursor(SWT.CURSOR_ARROW));
+	}
+
+	/**
 	 * 创建组件
 	 */
-	public void build() {
-		this.label.setLayoutData(layout);
-		
-		// 显示的图片
-		if (this.image != null) {
-			this.label.addPaintListener(this);
+	public ImageButton build() {
+
+		// 设置位置
+		if (layout != null) {
+			this.control.setLayoutData(layout);
 		}
-		
+
+		// 大小
+		if (bounds != null) {
+			this.control.setBounds(bounds);
+		}
+
+		// 显示的图片
+		this.control.addPaintListener(this);
+
+		// 文本
+		if (this.text != null) {
+			this.control.setBackground(ResourceManager.getColor(SWT.COLOR_WHITE));
+			if (control instanceof CLabel) {
+				((CLabel) (this.control)).setText(text);
+				((CLabel) (this.control)).setAlignment(SWT.CENTER);
+			} else {
+				((Button) (this.control)).setText(text);
+				((Button) (this.control)).setAlignment(SWT.CENTER);
+			}
+		}
+
+		// 文本 - blur
+		if (this.text != null && this.blurColor != null) {
+			this.control.setBackground(blurColor);
+		}
+
 		// 提示
 		if (this.tip != null) {
-			this.label.setToolTipText(this.tip);
+			this.control.setToolTipText(this.tip);
 		}
 		// hover 事件
 		if (this.hoverImage != null) {
-			this.label.addMouseTrackListener(new MouseTrackListener() {
+			this.control.addMouseTrackListener(new MouseTrackListener() {
 				@Override
 				public void mouseEnter(MouseEvent arg0) {
-					on = true;
-					label.redraw();
-					label.getShell().setCursor(ResourceManager.getCursor(SWT.CURSOR_HAND));
+					hoverOn();
 				}
 
 				@Override
 				public void mouseExit(MouseEvent arg0) {
-					on = false;
-					label.redraw();
-					label.getShell().setCursor(ResourceManager.getCursor(SWT.CURSOR_ARROW));
+					hoverOff();
 				}
 
 				@Override
@@ -165,11 +309,17 @@ public class ImageButton implements PaintListener {
 		}
 
 		// 点击事件
-		if (this.click != null) {
-			this.label.addListener(SWT.MouseUp, (e) -> {
-				this.click.run();
+		if (this.click != null || this.group != null) {
+			this.control.addListener(SWT.MouseUp, (e) -> {
+				if (this.group != null) {
+					this.group.on(this);
+				}
+				if (this.click != null) {
+					this.click.run();
+				}
 			});
 		}
+		return this;
 	}
 
 	/**

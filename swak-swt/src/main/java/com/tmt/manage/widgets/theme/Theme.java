@@ -2,6 +2,7 @@ package com.tmt.manage.widgets.theme;
 
 import java.util.List;
 
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -45,6 +46,7 @@ public interface Theme {
 		private Image image;
 		private Image imageOn;
 		private Runnable runnable;
+		private Color color;
 
 		public String name() {
 			return name;
@@ -52,6 +54,15 @@ public interface Theme {
 
 		public Action name(String name) {
 			this.name = name;
+			return this;
+		}
+		
+		public Color color() {
+			return color;
+		}
+
+		public Action color(Color color) {
+			this.color = color;
 			return this;
 		}
 

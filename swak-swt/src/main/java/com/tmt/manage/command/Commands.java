@@ -156,7 +156,7 @@ public class Commands {
 	 */
 	public static enum Cmd {
 		init("初始化"), task("任务"), start("启动"), open("主页"), url("打开地址"), stop("停止"), close("关闭"), exit("退出"), Dispose(
-				"释放"), Deactivated("非激活"), Deiconified("非最小化"), Iconified("最小化");
+				"释放"), Deactivated("非激活"), Deiconified("非最小化"), Iconified("最小化"), upgrade("升级");
 
 		private String name;
 

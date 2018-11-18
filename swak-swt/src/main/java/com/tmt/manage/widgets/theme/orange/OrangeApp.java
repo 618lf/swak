@@ -6,6 +6,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -30,6 +33,8 @@ import com.tmt.manage.command.Receiver;
 import com.tmt.manage.config.Settings;
 import com.tmt.manage.widgets.BaseApp;
 import com.tmt.manage.widgets.ImageButton;
+import com.tmt.manage.widgets.ImageButtonGroup;
+import com.tmt.manage.widgets.MD5;
 import com.tmt.manage.widgets.Progress;
 import com.tmt.manage.widgets.ResourceManager;
 import com.tmt.manage.widgets.theme.Theme.Action;
@@ -49,6 +54,9 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 	private Progress progress;
 	private Thread signalThread;
 	private volatile Status status = Status.stop;
+	private Clipboard clipboard;
+	private Thread clipboardThread;
+	private volatile String clipboardMD5 = null;
 
 	private int height_top = 32;
 	private int height_tools = 90;
@@ -65,6 +73,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 
 	@Override
 	protected void createContents() {
+		this.configureClipboard();
 		OrangeTheme theme = (OrangeTheme) this.theme;
 		shell.setText(Settings.me().getServerName());
 		if (theme.logo() != null) {
@@ -132,6 +141,53 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 		signalThread.start();
 	}
 
+	// 监控剪切板
+	protected void configureClipboard() {
+		clipboard = new Clipboard(shell.getDisplay());
+		clipboardThread = new Thread(() -> {
+			while (status != Status.exit) {
+				try {
+					monitorClipboardChange();
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					break;
+				}
+			}
+		});
+		clipboardThread.setDaemon(true);
+		clipboardThread.start();
+	}
+
+	// 获取监听内容
+	protected void monitorClipboardChange() {
+		Display.getDefault().asyncExec(() -> {
+			try {
+				String text = null;
+				TransferData[] available = clipboard.getAvailableTypes();
+				TextTransfer textTransfer = TextTransfer.getInstance();
+				for (int i = 0; i < available.length; i++) {
+					if (textTransfer.isSupportedType(available[i])) {
+						text = String.valueOf(clipboard.getContents(textTransfer));
+						break;
+					}
+				}
+
+				// 无文本内容不用处理
+				if (text == null) {
+					return;
+				}
+
+				// 比较是否变化
+				String md5 = MD5.encode(text);
+				if (this.clipboardMD5 == null || !this.clipboardMD5.equals(md5)) {
+					this.clipboardMD5 = md5;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+	}
+
 	// 控制按钮的配置
 	protected void configureTops(Composite top) {
 		OrangeTheme theme = (OrangeTheme) this.theme;
@@ -191,13 +247,16 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 		gl_childTools.marginHeight = 8;
 		childTools.setLayout(gl_childTools);
 
+		// 按钮组
+		ImageButtonGroup ibg = new ImageButtonGroup();
+					
 		// 按钮
 		for (int i = 0; i < size; i++) {
 			Action action = theme.actions().get(i);
 			GridData gd_index = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 			gd_index.widthHint = height_button;
 			gd_index.heightHint = height_button;
-			ImageButton.builder(childTools).image(action.image()).hover(action.imageOn()).layout(gd_index)
+			ImageButton.builder(childTools).group(ibg).image(action.image()).hover(action.imageOn()).layout(gd_index)
 					.click(action.click()).build();
 		}
 	}
@@ -297,7 +356,9 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 			}
 		});
 		shell.addDisposeListener(e -> {
+			clipboardThread.interrupt();
 			signalThread.interrupt();
+			clipboard.dispose();
 			Commands.nameCommand(Cmd.Dispose).exec();
 		});
 	}

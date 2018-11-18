@@ -11,6 +11,7 @@ import com.tmt.commands.ExitCommand;
 import com.tmt.commands.StartCommand;
 import com.tmt.commands.StopCommand;
 import com.tmt.commands.TouchCommand;
+import com.tmt.commands.UpgradeCommand;
 import com.tmt.commands.UrlCommand;
 import com.tmt.manage.App;
 import com.tmt.manage.command.Commands;
@@ -37,6 +38,7 @@ public class Starter extends App {
 		Commands.register(Cmd.exit, new ExitCommand());
 		Commands.register(Cmd.task, new TouchCommand());
 		Commands.register(Cmd.url, new UrlCommand());
+		Commands.register(Cmd.upgrade, new UpgradeCommand());
 	}
 
 	/**
@@ -104,6 +106,9 @@ public class Starter extends App {
 				}));
 				actions.add(Action.me().image(this.load("设置.png")).imageOn(this.load("设置-on.png")).click(() -> {
 					Commands.nameCommand(Cmd.url).exec("settings");
+				}));
+				actions.add(Action.me().image(this.load("升级.png")).imageOn(this.load("升级-on.png")).click(() -> {
+					Commands.nameCommand(Cmd.upgrade).exec();
 				}));
 				actions.add(Action.me().image(this.load("退出.png")).imageOn(this.load("退出-on.png")).click(() -> {
 					Commands.nameCommand(Cmd.close).exec();
