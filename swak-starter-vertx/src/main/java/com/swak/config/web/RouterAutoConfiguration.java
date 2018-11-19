@@ -1,12 +1,9 @@
 package com.swak.config.web;
 
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.DefaultFormattingConversionService;
@@ -32,8 +29,6 @@ import io.vertx.ext.web.Router;
 @Configuration
 @ConditionalOnClass(Router.class)
 @EnableConfigurationProperties(VertxProperties.class)
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 public class RouterAutoConfiguration {
 
 	/**

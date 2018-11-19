@@ -3,14 +3,11 @@ package com.swak.config.redis;
 import static com.swak.Application.APP_LOGGER;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 
 import com.swak.Constants;
 import com.swak.cache.CacheProperties;
@@ -22,15 +19,11 @@ import com.swak.cache.redis.RedisCacheManager;
  */
 @Configuration
 @ConditionalOnClass(RedisCacheManager.class)
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableRedis", matchIfMissing = true)
 public class CacheModuleAutoConfiguration {
 
 	
 	@Configuration
-	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@ConditionalOnMissingBean(CacheConfigurationSupport.class)
 	@EnableConfigurationProperties(CacheProperties.class)
 	public static class CacheAutoConfiguration extends CacheConfigurationSupport {}
@@ -40,8 +33,6 @@ public class CacheModuleAutoConfiguration {
 	 * @author lifeng
 	 */
 	@Configuration
-	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@ConditionalOnMissingBean(EventBusConfigurationSupport.class)
 	@AutoConfigureAfter(CacheAutoConfiguration.class)
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableEventBus", matchIfMissing = true)

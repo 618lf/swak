@@ -16,7 +16,6 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -27,8 +26,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -47,6 +44,7 @@ import com.swak.config.jdbc.database.DataSourceProperties;
 import com.swak.config.jdbc.database.DruidDataSourceAutoConfiguration;
 import com.swak.config.jdbc.database.HikariDataSourceAutoConfiguration;
 import com.swak.config.jdbc.database.SpringBootVFS;
+import com.swak.config.jdbc.database.SqlLiteDataSourceAutoConfiguration;
 import com.swak.config.jdbc.transaction.DataSourceTransactionManagerAutoConfiguration;
 import com.swak.config.jdbc.transaction.TransactionAutoConfiguration;
 import com.swak.persistence.JdbcSqlExecutor;
@@ -61,8 +59,6 @@ import com.swak.utils.StringUtils;
  */
 @org.springframework.context.annotation.Configuration
 @ConditionalOnClass(JdbcTemplate.class)
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableDataBase", matchIfMissing = true)
 public class DataBaseAutoConfiguration {
 
@@ -72,12 +68,11 @@ public class DataBaseAutoConfiguration {
 	 * @author lifeng
 	 */
 	@org.springframework.context.annotation.Configuration
-	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@ConditionalOnClass(JdbcTemplate.class)
 	@ConditionalOnMissingBean(DataSource.class)
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	@Import({
+		SqlLiteDataSourceAutoConfiguration.class,
 		DruidDataSourceAutoConfiguration.class,
 		HikariDataSourceAutoConfiguration.class
 	})
@@ -145,8 +140,6 @@ public class DataBaseAutoConfiguration {
 	 * @author lifeng
 	 */
 	@org.springframework.context.annotation.Configuration
-	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
-	@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE + 10)
 	@ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
 	@ConditionalOnSingleCandidate(DataSource.class)
 	@Import({ DataSourceTransactionManagerAutoConfiguration.class, TransactionAutoConfiguration.class })
@@ -164,8 +157,6 @@ public class DataBaseAutoConfiguration {
 	 *
 	 */
 	@org.springframework.context.annotation.Configuration
-	@Order(Ordered.HIGHEST_PRECEDENCE + 20)
-	@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE + 20)
 	@ConditionalOnClass({ SqlSessionFactory.class, SqlSessionFactoryBean.class })
 	@ConditionalOnBean(DataSource.class)
 	@EnableConfigurationProperties(MybatisProperties.class)
