@@ -30,6 +30,7 @@
 		<module>swak-quartz</module>
 		<module>swak-swt</module>
 		<module>swak-package</module>
+		<module>swak-excel</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.1.0.RELEASE</spring-boot.version>
@@ -62,6 +63,7 @@
 		<metrics.version>4.0.2</metrics.version>
 		<quartz.version>2.2.3</quartz.version>
 		<swt.version>1.0</swt.version>
+		<poi.version>4.0.0</poi.version>
 
 		<!-- test -->
 		<junit.version>4.12</junit.version>
