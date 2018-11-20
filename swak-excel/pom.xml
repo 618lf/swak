@@ -16,6 +16,16 @@
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>${poi.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-collections4</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-codec</groupId>
+					<artifactId>commons-codec</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -23,8 +33,12 @@
 			<version>${poi.version}</version>
 			<exclusions>
 				<exclusion>
-					<groupId>dom4j</groupId>
-					<artifactId>dom4j</artifactId>
+					<groupId>com.github.virtuald</groupId>
+					<artifactId>curvesapi</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-compress</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
