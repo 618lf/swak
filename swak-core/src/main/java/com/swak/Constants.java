@@ -16,7 +16,7 @@ public interface Constants {
 	String URL_PATH_VARIABLE_SUFFIX = "}";
 	String _URL_PATH_VARIABLE_PRE = ":";
 	String _URL_PATH_VARIABLE_SUFFIX = "";
-	
+
 	/** 配置项前缀 */
 	String APPLICATION_PREFIX = "spring.application";
 	String RPC_SERVER_PREFIX = "spring.rpc-server";
@@ -62,4 +62,9 @@ public interface Constants {
 	String write_pool = "write";
 	String read_pool = "read";
 	String single_pool = "single";
+
+	/** 目录 **/
+	default String temp() {
+		return System.getProperty("java.io.tmpdir");
+	}
 }

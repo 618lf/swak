@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -18,11 +19,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.entity.ColumnMapper;
 import com.swak.entity.DataType;
 import com.swak.entity.LabelVO;
 import com.swak.entity.Result;
+import com.swak.excel.impl.DefaultExportFile;
 import com.swak.utils.IOUtils;
 import com.swak.utils.Lists;
+import com.swak.utils.Maps;
 
 /**
  * 
@@ -32,8 +36,7 @@ import com.swak.utils.Lists;
  */
 public abstract class ExcelUtils {
 
-	private ExcelUtils() {
-	}
+	private ExcelUtils() {}
 
 	/**
 	 * 返回Excel的列序号集合
@@ -232,5 +235,79 @@ public abstract class ExcelUtils {
 			e.printStackTrace();
 		}
 		return Result.error("数据导入错误,未读取到数据");
+	}
+	
+	/**
+	 * 构建导出参数
+	 * 
+	 * @param fileName
+	 *            -- 导出的文件名称
+	 * @param title
+	 *            -- Excel 文件中的title(sheet页的名称)
+	 * @param columns
+	 *            -- 要导出的列 key和 columns 中的property对应
+	 * @param vaules
+	 *            -- 要导出的数据通过 key和 columns 中的property对应
+	 * @return
+	 */
+	public static <T> Map<String, Object> buildExpParams(String fileName, String title, List<ColumnMapper> columns,
+			List<T> vaules) {
+		Map<String, Object> datas = Maps.newHashMap();
+		datas.put(IExportFile.EXPORT_COLUMNS, columns);
+		datas.put(IExportFile.EXPORT_FILE_NAME, fileName);
+		datas.put(IExportFile.EXPORT_FILE_TITLE, title);
+		datas.put(IExportFile.EXPORT_VALUES, vaules);
+		return datas;
+	}
+	
+	/**
+	 * 根据模板构建导出参数
+	 * 
+	 * @param fileName
+	 *            -- 导出的文件名称
+	 * @param title
+	 *            -- Excel 文件中的title(sheet页的名称)
+	 * @param columns
+	 *            -- 要导出的列 key和 columns 中的property对应
+	 * @param vaules
+	 *            -- 要导出的数据通过 key和 columns 中的property对应
+	 * @param templatenName
+	 *            -- 要导出的模板名，模板默认放在WIN-INF/template/excel下面
+	 * @param startRow
+	 *            -- 要导出的模板从第几行开始写数据，值为开始写数据行减一（若从sheet第3行开始写数据就要写2）
+	 * @return
+	 */
+	public static <T> Map<String, Object> buildExpParams(String fileName, String title, List<ColumnMapper> columns,
+			List<T> vaules, String templatenName, int startRow) {
+		Map<String, Object> datas = Maps.newHashMap();
+		datas.put(IExportFile.EXPORT_COLUMNS, columns);
+		datas.put(IExportFile.EXPORT_FILE_NAME, fileName);
+		datas.put(IExportFile.EXPORT_FILE_TITLE, title);
+		datas.put(IExportFile.EXPORT_VALUES, vaules);
+		datas.put(IExportFile.TEMPLATE_NAME, templatenName);
+		datas.put(IExportFile.TEMPLATE_START_ROW, startRow);
+		return datas;
+	}
+	
+	/**
+	 * 直接构建Excel 文件
+	 * 
+	 * @param fileName
+	 * @param title
+	 * @param columns
+	 * @param vaules
+	 * @param templatenName
+	 * @param startRow
+	 * @return
+	 */
+	public static <T> File buildExcelFile(String fileName, String title, List<ColumnMapper> columns, List<T> vaules,
+			String templatenName, int startRow) {
+		try {
+			Map<String, Object> data = buildExpParams(fileName, title, columns, vaules, templatenName,
+					startRow);
+			return new DefaultExportFile().build(data);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }

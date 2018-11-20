@@ -10,6 +10,9 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.util.UUID;
+
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * 基于 NIO 的 高性能文件操作
@@ -17,6 +20,31 @@ import java.nio.channels.ReadableByteChannel;
  * @author lifeng
  */
 public class FileUtils {
+
+	/**
+	 * classpath 目录下的文件
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static File classpath(String name) {
+		ClassPathResource resource = new ClassPathResource(name);
+		try {
+			return resource.getFile();
+		} catch (IOException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * 返回一个指定名称的临时文件
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static File tempFile(String name) {
+		return new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + "." + name);
+	}
 
 	/**
 	 * 将 字节写入文件
@@ -68,10 +96,24 @@ public class FileUtils {
 	 * 
 	 * @param file
 	 */
-	public static FileInputStream open(File file) {
+	public static FileInputStream in(File file) {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
+		} catch (Exception e) {
+		}
+		return fis;
+	}
+
+	/**
+	 * 打开这个文件
+	 * 
+	 * @param file
+	 */
+	public static FileOutputStream out(File file) {
+		FileOutputStream fis = null;
+		try {
+			fis = new FileOutputStream(file);
 		} catch (Exception e) {
 		}
 		return fis;
@@ -117,10 +159,12 @@ public class FileUtils {
 				public void completed(Integer result, Void attachment) {
 					_continue();
 				}
+
 				@Override
 				public void failed(Throwable exc, Void attachment) {
 					_continue();
 				}
+
 				private void _continue() {
 					try {
 						asyncWrite(src, dist, bytebuf, completed);

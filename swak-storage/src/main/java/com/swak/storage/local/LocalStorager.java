@@ -75,7 +75,7 @@ public class LocalStorager implements Storager {
 		}
 		File file = new File(realFileName);
 		if (file != null && file.exists()) {
-			return FileUtils.open(file);
+			return FileUtils.in(file);
 		}
 		return null;
 	}
