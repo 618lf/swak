@@ -9,7 +9,7 @@ import java.util.Map;
  * @author 李锋
  * @date 2013-4-26 下午09:48:04
  */
-public interface IConverter<T> {
+public interface Converter<T> {
 
 	/**
 	 * 接收收据

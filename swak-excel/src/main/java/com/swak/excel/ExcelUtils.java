@@ -22,10 +22,8 @@ import com.swak.entity.ColumnMapper;
 import com.swak.entity.DataType;
 import com.swak.entity.LabelVO;
 import com.swak.entity.Result;
-import com.swak.excel.impl.DefaultExportFile;
 import com.swak.utils.IOUtils;
 import com.swak.utils.Lists;
-import com.swak.utils.Maps;
 
 /**
  * 
@@ -35,7 +33,10 @@ import com.swak.utils.Maps;
  */
 public abstract class ExcelUtils {
 
-	private ExcelUtils() {}
+	private static Logger logger = LoggerFactory.getLogger(ExcelUtils.class);
+
+	private ExcelUtils() {
+	}
 
 	/**
 	 * 返回Excel的列序号集合
@@ -97,66 +98,6 @@ public abstract class ExcelUtils {
 	}
 
 	/**
-	 * 从路径加载Excel
-	 * 
-	 * @param filePath
-	 * @return
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws BiffException
-	 */
-	public static Workbook loadExcelFile(String filePath) throws FileNotFoundException, IOException {
-		return loadExcelFile(new File(filePath));
-	}
-
-	/**
-	 * 从文件加载Excel
-	 * 
-	 * @param file
-	 * @return
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws BiffException
-	 */
-	public static Workbook loadExcelFile(File file) throws IOException {
-		InputStream inputStream = null;
-		try {
-			inputStream = new FileInputStream(file);
-		} catch (FileNotFoundException e) {
-			throw new IOException("指定的Excel数据文件不存在", e);
-		}
-		return loadExcelFile(inputStream);
-	}
-
-	/**
-	 * 从流加载Excel
-	 * 
-	 * @param inputStream
-	 * @return
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws BiffException
-	 */
-	public static Workbook loadExcelFile(InputStream inputStream) throws IOException {
-		try {
-			Workbook book = null;
-			inputStream = FileMagic.prepareToCheckMagic(inputStream);
-			if (FileMagic.valueOf(inputStream) == FileMagic.OLE2) {
-				book = new HSSFWorkbook(inputStream);
-			} else if (FileMagic.valueOf(inputStream) == FileMagic.OOXML) {
-				book = new XSSFWorkbook(OPCPackage.open(inputStream));
-			}
-			return book;
-		} catch (IOException e) {
-			throw new IOException("加载Excel数据文件异常", e);
-		} catch (InvalidFormatException e) {
-			throw new IOException("加载Excel数据文件异常", e);
-		} finally {
-			IOUtils.closeQuietly(inputStream);
-		}
-	}
-
-	/**
 	 * 是否是日期列
 	 * 
 	 * @param value
@@ -176,6 +117,57 @@ public abstract class ExcelUtils {
 		return DateUtil.isADateFormat(i, f);
 	}
 
+	// ########### Load Excel ################
+
+	/**
+	 * 从文件加载Excel
+	 * 
+	 * @param file
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws BiffException
+	 */
+	public static Workbook load(File file) throws IOException {
+		InputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new IOException("指定的Excel数据文件不存在", e);
+		}
+		return load(inputStream);
+	}
+
+	/**
+	 * 从流加载Excel
+	 * 
+	 * @param inputStream
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws BiffException
+	 */
+	public static Workbook load(InputStream inputStream) throws IOException {
+		try {
+			Workbook book = null;
+			inputStream = FileMagic.prepareToCheckMagic(inputStream);
+			if (FileMagic.valueOf(inputStream) == FileMagic.OLE2) {
+				book = new HSSFWorkbook(inputStream);
+			} else if (FileMagic.valueOf(inputStream) == FileMagic.OOXML) {
+				book = new XSSFWorkbook(OPCPackage.open(inputStream));
+			}
+			return book;
+		} catch (IOException e) {
+			throw new IOException("加载Excel数据文件异常", e);
+		} catch (InvalidFormatException e) {
+			throw new IOException("加载Excel数据文件异常", e);
+		} finally {
+			IOUtils.closeQuietly(inputStream);
+		}
+	}
+
+	// ########### 读取Excel 数据 ################
+
 	/**
 	 * 获取数据
 	 * 
@@ -184,10 +176,10 @@ public abstract class ExcelUtils {
 	 * @param file
 	 * @return
 	 */
-	public static <T> Result fetchObjectFromMapper(AbstractExcelMapper<T> mapper, File file) {
+	public static <T> Result read(AbstractExcelMapper<T> mapper, File file) {
 		try {
-			Workbook book = ExcelUtils.loadExcelFile(file);
-			return fetchObjectFromTemplate(mapper, book, false);
+			Workbook book = ExcelUtils.load(file);
+			return read(mapper, book, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -202,14 +194,13 @@ public abstract class ExcelUtils {
 	 * @param file
 	 * @return
 	 */
-	public static <T> Result fetchObjectFromTemplate(AbstractExcelMapper<T> mapper, Workbook book, boolean first) {
-		Logger logger = LoggerFactory.getLogger(ExcelUtils.class);
+	public static <T> Result read(AbstractExcelMapper<T> mapper, Workbook book, boolean first) {
 		try {
 			List<T> objects = Lists.newArrayList();
 			int sheets = first ? 1 : book.getNumberOfSheets();
 			for (int i = 0; i < sheets; i++) {
 				if (!book.isSheetHidden(i)) {
-					ImportResult<T> result = mapper.getExcelData(book.getSheetAt(i));
+					ImportResult<T> result = mapper.read(book.getSheetAt(i));
 					if (result != null && result.getSuccess()) {
 						List<T> _objects = result.getSucessRows();
 						if (null != _objects) {
@@ -233,61 +224,11 @@ public abstract class ExcelUtils {
 		}
 		return Result.error("数据导入错误,未读取到数据");
 	}
-	
+
+	// ########### 写 Excel 数据 ################
+
 	/**
-	 * 构建导出参数
-	 * 
-	 * @param fileName
-	 *            -- 导出的文件名称
-	 * @param title
-	 *            -- Excel 文件中的title(sheet页的名称)
-	 * @param columns
-	 *            -- 要导出的列 key和 columns 中的property对应
-	 * @param vaules
-	 *            -- 要导出的数据通过 key和 columns 中的property对应
-	 * @return
-	 */
-	public static <T> Map<String, Object> buildExpParams(String fileName, String title, List<ColumnMapper> columns,
-			List<T> vaules) {
-		Map<String, Object> datas = Maps.newHashMap();
-		datas.put(IExportFile.EXPORT_COLUMNS, columns);
-		datas.put(IExportFile.EXPORT_FILE_NAME, fileName);
-		datas.put(IExportFile.EXPORT_FILE_TITLE, title);
-		datas.put(IExportFile.EXPORT_VALUES, vaules);
-		return datas;
-	}
-	
-	/**
-	 * 根据模板构建导出参数
-	 * 
-	 * @param fileName
-	 *            -- 导出的文件名称
-	 * @param title
-	 *            -- Excel 文件中的title(sheet页的名称)
-	 * @param columns
-	 *            -- 要导出的列 key和 columns 中的property对应
-	 * @param vaules
-	 *            -- 要导出的数据通过 key和 columns 中的property对应
-	 * @param templatenName
-	 *            -- 要导出的模板名，模板默认放在WIN-INF/template/excel下面
-	 * @param startRow
-	 *            -- 要导出的模板从第几行开始写数据，值为开始写数据行减一（若从sheet第3行开始写数据就要写2）
-	 * @return
-	 */
-	public static <T> Map<String, Object> buildExpParams(String fileName, String title, List<ColumnMapper> columns,
-			List<T> vaules, String templatenName, int startRow) {
-		Map<String, Object> datas = Maps.newHashMap();
-		datas.put(IExportFile.EXPORT_COLUMNS, columns);
-		datas.put(IExportFile.EXPORT_FILE_NAME, fileName);
-		datas.put(IExportFile.EXPORT_FILE_TITLE, title);
-		datas.put(IExportFile.EXPORT_VALUES, vaules);
-		datas.put(IExportFile.TEMPLATE_NAME, templatenName);
-		datas.put(IExportFile.TEMPLATE_START_ROW, startRow);
-		return datas;
-	}
-	
-	/**
-	 * 直接构建Excel 文件
+	 * 创建Excel 文件
 	 * 
 	 * @param fileName
 	 * @param title
@@ -297,12 +238,11 @@ public abstract class ExcelUtils {
 	 * @param startRow
 	 * @return
 	 */
-	public static <T> File buildExcelFile(String fileName, String title, List<ColumnMapper> columns, List<T> vaules,
-			String templatenName, int startRow) {
+	public static File write(String fileName, String title, List<ColumnMapper> columns,
+			List<Map<String, Object>> vaules, String templateName, Integer startRow) {
 		try {
-			Map<String, Object> data = buildExpParams(fileName, title, columns, vaules, templatenName,
-					startRow);
-			return new DefaultExportFile().build(data);
+			return ExportFile.def().templateName(templateName).startRow(startRow).fileName(fileName).fileTitle(title)
+					.columns(columns).values(vaules).build();
 		} catch (Exception e) {
 			return null;
 		}

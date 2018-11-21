@@ -7,7 +7,7 @@ import org.apache.poi.ss.usermodel.Sheet;
  * 
  * @author liFeng 2014年9月22日
  */
-public interface IExcelExecuter {
+public interface ExcelExecuter {
 
 	/**
 	 * 得到excel的数据
@@ -15,5 +15,5 @@ public interface IExcelExecuter {
 	 * @param sheet
 	 * @return
 	 */
-	public <T> ImportResult<T> getExcelData(IExcelMapper<T> mapper, Sheet sheet);
+	public <T> ImportResult<T> getExcelData(ExcelMapper<T> mapper, Sheet sheet);
 }

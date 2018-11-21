@@ -21,16 +21,14 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import com.swak.entity.ColumnMapper;
 import com.swak.entity.DataType;
 import com.swak.excel.ExcelUtils;
-import com.swak.excel.IExportFile;
-import com.swak.excel.IExportStyleHandler;
+import com.swak.excel.ExportFile;
+import com.swak.excel.StyleHandler;
 import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.FileUtils;
 import com.swak.utils.IOUtils;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
-import com.swak.utils.SpringContextHolder;
 import com.swak.utils.StringUtils;
-import com.swak.utils.time.DateUtils;
 import com.swak.zip.ZipEntry;
 import com.swak.zip.ZipOutputStream;
 
@@ -39,45 +37,100 @@ import com.swak.zip.ZipOutputStream;
  * 
  * @author lifeng
  */
-public class DefaultExportFile implements IExportFile {
+public class DefaultExportFile implements ExportFile {
 
-	/**
-	 * 根据参数导出文件
-	 */
-	public File build(Map<String, Object> data) {
-		List<File> files = this.buildExcels(data);
-		return buildZip(files, data);
+	private String fileName;
+	private String fileTitle;
+	private List<ColumnMapper> columns;
+	private List<Map<String, Object>> values;
+	private String templateName;
+	private Integer startRow;
+	private Map<String, CellStyle> cellStyles;
+	private StyleHandler styleHandler;
+
+	public DefaultExportFile fileName(String fileName) {
+		this.fileName = fileName;
+		return this;
+	}
+
+	public DefaultExportFile fileTitle(String fileTitle) {
+		this.fileTitle = fileTitle;
+		return this;
+	}
+
+	public DefaultExportFile columns(List<ColumnMapper> columns) {
+		this.columns = columns;
+		return this;
+	}
+
+	public DefaultExportFile values(List<Map<String, Object>> values) {
+		this.values = values;
+		return this;
+	}
+
+	public DefaultExportFile templateName(String templateName) {
+		this.templateName = templateName;
+		return this;
+	}
+
+	public DefaultExportFile startRow(Integer startRow) {
+		this.startRow = startRow;
+		return this;
+	}
+
+	public DefaultExportFile cellStyles(Map<String, CellStyle> cellStyles) {
+		this.cellStyles = cellStyles;
+		return this;
+	}
+
+	public DefaultExportFile styleHandler(StyleHandler styleHandler) {
+		this.styleHandler = styleHandler;
+		return this;
 	}
 
 	/**
 	 * 根据参数导出文件
 	 */
-	public List<File> buildExcels(Map<String, Object> data) {
+	public File build() {
+		List<File> files = this.buildExcels();
+		if (files.size() <= 1) {
+			return files.get(0);
+		}
+		return buildZip(files);
+	}
+
+	/**
+	 * 根据参数导出文件
+	 */
+	private List<File> buildExcels() {
 
 		/**
 		 * 校验参数
 		 */
-		if (!this.checkDataAttr(data)) {
+		if (!this.checkDataAttr()) {
 			return null;
 		}
 
 		/**
+		 * 模板文件
+		 */
+		File templateFile = FileUtils.classpath(EXPORT_TEMPLATE_PATH + templateName);
+		
+		/**
 		 * 导出
 		 */
 		List<File> files = Lists.newArrayList();
-		List<Map<String, Object>> datas = getDatas(data);
-		int maxSize = MAX_ROWS - getStartPos(data);
+		List<Map<String, Object>> datas = this.values;
+		int maxSize = MAX_ROWS - this.startRow;
 		if (datas != null && datas.size() > maxSize) {
 			List<List<Map<String, Object>>> pDatas = Lists.partition(datas, maxSize);
-			for (List<Map<String, Object>> p : pDatas) {
-				data.put(EXPORT_VALUES, p);
-				// 生成文件
-				File outFile = createFile(data);
+			for (List<Map<String, Object>> value : pDatas) {
+				File outFile = createFile(templateFile, value);
 				files.add(outFile);
 			}
 		} else {
 			// 生成文件
-			File outFile = createFile(data);
+			File outFile = createFile(templateFile, datas);
 			files.add(outFile);
 		}
 
@@ -85,212 +138,14 @@ public class DefaultExportFile implements IExportFile {
 		return files;
 	}
 
-	/**
-	 * 创建zip 文件
-	 * 
-	 * @param files
-	 * @param data
-	 * @return
-	 */
-	public File buildZip(List<File> files, Map<String, Object> data) {
-		return getExportFile(files, getExportZipFile(data));
-	}
-
-	/**
-	 * Excel 的临时文件
-	 * 
-	 * @param data
-	 * @return
-	 */
-	private File getExportExcelFile(Map<String, Object> data) {
-		String name = data.get(EXPORT_FILE_NAME) + XLS;
-		return FileUtils.tempFile(name);
-	}
-
-	/**
-	 * zip 的临时文件
-	 * 
-	 * @param data
-	 * @return
-	 */
-	private File getExportZipFile(Map<String, Object> data) {
-		String name = data.get(EXPORT_FILE_NAME) + ZIP;
-		return FileUtils.tempFile(name);
-	}
-
-	/**
-	 * 模板文件
-	 * 
-	 * @param data
-	 * @return
-	 */
-	private File getTemplateFile(Map<String, Object> data) {
-		String templatePath = new StringBuilder().append(EXPORT_TEMPLATE_PATH).append(data.get(TEMPLATE_NAME))
-				.toString();
-		return FileUtils.classpath(templatePath);
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<ColumnMapper> getColumnMappers(Map<String, Object> data) {
-		return (List<ColumnMapper>) data.get(EXPORT_COLUMNS);
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Map<String, Object>> getDatas(Map<String, Object> data) {
-		return (List<Map<String, Object>>) data.get(EXPORT_VALUES);
-	}
-
-	public String getTitle(Map<String, Object> data) {
-		return String.valueOf(data.get(EXPORT_FILE_TITLE));
-	}
-
-	public IExportStyleHandler getStyleHandler(Map<String, Object> data) {
-		try {
-			String handlerName = String.valueOf(data.get(CUSTEM_CELL_STYLE_OBJ));
-			if (StringUtils.isNotBlank(handlerName)) {
-				return SpringContextHolder.getBean(handlerName, IExportStyleHandler.class);
-			}
-		} catch (Exception e) {
-		}
-		return null;
-	}
-
-	// 得到导出的开始位置
-	public Integer getStartPos(Map<String, Object> data) {
-		return (Integer) data.get(TEMPLATE_START_ROW);
-	}
-
-	// 是否自定义模板
-	public Boolean isDefaultTemplate(Map<String, Object> data) {
-		String templateName = (String) data.get(TEMPLATE_NAME);
-		return DEFAULT_TEMPLATE_NAME.equals(templateName);
-	}
-
-	// 得到单元格的格式(题头)
-	public CellStyle getHeaderCellStyle(Workbook template, Map<String, Object> data, String cellKey) {
-		@SuppressWarnings("unchecked")
-		Map<String, CellStyle> cells = (Map<String, CellStyle>) data.get(CELL_STYLE_NAMES);
-		if (cells == null) {
-			cells = loadcellStyles(template, data);
-		}
-		return cells.get(cellKey);
-	}
-
-	// 得到数据单元格的样式
-	public CellStyle getCellStyle(Workbook template, Map<String, Object> data, ColumnMapper mapper) {
-		@SuppressWarnings("unchecked")
-		Map<String, CellStyle> cells = (Map<String, CellStyle>) data.get(CELL_STYLE_NAMES);
-		if (cells == null) {
-			cells = loadcellStyles(template, data);
-		}
-		if (isDefaultTemplate(data)) {
-			if (mapper != null && mapper.getDataType() == DataType.DATE) {
-				return cells.get("date");
-			} else if (mapper != null && mapper.getDataType() == DataType.MONEY) {
-				return cells.get("money");
-			}
-			return cells.get("template");
-		} else {
-			return cells.get(mapper == null ? "A" : mapper.getColumn());
-		}
-	}
-
-	public Map<String, CellStyle> loadcellStyles(Workbook template, Map<String, Object> data) {
-		Map<String, CellStyle> cells = Maps.newHashMap();
-		if (isDefaultTemplate(data)) {
-			// 单元格格式
-			Cell objCellTemplate = template.getSheetAt(1).getRow(0).getCell(2);
-			CellStyle templateStyle = getWrapCellStyle(objCellTemplate.getCellStyle());
-			objCellTemplate = template.getSheetAt(1).getRow(0).getCell(0);
-			CellStyle dateStyle = getWrapCellStyle(objCellTemplate.getCellStyle());
-			objCellTemplate = template.getSheetAt(1).getRow(0).getCell(1);
-			CellStyle moneyStyle = getWrapCellStyle(objCellTemplate.getCellStyle());
-			objCellTemplate = template.getSheetAt(1).getRow(0).getCell(4);
-			CellStyle headerStyle = getWrapCellStyle(objCellTemplate.getCellStyle());
-			cells.put("template", templateStyle);
-			cells.put("date", dateStyle);
-			cells.put("money", moneyStyle);
-			cells.put("header", headerStyle);
-		} else {
-			int iPos = getStartPos(data);
-			Sheet sheet = template.getSheetAt(0);
-			Row objRow = sheet.getRow(iPos);
-			if (objRow == null) {
-				objRow = sheet.createRow(iPos);
-			}
-			int iCellIndex = 0;
-			Cell objCell = objRow.getCell(iCellIndex);
-			if (objCell == null) {
-				objCell = objRow.createCell(iCellIndex);
-			}
-			cells.put("A", getWrapCellStyle(objCell.getCellStyle()));
-			iCellIndex++;
-			for (ColumnMapper mapper : getColumnMappers(data)) {
-				objCell = objRow.getCell(iCellIndex);
-				if (objCell == null) {
-					objCell = objRow.createCell(iCellIndex);
-				}
-				CellStyle cellStyle = getWrapCellStyle(objCell.getCellStyle());
-				cells.put(mapper.getColumn(), cellStyle);
-				iCellIndex++;
-			}
-		}
-		return cells;
-	}
-
-	public CellStyle getWrapCellStyle(CellStyle cellStyle) {
-		cellStyle.setBorderBottom(BorderStyle.THIN); // 下边框
-		cellStyle.setBorderLeft(BorderStyle.THIN);// 左边框
-		cellStyle.setBorderTop(BorderStyle.THIN);// 上边框
-		cellStyle.setBorderRight(BorderStyle.THIN);// 右边框
-		return cellStyle;
-	}
-
-	// 只能导出一个文件，如果有多个，则合并为zip
-	public File getExportFile(List<File> files, File zipFile) {
-		if (files != null && files.size() == 1) {
-			return files.get(0);
-		} else if (files != null && files.size() > 1) {
-			InputStream objInputStream = null;
-			ZipOutputStream objZipOutputStream = null;
-			try {
-				objZipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
-				objZipOutputStream.setEncoding("GBK");
-				for (File file : files) {
-					objZipOutputStream.putNextEntry(new ZipEntry(file.getName()));
-					objInputStream = new FileInputStream(file);
-					byte[] blobbytes = new byte[10240];
-					int bytesRead = 0;
-					while ((bytesRead = objInputStream.read(blobbytes)) != -1) {
-						objZipOutputStream.write(blobbytes, 0, bytesRead);
-					}
-					// 重要，每次必须关闭此流，不然下面的临时文件是删不掉的
-					if (objInputStream != null) {
-						objInputStream.close();
-					}
-					objZipOutputStream.closeEntry();
-				}
-				return zipFile;
-			} catch (Exception e) {
-				throw new BaseRuntimeException(e.getMessage());
-			} finally {
-				IOUtils.closeQuietly(objInputStream);
-				IOUtils.closeQuietly(objZipOutputStream);
-			}
-		}
-		return null;
-	}
-
 	// 创建文件
-	public File createFile(Map<String, Object> data) {
-		File outFile = getExportExcelFile(data);
-		File templateFile = getTemplateFile(data);
+	private File createFile(File templateFile, List<Map<String, Object>> values) {
+		File outFile = FileUtils.tempFile( this.fileName + XLS);
 		FileOutputStream out = null;
 		try {
-			Workbook template = ExcelUtils.loadExcelFile(templateFile);
+			Workbook template = ExcelUtils.load(templateFile);
 			out = FileUtils.out(outFile);
-			writeData(template, data);
-			// 写入数据
+			writeData(template, values);
 			template.write(out);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -302,23 +157,23 @@ public class DefaultExportFile implements IExportFile {
 	}
 
 	// 写入数据
-	public void writeData(Workbook template, Map<String, Object> data) {
+	public void writeData(Workbook template, List<Map<String, Object>> value) {
 		// 写入题头
-		writeHeader(template, data);
+		writeHeader(template);
 		// 写入实际的数据
-		writeBody(template, data);
+		writeBody(template, value);
 		// 自定义样式
-		custemStyle(template, data);
+		custemStyle(template);
 	}
 
 	// 写入题头
-	public void writeHeader(Workbook template, Map<String, Object> data) {
-		if (isDefaultTemplate(data)) {
+	protected void writeHeader(Workbook template) {
+		if (DEFAULT_TEMPLATE_NAME.equals(templateName)) {
 			Row objRow = null;
 			Cell objCell = null;
 			Sheet sheet = template.getSheetAt(0);
 			// 写题头
-			int iHeader = getStartPos(data) - 1;
+			int iHeader = this.startRow - 1;
 			int iRegLeght = 1;
 			if (iHeader > 0) {
 				objRow = sheet.getRow(iHeader);
@@ -331,27 +186,25 @@ public class DefaultExportFile implements IExportFile {
 				objCell = objRow.getCell(iCellIndex);
 				if (objCell == null) {
 					objCell = objRow.createCell(iCellIndex);
-					objCell.setCellStyle(getHeaderCellStyle(template, data, "template"));
+					objCell.setCellStyle(getHeaderStyle(template, "template"));
 				}
 				objCell.setCellValue("序号");
-				objCell.setCellStyle(getHeaderCellStyle(template, data, "header"));
+				objCell.setCellStyle(getHeaderStyle(template, "header"));
 				iCellIndex++;
 				// 具体的数据
-				for (ColumnMapper mapper : getColumnMappers(data)) {
+				for (ColumnMapper mapper : this.columns) {
 					objCell = objRow.getCell(iCellIndex);
 					if (objCell == null) {
 						objCell = objRow.createCell(iCellIndex);
-						objCell.setCellStyle(getHeaderCellStyle(template, data, "template"));
+						objCell.setCellStyle(getHeaderStyle(template, "template"));
 					}
-
 					iCellIndex++;
 					String value = mapper.getTitle();
 					if (StringUtils.isBlank(value) || "null".equals(value)) {
 						value = "";
 					}
 					objCell.setCellValue(value);
-					objCell.setCellStyle(getHeaderCellStyle(template, data, "header"));
-
+					objCell.setCellStyle(getHeaderStyle(template, "header"));
 					iRegLeght++;
 				}
 			}
@@ -371,26 +224,25 @@ public class DefaultExportFile implements IExportFile {
 			if (objCell == null) {
 				objCell = objRow.createCell(0);
 			}
-			objCell.setCellValue(getTitle(data));
+			objCell.setCellValue(this.fileTitle);
 			CellStyle style = objCell.getCellStyle();
 			style.setAlignment(HorizontalAlignment.CENTER);
 			objCell.setCellStyle(style);
-			template.setSheetName(0, getTitle(data));
+			template.setSheetName(0, this.fileTitle);
 			objRow = null;
 			objCell = null;
 		}
 	}
 
 	// 写入实际的数据
-	public void writeBody(Workbook template, Map<String, Object> data) {
+	protected void writeBody(Workbook template, List<Map<String, Object>> values) {
 		Row objRow = null;
 		Cell objCell = null;
 		Sheet sheet = template.getSheetAt(0);
-		int iPos = getStartPos(data);
-		List<Map<String, Object>> datas = getDatas(data);
-		if (datas != null && datas.size() != 0) {
-			for (int i = 0, j = getDatas(data).size(); i < j; i++) {
-				Map<String, Object> oneData = getDatas(data).get(i);
+		int iPos = this.startRow;
+		if (values != null && values.size() != 0) {
+			for (int i = 0, j = values.size(); i < j; i++) {
+				Map<String, Object> oneData = this.values.get(i);
 				objRow = sheet.getRow(i + iPos);
 				if (objRow == null) {
 					objRow = sheet.createRow(i + iPos);
@@ -401,13 +253,13 @@ public class DefaultExportFile implements IExportFile {
 				objCell = objRow.getCell(iCellIndex);
 				if (objCell == null) {
 					objCell = objRow.createCell(iCellIndex);
-					objCell.setCellStyle(getCellStyle(template, data, null));
+					objCell.setCellStyle(getCellStyle(template, null));
 				}
 				objCell.setCellValue(i + 1);
 				objCell.setCellType(CellType.NUMERIC);
 				iCellIndex++;
 				// 具体的数据
-				for (ColumnMapper mapper : getColumnMappers(data)) {
+				for (ColumnMapper mapper : this.columns) {
 					objCell = objRow.getCell(iCellIndex);
 					if (objCell == null) {
 						objCell = objRow.createCell(iCellIndex);
@@ -425,27 +277,27 @@ public class DefaultExportFile implements IExportFile {
 					} else {
 						objCell.setCellValue(value);
 					}
-					objCell.setCellStyle(getCellStyle(template, data, mapper));
+					objCell.setCellStyle(getCellStyle(template, mapper));
 				}
 			}
 		}
 	}
 
-	public void custemStyle(Workbook template, Map<String, Object> data) {
-		IExportStyleHandler handler = getStyleHandler(data);
+	protected void custemStyle(Workbook template) {
+		StyleHandler handler = this.styleHandler;
 		if (handler != null) {
 			Row objRow = null;
 			Cell objCell = null;
 			Sheet sheet = template.getSheetAt(0);
-			int iPos = getStartPos(data);
-			List<Map<String, Object>> datas = getDatas(data);
+			int iPos = this.startRow;
+			List<Map<String, Object>> datas = this.values;
 			if (datas != null && datas.size() != 0) {
-				for (int i = 0, j = getDatas(data).size(); i < j; i++) {
-					Map<String, Object> oneData = getDatas(data).get(i);
+				for (int i = 0, j = this.values.size(); i < j; i++) {
+					Map<String, Object> oneData = this.values.get(i);
 					objRow = sheet.getRow(i + iPos);
 					int iCellIndex = 1;
 					// 具体的数据
-					for (ColumnMapper mapper : getColumnMappers(data)) {
+					for (ColumnMapper mapper : this.columns) {
 						objCell = objRow.getCell(iCellIndex);
 						handler.addStyle(template, objRow, objCell, oneData, mapper);
 						iCellIndex++;
@@ -456,21 +308,140 @@ public class DefaultExportFile implements IExportFile {
 	}
 
 	// 检查相应的参数
-	public Boolean checkDataAttr(Map<String, Object> data) {
-		if (data == null || (!data.containsKey(EXPORT_COLUMNS) && !data.containsKey(EXPORT_VALUES))) {
+	private Boolean checkDataAttr() {
+		if (this.columns == null && this.values == null) {
 			return Boolean.FALSE;
 		}
-		if (!data.containsKey(TEMPLATE_NAME)) {
-			data.put(TEMPLATE_NAME, DEFAULT_TEMPLATE_NAME);
+		if (StringUtils.isBlank(this.templateName)) {
+			this.templateName = DEFAULT_TEMPLATE_NAME;
 		}
-		if (!data.containsKey(EXPORT_FILE_NAME)) {
-			data.put(EXPORT_FILE_NAME, "导出_");
+		if (StringUtils.isBlank(this.fileName)) {
+			this.fileName = "导出_";
 		}
-		if (!data.containsKey(TEMPLATE_START_ROW)) {
-			data.put(TEMPLATE_START_ROW, 2);// 导出数据（不包括题头）的开始行，Excel中默认是0开始
+		if (this.startRow == null) {
+			this.startRow = 2;
 		}
-		data.put(EXPORT_FILE_NAME, data.get(EXPORT_FILE_NAME) + String
-				.valueOf(DateUtils.getTodayStr("yyyy-MM-dd HH:mm:ss").replaceAll(" ", "_").replaceAll(":", "_")));
 		return Boolean.TRUE;
+	}
+	
+	/**
+	 * 默认模板的样式
+	 * @param template
+	 * @return
+	 */
+	private Map<String, CellStyle> defaultCellStyles(Workbook template) {
+		Map<String, CellStyle> cells = Maps.newHashMap();
+		if (DEFAULT_TEMPLATE_NAME.equals(templateName)) {
+			Cell objCellTemplate = template.getSheetAt(1).getRow(0).getCell(2);
+			CellStyle templateStyle = getWrapCellStyle(objCellTemplate.getCellStyle());
+			objCellTemplate = template.getSheetAt(1).getRow(0).getCell(0);
+			CellStyle dateStyle = getWrapCellStyle(objCellTemplate.getCellStyle());
+			objCellTemplate = template.getSheetAt(1).getRow(0).getCell(1);
+			CellStyle moneyStyle = getWrapCellStyle(objCellTemplate.getCellStyle());
+			objCellTemplate = template.getSheetAt(1).getRow(0).getCell(4);
+			CellStyle headerStyle = getWrapCellStyle(objCellTemplate.getCellStyle());
+			cells.put("template", templateStyle);
+			cells.put("header", headerStyle);
+			cells.put("date", dateStyle);
+			cells.put("money", moneyStyle);
+		} else {
+			int iPos = this.startRow;
+			Sheet sheet = template.getSheetAt(0);
+			Row objRow = sheet.getRow(iPos);
+			if (objRow == null) {
+				objRow = sheet.createRow(iPos);
+			}
+			int iCellIndex = 0;
+			Cell objCell = objRow.getCell(iCellIndex);
+			if (objCell == null) {
+				objCell = objRow.createCell(iCellIndex);
+			}
+			cells.put("A", getWrapCellStyle(objCell.getCellStyle()));
+			iCellIndex++;
+			for (ColumnMapper mapper : this.columns) {
+				objCell = objRow.getCell(iCellIndex);
+				if (objCell == null) {
+					objCell = objRow.createCell(iCellIndex);
+				}
+				CellStyle cellStyle = getWrapCellStyle(objCell.getCellStyle());
+				cells.put(mapper.getColumn(), cellStyle);
+				iCellIndex++;
+			}
+		}
+		this.cellStyles = cells;
+		return cells;
+	}
+	
+	// 默认的样式
+	private CellStyle getWrapCellStyle(CellStyle cellStyle) {
+		cellStyle.setBorderBottom(BorderStyle.THIN);
+		cellStyle.setBorderLeft(BorderStyle.THIN);
+		cellStyle.setBorderTop(BorderStyle.THIN);
+		cellStyle.setBorderRight(BorderStyle.THIN);
+		return cellStyle;
+	}
+
+	// 得到单元格的格式(题头)
+	protected CellStyle getHeaderStyle(Workbook template, String cellKey) {
+		Map<String, CellStyle> cells = this.cellStyles;
+		if (cells == null) {
+			cells = defaultCellStyles(template);
+		}
+		return cells.get(cellKey);
+	}
+
+	// 得到数据单元格的样式
+	protected CellStyle getCellStyle(Workbook template, ColumnMapper mapper) {
+		Map<String, CellStyle> cells = this.cellStyles;
+		if (cells == null) {
+			cells = defaultCellStyles(template);
+		}
+		if (DEFAULT_TEMPLATE_NAME.equals(templateName)) {
+			if (mapper != null && mapper.getDataType() == DataType.DATE) {
+				return cells.get("date");
+			} else if (mapper != null && mapper.getDataType() == DataType.MONEY) {
+				return cells.get("money");
+			}
+			return cells.get("template");
+		} else {
+			return cells.get(mapper == null ? "A" : mapper.getColumn());
+		}
+	}
+
+	/**
+	 * 创建zip 文件
+	 * 
+	 * @param files
+	 * @param data
+	 * @return
+	 */
+	private File buildZip(List<File> files) {
+		File zipFile = FileUtils.tempFile(this.fileName + ZIP);
+		InputStream objInputStream = null;
+		ZipOutputStream objZipOutputStream = null;
+		try {
+			objZipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
+			objZipOutputStream.setEncoding("GBK");
+			for (File file : files) {
+				objZipOutputStream.putNextEntry(new ZipEntry(file.getName()));
+				objInputStream = new FileInputStream(file);
+				byte[] blobbytes = new byte[10240];
+				int bytesRead = 0;
+				while ((bytesRead = objInputStream.read(blobbytes)) != -1) {
+					objZipOutputStream.write(blobbytes, 0, bytesRead);
+				}
+				// 重要，每次必须关闭此流，不然下面的临时文件是删不掉的
+				if (objInputStream != null) {
+					objInputStream.close();
+				}
+				objZipOutputStream.closeEntry();
+			}
+			return zipFile;
+		} catch (Exception e) {
+			throw new BaseRuntimeException(e.getMessage());
+		} finally {
+			IOUtils.closeQuietly(objInputStream);
+			IOUtils.closeQuietly(objZipOutputStream);
+		}
 	}
 }

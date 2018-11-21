@@ -15,10 +15,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 
 import com.swak.entity.ColumnMapper;
 import com.swak.entity.DataType;
+import com.swak.excel.ExcelExecuter;
+import com.swak.excel.ExcelMapper;
 import com.swak.excel.ExcelUtils;
 import com.swak.excel.ExcelValidateUtils;
-import com.swak.excel.IExcelExecuter;
-import com.swak.excel.IExcelMapper;
 import com.swak.excel.ImportResult;
 import com.swak.utils.StringUtils;
 import com.swak.utils.time.DateUtils;
@@ -28,14 +28,14 @@ import com.swak.utils.time.DateUtils;
  * 
  * @author liFeng 2014年9月22日
  */
-public class DefaultExcelExecuter implements IExcelExecuter {
+public class DefaultExcelExecuter implements ExcelExecuter {
 
 	private static DefaultExcelExecuter EXECUTER = new DefaultExcelExecuter();
 
 	private DefaultExcelExecuter() {
 	}
 
-	public static IExcelExecuter getInstance() {
+	public static ExcelExecuter getInstance() {
 		return EXECUTER;
 	}
 
@@ -43,7 +43,7 @@ public class DefaultExcelExecuter implements IExcelExecuter {
 	 * iStartRow 从0开始 column 也是从0开始
 	 */
 	@Override
-	public <T> ImportResult<T> getExcelData(IExcelMapper<T> mapper, Sheet sheet) {
+	public <T> ImportResult<T> getExcelData(ExcelMapper<T> mapper, Sheet sheet) {
 		ImportResult<T> result = new ImportResult<T>(sheet.getSheetName());
 		int iStartRow = mapper.getStartRow() - 1;
 		int iEndRow = sheet.getLastRowNum();
@@ -66,7 +66,7 @@ public class DefaultExcelExecuter implements IExcelExecuter {
 		return result;
 	}
 
-	private <T> Boolean processRow(IExcelMapper<T> mapper, ImportResult<T> result, int iRow, Row row) throws Exception {
+	private <T> Boolean processRow(ExcelMapper<T> mapper, ImportResult<T> result, int iRow, Row row) throws Exception {
 		int _row = iRow, _cell = 0;
 		try {
 			Boolean isEmptyRow = Boolean.TRUE; // 是否空行-- 空行不处理，但也不提示错误
@@ -128,7 +128,7 @@ public class DefaultExcelExecuter implements IExcelExecuter {
 			if (isEmptyRow) { // 空行就返回 -- 但不提示有空行
 				return Boolean.TRUE;
 			}
-			result.addSucessRow(mapper.receive(valueMap));
+			result.addSucessRow(mapper.convert(valueMap));
 			return Boolean.TRUE;
 		} catch (Exception e) {
 			result.addError(_row, ExcelUtils.indexToColumn(_cell + 1), e.getMessage());

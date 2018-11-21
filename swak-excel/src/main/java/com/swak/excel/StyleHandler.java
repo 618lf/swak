@@ -13,7 +13,7 @@ import com.swak.entity.ColumnMapper;
  * @author root
  *
  */
-public interface IExportStyleHandler {
+public interface StyleHandler {
 
 	/**
 	 * 设置样式

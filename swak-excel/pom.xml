@@ -18,10 +18,6 @@
 			<version>${poi.version}</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.apache.commons</groupId>
-					<artifactId>commons-collections4</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>commons-codec</groupId>
 					<artifactId>commons-codec</artifactId>
 				</exclusion>

@@ -11,21 +11,21 @@ import com.swak.entity.ColumnMapper;
  * 
  * @author liFeng 2014年9月22日
  */
-public interface IExcelMapper<T> {
+public interface ExcelMapper<T> {
 
 	/**
 	 * 读取Excel 的起始行
 	 * 
 	 * @return
 	 */
-	public int getStartRow();
+	int getStartRow();
 
 	/**
 	 * 返回当有错误时
 	 * 
 	 * @return
 	 */
-	public Boolean returnWhenError();
+	Boolean returnWhenError();
 
 	/**
 	 * 通过对应的列得到 对应的列映射
@@ -33,21 +33,7 @@ public interface IExcelMapper<T> {
 	 * @param column
 	 * @return
 	 */
-	public Iterable<ColumnMapper> getColumnMappers(String column);
-
-	/**
-	 * 得到目标类型
-	 * 
-	 * @return
-	 */
-	public Class<?> getTargetClass();
-
-	/**
-	 * 得到类型转化器
-	 * 
-	 * @return
-	 */
-	public T receive(Map<String, Object> valueMap);
+	Iterable<ColumnMapper> getColumnMappers(String column);
 
 	/**
 	 * 得到Excel的数据
@@ -55,6 +41,13 @@ public interface IExcelMapper<T> {
 	 * @param sheet
 	 * @return
 	 */
-	public ImportResult<T> getExcelData(Sheet sheet);
+	ImportResult<T> read(Sheet sheet);
+	
+	/**
+	 * 得到类型转化器
+	 * 
+	 * @return
+	 */
+	T convert(Map<String, Object> value);
 
 }
