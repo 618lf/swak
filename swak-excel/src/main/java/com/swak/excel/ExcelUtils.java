@@ -19,8 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.swak.entity.ColumnMapper;
-import com.swak.entity.DataType;
-import com.swak.entity.LabelVO;
 import com.swak.entity.Result;
 import com.swak.utils.IOUtils;
 import com.swak.utils.Lists;
@@ -36,34 +34,6 @@ public abstract class ExcelUtils {
 	private static Logger logger = LoggerFactory.getLogger(ExcelUtils.class);
 
 	private ExcelUtils() {
-	}
-
-	/**
-	 * 返回Excel的列序号集合
-	 * 
-	 * @return
-	 */
-	public static List<LabelVO> getExcelColumns(int length) {
-		int _length = length == 0 ? 40 : length;
-		List<LabelVO> columns = Lists.newArrayList();
-		for (int i = 1; i < _length; i++) {
-			String key = indexToColumn(i);
-			columns.add(new LabelVO(key, key));
-		}
-		return columns;
-	}
-
-	/**
-	 * 返回可选的数据类型
-	 * 
-	 * @return
-	 */
-	public static List<LabelVO> getDataTypes() {
-		List<LabelVO> columns = Lists.newArrayList();
-		for (DataType dataType : DataType.values()) {
-			columns.add(new LabelVO(dataType.name(), dataType.getName()));
-		}
-		return columns;
 	}
 
 	/**

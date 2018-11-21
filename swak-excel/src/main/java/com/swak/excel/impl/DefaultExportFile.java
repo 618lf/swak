@@ -115,7 +115,7 @@ public class DefaultExportFile implements ExportFile {
 		 * 模板文件
 		 */
 		File templateFile = FileUtils.classpath(EXPORT_TEMPLATE_PATH + templateName);
-		
+
 		/**
 		 * 导出
 		 */
@@ -140,7 +140,7 @@ public class DefaultExportFile implements ExportFile {
 
 	// 创建文件
 	private File createFile(File templateFile, List<Map<String, Object>> values) {
-		File outFile = FileUtils.tempFile( this.fileName + XLS);
+		File outFile = FileUtils.tempFile(this.fileName + XLS);
 		FileOutputStream out = null;
 		try {
 			Workbook template = ExcelUtils.load(templateFile);
@@ -169,31 +169,32 @@ public class DefaultExportFile implements ExportFile {
 	// 写入题头
 	protected void writeHeader(Workbook template) {
 		if (DEFAULT_TEMPLATE_NAME.equals(templateName)) {
-			Row objRow = null;
-			Cell objCell = null;
 			Sheet sheet = template.getSheetAt(0);
 			// 写题头
 			int iHeader = this.startRow - 1;
 			int iRegLeght = 1;
 			if (iHeader > 0) {
-				objRow = sheet.getRow(iHeader);
+				Row objRow = sheet.getRow(iHeader);
 				if (objRow == null) {
 					objRow = sheet.createRow(iHeader);
 					objRow.setHeight((short) 500);
 				}
-				int iCellIndex = 0;
+
 				// 设置序号
-				objCell = objRow.getCell(iCellIndex);
-				if (objCell == null) {
-					objCell = objRow.createCell(iCellIndex);
-					objCell.setCellStyle(getHeaderStyle(template, "template"));
+				if (!this.columns.get(0).getColumn().equals("A")) {
+					Cell objCell = objRow.getCell(0);
+					if (objCell == null) {
+						objCell = objRow.createCell(0);
+						objCell.setCellStyle(getHeaderStyle(template, "template"));
+					}
+					objCell.setCellValue("序号");
+					objCell.setCellStyle(getHeaderStyle(template, "header"));
 				}
-				objCell.setCellValue("序号");
-				objCell.setCellStyle(getHeaderStyle(template, "header"));
-				iCellIndex++;
+
 				// 具体的数据
 				for (ColumnMapper mapper : this.columns) {
-					objCell = objRow.getCell(iCellIndex);
+					int iCellIndex = ExcelUtils.columnToIndex(mapper.getColumn()) - 1;
+					Cell objCell = objRow.getCell(iCellIndex);
 					if (objCell == null) {
 						objCell = objRow.createCell(iCellIndex);
 						objCell.setCellStyle(getHeaderStyle(template, "template"));
@@ -216,11 +217,11 @@ public class DefaultExportFile implements ExportFile {
 			// 表头
 			CellRangeAddress region = new CellRangeAddress(0, 0, 0, lastCellNum - 1);
 			sheet.addMergedRegion(region);
-			objRow = sheet.getRow(0);
+			Row objRow = sheet.getRow(0);
 			if (objRow == null) {
 				objRow = sheet.createRow(0);
 			}
-			objCell = objRow.getCell(0);
+			Cell objCell = objRow.getCell(0);
 			if (objCell == null) {
 				objCell = objRow.createCell(0);
 			}
@@ -236,31 +237,32 @@ public class DefaultExportFile implements ExportFile {
 
 	// 写入实际的数据
 	protected void writeBody(Workbook template, List<Map<String, Object>> values) {
-		Row objRow = null;
-		Cell objCell = null;
 		Sheet sheet = template.getSheetAt(0);
 		int iPos = this.startRow;
 		if (values != null && values.size() != 0) {
 			for (int i = 0, j = values.size(); i < j; i++) {
 				Map<String, Object> oneData = this.values.get(i);
-				objRow = sheet.getRow(i + iPos);
+				Row objRow = sheet.getRow(i + iPos);
 				if (objRow == null) {
 					objRow = sheet.createRow(i + iPos);
 					objRow.setHeight((short) 500);
 				}
-				int iCellIndex = 0;
+
 				// 设置序号
-				objCell = objRow.getCell(iCellIndex);
-				if (objCell == null) {
-					objCell = objRow.createCell(iCellIndex);
-					objCell.setCellStyle(getCellStyle(template, null));
+				if (!this.columns.get(0).getColumn().equals("A")) {
+					Cell objCell = objRow.getCell(0);
+					if (objCell == null) {
+						objCell = objRow.createCell(0);
+						objCell.setCellStyle(getCellStyle(template, null));
+					}
+					objCell.setCellValue(i + 1);
+					objCell.setCellType(CellType.NUMERIC);
 				}
-				objCell.setCellValue(i + 1);
-				objCell.setCellType(CellType.NUMERIC);
-				iCellIndex++;
+
 				// 具体的数据
 				for (ColumnMapper mapper : this.columns) {
-					objCell = objRow.getCell(iCellIndex);
+					int iCellIndex = ExcelUtils.columnToIndex(mapper.getColumn()) - 1;
+					Cell objCell = objRow.getCell(iCellIndex);
 					if (objCell == null) {
 						objCell = objRow.createCell(iCellIndex);
 					}
@@ -323,9 +325,10 @@ public class DefaultExportFile implements ExportFile {
 		}
 		return Boolean.TRUE;
 	}
-	
+
 	/**
 	 * 默认模板的样式
+	 * 
 	 * @param template
 	 * @return
 	 */
@@ -371,7 +374,7 @@ public class DefaultExportFile implements ExportFile {
 		this.cellStyles = cells;
 		return cells;
 	}
-	
+
 	// 默认的样式
 	private CellStyle getWrapCellStyle(CellStyle cellStyle) {
 		cellStyle.setBorderBottom(BorderStyle.THIN);
