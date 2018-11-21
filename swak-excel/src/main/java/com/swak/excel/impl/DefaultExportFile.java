@@ -125,7 +125,8 @@ public class DefaultExportFile implements IExportFile {
 	 * @return
 	 */
 	private File getTemplateFile(Map<String, Object> data) {
-		String templatePath = new StringBuilder().append(EXPORT_TEMPLATE_PATH).append(TEMPLATE_NAME).toString();
+		String templatePath = new StringBuilder().append(EXPORT_TEMPLATE_PATH).append(data.get(TEMPLATE_NAME))
+				.toString();
 		return FileUtils.classpath(templatePath);
 	}
 

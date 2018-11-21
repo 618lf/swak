@@ -32,6 +32,10 @@
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>
+			<artifactId>swak-excel</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
 			<artifactId>swak-kotlin</artifactId>
 		</dependency>
 		<dependency>

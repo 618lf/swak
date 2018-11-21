@@ -25,7 +25,7 @@ public interface IExportFile {
 	
 	//导出临时目录,模版文件路径
 	String DEFAULT_TEMPLATE_NAME = "defaultTemplate.xls";//格式参考的文件名
-	String EXPORT_TEMPLATE_PATH = "excel" + File.separator;
+	String EXPORT_TEMPLATE_PATH = File.separator + "excel" + File.separator;
 	String CELL_STYLE_NAMES = "CELL_STYLE_NAMES";
 	Integer MAX_ROWS = 65535;
 	

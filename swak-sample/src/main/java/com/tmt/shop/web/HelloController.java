@@ -1,5 +1,6 @@
 package com.tmt.shop.web;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.swak.cache.Cache;
 import com.swak.cache.CacheManager;
 import com.swak.entity.Result;
+import com.swak.excel.ExcelUtils;
 import com.swak.executor.Workers;
 import com.swak.http.builder.RequestBuilder;
 import com.swak.persistence.QueryCondition;
@@ -18,6 +20,7 @@ import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.WebUtils;
 import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.RestController;
+import com.swak.utils.FileUtils;
 import com.swak.utils.StringUtils;
 import com.tmt.shop.entity.Shop;
 import com.tmt.shop.entity.ShopXml;
@@ -233,5 +236,19 @@ public class HelloController {
 			});
 		}
 		return Mono.just("lifeng say 1");
+	}
+	
+	/**
+	 * 返回 mono 对象
+	 * @return
+	 */
+	@GetMapping("/say/excel")
+	public void sayExcel() {
+		File excel = FileUtils.classpath("/excel/defaultTemplate.xls");
+		try {
+			ExcelUtils.loadExcelFile(excel);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

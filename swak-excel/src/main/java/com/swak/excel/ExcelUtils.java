@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PushbackInputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -120,13 +119,13 @@ public abstract class ExcelUtils {
 	 * @throws BiffException
 	 */
 	public static Workbook loadExcelFile(File file) throws IOException {
-		FileInputStream fileInputStream = null;
+		InputStream inputStream = null;
 		try {
-			fileInputStream = new FileInputStream(file);
+			inputStream = new FileInputStream(file);
 		} catch (FileNotFoundException e) {
 			throw new IOException("指定的Excel数据文件不存在", e);
 		}
-		return loadExcelFile(fileInputStream);
+		return loadExcelFile(inputStream);
 	}
 
 	/**
@@ -141,9 +140,7 @@ public abstract class ExcelUtils {
 	public static Workbook loadExcelFile(InputStream inputStream) throws IOException {
 		try {
 			Workbook book = null;
-			if (!(inputStream.markSupported())) {
-				inputStream = new PushbackInputStream(inputStream, 8);
-			}
+			inputStream = FileMagic.prepareToCheckMagic(inputStream);
 			if (FileMagic.valueOf(inputStream) == FileMagic.OLE2) {
 				book = new HSSFWorkbook(inputStream);
 			} else if (FileMagic.valueOf(inputStream) == FileMagic.OOXML) {

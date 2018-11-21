@@ -866,9 +866,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			content = this.content == null ? Unpooled.EMPTY_BUFFER : this.content;
 			response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, this.content);
 			int contentSize = content.readableBytes();
-			if (contentSize > 0) {
-				responseHeaders.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
-			}
+			responseHeaders.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
 		}
 		
 		// 长链接
