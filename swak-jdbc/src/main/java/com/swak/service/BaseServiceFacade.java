@@ -3,7 +3,7 @@ package com.swak.service;
 import java.util.List;
 
 import com.swak.entity.Page;
-import com.swak.entity.PageParameters;
+import com.swak.entity.Parameters;
 import com.swak.persistence.QueryCondition;
 
 /**
@@ -41,7 +41,7 @@ public interface BaseServiceFacade<T, PK>{
      * @param param
      * @return
      */
-    public Page queryForPage(QueryCondition qc, PageParameters param);
+    public Page queryForPage(QueryCondition qc, Parameters param);
     
     /**
      * 条件查询个数

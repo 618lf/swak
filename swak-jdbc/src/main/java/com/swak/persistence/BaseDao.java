@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.swak.entity.Page;
-import com.swak.entity.PageParameters;
+import com.swak.entity.Parameters;
 
 /**
  * 基础Dao
@@ -246,16 +246,16 @@ public interface BaseDao<T, PK> {
 	 * @param pageNum
 	 * @return
 	 */
-	public Page queryForPageList(String sql, Map<String, ?> args, PageParameters pageParameters);
+	public Page queryForPageList(String sql, Map<String, ?> args, Parameters param);
 
 	/**
 	 * 查询Map分页
 	 * @param sql
 	 * @param args
-	 * @param pageParameters
+	 * @param param
 	 * @return
 	 */
-	public Page queryForMapPageList(String sql, Map<String, ?> args, PageParameters pageParameters);
+	public Page queryForMapPageList(String sql, Map<String, ?> args, Parameters param);
 
 	/**
 	 * 提供分页功能的数据查询 注意:本功能的SQL语句需要有对应统计记录数方法 命名规则为:功能SQL语句名称+Stat
@@ -266,7 +266,7 @@ public interface BaseDao<T, PK> {
 	 * @param pageNum
 	 * @return
 	 */
-	public Page queryForPageList(String sql, QueryCondition args, PageParameters pageParameters);
+	public Page queryForPageList(String sql, QueryCondition args, Parameters param);
 
 	/**
 	 * 提供分页功能的数据查询 注意:本功能的SQL语句需要有对应统计记录数方法 命名规则为:功能SQL语句名称+Stat
@@ -277,7 +277,7 @@ public interface BaseDao<T, PK> {
 	 * @param pageNum
 	 * @return
 	 */
-	public Page queryForPage(QueryCondition args, PageParameters pageParameters);
+	public Page queryForPage(QueryCondition args, Parameters param);
 
 	/**
 	 * 根据条件查询个数

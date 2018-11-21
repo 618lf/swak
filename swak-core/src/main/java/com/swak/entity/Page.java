@@ -12,7 +12,7 @@ public class Page implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 
-	private PageParameters param;
+	private Parameters param;
 	
 	private List data;
 
@@ -21,21 +21,21 @@ public class Page implements Serializable{
 	}
 
 	public <T> Page(int pageSize,int pageNum,int recordCount,List<T> page){
-		this.param = new PageParameters(pageNum,pageSize,recordCount);
+		this.param = new Parameters(pageNum,pageSize,recordCount);
 		this.data = page;
 	}
 	
-	public <T> Page(PageParameters pageParameters,List<T> page){
-		this.param = new PageParameters(pageParameters.getPageIndex(),pageParameters.getPageSize(),pageParameters.getRecordCount());
-		this.param.setSortField(pageParameters.getSortField());
-		this.param.setSortType(pageParameters.getSortType());	
-		this.param.setPageUrl(pageParameters.getPageUrl());
-		this.param.setSerializePage(pageParameters.getSerializePage());
+	public <T> Page(Parameters Parameters,List<T> page){
+		this.param = new Parameters(Parameters.getPageIndex(),Parameters.getPageSize(),Parameters.getRecordCount());
+		this.param.setSortField(Parameters.getSortField());
+		this.param.setSortType(Parameters.getSortType());	
+		this.param.setPageUrl(Parameters.getPageUrl());
+		this.param.setSerializePage(Parameters.getSerializePage());
 		this.data = page;
 	}
 
-	public void setPage(PageParameters pageParameters) {
-		this.param = pageParameters;
+	public void setPage(Parameters Parameters) {
+		this.param = Parameters;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -46,14 +46,14 @@ public class Page implements Serializable{
 	public void setData(List data) {
 		this.data = data;
 		if(this.param == null && this.data != null) {
-			param = new PageParameters();
+			param = new Parameters();
 			param.setRecordCount(this.data.size());
 		}
 	}
 
-	public PageParameters getParam() {
+	public Parameters getParam() {
 		if(this.param == null) {
-			param = new PageParameters();
+			param = new Parameters();
 		}
 		return param;
 	}

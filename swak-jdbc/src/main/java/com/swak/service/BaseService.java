@@ -15,7 +15,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.swak.entity.IdEntity;
 import com.swak.entity.Page;
-import com.swak.entity.PageParameters;
+import com.swak.entity.Parameters;
 import com.swak.persistence.BaseDao;
 import com.swak.persistence.QueryCondition;
 
@@ -90,7 +90,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param param
      * @return
      */
-    public Page queryForPage(QueryCondition qc, PageParameters param) {
+    public Page queryForPage(QueryCondition qc, Parameters param) {
     	return this.getBaseDao().queryForPage(qc, param);
     }
     
@@ -220,7 +220,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param entity
      * @return
      */
-    protected Page queryForPageList(String sql, QueryCondition qc, PageParameters param) {
+    protected Page queryForPageList(String sql, QueryCondition qc, Parameters param) {
     	return this.getBaseDao().queryForPageList(sql, qc, param);
     }
     
@@ -229,7 +229,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param entity
      * @return
      */
-    protected Page queryForPageList(String sql, Map<String,?> qc, PageParameters param) {
+    protected Page queryForPageList(String sql, Map<String,?> qc, Parameters param) {
     	return this.getBaseDao().queryForPageList(sql, qc, param);
     }
     
@@ -238,7 +238,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
      * @param entity
      * @return
      */
-    protected Page queryForMapPageList(String sql, Map<String,?> qc, PageParameters param) {
+    protected Page queryForMapPageList(String sql, Map<String,?> qc, Parameters param) {
     	return this.getBaseDao().queryForMapPageList(sql, qc, param);
     }
     

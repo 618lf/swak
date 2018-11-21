@@ -5,7 +5,7 @@ import java.io.Serializable;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.swak.utils.StringUtils;
 
-public class PageParameters implements Serializable{
+public class Parameters implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	public final static String DESC = "desc";
@@ -33,7 +33,7 @@ public class PageParameters implements Serializable{
 	/**
 	 * 以默认当前页面和页面大小构造一个分页对象。 其中，默认当前页数为1，默认页面大小为15。
 	 */
-	public PageParameters() {
+	public Parameters() {
 		this.pageIndex = DEFAULT_PAGE_INDEX;
 		this.pageSize = DEFAULT_PAGE_SIZE;
 	}
@@ -50,7 +50,7 @@ public class PageParameters implements Serializable{
 	 * @param pageSize
 	 *            页面大小，若参数值不大于0，则使用默认值10。
 	 */
-	public PageParameters(int pageIndex, int pageSize,int recordCount) {
+	public Parameters(int pageIndex, int pageSize,int recordCount) {
 		this.pageIndex = pageIndex > 0 ? pageIndex : DEFAULT_PAGE_INDEX;
 		this.pageSize = pageSize > 0 ? pageSize : DEFAULT_PAGE_SIZE;
 		this.recordCount = recordCount;

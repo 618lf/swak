@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.swak.entity.BaseEntity;
 import com.swak.entity.IdEntity;
 import com.swak.entity.Page;
-import com.swak.entity.PageParameters;
+import com.swak.entity.Parameters;
 import com.swak.exception.StaleObjectStateException;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
@@ -371,8 +371,8 @@ public class BaseDaoImpl<T, PK> implements BaseDao<T, PK>{
      * @return
      */
     @Override
-    public Page queryForMapPageList(String sql, Map<String,?> args, PageParameters pageParameters) {
-    	return this.queryForPage(sql, args, pageParameters);
+    public Page queryForMapPageList(String sql, Map<String,?> args, Parameters param) {
+    	return this.queryForPage(sql, args, param);
     }
 
     /**
@@ -382,8 +382,8 @@ public class BaseDaoImpl<T, PK> implements BaseDao<T, PK>{
      * @return
      */
     @Override
-    public Page queryForPageList(String sql, Map<String,?> args, PageParameters pageParameters) {
-    	return this.queryForPage(sql, args, pageParameters);
+    public Page queryForPageList(String sql, Map<String,?> args, Parameters param) {
+    	return this.queryForPage(sql, args, param);
     }
     
     /**
@@ -393,8 +393,8 @@ public class BaseDaoImpl<T, PK> implements BaseDao<T, PK>{
      * @return
      */
     @Override
-    public Page queryForPageList(String sql, QueryCondition args, PageParameters pageParameters) {
-    	return this.queryForPage(sql, args, pageParameters);
+    public Page queryForPageList(String sql, QueryCondition args, Parameters param) {
+    	return this.queryForPage(sql, args, param);
     }
     
     /**
@@ -404,23 +404,23 @@ public class BaseDaoImpl<T, PK> implements BaseDao<T, PK>{
      * @return
      */
     @Override
-    public Page queryForPage(QueryCondition args, PageParameters pageParameters) {
-        return this.queryForPage(FIND_BY_CONDITION, args, pageParameters);
+    public Page queryForPage(QueryCondition args, Parameters param) {
+        return this.queryForPage(FIND_BY_CONDITION, args, param);
     }
     
     /**
      * 通用的分页处理
      * @param sql
      * @param args
-     * @param pageParameters
+     * @param param
      * @return
      */
-    protected <E> Page queryForPage(String sql, Object args, PageParameters pageParameters) {
-    	 int pageNum = pageParameters.getPageIndex();
-         int pageSize = pageParameters.getPageSize();
+    protected <E> Page queryForPage(String sql, Object args, Parameters param) {
+    	 int pageNum = param.getPageIndex();
+         int pageSize = param.getPageSize();
          Integer count = 0;
          List<E> lst = null;
-         if (pageNum == PageParameters.NO_PAGINATION  || pageSize == PageParameters.NO_PAGINATION) {
+         if (pageNum == Parameters.NO_PAGINATION  || pageSize == Parameters.NO_PAGINATION) {
              lst = this.getSqlRunner().selectList(sql, args);
          } else {
         	 count = (Integer) this.getSqlRunner().selectOne(getStatementName(new StringBuilder(sql).append("Stat").toString()),args);
@@ -433,8 +433,8 @@ public class BaseDaoImpl<T, PK> implements BaseDao<T, PK>{
                 lst = this.getSqlRunner().selectList(getStatementName(sql), args, new RowBounds((pageNum - 1) * pageSize, pageSize));
              }
          }
-         pageParameters.setRecordCount(count);
-         return new Page(pageParameters, lst);
+         param.setRecordCount(count);
+         return new Page(param, lst);
     }
     
     private int getPageCount(int recordCount, int pageSize) {
