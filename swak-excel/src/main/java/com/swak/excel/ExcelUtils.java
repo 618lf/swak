@@ -235,7 +235,7 @@ public abstract class ExcelUtils {
 		ZipOutputStream objZipOutputStream = null;
 		try {
 			objZipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
-			objZipOutputStream.setEncoding("GBK");
+			objZipOutputStream.setEncoding("UTF-8"); 
 			for (File file : files) {
 				objZipOutputStream.putNextEntry(new ZipEntry(file.getName()));
 				objInputStream = new FileInputStream(file);

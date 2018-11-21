@@ -1,6 +1,8 @@
 package com.swak.vertx.config;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import com.swak.exception.BaseRuntimeException;
 import com.swak.vertx.handler.VertxHandler;
@@ -87,7 +89,7 @@ public class VertxBean implements VertxHandler {
 		if (!this.inited) {
 			throw new BaseRuntimeException("vertx doesn't inited");
 		}
-		
+
 		// 默认的配置
 		DeliveryOptions deliveryOptions = this.deliveryOptions;
 		if (timeout >= 1) {
@@ -105,5 +107,30 @@ public class VertxBean implements VertxHandler {
 	@Override
 	public FileSystem fileSystem() {
 		return vertx.fileSystem();
+	}
+
+	/**
+	 * 使用异步队列执行代码
+	 * 
+	 * @param supplier
+	 * @return
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> CompletableFuture<T> future(Supplier<T> supplier) {
+		CompletableFuture<T> future = new CompletableFuture<T>();
+		vertx.executeBlocking((f) -> {
+			T t = supplier.get();
+			f.complete(t);
+		}, (r) -> {
+			Throwable exception = r.cause();
+			if (exception != null) {
+				future.completeExceptionally(exception);
+			} else {
+				T t = (T)r.result();
+				future.complete(t);
+			}
+		});
+		return future;
 	}
 }

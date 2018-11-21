@@ -21,7 +21,8 @@ public class VertxProperties {
 	private int port = 8080;
 	private TransportMode mode = TransportMode.NIO;
 	private int eventLoopPoolSize = 2 * CpuCoreSensor.availableProcessors();
-	private int workerThreads = 20;
+	private int workerThreads = 20; // vertx 自定义使用
+	private int extWorkerThreads = 10;// workers 外部使用
 	private Map<String, Integer> workers = Maps.newHashMap();
 	private boolean metricAble = true;
 	
@@ -232,5 +233,11 @@ public class VertxProperties {
 	}
 	public void setPort(int port) {
 		this.port = port;
+	}
+	public int getExtWorkerThreads() {
+		return extWorkerThreads;
+	}
+	public void setExtWorkerThreads(int extWorkerThreads) {
+		this.extWorkerThreads = extWorkerThreads;
 	}
 }

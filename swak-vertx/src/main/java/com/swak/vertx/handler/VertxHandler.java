@@ -1,6 +1,8 @@
 package com.swak.vertx.handler;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import com.swak.vertx.transport.codec.Msg;
 
@@ -48,4 +50,9 @@ public interface VertxHandler {
 	 * @return
 	 */
 	FileSystem fileSystem();
+	
+	/**
+	 * 使用workers 线程执行阻塞的代码
+	 */
+	<T> CompletableFuture<T> future(Supplier<T> supplier);
 }

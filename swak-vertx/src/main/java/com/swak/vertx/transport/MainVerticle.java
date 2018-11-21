@@ -126,7 +126,7 @@ public class MainVerticle extends AbstractVerticle {
 		} else {
 			options.setWorkerPoolSize(properties.getWorkerThreads());
 		}
-
+		
 		// 配置发布多个服务
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
