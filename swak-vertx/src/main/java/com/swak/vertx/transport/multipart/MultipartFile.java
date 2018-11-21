@@ -1,11 +1,6 @@
 package com.swak.vertx.transport.multipart;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.function.Consumer;
 
 /**
  * 上传文件
@@ -16,11 +11,9 @@ public class MultipartFile {
 
 	private String name;
 	private String fileName;
-	private CharSequence contentType;
-	private long length;
 	private byte[] data;
 	private File file;
-	private Consumer<Void> accept;
+	private Runnable accept;
 
 	public MultipartFile(String name, String fileName, File file) {
 		this.name = name;
@@ -32,84 +25,50 @@ public class MultipartFile {
 		this.name = name;
 		this.fileName = fileName;
 		this.data = data;
-		this.length = data.length;
 	}
 	
-	public Consumer<Void> getAccept() {
+	public Runnable accept() {
 		return accept;
 	}
 
-	public void setAccept(Consumer<Void> accept) {
+	public MultipartFile accept(Runnable accept) {
 		this.accept = accept;
+		return this;
 	}
 
-	public String getName() {
+	public String name() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public MultipartFile name(String name) {
 		this.name = name;
+		return this;
 	}
 
-	public String getFileName() {
+	public String fileName() {
 		return fileName;
 	}
 
-	public void setFileName(String fileName) {
+	public MultipartFile fileName(String fileName) {
 		this.fileName = fileName;
+		return this;
 	}
 
-	public CharSequence getContentType() {
-		return contentType;
-	}
-
-	public void setContentType(CharSequence contentType) {
-		this.contentType = contentType;
-	}
-
-	public long getLength() {
-		return length;
-	}
-
-	public void setLength(long length) {
-		this.length = length;
-	}
-
-	public byte[] getData() {
+	public byte[] data() {
 		return data;
 	}
 
-	public void setData(byte[] data) {
+	public MultipartFile data(byte[] data) {
 		this.data = data;
+		return this;
 	}
 
-	public File getFile() {
+	public File file() {
 		return file;
 	}
 
-	public void setFile(File file) {
+	public MultipartFile file(File file) {
 		this.file = file;
-	}
-	
-	/**
-	 * 返回文件输出流
-	 * @return
-	 * @throws IOException
-	 */
-	public InputStream getInputStream() throws IOException {
-		if (data != null) {
-			return new ByteArrayInputStream(data);
-		}
-		if (file != null) {
-			return new FileInputStream(file);
-		}
-		return null;
-	}
-
-	@Override
-	public String toString() {
-		long kb = length / 1024;
-		return "FileItem(" + "name='" + name + '\'' + ", fileName='" + fileName + '\'' + ", contentType='" + contentType
-				+ '\'' + ", size=" + (kb < 1 ? 1 : kb) + "KB)";
+		return this;
 	}
 }

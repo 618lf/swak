@@ -32,17 +32,17 @@ public class StreamMessageConverter implements HttpMessageConverter {
 	public void write(Object t, HttpServerResponse response) {
 		MultipartFile file = (MultipartFile) t;
 		response.putHeader(HttpHeaderNames.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaderNames.CONTENT_DISPOSITION);
-		response.putHeader(HttpHeaderNames.CONTENT_TYPE, MimeType.getMimeType(file.getFileName()) + "; charset=UTF-8");
+		response.putHeader(HttpHeaderNames.CONTENT_TYPE, MimeType.getMimeType(file.fileName()) + "; charset=UTF-8");
 		response.putHeader(HttpHeaderNames.CONTENT_DISPOSITION, StringUtils.format("%s;%s=%s",
-				HttpHeaderValues.ATTACHMENT, HttpHeaderValues.FILENAME, Encodes.urlEncode(file.getFileName())));
-		if (file.getFile() != null) {
-			response.sendFile(file.getFile().getAbsolutePath(), (event) -> {
-				if (file.getAccept() != null) {
-					file.getAccept().accept(null);
+				HttpHeaderValues.ATTACHMENT, HttpHeaderValues.FILENAME, Encodes.urlEncode(file.fileName())));
+		if (file.file() != null) {
+			response.sendFile(file.file().getAbsolutePath(), (event) -> {
+				if (file.accept() != null) {
+					file.accept().run();
 				}
 			});
-		} else if (file.getData() != null) {
-			Buffer buffer = Buffer.buffer(file.getData());
+		} else if (file.data() != null) {
+			Buffer buffer = Buffer.buffer(file.data());
 			response.end(buffer);
 		}
 	}

@@ -3,6 +3,7 @@ package com.swak.excel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -20,8 +21,11 @@ import org.slf4j.LoggerFactory;
 
 import com.swak.entity.ColumnMapper;
 import com.swak.entity.Result;
+import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.IOUtils;
 import com.swak.utils.Lists;
+import com.swak.zip.ZipEntry;
+import com.swak.zip.ZipOutputStream;
 
 /**
  * 
@@ -215,6 +219,43 @@ public abstract class ExcelUtils {
 					.columns(columns).values(vaules).build();
 		} catch (Exception e) {
 			return null;
+		}
+	}
+	
+	// ########### ZIP ################
+	/**
+	 * 创建zip 文件
+	 * 
+	 * @param files
+	 * @param data
+	 * @return
+	 */
+	public static File buildZip(List<File> files, File zipFile) {
+		InputStream objInputStream = null;
+		ZipOutputStream objZipOutputStream = null;
+		try {
+			objZipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
+			objZipOutputStream.setEncoding("GBK");
+			for (File file : files) {
+				objZipOutputStream.putNextEntry(new ZipEntry(file.getName()));
+				objInputStream = new FileInputStream(file);
+				byte[] blobbytes = new byte[10240];
+				int bytesRead = 0;
+				while ((bytesRead = objInputStream.read(blobbytes)) != -1) {
+					objZipOutputStream.write(blobbytes, 0, bytesRead);
+				}
+				// 重要，每次必须关闭此流，不然下面的临时文件是删不掉的
+				if (objInputStream != null) {
+					objInputStream.close();
+				}
+				objZipOutputStream.closeEntry();
+			}
+			return zipFile;
+		} catch (Exception e) {
+			throw new BaseRuntimeException(e.getMessage());
+		} finally {
+			IOUtils.closeQuietly(objInputStream);
+			IOUtils.closeQuietly(objZipOutputStream);
 		}
 	}
 }
