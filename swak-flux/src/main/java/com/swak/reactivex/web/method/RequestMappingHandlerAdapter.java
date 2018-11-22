@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 
 import com.swak.entity.Result;
@@ -129,10 +128,6 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 		for (int i = 0; i < parameters.length; i++) {
 			MethodParameter parameter = parameters[i];
 			args[i] = this.argumentResolver.resolveArgument(parameter, request);
-			if (args[i] == null) {
-				throw new IllegalStateException("Could not resolve method parameter at index "
-						+ parameter.getParameterIndex() + " in " + parameter.getMethod().toGenericString());
-			}
 		}
 		return args;
 	}

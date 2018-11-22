@@ -2,7 +2,7 @@ package com.swak.vertx.transport.codec;
 
 import java.io.Serializable;
 
-import com.swak.vertx.utils.MethodCache.MethodMeta;
+import com.swak.asm.MethodCache.MethodMeta;
 
 /**
  * 定义传递的消息

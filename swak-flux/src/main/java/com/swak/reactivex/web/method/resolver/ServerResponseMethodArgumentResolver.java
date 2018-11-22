@@ -2,11 +2,10 @@ package com.swak.reactivex.web.method.resolver;
 
 import java.io.OutputStream;
 
-import org.springframework.core.MethodParameter;
-
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.method.HandlerMethodArgumentResolver;
+import com.swak.reactivex.web.method.MethodParameter;
 
 /**
  * 支持在方法参数中直接设置 HttpServerResponse 和 OutputStream

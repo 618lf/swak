@@ -1,11 +1,15 @@
 package com.swak.reactivex.web.method.resolver;
 
-import org.springframework.core.MethodParameter;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.method.HandlerMethodArgumentResolver;
+import com.swak.reactivex.web.method.MethodParameter;
 
 /**
  * 基本的参数处理器
@@ -46,6 +50,23 @@ public abstract class AbstractMethodArgumentResolver implements HandlerMethodArg
 			return (T) conversionService.convert(value, sourceTypeDesc, targetDescriptor); 
 		}
 		return null;
+	}
+	
+	/**
+	 * 获得参数
+	 * 
+	 * @param request
+	 * @return
+	 */
+	protected Map<String, String> getArguments(HttpServerRequest request) {
+		Map<String, List<String>> parameterMap = request.getParameterMap();
+		Map<String, String> result = new LinkedHashMap<String, String>(parameterMap.size());
+		for (Map.Entry<String, List<String>> entry : parameterMap.entrySet()) {
+			if (entry.getValue().size() > 0) {
+				result.put(entry.getKey(), entry.getValue().get(0));
+			}
+		}
+		return result;
 	}
 	
 	/**

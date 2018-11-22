@@ -1,15 +1,13 @@
 package com.swak.reactivex.web.method.resolver;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
-import com.swak.utils.StringUtils;
+import com.swak.reactivex.web.method.MethodParameter;
 
 /**
  * 处理基本的参数 支持最基本的类型和Map类型
@@ -27,33 +25,23 @@ public class RequestParamMethodArgumentResolver extends AbstractMethodArgumentRe
 	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
-		return Map.class.isAssignableFrom(parameter.nestedIfOptional().getNestedParameterType())
-				|| BeanUtils.isSimpleProperty(parameter.getNestedParameterType());
+		return Map.class.isAssignableFrom(parameter.getParameterType())
+				|| List.class.isAssignableFrom(parameter.getParameterType())
+				|| BeanUtils.isSimpleProperty(parameter.getParameterType());
 	}
 
 	/**
 	 * 返回对应的对象
 	 */
 	@Override
-	public Object resolveArgumentInternal(MethodParameter parameter, HttpServerRequest request){
+	public Object resolveArgumentInternal(MethodParameter parameter, HttpServerRequest request) {
 		if (Map.class.isAssignableFrom(parameter.getParameterType())) {
-			Map<String, List<String>> parameterMap = request.getParameterMap();
-			Map<String, String> result = new LinkedHashMap<String, String>(parameterMap.size());
-			for (Map.Entry<String, List<String>> entry : parameterMap.entrySet()) {
-				if (entry.getValue().size() > 0) {
-					result.put(entry.getKey(), entry.getValue().get(0));
-				}
-			}
-			return result;
+			return this.getArguments(request);
+		} else if (List.class.isAssignableFrom(parameter.getParameterType())) {
+			String resolvedName = parameter.getParameterName();
+			return request.getParameterValues(resolvedName);
 		} else {
-			MethodParameter nestedParameter = parameter.nestedIfOptional();
-			String resolvedName = nestedParameter.getParameterName();
-			List<String> paramValues = request.getParameterValues(resolvedName);
-			Object arg = null;
-			if (paramValues != null) {
-				arg = (paramValues.size() == 1 ? paramValues.get(0) : paramValues);
-			}
-			return arg == null ? StringUtils.EMPTY : arg;
+			return request.getParameter(parameter.getParameterName());
 		}
 	}
 }

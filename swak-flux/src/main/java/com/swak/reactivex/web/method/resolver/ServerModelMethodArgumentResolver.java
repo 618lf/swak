@@ -1,13 +1,18 @@
 package com.swak.reactivex.web.method.resolver;
 
-import java.lang.reflect.Method;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 
+import com.swak.asm.FieldCache;
+import com.swak.asm.FieldCache.ClassMeta;
+import com.swak.asm.FieldCache.FieldMeta;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.reactivex.web.method.MethodParameter;
 import com.swak.utils.StringUtils;
 
 /**
@@ -16,6 +21,8 @@ import com.swak.utils.StringUtils;
  * @author lifeng
  */
 public class ServerModelMethodArgumentResolver extends AbstractMethodArgumentResolver {
+
+	private Pattern OBJECT_PARAM_PATTERN = Pattern.compile("\\w+\\[(\\w+)\\]");
 
 	public ServerModelMethodArgumentResolver(ConversionService conversionService) {
 		super(conversionService);
@@ -33,33 +40,52 @@ public class ServerModelMethodArgumentResolver extends AbstractMethodArgumentRes
 	 * 只做第一层解析 调用 set 方法来初始化
 	 */
 	@Override
-	protected Object resolveArgumentInternal(MethodParameter parameter, HttpServerRequest webRequest) {
-		Class<?> paramtype = parameter.getParameterType();
-		Object model = null;
+	protected Object resolveArgumentInternal(MethodParameter parameter, HttpServerRequest request) {
+		ClassMeta classMeta = FieldCache.get(parameter.getParameterType());
+		if (classMeta == null) {
+			return null;
+		}
 		try {
-			model = paramtype.newInstance();
-			if (!webRequest.getParameterMap().isEmpty()) {
-				Method[] methods = paramtype.getMethods();
-				for (Method method : methods) {
-					if (method.isAccessible() && StringUtils.startsWith(method.getName(), "set")
-							&& method.getParameterCount() == 1) {
-						Object value = this.getParamValue(webRequest, method);
-						method.invoke(model, value);
-					}
-				}
+			Map<String, String> arguments = this.getArguments(request);
+			Object obj = parameter.getParameterType().newInstance();
+			if (!arguments.isEmpty()) {
+				classMeta = FieldCache.get(parameter.getParameterType());
+				this.fillObjectValue(obj, classMeta.getFields(), parameter.getParameterName(), arguments);
 			}
-		} catch (Exception e) {}
-		return model;
+			return obj;
+		} catch (Exception e) {
+		}
+		return null;
 	}
 
-	private Object getParamValue(HttpServerRequest request, Method setMethod) {
-		String name = StringUtils.substring(setMethod.getName(), 3).toLowerCase();
-		List<String> paramValues = request.getParameterValues(name);
-		Object value = null;
-		if (paramValues != null) {
-			value = (paramValues.size() == 1 ? paramValues.get(0) : paramValues);
+	// 循环 arguments 更好一点
+	private void fillObjectValue(Object obj, Map<String, FieldMeta> fields, String paramName,
+			Map<String, String> arguments) throws IllegalArgumentException, IllegalAccessException {
+		Iterator<String> it = arguments.keySet().iterator();
+		while (it.hasNext()) {
+			String key = it.next();
+			Object value = arguments.get(key);
+
+			// 值不能为空
+			if (value == null) {
+				continue;
+			}
+
+			// 是否可以获取配置
+			FieldMeta field = fields.get(key);
+			Matcher found = null;
+
+			// name[n]=xxx 的型式，如果 name 和 参数名称一致也填充进去
+			if (field == null && StringUtils.startsWith(key, paramName) && StringUtils.endsWith(key, "]")
+					&& (found = OBJECT_PARAM_PATTERN.matcher(key)).find()) {
+				key = found.group(1);
+				field = fields.get(key);
+			}
+
+			// 设置值
+			if (field != null) {
+				field.getField().set(obj, this.doConvert(value, field.getFieldClass()));
+			}
 		}
-		value = value == null ? StringUtils.EMPTY : value;
-		return this.doConvert(value, setMethod.getParameterTypes()[0]);
 	}
 }

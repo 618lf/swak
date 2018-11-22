@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -23,38 +24,45 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.swak.asm.FieldCache;
 import com.swak.reactivex.transport.http.HttpConst;
+import com.swak.reactivex.transport.http.Principal;
+import com.swak.reactivex.transport.http.Session;
+import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.AbstractHandlerMapping;
 import com.swak.reactivex.web.HandlerMapping;
 import com.swak.reactivex.web.annotation.RequestMethod;
 import com.swak.reactivex.web.method.pattern.UrlPathHelper;
 import com.swak.utils.Maps;
 
-public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandlerMapping implements ApplicationContextAware, HandlerMapping {
+public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandlerMapping
+		implements ApplicationContextAware, HandlerMapping {
 
 	private Map<String, Match> matchLookup = new HashMap<String, Match>();
 	private MappingRegistry mappingRegistry = new MappingRegistry();
-	
+
 	public MappingRegistry getMappingRegistry() {
 		return mappingRegistry;
 	}
-	
+
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.initRequestMappings(applicationContext);
 		mappingRegistry.readWriteLock = null;
 	}
-	
+
 	/**
 	 * 初始化
+	 * 
 	 * @param applicationContext
 	 */
-    protected abstract void initRequestMappings(ApplicationContext applicationContext);
-    
-    
+	protected abstract void initRequestMappings(ApplicationContext applicationContext);
+
 	/**
 	 * 将一个对象注册为mapping
+	 * 
 	 * @param handler
 	 */
 	public void registryMapping(Object handler) {
@@ -70,8 +78,7 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 									"Invalid mapping on handler class [" + userType.getName() + "]: " + method, ex);
 						}
 					}
-				}
-		);
+				});
 		if (logger.isDebugEnabled()) {
 			logger.debug(methods.size() + " request handler methods found on " + userType + ": " + methods);
 		}
@@ -82,24 +89,23 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 			this.mappingRegistry.register(mapping, handler, invocableMethod);
 		}
 	}
-	
+
 	protected abstract RequestMappingInfo getMappingForMethod(Object handler, Method method, Class<?> handlerType);
-	
-	
+
 	/**
 	 * 获得请求的执行链
 	 */
 	@Override
-	public HandlerMethod getHandler(HttpServerRequest request){
+	public HandlerMethod getHandler(HttpServerRequest request) {
 		String lookupPath = UrlPathHelper.getLookupPathForRequest(request);
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking up handler method for path " + lookupPath);
 		}
-		
+
 		RequestMethod lookupMethod = null;
 		try {
 			lookupMethod = RequestMethod.valueOf(request.getRequestMethod().name().toUpperCase());
-		}catch(Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException("do not support method");
 		}
 
@@ -115,7 +121,7 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 
 		return handlerMethod;
 	}
-	
+
 	/**
 	 * 根据url查找method
 	 * 
@@ -124,7 +130,8 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 	 * @return
 	 * @throws Exception
 	 */
-	protected HandlerMethod lookupHandlerMethod(String lookupPath, RequestMethod lookupMethod, HttpServerRequest request){
+	protected HandlerMethod lookupHandlerMethod(String lookupPath, RequestMethod lookupMethod,
+			HttpServerRequest request) {
 		Match bestMatch = matchLookup.get(lookupPath);
 		if (bestMatch == null) {
 			List<Match> matches = new ArrayList<Match>();
@@ -148,16 +155,16 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 		}
 		return null;
 	}
-	
+
 	private void recordPath(Match bestMatch, HttpServerRequest request) {
 		Set<String> mapping = bestMatch.getMapping();
 		if (mapping != null && !mapping.isEmpty()) {
 			request.setAttribute(HttpConst.ATTRIBUTE_FOR_PATH, mapping.stream().findFirst());
 		}
-	} 
-	
-	protected void addMatchingMappings(Collection<RequestMappingInfo> mappings, List<Match> matches,
-			String lookupPath, RequestMethod lookupMethod) {
+	}
+
+	protected void addMatchingMappings(Collection<RequestMappingInfo> mappings, List<Match> matches, String lookupPath,
+			RequestMethod lookupMethod) {
 		for (RequestMappingInfo mapping : mappings) {
 			Match match = mapping.getMatchingCondition(lookupPath, lookupMethod);
 			if (match != null) {
@@ -166,7 +173,7 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 			}
 		}
 	}
-	
+
 	protected void handleMatch(Set<String> patterns, String lookupPath, HttpServerRequest request) {
 		if (patterns.size() == 1) {
 			Map<String, String> uriVariables = getPathMatcher().extractUriTemplateVariables(patterns.iterator().next(),
@@ -185,7 +192,7 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 			request.addPathVariables(all);
 		}
 	}
-	
+
 	/**
 	 * 释放资源
 	 */
@@ -194,9 +201,10 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 		this.mappingRegistry.close();
 		this.matchLookup.clear();
 	}
-	
+
 	/**
 	 * 注册器
+	 * 
 	 * @author lifeng
 	 */
 	public class MappingRegistry implements Closeable {
@@ -214,9 +222,35 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 				for (String url : directUrls) {
 					this.urlLookup.add(url, mapping);
 				}
+				initHandler(handlerMethod);
 			} finally {
 				this.readWriteLock.writeLock().unlock();
 			}
+		}
+
+		// 初始化处理器
+		private void initHandler(HandlerMethod handlerMethod) {
+			MethodParameter[] parameters = handlerMethod.getParameters();
+			for (int i = 0; i < parameters.length; i++) {
+				MethodParameter parameter = parameters[i];
+
+				// 实际的类型
+				Class<?> parameterType = parameter.getNestedParameterType();
+
+				// 对于集合类型支持第一层
+				this.initField(parameterType);
+			}
+		}
+
+		// 只覆盖支持的类型：自定义的实体类
+		private void initField(Class<?> parameterType) {
+			if (parameterType == HttpServerRequest.class || parameterType == HttpServerResponse.class
+					|| parameterType == Subject.class || parameterType == Session.class
+					|| parameterType == Principal.class || BeanUtils.isSimpleProperty(parameterType)
+					|| parameterType.isAssignableFrom(Collection.class) || parameterType.isAssignableFrom(Map.class)) {
+				return;
+			}
+			FieldCache.set(parameterType);
 		}
 
 		private List<String> getDirectUrls(RequestMappingInfo mapping) {

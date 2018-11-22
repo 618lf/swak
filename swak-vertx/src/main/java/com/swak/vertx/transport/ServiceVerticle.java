@@ -7,12 +7,12 @@ import java.util.concurrent.CompletionStage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.asm.MethodCache;
+import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.asm.Wrapper;
 import com.swak.utils.ExceptionUtils;
 import com.swak.utils.Maps;
 import com.swak.vertx.transport.codec.Msg;
-import com.swak.vertx.utils.MethodCache;
-import com.swak.vertx.utils.MethodCache.MethodMeta;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;

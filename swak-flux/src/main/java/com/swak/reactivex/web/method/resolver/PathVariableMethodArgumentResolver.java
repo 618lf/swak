@@ -3,11 +3,11 @@ package com.swak.reactivex.web.method.resolver;
 import java.util.Collections;
 import java.util.Map;
 
-import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.annotation.PathVariable;
+import com.swak.reactivex.web.method.MethodParameter;
 import com.swak.utils.StringUtils;
 
 /**

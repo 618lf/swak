@@ -2,14 +2,11 @@ package com.swak.reactivex.web.method;
 
 import java.lang.reflect.Method;
 
-import org.springframework.core.GenericTypeResolver;
-import org.springframework.core.MethodParameter;
 import org.springframework.util.ClassUtils;
 
 import com.swak.reactivex.web.Handler;
 import com.swak.reactivex.web.annotation.Async;
 import com.swak.reactivex.web.annotation.Auth;
-import com.swak.utils.ParameterNameResolver;
 
 import reactor.core.publisher.Mono;
 
@@ -41,13 +38,9 @@ public class HandlerMethod implements Handler {
 
 	private MethodParameter[] initMethodParameters() {
 		int count = this.method.getParameterTypes().length;
-		String[] pnames = ParameterNameResolver.resolveParameterName(method);
 		MethodParameter[] result = new MethodParameter[count];
 		for (int i = 0; i < count; i++) {
-			HandlerMethodParameter parameter = new HandlerMethodParameter(this.method, i);
-			GenericTypeResolver.resolveParameterType(parameter, this.beanType);
-			parameter.setParameterName(pnames[i]);
-			result[i] = parameter;
+			result[i] = new MethodParameter(this.beanType, this.method, i);
 		}
 		return result;
 	}

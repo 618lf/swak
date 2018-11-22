@@ -1,4 +1,4 @@
-package com.swak.vertx.annotation;
+package com.swak.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
