@@ -141,7 +141,7 @@ public abstract class ExcelUtils {
 	}
 
 	// ########### 读取Excel 数据 ################
-
+	
 	/**
 	 * 获取数据
 	 * 
@@ -151,6 +151,24 @@ public abstract class ExcelUtils {
 	 * @return
 	 */
 	public static <T> Result read(AbstractExcelMapper<T> mapper, File file) {
+		try {
+			Workbook book = ExcelUtils.load(file);
+			return read(mapper, book, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Result.error("数据导入错误");
+	}
+
+	/**
+	 * 获取数据
+	 * 
+	 * @param templateId
+	 * @param obj
+	 * @param file
+	 * @return
+	 */
+	public static <T> Result read(AbstractExcelMapper<T> mapper, InputStream file) {
 		try {
 			Workbook book = ExcelUtils.load(file);
 			return read(mapper, book, false);
