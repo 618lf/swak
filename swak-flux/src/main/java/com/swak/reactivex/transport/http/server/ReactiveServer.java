@@ -5,6 +5,7 @@ import java.util.function.BiFunction;
 
 import org.springframework.boot.web.server.WebServerException;
 
+import com.swak.Constants;
 import com.swak.reactivex.context.Server;
 import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.NettyOutbound;
@@ -49,7 +50,7 @@ public class ReactiveServer implements Server {
 			address.append(":").append(port);
 		}
 		String hostName = realServer.getAddress().getHostString();
-		if ("0.0.0.0".equals(hostName)) {
+		if (!Constants.LOCALHOST.equals(hostName)) {
 			hostName = this.getLocalHost();
 		}
 		return StringUtils.format(address.toString(), hostName);
@@ -60,7 +61,7 @@ public class ReactiveServer implements Server {
 			InetAddress addr = InetAddress.getLocalHost();
 			return addr.getHostAddress().toString();
 		} catch (Exception e) {
-			return "127.0.0.1";
+			return Constants.LOCALHOST;
 		}
 	}
 

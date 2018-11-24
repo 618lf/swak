@@ -62,6 +62,9 @@ public interface Constants {
 	String write_pool = "write";
 	String read_pool = "read";
 	String single_pool = "single";
+	
+	/** 服务地址 **/
+	String LOCALHOST = "127.0.0.1";
 
 	/** 目录 **/
 	default String temp() {
