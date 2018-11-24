@@ -3,6 +3,7 @@ package com.swak.reactivex.transport.http.server;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.swak.Constants;
+import com.swak.OS;
 import com.swak.reactivex.transport.TransportMode;
 
 import io.netty.handler.codec.http.multipart.DiskAttribute;
@@ -19,7 +20,7 @@ import io.netty.util.ResourceLeakDetector.Level;
 public class HttpServerProperties {
 
 	private String name = "SWAK-HTTP-SERVER";
-	private TransportMode mode = TransportMode.NIO;
+	private TransportMode mode = TransportMode.OS;
 	private LogLevel serverLogLevel = null;
 	private Level leakDetectionLevel = Level.DISABLED;
 	private boolean threadCache = true;
@@ -46,10 +47,10 @@ public class HttpServerProperties {
 	// 文件上传
 	private boolean deleteOnExitTemporaryFile = true;
 	private String baseDirectory = null;
-	
+
 	// 静态资源
 	private String[] statics;
-	
+
 	// 授权
 	private String keyStorePath; // keyStore 的路径
 	private String keyStorePass = "secret"; // keyStore 的密码
@@ -120,7 +121,18 @@ public class HttpServerProperties {
 	}
 
 	public TransportMode getMode() {
+		if (TransportMode.OS == mode) {
+			return this.getModeByOS();
+		}
 		return mode;
+	}
+
+	public TransportMode getModeByOS() {
+		OS os = OS.me();
+		if (os == OS.linux) {
+			return TransportMode.EPOLL;
+		}
+		return TransportMode.NIO;
 	}
 
 	public void setMode(TransportMode mode) {
@@ -142,6 +154,7 @@ public class HttpServerProperties {
 	public void setServerLogLevel(LogLevel serverLogLevel) {
 		this.serverLogLevel = serverLogLevel;
 	}
+
 	public boolean isThreadCache() {
 		return threadCache;
 	}
