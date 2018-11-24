@@ -58,8 +58,8 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 	private Thread clipboardThread;
 	private volatile String clipboardMD5 = null;
 
-	private int height_top = 32;
-	private int height_tools = 90;
+	private int height_top = 25;
+	private int height_tools = 70;
 	private int height_bottom = 25;
 	private int margin_width = 15;
 
@@ -204,8 +204,8 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 		// close
 		if (theme.close() != null) {
 			GridData gd_close = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-			gd_close.widthHint = 32;
-			gd_close.heightHint = 32;
+			gd_close.widthHint = height_top;
+			gd_close.heightHint = height_top;
 			ImageButton.builder(top).image(theme.close().image()).layout(gd_close).click(() -> {
 				shell.close();
 			}).tip("关闭").build();
@@ -237,7 +237,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 		childTools.setLayoutData(gd_childTools);
 
 		// 按钮的大小
-		int height_button = 64;
+		int height_button = 48;
 		int size = theme.actions().size();
 
 		// 子部快捷菜单 - 布局
