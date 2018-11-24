@@ -62,8 +62,9 @@ public class HandlerAdapter extends AbstractRouterHandler {
 
 	private void initField(Class<?> parameterType) {
 		if (parameterType == HttpServerRequest.class || parameterType == HttpServerResponse.class
-				|| parameterType == RoutingContext.class || parameterType == Subject.class || BeanUtils.isSimpleProperty(parameterType)
-				|| parameterType.isAssignableFrom(Collection.class) || parameterType.isAssignableFrom(Map.class)) {
+				|| parameterType == RoutingContext.class || parameterType == Subject.class
+				|| BeanUtils.isSimpleProperty(parameterType) || parameterType.isAssignableFrom(Collection.class)
+				|| parameterType.isAssignableFrom(Map.class)) {
 			return;
 		}
 		FieldCache.set(parameterType);
@@ -119,7 +120,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 				context.put(Constants.SUBJECT_NAME, subject);
 			}
 			return subject;
-		}else if (BeanUtils.isSimpleProperty(parameterType)) {
+		} else if (BeanUtils.isSimpleProperty(parameterType)) {
 			return this.doConvert(context.request().getParam(parameter.getParameterName()), parameterType);
 		} else if (parameterType.isAssignableFrom(List.class)) {
 			return Lists.newArrayList();
@@ -183,6 +184,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			}
 			return obj;
 		} catch (Exception e) {
+			logger.error("Set obj field faile");
 		}
 		return null;
 	}
@@ -212,8 +214,12 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			}
 
 			// 设置值
-			if (field != null) {
-				field.getField().set(obj, this.doConvert(value, field.getFieldClass()));
+			try {
+				if (field != null) {
+					field.getField().set(obj, this.doConvert(value, field.getFieldClass()));
+				}
+			} catch (Exception e) {
+				logger.error("Set obj field faile:field[{}]-value[{}]", field.getPropertyName(), value);
 			}
 		}
 	}

@@ -3,6 +3,9 @@ package com.swak.vertx.handler;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.annotation.RequestMethod;
@@ -25,6 +28,7 @@ public abstract class AbstractRouterHandler implements RouterHandler {
 
 	// 系统唯一的 router
 	protected static volatile CompletableFuture<Router> routerFuture = new CompletableFuture<>();
+	protected static Logger logger = LoggerFactory.getLogger(RouterHandler.class);
 
 	/**
 	 * 
