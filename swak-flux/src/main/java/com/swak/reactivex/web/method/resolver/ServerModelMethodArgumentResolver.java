@@ -83,8 +83,12 @@ public class ServerModelMethodArgumentResolver extends AbstractMethodArgumentRes
 			}
 
 			// 设置值
-			if (field != null) {
-				field.getField().set(obj, this.doConvert(value, field.getFieldClass()));
+			try {
+				if (field != null) {
+					field.getField().set(obj, this.doConvert(value, field.getFieldClass()));
+				}
+			} catch (Exception e) {
+				logger.error("Set obj field faile:field[{}]-value[{}]", field.getPropertyName(), value);
 			}
 		}
 	}

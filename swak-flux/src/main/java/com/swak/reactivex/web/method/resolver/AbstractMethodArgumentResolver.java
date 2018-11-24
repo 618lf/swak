@@ -4,6 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
@@ -19,6 +21,7 @@ public abstract class AbstractMethodArgumentResolver implements HandlerMethodArg
 	
 	// 属性转换服务
 	protected ConversionService conversionService;
+	protected static Logger logger = LoggerFactory.getLogger(HandlerMethodArgumentResolver.class);
 	
 	public AbstractMethodArgumentResolver(ConversionService conversionService) {
 		this.conversionService = conversionService;
