@@ -14,5 +14,10 @@ public enum TransportMode {
      * Use EPOLL transport. Activates an unix socket if servers binded to loopback interface.
      * Requires <b>netty-transport-native-epoll</b> lib in classpath.
      */
-    EPOLL
+    EPOLL,
+    
+    /**
+     * OS Adaptation, Linux us EPOLL, Others use NIO
+     */
+    OS,
 }
