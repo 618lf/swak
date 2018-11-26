@@ -20,11 +20,11 @@ public enum OS {
 	 */
 	public static OS me() {
 		String os = System.getProperty("os.name").toLowerCase();
-		if (os.indexOf(OS.linux.name()) > 0) {
+		if (os.indexOf(OS.linux.name()) >= 0) {
 			return OS.linux;
-		} else if (os.indexOf(OS.mac.name()) > 0) {
+		} else if (os.indexOf(OS.mac.name()) >= 0) {
 			return OS.mac;
-		} else if (os.indexOf(OS.windows.name()) > 0) {
+		} else if (os.indexOf(OS.windows.name()) >= 0) {
 			return OS.windows;
 		}
 		return OS.Others;
