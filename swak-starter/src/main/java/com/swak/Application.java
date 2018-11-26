@@ -3,6 +3,7 @@ package com.swak;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -118,7 +119,7 @@ public class Application extends SpringApplication {
 	 */
 	public static void stop() {
 		if (applicationContext != null) {
-			applicationContext.close();
+			exit(applicationContext, new ExitCodeGenerator[] {});
 			applicationContext = null;
 		}
 	}

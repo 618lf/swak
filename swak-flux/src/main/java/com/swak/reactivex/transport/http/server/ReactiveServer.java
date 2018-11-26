@@ -1,11 +1,11 @@
 package com.swak.reactivex.transport.http.server;
 
-import java.net.InetAddress;
 import java.util.function.BiFunction;
 
 import org.springframework.boot.web.server.WebServerException;
 
 import com.swak.Constants;
+import com.swak.OS;
 import com.swak.reactivex.context.Server;
 import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.NettyOutbound;
@@ -51,18 +51,9 @@ public class ReactiveServer implements Server {
 		}
 		String hostName = realServer.getAddress().getHostString();
 		if (!Constants.LOCALHOST.equals(hostName)) {
-			hostName = this.getLocalHost();
+			hostName = OS.ip();
 		}
 		return StringUtils.format(address.toString(), hostName);
-	}
-
-	private String getLocalHost() {
-		try {
-			InetAddress addr = InetAddress.getLocalHost();
-			return addr.getHostAddress().toString();
-		} catch (Exception e) {
-			return Constants.LOCALHOST;
-		}
 	}
 
 	/**
