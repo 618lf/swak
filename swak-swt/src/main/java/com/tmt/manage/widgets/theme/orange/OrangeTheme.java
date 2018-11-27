@@ -38,6 +38,14 @@ public abstract class OrangeTheme implements Theme {
 	public int getShellStyle() {
 		return SWT.NONE;
 	}
+	
+	/**
+	 * 显示底部
+	 * @return
+	 */
+	public  boolean showFoot() {
+		return Boolean.TRUE;
+	}
 
 	/**
 	 * background
@@ -59,4 +67,6 @@ public abstract class OrangeTheme implements Theme {
 	 * @return
 	 */
 	public abstract Action close();
+	
+	
 }

@@ -117,11 +117,13 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 		this.configureContent(content);
 
 		// 脚部
-		Composite bottom = new Composite(shell, SWT.TRANSPARENCY_ALPHA);
-		GridData gd_bottom = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-		gd_bottom.heightHint = height_bottom;
-		bottom.setLayoutData(gd_bottom);
-		this.configureBottoms(bottom);
+		if (theme.showFoot()) {
+			Composite bottom = new Composite(shell, SWT.TRANSPARENCY_ALPHA);
+			GridData gd_bottom = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+			gd_bottom.heightHint = height_bottom;
+			bottom.setLayoutData(gd_bottom);
+			this.configureBottoms(bottom);
+		}
 
 		// 信号处理线程
 		signalThread = new Thread(() -> {
@@ -249,7 +251,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 
 		// 按钮组
 		ImageButtonGroup ibg = new ImageButtonGroup();
-					
+
 		// 按钮
 		for (int i = 0; i < size; i++) {
 			Action action = theme.actions().get(i);
