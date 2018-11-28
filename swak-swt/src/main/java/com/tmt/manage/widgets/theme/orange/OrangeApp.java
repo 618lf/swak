@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.Clipboard;
@@ -58,7 +59,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 	private Thread clipboardThread;
 	private volatile String clipboardMD5 = null;
 
-	private int height_top = 25;
+	private int height_top = 35;
 	private int height_tools = 70;
 	private int height_bottom = 25;
 	private int margin_width = 15;
@@ -79,8 +80,11 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 		if (theme.logo() != null) {
 			shell.setImage(theme.logo().image());
 		}
-		if (theme.background() != null) {
+		if (theme.background() != null && theme.background().image() != null) {
 			shell.setBackgroundImage(theme.background().image());
+		}
+		if (theme.background() != null && theme.background().color() != null) {
+			shell.setBackground(theme.background().color());
 		}
 		GridLayout gl_shell = new GridLayout(1, false);
 		this.clearGridLayout(gl_shell);
@@ -101,13 +105,15 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 		}
 
 		// 快捷菜单
-		List<Action> actions = theme.actions();
-		if (actions != null && actions.size() > 0 && theme.logo() != null) {
-			Composite tools = new Composite(shell, SWT.TRANSPARENCY_ALPHA);
-			GridData gd_tools = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-			gd_tools.heightHint = height_tools;
-			tools.setLayoutData(gd_tools);
-			this.configureTools(tools);
+		if (theme.showTools()) {
+			List<Action> actions = theme.actions();
+			if (actions != null && actions.size() > 0 && theme.logo() != null) {
+				Composite tools = new Composite(shell, SWT.TRANSPARENCY_ALPHA);
+				GridData gd_tools = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+				gd_tools.heightHint = height_tools;
+				tools.setLayoutData(gd_tools);
+				this.configureTools(tools);
+			}
 		}
 
 		// 内容展示
@@ -193,21 +199,44 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 	// 控制按钮的配置
 	protected void configureTops(Composite top) {
 		OrangeTheme theme = (OrangeTheme) this.theme;
-		GridLayout gl_top = new GridLayout(2, false);
+		GridLayout gl_top = new GridLayout(4, false);
 		this.clearGridLayout(gl_top);
+		gl_top.marginWidth = 5;
+		gl_top.marginHeight = 5;
+		gl_top.horizontalSpacing = 10;
 		top.setLayout(gl_top);
 
+		// logo
+		if (theme.logo() != null) {
+			GridData gd_logo = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+			gd_logo.widthHint = height_top - 10;
+			gd_logo.heightHint = height_top - 10;
+			ImageButton.builder(top).image(theme.logo().image()).layout(gd_logo).build();
+		}
+
 		// left
-		Label left = new Label(top, SWT.NONE);
+		CLabel left = new CLabel(top, SWT.SHADOW_NONE);
+		left.setText(Settings.me().getServerName());
+		left.setForeground(ResourceManager.getColor(SWT.COLOR_WHITE));
 		left.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		left.addMouseListener(this);
 		left.addMouseMoveListener(this);
 
+		// secure
+		if (theme.secure() != null) {
+			GridData gd_secure = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+			gd_secure.widthHint = height_top - 10;
+			gd_secure.heightHint = height_top - 10;
+			ImageButton.builder(top).image(theme.secure().image()).layout(gd_secure).click(() -> {
+				shell.close();
+			}).tip("安全").build();
+		}
+
 		// close
 		if (theme.close() != null) {
 			GridData gd_close = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-			gd_close.widthHint = height_top;
-			gd_close.heightHint = height_top;
+			gd_close.widthHint = height_top - 10;
+			gd_close.heightHint = height_top - 10;
 			ImageButton.builder(top).image(theme.close().image()).layout(gd_close).click(() -> {
 				shell.close();
 			}).tip("关闭").build();

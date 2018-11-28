@@ -40,6 +40,14 @@ public abstract class OrangeTheme implements Theme {
 	}
 	
 	/**
+	 * 显示工具栏
+	 * @return
+	 */
+	public  boolean showTools() {
+		return Boolean.TRUE;
+	}
+	
+	/**
 	 * 显示底部
 	 * @return
 	 */
@@ -62,11 +70,17 @@ public abstract class OrangeTheme implements Theme {
 	public abstract Action logo();
 	
 	/**
+	 * secure
+	 * 
+	 * @return
+	 */
+	public abstract Action secure();
+	
+	/**
 	 * close
 	 * 
 	 * @return
 	 */
 	public abstract Action close();
-	
 	
 }

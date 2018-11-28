@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 
 import com.tmt.commands.ExitCommand;
@@ -54,7 +55,7 @@ public class Starter extends App {
 			 */
 			@Override
 			public Action logo() {
-				return Action.me().image(this.load("logo.png"));
+				return Action.me().image(this.load("橙子.png"));
 			}
 
 			/**
@@ -62,7 +63,15 @@ public class Starter extends App {
 			 */
 			@Override
 			public Action background() {
-				return Action.me().image(this.load("背景.png"));
+				return Action.me().color(ResourceManager.getColor(new RGB(0, 153, 204)));
+			}
+			
+			/**
+			 * 背景图， 确定一个比例就好： 16：9的比例
+			 */
+			@Override
+			public Action secure() {
+				return Action.me().image(this.load("安全.png"));
 			}
 			
 			/**
@@ -125,6 +134,17 @@ public class Starter extends App {
 			private Image load(String path) {
 				return ResourceManager.getImage(Starter.class, "theme/" + path);
 			}
+
+			@Override
+			public boolean showTools() {
+				return Boolean.FALSE;
+			}
+
+			@Override
+			public boolean showFoot() {
+				return Boolean.FALSE;
+			}
+			
 		};
 	}
 
