@@ -150,6 +150,13 @@ public class Starter extends App {
 			private Image load(String path) {
 				return ResourceManager.getImage(Starter.class, "theme/" + path);
 			}
+			
+			
+			
+			@Override
+			public boolean showTop() {
+				return Boolean.FALSE;
+			}
 
 			@Override
 			public boolean showTools() {

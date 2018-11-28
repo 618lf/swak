@@ -115,7 +115,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 
 		// 内容展示
 		content = new Composite(shell, SWT.NONE);
-		GridData gd_content = new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1);
+		GridData gd_content = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		content.setLayoutData(gd_content);
 		this.configureContent(content);
 
