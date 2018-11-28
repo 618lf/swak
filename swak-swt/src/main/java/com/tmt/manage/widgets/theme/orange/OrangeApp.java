@@ -92,20 +92,14 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 		shell.setLayout(gl_shell);
 		shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
 
-		// shell 样式
-		int shellStyle = this.getShellStyle();
-
-		// 使用系统默认的控制按钮
-		if (shellStyle == SWT.NONE) {
-			
-		}
-		
 		// 控制按钮
-		Composite top = new Composite(shell, SWT.TRANSPARENCY_ALPHA);
-		GridData gd_top = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-		gd_top.heightHint = height_top;
-		top.setLayoutData(gd_top);
-		this.configureTops(top);
+		if (theme.showTop()) {
+			Composite top = new Composite(shell, SWT.TRANSPARENCY_ALPHA);
+			GridData gd_top = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+			gd_top.heightHint = height_top;
+			top.setLayoutData(gd_top);
+			this.configureTops(top);
+		}
 
 		// 快捷菜单
 		if (theme.showTools()) {

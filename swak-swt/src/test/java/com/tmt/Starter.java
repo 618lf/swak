@@ -160,7 +160,6 @@ public class Starter extends App {
 			public boolean showFoot() {
 				return Boolean.FALSE;
 			}
-			
 		};
 	}
 
