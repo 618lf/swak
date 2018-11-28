@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.ProgressBar;
 import com.tmt.manage.command.Commands;
 import com.tmt.manage.command.Commands.Cmd;
 import com.tmt.manage.command.Commands.Signal;
+import com.tmt.manage.command.JsCommand;
 import com.tmt.manage.command.Receiver;
 import com.tmt.manage.config.Settings;
 import com.tmt.manage.widgets.BaseApp;
@@ -343,6 +344,9 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 
 		// 内容展示 - 浏览器
 		browser = new Browser(content, SWT.NONE);
+		
+		// 注册 JS 命令 
+		JsCommand.bind(browser);
 
 		// 默认展示
 		contentStack.topControl = this.logComposite;
