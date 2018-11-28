@@ -55,7 +55,7 @@ public class Starter extends App {
 			 */
 			@Override
 			public Action logo() {
-				return Action.me().image(this.load("橙子.png"));
+				return Action.me().image(this.load("税务.png"));
 			}
 
 			/**
@@ -71,7 +71,23 @@ public class Starter extends App {
 			 */
 			@Override
 			public Action secure() {
-				return Action.me().image(this.load("安全.png"));
+				return Action.me().image(this.load("安全.png")).name("安全");
+			}
+			
+			/**
+			 * 背景图， 确定一个比例就好： 16：9的比例
+			 */
+			@Override
+			public Action tray() {
+				return Action.me().image(this.load("托盘.png")).name("最小化到托盘");
+			}
+			
+			/**
+			 * 背景图， 确定一个比例就好： 16：9的比例
+			 */
+			@Override
+			public Action resize() {
+				return Action.me().image(this.load("最大化.png")).imageOn(this.load("最小化.png"));
 			}
 			
 			/**
@@ -79,7 +95,7 @@ public class Starter extends App {
 			 */
 			@Override
 			public Action close() {
-				return Action.me().image(this.load("关闭.png"));
+				return Action.me().image(this.load("关闭.png")).name("关闭");
 			}
 			
 			/**

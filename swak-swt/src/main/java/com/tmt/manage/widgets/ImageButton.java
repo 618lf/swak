@@ -25,6 +25,7 @@ public class ImageButton implements PaintListener {
 	private Object layout;
 	private Image image;
 	private Image hoverImage;
+	private Image onImage;
 	private Color blurColor;
 	private String text;
 	private String tip;
@@ -98,8 +99,8 @@ public class ImageButton implements PaintListener {
 	 * @return
 	 */
 	private Image drawable() {
-		if ((this.on || this.hoverOn) && hoverImage != null) {
-			return hoverImage;
+		if ((this.on || this.hoverOn) && (hoverImage != null || onImage != null)) {
+			return hoverImage != null ? hoverImage : onImage;
 		}
 		return image;
 	}
@@ -200,6 +201,17 @@ public class ImageButton implements PaintListener {
 	 * @param layout
 	 * @return
 	 */
+	public ImageButton on(Image image) {
+		this.onImage = image;
+		return this;
+	}
+
+	/**
+	 * hover
+	 * 
+	 * @param layout
+	 * @return
+	 */
 	public ImageButton blur(Color color) {
 		this.blurColor = color;
 		return this;
@@ -251,6 +263,15 @@ public class ImageButton implements PaintListener {
 	}
 
 	/**
+	 * 切还
+	 */
+	private void hoverToggle() {
+		this.hoverOn = !this.hoverOn;
+		control.redraw();
+		control.getShell().setCursor(ResourceManager.getCursor(SWT.CURSOR_HAND));
+	}
+
+	/**
 	 * 创建组件
 	 */
 	public ImageButton build() {
@@ -289,6 +310,7 @@ public class ImageButton implements PaintListener {
 		if (this.tip != null) {
 			this.control.setToolTipText(this.tip);
 		}
+
 		// hover 事件
 		if (this.hoverImage != null) {
 			this.control.addMouseTrackListener(new MouseTrackListener() {
@@ -309,10 +331,12 @@ public class ImageButton implements PaintListener {
 		}
 
 		// 点击事件
-		if (this.click != null || this.group != null) {
+		if (this.click != null || this.group != null || this.onImage != null) {
 			this.control.addListener(SWT.MouseUp, (e) -> {
 				if (this.group != null) {
 					this.group.on(this);
+				} else if (this.onImage != null) {
+					hoverToggle();
 				}
 				if (this.click != null) {
 					this.click.run();

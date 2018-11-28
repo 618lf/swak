@@ -96,13 +96,15 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 
 		// 使用系统默认的控制按钮
 		if (shellStyle == SWT.NONE) {
-			// 控制按钮
-			Composite top = new Composite(shell, SWT.TRANSPARENCY_ALPHA);
-			GridData gd_top = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-			gd_top.heightHint = height_top;
-			top.setLayoutData(gd_top);
-			this.configureTops(top);
+			
 		}
+		
+		// 控制按钮
+		Composite top = new Composite(shell, SWT.TRANSPARENCY_ALPHA);
+		GridData gd_top = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+		gd_top.heightHint = height_top;
+		top.setLayoutData(gd_top);
+		this.configureTops(top);
 
 		// 快捷菜单
 		if (theme.showTools()) {
@@ -199,7 +201,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 	// 控制按钮的配置
 	protected void configureTops(Composite top) {
 		OrangeTheme theme = (OrangeTheme) this.theme;
-		GridLayout gl_top = new GridLayout(4, false);
+		GridLayout gl_top = new GridLayout(6, false);
 		this.clearGridLayout(gl_top);
 		gl_top.marginWidth = 5;
 		gl_top.marginHeight = 5;
@@ -229,7 +231,27 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 			gd_secure.heightHint = height_top - 10;
 			ImageButton.builder(top).image(theme.secure().image()).layout(gd_secure).click(() -> {
 				shell.close();
-			}).tip("安全").build();
+			}).tip(theme.secure().name()).build();
+		}
+		
+		// tray
+		if (theme.tray() != null) {
+			GridData gd_tray = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+			gd_tray.widthHint = height_top - 10;
+			gd_tray.heightHint = height_top - 10;
+			ImageButton.builder(top).image(theme.tray().image()).layout(gd_tray).click(() -> {
+				this.min();
+			}).tip(theme.tray().name()).build();
+		}
+		
+		// resize
+		if (theme.resize() != null) {
+			GridData gd_resize = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+			gd_resize.widthHint = height_top - 10;
+			gd_resize.heightHint = height_top - 10;
+			ImageButton.builder(top).image(theme.resize().image()).on(theme.resize().imageOn()).layout(gd_resize).click(() -> {
+				this.resize();
+			}).tip(theme.resize().name()).build();
 		}
 
 		// close
@@ -239,7 +261,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 			gd_close.heightHint = height_top - 10;
 			ImageButton.builder(top).image(theme.close().image()).layout(gd_close).click(() -> {
 				shell.close();
-			}).tip("关闭").build();
+			}).tip(theme.close().name()).build();
 		}
 	}
 

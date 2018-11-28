@@ -1,10 +1,14 @@
 package com.tmt.manage.widgets;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Tray;
+import org.eclipse.swt.widgets.TrayItem;
 
 import com.tmt.manage.widgets.theme.Theme;
 
@@ -17,8 +21,10 @@ public abstract class BaseApp {
 
 	protected Theme theme;
 	protected Shell shell;
+	protected Tray tray;
 	protected Point FULL_POINT = new Point(-1, -1);
-
+	protected Rectangle bounds = null;
+	protected Point location = null;
 	/**
 	 * Configure the theme.
 	 */
@@ -34,6 +40,7 @@ public abstract class BaseApp {
 		shell = newShell();
 		createContents();
 		configureShell();
+		newTray();
 		shell.open();
 		shell.layout();
 		while (!shell.isDisposed()) {
@@ -84,6 +91,40 @@ public abstract class BaseApp {
 		}
 		return shell;
 	}
+	
+	/**
+	 * 系统托盘
+	 * 
+	 * @return
+	 */
+	protected Tray newTray() {
+		tray = Display.getDefault().getSystemTray();  
+        TrayItem trayItem = new TrayItem(tray, SWT.NONE);  
+        trayItem.setVisible(false);  
+        trayItem.setToolTipText(shell.getText());
+        trayItem.setImage(shell.getImage());
+        trayItem.addSelectionListener(new SelectionAdapter() {  
+            public void widgetSelected(SelectionEvent e) {  
+            	min();
+            }  
+        });
+        return tray;
+	}
+	
+	/**
+	 * 最小化到托盘
+	 */
+	protected void min() {
+		try {
+			shell.setVisible(!shell.isVisible());  
+	        tray.getItem(0).setVisible(!shell.isVisible());  
+	        if (shell.getVisible()) {  
+	            shell.setActive();  
+	        }
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * close the window
@@ -93,7 +134,23 @@ public abstract class BaseApp {
 		shell.dispose();
 		ResourceManager.dispose();
 	}
-
+	
+	/**
+	 * 全屏幕显示
+	 */
+	public void resize() {
+		if (bounds == null) {
+			bounds = shell.getBounds();
+			location = shell.getLocation();
+			shell.setBounds(Display.getDefault().getBounds());
+		} else {
+			shell.setBounds(bounds);
+			shell.setLocation(location);
+			bounds = null;
+			location = null;
+		}
+	}
+	
 	/**
 	 * get Shell Style, Default
 	 */

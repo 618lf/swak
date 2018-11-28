@@ -36,7 +36,7 @@ public abstract class OrangeTheme implements Theme {
 	 * @return
 	 */
 	public int getShellStyle() {
-		return SWT.NONE;
+		return SWT.SYSTEM_MODAL;
 	}
 	
 	/**
@@ -75,6 +75,20 @@ public abstract class OrangeTheme implements Theme {
 	 * @return
 	 */
 	public abstract Action secure();
+	
+	/**
+	 * secure
+	 * 
+	 * @return
+	 */
+	public abstract Action tray();
+	
+	/**
+	 * resize
+	 * 
+	 * @return
+	 */
+	public abstract Action resize();
 	
 	/**
 	 * close
