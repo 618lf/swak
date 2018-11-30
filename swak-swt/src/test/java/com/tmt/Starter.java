@@ -12,7 +12,7 @@ import com.tmt.commands.ExitCommand;
 import com.tmt.commands.StartCommand;
 import com.tmt.commands.StopCommand;
 import com.tmt.commands.TouchCommand;
-import com.tmt.commands.UpgradeCommand;
+import com.tmt.commands.UpgraderCommand;
 import com.tmt.commands.UrlCommand;
 import com.tmt.manage.App;
 import com.tmt.manage.command.Commands;
@@ -39,7 +39,7 @@ public class Starter extends App {
 		Commands.register(Cmd.exit, new ExitCommand());
 		Commands.register(Cmd.task, new TouchCommand());
 		Commands.register(Cmd.url, new UrlCommand());
-		Commands.register(Cmd.upgrade, new UpgradeCommand());
+		Commands.register(Cmd.upgrade, new UpgraderCommand());
 	}
 
 	/**

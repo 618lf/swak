@@ -26,6 +26,7 @@ public class ImageButton implements PaintListener {
 	private Image image;
 	private Image hoverImage;
 	private Image onImage;
+	private Color onColor;
 	private Color blurColor;
 	private String text;
 	private String tip;
@@ -111,8 +112,8 @@ public class ImageButton implements PaintListener {
 	 * @return
 	 */
 	private Color drawColor() {
-		if ((this.on || this.hoverOn) && this.blurColor != null) {
-			return ResourceManager.getColor(SWT.COLOR_WHITE);
+		if ((this.on || this.hoverOn) && this.onColor != null) {
+			return onColor;
 		}
 		return blurColor;
 	}
@@ -203,6 +204,17 @@ public class ImageButton implements PaintListener {
 	 */
 	public ImageButton on(Image image) {
 		this.onImage = image;
+		return this;
+	}
+	
+	/**
+	 * hover
+	 * 
+	 * @param layout
+	 * @return
+	 */
+	public ImageButton on(Color color) {
+		this.onColor = color;
 		return this;
 	}
 

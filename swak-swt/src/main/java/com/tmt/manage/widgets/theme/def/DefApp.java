@@ -47,7 +47,7 @@ public class DefApp extends BaseApp implements Receiver {
 	@Override
 	protected void createContents() {
 		shell.setLayout(new FillLayout());
-		shell.setText(Settings.me().getServerName());
+		shell.setText(Settings.me().getServer().getName());
 		Composite container = new Composite(shell, SWT.NONE);
 		container.setLayout(new GridLayout(1, false));
 
@@ -70,8 +70,9 @@ public class DefApp extends BaseApp implements Receiver {
 
 		openButton = new CommandButton(Commands.nameCommand(Cmd.open), composite, SWT.NONE).getButton();
 		openButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
-		
-		stopButton = new ConfirmCommandButton(Commands.nameCommand(Cmd.stop), composite, SWT.NONE, "确认停止系统？").getButton();
+
+		stopButton = new ConfirmCommandButton(Commands.nameCommand(Cmd.stop), composite, SWT.NONE, "确认停止系统？")
+				.getButton();
 		stopButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 
 		// 信号处理线程
@@ -222,6 +223,10 @@ public class DefApp extends BaseApp implements Receiver {
 		case log:
 			logText.append(signal.getRemarks());
 			logText.setTopIndex(Integer.MAX_VALUE);
+			break;
+		case upgrade:
+			break;
+		case upgraded:
 			break;
 		}
 	}

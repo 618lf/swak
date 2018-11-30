@@ -1,6 +1,6 @@
 package com.tmt.manage.widgets;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class ImageButtonGroup {
 
-	private Set<ImageButton> buttons = new HashSet<>(2);
+	private Set<ImageButton> buttons = new LinkedHashSet<>(2);
 
 	/**
 	 * 添加受管理的组件

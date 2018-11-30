@@ -1,5 +1,7 @@
 package com.tmt.manage.widgets.theme.upgrade;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -11,6 +13,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Image;
@@ -18,18 +22,25 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.tmt.manage.command.Commands;
 import com.tmt.manage.command.Commands.Cmd;
+import com.tmt.manage.command.Commands.Sign;
 import com.tmt.manage.command.Commands.Signal;
 import com.tmt.manage.command.Receiver;
 import com.tmt.manage.config.Settings;
 import com.tmt.manage.widgets.BaseApp;
 import com.tmt.manage.widgets.ImageButton;
 import com.tmt.manage.widgets.ImageButtonGroup;
+import com.tmt.manage.widgets.Progress;
 import com.tmt.manage.widgets.ResourceManager;
 import com.tmt.manage.widgets.theme.Theme.Action;
 import com.tmt.manage.widgets.theme.upgrade.UpgraderTheme.Backup;
@@ -46,13 +57,13 @@ public class UpgraderApp extends BaseApp implements Receiver {
 	private Composite content;
 	private int height_top = 42;
 	private int height_tools = 70;
-
-	// 先阶段只支持两个区域的显示
 	private Composite oneComposite;
 	private Composite twoComposite;
-
-	// buttons
 	private ImageButtonGroup group;
+	private TableViewer packs;
+	private Thread signalThread;
+	private Progress progress;
+	private volatile Status status = Status.idle;
 
 	// 清除默认样式
 	private void clearGridLayout(GridLayout gridLayout) {
@@ -64,7 +75,7 @@ public class UpgraderApp extends BaseApp implements Receiver {
 
 	@Override
 	protected void createContents() {
-		shell.setText(Settings.me().getServerName() + "- 安全模式");
+		shell.setText(Settings.me().getServer().getName() + "- 安全模式");
 		UpgraderTheme theme = (UpgraderTheme) this.theme;
 		if (theme.logo() != null) {
 			shell.setImage(theme.logo().image());
@@ -96,6 +107,31 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		GridData gd_content = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		content.setLayoutData(gd_content);
 		this.configureContent(content);
+
+		// 进度条
+		ProgressBar progressBar = new ProgressBar(shell, SWT.HORIZONTAL | SWT.SMOOTH);
+		GridData gd_progressBar = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+		progressBar.setLayoutData(gd_progressBar);
+		progressBar.setEnabled(false);
+		progress = new Progress(progressBar);
+		progress.hide();
+
+		// 信号处理线程
+		signalThread = new Thread(() -> {
+			while (status != Status.exit) {
+				try {
+					Signal signal = Commands.receiveSignal();
+					if (signal != null) {
+						this.handleSignal(signal);
+					}
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					break;
+				}
+			}
+		});
+		signalThread.setDaemon(true);
+		signalThread.start();
 	}
 
 	// 控制按钮的配置
@@ -117,7 +153,7 @@ public class UpgraderApp extends BaseApp implements Receiver {
 
 		// left
 		CLabel left = new CLabel(top, SWT.SHADOW_NONE);
-		left.setText(Settings.me().getServerName() + "- 安全模式");
+		left.setText(Settings.me().getServer().getName() + "- 安全模式");
 		left.setForeground(ResourceManager.getColor(SWT.COLOR_WHITE));
 		GridData gd_left = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		left.setLayoutData(gd_left);
@@ -156,32 +192,35 @@ public class UpgraderApp extends BaseApp implements Receiver {
 			// 已经安装的补丁
 			Action doneAction = actions.get(0);
 			ImageButton.builder(left).text(doneAction.name()).bounds(new Rectangle(39, 32, 95, 38)).group(group)
-					.image(doneAction.image()).blur(doneAction.color()).hover(doneAction.imageOn()).click(() -> {
+					.image(doneAction.image()).blur(doneAction.color()).on(doneAction.colorOn())
+					.hover(doneAction.imageOn()).click(() -> {
 						contentStack.topControl = this.oneComposite;
 						content.layout();
 						doneAction.click();
 					}).build();
 
 			// 待经安装的补丁
-			Action undoneAction = actions.get(1);
-			ImageButton.builder(left).text(undoneAction.name()).bounds(new Rectangle(139, 32, 95, 38)).group(group)
-					.image(undoneAction.image()).blur(undoneAction.color()).hover(undoneAction.imageOn()).click(() -> {
+			Action backupAction = actions.get(1);
+			ImageButton.builder(left).text(backupAction.name()).bounds(new Rectangle(139, 32, 95, 38)).group(group)
+					.image(backupAction.image()).blur(backupAction.color()).on(backupAction.colorOn())
+					.hover(backupAction.imageOn()).click(() -> {
 						contentStack.topControl = this.twoComposite;
 						content.layout();
-						undoneAction.click();
+						backupAction.click();
 					}).build();
 
-//			// right
-//			Composite right = new Composite(tools, SWT.TRANSPARENCY_ALPHA);
-//			GridData gd_right = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-//			gd_right.widthHint = 110;
-//			right.setLayoutData(gd_right);
-//
-//			// 选择补丁包
-//			Action selectAction = actions.get(2);
-//			ImageButton.builder(right).text(selectAction.name()).bounds(new Rectangle(5, 30, 95, 35))
-//					.image(selectAction.image()).hover(selectAction.imageOn()).click(selectAction.click()).build();
-			
+			// right
+			Composite right = new Composite(tools, SWT.TRANSPARENCY_ALPHA);
+			GridData gd_right = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+			gd_right.widthHint = 110;
+			right.setLayoutData(gd_right);
+
+			// 启动系统
+			Action selectAction = actions.get(2);
+			Button selectActionBtn = new Button(right, SWT.BORDER);
+			selectActionBtn.setText(selectAction.name());
+			selectActionBtn.setBounds(new Rectangle(5, 32, 100, 35));
+
 			// 默认第一个点亮
 			this.group.first();
 		}
@@ -193,14 +232,14 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		contentStack = new StackLayout();
 		content.setLayout(contentStack);
 
-		//############ ** 补丁区域 ** ##############
-		
+		// ############ ** 补丁区域 ** ##############
+
 		oneComposite = new Composite(content, SWT.NONE);
-		oneComposite.setBackground(ResourceManager.getColor(SWT.COLOR_WHITE));
+		oneComposite.setBackground(theme.actions().get(0).colorOn());
 		GridLayout gl_oneComposite = new GridLayout(1, false);
 		this.clearGridLayout(gl_oneComposite);
 		oneComposite.setLayout(gl_oneComposite);
-		
+
 		// 提示和操作
 		Composite done_top = new Composite(oneComposite, SWT.NONE);
 		GridData gd_done_top = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
@@ -210,28 +249,48 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		gl_done_top.marginWidth = 15;
 		gl_done_top.marginHeight = 20;
 		done_top.setLayout(gl_done_top);
-		
+
 		// 提示
 		CLabel done_top_left = new CLabel(done_top, SWT.SHADOW_NONE);
 		done_top_left.setText("请选择需要添加的补丁");
 		GridData gd_done_top_left = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		done_top_left.setLayoutData(gd_done_top_left);
-		
+
 		// 操作
-		CLabel done_top_right = new CLabel(done_top, SWT.SHADOW_NONE);
-		done_top_right.setText("添加补丁");
+		Button done_top_right = new Button(done_top, SWT.BORDER);
+		done_top_right.setText("安装补丁");
 		GridData gd_done_top_right = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		done_top_right.setLayoutData(gd_done_top_right);
+		done_top_right.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog fileselect = new FileDialog(shell, SWT.MULTI);
+				fileselect.setFilterExtensions(new String[] { "*.zip", "*.ZIP*" });
+				fileselect.open();
+				String path = fileselect.getFilterPath();
+				if (path != null) {
+					String[] fileNames = fileselect.getFileNames();
+					List<File> files = new ArrayList<>();
+					for (String name : fileNames) {
+						files.add(new File(path, name));
+					}
+					Commands.sendSignal(Signal.newSignal(Sign.upgrade));
+					theme.actions().get(0).accept().accept(files);
+					refreshPacks();
+					Commands.nameCommand(Cmd.upgrade).exec();
+				}
+			}
+		});
 
 		// 表格
-		TableViewer done_tableViewer = new TableViewer(oneComposite,
+		packs = new TableViewer(oneComposite,
 				SWT.MULTI | SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.FULL_SELECTION);
-		this.configureDoneTable(done_tableViewer, new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		done_tableViewer.setInput(theme.dones());
-		
-		//############ ** 备份区域 ** ##############
+		this.configureDoneTable(packs, new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		packs.setInput(theme.patchs());
+
+		// ############ ** 备份区域 ** ##############
 		twoComposite = new Composite(content, SWT.NONE);
-		twoComposite.setBackground(ResourceManager.getColor(SWT.COLOR_WHITE));
+		twoComposite.setBackground(theme.actions().get(1).colorOn());
 		GridLayout gl_twoComposite = new GridLayout(1, false);
 		this.clearGridLayout(gl_twoComposite);
 		twoComposite.setLayout(gl_twoComposite);
@@ -245,15 +304,15 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		gl_backup_top.marginWidth = 15;
 		gl_backup_top.marginHeight = 20;
 		backup_top.setLayout(gl_backup_top);
-		
+
 		// 提示
 		CLabel backup_top_left = new CLabel(backup_top, SWT.SHADOW_NONE);
 		backup_top_left.setText("请及时备份系统，并将数据保存到安全的地方");
 		GridData gd_backup_top_left = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		backup_top_left.setLayoutData(gd_backup_top_left);
-		
+
 		// 操作
-		CLabel backup_top_right = new CLabel(backup_top, SWT.SHADOW_NONE);
+		Button backup_top_right = new Button(backup_top, SWT.BORDER);
 		backup_top_right.setText("备份系统");
 		GridData gd_backup_top_right = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		backup_top_right.setLayoutData(gd_backup_top_right);
@@ -276,12 +335,10 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		done_table.setLinesVisible(true);
 		TableLayout tLayout = new TableLayout();
 		done_table.setLayout(tLayout);
-		tLayout.addColumnData(new ColumnWeightData(20));
-		new TableColumn(done_table, SWT.BORDER).setText("安装时间");
-		tLayout.addColumnData(new ColumnWeightData(30));
+		tLayout.addColumnData(new ColumnWeightData(70));
 		new TableColumn(done_table, SWT.BORDER).setText("补丁名称");
-		tLayout.addColumnData(new ColumnWeightData(50));
-		new TableColumn(done_table, SWT.BORDER).setText("补丁描述");
+		tLayout.addColumnData(new ColumnWeightData(30));
+		new TableColumn(done_table, SWT.BORDER).setText("备注");
 		done_tableViewer.setContentProvider(new IStructuredContentProvider() {
 			@SuppressWarnings("rawtypes")
 			@Override
@@ -321,12 +378,9 @@ public class UpgraderApp extends BaseApp implements Receiver {
 			public String getColumnText(Object arg0, int arg1) {
 				Patch patch = (Patch) arg0;
 				if (arg1 == 0) {
-					return patch.getCreateDate();
-				}
-				if (arg1 == 1) {
 					return patch.getName();
 				}
-				if (arg1 == 2) {
+				if (arg1 == 1) {
 					return patch.getRemarks();
 				}
 				return "";
@@ -400,6 +454,9 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		});
 	}
 
+	/**
+	 * 设置 shell 的事件
+	 */
 	@Override
 	protected void configureShell() {
 		shell.addShellListener(new ShellListener() {
@@ -410,7 +467,14 @@ public class UpgraderApp extends BaseApp implements Receiver {
 
 			@Override
 			public void shellClosed(ShellEvent event) {
-
+				if (status == Status.doing) {
+					event.doit = false;
+					int style = SWT.APPLICATION_MODAL | SWT.YES;
+					MessageBox messageBox = new MessageBox(shell, style);
+					messageBox.setText("提示");
+					messageBox.setMessage("系统正在安装补丁或备份数据，请不要关闭！");
+					messageBox.open();
+				}
 			}
 
 			@Override
@@ -429,6 +493,7 @@ public class UpgraderApp extends BaseApp implements Receiver {
 			}
 		});
 		shell.addDisposeListener(e -> {
+			signalThread.interrupt();
 			Commands.nameCommand(Cmd.Dispose).exec();
 		});
 	}
@@ -448,6 +513,70 @@ public class UpgraderApp extends BaseApp implements Receiver {
 
 	@Override
 	public void handleSignal(Signal signal) {
+		Display.getDefault().asyncExec(() -> {
+			this.doSignal(signal);
+		});
+	}
 
+	/**
+	 * 刷新表格
+	 */
+	protected void refreshPacks() {
+		UpgraderTheme theme = (UpgraderTheme) this.theme;
+		packs.setInput(theme.patchs());
+		packs.refresh(true, true);
+	}
+
+	/**
+	 * 处理信号
+	 * 
+	 * @param signal
+	 */
+	private void doSignal(Signal signal) {
+		if (shell.isDisposed() || this.status == Status.exit) {
+			return;
+		}
+		switch (signal.getSign()) {
+		case server_starting:
+			break;
+		case server_started:
+			break;
+		case server_stoping:
+			break;
+		case server_stoped:
+			break;
+		case browser_opened:
+			break;
+		case browser_closed:
+			break;
+		case window_close:
+			shell.close();
+			break;
+		case window_exit:
+			this.status = Status.exit;
+			this.close();
+			break;
+		case browser:
+			break;
+		case log:
+			break;
+		case upgrade:
+			this.status = Status.doing;
+			progress.start();
+			break;
+		case upgraded:
+			this.status = Status.idle;
+			progress.stop();
+			break;
+		}
+	}
+
+	/**
+	 * 系统状态
+	 * 
+	 * @author lifeng
+	 */
+	public static enum Status {
+		doing, idle, exit
 	}
 }

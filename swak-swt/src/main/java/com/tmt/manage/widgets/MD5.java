@@ -15,12 +15,23 @@ public class MD5 {
 	private static final String MD5 = "MD5";
 
 	/**
+	 * Md5 编码
 	 * 
 	 * @param input
 	 * @return
 	 */
 	public static String encode(String input) {
 		return new String(encodeHex(digest(input.getBytes(), MD5, null, 1), DIGITS_UPPER));
+	}
+	
+	/**
+	 * Md5 编码
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static String encode(byte[] input, byte[] salt) {
+		return new String(encodeHex(digest(input, MD5, salt, 1), DIGITS_UPPER));
 	}
 
 	/**

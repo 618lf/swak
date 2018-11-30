@@ -14,7 +14,7 @@ import com.tmt.manage.config.Settings;
  * 
  * @author lifeng
  */
-public class UpgradeCommand implements Command {
+public class UpgraderCommand implements Command {
 
 	@Override
 	public void exec() {

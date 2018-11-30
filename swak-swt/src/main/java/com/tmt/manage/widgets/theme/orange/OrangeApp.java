@@ -77,7 +77,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 	protected void createContents() {
 		this.configureClipboard();
 		OrangeTheme theme = (OrangeTheme) this.theme;
-		shell.setText(Settings.me().getServerName());
+		shell.setText(Settings.me().getServer().getName());
 		if (theme.logo() != null) {
 			shell.setImage(theme.logo().image());
 		}
@@ -213,7 +213,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 
 		// left
 		CLabel left = new CLabel(top, SWT.SHADOW_NONE);
-		left.setText(Settings.me().getServerName());
+		left.setText(Settings.me().getServer().getName());
 		left.setForeground(ResourceManager.getColor(SWT.COLOR_WHITE));
 		left.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		left.addMouseListener(this);
@@ -355,7 +355,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 
 		// left
 		Label copyRight = new Label(bottom, SWT.NONE);
-		copyRight.setText(Settings.me().getServerVersion());
+		copyRight.setText(Settings.me().getServer().getVersion());
 		copyRight.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		copyRight.setForeground(ResourceManager.getColor(SWT.COLOR_WHITE));
 	}
@@ -502,6 +502,10 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 		case log:
 			logText.append(signal.getRemarks());
 			logText.setTopIndex(Integer.MAX_VALUE);
+			break;
+		case upgrade:
+			break;
+		case upgraded:
 			break;
 		}
 	}

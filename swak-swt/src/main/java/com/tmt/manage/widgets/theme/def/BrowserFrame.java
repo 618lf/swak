@@ -35,7 +35,7 @@ public class BrowserFrame extends BaseApp{
 				shell.setText(event.title);
 			}
 		});
-		browser.setUrl(Settings.me().getServerPage());
+		browser.setUrl(Settings.me().getServer().getIndex());
 	}
 
 	@Override

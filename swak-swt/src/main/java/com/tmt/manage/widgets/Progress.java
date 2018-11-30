@@ -1,5 +1,6 @@
 package com.tmt.manage.widgets;
 
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ProgressBar;
 
@@ -28,7 +29,7 @@ public class Progress {
 		times = 0;
 		Display.getDefault().asyncExec(() -> {
 			this.progressBar.setSelection(0);
-			this.progressBar.setVisible(true);
+			this.show();
 		});
 		thread = new Thread(() -> {
 			while (!finish) {
@@ -55,7 +56,7 @@ public class Progress {
 				} catch (InterruptedException e) {
 					Display.getDefault().asyncExec(() -> {
 						this.progressBar.setSelection(100);
-						this.progressBar.setVisible(false);
+						this.hide();
 					});
 					finish = true;
 					break;
@@ -64,6 +65,32 @@ public class Progress {
 		});
 		thread.setDaemon(true);
 		thread.start();
+	}
+
+	/**
+	 * 显示
+	 */
+	public void show() {
+		Object gridData = this.progressBar.getLayoutData();
+		if (gridData != null && gridData instanceof GridData) {
+			GridData _gridData = (GridData) gridData;
+			_gridData.exclude = false;
+		}
+		this.progressBar.setVisible(true);
+		this.progressBar.getParent().layout();
+	}
+	
+	/**
+	 * 隐藏
+	 */
+	public void hide() {
+		Object gridData = this.progressBar.getLayoutData();
+		if (gridData != null && gridData instanceof GridData) {
+			GridData _gridData = (GridData) gridData;
+			_gridData.exclude = true;
+		}
+		this.progressBar.setVisible(false);
+		this.progressBar.getParent().layout();
 	}
 
 	/**

@@ -182,7 +182,7 @@ public class Commands {
 		/** Netty */
 		server_starting, server_started, server_stoping, server_stoped,
 		/** 日志 */
-		log,
+		log, upgrade, upgraded,
 		/** 浏览器 */
 		browser_opened, browser_closed, browser,
 		/** SWT */

@@ -1,6 +1,7 @@
 package com.tmt.manage.widgets.theme;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -46,7 +47,9 @@ public interface Theme {
 		private Image image;
 		private Image imageOn;
 		private Runnable runnable;
+		private Consumer<Object> accept;
 		private Color color;
+		private Color colorOn;
 
 		public String name() {
 			return name;
@@ -60,9 +63,18 @@ public interface Theme {
 		public Color color() {
 			return color;
 		}
+		
+		public Color colorOn() {
+			return colorOn;
+		}
 
 		public Action color(Color color) {
 			this.color = color;
+			return this;
+		}
+		
+		public Action colorOn(Color color) {
+			this.colorOn = color;
 			return this;
 		}
 
@@ -90,6 +102,14 @@ public interface Theme {
 
 		public Action click(Runnable runnable) {
 			this.runnable = runnable;
+			return this;
+		}
+		
+		public Consumer<Object> accept() {
+			return accept;
+		}
+		public Action accept(Consumer<Object> accept) {
+			this.accept = accept;
 			return this;
 		}
 

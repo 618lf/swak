@@ -76,8 +76,9 @@ public class Settings {
 				configPath = basePath;
 			}
 			Settings settings = new Settings();
-			settings.setBasePath(basePath);
-			settings.setConfigPath(configPath);
+			settings.basePath = basePath;
+			settings.configPath = configPath;
+			settings.upgradePath = basePath + "/.upgrade/";
 			settings.handleOs();
 			settings.handleLog();
 			settings.handleFileSeparator();
@@ -91,57 +92,41 @@ public class Settings {
 
 	private String basePath;
 	private String configPath;
-	private String serverName;
-	private String serverPage;
-	private String serverVersion;
+	private String upgradePath;
+	private Server server = new Server();
+	private Datasource datasource = new Datasource();
 
 	public String getBasePath() {
 		return basePath;
 	}
-
-	public void setBasePath(String basePath) {
-		this.basePath = basePath;
-	}
-
 	public String getConfigPath() {
 		return configPath;
 	}
-
-	public void setConfigPath(String configPath) {
-		this.configPath = configPath;
+	public String getUpgradePath() {
+		return upgradePath;
 	}
-
-	public String getServerName() {
-		return serverName;
+	public String getUnUpgradePath() {
+		return upgradePath + "un";
 	}
-
-	public void setServerName(String serverName) {
-		this.serverName = serverName;
+	public String getDoUpgradePath() {
+		return upgradePath + "do";
+	} 
+	public String getLogUpgradePath() {
+		return upgradePath + "log";
 	}
-
-	public String getServerPage() {
-		return serverPage;
+	public Server getServer() {
+		return server;
 	}
-
-	public void setServerPage(String serverPage) {
-		this.serverPage = serverPage;
+	public Datasource getDatasource() {
+		return datasource;
 	}
-
-	public String getServerVersion() {
-		return serverVersion;
-	}
-
-	public void setServerVersion(String serverVersion) {
-		this.serverVersion = serverVersion;
-	}
-
 	protected void handleOs() {
 		if (configPath.startsWith("home/")) {
 			configPath = "/" + configPath;
 			basePath = "/" + basePath;
+			upgradePath = "/" + upgradePath;
 		}
 	}
-
 	protected void handleLog() {
 		File file = new File(configPath, "logback.xml");
 		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -154,7 +139,6 @@ public class Settings {
 		}
 		StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
 	}
-
 	protected void handleFileSeparator() {
 		String separator = File.separator;
 		if ("\\".equals(separator)) {
@@ -169,17 +153,119 @@ public class Settings {
 			this.configPath = this.configPath.replaceAll("/", separator);
 		}
 	}
-
 	protected void handleProperties() {
+		String profiles = null;
 		try {
 			File propertiesFile = new File(configPath, "application.properties");
 			InputStream is = new FileInputStream(propertiesFile);
 			Properties properties = new Properties();
 			properties.load(is);
+			profiles = properties.getProperty("spring.profiles.active");
 			is.close();
-			this.serverName = properties.getProperty("app.name");
-			this.serverVersion = properties.getProperty("app.version");
+			this.handleProperties(properties);
 		} catch (Exception e) {
+		}
+		if (profiles != null) {
+			try {
+				File propertiesFile = new File(configPath, "application-" + profiles + ".properties");
+				InputStream is = new FileInputStream(propertiesFile);
+				Properties properties = new Properties();
+				properties.load(is);
+				is.close();
+				this.handleProperties(properties);
+			} catch (Exception e) {
+			}
+		}
+	}
+	protected void handleProperties(Properties properties) {
+		String serverName = properties.getProperty("app.name");
+		String serverIndex = properties.getProperty("app.name");
+		String serverVersion = properties.getProperty("app.version");
+		String db = properties.getProperty("spring.datasource.db");
+		String url = properties.getProperty("spring.datasource.url");
+		String username = properties.getProperty("spring.datasource.username");
+		String password = properties.getProperty("spring.datasource.password");
+
+		this.server.setName(serverName);
+		this.server.setIndex(serverIndex);
+		this.server.setVersion(serverVersion);
+		this.datasource.setDb(db);
+		this.datasource.setUrl(url);
+		this.datasource.setUsername(username);
+		this.datasource.setPassword(password);
+	}
+
+	// 服务的配置
+	public class Server {
+		
+		private String name;
+		private String index;
+		private String version;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getIndex() {
+			return index;
+		}
+
+		public void setIndex(String index) {
+			this.index = index;
+		}
+
+		public String getVersion() {
+			return version;
+		}
+
+		public void setVersion(String version) {
+			this.version = version;
+		}
+
+	}
+
+	// 数据库配置
+	public class Datasource {
+		
+		private String db;
+		private String url;
+		private String username;
+		private String password;
+
+		public String getDb() {
+			return db;
+		}
+
+		public void setDb(String db) {
+			this.db = db;
+		}
+
+		public String getUrl() {
+			return url;
+		}
+
+		public void setUrl(String url) {
+			this.url = url;
+		}
+
+		public String getUsername() {
+			return username;
+		}
+
+		public void setUsername(String username) {
+			this.username = username;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
 		}
 	}
 }
