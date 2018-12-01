@@ -36,6 +36,7 @@ import com.tmt.manage.command.Commands.Cmd;
 import com.tmt.manage.command.Commands.Sign;
 import com.tmt.manage.command.Commands.Signal;
 import com.tmt.manage.command.Receiver;
+import com.tmt.manage.command.impl.UpgradeCommand;
 import com.tmt.manage.config.Settings;
 import com.tmt.manage.widgets.BaseApp;
 import com.tmt.manage.widgets.ImageButton;
@@ -218,6 +219,12 @@ public class UpgraderApp extends BaseApp implements Receiver {
 			Button selectActionBtn = new Button(right, SWT.BORDER);
 			selectActionBtn.setText(selectAction.name());
 			selectActionBtn.setBounds(new Rectangle(5, 32, 100, 35));
+			selectActionBtn.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					Commands.nameCommand(Cmd.starter).exec();
+				}
+			});
 
 			// 默认第一个点亮
 			this.group.first();
@@ -275,7 +282,7 @@ public class UpgraderApp extends BaseApp implements Receiver {
 					Commands.sendSignal(Signal.newSignal(Sign.upgrade));
 					theme.actions().get(0).accept().accept(files);
 					refreshPacks();
-					Commands.nameCommand(Cmd.upgrade).exec();
+					new UpgradeCommand().exec();
 				}
 			}
 		});

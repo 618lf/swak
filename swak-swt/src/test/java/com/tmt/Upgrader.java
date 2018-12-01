@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.eclipse.swt.graphics.Image;
 
+import com.tmt.commands.StarterCommand;
 import com.tmt.manage.App;
 import com.tmt.manage.command.Commands;
 import com.tmt.manage.command.Commands.Cmd;
@@ -181,7 +182,8 @@ public class Upgrader extends App {
 
 	@Override
 	protected void commands() {
-		Commands.register(Cmd.upgrade, new UpgradeCommand());
+		Commands.register(Cmd.upgrader, new UpgradeCommand());
+		Commands.register(Cmd.starter, new StarterCommand());
 	}
 
 	public static void main(String[] args) {

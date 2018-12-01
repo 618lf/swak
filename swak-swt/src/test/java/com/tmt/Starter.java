@@ -39,7 +39,7 @@ public class Starter extends App {
 		Commands.register(Cmd.exit, new ExitCommand());
 		Commands.register(Cmd.task, new TouchCommand());
 		Commands.register(Cmd.url, new UrlCommand());
-		Commands.register(Cmd.upgrade, new UpgraderCommand());
+		Commands.register(Cmd.upgrader, new UpgraderCommand());
 	}
 
 	/**
@@ -133,7 +133,7 @@ public class Starter extends App {
 					Commands.nameCommand(Cmd.url).exec("settings");
 				}));
 				actions.add(Action.me().image(this.load("升级.png")).imageOn(this.load("升级-on.png")).click(() -> {
-					Commands.nameCommand(Cmd.upgrade).exec();
+					Commands.nameCommand(Cmd.upgrader).exec();
 				}));
 				actions.add(Action.me().image(this.load("退出.png")).imageOn(this.load("退出-on.png")).click(() -> {
 					Commands.nameCommand(Cmd.close).exec();
