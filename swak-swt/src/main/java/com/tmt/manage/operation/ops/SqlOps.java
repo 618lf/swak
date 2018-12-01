@@ -60,7 +60,6 @@ public class SqlOps extends AbsOps {
 				}
 			}
 			conn.setAutoCommit(autoCommit);
-			conn.commit();
 		} catch (Exception e) {
 			conn.rollback();
 		} finally {

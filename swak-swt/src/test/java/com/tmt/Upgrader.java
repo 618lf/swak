@@ -98,11 +98,11 @@ public class Upgrader extends App {
 				if (files != null && files.length > 0) {
 					List<Log> logs = this.read();
 					for (Log log : logs) {
-                        for(Patch patch: patchs) {
-                        	if (log.getName().equals(patch.getName())) {
-                        		patch.setRemarks(log.getRemarks());
-                        	}
-                        }
+						for (Patch patch : patchs) {
+							if (log.getName().equals(patch.getName())) {
+								patch.setRemarks(log.getRemarks());
+							}
+						}
 					}
 				}
 
@@ -170,10 +170,9 @@ public class Upgrader extends App {
 						if (target.exists()) {
 							continue;
 						}
-						if (target.createNewFile()) {
-							Files.copy(src.toPath(), target.toPath());
-						}
+						Files.copy(src.toPath(), target.toPath());
 					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
 			}

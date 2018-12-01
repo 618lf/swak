@@ -2,7 +2,10 @@ package com.tmt.manage.command;
 
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.tmt.manage.App;
 import com.tmt.manage.command.Commands.Cmd;
 
 /**
@@ -10,8 +13,9 @@ import com.tmt.manage.command.Commands.Cmd;
  * 
  * @author lifeng
  */
-public class JsCommand extends BrowserFunction implements Command {
+public class JsCommand extends BrowserFunction {
 
+	private static Logger LOGGER = LoggerFactory.getLogger(App.class);
 	private static final String COMMAND_NAME = "_JS_COMMAND";
 
 	/**

@@ -18,8 +18,7 @@ public interface Command {
 	/**
 	 * 执行
 	 */
-	default void exec() {
-	}
+	void exec();
 
 	/**
 	 * 待参数执行

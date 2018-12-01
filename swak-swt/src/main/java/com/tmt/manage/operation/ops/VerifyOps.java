@@ -3,7 +3,7 @@ package com.tmt.manage.operation.ops;
 import com.tmt.manage.operation.AbsOps;
 import com.tmt.manage.operation.OpsException;
 import com.tmt.manage.operation.OpsFile;
-import com.tmt.manage.widgets.MD5;
+import com.tmt.manage.widgets.MD5s;
 
 /**
  * 验证操作
@@ -21,7 +21,7 @@ public class VerifyOps extends AbsOps {
 	protected void doInnerOps(OpsFile file) throws Exception {
 		try {
 			String md51 = new String(file.md5().getData());
-			String md52 = MD5.encode(file.all().getData(), SALT.getBytes());
+			String md52 = MD5s.encode(file.all().getData(), SALT.getBytes());
 			if (!(md51 != null && md52 != null && md52.equals(md51))) {
 				file.error("升级包验证失败");
 			}

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.sqlite.SQLiteDataSource;
 
 import com.tmt.manage.operation.Dialect;
@@ -21,7 +22,7 @@ public class SqliteDialect implements Dialect {
 		dataSource.setUrl("jdbc:sqlite:" + loadSqliteUrl(url));
 		return dataSource.getConnection();
 	}
-	
+
 	/**
 	 * 加载资源文件
 	 * 
@@ -32,7 +33,11 @@ public class SqliteDialect implements Dialect {
 			return location;
 		}
 		try {
-			FileSystemResource resource = new FileSystemResource(location);
+			Resource resource = null;
+			if (location.startsWith("file:")) {
+				location = location.substring(5);
+				resource = new FileSystemResource(location);
+			}
 			return resource.getFile().getAbsolutePath();
 		} catch (Exception e) {
 			throw new RuntimeException(e);

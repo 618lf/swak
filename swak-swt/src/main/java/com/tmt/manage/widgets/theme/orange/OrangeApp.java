@@ -36,7 +36,7 @@ import com.tmt.manage.config.Settings;
 import com.tmt.manage.widgets.BaseApp;
 import com.tmt.manage.widgets.ImageButton;
 import com.tmt.manage.widgets.ImageButtonGroup;
-import com.tmt.manage.widgets.MD5;
+import com.tmt.manage.widgets.MD5s;
 import com.tmt.manage.widgets.Progress;
 import com.tmt.manage.widgets.ResourceManager;
 import com.tmt.manage.widgets.theme.Theme.Action;
@@ -183,7 +183,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 				}
 
 				// 比较是否变化
-				String md5 = MD5.encode(text);
+				String md5 = MD5s.encode(text);
 				if (this.clipboardMD5 == null || !this.clipboardMD5.equals(md5)) {
 					this.clipboardMD5 = md5;
 				}

@@ -20,12 +20,12 @@ public class JarOps extends AbsOps {
 	@Override
 	protected void doInnerOps(OpsFile file) throws Exception {
 		try {
-			if (file.continuAbled()) {
-				OpsEntry entry = file.jar();
+			OpsEntry entry = null;
+			if (file.continuAbled() && (entry = file.jar()) != null) {
 				File base = new File(Settings.me().getBasePath());
 				updateJar(base, entry);
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			throw new OpsException("更新JAR失败");
 		}
 	}
