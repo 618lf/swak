@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import com.tmt.manage.config.Settings;
 import com.tmt.manage.operation.AbsOps;
+import com.tmt.manage.operation.OpsException;
 import com.tmt.manage.operation.OpsFile;
 import com.tmt.manage.operation.OpsFile.OpsEntry;
 
@@ -18,10 +19,14 @@ public class JarOps extends AbsOps {
 
 	@Override
 	protected void doInnerOps(OpsFile file) throws Exception {
-		if (file.continuAbled()) {
-			OpsEntry entry = file.jar();
-			File base = new File(Settings.me().getBasePath());
-			updateJar(base, entry);
+		try {
+			if (file.continuAbled()) {
+				OpsEntry entry = file.jar();
+				File base = new File(Settings.me().getBasePath());
+				updateJar(base, entry);
+			}
+		}catch (Exception e) {
+			throw new OpsException("更新JAR失败");
 		}
 	}
 

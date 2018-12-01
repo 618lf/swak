@@ -43,8 +43,6 @@ import com.tmt.manage.widgets.ImageButtonGroup;
 import com.tmt.manage.widgets.Progress;
 import com.tmt.manage.widgets.ResourceManager;
 import com.tmt.manage.widgets.theme.Theme.Action;
-import com.tmt.manage.widgets.theme.upgrade.UpgraderTheme.Backup;
-import com.tmt.manage.widgets.theme.upgrade.UpgraderTheme.Patch;
 
 /**
  * 升级模式
@@ -567,6 +565,7 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		case upgraded:
 			this.status = Status.idle;
 			progress.stop();
+			refreshPacks();
 			break;
 		}
 	}

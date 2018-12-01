@@ -1,6 +1,8 @@
 package com.tmt;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,9 @@ import com.tmt.manage.command.impl.UpgradeCommand;
 import com.tmt.manage.config.Settings;
 import com.tmt.manage.widgets.ResourceManager;
 import com.tmt.manage.widgets.theme.Theme;
+import com.tmt.manage.widgets.theme.upgrade.Backup;
+import com.tmt.manage.widgets.theme.upgrade.Log;
+import com.tmt.manage.widgets.theme.upgrade.Patch;
 import com.tmt.manage.widgets.theme.upgrade.UpgraderTheme;
 
 /**
@@ -78,6 +83,8 @@ public class Upgrader extends App {
 			 */
 			@Override
 			public List<Patch> patchs() {
+
+				// 待安装
 				List<Patch> patchs = new ArrayList<>(10);
 				File upgradeFile = new File(Settings.me().getUnUpgradePath());
 				File[] files = upgradeFile.listFiles();
@@ -87,6 +94,19 @@ public class Upgrader extends App {
 					}
 				}
 
+				// 加载log
+				if (files != null && files.length > 0) {
+					List<Log> logs = this.read();
+					for (Log log : logs) {
+                        for(Patch patch: patchs) {
+                        	if (log.getName().equals(patch.getName())) {
+                        		patch.setRemarks(log.getRemarks());
+                        	}
+                        }
+					}
+				}
+
+				// 已安装
 				upgradeFile = new File(Settings.me().getDoUpgradePath());
 				files = upgradeFile.listFiles();
 				if (files != null) {
@@ -96,6 +116,34 @@ public class Upgrader extends App {
 				}
 				patchs.sort(Patch.show);
 				return patchs;
+			}
+
+			// 读取日志文件
+			private List<Log> read() {
+				List<Log> logs = new ArrayList<>();
+				RandomAccessFile rf = null;
+				try {
+					List<String> lines = new ArrayList<>();
+					File logFile = new File(Settings.me().getLogUpgradePath());
+					rf = new RandomAccessFile(logFile, "r");
+					String line = null;
+					while ((line = rf.readLine()) != null) {
+						lines.add(new String(line.getBytes("ISO-8859-1"), "utf-8"));
+					}
+					for (String _line : lines) {
+						if (_line != null && !"".equals(_line)) {
+							logs.add(Log.parse(_line));
+						}
+					}
+				} catch (Exception e) {
+				} finally {
+					try {
+						if (rf != null)
+							rf.close();
+					} catch (IOException e) {
+					}
+				}
+				return logs;
 			}
 
 			/**
@@ -134,7 +182,7 @@ public class Upgrader extends App {
 
 	@Override
 	protected void commands() {
-        Commands.register(Cmd.upgrade, new UpgradeCommand());
+		Commands.register(Cmd.upgrade, new UpgradeCommand());
 	}
 
 	public static void main(String[] args) {

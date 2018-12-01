@@ -114,6 +114,12 @@ public class Settings {
 	public String getLogUpgradePath() {
 		return upgradePath + "log";
 	}
+	public String getLibPath() {
+		return upgradePath + "lib";
+	}
+	public String getLogsPath() {
+		return upgradePath + "logs";
+	}
 	public Server getServer() {
 		return server;
 	}

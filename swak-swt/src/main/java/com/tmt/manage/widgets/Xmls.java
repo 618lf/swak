@@ -82,8 +82,8 @@ public class Xmls {
 		try {
 			JAXBContext jaxbContext = getJaxbContext(clazz);
 			Marshaller marshaller = jaxbContext.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
+			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
 			marshaller.setProperty(CharacterEscapeHandler.class.getName(), new CharacterEscapeHandler() {
 				public void escape(char[] ac, int i, int j, boolean flag, Writer writer) throws IOException {
 					writer.write(ac, i, j);

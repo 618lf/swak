@@ -9,6 +9,7 @@ import com.tmt.manage.config.Settings;
 import com.tmt.manage.config.Settings.Datasource;
 import com.tmt.manage.operation.AbsOps;
 import com.tmt.manage.operation.Dialects;
+import com.tmt.manage.operation.OpsException;
 import com.tmt.manage.operation.OpsFile;
 import com.tmt.manage.operation.OpsFile.OpsEntry;
 
@@ -29,11 +30,15 @@ public class SqlOps extends AbsOps {
 	 */
 	@Override
 	protected void doInnerOps(OpsFile file) throws Exception {
-		if (file.continuAbled()) {
-			List<OpsEntry> sqls = file.sqls();
-			if (sqls != null) {
-				this.execSql(sqls);
+		try {
+			if (file.continuAbled()) {
+				List<OpsEntry> sqls = file.sqls();
+				if (sqls != null) {
+					this.execSql(sqls);
+				}
 			}
+		}catch (Exception e) {
+			throw new OpsException("执行SQL失败");
 		}
 	}
 
