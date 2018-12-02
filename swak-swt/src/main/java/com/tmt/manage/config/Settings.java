@@ -99,33 +99,43 @@ public class Settings {
 	public String getBasePath() {
 		return basePath;
 	}
+
 	public String getConfigPath() {
 		return configPath;
 	}
+
 	public String getUpgradePath() {
 		return upgradePath;
 	}
+
 	public String getUnUpgradePath() {
 		return upgradePath + "un";
 	}
+
 	public String getDoUpgradePath() {
 		return upgradePath + "do";
-	} 
+	}
+
 	public String getLogUpgradePath() {
 		return upgradePath + "log";
 	}
+
 	public String getLibPath() {
 		return upgradePath + "lib";
 	}
+
 	public String getLogsPath() {
 		return upgradePath + "logs";
 	}
+
 	public Server getServer() {
 		return server;
 	}
+
 	public Datasource getDatasource() {
 		return datasource;
 	}
+
 	protected void handleOs() {
 		if (configPath.startsWith("home/")) {
 			configPath = "/" + configPath;
@@ -133,6 +143,7 @@ public class Settings {
 			upgradePath = "/" + upgradePath;
 		}
 	}
+
 	protected void handleLog() {
 		File file = new File(configPath, "logback.xml");
 		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -145,6 +156,7 @@ public class Settings {
 		}
 		StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
 	}
+
 	protected void handleFileSeparator() {
 		String separator = File.separator;
 		if ("\\".equals(separator)) {
@@ -159,6 +171,7 @@ public class Settings {
 			this.configPath = this.configPath.replaceAll("/", separator);
 		}
 	}
+
 	protected void handleProperties() {
 		String profiles = null;
 		try {
@@ -183,6 +196,7 @@ public class Settings {
 			}
 		}
 	}
+
 	protected void handleProperties(Properties properties) {
 		String serverName = properties.getProperty("app.name");
 		String serverIndex = properties.getProperty("app.name");
@@ -192,18 +206,32 @@ public class Settings {
 		String username = properties.getProperty("spring.datasource.username");
 		String password = properties.getProperty("spring.datasource.password");
 
-		this.server.setName(serverName);
-		this.server.setIndex(serverIndex);
-		this.server.setVersion(serverVersion);
-		this.datasource.setDb(db);
-		this.datasource.setUrl(url);
-		this.datasource.setUsername(username);
-		this.datasource.setPassword(password);
+		if (serverName != null) {
+			this.server.setName(serverName);
+		}
+		if (serverIndex != null) {
+			this.server.setIndex(serverIndex);
+		}
+		if (serverVersion != null) {
+			this.server.setVersion(serverVersion);
+		}
+		if (db != null) {
+			this.datasource.setDb(db);
+		}
+		if (url != null) {
+			this.datasource.setUrl(url);
+		}
+		if (username != null) {
+			this.datasource.setUsername(username);
+		}
+		if (password != null) {
+			this.datasource.setPassword(password);
+		}
 	}
 
 	// 服务的配置
 	public class Server {
-		
+
 		private String name;
 		private String index;
 		private String version;
@@ -236,7 +264,7 @@ public class Settings {
 
 	// 数据库配置
 	public class Datasource {
-		
+
 		private String db;
 		private String url;
 		private String username;
