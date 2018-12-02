@@ -1,8 +1,6 @@
 package com.tmt.manage.operation.ops;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 
 import com.tmt.manage.config.Settings;
@@ -25,24 +23,11 @@ public class ConfigOps extends AbsOps{
 				File base = new File(Settings.me().getConfigPath());
 				List<OpsEntry> sattics = file.configs();
 				for (OpsEntry entry : sattics) {
-					this.updateConfig(base, entry);
+					this.updateFile(base, entry);
 				}
 			}
 		} catch (Exception e) {
 			throw new OpsException("更新配置文件失败");
-		}
-	}
-	
-	// 更新 lib
-	protected void updateConfig(File parent, OpsEntry entry) throws IOException {
-		File libFile = new File(parent, entry.getName());
-		libFile.delete();
-		libFile.createNewFile();
-		FileOutputStream out = new FileOutputStream(libFile);
-		try {
-			out.write(entry.getData());
-		} finally {
-			out.close();
 		}
 	}
 }

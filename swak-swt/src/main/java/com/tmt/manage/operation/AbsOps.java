@@ -1,5 +1,11 @@
 package com.tmt.manage.operation;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import com.tmt.manage.operation.OpsFile.OpsEntry;
+
 /**
  * 抽象的操作
  * 
@@ -44,4 +50,27 @@ public abstract class AbsOps implements Ops {
 	 * @return
 	 */
 	protected abstract void doInnerOps(OpsFile file) throws Exception;
+	
+	/**
+	 * 更新文件
+	 * @param parent
+	 * @param entry
+	 * @throws IOException
+	 */
+	protected void updateFile(File parent, OpsEntry entry) throws IOException {
+		File libFile = new File(parent, entry.getName());
+		if (libFile.exists()) {
+			libFile.delete();
+			libFile.createNewFile();
+		} else {
+			libFile.getParentFile().mkdirs();
+			libFile.createNewFile();
+		}
+		FileOutputStream out = new FileOutputStream(libFile);
+		try {
+			out.write(entry.getData());
+		} finally {
+			out.close();
+		}
+	}
 }

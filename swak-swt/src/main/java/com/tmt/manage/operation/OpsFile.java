@@ -197,6 +197,7 @@ public class OpsFile {
 				entry = (ZipEntry) entries.nextElement();
 				String name = entry.getName();
 				if (name.startsWith(type) && !entry.isDirectory()) {
+					name = name.substring(type.length());
 					oentrys.add(this.content(zip.getInputStream(entry), name));
 				}
 			}
