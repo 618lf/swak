@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.swak.exception.BaseRuntimeException;
 import com.swak.persistence.BaseDao;
 import com.swak.service.BaseService;
 import com.tmt.shop.dao.ShopDao;
@@ -47,6 +48,7 @@ public class ShopService extends BaseService<Shop, Long>{
 	 */
 	@Transactional
 	public Shop save(Shop shop) {
-		return shop;
+		throw new BaseRuntimeException("数据错误！");
+		//return shop;
 	}
 }

@@ -23,6 +23,7 @@ import com.swak.http.builder.RequestBuilder;
 import com.swak.persistence.QueryCondition;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.WebUtils;
+import com.swak.reactivex.web.annotation.Async;
 import com.swak.reactivex.web.annotation.GetMapping;
 import com.swak.reactivex.web.annotation.RestController;
 import com.swak.utils.Lists;
@@ -177,6 +178,20 @@ public class HelloController {
 		Shop shop = new Shop();
 		shop.setName(name);
 		return Mono.fromFuture(Workers.future(() -> shopService.save(shop))).map(s -> Result.success(s));
+	}
+	
+	/**
+	 * 返回 mono 对象
+	 * 
+	 * @return
+	 */
+	@Async
+	@GetMapping("/say/future2")
+	public Result sayFuture2(String name) {
+		Shop shop = new Shop();
+		shop.setName(name);
+		shopService.save(shop);
+		return Result.success();
 	}
 
 	/**

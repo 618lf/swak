@@ -8,11 +8,9 @@ import com.swak.reactivex.web.Handler;
 import com.swak.reactivex.web.annotation.Async;
 import com.swak.reactivex.web.annotation.Auth;
 
-import reactor.core.publisher.Mono;
-
 /**
- * 也是一个执行链，没有拦截器；
- * 可以将 handler 定义默认的前置执行器
+ * 也是一个执行链，没有拦截器； 可以将 handler 定义默认的前置执行器
+ * 
  * @author lifeng
  */
 public class HandlerMethod implements Handler {
@@ -44,7 +42,7 @@ public class HandlerMethod implements Handler {
 		}
 		return result;
 	}
-	
+
 	public Object getBean() {
 		return bean;
 	}
@@ -56,11 +54,11 @@ public class HandlerMethod implements Handler {
 	public Class<?> getBeanType() {
 		return beanType;
 	}
-	
+
 	public MethodParameter[] getParameters() {
 		return parameters;
 	}
-	
+
 	public Async getAsync() {
 		return async;
 	}
@@ -75,14 +73,14 @@ public class HandlerMethod implements Handler {
 	 * @param args
 	 * @return
 	 */
-	public Object doInvoke(Object[] args){
+	public Object doInvoke(Object[] args) {
 		try {
 			return this.getMethod().invoke(this.getBean(), args);
 		} catch (Exception e) {
-			return Mono.error(e);
+			throw new RuntimeException("Handler Method Execute Error!", e);
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.method.toGenericString();
