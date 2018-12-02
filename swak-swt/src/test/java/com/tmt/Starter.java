@@ -155,7 +155,7 @@ public class Starter extends App {
 			
 			@Override
 			public boolean showTop() {
-				return Boolean.FALSE;
+				return Boolean.TRUE;
 			}
 
 			@Override

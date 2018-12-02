@@ -228,7 +228,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 				Commands.nameCommand(Cmd.upgrader).exec();
 			}).tip(theme.secure().name()).build();
 		}
-		
+
 		// tray
 		if (theme.tray() != null) {
 			GridData gd_tray = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
@@ -238,15 +238,16 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 				this.min();
 			}).tip(theme.tray().name()).build();
 		}
-		
+
 		// resize
 		if (theme.resize() != null) {
 			GridData gd_resize = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 			gd_resize.widthHint = height_top - 10;
 			gd_resize.heightHint = height_top - 10;
-			ImageButton.builder(top).image(theme.resize().image()).on(theme.resize().imageOn()).layout(gd_resize).click(() -> {
-				this.resize();
-			}).tip(theme.resize().name()).build();
+			ImageButton.builder(top).image(theme.resize().image()).on(theme.resize().imageOn()).layout(gd_resize)
+					.click(() -> {
+						this.resize();
+					}).tip(theme.resize().name()).build();
 		}
 
 		// close
@@ -338,8 +339,8 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 
 		// 内容展示 - 浏览器
 		browser = new Browser(content, SWT.NONE);
-		
-		// 注册 JS 命令 
+
+		// 注册 JS 命令
 		JsCommand.bind(browser);
 
 		// 默认展示
@@ -383,11 +384,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 						Commands.nameCommand(Cmd.exit).exec();
 					}
 				} else {
-					int style = SWT.APPLICATION_MODAL | SWT.YES;
-					MessageBox messageBox = new MessageBox(shell, style);
-					messageBox.setText("提示");
-					messageBox.setMessage("系统停止成功,点击“Yes”关闭界面！");
-					event.doit = messageBox.open() == SWT.YES;
+					event.doit = true;
 				}
 			}
 

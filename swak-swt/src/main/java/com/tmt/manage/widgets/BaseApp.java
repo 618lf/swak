@@ -142,7 +142,7 @@ public abstract class BaseApp {
 		if (bounds == null) {
 			bounds = shell.getBounds();
 			location = shell.getLocation();
-			shell.setBounds(Display.getDefault().getBounds());
+			shell.setBounds(Display.getDefault().getPrimaryMonitor().getClientArea());
 		} else {
 			shell.setBounds(bounds);
 			shell.setLocation(location);
