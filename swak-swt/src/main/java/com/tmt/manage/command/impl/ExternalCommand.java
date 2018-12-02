@@ -20,11 +20,11 @@ public abstract class ExternalCommand implements  Command {
 		String command = null;
 		String OS = System.getProperty("os.name").toLowerCase();
 		if (isWindows(OS)) {
-			command = "cmd /c " + Settings.me().getBasePath() + name + ".bat";
+			command = "cmd /c " + Settings.me().getBasePath() + "/" + name + ".bat";
 		} else if (isMacOS(OS)) {
 
 		} else if (isLinux(OS)) {
-			command = Settings.me().getBasePath() + name + ".sh";
+			command = Settings.me().getBasePath() + "/" + name + ".sh";
 		} else {
 
 		}
