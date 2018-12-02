@@ -225,7 +225,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 			gd_secure.widthHint = height_top - 10;
 			gd_secure.heightHint = height_top - 10;
 			ImageButton.builder(top).image(theme.secure().image()).layout(gd_secure).click(() -> {
-				shell.close();
+				Commands.nameCommand(Cmd.upgrader).exec();
 			}).tip(theme.secure().name()).build();
 		}
 		
