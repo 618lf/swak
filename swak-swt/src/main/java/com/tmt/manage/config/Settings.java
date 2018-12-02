@@ -121,11 +121,15 @@ public class Settings {
 	}
 
 	public String getLibPath() {
-		return upgradePath + "lib";
+		return basePath + "/lib";
 	}
 
 	public String getLogsPath() {
-		return upgradePath + "logs";
+		return basePath + "/logs";
+	}
+	
+	public String getStaticsPath() {
+		return basePath + "/static";
 	}
 
 	public Server getServer() {

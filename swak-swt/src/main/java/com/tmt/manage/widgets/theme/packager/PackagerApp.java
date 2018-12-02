@@ -87,6 +87,8 @@ public class PackagerApp extends BaseApp {
 		logText.append("***PTMS" + "\n");
 		logText.append("***└  SQLS" + "\n");
 		logText.append("***└  LIBS" + "\n");
+		logText.append("***└  STATICS" + "\n");
+		logText.append("***└  CONFIGS" + "\n");
 		logText.append("*************************" + "\n");
 		logText.append("请将相关文件放入相应的目录，填入版本号" + "\n");
 
@@ -95,6 +97,8 @@ public class PackagerApp extends BaseApp {
 		makeDir.mkdir();
 		new File(makeDir, OpsFile.SQL).mkdir();
 		new File(makeDir, OpsFile.LIB).mkdir();
+		new File(makeDir, OpsFile.STATIC).mkdir();
+		new File(makeDir, OpsFile.CONFIG).mkdir();
 		createVersion(makeDir);
 	}
 

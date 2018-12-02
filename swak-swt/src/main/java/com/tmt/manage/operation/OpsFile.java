@@ -33,6 +33,8 @@ public class OpsFile {
 	public static final String SQL = "SQLS";
 	public static final String JAR = "JAR";
 	public static final String LIB = "LIBS";
+	public static final String STATIC = "STATICS";
+	public static final String CONFIG = "CONFIGS";
 	public static final String VER = "VERSION";
 	final String SALT = "SWAK";
 
@@ -128,6 +130,28 @@ public class OpsFile {
 	 */
 	public List<OpsEntry> libs() throws Exception {
 		return content(LIB);
+	}
+	
+	/**
+	 * 获取文件中的sql内容
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws ZipException
+	 */
+	public List<OpsEntry> statics() throws Exception {
+		return content(STATIC);
+	}
+	
+	/**
+	 * 获取文件中的sql内容
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws ZipException
+	 */
+	public List<OpsEntry> configs() throws Exception {
+		return content(CONFIG);
 	}
 
 	/**

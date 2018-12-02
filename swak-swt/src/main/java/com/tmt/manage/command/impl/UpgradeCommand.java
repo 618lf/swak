@@ -10,11 +10,13 @@ import com.tmt.manage.command.Commands.Signal;
 import com.tmt.manage.config.Settings;
 import com.tmt.manage.operation.Ops;
 import com.tmt.manage.operation.OpsFile;
+import com.tmt.manage.operation.ops.ConfigOps;
 import com.tmt.manage.operation.ops.JarOps;
 import com.tmt.manage.operation.ops.LibOps;
 import com.tmt.manage.operation.ops.LogOps;
 import com.tmt.manage.operation.ops.MoveOps;
 import com.tmt.manage.operation.ops.SqlOps;
+import com.tmt.manage.operation.ops.StaticOps;
 import com.tmt.manage.operation.ops.VerifyOps;
 import com.tmt.manage.widgets.theme.upgrade.Patch;
 
@@ -31,12 +33,16 @@ public class UpgradeCommand implements Command {
 		ops = new VerifyOps();
 		SqlOps sqlOps = new SqlOps();
 		LibOps libOps = new LibOps();
+		StaticOps staticOps = new StaticOps();
+		ConfigOps configOps = new ConfigOps();
 		JarOps jarOps = new JarOps();
 		MoveOps moveOps = new MoveOps();
 		LogOps logOps = new LogOps();
 		ops.next(sqlOps);
 		sqlOps.next(libOps);
-		libOps.next(jarOps);
+		libOps.next(staticOps);
+		staticOps.next(configOps);
+		configOps.next(jarOps);
 		jarOps.next(moveOps);
 		moveOps.next(logOps);
 	}
