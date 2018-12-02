@@ -8,6 +8,8 @@ import com.swak.reactivex.web.Handler;
 import com.swak.reactivex.web.annotation.Async;
 import com.swak.reactivex.web.annotation.Auth;
 
+import reactor.core.publisher.Mono;
+
 /**
  * 也是一个执行链，没有拦截器； 可以将 handler 定义默认的前置执行器
  * 
@@ -32,6 +34,12 @@ public class HandlerMethod implements Handler {
 		this.parameters = initMethodParameters();
 		this.async = this.method.getAnnotation(Async.class);
 		this.auth = this.method.getAnnotation(Auth.class);
+
+		// Mono Can Not Use With Async
+		if (method.getReturnType().isAssignableFrom(Mono.class) && this.async != null) {
+			throw new RuntimeException(
+					"Mono Can Not Use With Async in Api:[" + bean.getClass() + "." + method.getName() + "]");
+		}
 	}
 
 	private MethodParameter[] initMethodParameters() {
@@ -68,7 +76,7 @@ public class HandlerMethod implements Handler {
 	}
 
 	/**
-	 * 如果出错了，则输出 Mono.error(e) 对象
+	 * 如果出错了，不能将 Invoke 对象转为 mono.error。
 	 * 
 	 * @param args
 	 * @return

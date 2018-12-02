@@ -78,6 +78,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 
 	/**
 	 * 如果添加注解 Async 则会异步执行代码
+	 * Async 与 mono 不要一起使用
 	 * 
 	 * @param handler
 	 * @param args

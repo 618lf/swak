@@ -116,9 +116,11 @@ public class HelloController {
 	 * @return
 	 */
 	@GetMapping("/say/error")
-	public String sayError() {
-		int i = 1 / 0;
-		return "lifeng" + i;
+	public Mono<String> sayError() {
+		return Mono.fromSupplier(() ->{
+			int i = 1 / 0;
+			return "lifeng" + i;
+		});
 	}
 
 	/**
