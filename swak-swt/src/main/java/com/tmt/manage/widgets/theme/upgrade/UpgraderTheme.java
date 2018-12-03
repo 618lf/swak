@@ -56,4 +56,11 @@ public abstract class UpgraderTheme implements Theme {
 	 */
 	public abstract List<Backup> backups();
 	
+	/**
+	 * 日志
+	 * 
+	 * @return
+	 */
+	public abstract List<Log> logs();
+	
 }

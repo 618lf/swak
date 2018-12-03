@@ -1,11 +1,14 @@
 package com.tmt;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.eclipse.swt.graphics.Image;
 
@@ -61,9 +64,12 @@ public class Upgrader extends App {
 						}));
 				actions.add(Action.me().name("数据备份").colorOn(ResourceManager.getColor(244, 244, 238))
 						.color(ResourceManager.getColor(237, 234, 215)).accept((files) -> {
-
+							saveBacks((Backup) files);
 						}));
-				actions.add(Action.me().name("启动系统"));
+				actions.add(Action.me().name("运行日志").colorOn(ResourceManager.getColor(244, 244, 238))
+						.color(ResourceManager.getColor(237, 234, 215)).accept((files) -> {
+							saveLogs((File) files);
+						}));
 				return actions;
 			}
 
@@ -155,8 +161,32 @@ public class Upgrader extends App {
 			@Override
 			public List<Backup> backups() {
 				List<Backup> patchs = new ArrayList<>(10);
-
+				File upgradeFile = new File(Settings.me().getBackupPath());
+				File[] files = upgradeFile.listFiles();
+				if (files != null) {
+					for (File file : files) {
+						patchs.add(Backup.newBackup(file));
+					}
+				}
+				patchs.sort(Backup.show);
 				return patchs;
+			}
+
+			/**
+			 * 显示日志文件
+			 */
+			@Override
+			public List<Log> logs() {
+				List<Log> logs = new ArrayList<>();
+				File errorDir = new File(Settings.me().getLogsPath(), "error");
+				if (errorDir.exists()) {
+					File[] files = errorDir.listFiles();
+					for (File file : files) {
+						logs.add(Log.newLog(file.getName(), ""));
+					}
+				}
+				logs.sort(Log.show);
+				return logs;
 			}
 
 			// 保存补丁文件
@@ -175,6 +205,46 @@ public class Upgrader extends App {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
+				}
+			}
+
+			// 保存备份文件
+			private void saveBacks(Backup backup) {
+				File backFile = backup.getFile();
+				try {
+					File target = new File(backup.getSave(), backFile.getName());
+					if (target.exists()) {
+						return;
+					}
+					Files.copy(backFile.toPath(), target.toPath());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			// 保存日志文件
+			private void saveLogs(File save) {
+				List<Log> logs = this.logs();
+				if (logs == null || logs.size() == 0) {
+					return;
+				}
+				try {
+					File errorDir = new File(Settings.me().getLogsPath(), "error");
+					File zipFile = new File(save, "系统运行日志.zip");
+					ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
+					int max = 60;
+					for (Log log : logs) {
+						File logFile = new File(errorDir, log.getName());
+						out.putNextEntry(new ZipEntry(logFile.getName()));
+						out.write(Files.readAllBytes(logFile.toPath()));
+						out.closeEntry();
+						if (max-- <= 0) {
+							break;
+						}
+					}
+					out.flush();
+					out.close();
+				} catch (Exception e) {
 				}
 			}
 		};

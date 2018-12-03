@@ -3,6 +3,7 @@ package com.tmt.manage.widgets.theme.upgrade;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -71,4 +72,12 @@ public class Log implements Serializable {
 	public static Log parse(String xml) {
 		return Xmls.fromXml(xml, Log.class);
 	}
+	
+	// 显示的时候从高往低版本显示
+	public static Comparator<Log> show = new Comparator<Log>() {
+		@Override
+		public int compare(Log o1, Log o2) {
+			return o2.name.compareTo(o1.name);
+		}
+	};
 }

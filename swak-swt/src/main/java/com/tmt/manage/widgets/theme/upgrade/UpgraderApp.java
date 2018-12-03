@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -24,6 +25,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
@@ -42,6 +44,7 @@ import com.tmt.manage.config.Settings;
 import com.tmt.manage.widgets.BaseApp;
 import com.tmt.manage.widgets.ImageButton;
 import com.tmt.manage.widgets.ImageButtonGroup;
+import com.tmt.manage.widgets.Message;
 import com.tmt.manage.widgets.Progress;
 import com.tmt.manage.widgets.ResourceManager;
 import com.tmt.manage.widgets.theme.Theme.Action;
@@ -59,8 +62,10 @@ public class UpgraderApp extends BaseApp implements Receiver {
 	private int height_tools = 70;
 	private Composite oneComposite;
 	private Composite twoComposite;
+	private Composite threeComposite;
 	private ImageButtonGroup group;
 	private TableViewer packs;
+	private TableViewer backs;
 	private Thread signalThread;
 	private Progress progress;
 	private volatile Status status = Status.idle;
@@ -208,28 +213,37 @@ public class UpgraderApp extends BaseApp implements Receiver {
 						content.layout();
 						backupAction.click();
 					}).build();
-
-			// right
-			Composite right = new Composite(tools, SWT.TRANSPARENCY_ALPHA);
-			GridData gd_right = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-			gd_right.widthHint = 110;
-			right.setLayoutData(gd_right);
-
-			// 启动系统
-			Action selectAction = actions.get(2);
-			Button selectActionBtn = new Button(right, SWT.BORDER);
-			selectActionBtn.setText(selectAction.name());
-			selectActionBtn.setBounds(new Rectangle(5, 32, 100, 35));
-			selectActionBtn.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					Commands.nameCommand(Cmd.starter).exec();
-				}
-			});
+			
+			// 待经安装的补丁
+			Action logAction = actions.get(2);
+			ImageButton.builder(left).text(logAction.name()).bounds(new Rectangle(239, 32, 95, 38)).group(group)
+					.image(logAction.image()).blur(logAction.color()).on(logAction.colorOn())
+					.hover(logAction.imageOn()).click(() -> {
+						contentStack.topControl = this.threeComposite;
+						content.layout();
+						logAction.click();
+					}).build();
 
 			// 默认第一个点亮
 			this.group.first();
 		}
+		
+		// right
+		Composite right = new Composite(tools, SWT.TRANSPARENCY_ALPHA);
+		GridData gd_right = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+		gd_right.widthHint = 110;
+		right.setLayoutData(gd_right);
+
+		// 启动系统
+		Button selectActionBtn = new Button(right, SWT.BORDER);
+		selectActionBtn.setText("启动系统");
+		selectActionBtn.setBounds(new Rectangle(5, 32, 100, 35));
+		selectActionBtn.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Commands.nameCommand(Cmd.starter).exec();
+			}
+		});
 	}
 
 	// 内容区域的配置
@@ -295,6 +309,7 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		packs.setInput(theme.patchs());
 
 		// ############ ** 备份区域 ** ##############
+		
 		twoComposite = new Composite(content, SWT.NONE);
 		twoComposite.setBackground(theme.actions().get(1).colorOn());
 		GridLayout gl_twoComposite = new GridLayout(1, false);
@@ -331,10 +346,61 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		});
 
 		// 表格
-		TableViewer undone_tableViewer = new TableViewer(twoComposite,
+		backs = new TableViewer(twoComposite,
 				SWT.MULTI | SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.FULL_SELECTION);
-		this.configureUnDoneTable(undone_tableViewer, new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		undone_tableViewer.setInput(theme.backups());
+		this.configureUnDoneTable(backs, new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		backs.setInput(theme.backups());
+		
+		
+		// ############ ** 日志区域 ** ##############
+		threeComposite = new Composite(content, SWT.NONE);
+		threeComposite.setBackground(theme.actions().get(2).colorOn());
+		GridLayout gl_threeComposite = new GridLayout(1, false);
+		this.clearGridLayout(gl_threeComposite);
+		threeComposite.setLayout(gl_threeComposite);
+		
+		// 提示
+		// 提示和操作
+		Composite log_top = new Composite(threeComposite, SWT.NONE);
+		GridData gd_log_top = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+		log_top.setLayoutData(gd_log_top);
+		GridLayout gl_log_top = new GridLayout(2, false);
+		this.clearGridLayout(gl_log_top);
+		gl_log_top.marginWidth = 15;
+		gl_log_top.marginHeight = 20;
+		log_top.setLayout(gl_log_top);
+
+		// 提示
+		CLabel log_top_left = new CLabel(log_top, SWT.SHADOW_NONE);
+		log_top_left.setText("显示最近两个月的运行日志");
+		GridData gd_log_top_left = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		log_top_left.setLayoutData(gd_log_top_left);
+		
+		// 操作
+		Button log_top_right = new Button(log_top, SWT.BORDER);
+		log_top_right.setText("导出日志");
+		GridData gd_log_top_right = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+		log_top_right.setLayoutData(gd_log_top_right);
+		log_top_right.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				DirectoryDialog folder = new DirectoryDialog(shell);
+				folder.setText("选择日志文件存储目录");
+				folder.setFilterPath("SystemDrive");
+				folder.setMessage("选择日志文件存储目录");
+				String dir = folder.open();
+				if (dir != null) {
+					theme.actions().get(2).accept().accept(new File(dir));
+					Message.success("导出成功！");
+				}
+			}
+		});
+		
+		// 表格
+		TableViewer logs = new TableViewer(threeComposite,
+				SWT.MULTI | SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.FULL_SELECTION);
+		this.configureLogsTable(logs, new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		logs.setInput(theme.logs());
 
 		// 默认展示
 		contentStack.topControl = this.oneComposite;
@@ -413,12 +479,28 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		new TableColumn(done_table, SWT.BORDER).setText("备份文件名称");
 		tLayout.addColumnData(new ColumnWeightData(30));
 		new TableColumn(done_table, SWT.BORDER).setText("操作");
+		done_tableViewer.addDoubleClickListener((event) -> {
+			StructuredSelection selection = (StructuredSelection) event.getSelection();
+			if (!selection.isEmpty()) {
+				DirectoryDialog folder = new DirectoryDialog(shell);
+				folder.setText("选择备份文件存储目录");
+				folder.setFilterPath("SystemDrive");
+				folder.setMessage("选择备份文件存储目录");
+				String dir = folder.open();
+				if (dir != null) {
+					Backup file = (Backup) (selection.getFirstElement());
+					file.setSave(new File(dir));
+					theme.actions().get(1).accept().accept(file);
+					Message.success("下载成功！");
+				}
+			}
+		});
 		done_tableViewer.setContentProvider(new IStructuredContentProvider() {
 			@SuppressWarnings("rawtypes")
 			@Override
 			public Object[] getElements(Object arg0) {
 				if (arg0 instanceof List) {
-					return ((List) arg0).toArray();// 将setInput传过来的List变成一个数组输出
+					return ((List) arg0).toArray();
 				}
 				return new Object[0];
 			}
@@ -455,7 +537,63 @@ public class UpgraderApp extends BaseApp implements Receiver {
 					return patch.getName();
 				}
 				if (arg1 == 1) {
-					return "操作";
+					return "双击下载";
+				}
+				return "";
+			}
+		});
+	}
+	
+	// 配置表格
+	private void configureLogsTable(TableViewer done_tableViewer, GridData gridData) {
+		Table done_table = done_tableViewer.getTable();
+		done_table.setLayoutData(gridData);
+		done_table.setHeaderVisible(true);
+		done_table.setLinesVisible(true);
+		TableLayout tLayout = new TableLayout();
+		done_table.setLayout(tLayout);
+		tLayout.addColumnData(new ColumnWeightData(100));
+		new TableColumn(done_table, SWT.BORDER).setText("运行日志文件");
+		done_tableViewer.setContentProvider(new IStructuredContentProvider() {
+			@SuppressWarnings("rawtypes")
+			@Override
+			public Object[] getElements(Object arg0) {
+				if (arg0 instanceof List) {
+					return ((List) arg0).toArray();
+				}
+				return new Object[0];
+			}
+		});
+		done_tableViewer.setLabelProvider(new ITableLabelProvider() {
+
+			@Override
+			public void addListener(ILabelProviderListener arg0) {
+			}
+
+			@Override
+			public void dispose() {
+			}
+
+			@Override
+			public boolean isLabelProperty(Object arg0, String arg1) {
+				return false;
+			}
+
+			@Override
+			public void removeListener(ILabelProviderListener arg0) {
+
+			}
+
+			@Override
+			public Image getColumnImage(Object arg0, int arg1) {
+				return null;
+			}
+
+			@Override
+			public String getColumnText(Object arg0, int arg1) {
+				Log patch = (Log) arg0;
+				if (arg1 == 0) {
+					return patch.getName();
 				}
 				return "";
 			}
@@ -536,6 +674,15 @@ public class UpgraderApp extends BaseApp implements Receiver {
 	}
 
 	/**
+	 * 刷新表格
+	 */
+	protected void refreshBacks() {
+		UpgraderTheme theme = (UpgraderTheme) this.theme;
+		backs.setInput(theme.backups());
+		backs.refresh(true, true);
+	}
+
+	/**
 	 * 处理信号
 	 * 
 	 * @param signal
@@ -576,6 +723,7 @@ public class UpgraderApp extends BaseApp implements Receiver {
 			this.status = Status.idle;
 			progress.stop();
 			refreshPacks();
+			refreshBacks();
 			break;
 		}
 	}
