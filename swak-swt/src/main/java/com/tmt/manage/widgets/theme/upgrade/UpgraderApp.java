@@ -235,7 +235,7 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		right.setLayoutData(gd_right);
 
 		// 启动系统
-		Button selectActionBtn = new Button(right, SWT.BORDER);
+		Button selectActionBtn = new Button(right, SWT.NONE);
 		selectActionBtn.setText("启动系统");
 		selectActionBtn.setBounds(new Rectangle(5, 32, 100, 35));
 		selectActionBtn.addSelectionListener(new SelectionAdapter() {
@@ -277,7 +277,7 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		done_top_left.setLayoutData(gd_done_top_left);
 
 		// 操作
-		Button done_top_right = new Button(done_top, SWT.BORDER);
+		Button done_top_right = new Button(done_top, SWT.NONE);
 		done_top_right.setText("安装补丁");
 		GridData gd_done_top_right = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		done_top_right.setLayoutData(gd_done_top_right);
@@ -333,7 +333,7 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		backup_top_left.setLayoutData(gd_backup_top_left);
 
 		// 操作
-		Button backup_top_right = new Button(backup_top, SWT.BORDER);
+		Button backup_top_right = new Button(backup_top, SWT.NONE);
 		backup_top_right.setText("备份数据");
 		GridData gd_backup_top_right = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		backup_top_right.setLayoutData(gd_backup_top_right);
@@ -377,7 +377,7 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		log_top_left.setLayoutData(gd_log_top_left);
 		
 		// 操作
-		Button log_top_right = new Button(log_top, SWT.BORDER);
+		Button log_top_right = new Button(log_top, SWT.NONE);
 		log_top_right.setText("导出日志");
 		GridData gd_log_top_right = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		log_top_right.setLayoutData(gd_log_top_right);

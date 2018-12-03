@@ -22,7 +22,7 @@ public class UpgraderCommand extends ExternalCommand implements Command {
 			int style = SWT.APPLICATION_MODAL | SWT.YES | SWT.NO;
 			MessageBox messageBox = new MessageBox(Display.getDefault().getActiveShell(), style);
 			messageBox.setText("提示");
-			messageBox.setMessage("系统将进入升级模式，服务将停止，点击确定继续?");
+			messageBox.setMessage("系统将进入安全模式，服务将停止，点击确定继续?");
 			if (messageBox.open() == SWT.YES) {
 				new StopCommand() {
 					@Override
@@ -38,7 +38,7 @@ public class UpgraderCommand extends ExternalCommand implements Command {
 	 * 执行一个批处理文件启动升级程序，启动之后发送退出系统的信号
 	 */
 	private void doUpgrade() {
-		this.log("系统进入升级模式...");
+		this.log("系统进入安全模式...");
 
 		// 得到外部命令
 		String command = this.getCommand("upgrader");
@@ -52,13 +52,13 @@ public class UpgraderCommand extends ExternalCommand implements Command {
 
 		// 判断是否执行成功
 		if (result) {
-			this.log("进入升级模式成功");
+			this.log("进入安全模式成功");
 			this.sendSignal(Signal.newSignal(Sign.window_close));
 		}
 
 		// 执行失败
 		else {
-			this.log("进入升级模式失败，请重试");
+			this.log("进入安全模式失败，请重试");
 		}
 	}
 }
