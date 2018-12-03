@@ -472,6 +472,10 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 				Attribute attribute = (Attribute) data;
 				String name = attribute.getName();
 				String value = attribute.getValue();
+				if (this.parameters.containsKey(name)) {
+					this.parameters.get(name).add(value);
+					break;
+				}
 				this.parameters.put(name, Collections.singletonList(value));
 				break;
 			case FileUpload:
@@ -868,7 +872,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			int contentSize = content.readableBytes();
 			responseHeaders.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
 		}
-		
+
 		// 长链接
 		if (isKeepAlive()) {
 			responseHeaders.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
