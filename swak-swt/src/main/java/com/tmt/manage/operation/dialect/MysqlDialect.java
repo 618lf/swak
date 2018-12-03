@@ -11,10 +11,23 @@ import com.tmt.manage.operation.Dialect;
  * 
  * @author lifeng
  */
-public class MysqlDialect implements Dialect{
+public class MysqlDialect implements Dialect {
 
 	@Override
 	public Connection open(String url, String user, String password) throws SQLException {
 		return DriverManager.getConnection(url,user,password);
+	}
+
+	/**
+	 * 不支持的备份
+	 */
+	@Override
+	public void backup(String url, String user, String password) throws SQLException {
+		
+	}
+
+	@Override
+	public String db() {
+		return "mysql";
 	}
 }

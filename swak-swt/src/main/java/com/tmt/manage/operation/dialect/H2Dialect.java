@@ -20,4 +20,9 @@ public class H2Dialect implements Dialect{
 	public Connection open(String url, String user, String password) throws SQLException {
 		return DriverManager.getConnection(url,user,password);
 	}
+
+	@Override
+	public String db() {
+		return  "h2";
+	}
 }

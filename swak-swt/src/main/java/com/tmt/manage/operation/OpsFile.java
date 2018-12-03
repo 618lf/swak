@@ -19,6 +19,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import com.tmt.manage.widgets.MD5s;
+import com.tmt.manage.widgets.theme.upgrade.Backup;
 import com.tmt.manage.widgets.theme.upgrade.Patch;
 
 /**
@@ -39,11 +40,25 @@ public class OpsFile {
 	final String SALT = "SWAK";
 
 	// 需要操作的文件
-	private final Patch file;
+	private Patch patch;
+	private Backup backup;
 	private final StringBuilder error;
 
-	public OpsFile(Patch zipFile) {
-		this.file = zipFile;
+	/**
+	 * 备份
+	 * @param backup
+	 */
+	private OpsFile(Backup backup) {
+		this.backup = backup;
+		this.error = new StringBuilder();
+	}
+	
+	/**
+	 * 补丁
+	 * @param zipFile
+	 */
+	private OpsFile(Patch zipFile) {
+		this.patch = zipFile;
 		this.error = new StringBuilder();
 	}
 
@@ -53,7 +68,7 @@ public class OpsFile {
 	 * @param msg
 	 */
 	public Patch patch() {
-		return this.file;
+		return this.patch;
 	}
 
 	/**
@@ -162,7 +177,7 @@ public class OpsFile {
 	 */
 	public OpsEntry all() throws Exception {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ZipFile zip = new ZipFile(file.getFile());
+		ZipFile zip = new ZipFile(patch.getFile());
 		try {
 			Enumeration<?> entries = zip.entries();
 			ZipEntry entry = null;
@@ -189,7 +204,7 @@ public class OpsFile {
 	// 操作项
 	private List<OpsEntry> content(String type) throws Exception {
 		List<OpsEntry> oentrys = new ArrayList<>();
-		ZipFile zip = new ZipFile(file.getFile());
+		ZipFile zip = new ZipFile(patch.getFile());
 		try {
 			Enumeration<?> entries = zip.entries();
 			ZipEntry entry = null;
@@ -319,8 +334,22 @@ public class OpsFile {
 			output.write(buffer, 0, bytesRead);
 		}
 	}
+	
+	/**
+	 * 备份目录
+	 * 
+	 * @throws IOException 
+	 */
+	public void backup(File makeDir) throws IOException {
+		this.compress(makeDir, this.backup.getFile());
+	}
 
-	// 制作压缩文件
+	/**
+	 * 制作压缩文件
+	 * @param makeDir
+	 * @param zipFile
+	 * @throws IOException
+	 */
 	private void compress(File makeDir, File zipFile) throws IOException {
 		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
 		try {
@@ -385,6 +414,16 @@ public class OpsFile {
 	 * @return
 	 */
 	public static OpsFile ops(Patch file) {
+		return new OpsFile(file);
+	}
+	
+	/**
+	 * 返回操作文件
+	 * 
+	 * @param zipFile
+	 * @return
+	 */
+	public static OpsFile ops(Backup file) {
 		return new OpsFile(file);
 	}
 }

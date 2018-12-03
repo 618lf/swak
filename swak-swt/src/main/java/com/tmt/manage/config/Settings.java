@@ -79,6 +79,7 @@ public class Settings {
 			settings.basePath = basePath;
 			settings.configPath = configPath;
 			settings.upgradePath = basePath + "/.upgrade/";
+			settings.backupPath = basePath + "/.back/";
 			settings.handleOs();
 			settings.handleLog();
 			settings.handleFileSeparator();
@@ -93,6 +94,7 @@ public class Settings {
 	private String basePath;
 	private String configPath;
 	private String upgradePath;
+	private String backupPath;
 	private Server server = new Server();
 	private Datasource datasource = new Datasource();
 
@@ -118,6 +120,10 @@ public class Settings {
 
 	public String getLogUpgradePath() {
 		return upgradePath + "log";
+	}
+	
+	public String getBackupPath() {
+		return backupPath;
 	}
 
 	public String getLibPath() {

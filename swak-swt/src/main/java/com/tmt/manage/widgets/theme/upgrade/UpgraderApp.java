@@ -36,6 +36,7 @@ import com.tmt.manage.command.Commands.Cmd;
 import com.tmt.manage.command.Commands.Sign;
 import com.tmt.manage.command.Commands.Signal;
 import com.tmt.manage.command.Receiver;
+import com.tmt.manage.command.impl.BackupCommand;
 import com.tmt.manage.command.impl.UpgradeCommand;
 import com.tmt.manage.config.Settings;
 import com.tmt.manage.widgets.BaseApp;
@@ -312,15 +313,22 @@ public class UpgraderApp extends BaseApp implements Receiver {
 
 		// 提示
 		CLabel backup_top_left = new CLabel(backup_top, SWT.SHADOW_NONE);
-		backup_top_left.setText("请及时备份系统，并将数据保存到安全的地方");
+		backup_top_left.setText("请及时备份数据，并将数据保存到安全的地方");
 		GridData gd_backup_top_left = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		backup_top_left.setLayoutData(gd_backup_top_left);
 
 		// 操作
 		Button backup_top_right = new Button(backup_top, SWT.BORDER);
-		backup_top_right.setText("备份系统");
+		backup_top_right.setText("备份数据");
 		GridData gd_backup_top_right = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		backup_top_right.setLayoutData(gd_backup_top_right);
+		backup_top_right.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Commands.sendSignal(Signal.newSignal(Sign.upgrade));
+				new BackupCommand().exec();
+			}
+		});
 
 		// 表格
 		TableViewer undone_tableViewer = new TableViewer(twoComposite,
@@ -401,11 +409,9 @@ public class UpgraderApp extends BaseApp implements Receiver {
 		done_table.setLinesVisible(true);
 		TableLayout tLayout = new TableLayout();
 		done_table.setLayout(tLayout);
-		tLayout.addColumnData(new ColumnWeightData(20));
-		new TableColumn(done_table, SWT.BORDER).setText("备份时间");
-		tLayout.addColumnData(new ColumnWeightData(30));
+		tLayout.addColumnData(new ColumnWeightData(70));
 		new TableColumn(done_table, SWT.BORDER).setText("备份文件名称");
-		tLayout.addColumnData(new ColumnWeightData(50));
+		tLayout.addColumnData(new ColumnWeightData(30));
 		new TableColumn(done_table, SWT.BORDER).setText("操作");
 		done_tableViewer.setContentProvider(new IStructuredContentProvider() {
 			@SuppressWarnings("rawtypes")
@@ -446,12 +452,9 @@ public class UpgraderApp extends BaseApp implements Receiver {
 			public String getColumnText(Object arg0, int arg1) {
 				Backup patch = (Backup) arg0;
 				if (arg1 == 0) {
-					return patch.getCreateDate();
-				}
-				if (arg1 == 1) {
 					return patch.getName();
 				}
-				if (arg1 == 2) {
+				if (arg1 == 1) {
 					return "操作";
 				}
 				return "";

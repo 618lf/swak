@@ -59,7 +59,7 @@ public class Upgrader extends App {
 						.color(ResourceManager.getColor(237, 234, 215)).accept((files) -> {
 							savePacks((List<File>) files);
 						}));
-				actions.add(Action.me().name("系统备份").colorOn(ResourceManager.getColor(244, 244, 238))
+				actions.add(Action.me().name("数据备份").colorOn(ResourceManager.getColor(244, 244, 238))
 						.color(ResourceManager.getColor(237, 234, 215)).accept((files) -> {
 
 						}));

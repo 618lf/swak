@@ -1,5 +1,7 @@
 package com.tmt.manage.widgets.theme.upgrade;
 
+import java.io.File;
+
 /**
  * 备份
  * 
@@ -8,8 +10,16 @@ package com.tmt.manage.widgets.theme.upgrade;
 public class Backup {
 
 	private String name;
-	private String createDate;
+	private File file;
 	private String size;
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
 
 	public String getName() {
 		return name;
@@ -17,14 +27,6 @@ public class Backup {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getCreateDate() {
-		return createDate;
-	}
-
-	public void setCreateDate(String createDate) {
-		this.createDate = createDate;
 	}
 
 	public String getSize() {
@@ -43,11 +45,25 @@ public class Backup {
 	 * @param createDate
 	 * @return
 	 */
-	public static Backup newBackup(String name, String createDate, String size) {
+	public static Backup newBackup(String name, String size) {
 		Backup patch = new Backup();
 		patch.setName(name);
-		patch.setCreateDate(createDate);
 		patch.setSize(size);
+		return patch;
+	}
+
+	/**
+	 * 创建补丁对象
+	 * 
+	 * @param name
+	 * @param remarks
+	 * @param createDate
+	 * @return
+	 */
+	public static Backup newBackup(File file) {
+		Backup patch = new Backup();
+		patch.setFile(file);
+		patch.setName(file.getName());
 		return patch;
 	}
 }

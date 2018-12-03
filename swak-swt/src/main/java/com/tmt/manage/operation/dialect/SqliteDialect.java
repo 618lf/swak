@@ -43,4 +43,9 @@ public class SqliteDialect implements Dialect {
 			throw new RuntimeException(e);
 		}
 	}
+
+	@Override
+	public String db() {
+		return "sqlite";
+	}
 }
