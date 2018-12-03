@@ -15,6 +15,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 import com.swak.Constants;
+import com.swak.utils.StringUtils;
 
 /**
  * Configuration properties for MyBatis.
@@ -33,7 +34,7 @@ public class MybatisProperties {
 	/**
 	 * Locations of MyBatis mapper files.
 	 */
-	private String[] mapperLocations = new String[] { "classpath*:com/tmt/**/dao/*.Mapper.xml" };
+	private String[] mapperLocations;
 
 	/**
 	 * Packages to search type aliases. (Package delimiters are ",; \t\n")
@@ -153,10 +154,32 @@ public class MybatisProperties {
 		this.configuration = configuration;
 	}
 
+	/**
+	 * 获取 Mappers
+	 * 
+	 * @return
+	 */
 	public Resource[] resolveMapperLocations() {
 		ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
 		List<Resource> resources = new ArrayList<Resource>();
+
+		// 自定义的配置
 		if (this.mapperLocations != null) {
+			for (String mapperLocation : this.mapperLocations) {
+				try {
+					Resource[] mappers = resourceResolver.getResources(mapperLocation);
+					resources.addAll(Arrays.asList(mappers));
+				} catch (IOException e) {
+					// ignore
+				}
+			}
+		}
+
+		// 默认的配置
+		else {
+			String mapperLocations = StringUtils.format("classpath*:%s/**/dao/*.Mapper.xml", StringUtils
+					.substringBeforeLast(Constants.BOOT_CLASSES.get(0).getName(), ".").replaceAll("\\.", "/"));
+			this.mapperLocations = new String[] { mapperLocations };
 			for (String mapperLocation : this.mapperLocations) {
 				try {
 					Resource[] mappers = resourceResolver.getResources(mapperLocation);

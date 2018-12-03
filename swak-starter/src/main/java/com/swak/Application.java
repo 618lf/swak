@@ -43,6 +43,9 @@ public class Application extends SpringApplication {
 	public Application(Class<?>... primarySources) {
 		super(primarySources);
 
+		// 启动的类
+		Constants.BOOT_CLASSES.add(primarySources[0]);
+
 		// 重新识别配置
 		this.setWebApplicationType(this.deduceWebApplicationType());
 	}
@@ -121,6 +124,7 @@ public class Application extends SpringApplication {
 		if (applicationContext != null) {
 			exit(applicationContext, new ExitCodeGenerator[] {});
 			applicationContext = null;
+			Constants.BOOT_CLASSES.clear();
 		}
 	}
 }
