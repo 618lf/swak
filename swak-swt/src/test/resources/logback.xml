@@ -20,7 +20,7 @@
 	</appender>
 	
 	<!-- 记录日志 -->
-	<appender name="LOGGER" class="com.tmt.manage.logger.LoggerAppender">
+	<appender name="LOGGER" class="com.swak.manage.logger.LoggerAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
           <pattern>%d{HH:mm:ss} - %msg%n</pattern>
         </layout>
@@ -49,7 +49,7 @@
 	</logger>
 	
 	<!-- 常用的应用程序的日志 -->
-	<logger name="com.tmt.manage.App" level="INFO">
+	<logger name="com.swak.manage.App" level="INFO">
 	    <appender-ref ref="LOGGER"/>
 	</logger>
 	<logger name="com.swak.Application" level="DEBUG">

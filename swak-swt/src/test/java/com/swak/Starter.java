@@ -151,8 +151,6 @@ public class Starter extends App {
 				return ResourceManager.getImage(Starter.class, "theme/" + path);
 			}
 			
-			
-			
 			@Override
 			public boolean showTop() {
 				return Boolean.TRUE;
@@ -176,6 +174,6 @@ public class Starter extends App {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		new Starter().run(new String[] { "com/tmt/Starter.class" });
+		new Starter().run(new String[] { "com/swak/Starter.class" });
 	}
 }

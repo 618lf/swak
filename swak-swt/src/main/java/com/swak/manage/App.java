@@ -26,7 +26,7 @@ public abstract class App {
 
 		// 加载主题
 		try {
-			String windowClass = "com.tmt.manage.widgets.theme." + theme.path();
+			String windowClass = Theme.class.getPackage().getName() + "." + theme.path();
 			window = (BaseApp) (App.class.getClassLoader().loadClass(windowClass).newInstance());
 		} catch (Exception e) {
 			e.printStackTrace();
