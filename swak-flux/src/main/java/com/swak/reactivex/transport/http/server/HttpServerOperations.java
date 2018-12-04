@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import com.swak.reactivex.transport.http.multipart.FileProps;
 import com.swak.reactivex.transport.http.multipart.MimeType;
 import com.swak.reactivex.transport.http.multipart.MultipartFile;
 import com.swak.utils.IOUtils;
+import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 
 import io.netty.buffer.ByteBuf;
@@ -473,6 +475,11 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 				String name = attribute.getName();
 				String value = attribute.getValue();
 				if (this.parameters.containsKey(name)) {
+					List<String> values = this.parameters.get(name);
+					if (!(values instanceof ArrayList)) {
+						values = Lists.newArrayList(values.get(0));
+					}
+					this.parameters.put(name, values);
 					this.parameters.get(name).add(value);
 					break;
 				}
@@ -485,7 +492,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			default:
 				break;
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.error("parse request parameter error", e);
 		} finally {
 			data.release();
