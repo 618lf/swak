@@ -338,7 +338,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 		progress = new Progress(progressBar);
 
 		// 内容展示 - 浏览器
-		browser = new Browser(content, SWT.WEBKIT); 
+		browser = new Browser(content, SWT.WEBKIT);
 
 		// 注册 JS 命令
 		JsCommand.bind(browser);
