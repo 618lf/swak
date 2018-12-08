@@ -3,7 +3,6 @@ package com.swak.manage.widgets.theme.orange;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.custom.StyledText;
@@ -28,10 +27,9 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ProgressBar;
 
 import com.swak.manage.command.Commands;
-import com.swak.manage.command.JsCommand;
-import com.swak.manage.command.Receiver;
 import com.swak.manage.command.Commands.Cmd;
 import com.swak.manage.command.Commands.Signal;
+import com.swak.manage.command.Receiver;
 import com.swak.manage.config.Settings;
 import com.swak.manage.widgets.BaseApp;
 import com.swak.manage.widgets.ImageButton;
@@ -52,7 +50,7 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 	private Composite content;
 	private Composite logComposite;
 	private StyledText logText;
-	private Browser browser;
+	private OrangeBrowser browser;
 	private Progress progress;
 	private Thread signalThread;
 	private volatile Status status = Status.stop;
@@ -338,10 +336,8 @@ public class OrangeApp extends BaseApp implements Receiver, MouseListener, Mouse
 		progress = new Progress(progressBar);
 
 		// 内容展示 - 浏览器
-		browser = new Browser(content, SWT.NONE);
-
-		// 注册 JS 命令
-		JsCommand.bind(browser);
+		browser = new OrangeBrowser(content, SWT.NONE);
+		browser.setBackground(ResourceManager.getColor(SWT.COLOR_WHITE));
 
 		// 默认展示
 		contentStack.topControl = this.logComposite;
