@@ -10,14 +10,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tray;
 import org.eclipse.swt.widgets.TrayItem;
 
-import com.swak.manage.widgets.theme.Theme;
-
 /**
  * 基本的frame
  * 
  * @author lifeng
  */
-public abstract class BaseApp {
+public abstract class BaseApp implements Window {
 
 	protected Theme theme;
 	protected Shell shell;
@@ -28,7 +26,7 @@ public abstract class BaseApp {
 	/**
 	 * Configure the theme.
 	 */
-	public void setTheme(Theme theme) {
+	public void theme(Theme theme) {
 		this.theme = theme;
 	}
 	
@@ -48,6 +46,7 @@ public abstract class BaseApp {
 				display.sleep();
 			}
 		}
+		Display.getDefault().dispose();
 	}
 
 	/**

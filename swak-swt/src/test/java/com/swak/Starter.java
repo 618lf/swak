@@ -18,7 +18,7 @@ import com.swak.manage.App;
 import com.swak.manage.command.Commands;
 import com.swak.manage.command.Commands.Cmd;
 import com.swak.manage.widgets.ResourceManager;
-import com.swak.manage.widgets.theme.Theme;
+import com.swak.manage.widgets.Theme;
 import com.swak.manage.widgets.theme.orange.OrangeTheme;
 
 /**

@@ -1,12 +1,12 @@
 package com.swak.manage.widgets.theme.packager;
 
-import com.swak.manage.widgets.theme.Theme;
+import com.swak.manage.widgets.theme.AbsTheme;
 
 /**
  * 打开打包工具
  * @author lifeng
  */
-public abstract class PackagerTheme implements Theme{
+public abstract class PackagerTheme extends AbsTheme {
 
 	@Override
 	public String name() {

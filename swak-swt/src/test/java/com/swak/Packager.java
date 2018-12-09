@@ -4,7 +4,7 @@ import org.eclipse.swt.graphics.Image;
 
 import com.swak.manage.App;
 import com.swak.manage.widgets.ResourceManager;
-import com.swak.manage.widgets.theme.Theme;
+import com.swak.manage.widgets.Theme;
 import com.swak.manage.widgets.theme.packager.PackagerTheme;
 
 /**

@@ -19,7 +19,7 @@ import com.swak.manage.command.Commands.Cmd;
 import com.swak.manage.command.impl.UpgradeCommand;
 import com.swak.manage.config.Settings;
 import com.swak.manage.widgets.ResourceManager;
-import com.swak.manage.widgets.theme.Theme;
+import com.swak.manage.widgets.Theme;
 import com.swak.manage.widgets.theme.upgrade.Backup;
 import com.swak.manage.widgets.theme.upgrade.Log;
 import com.swak.manage.widgets.theme.upgrade.Patch;

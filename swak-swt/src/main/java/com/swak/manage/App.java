@@ -1,10 +1,8 @@
 package com.swak.manage;
 
-import org.eclipse.swt.widgets.Display;
-
 import com.swak.manage.config.Settings;
-import com.swak.manage.widgets.BaseApp;
-import com.swak.manage.widgets.theme.Theme;
+import com.swak.manage.widgets.Theme;
+import com.swak.manage.widgets.Window;
 import com.swak.manage.widgets.theme.def.DefTheme;
 
 /**
@@ -14,7 +12,10 @@ import com.swak.manage.widgets.theme.def.DefTheme;
  */
 public abstract class App {
 
-	private BaseApp window;
+	/**
+	 * 界面，支持 SWT 和 SWING
+	 */
+	private Window window;
 
 	/**
 	 * 打开主窗口
@@ -26,14 +27,14 @@ public abstract class App {
 
 		// 加载主题
 		try {
-			String windowClass = Theme.class.getPackage().getName() + "." + theme.path();
-			window = (BaseApp) (App.class.getClassLoader().loadClass(windowClass).newInstance());
+			String windowClass = Theme.class.getPackage().getName() + ".theme." + theme.path();
+			window = (Window) (App.class.getClassLoader().loadClass(windowClass).newInstance());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		// 设置主题
-		window.setTheme(theme);
+		window.theme(theme);
 
 		// 打开界面
 		window.open();
@@ -54,9 +55,6 @@ public abstract class App {
 
 		// 启动主界面
 		this.open();
-
-		// 结束
-		Display.getDefault().dispose();
 	}
 
 	/**

@@ -6,33 +6,20 @@ import java.util.function.Consumer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
+import com.swak.manage.widgets.Theme;
+
 /**
- * 主题
  * 
  * @author lifeng
  */
-public interface Theme {
-
-	/**
-	 * 名称
-	 * 
-	 * @return
-	 */
-	String name();
-
-	/**
-	 * 路径
-	 * 
-	 * @return
-	 */
-	String path();
+public abstract class AbsTheme implements Theme{
 
 	/**
 	 * 操作
 	 * 
 	 * @return
 	 */
-	default List<Action> actions() {
+	public List<Action> actions() {
 		return null;
 	};
 

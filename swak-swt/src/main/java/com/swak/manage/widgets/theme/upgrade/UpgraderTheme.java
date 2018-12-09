@@ -2,14 +2,14 @@ package com.swak.manage.widgets.theme.upgrade;
 
 import java.util.List;
 
-import com.swak.manage.widgets.theme.Theme;
+import com.swak.manage.widgets.theme.AbsTheme;
 
 /**
  * 升级模式
  * 
  * @author lifeng
  */
-public abstract class UpgraderTheme implements Theme {
+public abstract class UpgraderTheme extends AbsTheme {
 
 	@Override
 	public String name() {

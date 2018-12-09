@@ -4,14 +4,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
-import com.swak.manage.widgets.theme.Theme;
+import com.swak.manage.widgets.theme.AbsTheme;
 
 /**
  * 支持的主题
  * 
  * @author lifeng
  */
-public abstract class OrangeTheme implements Theme {
+public abstract class OrangeTheme extends AbsTheme {
 
 	@Override
 	public String name() {

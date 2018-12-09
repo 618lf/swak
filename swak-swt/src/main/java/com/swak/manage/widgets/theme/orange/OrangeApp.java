@@ -37,7 +37,7 @@ import com.swak.manage.widgets.ImageButtonGroup;
 import com.swak.manage.widgets.MD5s;
 import com.swak.manage.widgets.Progress;
 import com.swak.manage.widgets.ResourceManager;
-import com.swak.manage.widgets.theme.Theme.Action;
+import com.swak.manage.widgets.theme.AbsTheme.Action;
 
 /**
  * 橙子主题的系统界面

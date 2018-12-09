@@ -34,10 +34,10 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.swak.manage.command.Commands;
-import com.swak.manage.command.Receiver;
 import com.swak.manage.command.Commands.Cmd;
 import com.swak.manage.command.Commands.Sign;
 import com.swak.manage.command.Commands.Signal;
+import com.swak.manage.command.Receiver;
 import com.swak.manage.command.impl.BackupCommand;
 import com.swak.manage.command.impl.UpgradeCommand;
 import com.swak.manage.config.Settings;
@@ -47,7 +47,8 @@ import com.swak.manage.widgets.ImageButtonGroup;
 import com.swak.manage.widgets.Message;
 import com.swak.manage.widgets.Progress;
 import com.swak.manage.widgets.ResourceManager;
-import com.swak.manage.widgets.theme.Theme.Action;
+import com.swak.manage.widgets.theme.AbsTheme;
+import com.swak.manage.widgets.theme.AbsTheme.Action;
 
 /**
  * 升级模式
@@ -490,7 +491,7 @@ public class UpgraderApp extends BaseApp implements Receiver {
 				if (dir != null) {
 					Backup file = (Backup) (selection.getFirstElement());
 					file.setSave(new File(dir));
-					theme.actions().get(1).accept().accept(file);
+					((AbsTheme)theme).actions().get(1).accept().accept(file);
 					Message.success("下载成功！");
 				}
 			}

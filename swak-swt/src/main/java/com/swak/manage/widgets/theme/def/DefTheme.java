@@ -2,14 +2,14 @@ package com.swak.manage.widgets.theme.def;
 
 import java.util.List;
 
-import com.swak.manage.widgets.theme.Theme;
+import com.swak.manage.widgets.theme.AbsTheme;
 
 /**
  * 默认的主题
  * 
  * @author lifeng
  */
-public class DefTheme implements Theme {
+public class DefTheme extends AbsTheme {
 
 	/**
 	 * 名称
