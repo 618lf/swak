@@ -2,11 +2,13 @@ package com.swak.config.quartz;
 
 import java.util.Properties;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.swak.Constants;
 import com.swak.quartz.SchedulerFactoryBean;
 
 /**
@@ -16,8 +18,9 @@ import com.swak.quartz.SchedulerFactoryBean;
  * @author lifeng
  */
 @Configuration
+@ConditionalOnClass(SchedulerFactoryBean.class)
 @EnableConfigurationProperties(ScheduleProperties.class)
-@ConditionalOnProperty(prefix = "spring.application", name = "enableSchedule", matchIfMissing = true)
+@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSchedule", matchIfMissing = true)
 public class ScheduleAutoConfiguration {
 
 	/**
