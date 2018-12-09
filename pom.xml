@@ -63,6 +63,7 @@
 		<metrics.version>4.0.2</metrics.version>
 		<quartz.version>2.2.3</quartz.version>
 		<swt.version>1.0</swt.version>
+		<jcef.version>1.0</jcef.version>
 		<poi.version>4.0.0</poi.version>
 
 		<!-- test -->

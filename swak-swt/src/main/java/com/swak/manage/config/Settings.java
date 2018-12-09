@@ -71,15 +71,13 @@ public class Settings {
 			else {
 				basePath = classPath;
 				if (mainClass != null && !"".equals(mainClass)) {
-					basePath = basePath.substring(0, basePath.indexOf(mainClass));
+					basePath = basePath.substring(0, basePath.lastIndexOf("/" + mainClass));
 				}
 				configPath = basePath;
 			}
 			Settings settings = new Settings();
-			settings.basePath = basePath;
+			settings.basePath = basePath + "/";
 			settings.configPath = configPath;
-			settings.upgradePath = basePath + "/.upgrade/";
-			settings.backupPath = basePath + "/.back/";
 			settings.handleOs();
 			settings.handleLog();
 			settings.handleFileSeparator();
@@ -93,8 +91,6 @@ public class Settings {
 
 	private String basePath;
 	private String configPath;
-	private String upgradePath;
-	private String backupPath;
 	private Server server = new Server();
 	private Datasource datasource = new Datasource();
 
@@ -107,35 +103,35 @@ public class Settings {
 	}
 
 	public String getUpgradePath() {
-		return upgradePath;
+		return basePath + ".upgrade" + File.separator;
 	}
 
 	public String getUnUpgradePath() {
-		return upgradePath + "un";
+		return basePath + ".upgrade" + File.separator + "un";
 	}
 
 	public String getDoUpgradePath() {
-		return upgradePath + "do";
+		return basePath  + ".upgrade" + File.separator + "do";
 	}
 
 	public String getLogUpgradePath() {
-		return upgradePath + "log";
+		return basePath  + ".upgrade" + File.separator + "log";
 	}
-	
+
 	public String getBackupPath() {
-		return backupPath;
+		return basePath + ".back" + File.separator;
 	}
 
 	public String getLibPath() {
-		return basePath + "/lib";
+		return basePath + "lib";
 	}
 
 	public String getLogsPath() {
-		return basePath + "/logs";
+		return basePath + "logs";
 	}
-	
+
 	public String getStaticsPath() {
-		return basePath + "/static";
+		return basePath + "static";
 	}
 
 	public Server getServer() {
@@ -150,7 +146,11 @@ public class Settings {
 		if (configPath.startsWith("home/")) {
 			configPath = "/" + configPath;
 			basePath = "/" + basePath;
-			upgradePath = "/" + upgradePath;
+		}
+		String OS = System.getProperty("os.name").toLowerCase();
+		if (OS.indexOf("windows") >= 0 && configPath.startsWith("/")) {
+			configPath = configPath.substring(1);
+			basePath = basePath.substring(1);
 		}
 	}
 

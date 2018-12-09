@@ -60,5 +60,4 @@ public class AppleStarter extends App {
 	public static void main(String[] args) {
 		new AppleStarter().run(new String[] { "com/swak/AppleStarter.class" });
 	}
-
 }

@@ -1,17 +1,15 @@
 package com.swak.manage.widgets.theme.apple;
 
-import java.awt.CardLayout;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.UIManager;
 
 import com.swak.manage.config.Settings;
@@ -28,10 +26,12 @@ public class AppleApp extends JFrame implements Window {
 	private static final long serialVersionUID = 1L;
 
 	private AppleTheme theme;
+	private AppleBrowser browser;
 
 	public AppleApp() {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			this.browser = new AppleBrowser();
 		} catch (Exception e) {
 		}
 	}
@@ -97,9 +97,10 @@ public class AppleApp extends JFrame implements Window {
 		panel.setLayout(topLayout);
 		panel.setBackground(theme.background().color());
 		ImageButton image = ImageButton.image(theme.logo().image());
-		image.setSize(32, 32);image.display();
+		image.setSize(32, 32);
+		image.display();
 		panel.add(image, new GBC(0, 0));
-		
+
 		JLabel text = new JLabel();
 		text.setText(Settings.me().getServer().getName());
 		panel.add(text, new GBC(1, 0).setFill(GBC.BOTH).setWeight(1, 1));
@@ -107,20 +108,27 @@ public class AppleApp extends JFrame implements Window {
 
 	// 内容配置
 	protected void configureContent(JPanel content) {
-		CardLayout cardLayout = new CardLayout();
-		content.setLayout(cardLayout);
+		// CardLayout cardLayout = new CardLayout();
+		// content.setLayout(cardLayout);
+		//
+		// // 日志
+		// JTextArea sample = new JTextArea();
+		// sample.setText("The quick brown fox jump over the lazy dog.");
+		// sample.setBorder(BorderFactory.createEmptyBorder());
+		// sample.setEditable(false);
+		// sample.setLineWrap(true);
+		// sample.setBorder(BorderFactory.createEtchedBorder());
+		//
+		// // 添加日志
+		// content.add("log", sample);
+		content.setLayout(new BorderLayout());
+		// 设置浏览器
+		// this.browser = new AppleBrowser();
+		// content.add(browser.getUIComponent(), BorderLayout.CENTER);
+		//
+		// cardLayout.show(content, "brower");
 
-		// 日志
-		JTextArea sample = new JTextArea();
-		sample.setText("The quick brown fox jump over the lazy dog.");
-		sample.setBorder(BorderFactory.createEmptyBorder());
-		sample.setEditable(false);
-		sample.setLineWrap(true);
-		sample.setBorder(BorderFactory.createEtchedBorder());
-
-		// 添加日志
-		content.add("one", sample);
-		
+		content.add(browser.getUIComponent(), BorderLayout.CENTER);
 	}
 
 	/**

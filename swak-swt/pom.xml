@@ -50,21 +50,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.swt</groupId>
-			<artifactId>org.eclipse.swt.gtk.linux.x86_64_3.108.0.v20180904</artifactId>
-			<version>${swt.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.swt</groupId>
-			<artifactId>org.eclipse.swt.win32.win32.x86_64_3.108.0.v20180904</artifactId>
-			<version>${swt.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.swt</groupId>
-			<artifactId>org.eclipse.swt.win32.win32.x86_3.108.0.v20180904</artifactId>
-			<version>${swt.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.swt</groupId>
 			<artifactId>org.eclipse.swt_3.108.0.v20180904</artifactId>
 			<version>${swt.version}</version>
 		</dependency>
@@ -83,13 +68,46 @@
 			<artifactId>org.eclipse.ui.workbench_3.112.0.v20180906</artifactId>
 			<version>${swt.version}</version>
 		</dependency>
+		
+		<!-- 环境相关
+		<dependency>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.swt.gtk.linux.x86_64_3.108.0.v20180904</artifactId>
+			<version>${swt.version}</version>
+		</dependency>-->
+		<dependency>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.swt.win32.win32.x86_64_3.108.0.v20180904</artifactId>
+			<version>${swt.version}</version>
+		</dependency>
+		<!-- 
+		<dependency>
+			<groupId>org.swt</groupId>
+			<artifactId>org.eclipse.swt.win32.win32.x86_3.108.0.v20180904</artifactId>
+			<version>${swt.version}</version>
+		</dependency> -->
+		<dependency>
+			<groupId>org.jcef</groupId>
+			<artifactId>jcef</artifactId>
+			<version>${jcef.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jcef</groupId>
+			<artifactId>jogl-all</artifactId>
+			<version>${jcef.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jcef</groupId>
+            <artifactId>gluegen-rt</artifactId>
+			<version>${jcef.version}</version>
+		</dependency>
+		
+		<!-- 数据库或其他 -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>${logback.version}</version>
 		</dependency>
-		
-		<!-- 支持的数据库 -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
