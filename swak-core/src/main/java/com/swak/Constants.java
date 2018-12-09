@@ -37,6 +37,7 @@ public interface Constants {
 	String ACTUATOR_TRACE = "spring.trace";
 	String STORAGE_PREFIX = "spring.storage";
 	String MOTAN_PREFIX = "spring.motan";
+	String QUARTZ_PREFIX = "spring.quartz";
 
 	/** 保留ID **/
 	long ROOT = 0L;
