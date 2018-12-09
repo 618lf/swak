@@ -1,7 +1,9 @@
 package com.swak.manage.widgets.theme.apple;
 
-import java.awt.Component;
+import java.awt.BorderLayout;
 import java.lang.reflect.Field;
+
+import javax.swing.JPanel;
 
 import org.cef.CefApp;
 import org.cef.CefClient;
@@ -15,13 +17,15 @@ import com.swak.manage.config.Settings;
  * 
  * @author lifeng
  */
-public class AppleBrowser {
+public class AppleBrowser extends JPanel {
 
+	private static final long serialVersionUID = 1L;
 	private CefApp cefApp;
 	private CefClient cefClient;
 	private CefBrowser browser;
 
 	public AppleBrowser() {
+		super();
 		loadLibrary();
 		CefSettings settings = new CefSettings();
 		settings.windowless_rendering_enabled = false;
@@ -31,8 +35,15 @@ public class AppleBrowser {
 		browser = cefClient.createBrowser("http://www.baidu.com", false, false);
 	}
 
-	public Component getUIComponent() {
-		return browser.getUIComponent();
+	/**
+	 * 显示布局
+	 * 
+	 * @param content
+	 */
+	public AppleBrowser render() {
+		this.setLayout(new BorderLayout(0, 0));
+		this.add(browser.getUIComponent(), BorderLayout.CENTER);
+		return this;
 	}
 
 	private void loadLibrary() {
@@ -60,7 +71,7 @@ public class AppleBrowser {
 	}
 
 	private String getLibraryPath() {
-		return Settings.me().getLibPath() + "\\win64"; 
+		return Settings.me().getLibPath() + "\\win64";
 	}
 
 	public void dispost() {

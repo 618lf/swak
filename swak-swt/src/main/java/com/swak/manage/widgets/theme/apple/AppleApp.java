@@ -1,15 +1,17 @@
 package com.swak.manage.widgets.theme.apple;
 
-import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.UIManager;
 
 import com.swak.manage.config.Settings;
@@ -108,27 +110,25 @@ public class AppleApp extends JFrame implements Window {
 
 	// 内容配置
 	protected void configureContent(JPanel content) {
-		// CardLayout cardLayout = new CardLayout();
-		// content.setLayout(cardLayout);
-		//
-		// // 日志
-		// JTextArea sample = new JTextArea();
-		// sample.setText("The quick brown fox jump over the lazy dog.");
-		// sample.setBorder(BorderFactory.createEmptyBorder());
-		// sample.setEditable(false);
-		// sample.setLineWrap(true);
-		// sample.setBorder(BorderFactory.createEtchedBorder());
-		//
-		// // 添加日志
-		// content.add("log", sample);
-		content.setLayout(new BorderLayout());
+		 CardLayout cardLayout = new CardLayout();
+		 content.setLayout(cardLayout);
+		
+		 // 日志
+		 JTextArea sample = new JTextArea();
+		 sample.setText("The quick brown fox jump over the lazy dog.");
+		 sample.setBorder(BorderFactory.createEmptyBorder());
+		 sample.setEditable(false);
+		 sample.setLineWrap(true);
+		 sample.setBorder(BorderFactory.createEtchedBorder());
+		
+		 // 添加日志
+		content.add("log", sample);
+		
 		// 设置浏览器
-		// this.browser = new AppleBrowser();
-		// content.add(browser.getUIComponent(), BorderLayout.CENTER);
-		//
-		// cardLayout.show(content, "brower");
-
-		content.add(browser.getUIComponent(), BorderLayout.CENTER);
+		content.add("browser", browser.render());
+		
+		// 显示浏览器
+		cardLayout.show(content, "brower");
 	}
 
 	/**
