@@ -72,5 +72,10 @@
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>${sqlite-jdbc.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.shardingsphere</groupId>
+			<artifactId>sharding-jdbc-core</artifactId>
+			<version>${sharding.version}</version>
+		</dependency>
 	</dependencies>
 </project>

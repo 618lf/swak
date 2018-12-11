@@ -70,6 +70,7 @@
 		<junit.version>4.12</junit.version>
 
 		<!-- db driver -->
+		<sharding.version>3.0.0</sharding.version>
 		<mysql-jdbc.version>6.0.6</mysql-jdbc.version>
 		<h2-jdbc.version>1.4.197</h2-jdbc.version>
 		<sqlite-jdbc.version>3.25.2</sqlite-jdbc.version>
