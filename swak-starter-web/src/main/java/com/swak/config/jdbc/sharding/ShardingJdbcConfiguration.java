@@ -24,6 +24,8 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +33,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 import com.google.common.base.Preconditions;
+import com.swak.Constants;
 
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import io.shardingsphere.shardingjdbc.util.DataSourceUtil;
@@ -43,7 +47,9 @@ import io.shardingsphere.shardingjdbc.util.DataSourceUtil;
  * @author caohao
  */
 @Configuration
+@ConditionalOnClass(YamlShardingRuleConfiguration.class)
 @EnableConfigurationProperties({ShardingJdbcShardingRuleConfigurationProperties.class, ShardingJdbcMasterSlaveRuleConfigurationProperties.class})
+@ConditionalOnProperty(prefix = Constants.DATASOURCE_PREFIX, name = "db", havingValue = "sharding", matchIfMissing = false)
 public class ShardingJdbcConfiguration implements EnvironmentAware {
     
     @Autowired

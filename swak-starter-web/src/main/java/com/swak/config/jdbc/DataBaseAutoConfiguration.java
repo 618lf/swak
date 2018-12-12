@@ -46,6 +46,7 @@ import com.swak.config.jdbc.database.DruidDataSourceAutoConfiguration;
 import com.swak.config.jdbc.database.HikariDataSourceAutoConfiguration;
 import com.swak.config.jdbc.database.SpringBootVFS;
 import com.swak.config.jdbc.database.SqlLiteDataSourceAutoConfiguration;
+import com.swak.config.jdbc.sharding.ShardingJdbcConfiguration;
 import com.swak.config.jdbc.transaction.DataSourceTransactionManagerAutoConfiguration;
 import com.swak.config.jdbc.transaction.TransactionAutoConfiguration;
 import com.swak.persistence.JdbcSqlExecutor;
@@ -59,7 +60,8 @@ import com.swak.persistence.mybatis.ExecutorInterceptor;
 import com.swak.utils.StringUtils;
 
 /**
- * 会判断是否引入了数据库组件
+ * 单机版的数据库启动
+ * 
  * @author lifeng
  */
 @org.springframework.context.annotation.Configuration
@@ -76,12 +78,10 @@ public class DataBaseAutoConfiguration {
 	@ConditionalOnClass(JdbcTemplate.class)
 	@ConditionalOnMissingBean(DataSource.class)
 	@EnableConfigurationProperties(DataSourceProperties.class)
-	@Import({
-		SqlLiteDataSourceAutoConfiguration.class,
-		DruidDataSourceAutoConfiguration.class,
-		HikariDataSourceAutoConfiguration.class
-	})
-	public static class DataSourceAutoConfiguration {}
+	@Import({ ShardingJdbcConfiguration.class, SqlLiteDataSourceAutoConfiguration.class,
+			DruidDataSourceAutoConfiguration.class, HikariDataSourceAutoConfiguration.class })
+	public static class DataSourceAutoConfiguration {
+	}
 
 	/**
 	 * JDBC 操作模板
@@ -91,9 +91,9 @@ public class DataBaseAutoConfiguration {
 	@org.springframework.context.annotation.Configuration
 	@ConditionalOnClass(JdbcTemplate.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
-	@AutoConfigureAfter({DataSourceAutoConfiguration.class,SqlLiteDataSourceAutoConfiguration.class,
-		DruidDataSourceAutoConfiguration.class,
-		HikariDataSourceAutoConfiguration.class})
+	@AutoConfigureAfter({ DataSourceAutoConfiguration.class, ShardingJdbcConfiguration.class,
+			SqlLiteDataSourceAutoConfiguration.class, DruidDataSourceAutoConfiguration.class,
+			HikariDataSourceAutoConfiguration.class })
 	@EnableConfigurationProperties(JdbcProperties.class)
 	public static class JdbcTemplateAutoConfiguration {
 
@@ -150,9 +150,9 @@ public class DataBaseAutoConfiguration {
 	@ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
 	@ConditionalOnSingleCandidate(DataSource.class)
 	@Import({ DataSourceTransactionManagerAutoConfiguration.class, TransactionAutoConfiguration.class })
-	@AutoConfigureAfter({DataSourceAutoConfiguration.class,SqlLiteDataSourceAutoConfiguration.class,
-		DruidDataSourceAutoConfiguration.class,
-		HikariDataSourceAutoConfiguration.class})
+	@AutoConfigureAfter({ DataSourceAutoConfiguration.class, ShardingJdbcConfiguration.class,
+			SqlLiteDataSourceAutoConfiguration.class, DruidDataSourceAutoConfiguration.class,
+			HikariDataSourceAutoConfiguration.class })
 	public static class DataSourceTransactionManagerConfiguration {
 		DataSourceTransactionManagerConfiguration() {
 			APP_LOGGER.debug("Loading Transaction Manager");
@@ -163,15 +163,14 @@ public class DataBaseAutoConfiguration {
 	 * Mybatis
 	 * 
 	 * @author lifeng
-	 *
 	 */
 	@org.springframework.context.annotation.Configuration
 	@ConditionalOnClass({ SqlSessionFactory.class, SqlSessionFactoryBean.class })
 	@ConditionalOnBean(DataSource.class)
 	@EnableConfigurationProperties(MybatisProperties.class)
-	@AutoConfigureAfter({DataSourceAutoConfiguration.class,SqlLiteDataSourceAutoConfiguration.class,
-		DruidDataSourceAutoConfiguration.class,
-		HikariDataSourceAutoConfiguration.class})
+	@AutoConfigureAfter({ DataSourceAutoConfiguration.class, ShardingJdbcConfiguration.class,
+			SqlLiteDataSourceAutoConfiguration.class, DruidDataSourceAutoConfiguration.class,
+			HikariDataSourceAutoConfiguration.class })
 	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMybatis", matchIfMissing = true)
 	public static class MybatisAutoConfiguration {
 		private final DataSourceProperties dbProperties;
@@ -180,9 +179,8 @@ public class DataBaseAutoConfiguration {
 		private final ResourceLoader resourceLoader;
 		private final DatabaseIdProvider databaseIdProvider;
 		private final List<ConfigurationCustomizer> configurationCustomizers;
-		
-		public MybatisAutoConfiguration(MybatisProperties properties,
-				DataSourceProperties dbProperties, 
+
+		public MybatisAutoConfiguration(MybatisProperties properties, DataSourceProperties dbProperties,
 				ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader,
 				ObjectProvider<DatabaseIdProvider> databaseIdProvider,
 				ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider) {
@@ -257,7 +255,7 @@ public class DataBaseAutoConfiguration {
 			// 默认的别名
 			configuration.getTypeAliasRegistry().registerAlias("queryCondition", QueryCondition.class);
 		}
-		
+
 		private Dialect getDialect() {
 			Database db = this.dbProperties.getDb();
 			if (db == Database.h2) {
