@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import net.sf.cglib.beans.BeanMap;
+
 /**
  * Maps 操作类
  * 
@@ -50,7 +52,7 @@ public class Maps {
 	}
 	
 	/**
-	 * 将 bean 转为 map, 忽略为 null 的属性
+	 * 将 bean 转为 map, 忽略为 null 的属性（效率稍低）
 	 * @param bean
 	 * @return
 	 */
@@ -58,5 +60,35 @@ public class Maps {
 	public static Map<String, Object> fromBean(Object bean) {
 		String json = JsonMapper.toJson(bean);
 		return JsonMapper.fromJson(json, Map.class);
+	}
+	
+	/**
+	 * 通过cglib 高效的转换
+	 * 
+	 * @param bean
+	 * @return
+	 */
+	public static Map<String, Object> toMap(Object bean) {
+		Map<String, Object> map = Maps.newHashMap();  
+	    if (bean != null) {  
+	        BeanMap beanMap = BeanMap.create(bean);  
+	        for (Object key : beanMap.keySet()) {  
+	            map.put(String.valueOf(key), beanMap.get(key));  
+	        }             
+	    }  
+	    return map;
+	}
+	
+	/**
+	 * 复制map 的属性到bean
+	 * 
+	 * @param map
+	 * @param bean
+	 * @return
+	 */
+	public static <T> T toBean(Map<String, Object> map, T bean) {
+		BeanMap beanMap = BeanMap.create(bean);  
+	    beanMap.putAll(map);  
+	    return bean;
 	}
 }

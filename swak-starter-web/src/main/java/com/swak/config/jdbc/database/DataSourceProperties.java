@@ -37,6 +37,34 @@ public class DataSourceProperties {
 	private Integer prepStmtCacheSqlLimit = 2048;
 	private Integer maxLifetime = 1800000; // 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒
 
+	public DataSourceProperties() {
+	}
+
+	public DataSourceProperties(DataSourceProperties copy) {
+		this.name = copy.getName();
+		this.db = copy.getDb();
+		this.url = copy.getUrl();
+		this.username = copy.getUsername();
+		this.password = copy.getPassword();
+		this.driverClassName = copy.getDriverClassName();
+		this.initialSize = copy.getInitialSize();
+		this.minIdle = copy.getMinIdle();
+		this.maxActive = copy.getMaxActive();
+		this.maxWait = copy.getMaxWait();
+		this.timeBetweenEvictionRunsMillis = copy.getTimeBetweenEvictionRunsMillis();
+		this.minEvictableIdleTimeMillis = copy.getMinEvictableIdleTimeMillis();
+		this.validationQuery = copy.getValidationQuery();
+		this.testWhileIdle = copy.getTestWhileIdle();
+		this.testOnBorrow = copy.getTestOnBorrow();
+		this.testOnReturn = copy.getTestOnReturn();
+		this.poolPreparedStatements = copy.getPoolPreparedStatements();
+		this.maxPoolPreparedStatementPerConnectionSize = copy.getMaxPoolPreparedStatementPerConnectionSize();
+		this.filters = copy.getFilters();
+		this.prepStmtCacheSize = copy.getPrepStmtCacheSize();
+		this.prepStmtCacheSqlLimit = copy.getPrepStmtCacheSqlLimit();
+		this.maxLifetime = copy.getMaxLifetime();
+	}
+
 	public Database getDb() {
 		return db;
 	}
