@@ -119,6 +119,8 @@ public class DataSourceProperties {
 			this.driverClassName = "com.mysql.cj.jdbc.Driver";
 		} else if (db == Database.h2) {
 			this.driverClassName = "org.h2.Driver";
+		} else if (db == Database.sharding) {
+			this.driverClassName = "com.mysql.cj.jdbc.Driver";
 		}
 	}
 

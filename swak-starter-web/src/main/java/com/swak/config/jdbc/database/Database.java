@@ -7,5 +7,5 @@ package com.swak.config.jdbc.database;
  */
 public enum Database {
 
-	h2, mysql, sqlite, oracle
+	h2, mysql, sqlite, oracle, sharding
 }
