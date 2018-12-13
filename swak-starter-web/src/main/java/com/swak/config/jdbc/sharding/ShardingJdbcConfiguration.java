@@ -36,6 +36,7 @@ import com.swak.Constants;
 import com.swak.config.jdbc.database.DataSourceProperties;
 import com.swak.config.jdbc.database.HikariDataSourceAutoConfiguration;
 import com.swak.utils.Maps;
+import com.swak.utils.PropertyKit;
 
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
@@ -72,13 +73,19 @@ public class ShardingJdbcConfiguration implements EnvironmentAware {
 	 */
 	@Bean
 	public DataSource dataSource() throws SQLException {
-		return null == masterSlaveProperties.getMasterDataSourceName()
-				? ShardingDataSourceFactory.createDataSource(dataSourceMap,
-						shardingProperties.getShardingRuleConfiguration(), shardingProperties.getConfigMap(),
-						shardingProperties.getProps())
-				: MasterSlaveDataSourceFactory.createDataSource(dataSourceMap,
-						masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(),
-						masterSlaveProperties.getProps());
+		try {
+			DataSource dataSource = null == masterSlaveProperties.getMasterDataSourceName()
+					? ShardingDataSourceFactory.createDataSource(dataSourceMap,
+							shardingProperties.getShardingRuleConfiguration(), shardingProperties.getConfigMap(),
+							shardingProperties.getProps())
+					: MasterSlaveDataSourceFactory.createDataSource(dataSourceMap,
+							masterSlaveProperties.getMasterSlaveRuleConfiguration(),
+							masterSlaveProperties.getConfigMap(), masterSlaveProperties.getProps());
+			return dataSource;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 
 	/**
@@ -95,10 +102,10 @@ public class ShardingJdbcConfiguration implements EnvironmentAware {
 		String dataSources = environment.getProperty(prefix + "names");
 		for (String each : dataSources.split(",")) {
 			try {
-				Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, prefix + each, Map.class);
+				Map<String, Object> dataSourceProps = PropertyKit.handle(environment, prefix + each, Map.class);
 				DataSource dataSource = newHikariDataSource(dataSourceProps);
 				dataSourceMap.put(each, dataSource);
-			} catch (final ReflectiveOperationException ex) {
+			} catch (Exception ex) {
 				throw new ShardingException("Can't find datasource type!", ex);
 			}
 		}
@@ -112,7 +119,9 @@ public class ShardingJdbcConfiguration implements EnvironmentAware {
 	 */
 	private DataSource newHikariDataSource(Map<String, Object> dataSourceProps) {
 		DataSourceProperties properties = new DataSourceProperties(this.properties);
-		properties = Maps.toBean(dataSourceProps, properties);
+		if (dataSourceProps != null) {
+			properties = Maps.toBean(dataSourceProps, properties);
+		}
 		return new HikariDataSourceAutoConfiguration(properties).hikariDataSource();
 	}
 }
