@@ -97,7 +97,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 
 	// -------- 请求 --------------------
 	private ByteBufInputStream is;
-	private ByteBuf body;
 	private String remoteAddress;
 	private String uri;
 	private String url;
@@ -131,7 +130,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		this.parseParameter(request);
 		this.parseHeaders(request);
 		this.parseCookies();
-		this.parseBody(request);
 
 		// 释放引用
 		request = null;
@@ -416,22 +414,13 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
-	 * 解析 body 数据 先这样处理 是否还有优化的方式
-	 * 
-	 * @param request
-	 */
-	private void parseBody(FullHttpRequest request) {
-		this.body = request.content();
-	}
-
-	/**
 	 * 请求的输入流
 	 * 
 	 * @return
 	 */
 	public InputStream getInputStream() {
 		if (is == null) {
-			is = new ByteBufInputStream(body);
+			is = new ByteBufInputStream(this.request.content());
 		}
 		return is;
 	}
@@ -847,7 +836,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 */
 	protected void send() {
 		if (!this.channel().isActive()) {
-			ReferenceCountUtil.release(request);
 			IOUtils.closeQuietly(this);
 			return;
 		}
@@ -1005,14 +993,12 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 */
 	@Override
 	public void close() throws IOException {
-
+		ReferenceCountUtil.release(request);
 		// 关闭请求数据
 		if (this.files != null) {
 			this.files.clear();
 			this.files = null;
 		}
-		ReferenceCountUtil.release(this.body);
-		this.body = null;
 		this.content = null; // write to release
 		this.remoteAddress = null;
 		this.uri = null;
