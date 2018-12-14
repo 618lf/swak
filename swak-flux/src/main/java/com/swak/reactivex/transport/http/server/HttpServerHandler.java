@@ -60,7 +60,6 @@ public class HttpServerHandler extends ChannelDuplexHandler {
 	 */
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-		// promise.addListener(ChannelFutureListener.CLOSE);
 		super.write(ctx, msg, promise);
 	}
 

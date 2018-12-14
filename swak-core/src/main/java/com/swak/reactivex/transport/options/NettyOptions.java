@@ -30,10 +30,12 @@ public class NettyOptions<BOOTSTRAP extends AbstractBootstrap<BOOTSTRAP, ?>> {
 	private final long sslHandshakeTimeoutMillis;
 	private final long sslCloseNotifyFlushTimeoutMillis;
 	private final long sslCloseNotifyReadTimeoutMillis;
+	private final long readTimeoutMillis;
+	private final long writeTimeoutMillis;
 	protected final Consumer<? super Channel> afterChannelInit;
 	protected final Consumer<? super NettyContext> afterNettyContextInit;
 	private final Predicate<? super Channel> onChannelInit;
-    private final LoopResources loopResources;
+	private final LoopResources loopResources;
 
 	protected NettyOptions(NettyOptions.Builder<BOOTSTRAP> builder) {
 		this.bootstrapTemplate = builder.bootstrapTemplate;
@@ -44,6 +46,8 @@ public class NettyOptions<BOOTSTRAP extends AbstractBootstrap<BOOTSTRAP, ?>> {
 		this.afterNettyContextInit = builder.afterNettyContextInit;
 		this.onChannelInit = builder.onChannelInit;
 		this.loopResources = builder.loopResources;
+		this.readTimeoutMillis = builder.readTimeoutMillis;
+		this.writeTimeoutMillis = builder.writeTimeoutMillis;
 
 		Consumer<? super Channel> afterChannel = builder.afterChannelInit;
 		if (afterChannel != null && builder.channelGroup != null) {
@@ -74,10 +78,11 @@ public class NettyOptions<BOOTSTRAP extends AbstractBootstrap<BOOTSTRAP, ?>> {
 	public BOOTSTRAP getBootstrapTemplate() {
 		return bootstrapTemplate;
 	}
-	
+
 	public LoopResources getLoopResources() {
 		return loopResources;
 	}
+
 	public SslContext sslContext() {
 		return sslContext;
 	}
@@ -94,6 +99,14 @@ public class NettyOptions<BOOTSTRAP extends AbstractBootstrap<BOOTSTRAP, ?>> {
 		return sslCloseNotifyReadTimeoutMillis;
 	}
 
+	public long getReadTimeoutMillis() {
+		return readTimeoutMillis;
+	}
+
+	public long getWriteTimeoutMillis() {
+		return writeTimeoutMillis;
+	}
+
 	public Consumer<? super Channel> afterChannelInit() {
 		return afterChannelInit;
 	}
@@ -105,7 +118,7 @@ public class NettyOptions<BOOTSTRAP extends AbstractBootstrap<BOOTSTRAP, ?>> {
 	public Predicate<? super Channel> onChannelInit() {
 		return onChannelInit;
 	}
-	
+
 	public SslHandler getSslHandler(ByteBufAllocator allocator) {
 		SslContext sslContext = this.sslContext;
 
@@ -129,6 +142,8 @@ public class NettyOptions<BOOTSTRAP extends AbstractBootstrap<BOOTSTRAP, ?>> {
 		private long sslHandshakeTimeoutMillis = 10000L;
 		private long sslCloseNotifyFlushTimeoutMillis = 3000L;
 		private long sslCloseNotifyReadTimeoutMillis = 0L;
+		private long readTimeoutMillis = -1L;
+		private long writeTimeoutMillis = -1L;
 		private LoopResources loopResources;
 
 		private Consumer<? super Channel> afterChannelInit = null;
@@ -153,6 +168,7 @@ public class NettyOptions<BOOTSTRAP extends AbstractBootstrap<BOOTSTRAP, ?>> {
 			this.bootstrapTemplate.option(key, value);
 			return this;
 		}
+
 		public final Builder<BOOTSTRAP> channelGroup(ChannelGroup channelGroup) {
 			this.channelGroup = Objects.requireNonNull(channelGroup, "channelGroup");
 			return this;
@@ -162,7 +178,7 @@ public class NettyOptions<BOOTSTRAP extends AbstractBootstrap<BOOTSTRAP, ?>> {
 			this.sslContext = sslContext;
 			return this;
 		}
-		
+
 		public final Builder<BOOTSTRAP> loopResources(LoopResources loopResources) {
 			this.loopResources = Objects.requireNonNull(loopResources, "loopResources");
 			return this;
@@ -207,6 +223,18 @@ public class NettyOptions<BOOTSTRAP extends AbstractBootstrap<BOOTSTRAP, ?>> {
 						"ssl close_notify read timeout must be positive," + " was: " + sslCloseNotifyReadTimeoutMillis);
 			}
 			this.sslCloseNotifyReadTimeoutMillis = sslCloseNotifyReadTimeoutMillis;
+			return this;
+		}
+
+		public final Builder<BOOTSTRAP> readTimeoutMillis(long readTimeoutMillis) {
+			Objects.requireNonNull(readTimeoutMillis, "readTimeoutMillis");
+			this.readTimeoutMillis = readTimeoutMillis;
+			return this;
+		}
+
+		public final Builder<BOOTSTRAP> writeTimeoutMillis(long writeTimeoutMillis) {
+			Objects.requireNonNull(writeTimeoutMillis, "writeTimeoutMillis");
+			this.writeTimeoutMillis = writeTimeoutMillis;
 			return this;
 		}
 

@@ -2,6 +2,7 @@ package com.swak.reactivex.transport.http.server;
 
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -29,6 +30,8 @@ import io.netty.handler.codec.http.cors.CorsHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -92,7 +95,10 @@ public class HttpServer extends TcpServer {
 				if (properties.isSslOn()) {
 					this.customizeSsl(options);
 				}
+				options.readTimeoutMillis(properties.getReadTimeout());
+				options.writeTimeoutMillis(properties.getWriteTimeout());
 				options.enableCors(properties.isEnableCors());
+				options.enableCompression(properties.isEnableGzip());
 				options.logLevel(properties.getServerLogLevel());
 				options.loopResources(LoopResources.create(properties.getMode(), properties.getServerSelect(),
 						properties.getServerWorker(), properties.getName()));
@@ -138,7 +144,16 @@ public class HttpServer extends TcpServer {
 	 */
 	@Override
 	public void accept(ChannelPipeline p, ContextHandler ch) {
-		p.addLast(NettyPipeline.HttpCodec, new HttpServerCodec(36192 * 2, 36192 * 8, 36192 * 16, false));
+		if (options.enableReadIdle()) {
+			p.addLast(new ReadTimeoutHandler(options.getReadTimeoutMillis(), TimeUnit.MILLISECONDS));
+		}
+		if (options.enableWriteIdle()) {
+			p.addLast(new WriteTimeoutHandler(options.getWriteTimeoutMillis(), TimeUnit.MILLISECONDS));
+		}
+		p.addLast(NettyPipeline.HttpCodec,
+				new HttpServerCodec(options.httpCodecMaxInitialLineLength(), options.httpCodecMaxChunkSize(),
+						options.httpCodecMaxChunkSize(), options.httpCodecValidateHeaders(),
+						options.httpCodecInitialBufferSize()));
 		p.addLast(NettyPipeline.HttpAggregator, new HttpObjectAggregator(Integer.MAX_VALUE));
 		p.addLast(NettyPipeline.ExpectContinueHandler, new HttpServerExpectContinueHandler());
 		if (options.enabledCompression()) {
@@ -227,7 +242,7 @@ public class HttpServer extends TcpServer {
 		}
 		return "http";
 	}
-	
+
 	@Override
 	public InetSocketAddress getAddress() {
 		return context.address();

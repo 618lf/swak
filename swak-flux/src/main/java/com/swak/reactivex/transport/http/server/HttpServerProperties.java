@@ -26,11 +26,13 @@ public class HttpServerProperties {
 	private boolean threadCache = true;
 	private int port = 8888;
 	private int connectTimeout = 30000;
+	private int readTimeout = -1;
+	private int writeTimeout = -1;
 	private String host = null; // 设置这个回导致只能通过网卡IP或本机IP访问 或 0.0.0.0
 	private boolean tcpNoDelay = true;
 	private boolean soKeepAlive = true;
 	private boolean startReport = false;
-	private boolean enableGzip = false; // 暂时不支持
+	private boolean enableGzip = false;
 	private boolean enableCors = false;
 
 	// 线程数量
@@ -55,6 +57,22 @@ public class HttpServerProperties {
 	private String keyStorePath; // keyStore 的路径
 	private String keyStorePass = "secret"; // keyStore 的密码
 	private String jwtTokenName = "X-Token";
+
+	public int getReadTimeout() {
+		return readTimeout;
+	}
+
+	public void setReadTimeout(int readTimeout) {
+		this.readTimeout = readTimeout;
+	}
+
+	public int getWriteTimeout() {
+		return writeTimeout;
+	}
+
+	public void setWriteTimeout(int writeTimeout) {
+		this.writeTimeout = writeTimeout;
+	}
 
 	public String[] getStatics() {
 		return statics;
@@ -226,7 +244,7 @@ public class HttpServerProperties {
 	public void setEnableCors(boolean enableCors) {
 		this.enableCors = enableCors;
 	}
-
+	
 	public boolean isSslOn() {
 		return sslOn;
 	}

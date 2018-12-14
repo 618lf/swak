@@ -11,49 +11,59 @@ import io.netty.bootstrap.ServerBootstrap;
  */
 public class HttpServerOptions extends ServerOptions {
 
-	private final int minCompressionResponseSize;
 	private final int maxInitialLineLength;
 	private final int maxHeaderSize;
 	private final int maxChunkSize;
 	private final int initialBufferSize;
 	private final boolean validateHeaders;
 	private final boolean enableCors;
+	private final boolean enableCompression;
 
 	private HttpServerOptions(HttpServerOptions.Builder builder) {
 		super(builder);
-		this.minCompressionResponseSize = builder.minCompressionResponseSize;
 		this.maxInitialLineLength = builder.maxInitialLineLength;
 		this.maxHeaderSize = builder.maxHeaderSize;
 		this.maxChunkSize = builder.maxChunkSize;
 		this.validateHeaders = builder.validateHeaders;
 		this.initialBufferSize = builder.initialBufferSize;
 		this.enableCors = builder.enableCors;
+		this.enableCompression = builder.enableCompression;
 	}
 
 	/**
-	 * Returns the minimum response size before the output is compressed. By default
-	 * the compression is disabled.
-	 *
-	 * @return Returns the minimum response size before the output is compressed.
-	 */
-	public int minCompressionResponseSize() {
-		return minCompressionResponseSize;
-	}
-
-	/**
+	 * 开启压缩
 	 * 
 	 * @return
 	 */
 	public boolean enabledCompression() {
-		return minCompressionResponseSize >= 0;
+		return enableCompression;
 	}
-	
+
 	/**
+	 * 开启跨域
 	 * 
 	 * @return
 	 */
 	public boolean enableCors() {
 		return enableCors;
+	}
+
+	/**
+	 * 开启读取超时 -- 对于服务器而言（服务器的处理时长）
+	 * 
+	 * @return
+	 */
+	public boolean enableReadIdle() {
+		return this.getReadTimeoutMillis() != -1;
+	}
+	
+	/**
+	 * 开启写超时
+	 * 
+	 * @return
+	 */
+	public boolean enableWriteIdle() {
+		return this.getWriteTimeoutMillis() != -1;
 	}
 
 	/**
@@ -120,17 +130,18 @@ public class HttpServerOptions extends ServerOptions {
 		public static final int DEFAULT_MAX_INITIAL_LINE_LENGTH = 4096;
 		public static final int DEFAULT_MAX_HEADER_SIZE = 8192;
 		public static final int DEFAULT_MAX_CHUNK_SIZE = 8192;
-		public static final boolean DEFAULT_VALIDATE_HEADERS = true;
+		public static final boolean DEFAULT_VALIDATE_HEADERS = false;
 		public static final int DEFAULT_INITIAL_BUFFER_SIZE = 128;
 		public static final boolean DEFAULT_ENABLE_CORS = false;
+		public static final boolean DEFAULT_ENABLE_COMPRESSION = false;
 
-		private int minCompressionResponseSize = -1;
 		private int maxInitialLineLength = DEFAULT_MAX_INITIAL_LINE_LENGTH;
 		private int maxHeaderSize = DEFAULT_MAX_HEADER_SIZE;
 		private int maxChunkSize = DEFAULT_MAX_CHUNK_SIZE;
 		private boolean validateHeaders = DEFAULT_VALIDATE_HEADERS;
 		private int initialBufferSize = DEFAULT_INITIAL_BUFFER_SIZE;
 		private boolean enableCors = DEFAULT_ENABLE_CORS;
+		private boolean enableCompression = DEFAULT_ENABLE_COMPRESSION;
 
 		protected Builder() {
 			super(new ServerBootstrap());
@@ -144,25 +155,8 @@ public class HttpServerOptions extends ServerOptions {
 		 *            true whether compression is enabled
 		 * @return {@code this}
 		 */
-		public final Builder compression(boolean enabled) {
-			this.minCompressionResponseSize = enabled ? 0 : -1;
-			return this;
-		}
-
-		/**
-		 * Enable GZip response compression if the client request presents accept
-		 * encoding headers AND the response reaches a minimum threshold
-		 *
-		 * @param minResponseSize
-		 *            compression is performed once response size exceeds given value in
-		 *            byte
-		 * @return {@code this}
-		 */
-		public final Builder compression(int minResponseSize) {
-			if (minResponseSize < 0) {
-				throw new IllegalArgumentException("minResponseSize must be positive");
-			}
-			this.minCompressionResponseSize = minResponseSize;
+		public final Builder enableCompression(boolean enabled) {
+			this.enableCompression = enabled;
 			return this;
 		}
 
@@ -242,7 +236,7 @@ public class HttpServerOptions extends ServerOptions {
 			this.initialBufferSize = value;
 			return this;
 		}
-		
+
 		/**
 		 * enableCors
 		 *

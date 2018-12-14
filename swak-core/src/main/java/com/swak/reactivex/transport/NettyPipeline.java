@@ -45,5 +45,6 @@ public interface NettyPipeline {
 	String LoggingHandler     = LEFT + "loggingHandler";
 	String CompressionHandler = LEFT + "compressionHandler";
 	String HttpCors          = LEFT + "httpCors";
+	String HttpIdle          = LEFT + "httpIdle";
 	String ExpectContinueHandler  = LEFT + "httpExpectContinue";
 }
