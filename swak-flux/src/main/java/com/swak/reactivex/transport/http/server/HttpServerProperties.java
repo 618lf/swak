@@ -161,16 +161,16 @@ public class HttpServerProperties {
 		return serverLogLevel;
 	}
 
-	public Level getLeakDetectionLevel() {
+	public void setServerLogLevel(LogLevel serverLogLevel) {
+		this.serverLogLevel = serverLogLevel;
+	}
+	
+	public Level getLeakDetectionLevel() { 
 		return leakDetectionLevel;
 	}
 
 	public void setLeakDetectionLevel(Level leakDetectionLevel) {
 		this.leakDetectionLevel = leakDetectionLevel;
-	}
-
-	public void setServerLogLevel(LogLevel serverLogLevel) {
-		this.serverLogLevel = serverLogLevel;
 	}
 
 	public boolean isThreadCache() {
