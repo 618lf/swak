@@ -1,8 +1,8 @@
 package com.swak.incrementer;
 
 /**
- * good
- * 64byte位ID生成规则(42(毫秒)+5(机器ID)+5(业务编码)+12(重复累加)) 
+ * good 64byte位ID生成规则(42(毫秒)+5(机器ID)+5(业务编码)+12(重复累加))
+ * 
  * @author root
  */
 public class Long64Generator implements IdGenerator {
@@ -25,7 +25,7 @@ public class Long64Generator implements IdGenerator {
 	private final static long timestampLeftShift = sequenceBits + workerIdBits + datacenterIdBits;
 	private final static long sequenceMask = -1L ^ (-1L << sequenceBits);
 	private static long lastTimestamp = -1L;
-	
+
 	private final static long twepoch = 1288834974657L;
 	private long sequence = 0L;
 	private final long workerId;
@@ -33,10 +33,10 @@ public class Long64Generator implements IdGenerator {
 
 	public Long64Generator(long workerId, long datacenterId) {
 		if (workerId > maxWorkerId || workerId < 0) {
-			throw new IllegalArgumentException( "worker Id can't be greater than %d or less than 0");
+			throw new IllegalArgumentException("worker Id can't be greater than %d or less than 0");
 		}
 		if (datacenterId > maxDatacenterId || datacenterId < 0) {
-			throw new IllegalArgumentException( "datacenter Id can't be greater than %d or less than 0");
+			throw new IllegalArgumentException("datacenter Id can't be greater than %d or less than 0");
 		}
 		this.workerId = workerId;
 		this.datacenterId = datacenterId;
@@ -45,11 +45,8 @@ public class Long64Generator implements IdGenerator {
 	public synchronized long nextId() {
 		long timestamp = timeGen();
 		if (timestamp < lastTimestamp) {
-			try {
-				throw new Exception( "Clock moved backwards.  Refusing to generate id for " + (lastTimestamp - timestamp) + " milliseconds");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			throw new RuntimeException("Clock moved backwards.  Refusing to generate id for "
+					+ (lastTimestamp - timestamp) + " milliseconds");
 		}
 		if (lastTimestamp == timestamp) {
 			// 当前毫秒内，则+1
@@ -61,10 +58,12 @@ public class Long64Generator implements IdGenerator {
 		} else {
 			sequence = 0;
 		}
+		
 		lastTimestamp = timestamp;
+		
 		// ID偏移组合生成最终的ID，并返回ID
-		long nextId = ((timestamp - twepoch) << timestampLeftShift) | (datacenterId << datacenterIdShift) | (workerId << workerIdShift) | sequence;
-		return nextId;
+		return ((timestamp - twepoch) << timestampLeftShift) | (datacenterId << datacenterIdShift)
+				| (workerId << workerIdShift) | sequence;
 	}
 
 	private long tilNextMillis(final long lastTimestamp) {
@@ -74,11 +73,11 @@ public class Long64Generator implements IdGenerator {
 		}
 		return timestamp;
 	}
+
 	private long timeGen() {
 		return System.currentTimeMillis();
 	}
-	
-	
+
 	/**
 	 * 对外提供服务
 	 */
@@ -87,4 +86,13 @@ public class Long64Generator implements IdGenerator {
 	public Long id() {
 		return this.nextId();
 	}
+	
+    /** 测试 */
+    public static void main(String[] args) {
+    	Long64Generator idWorker = new Long64Generator(0, 0);
+        for (int i = 0; i < 1000; i++) {
+            long id = idWorker.nextId();
+            System.out.println(id);
+        }
+    }
 }
