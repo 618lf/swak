@@ -2,7 +2,9 @@ package com.swak.reactivex.transport.http.multipart;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.FileChannel;
@@ -14,9 +16,11 @@ import java.util.UUID;
 
 import org.springframework.core.io.Resource;
 
+import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.FileUtils;
 import com.swak.utils.IOUtils;
 
+import io.netty.handler.stream.ChunkedFile;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoSink;
 
@@ -26,7 +30,7 @@ import reactor.core.publisher.MonoSink;
  * 
  * @author lifeng
  */
-public class FileProps implements Closeable{
+public class FileProps implements Closeable {
 
 	private final long lastModifiedTime;
 	private final long size;
@@ -80,8 +84,29 @@ public class FileProps implements Closeable{
 	 * 
 	 * @return
 	 */
-	public FileChannel channel(){
+	public FileChannel channel() {
 		return this.channel;
+	}
+
+	/**
+	 * 以文件流的型式输出
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	public ChunkedFile chunked() {
+		try {
+			RandomAccessFile raf = null;
+			if (this.resource.isFile()) {
+				raf = new RandomAccessFile(this.resource.getFile(), "r");
+			} else {
+				raf = new RandomAccessFile(this.deleteFile, "r");
+			}
+			return new ChunkedFile(raf, 0, this.size(), 8192);
+		} catch (Exception e) {
+			throw new BaseRuntimeException(e);
+		}
 	}
 
 	/**
@@ -99,40 +124,8 @@ public class FileProps implements Closeable{
 		}
 	}
 
-	// /**
-	// * jar 中执行二进制输出 研究下 nio 怎么读取流
-	// *
-	// * @return
-	// */
-	// public ByteBuf bytes() throws IOException {
-	//
-	// // 分配的缓冲区
-	// ByteBuf byteBuf = Unpooled.buffer();
-	//
-	// // 读取数据
-	// ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	// ReadableByteChannel channel = this.resource.readableChannel();
-	// ByteBuffer bytebuf = ByteBuffer.allocate(1024);
-	// while (channel.read(bytebuf) >= 0) {
-	// bytebuf.flip();
-	// baos.write(bytebuf.array(), 0, bytebuf.limit());
-	// bytebuf.clear();
-	// }
-	//
-	// // 设置缓冲数据
-	// byteBuf.writeBytes(baos.toByteArray());
-	//
-	// // 关闭资源
-	// baos.close();
-	// bytebuf.clear();
-	//
-	// // 返回数据
-	// return byteBuf;
-	// }
-
 	/**
-	 * 创建文件流
-	 * 如果是相对目录getURL, getURI 都获取不到路径
+	 * 创建文件流 如果是相对目录getURL, getURI 都获取不到路径
 	 * 
 	 * @param sink
 	 */

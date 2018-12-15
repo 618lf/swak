@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -19,6 +18,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 
 import com.swak.codec.Encodes;
+import com.swak.reactivex.transport.NettyPipeline;
 import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
 import com.swak.reactivex.transport.channel.GmtDateKit;
@@ -47,6 +47,7 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpChunkedInput;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -933,9 +934,16 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		response.headers().set(HttpHeaderNames.CONTENT_LENGTH, fileProps.size());
 		response.headers().set(HttpHeaderNames.CONTENT_TYPE, MimeType.getMimeType(fileProps.name()));
 		channel().write(response);
-		FileChannel channel = fileProps.channel();
-		channel().write(new DefaultFileRegion(channel, 0, fileProps.size()), channel().newProgressivePromise());
-		ChannelFuture lastContentFuture = channel().writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+		ChannelFuture lastContentFuture = null;
+		if (channel().pipeline().get(NettyPipeline.HttpCompressor) != null
+				|| channel().pipeline().get(NettyPipeline.SslHandler) != null) {
+			lastContentFuture = channel().writeAndFlush(new HttpChunkedInput(fileProps.chunked()),
+					channel().newProgressivePromise());
+		} else {
+			channel().write(new DefaultFileRegion(fileProps.channel(), 0, fileProps.size()),
+					channel().newProgressivePromise());
+			lastContentFuture = channel().writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+		}
 		lastContentFuture.addListener(new ChannelFutureListener() {
 			@Override
 			public void operationComplete(ChannelFuture complete) {
