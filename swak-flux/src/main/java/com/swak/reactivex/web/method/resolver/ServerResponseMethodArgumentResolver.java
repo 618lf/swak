@@ -9,6 +9,7 @@ import com.swak.reactivex.web.method.MethodParameter;
 
 /**
  * 支持在方法参数中直接设置 HttpServerResponse 和 OutputStream
+ * 
  * @author lifeng
  */
 public class ServerResponseMethodArgumentResolver implements HandlerMethodArgumentResolver {
@@ -26,7 +27,7 @@ public class ServerResponseMethodArgumentResolver implements HandlerMethodArgume
 	 * 返回对应的对象
 	 */
 	@Override
-	public Object resolveArgument(MethodParameter parameter, HttpServerRequest request){
+	public Object resolveArgument(MethodParameter parameter, HttpServerRequest request) {
 		Class<?> paramType = parameter.getParameterType();
 		if (HttpServerResponse.class.isAssignableFrom(paramType)) {
 			return request.getResponse();
