@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.swak.entity.ColumnMapper;
 import com.swak.entity.Result;
+import com.swak.excel.impl.DefaultExcelMapper;
 import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.IOUtils;
 import com.swak.utils.Lists;
@@ -150,7 +151,7 @@ public abstract class ExcelUtils {
 	 * @param file
 	 * @return
 	 */
-	public static <T> Result read(AbstractExcelMapper<T> mapper, File file) {
+	public static <T> Result read(DefaultExcelMapper<T> mapper, File file) {
 		try {
 			Workbook book = ExcelUtils.load(file);
 			return read(mapper, book, false);
@@ -168,7 +169,7 @@ public abstract class ExcelUtils {
 	 * @param file
 	 * @return
 	 */
-	public static <T> Result read(AbstractExcelMapper<T> mapper, InputStream file) {
+	public static <T> Result read(DefaultExcelMapper<T> mapper, InputStream file) {
 		try {
 			Workbook book = ExcelUtils.load(file);
 			return read(mapper, book, false);
@@ -186,7 +187,7 @@ public abstract class ExcelUtils {
 	 * @param file
 	 * @return
 	 */
-	public static <T> Result read(AbstractExcelMapper<T> mapper, Workbook book, boolean first) {
+	public static <T> Result read(DefaultExcelMapper<T> mapper, Workbook book, boolean first) {
 		try {
 			List<T> objects = Lists.newArrayList();
 			int sheets = first ? 1 : book.getNumberOfSheets();

@@ -114,7 +114,7 @@ public class DefaultExportFile implements ExportFile {
 		/**
 		 * 模板文件
 		 */
-		File templateFile = FileUtils.classpath(EXPORT_TEMPLATE_PATH + templateName);
+		InputStream templateFile = FileUtils.resource(EXPORT_TEMPLATE_PATH + templateName);
 
 		/**
 		 * 导出
@@ -139,7 +139,7 @@ public class DefaultExportFile implements ExportFile {
 	}
 
 	// 创建文件
-	private File createFile(File templateFile, List<Map<String, Object>> values) {
+	private File createFile(InputStream templateFile, List<Map<String, Object>> values) {
 		File outFile = FileUtils.tempFile(this.fileName + XLS);
 		FileOutputStream out = null;
 		try {

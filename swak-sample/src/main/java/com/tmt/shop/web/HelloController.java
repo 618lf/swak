@@ -16,8 +16,8 @@ import com.swak.cache.CacheManager;
 import com.swak.entity.ColumnMapper;
 import com.swak.entity.DataType;
 import com.swak.entity.Result;
-import com.swak.excel.AbstractExcelMapper;
 import com.swak.excel.ExcelUtils;
+import com.swak.excel.impl.DefaultExcelMapper;
 import com.swak.executor.Workers;
 import com.swak.http.builder.RequestBuilder;
 import com.swak.persistence.QueryCondition;
@@ -117,7 +117,7 @@ public class HelloController {
 	 */
 	@GetMapping("/say/error")
 	public Mono<String> sayError() {
-		return Mono.fromSupplier(() ->{
+		return Mono.fromSupplier(() -> {
 			int i = 1 / 0;
 			return "lifeng" + i;
 		});
@@ -181,7 +181,7 @@ public class HelloController {
 		shop.setName(name);
 		return Mono.fromFuture(Workers.future(() -> shopService.save(shop))).map(s -> Result.success(s));
 	}
-	
+
 	/**
 	 * 返回 mono 对象
 	 * 
@@ -282,25 +282,14 @@ public class HelloController {
 	 * @return
 	 */
 	@GetMapping("/say/excel")
-	public CompletableFuture<Result> sayExcel() {
+	public CompletableFuture<Result> sayExcel() { 
 		return Workers.future(() -> {
-			
+
 			// 创建文件
 			File excelFile = ExcelUtils.write("测试创建文件", "测试创建文件", toMapper(), toValues(), null, null);
 
 			// 读取文件
-			Result result = ExcelUtils.read(new AbstractExcelMapper<Excel>() {
-				
-				@Override
-				public int getStartRow() {
-					return 3;
-				}
-
-				@Override
-				public Class<Excel> getTargetClass() {
-					return Excel.class;
-				}
-
+			Result result = ExcelUtils.read(new DefaultExcelMapper<Excel>() {
 				@Override
 				protected List<ColumnMapper> getRowMapper() {
 					return toMapper();

@@ -2,6 +2,8 @@ package com.swak.excel;
 
 import org.apache.poi.ss.usermodel.Sheet;
 
+import com.swak.excel.impl.DefaultExcelExecuter;
+
 /**
  * 执行器
  * 
@@ -15,5 +17,14 @@ public interface ExcelExecuter {
 	 * @param sheet
 	 * @return
 	 */
-	public <T> ImportResult<T> getExcelData(ExcelMapper<T> mapper, Sheet sheet);
+	<T> ImportResult<T> execute(ExcelMapper<T> mapper, Sheet sheet);
+	
+	/**
+	 * 默认的执行器
+	 * 
+	 * @return
+	 */
+    static ExcelExecuter def() {
+    	return new DefaultExcelExecuter();
+    }
 }

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
@@ -12,7 +13,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.UUID;
 
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 /**
  * 基于 NIO 的 高性能文件操作
@@ -22,15 +23,18 @@ import org.springframework.core.io.ClassPathResource;
 public class FileUtils {
 
 	/**
-	 * classpath 目录下的文件
+	 * 获取资源文件
 	 * 
 	 * @param name
 	 * @return
 	 */
-	public static File classpath(String name) {
-		ClassPathResource resource = new ClassPathResource(name);
+	public static InputStream resource(String localtion) {
 		try {
-			return resource.getFile();
+			Resource resource = SpringContextHolder.resource(localtion);
+			if (resource.isFile()) {
+				return new FileInputStream(resource.getFile());
+			}
+			return resource.getInputStream();
 		} catch (IOException e) {
 			return null;
 		}

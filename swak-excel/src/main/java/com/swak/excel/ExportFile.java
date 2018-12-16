@@ -14,7 +14,7 @@ public interface ExportFile {
 	String EXPORTS_PARAM = "export.";// 导出的参数
 	String CUSTEM_CELL_STYLE_OBJ = "可以设置自定义样式"; // 支持
 	String DEFAULT_TEMPLATE_NAME = "defaultTemplate.xls";// 格式参考的文件名
-	String EXPORT_TEMPLATE_PATH = File.separator + "excel" + File.separator;
+	String EXPORT_TEMPLATE_PATH = "classpath:" + File.separator + "excel" + File.separator;
 	Integer MAX_ROWS = 65535;
 	String XLS = ".xls";
 	String ZIP = ".zip";

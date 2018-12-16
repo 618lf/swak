@@ -30,20 +30,11 @@ import com.swak.utils.time.DateUtils;
  */
 public class DefaultExcelExecuter implements ExcelExecuter {
 
-	private static DefaultExcelExecuter EXECUTER = new DefaultExcelExecuter();
-
-	private DefaultExcelExecuter() {
-	}
-
-	public static ExcelExecuter getInstance() {
-		return EXECUTER;
-	}
-
 	/**
 	 * iStartRow 从0开始 column 也是从0开始
 	 */
 	@Override
-	public <T> ImportResult<T> getExcelData(ExcelMapper<T> mapper, Sheet sheet) {
+	public <T> ImportResult<T> execute(ExcelMapper<T> mapper, Sheet sheet) {
 		ImportResult<T> result = new ImportResult<T>(sheet.getSheetName());
 		int iStartRow = mapper.getStartRow() - 1;
 		int iEndRow = sheet.getLastRowNum();
