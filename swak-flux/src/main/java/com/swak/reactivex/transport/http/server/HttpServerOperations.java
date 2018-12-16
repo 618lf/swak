@@ -83,7 +83,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		implements HttpServerRequest, HttpServerResponse {
 
 	private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
-
+	
 	// 初始化
 	final String serverName;
 	final FullHttpRequest request;

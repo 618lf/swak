@@ -13,6 +13,8 @@ import com.swak.reactivex.transport.http.server.HttpServer;
 import com.swak.reactivex.transport.http.server.HttpServerProperties;
 import com.swak.reactivex.transport.http.server.ReactiveServer;
 
+import io.netty.handler.codec.http.multipart.DiskFileUpload;
+
 /**
  * 服务器配置
  * 
@@ -48,6 +50,10 @@ public class HttpServerAutoConfiguration {
 		if (properties.getLeakDetectionLevel() != null) {
 			System.setProperty("io.netty.leakDetection.level", properties.getLeakDetectionLevel().name());
 		}
+		// upload set
+		DiskFileUpload.deleteOnExitTemporaryFile = false;
+		DiskFileUpload.baseDirectory = null;
+         
 		// 真实的服务器，用于提供 http 服务
 		HttpServer httpServer = HttpServer.build(properties);
 		return new ReactiveServer(httpServer, handler);
