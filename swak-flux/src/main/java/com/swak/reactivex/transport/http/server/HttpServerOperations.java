@@ -1007,7 +1007,9 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.files.clear();
 			this.files = null;
 		}
-		this.content = null; // write to release
+		if (this.content != null) {
+			ReferenceCountUtil.release(this.content);
+		}
 		this.remoteAddress = null;
 		this.uri = null;
 		this.url = null;
