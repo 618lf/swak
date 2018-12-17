@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 
 import com.swak.codec.Encodes;
+import com.swak.exception.ErrorCode;
 import com.swak.reactivex.transport.NettyPipeline;
 import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
@@ -82,6 +83,7 @@ import reactor.core.publisher.Mono;
 public class HttpServerOperations extends ChannelOperations<HttpServerRequest, HttpServerResponse>
 		implements HttpServerRequest, HttpServerResponse {
 
+	// 重定义删除资源的方式（）
 	private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
 
 	// 初始化
@@ -282,7 +284,8 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 
 		if (!HttpMethod.GET.name().equals(request.method().name())) {
 			postData = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, request);
-			while (postData.hasNext()) {
+			int size = postData.getBodyHttpDatas().size();
+			for (int i = 0; i < size; i++) {
 				this.parseData(postData.next());
 			}
 		}
@@ -896,8 +899,8 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @param response
 	 */
 	protected void sendData(HttpResponse response) {
-		Session session = this.getSubject().getSession();
-		if (session != null) {
+		Session session = null;
+		if (this.getSubject() != null && (session = this.getSubject().getSession()) != null) {
 			session.onCommit().doOnSuccessOrError((s, e) -> {
 				this._sendData(response);
 			});
@@ -971,6 +974,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			this.initRequest(channel());
 			this.handler.apply(this, this).subscribe(this);
 		} catch (Exception e) {
+			logger.error("Handler Start Error:", e);
 			this.onError(e);
 		}
 	}
@@ -988,7 +992,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 */
 	@Override
 	public void onError(Throwable e) {
-		this.getResponse().error().buffer(e);
+		this.getResponse().json().buffer(ErrorCode.SERVER_ERROR.toJson());
 		this.onComplete();
 	}
 
