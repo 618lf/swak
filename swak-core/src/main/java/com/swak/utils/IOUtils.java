@@ -27,6 +27,18 @@ import com.swak.Constants;
 public class IOUtils {
 
 	/**
+	 * @param closeable
+	 *            the object to close, may be null or already closed
+	 * @throws IOException
+	 * @since 2.0
+	 */
+	public static void close(Closeable closeable) throws IOException {
+		if (closeable != null) {
+			closeable.close();
+		}
+	}
+
+	/**
 	 * Unconditionally close a <code>Closeable</code>.
 	 * <p>
 	 * Equivalent to {@link Closeable#close()}, except any exceptions will be

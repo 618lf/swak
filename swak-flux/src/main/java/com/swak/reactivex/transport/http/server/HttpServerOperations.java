@@ -83,7 +83,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		implements HttpServerRequest, HttpServerResponse {
 
 	private static final HttpDataFactory HTTP_DATA_FACTORY = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
-	
+
 	// 初始化
 	final String serverName;
 	final FullHttpRequest request;
@@ -111,6 +111,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	private Map<String, String> pathVariables = null;
 	private Map<String, MultipartFile> files = null;
 	private Subject subject;
+	private HttpPostRequestDecoder postData = null;
 
 	/**
 	 * 初始化
@@ -118,7 +119,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @param channel
 	 * @param fullHttpRequest
 	 */
-	protected void initRequest(Channel channel, FullHttpRequest request) {
+	protected void initRequest(Channel channel) {
 		this.keepAlive = HttpUtil.isKeepAlive(request);
 		String remoteAddress = channel.remoteAddress().toString();
 		this.remoteAddress = remoteAddress;
@@ -126,14 +127,9 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		int pathEndPos = this.uri.indexOf('?');
 		this.url = pathEndPos < 0 ? this.uri : this.uri.substring(0, pathEndPos);
 		this.method = request.method();
-
-		// 获取一些数据
 		this.parseParameter(request);
 		this.parseHeaders(request);
 		this.parseCookies();
-
-		// 释放引用
-		request = null;
 	}
 
 	/**
@@ -285,8 +281,8 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		}
 
 		if (!HttpMethod.GET.name().equals(request.method().name())) {
-			HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, request);
-			decoder.getBodyHttpDatas().forEach(this::parseData);
+			postData = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, request);
+			postData.getBodyHttpDatas().forEach(this::parseData);
 		}
 	}
 
@@ -484,9 +480,11 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			}
 		} catch (Exception e) {
 			logger.error("parse request parameter error", e);
-		} finally {
-			data.release();
 		}
+		// 最后释放资源
+		// finally {
+		// data.release();
+		// }
 	}
 
 	private void parseFileUpload(FileUpload fileUpload) throws IOException {
@@ -863,8 +861,8 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		if (this.fileProps != null) {
 			response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
 		} else {
-			content = this.content == null ? Unpooled.EMPTY_BUFFER : this.content;
-			response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, this.content);
+			ByteBuf content = this.content == null ? Unpooled.EMPTY_BUFFER : this.content;
+			response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, content);
 			int contentSize = content.readableBytes();
 			responseHeaders.set(HttpHeaderNames.CONTENT_LENGTH, contentSize);
 		}
@@ -972,7 +970,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	@Override
 	public void onHandlerStart() {
 		try {
-			this.initRequest(channel(), request);
+			this.initRequest(channel());
 			this.handler.apply(this, this).subscribe(this);
 		} catch (Exception e) {
 			this.onError(e);
@@ -1001,49 +999,57 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 */
 	@Override
 	public void close() throws IOException {
-		ReferenceCountUtil.release(request);
-		// 关闭请求数据
-		if (this.files != null) {
-			this.files.clear();
-			this.files = null;
-		}
-		if (this.content != null) {
-			ReferenceCountUtil.release(this.content);
-		}
-		this.remoteAddress = null;
-		this.uri = null;
-		this.url = null;
-		this.method = null;
-		if (this.requestHeaders != null) {
-			this.requestHeaders.clear();
-			this.requestHeaders = null;
-		}
-		if (this.attributes != null) {
-			this.attributes.clear();
-			this.attributes = null;
-		}
-		if (this.parameters != null) {
-			this.parameters.clear();
-			this.parameters = null;
-		}
-		if (this.requestCookies != null) {
-			this.requestCookies.clear();
-			this.requestCookies = null;
-		}
-		if (this.pathVariables != null) {
-			this.pathVariables.clear();
-			this.pathVariables = null;
-		}
-		IOUtils.closeQuietly(fileProps);
-		IOUtils.closeQuietly(is);
-		IOUtils.closeQuietly(os);
-		if (responseHeaders != null) {
-			responseHeaders.clear();
-			responseHeaders = null;
-		}
-		if (responseCookies != null) {
-			responseCookies.clear();
-			responseCookies = null;
+		try {
+			if (this.files != null) {
+				this.files.clear();
+				this.files = null;
+			}
+			IOUtils.close(fileProps);
+			IOUtils.close(is);
+			IOUtils.close(os);
+			this.remoteAddress = null;
+			this.uri = null;
+			this.url = null;
+			this.method = null;
+			if (this.requestHeaders != null) {
+				this.requestHeaders.clear();
+				this.requestHeaders = null;
+			}
+			if (this.attributes != null) {
+				this.attributes.clear();
+				this.attributes = null;
+			}
+			if (this.parameters != null) {
+				this.parameters.clear();
+				this.parameters = null;
+			}
+			if (this.requestCookies != null) {
+				this.requestCookies.clear();
+				this.requestCookies = null;
+			}
+			if (this.pathVariables != null) {
+				this.pathVariables.clear();
+				this.pathVariables = null;
+			}
+			if (responseHeaders != null) {
+				responseHeaders.clear();
+				responseHeaders = null;
+			}
+			if (responseCookies != null) {
+				responseCookies.clear();
+				responseCookies = null;
+			}
+			if (this.content != null && this.content.refCnt() > 0) {
+				ReferenceCountUtil.release(this.content);
+			}
+			if (this.postData != null) {
+				this.postData.destroy();
+			}
+			if (this.request.refCnt() > 0) {
+				ReferenceCountUtil.release(this.request);
+			}
+		} catch (Exception e) { 
+			logger.error("Clear Resource Rrror:", e);
 		}
 	}
 
