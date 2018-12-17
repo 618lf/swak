@@ -282,7 +282,9 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 
 		if (!HttpMethod.GET.name().equals(request.method().name())) {
 			postData = new HttpPostRequestDecoder(HTTP_DATA_FACTORY, request);
-			postData.getBodyHttpDatas().forEach(this::parseData);
+			while (postData.hasNext()) {
+				this.parseData(postData.next());
+			}
 		}
 	}
 
@@ -481,10 +483,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 		} catch (Exception e) {
 			logger.error("parse request parameter error", e);
 		}
-		// 最后释放资源
-		// finally {
-		// data.release();
-		// }
 	}
 
 	private void parseFileUpload(FileUpload fileUpload) throws IOException {
@@ -1048,7 +1046,7 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 			if (this.request.refCnt() > 0) {
 				ReferenceCountUtil.release(this.request);
 			}
-		} catch (Exception e) { 
+		} catch (Exception e) {
 			logger.error("Clear Resource Rrror:", e);
 		}
 	}
