@@ -22,7 +22,7 @@ import com.swak.utils.StringUtils;
  */
 public class ServerModelMethodArgumentResolver extends AbstractMethodArgumentResolver {
 
-	private Pattern OBJECT_PARAM_PATTERN = Pattern.compile("\\w+\\[(\\w+)\\]");
+	private Pattern OBJECT_PARAM_PATTERN = Pattern.compile("\\w+[\\.\\[]{1}(\\w+)[\\]]?");
 
 	public ServerModelMethodArgumentResolver(ConversionService conversionService) {
 		super(conversionService);
@@ -76,7 +76,8 @@ public class ServerModelMethodArgumentResolver extends AbstractMethodArgumentRes
 			Matcher found = null;
 
 			// name[n]=xxx 的型式，如果 name 和 参数名称一致也填充进去
-			if (field == null && StringUtils.startsWith(key, paramName) && StringUtils.endsWith(key, "]")
+			// name.n=xxx 的型式，如果 name 和 参数名称一致也填充进去
+			if (field == null && StringUtils.startsWith(key, paramName)
 					&& (found = OBJECT_PARAM_PATTERN.matcher(key)).find()) {
 				key = found.group(1);
 				field = fields.get(key);

@@ -95,25 +95,6 @@ public abstract class ExcelUtils {
 	// ########### Load Excel ################
 
 	/**
-	 * 从文件加载Excel
-	 * 
-	 * @param file
-	 * @return
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws BiffException
-	 */
-	public static Workbook load(File file) throws IOException {
-		InputStream inputStream = null;
-		try {
-			inputStream = new FileInputStream(file);
-		} catch (FileNotFoundException e) {
-			throw new IOException("指定的Excel数据文件不存在", e);
-		}
-		return load(inputStream);
-	}
-
-	/**
 	 * 从流加载Excel
 	 * 
 	 * @param inputStream
@@ -152,9 +133,20 @@ public abstract class ExcelUtils {
 	 * @return
 	 */
 	public static <T> Result read(DefaultExcelMapper<T> mapper, File file) {
+		return read(mapper, file, false);
+	}
+	
+	/**
+	 * 获取数据
+	 * 
+	 * @param templateId
+	 * @param obj
+	 * @param file
+	 * @return
+	 */
+	public static <T> Result read(DefaultExcelMapper<T> mapper, File file, boolean first) {
 		try {
-			Workbook book = ExcelUtils.load(file);
-			return read(mapper, book, false);
+			return read(mapper, new FileInputStream(file), first);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -170,13 +162,7 @@ public abstract class ExcelUtils {
 	 * @return
 	 */
 	public static <T> Result read(DefaultExcelMapper<T> mapper, InputStream file) {
-		try {
-			Workbook book = ExcelUtils.load(file);
-			return read(mapper, book, false);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return Result.error("数据导入错误");
+		return read(mapper, file, false);
 	}
 
 	/**
@@ -187,8 +173,9 @@ public abstract class ExcelUtils {
 	 * @param file
 	 * @return
 	 */
-	public static <T> Result read(DefaultExcelMapper<T> mapper, Workbook book, boolean first) {
+	public static <T> Result read(DefaultExcelMapper<T> mapper, InputStream file, boolean first) {
 		try {
+			Workbook book = ExcelUtils.load(file);
 			List<T> objects = Lists.newArrayList();
 			int sheets = first ? 1 : book.getNumberOfSheets();
 			for (int i = 0; i < sheets; i++) {

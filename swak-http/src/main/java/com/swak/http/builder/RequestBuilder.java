@@ -12,6 +12,7 @@ import org.asynchttpclient.RequestBuilderBase;
 import com.swak.http.HttpClients;
 import com.swak.http.handler.AbstractResponse;
 import com.swak.http.handler.JsonResponse;
+import com.swak.http.handler.PlainResponse;
 import com.swak.http.handler.TextResponse;
 import com.swak.http.handler.XmlResponse;
 import com.swak.http.reactor.ReactorHttpClient;
@@ -52,6 +53,10 @@ public class RequestBuilder extends RequestBuilderBase<RequestBuilder> {
 	}
 	public RequestBuilder text() {
 		handler = TextResponse.create();
+		return this;
+	}
+	public RequestBuilder plain() {
+		handler = PlainResponse.create();
 		return this;
 	}
 	

@@ -12,8 +12,7 @@ import com.swak.excel.ExcelExecuter;
 import com.swak.excel.ExcelMapper;
 import com.swak.excel.ImportResult;
 import com.swak.excel.Multimap;
-
-import net.sf.cglib.beans.BeanMap;
+import com.swak.utils.JsonMapper;
 
 /**
  * 默认的 Excel Mapping
@@ -64,9 +63,8 @@ public abstract class DefaultExcelMapper<T> implements ExcelMapper<T> {
 		if (this.getTargetClass() == HashMap.class) {
 			return (T) valueMap;
 		} else {
-			BeanMap beanMap = BeanMap.create(this.getTargetClass());  
-			beanMap.putAll(valueMap);  
-			return (T) beanMap.getBean();
+			String json = JsonMapper.toJson(valueMap);
+			return JsonMapper.fromJson(json, this.getTargetClass());
 		}
 	}
 
