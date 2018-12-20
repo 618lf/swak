@@ -45,8 +45,13 @@ public class AppConfiguration {
 	public Filter securityFilter() {
 		// 权限配置
 		SecurityFilter filter = new SecurityFilter();
-		filter.definition("/api/login=anno").definition("/api/logout=anno").definition("/api/reqister=anno")
-				.definition("/api/user/=user").definition("/api/manage/=user, role[admin]").definition("/=user");
+		filter.definition("/api/login=anno")
+		.definition("/api/logout=anno")
+		.definition("/api/reqister=anno")
+		.definition("/api/goods=anno")
+		.definition("/api/user/=user")
+		.definition("/api/manage/=user, role[admin]")
+		.definition("/=user");
 		return filter;
 	}
 

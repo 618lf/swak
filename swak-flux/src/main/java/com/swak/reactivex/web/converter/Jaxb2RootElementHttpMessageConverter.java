@@ -1,11 +1,9 @@
 package com.swak.reactivex.web.converter;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 import org.springframework.core.annotation.AnnotationUtils;
 
-import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.utils.JaxbMapper;
 
@@ -14,17 +12,7 @@ import com.swak.utils.JaxbMapper;
  * 需要对象中包含 @XmlRootElement 或者 @XmlType
  * @author lifeng
  */
-public class Jaxb2RootElementHttpMessageConverter implements HttpMessageConverter<Object> {
-
-	@Override
-	public boolean canRead(Class<?> clazz) {
-		return clazz.isAnnotationPresent(XmlRootElement.class) || clazz.isAnnotationPresent(XmlType.class);
-	}
-
-	@Override
-	public Object read(Class<? extends Object> clazz, HttpServerRequest request){
-		return JaxbMapper.fromXml(request.getInputStream(), clazz);
-	}
+public class Jaxb2RootElementHttpMessageConverter implements HttpMessageConverter {
 
 	@Override
 	public boolean canWrite(Class<?> clazz) {

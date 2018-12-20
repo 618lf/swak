@@ -11,6 +11,12 @@
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-starter-vertx</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>io.vertx</groupId>
+					<artifactId>vertx-zookeeper</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>

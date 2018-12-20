@@ -1,11 +1,7 @@
 package com.swak.reactivex.web.converter;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
-import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.utils.JsonMapper;
 
@@ -14,20 +10,9 @@ import com.swak.utils.JsonMapper;
  * 出类其他转换器之外的情况
  * @author lifeng
  */
-public class JsonHttpMessageConverter implements HttpMessageConverter<Object> {
+public class JsonHttpMessageConverter implements HttpMessageConverter {
 
 	private FastJsonConfig fastJsonConfig = new FastJsonConfig();
-
-	@Override
-	public boolean canRead(Class<?> clazz) {
-		return clazz != void.class;
-	}
-
-	@Override
-	public Object read(Class<? extends Object> clazz, HttpServerRequest request)  throws IOException{
-		InputStream in = request.getInputStream();
-		return JSON.parseObject(in, fastJsonConfig.getCharset(), clazz, fastJsonConfig.getFeatures());
-	}
 
 	@Override
 	public boolean canWrite(Class<?> clazz) {

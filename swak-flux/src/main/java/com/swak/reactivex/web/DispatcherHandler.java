@@ -8,7 +8,6 @@ import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.interceptor.HandlerInterceptor;
 import com.swak.reactivex.web.interceptor.MappedInterceptor;
-import com.swak.reactivex.web.result.HandlerResult;
 
 import reactor.core.publisher.Mono;
 
@@ -141,10 +140,10 @@ public class DispatcherHandler implements WebHandler {
 	 * @return
 	 */
 	public Mono<Void> doHandler(HttpServerRequest request, HttpServerResponse response, Handler handler) {
-		HandlerResult result = this.invokeHandler(request, response, handler);
+		Object result = this.invokeHandler(request, response, handler);
 		return handleResult(request, response, result);
 	}
-	private HandlerResult invokeHandler(HttpServerRequest request, HttpServerResponse response, Handler handler) {
+	private Object invokeHandler(HttpServerRequest request, HttpServerResponse response, Handler handler) {
 		for (HandlerAdapter handlerAdapter : this.adapters) {
 			if (handlerAdapter.supports(handler)) {
 				return handlerAdapter.handle(request, response, handler);
@@ -152,7 +151,7 @@ public class DispatcherHandler implements WebHandler {
 		}
 		return null;
 	}
-	private Mono<Void> handleResult(HttpServerRequest request, HttpServerResponse response, HandlerResult result) {
+	private Mono<Void> handleResult(HttpServerRequest request, HttpServerResponse response, Object result) {
 		for (HandlerResultHandler resultHandler : this.resultHandlers) {
 			if (resultHandler.supports(result)) {
 				return resultHandler.handle(request, response, result);

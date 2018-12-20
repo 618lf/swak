@@ -21,6 +21,7 @@ import com.swak.excel.impl.DefaultExcelMapper;
 import com.swak.executor.Workers;
 import com.swak.http.builder.RequestBuilder;
 import com.swak.persistence.QueryCondition;
+import com.swak.reactivex.transport.http.HttpConst;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.WebUtils;
 import com.swak.reactivex.web.annotation.Async;
@@ -48,6 +49,16 @@ public class HelloController {
 
 	@Autowired
 	private CacheManager cacheManager;
+
+	/**
+	 * 重定向
+	 * 
+	 * @return
+	 */
+	@GetMapping("/rt")
+	public CompletableFuture<String> rt() {
+		return CompletableFuture.completedFuture(HttpConst.REDIRECT_URL_PREFIX + "http://www.catax.cn/admin");
+	}
 
 	/**
 	 * from async apis
@@ -282,7 +293,7 @@ public class HelloController {
 	 * @return
 	 */
 	@GetMapping("/say/excel")
-	public CompletableFuture<Result> sayExcel() { 
+	public CompletableFuture<Result> sayExcel() {
 		return Workers.future(() -> {
 
 			// 创建文件

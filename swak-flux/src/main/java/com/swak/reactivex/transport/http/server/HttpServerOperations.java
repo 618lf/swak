@@ -580,16 +580,16 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	}
 
 	/**
-	 * 301
+	 * 302
 	 * 
 	 * @return
 	 */
 	public HttpServerResponse redirect() {
-		return this.status(HttpResponseStatus.MOVED_PERMANENTLY);
+		return this.status(HttpResponseStatus.FOUND);
 	}
 
 	/**
-	 * 301
+	 * 200
 	 * 
 	 * @return
 	 */

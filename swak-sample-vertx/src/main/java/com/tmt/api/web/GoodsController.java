@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import com.swak.vertx.annotation.GetMapping;
 import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.annotation.ServiceReferer;
+import com.swak.vertx.transport.HttpConst;
 import com.tmt.api.entity.Goods;
 import com.tmt.api.facade.GoodsServiceFacadeAsync;
 
@@ -15,16 +16,15 @@ import io.vertx.ext.web.RoutingContext;
  * 
  * @author lifeng
  */
-@RestController(path="/api/goods")
+@RestController(path = "/api/goods")
 public class GoodsController {
 
 	@ServiceReferer
 	private GoodsServiceFacadeAsync goodsService;
 
 	/**
-	 * get参数或 post 参数
-	 * get 参数： ?name=xxx
-	 * post参数： xxx=yyy
+	 * get参数或 post 参数 get 参数： ?name=xxx post参数： xxx=yyy
+	 * 
 	 * @param context
 	 * @return
 	 */
@@ -32,9 +32,10 @@ public class GoodsController {
 	public CompletableFuture<String> get(RoutingContext context) {
 		return goodsService.sayHello();
 	}
-	
+
 	/**
 	 * rest 参数: /get/123
+	 * 
 	 * @param id
 	 * @return
 	 */
@@ -43,9 +44,10 @@ public class GoodsController {
 		System.out.println(id);
 		return goodsService.sayHello();
 	}
-	
+
 	/**
 	 * rest 参数: /get/123
+	 * 
 	 * @param id
 	 * @return
 	 */
@@ -54,5 +56,16 @@ public class GoodsController {
 		System.out.println("内部序列:" + goods.getId());
 		System.out.println("内部序列:" + goods.getName());
 		return goodsService.sayHello();
+	}
+
+	/**
+	 * 重定向
+	 * 
+	 * @param context
+	 * @return
+	 */
+	@GetMapping("/rt")
+	public CompletableFuture<String> rt(RoutingContext context) {
+		return CompletableFuture.completedFuture(HttpConst.REDIRECT_URL_PREFIX + "http://www.catax.cn/admin");
 	}
 }

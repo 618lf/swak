@@ -2,7 +2,6 @@ package com.swak.reactivex.web;
 
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
-import com.swak.reactivex.web.result.HandlerResult;
 
 /**
  * Handler 的处理器
@@ -27,5 +26,5 @@ public interface HandlerAdapter {
 	 * @return
 	 * @throws Exception
 	 */
-	HandlerResult handle(HttpServerRequest request, HttpServerResponse response, Handler handler);
+	Object handle(HttpServerRequest request, HttpServerResponse response, Handler handler);
 }

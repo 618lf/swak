@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import com.swak.config.zookeeper.ZookeeperClusterManager;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.config.ClusterVertxBean;
+import com.swak.vertx.config.VertxBean;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.handler.VertxHandler;
 
@@ -28,7 +29,7 @@ import io.vertx.core.spi.cluster.ClusterManager;
  * @author lifeng
  */
 @ConditionalOnClass(io.vertx.spi.cluster.zookeeper.ZookeeperClusterManager.class)
-@ConditionalOnMissingBean(ClusterVertxBean.class)
+@ConditionalOnMissingBean(VertxBean.class)
 @EnableConfigurationProperties(VertxProperties.class)
 public class ClusterVertxAutoConfiguration {
 

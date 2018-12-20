@@ -2,7 +2,6 @@ package com.swak.reactivex.web.converter;
 
 import java.io.IOException;
 
-import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 
 /**
@@ -11,23 +10,7 @@ import com.swak.reactivex.transport.http.server.HttpServerResponse;
  *
  * @param <T>
  */
-public interface HttpMessageConverter<T> {
-
-	/**
-	 * 读取的判断
-	 * @param clazz
-	 * @return
-	 */
-	boolean canRead(Class<?> clazz);
-
-	/**
-	 * 读取数据并返回响应的值
-	 * @param clazz
-	 * @param request
-	 * @return
-	 * @throws IOException
-	 */
-	T read(Class<? extends T> clazz, HttpServerRequest request) throws IOException;
+public interface HttpMessageConverter {
 
 	/**
 	 * 写数据的判断
@@ -42,5 +25,5 @@ public interface HttpMessageConverter<T> {
 	 * @param response
 	 * @throws IOException
 	 */
-	void write(T t, HttpServerResponse response);
+	void write(Object t, HttpServerResponse response);
 }

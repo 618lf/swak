@@ -27,7 +27,6 @@ import com.swak.reactivex.web.method.resolver.ServerModelMethodArgumentResolver;
 import com.swak.reactivex.web.method.resolver.ServerRequestMethodArgumentResolver;
 import com.swak.reactivex.web.method.resolver.ServerResponseMethodArgumentResolver;
 import com.swak.reactivex.web.method.resolver.ServerSessionMethodArgumentResolver;
-import com.swak.reactivex.web.result.HandlerResult;
 
 /**
  * 请求处理器
@@ -70,10 +69,10 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 	 * 支持异步执行代码
 	 */
 	@Override
-	public HandlerResult handle(HttpServerRequest request, HttpServerResponse response, Handler handler) {
+	public Object handle(HttpServerRequest request, HttpServerResponse response, Handler handler) {
 		HandlerMethod _handler = (HandlerMethod) handler;
 		Object[] args = getMethodArgumentValues(request, _handler);
-		return new HandlerResult(this.doHandle(request, _handler, args));
+		return this.doHandle(request, _handler, args);
 	}
 
 	/**

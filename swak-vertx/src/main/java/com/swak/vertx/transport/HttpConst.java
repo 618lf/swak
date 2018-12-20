@@ -35,4 +35,7 @@ public interface HttpConst {
 
 	// 线程的前缀
 	String workerPrex = "vert.x-workers-";
+	
+    // 重定向
+    String REDIRECT_URL_PREFIX = "redirect:"; 
 }

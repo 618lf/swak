@@ -3,7 +3,6 @@ package com.swak.reactivex.web;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.converter.HttpMessageConverter;
-import com.swak.reactivex.web.result.HandlerResult;
 
 import reactor.core.publisher.Mono;
 
@@ -17,12 +16,12 @@ public interface HandlerResultHandler {
 	 * 是否支持
 	 * @return
 	 */
-	boolean supports(HandlerResult result);
+	boolean supports(Object result);
 	
 	/**
 	 * 添加数据装换器
 	 */
-	void addConverter(HttpMessageConverter<?> messageConverter);
+	void addConverter(HttpMessageConverter messageConverter);
 	
 	/**
 	 * 处理结果
@@ -30,5 +29,5 @@ public interface HandlerResultHandler {
 	 * @param response
 	 * @param result
 	 */
-	Mono<Void> handle(HttpServerRequest request, HttpServerResponse response, HandlerResult result);
+	Mono<Void> handle(HttpServerRequest request, HttpServerResponse response, Object result);
 }

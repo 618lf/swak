@@ -20,15 +20,13 @@ import reactor.core.publisher.Mono;
  */
 public class RequestBodyHandlerResult implements HandlerResultHandler {
 
-	private HandlerReturnValueResolver returnValueResolver;
-	private List<HttpMessageConverter<?>> converters;
+	private List<HttpMessageConverter> converters;
 
 	public RequestBodyHandlerResult() {
 		converters = Lists.newArrayList();
-		returnValueResolver = new RequestResponseBodyReturnValueResolver(converters);
 	}
 
-	public void addConverter(HttpMessageConverter<?> messageConverter) {
+	public void addConverter(HttpMessageConverter messageConverter) {
 		converters.add(messageConverter);
 	}
 
@@ -36,32 +34,42 @@ public class RequestBodyHandlerResult implements HandlerResultHandler {
 	 * 这个地方的逻辑是把HandlerResult转换到执行链中
 	 */
 	@Override
-	public Mono<Void> handle(HttpServerRequest request, HttpServerResponse response, HandlerResult result) {
-		return transformMono(result.getReturnValue()).flatMap(t ->{
-			handleResult(response, result.getReturnValueType(), t);
+	public Mono<Void> handle(HttpServerRequest request, HttpServerResponse response, Object result) {
+		return transformMono(result).flatMap(t -> {
+			handleResult(response, t);
 			return Mono.empty();
 		});
 	}
-	
+
 	private Mono<?> transformMono(Object result) {
 		if (result != null && result instanceof Mono) {
 			return (Mono<?>) result;
-		} else if(result != null && result instanceof Publisher) {
-			return Mono.from((Publisher<?>)result);
-		} else if(result != null && result instanceof CompletableFuture) {
-			return Mono.fromFuture((CompletableFuture<?>)result);
-		} else if(result != null) {
+		} else if (result != null && result instanceof Publisher) {
+			return Mono.from((Publisher<?>) result);
+		} else if (result != null && result instanceof CompletableFuture) {
+			return Mono.fromFuture((CompletableFuture<?>) result);
+		} else if (result != null) {
 			return Mono.just(result);
 		}
 		return Mono.empty();
 	}
 
-	private void handleResult(HttpServerResponse response, Class<?> returnType, Object returnValue) {
-		returnValueResolver.handleReturnValue(returnValue, returnType, response);
+	private void handleResult(HttpServerResponse response, Object returnValue) {
+		
+		// donot deal null
+		if (returnValue == null) {return;}
+		
+		// find one Message Converter
+		for (HttpMessageConverter messageConverter : this.converters) {
+			if (messageConverter.canWrite(returnValue.getClass())) {
+				messageConverter.write(returnValue, response);
+				return;
+			}
+		}
 	}
 
 	@Override
-	public boolean supports(HandlerResult result) {
+	public boolean supports(Object result) {
 		return true;
 	}
 }
