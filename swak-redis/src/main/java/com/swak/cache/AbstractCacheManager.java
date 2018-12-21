@@ -1,44 +1,56 @@
 package com.swak.cache;
 
+import com.swak.cache.redis.NameableCache;
 import com.swak.cache.redis.RedisCache;
 import com.swak.cache.redis.RedisCacheChannel;
 import com.swak.cache.redis.RedisLocalCache;
 
 /**
  * 默认的缓存管理
+ * 
  * @author root
  */
 public abstract class AbstractCacheManager implements CacheManager {
 
 	/**
 	 * 获得本地缓存
+	 * 
 	 * @return
 	 */
 	protected abstract RedisLocalCache getLocalCache();
-	
+
 	/**
 	 * 获得一个缓存，如果不存在则创建一个默认的缓存
 	 */
 	@Override
 	public <T> Cache<T> getCache(String name) {
-		return this.getCache(name, -1);
+		return this.getCache(name, NameableCache.DEFAULT_LIFE_TIME);
 	}
-	
+
 	/**
 	 * 指定参数创建缓存
 	 */
 	@Override
 	public <T> Cache<T> getCache(String name, int timeToIdle) {
-		return this.createCache(name, timeToIdle);
+		return this.createCache(name, timeToIdle, NameableCache.DEFAULT_IDEA_LIFE);
 	}
-	
+
+	/**
+	 * 指定参数创建缓存
+	 */
+	@Override
+	public <T> Cache<T> getCache(String name, int timeToIdle, boolean idleAble) {
+		return this.createCache(name, timeToIdle, idleAble);
+	}
+
 	/**
 	 * 创建一个缓存
+	 * 
 	 * @param name
 	 * @param timeToIdle
 	 * @return
 	 */
-	protected abstract <T> Cache<T> createCache(String name, int timeToIdle);
+	protected abstract <T> Cache<T> createCache(String name, int timeToIdle, boolean idleAble);
 
 	/**
 	 * 将 cache 包裹为二级缓存
@@ -51,7 +63,7 @@ public abstract class AbstractCacheManager implements CacheManager {
 		RedisLocalCache local = getLocalCache();
 		RedisCacheChannel<T> channel = new RedisCacheChannel<T>();
 		channel.setLocal(local);
-		channel.setRemote((RedisCache<T>)cache);
+		channel.setRemote((RedisCache<T>) cache);
 		return channel;
 	}
 }

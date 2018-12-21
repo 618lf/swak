@@ -39,10 +39,19 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 		super(name, timeToIdle);
 	}
 	
+	/**
+	 * 指定过期时间, 过期方式
+	 * @param name
+	 * @param timeToIdle
+	 */
+	public RedisCache(String name, int timeToIdle, boolean idleAble) {
+		super(name, timeToIdle, idleAble);
+	}
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public T getObject(String key) {
-		if (!isValid()) {
+		if (!idleAble()) {
 			return (T) SerializationUtils.deserialize(this._get(key));
 		}
 		return (T) SerializationUtils.deserialize(this._hget(key));
@@ -50,7 +59,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	
 	@Override
 	public String getString(String key) {
-		if (!isValid()) {
+		if (!idleAble()) {
 			return SafeEncoder.encode(this._get(key));
 		}
 		return SafeEncoder.encode(this._hget(key));
@@ -58,7 +67,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	
 	@Override
 	public Boolean exists(String key) {
-		if (!isValid()) {
+		if (!idleAble()) {
 			return _exists(key);
 		}
 		return _hexists(key);
@@ -109,7 +118,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	 */
 	protected byte[] _hget(String key) {
 		String script = Cons.GET_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		return SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 	
@@ -123,7 +132,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	protected String _set(String key, byte[] value) {
 		String keyName = this.getKeyName(key);
 		if (isValid()) {
-			return SyncOperations.set(key, value, this.timeToIdle);
+			return SyncOperations.set(key, value, this.getLifeTime());
 		} else {
 			return SyncOperations.set(keyName, value);
 		}
@@ -159,7 +168,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	 */
 	protected Boolean _hexists(String key) {
 		String script = Cons.EXISTS_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		Long count = SyncOperations.runScript(script, ScriptOutputType.INTEGER, values);
 		return count != null && count >0;
 	}
@@ -167,10 +176,10 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	// -------------  提供的异步化支持 ------------
 	@Override
 	public AsyncCache<T> async() {
-		return new AsyncRedisCache<T>(this.name, this.timeToIdle);
+		return new AsyncRedisCache<T>(this.name, this.lifeTime, this.idleAble);
 	}
 	@Override
 	public ReactiveCache<T> reactive() {
-		return new ReactiveRedisCache<T>(this.name, this.timeToIdle);
+		return new ReactiveRedisCache<T>(this.name, this.lifeTime, this.idleAble);
 	}
 }

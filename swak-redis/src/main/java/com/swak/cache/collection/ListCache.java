@@ -55,7 +55,7 @@ public class ListCache<T> extends NameableCache implements CList<T> {
 	 */
 	protected void _hpush(T t) {
 		String script = Cons.LIST_PUT_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), this.ser.serialize(t), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), this.ser.serialize(t), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
@@ -64,7 +64,7 @@ public class ListCache<T> extends NameableCache implements CList<T> {
 	 */
 	@Override
 	public T pop() {
-		if (this.isValid()) {
+		if (this.idleAble()) {
 			return this.ser.deserialize(this._hpop());
 		}
 		return this.ser.deserialize(SyncOperations.lPop(this.getKeyName(null)));
@@ -77,7 +77,7 @@ public class ListCache<T> extends NameableCache implements CList<T> {
 	 */
 	protected byte[] _hpop() {
 		String script = Cons.LIST_GET_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 	    return SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
@@ -95,7 +95,7 @@ public class ListCache<T> extends NameableCache implements CList<T> {
 	 * @return
 	 */
 	public ListCache<T> expire(int seconds) {
-		this.setTimeToIdle(seconds);
+		this.lifeTime = seconds;
 		return this;
 	}
 	

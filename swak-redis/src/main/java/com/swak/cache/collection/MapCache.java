@@ -37,7 +37,7 @@ public class MapCache<T> extends NameableCache implements CMap<String, T>{
 	
 	@Override
 	public T get(String k) {
-		if (this.isValid()) {
+		if (this.idleAble()) {
 			return this.ser.deserialize(this._hget(k));
 		}
 		return this.ser.deserialize(SyncOperations.hGet(this.getKeyName(null), k));
@@ -50,7 +50,7 @@ public class MapCache<T> extends NameableCache implements CMap<String, T>{
 	 */
 	protected byte[] _hget(String k) {
 		String script = Cons.MAP_GET_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(k), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(k), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 	    return SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
@@ -70,7 +70,7 @@ public class MapCache<T> extends NameableCache implements CMap<String, T>{
 	 */
 	protected void _hput(String k, T v) {
 		String script = Cons.MAP_PUT_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(k), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(null)), SafeEncoder.encode(k), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
@@ -93,7 +93,7 @@ public class MapCache<T> extends NameableCache implements CMap<String, T>{
 	 * @return
 	 */
 	public MapCache<T> expire(int seconds) {
-		this.setTimeToIdle(seconds);
+		this.lifeTime = seconds;
 		return this;
 	}
 	

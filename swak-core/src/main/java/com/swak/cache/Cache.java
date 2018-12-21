@@ -12,12 +12,6 @@ public interface Cache<T> {
 	String getName();
 	
 	/**
-	 * 过期时间
-	 * @param seconds
-	 */
-    default void setTimeToIdle(int seconds) {}
-	
-	/**
 	 * 得到默认的缓存
 	 * @return
 	 */

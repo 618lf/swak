@@ -39,7 +39,7 @@ public class ReactiveMultiMapCache<T> extends NameableCache implements ReactiveM
 	
 	@Override
 	public Mono<Map<String, T>> get(String key) {
-		if (this.isValid()) {
+		if (this.idleAble()) {
 			return this._hget(key);
 		}
 		return ReactiveOperations.hGetAll(this.getKeyName(key)).map(values -> {
@@ -53,7 +53,7 @@ public class ReactiveMultiMapCache<T> extends NameableCache implements ReactiveM
 	
 	private Mono<Map<String, T>> _hget(String key) {
 		String script = Cons.MULTI_MAP_GET_LUA;
-		byte[][] pvalues = new byte[][] {SafeEncoder.encode(this.getKeyName(key)),SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] pvalues = new byte[][] {SafeEncoder.encode(this.getKeyName(key)),SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		Flux<List<byte[]>> fvalues = ReactiveOperations.runScript(script, ScriptOutputType.MULTI, pvalues);
 		return Mono.from(fvalues).map(values -> {
 			Map<String, T> maps = Maps.newHashMap();
@@ -93,7 +93,7 @@ public class ReactiveMultiMapCache<T> extends NameableCache implements ReactiveM
 		byte[][] values = bytes.toArray(new byte[bytes.size()][]);
 		byte[][] pvalues = new byte[][] {
 			SafeEncoder.encode(this.getKeyName(key)),
-			SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))
+			SafeEncoder.encode(String.valueOf(this.getLifeTime()))
 		};
 		byte[][] result = new byte[values.length + pvalues.length][];
 		System.arraycopy(pvalues, 0, result, 0, pvalues.length);  
@@ -108,7 +108,7 @@ public class ReactiveMultiMapCache<T> extends NameableCache implements ReactiveM
 
 	@Override
 	public Mono<T> get(String key, String k2) {
-		if (this.isValid()) {
+		if (this.idleAble()) {
 			return this._hget(key, k2).map(bs ->{
 				return this.ser.deserialize(bs);
 			});
@@ -125,7 +125,7 @@ public class ReactiveMultiMapCache<T> extends NameableCache implements ReactiveM
 	 */
 	protected Mono<byte[]> _hget(String key, String k2) {
 		String script = Cons.MAP_GET_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		return Mono.from(ReactiveOperations.runScript(script, ScriptOutputType.VALUE, values));
 	}
 
@@ -144,7 +144,7 @@ public class ReactiveMultiMapCache<T> extends NameableCache implements ReactiveM
 	 */
 	protected Mono<Boolean> _hput(String key, String k2, T v) {
 		String script = Cons.MAP_PUT_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		return Mono.from(ReactiveOperations.runScript(script, ScriptOutputType.VALUE, values));
 	}
 
@@ -155,7 +155,7 @@ public class ReactiveMultiMapCache<T> extends NameableCache implements ReactiveM
 
 	@Override
 	public ReactiveMultiMap<String, T> expire(int seconds) {
-		this.setTimeToIdle(seconds);
+		this.lifeTime = seconds;
 		return this;
 	}
 

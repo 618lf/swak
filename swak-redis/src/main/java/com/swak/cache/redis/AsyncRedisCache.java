@@ -31,11 +31,21 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 	public AsyncRedisCache(String name, int timeToIdle) {
 		super(name, timeToIdle);
 	}
+	
+	/**
+	 * 指定过期时间, 过期方式
+	 * @param name
+	 * @param timeToIdle
+	 * @param ideaAble
+	 */
+	public AsyncRedisCache(String name, int timeToIdle, boolean ideaAble) {
+		super(name, timeToIdle, ideaAble);
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public CompletionStage<T> getObject(String key) {
-		if (!isValid()) {
+		if (!idleAble()) {
 			return this._get(key).thenApply((bs) ->{
 				return (T) SerializationUtils.deserialize(bs);
 			}); 
@@ -47,7 +57,7 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 
 	@Override
 	public CompletionStage<String> getString(String key) {
-		if (!isValid()) {
+		if (!idleAble()) {
 			return this._get(key).thenApply((bs) ->{
 				return SafeEncoder.encode(bs);
 			}); 
@@ -69,7 +79,7 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 
 	@Override
 	public CompletionStage<Long> exists(String key) {
-		if (!isValid()) {
+		if (!idleAble()) {
 			return _exists(key);
 		}
 		return _hexists(key);
@@ -112,7 +122,7 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 	 */
 	protected CompletionStage<byte[]> _hget(String key) {
 		String script = Cons.GET_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		return AsyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 	
@@ -126,7 +136,7 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 	protected CompletionStage<String> _set(String key, byte[] value) {
 		String keyName = this.getKeyName(key);
 		if (isValid()) {
-			return AsyncOperations.set(keyName, value, this.timeToIdle);
+			return AsyncOperations.set(keyName, value, this.getLifeTime());
 		} else {
 			return AsyncOperations.set(keyName, value);
 		}
@@ -161,7 +171,7 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 	 */
 	protected CompletionStage<Long> _hexists(String key) {
 		String script = Cons.EXISTS_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		return AsyncOperations.runScript(script, ScriptOutputType.INTEGER, values);
 	}
 }

@@ -37,11 +37,21 @@ public class ReactiveRedisCache<T> extends NameableCache implements ReactiveCach
 	public ReactiveRedisCache(String name, int timeToIdle) {
 		super(name, timeToIdle);
 	}
+	
+	/**
+	 * 指定过期时间, 过期方式
+	 * @param name
+	 * @param timeToIdle
+	 * @param ideaAble
+	 */
+	public ReactiveRedisCache(String name, int timeToIdle, boolean ideaAble) {
+		super(name, timeToIdle, ideaAble);
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Mono<T> getObject(String key) {
-		if (!isValid()) {
+		if (!idleAble()) {
 			return this._get(key).map((bs) ->{
 				return (T) SerializationUtils.deserialize(bs);
 			}); 
@@ -53,7 +63,7 @@ public class ReactiveRedisCache<T> extends NameableCache implements ReactiveCach
 
 	@Override
 	public Mono<String> getString(String key) {
-		if (!isValid()) {
+		if (!idleAble()) {
 			return this._get(key).map((bs) ->{
 				return SafeEncoder.encode(bs);
 			}); 
@@ -118,7 +128,7 @@ public class ReactiveRedisCache<T> extends NameableCache implements ReactiveCach
 	 */
 	protected Mono<byte[]> _hget(String key) {
 		String script = Cons.GET_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		return Mono.from(ReactiveOperations.runScript(script, ScriptOutputType.VALUE, values));
 	}
 	
@@ -132,7 +142,7 @@ public class ReactiveRedisCache<T> extends NameableCache implements ReactiveCach
 	protected Mono<String> _set(String key, byte[] value) {
 		String keyName = this.getKeyName(key);
 		if (isValid()) {
-			return ReactiveOperations.set(keyName, value, this.timeToIdle);
+			return ReactiveOperations.set(keyName, value, this.getLifeTime());
 		} else {
 			return ReactiveOperations.set(keyName, value);
 		}
@@ -167,7 +177,7 @@ public class ReactiveRedisCache<T> extends NameableCache implements ReactiveCach
 	 */
 	protected Mono<Long> _hexists(String key) {
 		String script = Cons.EXISTS_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		return Mono.from(ReactiveOperations.runScript(script, ScriptOutputType.INTEGER, values));
 	}
 }

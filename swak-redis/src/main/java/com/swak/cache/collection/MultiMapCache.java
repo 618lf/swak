@@ -36,7 +36,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 	
 	@Override
 	public Map<String, T> get(String key) {
-		if (this.isValid()) {
+		if (this.idleAble()) {
 			return this._hget(key);
 		}
 		Map<byte[], byte[]> values = SyncOperations.hGetAll(this.getKeyName(key));
@@ -50,7 +50,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 	private Map<String, T> _hget(String key) {
 		Map<String, T> maps = Maps.newHashMap();
 		String script = Cons.MULTI_MAP_GET_LUA;
-		byte[][] pvalues = new byte[][] {SafeEncoder.encode(this.getKeyName(key)),SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] pvalues = new byte[][] {SafeEncoder.encode(this.getKeyName(key)),SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		List<byte[]> values = SyncOperations.runScript(script, ScriptOutputType.MULTI, pvalues);
 	    final Iterator<byte[]> iterator = values.iterator();
 	    while (iterator.hasNext()) {
@@ -88,7 +88,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 		byte[][] values = bytes.toArray(new byte[bytes.size()][]);
 		byte[][] pvalues = new byte[][] {
 			SafeEncoder.encode(this.getKeyName(key)),
-			SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))
+			SafeEncoder.encode(String.valueOf(this.getLifeTime()))
 		};
 		byte[][] result = new byte[values.length + pvalues.length][];
 		System.arraycopy(pvalues, 0, result, 0, pvalues.length);  
@@ -103,7 +103,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 
 	@Override
 	public T get(String key, String k2) {
-		if (this.isValid()) {
+		if (this.idleAble()) {
 			return this.ser.deserialize(this._hget(key, k2));
 		}
 		return this.ser.deserialize(SyncOperations.hGet(this.getKeyName(key), k2));
@@ -116,7 +116,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 	 */
 	protected byte[] _hget(String key, String k2) {
 		String script = Cons.MAP_GET_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		return SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
@@ -136,7 +136,7 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 	 */
 	protected void _hput(String key, String k2, T v) {
 		String script = Cons.MAP_PUT_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		SyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
@@ -147,11 +147,12 @@ public class MultiMapCache<T> extends NameableCache implements MultiMap<String, 
 	
 	/**
 	 * 设置过期时间
+	 * 
 	 * @param seconds
 	 * @return
 	 */
 	public MultiMapCache<T> expire(int seconds) {
-		this.setTimeToIdle(seconds);
+		this.lifeTime = seconds;
 		return this;
 	}
 	

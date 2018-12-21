@@ -1,20 +1,25 @@
 package com.swak.cache.redis;
 
-import com.swak.cache.redis.operations.SyncOperations;
-
+/**
+ * Cache 基本结构
+ * 
+ * @author lifeng
+ */
 public abstract class NameableCache {
 
-	private static int EXPIRATION_IN = -1; // 默认不过期
-	protected String name;
+	public static final int DEFAULT_LIFE_TIME = -1; // 默认不过期
+	public static final boolean DEFAULT_IDEA_LIFE = true; // 默认不过期
+	protected final String name;
 	protected String prex = "#";
-	protected int timeToIdle = EXPIRATION_IN;// 最大空闲时间，每次访问会修改最大的空闲时间
+	protected int lifeTime = DEFAULT_LIFE_TIME;// 生命期，默认永久
+	protected boolean idleAble = DEFAULT_IDEA_LIFE; // lifeTime 最大空闲时间，每次访问会修改最大的空闲时间
 	
 	/**
 	 * 默认不过期
 	 * @param name
 	 */
 	public NameableCache(String name) {
-		this.setName(name);
+		this.name = name.toUpperCase();
 	}
 	
 	/**
@@ -22,9 +27,20 @@ public abstract class NameableCache {
 	 * @param name
 	 * @param timeToIdle
 	 */
-	public NameableCache(String name, int timeToIdle) {
-		this.setName(name);
-		this.setTimeToIdle(timeToIdle);
+	public NameableCache(String name, int lifeTime) {
+		this.name = name.toUpperCase();
+		this.lifeTime = lifeTime;
+	}
+	
+	/**
+	 * 指定过期时间
+	 * @param name
+	 * @param timeToIdle
+	 */
+	public NameableCache(String name, int lifeTime, boolean idleAble) {
+		this.name = name.toUpperCase();
+		this.lifeTime = lifeTime;
+		this.idleAble = idleAble;
 	}
 	
 	public String getName() {
@@ -41,23 +57,6 @@ public abstract class NameableCache {
 		return new StringBuilder(name).append(prex).append(key).toString();
 	}
 	
-	/**
-	 * 设置过期时间
-	 * 
-	 * @param key
-	 */
-	protected void expire(String key) {
-		if (isValid()) {
-			SyncOperations.expire(this.getKeyName(key), this.timeToIdle);
-		}
-	}
-	
-	public void setName(String name) {
-		if (name != null) {
-			this.name = name.toUpperCase();
-		}
-	}
-
 	public String getPrex() {
 		return prex;
 	}
@@ -65,21 +64,28 @@ public abstract class NameableCache {
 	public void setPrex(String prex) {
 		this.prex = prex;
 	}
-
-	public int getTimeToIdle() {
-		return timeToIdle;
-	}
-
-	public void setTimeToIdle(int timeToIdle) {
-		this.timeToIdle = timeToIdle;
-	}
 	
+	public int getLifeTime() {
+		return lifeTime;
+	}
+
 	/**
 	 * 设置的时间是有效的
+	 * 
 	 * @param time
 	 * @return
 	 */
 	public boolean isValid() {
-		return this.timeToIdle > 0;
+		return this.lifeTime > 0;
+	}
+	
+	/**
+	 * 设置的时间是有效的
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public boolean idleAble() {
+		return idleAble & this.lifeTime > 0;
 	}
 }

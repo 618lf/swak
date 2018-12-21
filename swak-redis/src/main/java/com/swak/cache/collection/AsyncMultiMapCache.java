@@ -38,7 +38,7 @@ public class AsyncMultiMapCache<T> extends NameableCache implements AsyncMultiMa
 	
 	@Override
 	public CompletionStage<Map<String, T>> get(String key) {
-		if (this.isValid()) {
+		if (this.idleAble()) {
 			return this._hget(key);
 		}
 		return AsyncOperations.hGetAll(this.getKeyName(key)).thenApply(values -> {
@@ -52,7 +52,7 @@ public class AsyncMultiMapCache<T> extends NameableCache implements AsyncMultiMa
 	
 	private CompletionStage<Map<String, T>> _hget(String key) {
 		String script = Cons.MULTI_MAP_GET_LUA;
-		byte[][] pvalues = new byte[][] {SafeEncoder.encode(this.getKeyName(key)),SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] pvalues = new byte[][] {SafeEncoder.encode(this.getKeyName(key)),SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		CompletionStage<List<byte[]>> fvalues = AsyncOperations.runScript(script, ScriptOutputType.MULTI, pvalues);
 		return fvalues.thenApply(values -> {
 			Map<String, T> maps = Maps.newHashMap();
@@ -94,7 +94,7 @@ public class AsyncMultiMapCache<T> extends NameableCache implements AsyncMultiMa
 		byte[][] values = bytes.toArray(new byte[bytes.size()][]);
 		byte[][] pvalues = new byte[][] {
 			SafeEncoder.encode(this.getKeyName(key)),
-			SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))
+			SafeEncoder.encode(String.valueOf(this.getLifeTime()))
 		};
 		byte[][] result = new byte[values.length + pvalues.length][];
 		System.arraycopy(pvalues, 0, result, 0, pvalues.length);  
@@ -112,7 +112,7 @@ public class AsyncMultiMapCache<T> extends NameableCache implements AsyncMultiMa
 
 	@Override
 	public CompletionStage<T> get(String key, String k2) {
-		if (this.isValid()) {
+		if (this.idleAble()) {
 			return this._hget(key, k2).thenApply(bs ->{
 				return this.ser.deserialize(bs);
 			});
@@ -129,7 +129,7 @@ public class AsyncMultiMapCache<T> extends NameableCache implements AsyncMultiMa
 	 */
 	protected CompletionStage<byte[]> _hget(String key, String k2) {
 		String script = Cons.MAP_GET_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		return AsyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
@@ -148,7 +148,7 @@ public class AsyncMultiMapCache<T> extends NameableCache implements AsyncMultiMa
 	 */
 	protected CompletionStage<Boolean> _hput(String key, String k2, T v) {
 		String script = Cons.MAP_PUT_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getTimeToIdle()))};
+		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(k2), this.ser.serialize(v), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
 		return AsyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
 
@@ -159,7 +159,7 @@ public class AsyncMultiMapCache<T> extends NameableCache implements AsyncMultiMa
 
 	@Override
 	public AsyncMultiMap<String, T> expire(int seconds) {
-		this.setTimeToIdle(seconds);
+		this.lifeTime = seconds;
 		return this;
 	}
 
