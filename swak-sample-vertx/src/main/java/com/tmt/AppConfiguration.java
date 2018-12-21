@@ -9,6 +9,7 @@ import com.swak.security.JwtAuthProvider;
 import com.swak.utils.Sets;
 import com.swak.vertx.config.IRouterConfig;
 import com.swak.vertx.config.VertxProperties;
+import com.swak.vertx.handler.StaticHandler;
 import com.swak.vertx.security.JwtAuthHandler;
 import com.swak.vertx.security.SecurityFilter;
 import com.swak.vertx.security.filter.Filter;
@@ -33,7 +34,8 @@ public class AppConfiguration {
 	 */
 	@Bean
 	public JwtAuthProvider jwtAuth(VertxProperties properties) {
-		JwtAuthProvider JwtAuth = new JwtAuthProvider(properties.getKeyStorePath(), properties.getKeyStorePass(), properties.getJwtTokenName());
+		JwtAuthProvider JwtAuth = new JwtAuthProvider(properties.getKeyStorePath(), 
+				properties.getKeyStorePass(), properties.getJwtTokenName());
 		return JwtAuth;	}
 
 	/**
@@ -72,6 +74,7 @@ public class AppConfiguration {
 				router.route().handler(BodyHandler.create(properties.getUploadDirectory())
 							  .setBodyLimit(properties.getBodyLimit())
 							  .setDeleteUploadedFilesOnEnd(properties.isDeleteUploadedFilesOnEnd()));
+				router.route().handler(StaticHandler.create("static"));
 				router.route().handler(JwtAuthHandler.create(jwtAuth, securityFilter));
 			}
 		};

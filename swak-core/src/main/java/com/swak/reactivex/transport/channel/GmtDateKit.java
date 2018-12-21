@@ -44,6 +44,13 @@ public class GmtDateKit {
 	}
 
 	/**
+	 * DateTime 装为 GMT 表示
+	 */
+	public static String format(long date) {
+		return format(new Date(date));
+	}
+
+	/**
 	 * GMT Date 转为 Date
 	 */
 	public static Date format(String date) {
