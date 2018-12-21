@@ -17,8 +17,8 @@ import io.vertx.core.impl.cpu.CpuCoreSensor;
 @ConfigurationProperties(prefix = "spring.vertx")
 public class VertxProperties {
 
-	private String host = "127.0.0.1";
-	private int port = 8080;
+	private String host = null;
+	private int port = 8888;
 	private TransportMode mode = TransportMode.NIO;
 	private int eventLoopPoolSize = 2 * CpuCoreSensor.availableProcessors();
 	private int workerThreads = 20; // vertx 自定义使用

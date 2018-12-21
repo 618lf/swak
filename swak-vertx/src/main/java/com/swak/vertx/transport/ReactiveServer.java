@@ -5,8 +5,11 @@ import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.Constants;
+import com.swak.OS;
 import com.swak.reactivex.context.Server;
 import com.swak.reactivex.context.ServerException;
+import com.swak.utils.StringUtils;
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.VertxProperties;
 
@@ -20,9 +23,11 @@ public class ReactiveServer implements Server {
 	private static Logger Logger = LoggerFactory.getLogger(ReactiveServer.class);
 	private final AnnotationBean annotation;
 	private final MainVerticle mainVerticle;
+	private final VertxProperties properties;
 
 	public ReactiveServer(AnnotationBean annotation, VertxProperties properties) {
 		this.annotation = annotation;
+		this.properties = properties;
 		this.mainVerticle = new MainVerticle(annotation, properties);
 	}
 
@@ -81,6 +86,16 @@ public class ReactiveServer implements Server {
 	 */
 	@Override
 	public String getAddresses() {
-		return mainVerticle.getAddresses();
+		StringBuilder address = new StringBuilder();
+		address.append("http://").append("%s");
+		int port = properties.getPort();
+		if (port != 80) {
+			address.append(":").append(port);
+		}
+		String hostName = properties.getHost();
+		if (!Constants.LOCALHOST.equals(hostName)) {
+			hostName = OS.ip();
+		}
+		return StringUtils.format(address.toString(), hostName);
 	}
 }

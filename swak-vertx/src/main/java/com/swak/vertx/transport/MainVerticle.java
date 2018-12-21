@@ -102,7 +102,7 @@ public class MainVerticle extends AbstractVerticle {
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
 			futures.add(Future.<String>future(s -> {
-				vertx.deployVerticle(new HttpVerticle(routerHandler, properties.getPort()), options, s);
+				vertx.deployVerticle(new HttpVerticle(routerHandler, properties.getHost(), properties.getPort()), options, s);
 			}));
 		}
 		return futures;
