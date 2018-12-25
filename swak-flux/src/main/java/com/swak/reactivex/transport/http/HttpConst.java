@@ -34,7 +34,4 @@ public interface HttpConst {
 	
 	// 某些 重要key
 	String ATTRIBUTE_FOR_PATH = "base.matched.pattern.path";
-	
-    // 重定向
-    String REDIRECT_URL_PREFIX = "redirect:"; 
 }

@@ -1,5 +1,6 @@
 package com.swak.vertx.handler.converter;
 
+import com.swak.Constants;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.transport.HttpConst;
 
@@ -22,8 +23,8 @@ public class StringHttpMessageConverter implements HttpMessageConverter {
 	@Override
 	public void write(Object content, HttpServerResponse response) {
 		String _content = (String) content;
-		if (_content != null && StringUtils.startsWith(_content, HttpConst.REDIRECT_URL_PREFIX)) {
-			String payload = StringUtils.substringAfter(_content, HttpConst.REDIRECT_URL_PREFIX);
+		if (_content != null && StringUtils.startsWith(_content, Constants.REDIRECT_URL_PREFIX)) {
+			String payload = StringUtils.substringAfter(_content, Constants.REDIRECT_URL_PREFIX);
 			response.putHeader(HttpHeaders.LOCATION, payload).setStatusCode(302).end("Redirecting to " + payload + ".");
 			return;
 		}

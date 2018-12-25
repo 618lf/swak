@@ -1,6 +1,6 @@
 package com.swak.reactivex.web.converter;
 
-import com.swak.reactivex.transport.http.HttpConst;
+import com.swak.Constants;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.utils.StringUtils;
 
@@ -21,8 +21,8 @@ public class StringHttpMessageConverter implements HttpMessageConverter {
 	@Override
 	public void write(Object content, HttpServerResponse response) {
 		String _content = (String) content;
-		if (_content != null && StringUtils.startsWith(_content, HttpConst.REDIRECT_URL_PREFIX)) {
-			String payload = StringUtils.substringAfter(_content, HttpConst.REDIRECT_URL_PREFIX);
+		if (_content != null && StringUtils.startsWith(_content, Constants.REDIRECT_URL_PREFIX)) {
+			String payload = StringUtils.substringAfter(_content,Constants.REDIRECT_URL_PREFIX);
 			response.redirect().header(HttpHeaderNames.LOCATION, payload).buffer("Redirecting to " + payload + ".");
 			return;
 		}

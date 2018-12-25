@@ -72,6 +72,9 @@ public interface Constants {
 	
 	/** 服务地址 **/
 	String LOCALHOST = "127.0.0.1";
+	
+	/** 重定向 **/
+	String REDIRECT_URL_PREFIX = "redirect:"; 
 
 	/** 目录 **/
 	default String temp() {

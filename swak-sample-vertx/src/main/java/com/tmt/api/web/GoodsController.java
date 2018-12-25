@@ -2,10 +2,10 @@ package com.tmt.api.web;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.swak.Constants;
 import com.swak.vertx.annotation.GetMapping;
 import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.annotation.ServiceReferer;
-import com.swak.vertx.transport.HttpConst;
 import com.tmt.api.entity.Goods;
 import com.tmt.api.facade.GoodsServiceFacadeAsync;
 
@@ -66,6 +66,6 @@ public class GoodsController {
 	 */
 	@GetMapping("/rt")
 	public CompletableFuture<String> rt(RoutingContext context) {
-		return CompletableFuture.completedFuture(HttpConst.REDIRECT_URL_PREFIX + "http://www.catax.cn/admin");
+		return CompletableFuture.completedFuture(Constants.REDIRECT_URL_PREFIX + "http://www.catax.cn/admin");
 	}
 }

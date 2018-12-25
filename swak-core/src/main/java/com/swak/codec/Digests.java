@@ -11,6 +11,8 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 
+import com.swak.Constants;
+
 /**
  * 支持SHA-1/MD5消息摘要的工具类.
  * 
@@ -39,7 +41,7 @@ public class Digests {
 	public static byte[] sha1(byte[] input, byte[] salt, int iterations) {
 		return digest(input, SHA1, salt, iterations);
 	}
-	
+
 	/**
 	 * 对输入字符串进行MD5散列.
 	 */
@@ -81,7 +83,8 @@ public class Digests {
 	/**
 	 * 生成随机的Byte[]作为salt.
 	 * 
-	 * @param numBytes byte数组的大小
+	 * @param numBytes
+	 *            byte数组的大小
 	 */
 	public static byte[] generateSalt(int numBytes) {
 		byte[] bytes = new byte[numBytes];
@@ -120,15 +123,19 @@ public class Digests {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	//生成字符串摘要
+
+	// 生成字符串摘要
 	public static String md5(String input) {
-		return Encodes.encodeHex(md5(input.getBytes()));
+		return Encodes.encodeHex(md5(input.getBytes(Constants.DEFAULT_ENCODING)));
 	}
+
 	public static String md5(String input, String salt) {
-		return Encodes.encodeHex(md5(input.getBytes(), salt.getBytes()));
-    }
-    public static String md5(String input, String salt, int iterations ) {
-    	return Encodes.encodeHex(md5(input.getBytes(), salt.getBytes(), iterations));
+		return Encodes
+				.encodeHex(md5(input.getBytes(Constants.DEFAULT_ENCODING), salt.getBytes(Constants.DEFAULT_ENCODING)));
+	}
+
+	public static String md5(String input, String salt, int iterations) {
+		return Encodes.encodeHex(
+				md5(input.getBytes(Constants.DEFAULT_ENCODING), salt.getBytes(Constants.DEFAULT_ENCODING), iterations));
 	}
 }

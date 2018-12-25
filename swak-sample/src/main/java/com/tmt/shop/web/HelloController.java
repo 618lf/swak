@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.swak.Constants;
 import com.swak.cache.Cache;
 import com.swak.cache.CacheManager;
 import com.swak.entity.ColumnMapper;
@@ -21,7 +22,6 @@ import com.swak.excel.impl.DefaultExcelMapper;
 import com.swak.executor.Workers;
 import com.swak.http.builder.RequestBuilder;
 import com.swak.persistence.QueryCondition;
-import com.swak.reactivex.transport.http.HttpConst;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.WebUtils;
 import com.swak.reactivex.web.annotation.Async;
@@ -57,7 +57,7 @@ public class HelloController {
 	 */
 	@GetMapping("/rt")
 	public CompletableFuture<String> rt() {
-		return CompletableFuture.completedFuture(HttpConst.REDIRECT_URL_PREFIX + "http://www.catax.cn/admin");
+		return CompletableFuture.completedFuture(Constants.REDIRECT_URL_PREFIX + "http://www.catax.cn/admin");
 	}
 
 	/**
