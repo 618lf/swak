@@ -96,6 +96,6 @@ public class ResultHandler {
 		context.response().end(Result.error(ErrorCode.SERVER_ERROR).toJson());
 
 		// 打印错误信息
-		logger.error("输出结果异常:", e);
+		logger.error("{}", context.request().uri(), e);
 	}
 }

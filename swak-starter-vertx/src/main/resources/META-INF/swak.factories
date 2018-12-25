@@ -3,6 +3,7 @@
 
 # Auto Configuration, SWAK only load Auto Configuration 
 com.swak.ApplicationBoot=\
+com.swak.config.http.HttpClientAutoConfiguration,\
 com.swak.config.jdbc.DataBaseAutoConfiguration,\
 com.swak.config.redis.CacheModuleAutoConfiguration,\
 com.swak.config.quartz.QuartzAutoConfiguration,\
