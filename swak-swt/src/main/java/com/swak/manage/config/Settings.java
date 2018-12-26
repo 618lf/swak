@@ -131,7 +131,7 @@ public class Settings {
 	}
 
 	public String getStaticsPath() {
-		return basePath + "static";
+		return basePath + "statics";
 	}
 
 	public Server getServer() {
