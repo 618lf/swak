@@ -62,6 +62,13 @@ public interface WechatConfig {
 	 * @return
 	 */
 	String getMchId();
+	
+	/**
+	 * 商户名称
+	 * 
+	 * @return
+	 */
+	String getMchName();
 
 	/**
 	 * 商户Key
@@ -154,11 +161,9 @@ public interface WechatConfig {
 	 */
 	default Map<String, String> process(String xml, String signType) {
 		Map<String, String> respData = Maps.fromXml(xml);
-		if (!Constants.SUCCESS.equals(respData.get("return_code"))) {
-			return respData;
-		}
 		String sign = respData.get(Constants.FIELD_SIGN);
-		if (SignUtils.generateSign(respData, signType, this.getMchKey()).equals(sign)) {
+		if (Constants.SUCCESS.equals(respData.get("return_code"))
+				&& SignUtils.generateSign(respData, signType, this.getMchKey()).equals(sign)) {
 			return respData;
 		}
 		throw new WechatErrorException(String.format("Invalid sign value in XML: %s", xml));
