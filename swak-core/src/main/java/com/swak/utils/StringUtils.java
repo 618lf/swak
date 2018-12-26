@@ -888,8 +888,8 @@ public class StringUtils {
 
 	// Equals
 	// -----------------------------------------------------------------------
-    // Null-safe equals/hashCode
-    //-----------------------------------------------------------------------
+	// Null-safe equals/hashCode
+	// -----------------------------------------------------------------------
 	/**
 	 * <p>
 	 * Compares two CharSequences, returning {@code true} if they represent equal
@@ -8823,6 +8823,7 @@ public class StringUtils {
 		tokens.add(s);
 		return tokens.toArray(new String[tokens.size()]);
 	}
+
 	/**
 	 * 信息格式化
 	 * 
@@ -8918,52 +8919,77 @@ public class StringUtils {
 
 		return out;
 	}
-	
-    /**
-     * Constructs a new <code>String</code> by decoding the specified array of bytes using the UTF-8 charset.
-     *
-     * @param bytes
-     *            The bytes to be decoded into characters
-     * @return A new <code>String</code> decoded from the specified array of bytes using the UTF-8 charset,
-     *         or {@code null} if the input byte array was {@code null}.
-     * @throws NullPointerException
-     *             Thrown if {@link Charsets#UTF_8} is not initialized, which should never happen since it is
-     *             required by the Java platform specification.
-     * @since As of 1.7, throws {@link NullPointerException} instead of UnsupportedEncodingException
-     */
-    public static String newStringUtf8(final byte[] bytes) {
-    	return bytes == null ? null : new String(bytes, StandardCharsets.UTF_8);
-    }
-    
-    /**
-     * Encodes the given string into a sequence of bytes using the UTF-8 charset, storing the result into a new byte
-     * array.
-     *
-     * @param string
-     *            the String to encode, may be {@code null}
-     * @return encoded bytes, or {@code null} if the input string was {@code null}
-     * @throws NullPointerException
-     *             Thrown if {@link Charsets#UTF_8} is not initialized, which should never happen since it is
-     *             required by the Java platform specification.
-     * @since As of 1.7, throws {@link NullPointerException} instead of UnsupportedEncodingException
-     * @see <a href="http://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
-     * @see #getBytesUnchecked(String, String)
-     */
-    public static byte[] getBytesUtf8(final String string) {
-    	 if (string == null) {
-             return null;
-         }
-         return string.getBytes(StandardCharsets.UTF_8);
-    }
-    
+
+	/**
+	 * Constructs a new <code>String</code> by decoding the specified array of bytes
+	 * using the UTF-8 charset.
+	 *
+	 * @param bytes
+	 *            The bytes to be decoded into characters
+	 * @return A new <code>String</code> decoded from the specified array of bytes
+	 *         using the UTF-8 charset, or {@code null} if the input byte array was
+	 *         {@code null}.
+	 * @throws NullPointerException
+	 *             Thrown if {@link Charsets#UTF_8} is not initialized, which should
+	 *             never happen since it is required by the Java platform
+	 *             specification.
+	 * @since As of 1.7, throws {@link NullPointerException} instead of
+	 *        UnsupportedEncodingException
+	 */
+	public static String newStringUtf8(final byte[] bytes) {
+		return bytes == null ? null : new String(bytes, StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * Encodes the given string into a sequence of bytes using the UTF-8 charset,
+	 * storing the result into a new byte array.
+	 *
+	 * @param string
+	 *            the String to encode, may be {@code null}
+	 * @return encoded bytes, or {@code null} if the input string was {@code null}
+	 * @throws NullPointerException
+	 *             Thrown if {@link Charsets#UTF_8} is not initialized, which should
+	 *             never happen since it is required by the Java platform
+	 *             specification.
+	 * @since As of 1.7, throws {@link NullPointerException} instead of
+	 *        UnsupportedEncodingException
+	 * @see <a href=
+	 *      "http://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard
+	 *      charsets</a>
+	 * @see #getBytesUnchecked(String, String)
+	 */
+	public static byte[] getBytesUtf8(final String string) {
+		if (string == null) {
+			return null;
+		}
+		return string.getBytes(StandardCharsets.UTF_8);
+	}
+
 	/**
 	 * 替换所有的空白
+	 * 
 	 * @return
 	 */
-	public static String removeZ(String text){
+	public static String removeZ(String text) {
 		if (StringUtils.isNotBlank(text)) {
-		    return text.replaceAll("\\pZ", "");
+			return text.replaceAll("\\pZ", "");
 		}
 		return text;
+	}
+
+	/**
+	 * 两个字符串是否一样
+	 * 
+	 * @param str1
+	 * @param str2
+	 * @return
+	 */
+	public static boolean same(String str1, String str2) {
+		if (str1 == null && str2 == null) {
+			return true;
+		} else if (str1 != null && str2 != null && str2.equals(str1)) {
+			return true;
+		}
+		return false;
 	}
 }

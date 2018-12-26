@@ -147,7 +147,7 @@ public interface WechatConfig {
 	 * @param key
 	 * @return
 	 */
-	default Map<String, String> process(String xml) {
+	default Map<String, Object> process(String xml) {
 		return this.process(xml, Constants.HMACSHA256);
 	}
 
@@ -159,9 +159,9 @@ public interface WechatConfig {
 	 * @param key
 	 * @return
 	 */
-	default Map<String, String> process(String xml, String signType) {
-		Map<String, String> respData = Maps.fromXml(xml);
-		String sign = respData.get(Constants.FIELD_SIGN);
+	default Map<String, Object> process(String xml, String signType) {
+		Map<String, Object> respData = Maps.fromXml(xml);
+		String sign = String.valueOf(respData.get(Constants.FIELD_SIGN));
 		if (Constants.SUCCESS.equals(respData.get("return_code"))
 				&& SignUtils.generateSign(respData, signType, this.getMchKey()).equals(sign)) {
 			return respData;

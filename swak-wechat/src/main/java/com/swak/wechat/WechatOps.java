@@ -95,7 +95,7 @@ public class WechatOps {
 	 * @param unifiedorder
 	 * @return
 	 */
-	public static CompletableFuture<Map<String, String>> unifiedorder(WechatConfig app, Unifiedorder unifiedorder) {
+	public static CompletableFuture<Map<String, Object>> unifiedorder(WechatConfig app, Unifiedorder unifiedorder) {
 		CompletableFuture<String> future = null;
 		if (app.isUseSandbox()) {
 			unifiedorder.setSign_type(Constants.MD5);
@@ -116,7 +116,7 @@ public class WechatOps {
 			return app.process(res, unifiedorder.getSign_type());
 		});
 	}
-	
+
 	/**
 	 * 查询订单
 	 * 
@@ -124,7 +124,7 @@ public class WechatOps {
 	 * @param unifiedorder
 	 * @return
 	 */
-	public static CompletableFuture<Map<String, String>> queryOrder(WechatConfig app, MchOrderquery mchOrderquery) {
+	public static CompletableFuture<Map<String, Object>> queryOrder(WechatConfig app, MchOrderquery mchOrderquery) {
 		CompletableFuture<String> future = null;
 		if (app.isUseSandbox()) {
 			mchOrderquery.setSign_type(Constants.MD5);
@@ -162,8 +162,8 @@ public class WechatOps {
 		String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API)
 				.append(Constants.SANDBOX_GET_SIGNKEY_SUFFIX).toString();
 		return app.request(url, reqBody).thenApply(res -> {
-			Map<String, String> maps = Maps.fromXml(res);
-			return maps.get("sandbox_signkey");
+			Map<String, Object> maps = Maps.fromXml(res);
+			return String.valueOf(maps.get("sandbox_signkey"));
 		});
 	}
 }

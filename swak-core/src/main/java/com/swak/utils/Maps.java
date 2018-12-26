@@ -172,9 +172,9 @@ public class Maps {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<String, String> fromXml(String xmlStr) {
+	public static Map<String, Object> fromXml(String xmlStr) {
 		try {
-			Map<String, String> data = new HashMap<String, String>();
+			Map<String, Object> data = new HashMap<String, Object>();
 			Document doc = XmlParse.parse(xmlStr);
 			doc.getDocumentElement().normalize();
 			NodeList nodeList = doc.getDocumentElement().getChildNodes();
