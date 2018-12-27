@@ -81,8 +81,12 @@ public class JwtAuthProvider {
 		if (path.startsWith(ResourceLoader.CLASSPATH_URL_PREFIX)) {
 			return new ClassPathResource(path.substring(ResourceLoader.CLASSPATH_URL_PREFIX.length()));
 		} else {
-			URL url = new URL(path);
-			return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
+			try {
+				URL url = new URL(path);
+				return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
+			}catch (Exception e) {
+				return new ClassPathResource(path);
+			}
 		}
 	}
 
