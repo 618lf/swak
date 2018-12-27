@@ -57,6 +57,15 @@ public interface WechatConfig {
 	Object getSetting();
 
 	/**
+	 * 商户App - 默认和 app_id 相同
+	 * 
+	 * @return
+	 */
+	 default String getMchApp() {
+		 return this.getAppId();
+	 }
+	
+	/**
 	 * 商户Id
 	 * 
 	 * @return

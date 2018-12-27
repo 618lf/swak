@@ -246,7 +246,7 @@ public class Unifiedorder {
 			this.setNotify_url(config.getNotifyUrl());
 		}
 		if (StringUtils.isBlank(getAppid())) {
-			this.setAppid(config.getAppId());
+			this.setAppid(config.getMchApp());
 		}
 		if (StringUtils.isBlank(this.getMch_id())) {
 			this.setMch_id(config.getMchId());

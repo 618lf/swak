@@ -175,7 +175,7 @@ public class Refundorder {
 	 */
 	public void checkAndSign(WechatConfig config) throws Exception {
 		if (StringUtils.isBlank(getAppid())) {
-			this.setAppid(config.getAppId());
+			this.setAppid(config.getMchApp());
 		}
 		if (StringUtils.isBlank(this.getMch_id())) {
 			this.setMch_id(config.getMchId());
