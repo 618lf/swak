@@ -42,6 +42,7 @@ public class SpringContextHolder {
 	
 	/**
 	 * 获取资源文件
+	 * 
 	 * classpath:localtion
 	 * file:localtion
 	 * @param localtion

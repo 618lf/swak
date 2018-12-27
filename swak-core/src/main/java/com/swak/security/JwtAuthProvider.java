@@ -2,19 +2,24 @@ package com.swak.security;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileUrlResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.UrlResource;
+import org.springframework.util.ResourceUtils;
 
 import com.swak.exception.BaseRuntimeException;
 import com.swak.security.jwt.JWT;
 import com.swak.security.jwt.JWTOptions;
 import com.swak.security.jwt.JWTPayload;
 import com.swak.utils.IOUtils;
-import com.swak.utils.SpringContextHolder;
 import com.swak.utils.StringUtils;
 
 /**
@@ -51,7 +56,7 @@ public class JwtAuthProvider {
 			if (StringUtils.isBlank(path)) {
 				ksPath = JwtAuthProvider.class.getResourceAsStream("keystore.jceks");
 			} else {
-				Resource resource = SpringContextHolder.resource(path);
+				Resource resource = this.getResource(path);
 				ksPath = resource.getInputStream();
 			}
 		} catch (Exception e) {
@@ -69,6 +74,16 @@ public class JwtAuthProvider {
 
 		// 返回加载好的 keyStore
 		return keyStore;
+	}
+
+	// 获取资源
+	private Resource getResource(String path) throws Exception {
+		if (path.startsWith(ResourceLoader.CLASSPATH_URL_PREFIX)) {
+			return new ClassPathResource(path.substring(ResourceLoader.CLASSPATH_URL_PREFIX.length()));
+		} else {
+			URL url = new URL(path);
+			return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
+		}
 	}
 
 	/**
