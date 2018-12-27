@@ -67,13 +67,13 @@ public abstract class AbstractRouterHandler implements RouterHandler {
 			for (String path : paths) {
 				Route route = null;
 				if (StringUtils.contains(path, "*")) {
-					route = router.patchWithRegex(path);
+					route = router.routeWithRegex(path);
 				} else {
-					route = router.patch(path);
+					route = router.route(path);
 				}
 				if (rb.getRequestMethod() == RequestMethod.POST) {
 					route.method(HttpMethod.POST);
-				} else {
+				} else if(rb.getRequestMethod() == RequestMethod.GET) {
 					route.method(HttpMethod.GET);
 				}
 

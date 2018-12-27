@@ -1,6 +1,5 @@
 package com.swak.security;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -8,11 +7,14 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
+import org.springframework.core.io.Resource;
+
 import com.swak.exception.BaseRuntimeException;
 import com.swak.security.jwt.JWT;
 import com.swak.security.jwt.JWTOptions;
 import com.swak.security.jwt.JWTPayload;
 import com.swak.utils.IOUtils;
+import com.swak.utils.SpringContextHolder;
 import com.swak.utils.StringUtils;
 
 /**
@@ -25,7 +27,7 @@ public class JwtAuthProvider {
 	private final JWT jwt;
 	private final JWTOptions options;
 	private final String tokenName;
-	
+
 	public JwtAuthProvider(String keyStorePath, String keyStorePass, String tokenName) {
 		try {
 			KeyStore keyStore = this.loadKeyStore(keyStorePath, keyStorePass);
@@ -34,14 +36,14 @@ public class JwtAuthProvider {
 		} catch (Exception e) {
 			throw new BaseRuntimeException(e);
 		}
-		
+
 		// 设置tokenName
 		this.tokenName = tokenName;
-		
+
 		// 默认的配置
 		options = new JWTOptions();
 	}
-	
+
 	private synchronized KeyStore loadKeyStore(String path, String pass)
 			throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		InputStream ksPath = null;
@@ -49,7 +51,8 @@ public class JwtAuthProvider {
 			if (StringUtils.isBlank(path)) {
 				ksPath = JwtAuthProvider.class.getResourceAsStream("keystore.jceks");
 			} else {
-				ksPath = new FileInputStream(path);
+				Resource resource = SpringContextHolder.resource(path);
+				ksPath = resource.getInputStream();
 			}
 		} catch (Exception e) {
 			ksPath = JwtAuthProvider.class.getClassLoader().getResourceAsStream("keystore.jceks");
@@ -104,6 +107,7 @@ public class JwtAuthProvider {
 	public JWTOptions getOptions() {
 		return options;
 	}
+
 	public String getTokenName() {
 		return tokenName;
 	}
