@@ -6,4 +6,28 @@
     <version>0.1.2_final</version>
   </parent>
   <artifactId>swak-fx</artifactId>
+  <build>
+		<plugins>
+			
+			<!-- 打一个可执行的jar包 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+					<archive>
+						<manifest>
+							<mainClass>com.swak.fx.WebViewSample</mainClass>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>/lib</classpathPrefix>
+						</manifest>
+					</archive>
+					<classesDirectory>
+					</classesDirectory>
+				</configuration>
+			</plugin>
+			
+		</plugins>
+	</build>
 </project>

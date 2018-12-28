@@ -275,6 +275,7 @@
 					<include>**/*.factories</include>
 					<include>**/*.db</include>
 					<include>**/*.jceks</include>
+					<include>**/*.html</include>
 				</includes>
 				<filtering>false</filtering>
 			</resource>
