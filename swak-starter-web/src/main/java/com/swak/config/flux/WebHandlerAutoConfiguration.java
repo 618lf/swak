@@ -6,7 +6,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 
-import com.swak.config.jdbc.DataBaseAutoConfiguration;
+import com.swak.config.jdbc.DataSourceAutoConfiguration;
+import com.swak.config.jdbc.DataSourceTransactionManagerConfiguration;
 import com.swak.config.motan.MotanAutoConfiguration;
 
 /**
@@ -16,7 +17,8 @@ import com.swak.config.motan.MotanAutoConfiguration;
  */
 @Configuration
 @ConditionalOnMissingBean(WebConfigurationSupport.class)
-@AutoConfigureAfter({SecurityAutoConfiguration.class, DataBaseAutoConfiguration.class, MotanAutoConfiguration.class})
+@AutoConfigureAfter({ SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class,
+	DataSourceTransactionManagerConfiguration.class, MotanAutoConfiguration.class })
 public class WebHandlerAutoConfiguration extends WebConfigurationSupport {
 	public WebHandlerAutoConfiguration() {
 		APP_LOGGER.debug("Loading Web Flux");

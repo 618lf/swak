@@ -4,7 +4,6 @@ import static com.swak.Application.APP_LOGGER;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.jdbc.metadata.HikariDataSourcePoolMetadata;
@@ -22,8 +21,12 @@ import com.zaxxer.hikari.HikariDataSource;
 @ConditionalOnMissingBean(DataSource.class)
 public class HikariDataSourceAutoConfiguration {
 
-	@Autowired
+	// 数据库属性
 	private DataSourceProperties properties;
+	
+	public HikariDataSourceAutoConfiguration(DataSourceProperties properties) {
+		this.properties = properties;
+	}
 	
 	/**
 	 * 构建 HikariDataSource
