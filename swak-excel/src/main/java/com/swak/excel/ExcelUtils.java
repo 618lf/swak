@@ -13,7 +13,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.poifs.filesystem.FileMagic;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -21,10 +20,12 @@ import org.slf4j.LoggerFactory;
 
 import com.swak.entity.ColumnMapper;
 import com.swak.entity.Result;
+import com.swak.excel.impl.DefaultExcelExecuter.ExcelRow;
 import com.swak.excel.impl.DefaultExcelMapper;
 import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.IOUtils;
 import com.swak.utils.Lists;
+import com.swak.utils.StringUtils;
 import com.swak.zip.ZipEntry;
 import com.swak.zip.ZipOutputStream;
 
@@ -63,33 +64,13 @@ public abstract class ExcelUtils {
 	 * @return
 	 */
 	public static String indexToColumn(int index) {
-		String rs = "";
+		String rs = StringUtils.EMPTY;
 		do {
 			index--;
 			rs = ((char) (index % 26 + (int) 'A')) + rs;
 			index = (int) ((index - index % 26) / 26);
 		} while (index > 0);
 		return rs;
-	}
-
-	/**
-	 * 是否是日期列
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static Boolean isValidExcelDate(double value) {
-		return DateUtil.isValidExcelDate(value);
-	}
-
-	/**
-	 * 是否是日期列
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static Boolean isADateFormat(int i, String f) {
-		return DateUtil.isADateFormat(i, f);
 	}
 
 	// ########### Load Excel ################
@@ -196,6 +177,47 @@ public abstract class ExcelUtils {
 					} else {
 						return Result.error(result.getMsg(), result.getErrors());
 					}
+				}
+			}
+			return Result.success(objects);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Result.error("数据导入错误,未读取到数据");
+	}
+	
+	/**
+	 * 无模板读取excel内容
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public static Result read(InputStream file) {
+		try {
+			Workbook book = ExcelUtils.load(file);
+			List<ExcelRow> objects = Lists.newArrayList();
+			int sheets = book.getNumberOfSheets();
+			for (int i = 0; i < sheets; i++) {
+				if (!book.isSheetHidden(i)) {
+					ImportResult<ExcelRow> result = ExcelExecuter.def().execute(book.getSheetAt(i));
+					if (result != null && result.getSuccess()) {
+						List<ExcelRow> _objects = result.getSucessRows();
+						if (null != _objects) {
+							objects.addAll(_objects);
+						}
+
+						// debug
+						if (logger.isDebugEnabled()) {
+							int size = _objects != null ? _objects.size() : 0;
+							String name = book.getSheetName(i);
+							logger.debug("read {} rows from {}", size, name);
+						}
+					} else {
+						return Result.error(result.getMsg(), result.getErrors());
+					}
+					
+					// read first sheet
+					break;
 				}
 			}
 			return Result.success(objects);

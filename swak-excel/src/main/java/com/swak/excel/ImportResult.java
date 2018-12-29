@@ -158,5 +158,13 @@ public class ImportResult<T> {
 		public void setMsg(String msg) {
 			this.msg = msg;
 		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Sheet[").append(sheet).append("],").append("Row[").append(row).append("],").append("Column[")
+					.append(column).append("],").append("Msg[").append("]");
+			return sb.toString();
+		}
 	}
 }
