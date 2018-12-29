@@ -173,7 +173,7 @@ public class DefaultExcelExecuter implements ExcelExecuter<ExcelRow> {
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder("");
-			sb.append(this.name).append("=").append(this.value);
+			sb.append(this.name).append(this.row + 1).append("=").append(this.value);
 			if (merged != null) {
 				sb.append(merged.toString());
 			}
@@ -226,11 +226,11 @@ public class DefaultExcelExecuter implements ExcelExecuter<ExcelRow> {
 		}
 
 		public int getRowSpan() {
-			return lastRow - firstRow;
+			return lastRow - firstRow + 1;
 		}
 
 		public int getColSpan() {
-			return lastCol - firstCol;
+			return lastCol - firstCol + 1;
 		}
 
 		@Override
