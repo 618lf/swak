@@ -1,14 +1,21 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>com.swak</groupId>
-    <artifactId>swak</artifactId>
-    <version>0.1.2_final</version>
-  </parent>
-  <artifactId>swak-fx</artifactId>
-  <build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.swak</groupId>
+		<artifactId>swak</artifactId>
+		<version>0.1.2_final</version>
+	</parent>
+	<artifactId>swak-fx</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-core</artifactId>
+		</dependency>
+	</dependencies>
+	<build>
 		<plugins>
-			
+
 			<!-- 打一个可执行的jar包 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -27,7 +34,7 @@
 					</classesDirectory>
 				</configuration>
 			</plugin>
-			
+
 		</plugins>
 	</build>
 </project>
