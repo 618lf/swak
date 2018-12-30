@@ -211,7 +211,7 @@ public class OpsFile {
 			while (entries.hasMoreElements()) {
 				entry = (ZipEntry) entries.nextElement();
 				String name = entry.getName();
-				if (name.startsWith(type) && !entry.isDirectory()) {
+				if (name.startsWith(type) && !entry.getName().endsWith(File.separator)) {
 					name = name.substring(type.length());
 					oentrys.add(this.content(zip.getInputStream(entry), name));
 				}
@@ -270,8 +270,9 @@ public class OpsFile {
 
 		// 真实的文件
 		File zipFile = new File(tempFile.getParentFile(),
-				tempFile.getName().substring(0, tempFile.getName().length() - 4) + ":" + this.version(makeDir) + ":"
+				tempFile.getName().substring(0, tempFile.getName().length() - 4) + "_" + this.version(makeDir) + "_"
 						+ this.date() + ".zip");
+		zipFile.createNewFile();
 		ZipOutputStream target = new ZipOutputStream(new FileOutputStream(zipFile));
 		try {
 

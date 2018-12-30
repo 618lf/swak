@@ -60,7 +60,7 @@ public interface Dialect {
 	 * @return
 	 */
 	default String date() {
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH_mm");
 		return df.format(new Date());
 	}
 }
