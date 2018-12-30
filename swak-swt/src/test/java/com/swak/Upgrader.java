@@ -257,6 +257,6 @@ public class Upgrader extends App {
 	}
 
 	public static void main(String[] args) {
-		new Upgrader().run(new String[] { "com/tmt/Upgrader.class" });
+		new Upgrader().run(new String[] { "com/swak/Upgrader.class" });
 	}
 }

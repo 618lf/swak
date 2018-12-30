@@ -46,6 +46,6 @@ public class Packager extends App {
 	}
 
 	public static void main(String[] args) {
-		new Packager().run(new String[] { "com/tmt/Packager.class" });
+		new Packager().run(new String[] { "com/swak/Packager.class" });
 	}
 }
