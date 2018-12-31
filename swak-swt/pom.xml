@@ -90,19 +90,27 @@
 			<groupId>org.jcef</groupId>
 			<artifactId>jcef</artifactId>
 			<version>${jcef.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jcef</groupId>
 			<artifactId>jogl-all</artifactId>
 			<version>${jcef.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jcef</groupId>
             <artifactId>gluegen-rt</artifactId>
 			<version>${jcef.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		
 		<!-- 数据库或其他 -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
