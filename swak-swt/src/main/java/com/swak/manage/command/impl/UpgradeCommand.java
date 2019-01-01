@@ -10,13 +10,13 @@ import com.swak.manage.command.Commands.Signal;
 import com.swak.manage.config.Settings;
 import com.swak.manage.operation.Ops;
 import com.swak.manage.operation.OpsFile;
+import com.swak.manage.operation.ops.BackupOps;
 import com.swak.manage.operation.ops.ConfigOps;
 import com.swak.manage.operation.ops.JarOps;
 import com.swak.manage.operation.ops.LibOps;
 import com.swak.manage.operation.ops.LogOps;
 import com.swak.manage.operation.ops.MoveOps;
 import com.swak.manage.operation.ops.SqlOps;
-import com.swak.manage.operation.ops.StaticOps;
 import com.swak.manage.operation.ops.VerifyOps;
 import com.swak.manage.widgets.theme.upgrade.Patch;
 
@@ -30,18 +30,20 @@ public class UpgradeCommand implements Command {
 	Ops ops;
 
 	public UpgradeCommand() {
-		ops = new VerifyOps();
+		ops = new BackupOps();
+		VerifyOps verifyOps = new VerifyOps();
 		SqlOps sqlOps = new SqlOps();
 		LibOps libOps = new LibOps();
-		StaticOps staticOps = new StaticOps();
+//		StaticOps staticOps = new StaticOps();
 		ConfigOps configOps = new ConfigOps();
 		JarOps jarOps = new JarOps();
 		MoveOps moveOps = new MoveOps();
 		LogOps logOps = new LogOps();
-		ops.next(sqlOps);
+		ops.next(verifyOps);
+		verifyOps.next(sqlOps);
 		sqlOps.next(libOps);
-		libOps.next(staticOps);
-		staticOps.next(configOps);
+//		libOps.next(staticOps);
+		sqlOps.next(configOps);
 		configOps.next(jarOps);
 		jarOps.next(moveOps);
 		moveOps.next(logOps);

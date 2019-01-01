@@ -22,7 +22,7 @@ public class StarterCommand extends ExternalCommand implements Command {
 			int style = SWT.APPLICATION_MODAL | SWT.YES | SWT.NO;
 			MessageBox messageBox = new MessageBox(Display.getDefault().getActiveShell(), style);
 			messageBox.setText("提示");
-			messageBox.setMessage("系统将进入正常模式，点击确定继续?");
+			messageBox.setMessage("系统将退出升级平台，打开个税易系统，点击确定继续?");
 			if (messageBox.open() == SWT.YES) {
 				new StopCommand() {
 					@Override
