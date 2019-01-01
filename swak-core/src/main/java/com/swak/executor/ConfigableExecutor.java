@@ -2,10 +2,14 @@ package com.swak.executor;
 
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.Assert;
 
 import com.swak.Constants;
@@ -16,9 +20,10 @@ import com.swak.utils.Maps;
  * 
  * @author lifeng
  */
-public class ConfigableExecutor implements Executor {
+public class ConfigableExecutor implements Executor, DisposableBean {
 
 	private Map<String, Executor> executors = Maps.newHashMap();
+	private Logger logger = LoggerFactory.getLogger(ConfigableExecutor.class);
 
 	/**
 	 * 设置执行器 -- 只能在系统启动时设置，启动之后不能设置
@@ -103,7 +108,7 @@ public class ConfigableExecutor implements Executor {
 			}
 			metrics.put(name, one_metrics);
 		});
-		
+
 		// 默认的线程池 (参数名称需要修改)
 		ForkJoinPool commonPool = ForkJoinPool.commonPool();
 		Map<String, Object> one_metrics = Maps.newHashMap();
@@ -116,7 +121,7 @@ public class ConfigableExecutor implements Executor {
 		one_metrics.put("queuedTaskCount", commonPool.getQueuedTaskCount());
 		one_metrics.put("runningThreadCount", commonPool.getRunningThreadCount());
 		metrics.put("forkjoinpool", one_metrics);
-		
+
 		return metrics;
 	}
 
@@ -135,5 +140,21 @@ public class ConfigableExecutor implements Executor {
 			one_metrics.put("largestPoolSize", _executor.getLargestPoolSize());
 		}
 		return one_metrics;
+	}
+
+	/**
+	 * 停止服务
+	 */
+	@Override
+	public void destroy() throws Exception {
+		executors.values().forEach(ex -> {
+			if (ex instanceof ExecutorService) {
+				try {
+					((ExecutorService) ex).shutdown();
+				} catch (Exception e) {
+					logger.error("Shutdown Executor Error!", e);
+				}
+			}
+		});
 	}
 }
