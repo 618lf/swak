@@ -43,7 +43,7 @@ public class UpgradeCommand implements Command {
 		verifyOps.next(sqlOps);
 		sqlOps.next(libOps);
 //		libOps.next(staticOps);
-		sqlOps.next(configOps);
+		libOps.next(configOps);
 		configOps.next(jarOps);
 		jarOps.next(moveOps);
 		moveOps.next(logOps);
