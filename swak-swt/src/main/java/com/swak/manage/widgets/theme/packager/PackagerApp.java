@@ -85,9 +85,10 @@ public class PackagerApp extends BaseApp {
 		logText.append("创建目录PTMS，初始化增量包结构" + "\n");
 		logText.append("**********目录结构*********" + "\n");
 		logText.append("***PTMS" + "\n");
+		logText.append("***└  JAR" + "\n");
 		logText.append("***└  SQLS" + "\n");
 		logText.append("***└  LIBS" + "\n");
-		logText.append("***└  STATICS" + "\n");
+//		logText.append("***└  STATICS" + "\n");
 		logText.append("***└  CONFIGS" + "\n");
 		logText.append("*************************" + "\n");
 		logText.append("请将相关文件放入相应的目录，填入版本号" + "\n");
@@ -95,9 +96,10 @@ public class PackagerApp extends BaseApp {
 		// 主目录
 		File makeDir = new File(dir, "PTMS");
 		makeDir.mkdir();
+		new File(makeDir, OpsFile.JAR).mkdir();
 		new File(makeDir, OpsFile.SQL).mkdir();
 		new File(makeDir, OpsFile.LIB).mkdir();
-		new File(makeDir, OpsFile.STATIC).mkdir();
+//		new File(makeDir, OpsFile.STATIC).mkdir();
 		new File(makeDir, OpsFile.CONFIG).mkdir();
 		createVersion(makeDir);
 	}
