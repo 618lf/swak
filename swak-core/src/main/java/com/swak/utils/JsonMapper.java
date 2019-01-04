@@ -1,17 +1,13 @@
 package com.swak.utils;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Writer;
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.ObjectSerializer;
-import com.alibaba.fastjson.serializer.SerializeConfig;
-import com.alibaba.fastjson.serializer.SerializeFilter;
 import com.alibaba.fastjson.serializer.SerializeWriter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
@@ -67,6 +63,7 @@ public class JsonMapper {
 	
 	/**
 	 * copy from JSON 支持 long to string
+	 * 
 	 * @param object
 	 * @param defaultFeatures
 	 * @param features
@@ -85,55 +82,55 @@ public class JsonMapper {
         }
     }
 	
-	/**
-	 * 写入 outputStream
-	 * @param os
-	 * @param charset
-	 * @param object
-	 * @param config
-	 * @param filters
-	 * @param dateFormat
-	 * @param defaultFeatures
-	 * @param features
-	 * @return
-	 * @throws IOException
-	 */
-	public static final int writeJSONString(OutputStream os, //
-			Charset charset, //
-			Object object, //
-			SerializeConfig config, //
-			SerializeFilter[] filters, //
-			String dateFormat, //
-			int defaultFeatures, //
-			SerializerFeature... features) throws IOException {
-		SerializeWriter writer = new SerializeWriter(null, defaultFeatures,
-				features);
-
-		try {
-			JSONSerializer serializer = new JSONSerializer(writer, config);
-
-			if (dateFormat != null && dateFormat.length() != 0) {
-				serializer.setDateFormat(dateFormat);
-				serializer.config(SerializerFeature.WriteDateUseDateFormat,
-						true);
-			}
-
-			if (filters != null) {
-				for (SerializeFilter filter : filters) {
-					serializer.addFilter(filter);
-				}
-			}
-			
-			serializer.getMapping().put(Long.class, longSerializer);
-
-			serializer.write(object);
-
-			int len = writer.writeToEx(os, charset);
-			return len;
-		} finally {
-			writer.close();
-		}
-	}
+//	/**
+//	 * 写入 outputStream
+//	 * @param os
+//	 * @param charset
+//	 * @param object
+//	 * @param config
+//	 * @param filters
+//	 * @param dateFormat
+//	 * @param defaultFeatures
+//	 * @param features
+//	 * @return
+//	 * @throws IOException
+//	 */
+//	public static final int writeJSONString(OutputStream os, //
+//			Charset charset, //
+//			Object object, //
+//			SerializeConfig config, //
+//			SerializeFilter[] filters, //
+//			String dateFormat, //
+//			int defaultFeatures, //
+//			SerializerFeature... features) throws IOException {
+//		SerializeWriter writer = new SerializeWriter(null, defaultFeatures,
+//				features);
+//
+//		try {
+//			JSONSerializer serializer = new JSONSerializer(writer, config);
+//
+//			if (dateFormat != null && dateFormat.length() != 0) {
+//				serializer.setDateFormat(dateFormat);
+//				serializer.config(SerializerFeature.WriteDateUseDateFormat,
+//						true);
+//			}
+//
+//			if (filters != null) {
+//				for (SerializeFilter filter : filters) {
+//					serializer.addFilter(filter);
+//				}
+//			}
+//			
+//			serializer.getMapping().put(Long.class, longSerializer);
+//
+//			serializer.write(object);
+//
+//			int len = writer.writeToEx(os, charset);
+//			return len;
+//		} finally {
+//			writer.close();
+//		}
+//	}
 	
 	/**
 	 * 支持 long 转string

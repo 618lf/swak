@@ -1,5 +1,7 @@
 package com.swak.vertx.handler.converter;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.swak.utils.JsonMapper;
 import com.swak.vertx.transport.HttpConst;
 
@@ -13,6 +15,8 @@ import io.vertx.core.http.HttpServerResponse;
  */
 public class JsonHttpMessageConverter implements HttpMessageConverter {
 
+	private SerializerFeature[] features = new SerializerFeature[] {};
+
 	@Override
 	public boolean canWrite(Class<?> clazz) {
 		return clazz != void.class;
@@ -21,7 +25,7 @@ public class JsonHttpMessageConverter implements HttpMessageConverter {
 	@Override
 	public void write(Object obj, HttpServerResponse response) {
 		response.putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
-		String json = JsonMapper.toJson(obj);
-		response.end(json);
+		String content = JsonMapper.toJSONString(obj, JSON.DEFAULT_GENERATE_FEATURE, features);
+		response.end(content);
 	}
 }

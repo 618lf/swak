@@ -144,6 +144,13 @@ public class StringUtils {
 	 * @since 2.0
 	 */
 	public static final String EMPTY = "";
+	
+	/**
+	 * The null String {@code "null"}.
+	 * 
+	 * @since 2.0
+	 */
+	public static final String NULL = "null";
 
 	/**
 	 * A String for linefeed LF ("\n").

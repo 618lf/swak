@@ -67,7 +67,7 @@ public class ServerModelMethodArgumentResolver extends AbstractMethodArgumentRes
 			Object value = arguments.get(key);
 
 			// 值不能为空
-			if (value == null) {
+			if (value == null || StringUtils.NULL.equals(value)) {
 				continue;
 			}
 
