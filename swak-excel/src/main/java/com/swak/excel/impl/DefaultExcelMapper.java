@@ -19,6 +19,7 @@ import com.swak.excel.ExcelValidateUtils;
 import com.swak.excel.ImportResult;
 import com.swak.excel.Multimap;
 import com.swak.utils.JsonMapper;
+import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.utils.time.DateUtils;
 
@@ -118,7 +119,7 @@ public abstract class DefaultExcelMapper<T> implements ExcelMapper<T>, ExcelExec
 			if (row == null) {
 				return Boolean.TRUE;
 			}
-			Map<String, Object> valueMap = new HashMap<String, Object>();
+			Map<String, Object> valueMap = Maps.newOrderMap();
 			for (int i = row.getFirstCellNum(), j = row.getLastCellNum(); i < j; i++) {
 
 				// 记录当前列号
