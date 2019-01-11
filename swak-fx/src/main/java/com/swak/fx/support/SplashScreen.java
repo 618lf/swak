@@ -1,54 +1,84 @@
 package com.swak.fx.support;
 
-import javafx.scene.Parent;
+import javafx.fxml.FXML;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 /**
- * A default standard splash pane implementation Subclass it and override it's
- * methods to customize with your own behavior. Be aware that you can not use
- * Spring features here yet.
- *
- * @author Felix Roske
- * @author Andreas Jay
+ * 界面
+ * 
+ * @author lifeng
  */
-public class SplashScreen {
+@FXMLView(title = "个税易客户端", value = "/fxml/SplashScreen.fxml", css = "/css/splash.css", stageStyle = "TRANSPARENT")
+public class SplashScreen extends AbstractPage {
 
-	private static String DEFAULT_IMAGE = "/images/javafx.png";
+	@FXML
+	private VBox root;
+	@FXML
+	private ImageView logo;
+	@FXML
+	private ProgressBar progress;
+	private Thread thread;
+	private volatile int times;
+	private volatile boolean finish;
 
-	/**
-	 * Override this to create your own splash pane parent node.
-	 *
-	 * @return A standard image
-	 */
-	public Parent getParent() {
-		final ImageView imageView = new ImageView(getClass().getResource(getImagePath()).toExternalForm());
-		final ProgressBar splashProgressBar = new ProgressBar();
-		splashProgressBar.setPrefWidth(imageView.getImage().getWidth());
-
-		final VBox vbox = new VBox();
-		vbox.getChildren().addAll(imageView, splashProgressBar);
-
-		return vbox;
+	@FXML
+	public void initialize() {
+		logo.setImage(new Image(getClass().getResource("/images/logo.png").toExternalForm()));
+		this.start();
 	}
 
 	/**
-	 * Customize if the splash screen should be visible at all.
-	 *
-	 * @return true by default
+	 * 开始
 	 */
-	public boolean visible() {
-		return true;
+	public void start() {
+		finish = false;
+		times = 0;
+		Display.runUI(() -> {
+			this.progress.setProgress(0);
+		});
+		thread = new Thread(() -> {
+			while (!finish) {
+				Display.runUI(() -> {
+					double selection = this.progress.getProgress();
+					if (selection <= 0.5) {
+						this.progress.setProgress(selection + 0.05);
+					} else if (selection <= 0.75) {
+						times++;
+						if (times >= 5) {
+							this.progress.setProgress(selection + 0.03);
+							times = 0;
+						}
+					} else if (selection <= 0.95) {
+						times++;
+						if (times >= 10) {
+							this.progress.setProgress(selection + 0.01);
+							times = 0;
+						}
+					}
+				});
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					Display.runUI(() -> {
+						this.progress.setProgress(100);
+					});
+					finish = true;
+					break;
+				}
+			}
+		});
+		thread.setDaemon(true);
+		thread.start();
 	}
 
 	/**
-	 * Use your own splash image instead of the default one.
-	 *
-	 * @return "/splash/javafx.png"
+	 * 结束
 	 */
-	public String getImagePath() {
-		return DEFAULT_IMAGE;
+	@Override
+	public void close() {
+		this.finish = true;
 	}
-
 }

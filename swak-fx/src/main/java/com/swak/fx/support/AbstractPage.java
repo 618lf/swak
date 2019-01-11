@@ -234,9 +234,7 @@ public abstract class AbstractPage {
 	 *         AirhacksView the AirhacksPresenter)
 	 */
 	public Object getPresenter() {
-
 		ensureFxmlLoaderInitialized();
-
 		return presenterProperty.get();
 	}
 
@@ -359,6 +357,13 @@ public abstract class AbstractPage {
 	 */
 	public Optional<ResourceBundle> getResourceBundle() {
 		return bundle;
+	}
+	
+	/**
+	 * 关闭
+	 */
+	public void close() {
+		
 	}
 
 	@Override

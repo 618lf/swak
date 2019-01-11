@@ -23,11 +23,9 @@ import javafx.stage.StageStyle;
 public abstract class AbstractApplication extends Application {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(AbstractApplication.class);
-
 	private static String[] savedArgs = new String[0];
-
 	static Class<? extends AbstractPage> mainView;
-	static SplashScreen splashScreen;
+	static Class<? extends AbstractPage> splashView;
 	private final CompletableFuture<Runnable> splashIsShowing;
 
 	protected AbstractApplication() {
@@ -60,21 +58,19 @@ public abstract class AbstractApplication extends Application {
 	public void start(final Stage stage) throws Exception {
 		Display.setStage(stage);
 		Display.setHostServices(this.getHostServices());
+		AbstractPage splash = splashView.newInstance();
 		final Stage splashStage = new Stage(StageStyle.TRANSPARENT);
-
-		if (AbstractApplication.splashScreen.visible()) {
-			final Scene splashScene = new Scene(splashScreen.getParent(), Color.TRANSPARENT);
-			splashStage.setScene(splashScene);
-			splashStage.initStyle(StageStyle.TRANSPARENT);
-			splashStage.show();
-		}
+		final Scene splashScene = new Scene(splash.getView(), Color.TRANSPARENT);
+		this.customStage(splashStage, null);
+		splashStage.setScene(splashScene);
+		splashStage.initStyle(StageStyle.TRANSPARENT);
+		splashStage.show();
 
 		splashIsShowing.complete(() -> {
 			showView();
-			if (AbstractApplication.splashScreen.visible()) {
-				splashStage.hide();
-				splashStage.setScene(null);
-			}
+			splash.close();
+			splashStage.close();
+			splashStage.setScene(null);
 		});
 	}
 
@@ -135,7 +131,7 @@ public abstract class AbstractApplication extends Application {
 	 */
 	public static void launch(final Class<? extends Application> appClass,
 			final Class<? extends AbstractPage> viewClass, final String[] args) {
-		launch(appClass, viewClass, new SplashScreen(), args);
+		launch(appClass, viewClass, SplashScreen.class, args);
 	}
 
 	/**
@@ -151,13 +147,14 @@ public abstract class AbstractApplication extends Application {
 	 *            the args
 	 */
 	public static void launch(final Class<? extends Application> appClass,
-			final Class<? extends AbstractPage> viewClass, final SplashScreen splashScreen, final String[] args) {
+			final Class<? extends AbstractPage> viewClass, final Class<? extends AbstractPage> splashScreen,
+			final String[] args) {
 		mainView = viewClass;
 		savedArgs = args;
 		if (splashScreen != null) {
-			AbstractApplication.splashScreen = splashScreen;
+			AbstractApplication.splashView = splashScreen;
 		} else {
-			AbstractApplication.splashScreen = new SplashScreen();
+			AbstractApplication.splashView = SplashScreen.class;
 		}
 
 		if (SystemTray.isSupported()) {
