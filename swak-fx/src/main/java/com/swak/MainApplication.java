@@ -30,7 +30,7 @@ public class MainApplication extends AbstractApplication {
 	@Override
 	protected <T> T start(String[] savedArgs) {
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
