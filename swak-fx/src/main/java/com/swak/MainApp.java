@@ -61,7 +61,9 @@ public class MainApp extends Application {
             ActionListener listenerTray = new ActionListener() {                
                 @Override
                 public void actionPerformed(java.awt.event.ActionEvent arg0) {
-                	stage.hide();
+                	Display.runUI(()->{
+                		stage.hide();
+                	});
                 }                   
             };            
 
