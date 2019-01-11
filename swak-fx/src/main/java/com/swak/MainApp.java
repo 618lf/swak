@@ -33,51 +33,55 @@ public class MainApp extends Application {
 		stage.getIcons().add(new Image(Display.load("/images/logo.png").toExternalForm()));
 		stage.setScene(scene);
 		stage.sizeToScene();
-		stage.setOnCloseRequest(event ->{
+		stage.setOnCloseRequest(event -> {
 			System.out.println("退出1");
 			event.consume();
 		});
 		Display.setScene(scene);
 		Display.setStage(stage);
 		stage.show();
-		
-		if (SystemTray.isSupported()) {         
-            SystemTray tray = SystemTray.getSystemTray();
-            java.awt.Image image = Toolkit.getDefaultToolkit().getImage("/images/logo.png");
-            PopupMenu popup = new PopupMenu();
-            MenuItem item = new MenuItem("Exit");
 
-            popup.add(item);
+		if (SystemTray.isSupported()) {
+			SystemTray tray = SystemTray.getSystemTray();
+			java.awt.Image image = Toolkit.getDefaultToolkit().getImage("/images/logo.png");
+			PopupMenu popup = new PopupMenu();
+			MenuItem item = new MenuItem("Exit");
 
-            TrayIcon trayIcon = new TrayIcon(image, "Amr_Trial", popup);
+			popup.add(item);
 
-            ActionListener listener = new ActionListener() {                
-                @Override
-                public void actionPerformed(java.awt.event.ActionEvent arg0) {
-                    System.exit(0);                 
-                }               
-            };                       
+			TrayIcon trayIcon = new TrayIcon(image, "Amr_Trial", popup);
 
-            ActionListener listenerTray = new ActionListener() {                
-                @Override
-                public void actionPerformed(java.awt.event.ActionEvent arg0) {
-                	Display.runUI(()->{
-                		stage.hide();
-                	});
-                }                   
-            };            
+			ActionListener listener = new ActionListener() {
+				@Override
+				public void actionPerformed(java.awt.event.ActionEvent arg0) {
+					System.exit(0);
+				}
+			};
 
-            trayIcon.addActionListener(listenerTray);
-            item.addActionListener(listener);
+			ActionListener listenerTray = new ActionListener() {
+				@Override
+				public void actionPerformed(java.awt.event.ActionEvent arg0) {
+					Display.runUI(() -> {
+						if (stage.isShowing()) {
+							stage.hide();
+						} else {
+							stage.show();
+						}
+					});
+				}
+			};
 
-            try{
-              tray.add(trayIcon);
-            }catch (Exception e) {
-              System.err.println("Can't add to tray");
-            }
-          } else {
-            System.err.println("Tray unavailable");
-          } 
+			trayIcon.addActionListener(listenerTray);
+			item.addActionListener(listener);
+
+			try {
+				tray.add(trayIcon);
+			} catch (Exception e) {
+				System.err.println("Can't add to tray");
+			}
+		} else {
+			System.err.println("Tray unavailable");
+		}
 	}
 
 	/**
