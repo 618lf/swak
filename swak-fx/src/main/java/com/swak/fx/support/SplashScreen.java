@@ -1,5 +1,7 @@
 package com.swak.fx.support;
 
+import java.util.concurrent.CompletableFuture;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
@@ -20,7 +22,7 @@ public class SplashScreen extends AbstractPage {
 	private ImageView logo;
 	@FXML
 	private ProgressBar progress;
-	private Thread thread;
+	private volatile Thread thread;
 	private volatile int times;
 	private volatile boolean finish;
 
@@ -62,23 +64,36 @@ public class SplashScreen extends AbstractPage {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					Display.runUI(() -> {
-						this.progress.setProgress(100);
-					});
-					finish = true;
 					break;
 				}
 			}
+			this.finish();
 		});
 		thread.setDaemon(true);
 		thread.start();
+	}
+
+	// 结束
+	private void finish() {
+		Display.runUI(() -> {
+			this.progress.setProgress(1);
+			finish = true;
+		});
+		try {
+			Thread.sleep(200);
+		} catch (Exception e) {
+		}
+		closeFuture.complete(Boolean.TRUE);
 	}
 
 	/**
 	 * 结束
 	 */
 	@Override
-	public void close() {
-		this.finish = true;
+	public CompletableFuture<Boolean> close() {
+		if (thread != null) {
+			thread.interrupt();
+		}
+		return closeFuture;
 	}
 }

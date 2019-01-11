@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -35,6 +36,8 @@ public class Window extends AbstractPage {
 	protected Rectangle nWPane;
 	@FXML
 	protected Rectangle nEPane;
+	@FXML
+	protected Label title;
 
 	private double startMoveX = -1;
 	private double startMoveY = -1;
@@ -45,6 +48,11 @@ public class Window extends AbstractPage {
 	private double lastY = 0.0d;
 	private double lastWidth = 0.0d;
 	private double lastHeight = 0.0d;
+	
+	@FXML
+	public void initialize() {
+		this.title.setText(this.getDefaultTitle());
+	}
 
 	@FXML
 	public void hide(MouseEvent evt) {

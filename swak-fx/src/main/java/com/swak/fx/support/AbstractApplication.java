@@ -40,7 +40,7 @@ public abstract class AbstractApplication extends Application {
 				Platform.runLater(() -> showErrorAlert(throwable));
 			}
 		}).thenAcceptBothAsync(splashIsShowing, (ctx, closeSplash) -> {
-			Platform.runLater(closeSplash);
+			closeSplash.run();
 		});
 	}
 
@@ -67,10 +67,13 @@ public abstract class AbstractApplication extends Application {
 		splashStage.show();
 
 		splashIsShowing.complete(() -> {
-			showView();
-			splash.close();
-			splashStage.close();
-			splashStage.setScene(null);
+			splash.close().whenComplete((v, t) -> {
+				Display.runUI(() -> {
+					showView();
+					splashStage.close();
+					splashStage.setScene(null);
+				});
+			});
 		});
 	}
 

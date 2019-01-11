@@ -5,6 +5,7 @@ import java.awt.SystemTray;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -62,6 +63,10 @@ public enum Display {
 
 	static void setSystemTray(SystemTray systemTray) {
 		Display.systemTray = systemTray;
+	}
+	
+	public static Screen getScreen() {
+		return Screen.getPrimary();
 	}
 
 	/**

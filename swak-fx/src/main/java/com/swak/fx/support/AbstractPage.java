@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.util.MissingResourceException;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -35,7 +36,8 @@ import javafx.stage.StageStyle;
  * >FXMLView</a> that provides DI for Java FX Controllers via Spring.
  * </p>
  * <p>
- * Supports annotation driven creation of FXML based view beans with {@link FXMLView}
+ * Supports annotation driven creation of FXML based view beans with
+ * {@link FXMLView}
  * </p>
  *
  * @author Thomas Darimont
@@ -46,6 +48,7 @@ public abstract class AbstractPage {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPage.class);
 
+	protected CompletableFuture<Boolean> closeFuture = new CompletableFuture<>();
 	private final ObjectProperty<Object> presenterProperty;
 	private final Optional<ResourceBundle> bundle;
 	private final URL resource;
@@ -64,8 +67,8 @@ public abstract class AbstractPage {
 	}
 
 	/**
-	 * Gets the URL resource. This will be derived from applied annotation value
-	 * or from naming convention.
+	 * Gets the URL resource. This will be derived from applied annotation value or
+	 * from naming convention.
 	 *
 	 * @param annotation
 	 *            the annotation as defined by inheriting class.
@@ -105,9 +108,11 @@ public abstract class AbstractPage {
 	 * @throws IllegalStateException
 	 *             the illegal state exception
 	 */
-	private FXMLLoader loadSynchronously(final URL resource, final Optional<ResourceBundle> bundle) throws IllegalStateException {
+	private FXMLLoader loadSynchronously(final URL resource, final Optional<ResourceBundle> bundle)
+			throws IllegalStateException {
 		final FXMLLoader loader = new FXMLLoader(resource, bundle.orElse(null));
 		try {
+			loader.setController(this);
 			loader.load();
 		} catch (final IOException | IllegalStateException e) {
 			throw new IllegalStateException("Cannot load " + getConventionalName(), e);
@@ -127,8 +132,8 @@ public abstract class AbstractPage {
 	}
 
 	/**
-	 * Initializes the view by loading the FXML (if not happened yet) and
-	 * returns the top Node (parent) specified in the FXML file.
+	 * Initializes the view by loading the FXML (if not happened yet) and returns
+	 * the top Node (parent) specified in the FXML file.
 	 *
 	 * @return the root view as determined from {@link FXMLLoader}.
 	 */
@@ -140,9 +145,9 @@ public abstract class AbstractPage {
 	}
 
 	/**
-	 * Scene Builder creates for each FXML document a root container. This
-	 * method omits the root container (e.g. {@link AnchorPane}) and gives you
-	 * the access to its first child.
+	 * Scene Builder creates for each FXML document a root container. This method
+	 * omits the root container (e.g. {@link AnchorPane}) and gives you the access
+	 * to its first child.
 	 *
 	 * @return the first child of the {@link AnchorPane} or null if there are no
 	 *         children available from this view.
@@ -200,21 +205,21 @@ public abstract class AbstractPage {
 	}
 
 	/*
-	 * Gets the default title for to be shown in a (un)modal window. 
+	 * Gets the default title for to be shown in a (un)modal window.
 	 * 
 	 */
-    String getDefaultTitle() {
-        return annotation.title();
-    }
-    
-    /*
-     * Gets the default style for a (un)modal window.
-     */
-    StageStyle getDefaultStyle() {
-        final String style = annotation.stageStyle();
-        return StageStyle.valueOf(style.toUpperCase());
-    }
-	
+	String getDefaultTitle() {
+		return annotation.title();
+	}
+
+	/*
+	 * Gets the default style for a (un)modal window.
+	 */
+	StageStyle getDefaultStyle() {
+		final String style = annotation.stageStyle();
+		return StageStyle.valueOf(style.toUpperCase());
+	}
+
 	/**
 	 * Gets the style sheet name.
 	 *
@@ -226,12 +231,11 @@ public abstract class AbstractPage {
 
 	/**
 	 * In case the view was not initialized yet, the conventional fxml
-	 * (airhacks.fxml for the AirhacksView and AirhacksPresenter) are loaded and
-	 * the specified presenter / controller is going to be constructed and
-	 * returned.
+	 * (airhacks.fxml for the AirhacksView and AirhacksPresenter) are loaded and the
+	 * specified presenter / controller is going to be constructed and returned.
 	 *
-	 * @return the corresponding controller / presenter (usually for a
-	 *         AirhacksView the AirhacksPresenter)
+	 * @return the corresponding controller / presenter (usually for a AirhacksView
+	 *         the AirhacksPresenter)
 	 */
 	public Object getPresenter() {
 		ensureFxmlLoaderInitialized();
@@ -239,8 +243,8 @@ public abstract class AbstractPage {
 	}
 
 	/**
-	 * Does not initialize the view. Only registers the Consumer and waits until
-	 * the the view is going to be created / the method FXMLView#getView or
+	 * Does not initialize the view. Only registers the Consumer and waits until the
+	 * the view is going to be created / the method FXMLView#getView or
 	 * FXMLView#getViewAsync invoked.
 	 *
 	 * @param presenterConsumer
@@ -311,9 +315,8 @@ public abstract class AbstractPage {
 	/**
 	 * Gets the fxml file path.
 	 *
-	 * @return the relative path to the fxml file derived from the FXML view.
-	 *         e.g. The name for the AirhacksView is going to be
-	 *         <PATH>/airhacks.fxml.
+	 * @return the relative path to the fxml file derived from the FXML view. e.g.
+	 *         The name for the AirhacksView is going to be <PATH>/airhacks.fxml.
 	 */
 
 	final String getFxmlPath() {
@@ -332,8 +335,7 @@ public abstract class AbstractPage {
 	private Optional<ResourceBundle> getResourceBundle(final String name) {
 		try {
 			LOGGER.debug("Resource bundle: " + name);
-			return Optional.of(getBundle(name,
-				new ResourceBundleControl(getResourceBundleCharset())));
+			return Optional.of(getBundle(name, new ResourceBundleControl(getResourceBundleCharset())));
 		} catch (final MissingResourceException ex) {
 			LOGGER.debug("No resource bundle could be determined: " + ex.getMessage());
 			return Optional.empty();
@@ -341,10 +343,10 @@ public abstract class AbstractPage {
 	}
 
 	/**
-	 * Returns the charset to use when reading resource bundles as specified in
-	 * the annotation.
+	 * Returns the charset to use when reading resource bundles as specified in the
+	 * annotation.
 	 *
-	 * @return  the charset
+	 * @return the charset
 	 */
 	private Charset getResourceBundleCharset() {
 		return Charset.forName(annotation.encoding());
@@ -358,12 +360,12 @@ public abstract class AbstractPage {
 	public Optional<ResourceBundle> getResourceBundle() {
 		return bundle;
 	}
-	
+
 	/**
 	 * 关闭
 	 */
-	public void close() {
-		
+	public CompletableFuture<Boolean> close() {
+		return closeFuture;
 	}
 
 	@Override
