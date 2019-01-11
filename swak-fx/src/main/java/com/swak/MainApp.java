@@ -62,6 +62,7 @@ public class MainApp extends Application {
 				@Override
 				public void actionPerformed(java.awt.event.ActionEvent arg0) {
 					Display.runUI(() -> {
+						System.out.println(stage.isShowing());
 						if (stage.isShowing()) {
 							stage.hide();
 						} else {

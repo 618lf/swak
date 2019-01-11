@@ -59,8 +59,8 @@ public class MainApplication extends AbstractApplication {
 			event.consume();
 		});
 
-		// 设置托盘
-		if (tray != null) {
+		// 设置托盘(不支持1.8)
+		if (tray != null && System.getProperty("java.version").compareTo("1.9") > 0) {
 			this.enableTray(stage, tray);
 		}
 	}
