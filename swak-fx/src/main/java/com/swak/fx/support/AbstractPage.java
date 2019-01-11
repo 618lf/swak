@@ -1,6 +1,19 @@
 package com.swak.fx.support;
 
-import javafx.application.Platform;
+import static java.util.ResourceBundle.getBundle;
+
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.MissingResourceException;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.function.Consumer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -10,24 +23,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.StageStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.util.StringUtils;
-
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.MissingResourceException;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-
-import static java.util.ResourceBundle.getBundle;
 
 /**
  * Base class for fxml-based view classes.
@@ -46,32 +41,20 @@ import static java.util.ResourceBundle.getBundle;
  * @author Thomas Darimont
  * @author Felix Roske
  * @author Andreas Jay
- *
  */
-public abstract class AbstractFxmlView implements ApplicationContextAware {
+public abstract class AbstractPage {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractFxmlView.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPage.class);
 
 	private final ObjectProperty<Object> presenterProperty;
-
 	private final Optional<ResourceBundle> bundle;
-
 	private final URL resource;
-
 	private final FXMLView annotation;
-
 	private FXMLLoader fxmlLoader;
-
-	private ApplicationContext applicationContext;
-
 	private String fxmlRoot;
 
-	/**
-	 * Instantiates a new abstract fxml view.
-	 */
-	public AbstractFxmlView() {
+	public AbstractPage() {
 		LOGGER.debug("AbstractFxmlView construction");
-		// Set the root path to package path
 		final String filePathFromPackageName = PropertyReaderHelper.determineFilePathFromPackageName(getClass());
 		setFxmlRootPath(filePathFromPackageName);
 		annotation = getFXMLAnnotation();
@@ -102,37 +85,9 @@ public abstract class AbstractFxmlView implements ApplicationContextAware {
 	 * @return the FXML annotation
 	 */
 	private FXMLView getFXMLAnnotation() {
-		final Class<? extends AbstractFxmlView> theClass = this.getClass();
+		final Class<? extends AbstractPage> theClass = this.getClass();
 		final FXMLView annotation = theClass.getAnnotation(FXMLView.class);
 		return annotation;
-	}
-
-	/**
-	 * Creates the controller for type.
-	 *
-	 * @param type
-	 *            the type
-	 * @return the object
-	 */
-	private Object createControllerForType(final Class<?> type) {
-		return applicationContext.getBean(type);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.springframework.context.ApplicationContextAware#setApplicationContext
-	 * (org.springframework.context.ApplicationContext)
-	 */
-	@Override
-	public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-
-		if (this.applicationContext != null) {
-			return;
-		}
-
-		this.applicationContext = applicationContext;
 	}
 
 	private void setFxmlRootPath(final String path) {
@@ -151,16 +106,12 @@ public abstract class AbstractFxmlView implements ApplicationContextAware {
 	 *             the illegal state exception
 	 */
 	private FXMLLoader loadSynchronously(final URL resource, final Optional<ResourceBundle> bundle) throws IllegalStateException {
-
 		final FXMLLoader loader = new FXMLLoader(resource, bundle.orElse(null));
-		loader.setControllerFactory(this::createControllerForType);
-
 		try {
 			loader.load();
 		} catch (final IOException | IllegalStateException e) {
 			throw new IllegalStateException("Cannot load " + getConventionalName(), e);
 		}
-
 		return loader;
 	}
 
@@ -168,11 +119,9 @@ public abstract class AbstractFxmlView implements ApplicationContextAware {
 	 * Ensure fxml loader initialized.
 	 */
 	private void ensureFxmlLoaderInitialized() {
-
 		if (fxmlLoader != null) {
 			return;
 		}
-
 		fxmlLoader = loadSynchronously(resource, bundle);
 		presenterProperty.set(fxmlLoader.getController());
 	}
@@ -184,24 +133,10 @@ public abstract class AbstractFxmlView implements ApplicationContextAware {
 	 * @return the root view as determined from {@link FXMLLoader}.
 	 */
 	public Parent getView() {
-
 		ensureFxmlLoaderInitialized();
-
 		final Parent parent = fxmlLoader.getRoot();
 		addCSSIfAvailable(parent);
 		return parent;
-	}
-
-	/**
-	 * Initializes the view synchronously and invokes the consumer with the
-	 * created parent Node within the FX UI thread.
-	 *
-	 * @param consumer
-	 *            - an object interested in received the {@link Parent} as
-	 *            callback
-	 */
-	public void getView(final Consumer<Parent> consumer) {
-		CompletableFuture.supplyAsync(this::getView, Platform::runLater).thenAccept(consumer);
 	}
 
 	/**
@@ -229,12 +164,6 @@ public abstract class AbstractFxmlView implements ApplicationContextAware {
 	 *            the parent
 	 */
 	void addCSSIfAvailable(final Parent parent) {
-
-		// Read global css when available:
-		final List<String> list = PropertyReaderHelper.get(applicationContext.getEnvironment(), "javafx.css");
-		if (!list.isEmpty()) {
-			list.forEach(css -> parent.getStylesheets().add(getClass().getResource(css).toExternalForm()));
-		}
 
 		addCSSFromAnnotation(parent);
 
