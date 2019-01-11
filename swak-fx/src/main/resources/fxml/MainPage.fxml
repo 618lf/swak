@@ -22,11 +22,11 @@
 	minHeight="-Infinity" minWidth="-Infinity" styleClass="panel,panel-primary" xmlns="http://javafx.com/javafx/8"
 	xmlns:fx="http://javafx.com/fxml/1">
 	<top>
-		<HBox fx:id="topPane" prefHeight="32.0" onDragDetected="#startMoveWindow"
+		<HBox fx:id="topPane" prefHeight="24.0" onDragDetected="#startMoveWindow"
 			onMouseClicked="#titleDoubleClick" onMouseDragged="#moveWindow"
 			onMouseReleased="#endMoveWindow" styleClass="panel-heading">
 			<children>
-				<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+				<ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
 					preserveRatio="true">
 					<image>
 						<Image url="/images/logo.png" />
@@ -34,18 +34,18 @@
 				</ImageView>
 				<Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
 					<children>
-						<Label fx:id="title" minHeight="-Infinity" prefHeight="32.0" styleClass="title">
+						<Label fx:id="title" minHeight="-Infinity" prefHeight="24.0" styleClass="title">
 						</Label>
 					</children>
 				</Pane>
-				<ImageView styleClass="image-btn" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+				<ImageView styleClass="image-btn" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
 					preserveRatio="true">
 					<image>
 						<Image url="/images/安全.png" />
 					</image>
 				</ImageView>
-				<ImageView styleClass="image-btn" onMouseClicked="#minimize" fitHeight="32.0"
-					fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+				<ImageView styleClass="image-btn" onMouseClicked="#minimize" fitHeight="24.0"
+					fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
 					<image>
 						<Image url="/images/托盘.png" />
 					</image>
@@ -53,8 +53,8 @@
 						<Insets left="5.0" right="5.0" />
 					</HBox.margin>
 				</ImageView>
-				<ImageView styleClass="image-btn" onMouseClicked="#maximize" fitHeight="32.0"
-					fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+				<ImageView styleClass="image-btn" onMouseClicked="#maximize" fitHeight="24.0"
+					fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
 					<image>
 						<Image url="/images/最大化.png" />
 					</image>
@@ -62,8 +62,8 @@
 						<Insets left="5.0" right="5.0" />
 					</HBox.margin>
 				</ImageView>
-				<ImageView styleClass="image-btn" onMouseClicked="#close" fitHeight="32.0"
-					fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+				<ImageView styleClass="image-btn" onMouseClicked="#close" fitHeight="24.0"
+					fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
 					<image>
 						<Image url="/images/关闭.png" />
 					</image>
