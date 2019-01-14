@@ -12,7 +12,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
+
+import com.google.common.base.Strings;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -53,7 +54,7 @@ public abstract class AbstractPage {
 
 	public AbstractPage() {
 		LOGGER.debug("AbstractFxmlView construction");
-		final String filePathFromPackageName = PropertyReaderHelper.determineFilePathFromPackageName(getClass());
+		String filePathFromPackageName = "/" + this.getClass().getPackage().getName().replace('.', '/') + "/";
 		setFxmlRootPath(filePathFromPackageName);
 		annotation = getFXMLAnnotation();
 		resource = getURLResource(annotation);
@@ -249,7 +250,7 @@ public abstract class AbstractPage {
 	 * @return the bundle name
 	 */
 	private String getBundleName() {
-		if (StringUtils.isEmpty(annotation.bundle())) {
+		if (Strings.isNullOrEmpty(annotation.bundle())) {
 			final String lbundle = getClass().getPackage().getName() + "." + getConventionalName();
 			LOGGER.debug("Bundle: {} based on conventional name.", lbundle);
 			return lbundle;
@@ -299,7 +300,7 @@ public abstract class AbstractPage {
 	private Optional<ResourceBundle> getResourceBundle(final String name) {
 		try {
 			LOGGER.debug("Resource bundle: " + name);
-			return Optional.of(getBundle(name, new ResourceBundleControl(getResourceBundleCharset())));
+			return Optional.of(getBundle(name, new ResourceBundler(getResourceBundleCharset())));
 		} catch (final MissingResourceException ex) {
 			LOGGER.debug("No resource bundle could be determined: " + ex.getMessage());
 			return Optional.empty();
