@@ -10,7 +10,6 @@ import org.controlsfx.dialog.ProgressDialog;
 import org.controlsfx.dialog.Wizard.LinearFlow;
 import org.controlsfx.dialog.WizardPane;
 
-import com.swak.fx.support.Display;
 import com.swak.utils.Lists;
 
 import javafx.concurrent.Worker;
@@ -205,7 +204,7 @@ public class Dialogs {
 	 * @author lifeng
 	 */
 	public static class Builder {
-		
+
 		private Parent body;
 		private String fxml;
 		private String style;

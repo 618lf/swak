@@ -9,7 +9,7 @@ public class EventLoopFactory implements ThreadFactory {
 	final AtomicLong counter;
 	final String prefix;
 
-	EventLoopFactory(boolean daemon, String prefix, AtomicLong counter) {
+	public EventLoopFactory(boolean daemon, String prefix, AtomicLong counter) {
 		this.daemon = daemon;
 		this.counter = counter;
 		this.prefix = prefix;

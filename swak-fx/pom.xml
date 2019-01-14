@@ -9,13 +9,19 @@
 	<artifactId>swak-fx</artifactId>
 	<dependencies>
 		<dependency>
-			<groupId>com.swak</groupId>
-			<artifactId>swak-core</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
-			<version>8.40.14</version>
+			<version>${controlsfx.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-sample</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<build>

@@ -9,15 +9,11 @@ import java.util.MissingResourceException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -49,7 +45,6 @@ public abstract class AbstractPage {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPage.class);
 
 	protected CompletableFuture<Boolean> closeFuture = new CompletableFuture<>();
-	private final ObjectProperty<Object> presenterProperty;
 	private final Optional<ResourceBundle> bundle;
 	private final URL resource;
 	private final FXMLView annotation;
@@ -62,7 +57,6 @@ public abstract class AbstractPage {
 		setFxmlRootPath(filePathFromPackageName);
 		annotation = getFXMLAnnotation();
 		resource = getURLResource(annotation);
-		presenterProperty = new SimpleObjectProperty<>();
 		bundle = getResourceBundle(getBundleName());
 	}
 
@@ -128,7 +122,6 @@ public abstract class AbstractPage {
 			return;
 		}
 		fxmlLoader = loadSynchronously(resource, bundle);
-		presenterProperty.set(fxmlLoader.getController());
 	}
 
 	/**
@@ -227,35 +220,6 @@ public abstract class AbstractPage {
 	 */
 	private String getStyleSheetName() {
 		return fxmlRoot + getConventionalName(".css");
-	}
-
-	/**
-	 * In case the view was not initialized yet, the conventional fxml
-	 * (airhacks.fxml for the AirhacksView and AirhacksPresenter) are loaded and the
-	 * specified presenter / controller is going to be constructed and returned.
-	 *
-	 * @return the corresponding controller / presenter (usually for a AirhacksView
-	 *         the AirhacksPresenter)
-	 */
-	public Object getPresenter() {
-		ensureFxmlLoaderInitialized();
-		return presenterProperty.get();
-	}
-
-	/**
-	 * Does not initialize the view. Only registers the Consumer and waits until the
-	 * the view is going to be created / the method FXMLView#getView or
-	 * FXMLView#getViewAsync invoked.
-	 *
-	 * @param presenterConsumer
-	 *            listener for the presenter construction
-	 */
-	public void getPresenter(final Consumer<Object> presenterConsumer) {
-
-		presenterProperty.addListener(
-				(final ObservableValue<? extends Object> o, final Object oldValue, final Object newValue) -> {
-					presenterConsumer.accept(newValue);
-				});
 	}
 
 	/**
@@ -367,11 +331,4 @@ public abstract class AbstractPage {
 	public CompletableFuture<Boolean> close() {
 		return closeFuture;
 	}
-
-	@Override
-	public String toString() {
-		return "AbstractFxmlView [presenterProperty=" + presenterProperty + ", bundle=" + bundle + ", resource="
-				+ resource + ", fxmlRoot=" + fxmlRoot + "]";
-	}
-
 }

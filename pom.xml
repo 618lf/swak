@@ -67,6 +67,8 @@
 		<swt.version>1.0</swt.version>
 		<jcef.version>1.0</jcef.version>
 		<poi.version>4.0.1</poi.version>
+		<guava.version>21.0</guava.version>
+		<controlsfx.version>8.40.14</controlsfx.version>
 
 		<!-- test -->
 		<junit.version>4.12</junit.version>
@@ -204,6 +206,11 @@
 			<dependency>
 				<groupId>com.swak</groupId>
 				<artifactId>swak-sample-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-sample</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>

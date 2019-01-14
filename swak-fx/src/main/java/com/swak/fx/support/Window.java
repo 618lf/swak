@@ -1,6 +1,5 @@
 package com.swak.fx.support;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
@@ -48,7 +47,7 @@ public class Window extends AbstractPage {
 	private double lastY = 0.0d;
 	private double lastWidth = 0.0d;
 	private double lastHeight = 0.0d;
-	
+
 	@FXML
 	public void initialize() {
 		this.title.setText(this.getDefaultTitle());
@@ -61,10 +60,12 @@ public class Window extends AbstractPage {
 
 	@FXML
 	public void close(MouseEvent evt) {
-		ButtonType res = Dialogs.confirm("提醒", "确认关闭？", ButtonType.YES, ButtonType.NO);
-		if (res == ButtonType.YES) {
-			Platform.exit();
-		}
+		Display.runUI(() ->{
+			ButtonType res = Dialogs.confirm("提醒", "确认关闭？", ButtonType.YES, ButtonType.NO);
+			if (res == ButtonType.YES) {
+				Display.getEventBus().post(Event.EXIT);
+			}
+		});
 	}
 
 	@FXML

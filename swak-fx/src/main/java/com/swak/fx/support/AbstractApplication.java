@@ -2,9 +2,15 @@ package com.swak.fx.support;
 
 import java.awt.SystemTray;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.eventbus.AsyncEventBus;
+import com.google.common.eventbus.EventBus;
+import com.swak.reactivex.transport.resources.EventLoopFactory;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -20,16 +26,21 @@ import javafx.stage.StageStyle;
  *
  * @author Felix Roske
  */
-public abstract class AbstractApplication extends Application {
+public abstract class AbstractApplication extends Application implements EventListener {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(AbstractApplication.class);
 	private static String[] savedArgs = new String[0];
 	static Class<? extends AbstractPage> mainView;
 	static Class<? extends AbstractPage> splashView;
 	private final CompletableFuture<Runnable> splashIsShowing;
+	private final EventBus eventBus;
 
 	protected AbstractApplication() {
 		splashIsShowing = new CompletableFuture<>();
+		eventBus = new AsyncEventBus("app",
+				Executors.newFixedThreadPool(1, new EventLoopFactory(true, "app", new AtomicLong())));
+		eventBus.register(this);
+		Display.setEventBus(eventBus);
 	}
 
 	@Override
@@ -42,6 +53,20 @@ public abstract class AbstractApplication extends Application {
 		}).thenAcceptBothAsync(splashIsShowing, (ctx, closeSplash) -> {
 			closeSplash.run();
 		});
+	}
+
+	/**
+	 * 执行监听关闭
+	 */
+	@Override
+	public void listen(Event event) {
+		if (event == Event.EXIT) {
+			try {
+				Platform.exit();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -129,37 +154,19 @@ public abstract class AbstractApplication extends Application {
 	 *            the app class
 	 * @param view
 	 *            the view
-	 * @param args
-	 *            the args
-	 */
-	public static void launch(final Class<? extends Application> appClass,
-			final Class<? extends AbstractPage> viewClass, final String[] args) {
-		launch(appClass, viewClass, SplashScreen.class, args);
-	}
-
-	/**
-	 * Launch app.
-	 *
-	 * @param appClass
-	 *            the app class
-	 * @param view
-	 *            the view
 	 * @param splashScreen
 	 *            the splash screen
 	 * @param args
 	 *            the args
 	 */
 	public static void launch(final Class<? extends Application> appClass,
-			final Class<? extends AbstractPage> viewClass, final Class<? extends AbstractPage> splashScreen,
+			final Class<? extends AbstractPage> mainClass, final Class<? extends AbstractPage> splashScreen,
 			final String[] args) {
-		mainView = viewClass;
+		mainView = mainClass;
 		savedArgs = args;
 		if (splashScreen != null) {
 			AbstractApplication.splashView = splashScreen;
-		} else {
-			AbstractApplication.splashView = SplashScreen.class;
 		}
-
 		if (SystemTray.isSupported()) {
 			Display.setSystemTray(SystemTray.getSystemTray());
 		}

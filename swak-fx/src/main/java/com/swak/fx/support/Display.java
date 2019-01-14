@@ -2,6 +2,8 @@ package com.swak.fx.support;
 
 import java.awt.SystemTray;
 
+import com.google.common.eventbus.EventBus;
+
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -24,6 +26,7 @@ public enum Display {
 	private static String title;
 	private static HostServices hostServices;
 	private static SystemTray systemTray;
+	private static EventBus eventBus;
 
 	public static String getTitle() {
 		return title;
@@ -64,9 +67,17 @@ public enum Display {
 	static void setSystemTray(SystemTray systemTray) {
 		Display.systemTray = systemTray;
 	}
-	
+
 	public static Screen getScreen() {
 		return Screen.getPrimary();
+	}
+
+	public static EventBus getEventBus() {
+		return eventBus;
+	}
+
+	static void setEventBus(EventBus eventBus) {
+		Display.eventBus = eventBus;
 	}
 
 	/**
@@ -78,18 +89,18 @@ public enum Display {
 	public static java.net.URL load(String path) {
 		return Display.class.getResource(path);
 	}
-	
+
 	/**
-	 * 如果当前线程属于 UI 线程，则执行 runnable，否则调用 Platform.runLater() 来执行 runnable。
-     * 这样能保证 runnable 是在 UI 线程上执行。
+	 * 如果当前线程属于 UI 线程，则执行 runnable，否则调用 Platform.runLater() 来执行 runnable。 这样能保证
+	 * runnable 是在 UI 线程上执行。
 	 * 
 	 * @param runnable
 	 */
 	public static void runUI(Runnable runnable) {
 		if (Platform.isFxApplicationThread()) {
-            runnable.run();
-        } else {
-            Platform.runLater(runnable);
-        }
+			runnable.run();
+		} else {
+			Platform.runLater(runnable);
+		}
 	}
 }
