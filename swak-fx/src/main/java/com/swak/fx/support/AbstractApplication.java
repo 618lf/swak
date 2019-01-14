@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
-import com.swak.reactivex.transport.resources.EventLoopFactory;
 
 import javafx.application.Application;
 import javafx.application.Platform;

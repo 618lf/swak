@@ -25,7 +25,6 @@ import com.sun.javafx.scene.control.behavior.BehaviorBase;
 import com.sun.javafx.scene.control.behavior.KeyBinding;
 import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
 import com.sun.javafx.scene.traversal.ParentTraversalEngine;
-import com.swak.reactivex.transport.resources.EventLoopFactory;
 
 import javafx.animation.Animation.Status;
 import javafx.animation.Interpolator;

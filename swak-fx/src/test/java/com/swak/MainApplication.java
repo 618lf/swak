@@ -12,7 +12,6 @@ import com.swak.fx.support.Display;
 import com.swak.fx.support.Event;
 import com.swak.hello.MainPage;
 import com.swak.hello.SplashPage;
-import com.tmt.AppRunner;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -32,7 +31,7 @@ public class MainApplication extends AbstractApplication {
 	 */
 	@Override
 	protected <T> T start(String[] savedArgs) {
-		Application.run(AppRunner.class, savedArgs);
+		// Application.run(AppRunner.class, savedArgs);
 		return null;
 	}
 
@@ -41,7 +40,7 @@ public class MainApplication extends AbstractApplication {
 	 */
 	@Override
 	public void stop() throws Exception {
-		Application.stop();
+		// Application.stop();
 		super.stop();
 	}
 

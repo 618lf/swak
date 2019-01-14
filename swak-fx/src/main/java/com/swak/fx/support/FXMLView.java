@@ -3,8 +3,6 @@ package com.swak.fx.support;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.springframework.stereotype.Component;
-
 /**
  * The annotation {@link FXMLView} indicates a class to be used in the context
  * of an JavaFX view. Such classes are used in combination with fxml markup
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Component;
  *
  * @author Felix Roske
  */
-@Component
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FXMLView {
 

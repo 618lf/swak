@@ -10,7 +10,7 @@ import org.controlsfx.dialog.ProgressDialog;
 import org.controlsfx.dialog.Wizard.LinearFlow;
 import org.controlsfx.dialog.WizardPane;
 
-import com.swak.utils.Lists;
+import com.google.common.collect.Lists;
 
 import javafx.concurrent.Worker;
 import javafx.fxml.FXMLLoader;
