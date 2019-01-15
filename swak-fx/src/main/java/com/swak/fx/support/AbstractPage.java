@@ -357,7 +357,7 @@ public abstract class AbstractPage {
 		newStage.show();
 		return newStage;
 	}
-
+	
 	/**
 	 * 等待页面关闭
 	 */
@@ -368,5 +368,22 @@ public abstract class AbstractPage {
 		return initFuture.thenCompose((v) -> {
 			return closeFuture;
 		});
+	}
+	
+	/**
+	 * 当初始化之后需要处理
+	 * 
+	 * @return
+	 */
+	public CompletableFuture<Void> whenInited() {
+		return this.initFuture;
+	}
+	
+	/**
+	 * 当结束之后需要处理
+	 * @return
+	 */
+	public CompletableFuture<Void> whenClosed() {
+		return this.closeFuture;
 	}
 }

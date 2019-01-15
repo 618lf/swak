@@ -42,6 +42,9 @@ public abstract class AbstractApplication extends Application implements EventLi
 		Display.setEventBus(eventBus);
 	}
 
+	/**
+	 * 定制启动流程
+	 */
 	@Override
 	public void init() throws Exception {
 		this.start(savedArgs).whenComplete((ctx, throwable) -> {
@@ -79,7 +82,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 	 * @param savedArgs
 	 */
 	protected abstract CompletableFuture<Void> stop(final Stage stage);
-	
+
 	/**
 	 * 程序定制
 	 * 
@@ -98,7 +101,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 			throws InstantiationException, IllegalAccessException {
 		return view.newInstance();
 	}
-	
+
 	/**
 	 * 启动
 	 */
@@ -117,7 +120,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 		splashIsShowing.complete(() -> {
 			splash.waitClose().whenComplete((v, t) -> {
 				Display.runUI(() -> {
-					showView();
+					showMainView();
 					splashStage.close();
 					splashStage.setScene(null);
 				});
@@ -126,12 +129,9 @@ public abstract class AbstractApplication extends Application implements EventLi
 	}
 
 	/**
-	 * Show view.
-	 *
-	 * @param newView
-	 *            the new view
+	 * 显示主界面
 	 */
-	public void showView() {
+	protected void showMainView() {
 		try {
 			AbstractPage page = this.createPage(mainView);
 			if (Display.getScene() == null) {
@@ -144,6 +144,9 @@ public abstract class AbstractApplication extends Application implements EventLi
 			Display.getStage().setScene(Display.getScene());
 			this.customStage(Display.getStage(), Display.getSystemTray());
 			Display.getStage().show();
+			page.whenInited().thenAcceptAsync(v -> {
+				this.postInitialized();
+			});
 		} catch (Throwable t) {
 			LOGGER.error("Failed to load application: ", t);
 			showErrorAlert(t);
@@ -151,12 +154,16 @@ public abstract class AbstractApplication extends Application implements EventLi
 	}
 
 	/**
-	 * Show error alert that close app.
-	 *
-	 * @param throwable
-	 *            cause of error
+	 * 所有初始化之后
 	 */
-	private void showErrorAlert(Throwable throwable) {
+	protected void postInitialized() {}
+
+	/**
+	 * 启动错误
+	 * 
+	 * @param throwable
+	 */
+	protected void showErrorAlert(Throwable throwable) {
 		Alert alert = new Alert(AlertType.ERROR,
 				"Oops! An unrecoverable error occurred.\n" + "Please contact your software vendor.\n\n"
 						+ "The application will stop now.\n\n" + "Error: " + throwable.getMessage());
@@ -164,16 +171,12 @@ public abstract class AbstractApplication extends Application implements EventLi
 	}
 
 	/**
-	 * Launch app.
-	 *
+	 * Launch App
+	 * 
 	 * @param appClass
-	 *            the app class
-	 * @param view
-	 *            the view
+	 * @param mainClass
 	 * @param splashScreen
-	 *            the splash screen
 	 * @param args
-	 *            the args
 	 */
 	public static void launch(final Class<? extends Application> appClass,
 			final Class<? extends AbstractPage> mainClass, final Class<? extends AbstractPage> splashScreen,

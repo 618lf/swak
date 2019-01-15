@@ -132,7 +132,7 @@ public class MainApplication extends AbstractApplication {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * 启动系统
 	 * 
