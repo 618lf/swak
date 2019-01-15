@@ -89,6 +89,16 @@ public enum Display {
 	public static java.net.URL load(String path) {
 		return Display.class.getResource(path);
 	}
+	
+	/**
+	 * 加载资源
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static java.net.URL load(Class<?> clazz, String path) {
+		return clazz.getResource(path);
+	}
 
 	/**
 	 * 如果当前线程属于 UI 线程，则执行 runnable，否则调用 Platform.runLater() 来执行 runnable。 这样能保证

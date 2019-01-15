@@ -16,10 +16,13 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Strings;
 
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 /**
@@ -45,7 +48,8 @@ public abstract class AbstractPage {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPage.class);
 
-	protected CompletableFuture<Boolean> closeFuture = new CompletableFuture<>();
+	protected CompletableFuture<Void> initFuture = new CompletableFuture<>();
+	protected CompletableFuture<Void> closeFuture = new CompletableFuture<>();
 	private final Optional<ResourceBundle> bundle;
 	private final URL resource;
 	private final FXMLView annotation;
@@ -59,6 +63,14 @@ public abstract class AbstractPage {
 		annotation = getFXMLAnnotation();
 		resource = getURLResource(annotation);
 		bundle = getResourceBundle(getBundleName());
+	}
+
+	/**
+	 * 顶层初始化
+	 */
+	@FXML
+	public void initialize() {
+		this.initFuture.complete(null);
 	}
 
 	/**
@@ -327,9 +339,34 @@ public abstract class AbstractPage {
 	}
 
 	/**
-	 * 关闭
+	 * 显示界面
+	 * 
+	 * @param primaryStage
 	 */
-	public CompletableFuture<Boolean> close() {
-		return closeFuture;
+	public Stage openOn(Stage primaryStage) {
+		Stage newStage = new Stage(StageStyle.TRANSPARENT);
+		if (primaryStage != null) {
+			newStage.initOwner(primaryStage);
+			newStage.getIcons().addAll(primaryStage.getIcons());
+		}
+		Scene scene = new Scene(this.getView());
+		newStage.setScene(scene);
+		newStage.initStyle(StageStyle.TRANSPARENT);
+		newStage.setTitle(this.getDefaultTitle());
+		newStage.sizeToScene();
+		newStage.show();
+		return newStage;
+	}
+
+	/**
+	 * 等待页面关闭
+	 */
+	public CompletableFuture<Void> waitClose() {
+		if (!closeFuture.isDone()) {
+			closeFuture.complete(null);
+		}
+		return initFuture.thenCompose((v) -> {
+			return closeFuture;
+		});
 	}
 }

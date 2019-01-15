@@ -63,7 +63,7 @@
 						<Insets left="5.0" right="5.0" />
 					</HBox.margin>
 				</ImageView>
-				<ImageView styleClass="image-btn" onMouseClicked="#close" fitHeight="24.0"
+				<ImageView styleClass="image-btn" onMouseClicked="#onClose" fitHeight="24.0"
 					fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
 					<image>
 						<Image url="/images/关闭.png" />

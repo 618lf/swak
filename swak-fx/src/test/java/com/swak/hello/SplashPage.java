@@ -33,10 +33,11 @@ public class SplashPage extends AbstractPage {
 	@FXML
 	public void initialize() {
 		logo.setImage(new Image(getClass().getResource("/images/logo.png").toExternalForm()));
-		this.root.widthProperty().addListener((ob, o, n) ->{
+		this.root.widthProperty().addListener((ob, o, n) -> {
 			this.progress.setPrefWidth(n.doubleValue() - 6);
 		});
 		this.start();
+		super.initialize();
 	}
 
 	/**
@@ -87,20 +88,20 @@ public class SplashPage extends AbstractPage {
 			finish = true;
 		});
 		try {
-			Thread.sleep(200);
+			Thread.sleep(500);
 		} catch (Exception e) {
 		}
-		closeFuture.complete(Boolean.TRUE);
+		closeFuture.complete(null);
 	}
 
 	/**
 	 * 结束
 	 */
 	@Override
-	public CompletableFuture<Boolean> close() {
-		if (thread != null) {
+	public CompletableFuture<Void> waitClose() {
+		return initFuture.thenCompose((v) -> {
 			thread.interrupt();
-		}
-		return closeFuture;
+			return closeFuture;
+		});
 	}
 }

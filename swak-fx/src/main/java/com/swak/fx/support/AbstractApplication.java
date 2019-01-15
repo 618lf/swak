@@ -44,7 +44,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 
 	@Override
 	public void init() throws Exception {
-		CompletableFuture.supplyAsync(() -> this.start(savedArgs)).whenComplete((ctx, throwable) -> {
+		this.start(savedArgs).whenComplete((ctx, throwable) -> {
 			if (throwable != null) {
 				LOGGER.error("Failed to load spring application context: ", throwable);
 				Platform.runLater(() -> showErrorAlert(throwable));
@@ -60,11 +60,9 @@ public abstract class AbstractApplication extends Application implements EventLi
 	@Override
 	public void listen(Event event) {
 		if (event == Event.EXIT) {
-			try {
+			this.stop(Display.getStage()).whenComplete((v, t) -> {
 				Platform.exit();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			});
 		}
 	}
 
@@ -73,8 +71,34 @@ public abstract class AbstractApplication extends Application implements EventLi
 	 * 
 	 * @param savedArgs
 	 */
-	protected abstract <T> T start(String[] savedArgs);
+	protected abstract CompletableFuture<Void> start(String[] savedArgs);
 
+	/**
+	 * 停止服务
+	 * 
+	 * @param savedArgs
+	 */
+	protected abstract CompletableFuture<Void> stop(final Stage stage);
+	
+	/**
+	 * 程序定制
+	 * 
+	 * @param stage
+	 */
+	protected abstract void customStage(Stage stage, SystemTray tray);
+
+	/**
+	 * 创建页面
+	 * 
+	 * @param savedArgs
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 */
+	protected AbstractPage createPage(Class<? extends AbstractPage> view)
+			throws InstantiationException, IllegalAccessException {
+		return view.newInstance();
+	}
+	
 	/**
 	 * 启动
 	 */
@@ -82,7 +106,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 	public void start(final Stage stage) throws Exception {
 		Display.setStage(stage);
 		Display.setHostServices(this.getHostServices());
-		AbstractPage splash = splashView.newInstance();
+		AbstractPage splash = this.createPage(splashView);
 		final Stage splashStage = new Stage(StageStyle.TRANSPARENT);
 		final Scene splashScene = new Scene(splash.getView(), Color.TRANSPARENT);
 		this.customStage(splashStage, null);
@@ -91,7 +115,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 		splashStage.show();
 
 		splashIsShowing.complete(() -> {
-			splash.close().whenComplete((v, t) -> {
+			splash.waitClose().whenComplete((v, t) -> {
 				Display.runUI(() -> {
 					showView();
 					splashStage.close();
@@ -109,7 +133,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 	 */
 	public void showView() {
 		try {
-			AbstractPage page = mainView.newInstance();
+			AbstractPage page = this.createPage(mainView);
 			if (Display.getScene() == null) {
 				Display.setScene(new Scene(page.getView()));
 			} else {
@@ -125,13 +149,6 @@ public abstract class AbstractApplication extends Application implements EventLi
 			showErrorAlert(t);
 		}
 	}
-
-	/**
-	 * 程序定制
-	 * 
-	 * @param stage
-	 */
-	protected abstract void customStage(Stage stage, SystemTray tray);
 
 	/**
 	 * Show error alert that close app.

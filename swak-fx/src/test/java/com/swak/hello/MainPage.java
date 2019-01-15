@@ -1,6 +1,7 @@
 package com.swak.hello;
 
 import com.swak.fx.support.App;
+import com.swak.fx.support.Dialogs;
 import com.swak.fx.support.Display;
 import com.swak.fx.support.DownloadPane;
 import com.swak.fx.support.Event;
@@ -11,6 +12,8 @@ import com.swak.fx.support.Window;
 import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;
 import javafx.fxml.FXML;
+import javafx.scene.control.ButtonType;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
@@ -53,6 +56,21 @@ public class MainPage extends Window implements EventListener {
 		});
 		Display.getEventBus().register(this);
 	}
+	
+    /**
+     * 关闭页面
+     */
+	@FXML
+	@Override
+	public void onClose(MouseEvent evt) {
+		Display.runUI(() -> {
+			ButtonType res = Dialogs.confirm("提醒", "确认关闭？", ButtonType.YES, ButtonType.NO);
+			if (res == ButtonType.YES) {
+				this.onHide(evt);
+				Display.getEventBus().post(Event.EXIT);
+			}
+		});
+	}
 
 	/**
 	 * 监听事件
@@ -62,7 +80,7 @@ public class MainPage extends Window implements EventListener {
 		if (event.is(Event.DOWNLOAD)) {
 			download.download("张国荣图片张国荣图片张国荣图片.jpg", "http://192.168.0.16:8083/static/img/zgr.jpg");
 		} else if (event.is(Event.CLOSE)) {
-			this.close(null);
+			this.onClose(null);
 		}
 	}
 }

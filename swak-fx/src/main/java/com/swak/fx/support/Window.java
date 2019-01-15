@@ -3,11 +3,10 @@ package com.swak.fx.support;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
@@ -22,7 +21,7 @@ import javafx.stage.Stage;
 public class Window extends AbstractPage {
 
 	@FXML
-	protected BorderPane root;
+	protected Pane root;
 	@FXML
 	protected VBox leftPane;
 	@FXML
@@ -50,22 +49,30 @@ public class Window extends AbstractPage {
 
 	@FXML
 	public void initialize() {
+		super.initialize();
 		this.title.setText(this.getDefaultTitle());
 	}
 
+	// 真实的关闭
+	/**
+	 * 隐藏， 默认这两个是一致的，但如果设置
+	 * Platform.setImplicitExit(false); 就不一致
+	 * 
+	 * @param evt
+	 */
 	@FXML
-	public void hide(MouseEvent evt) {
+	public void onHide(MouseEvent evt) {
 		this.root.getScene().getWindow().hide();
 	}
 
+	/**
+	 * 关闭
+	 * 
+	 * @param evt
+	 */
 	@FXML
-	public void close(MouseEvent evt) {
-		Display.runUI(() ->{
-			ButtonType res = Dialogs.confirm("提醒", "确认关闭？", ButtonType.YES, ButtonType.NO);
-			if (res == ButtonType.YES) {
-				Display.getEventBus().post(Event.EXIT);
-			}
-		});
+	public void onClose(MouseEvent evt) {
+		this.root.getScene().getWindow().hide();
 	}
 
 	@FXML

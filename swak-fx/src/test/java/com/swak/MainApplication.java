@@ -4,14 +4,19 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.CompletableFuture;
 
 import javax.imageio.ImageIO;
+
+import org.springframework.context.ConfigurableApplicationContext;
 
 import com.swak.fx.support.AbstractApplication;
 import com.swak.fx.support.Display;
 import com.swak.fx.support.Event;
+import com.swak.hello.ClosePage;
 import com.swak.hello.MainPage;
 import com.swak.hello.SplashPage;
+import com.tmt.AppRunner;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -25,23 +30,51 @@ import javafx.stage.Stage;
 public class MainApplication extends AbstractApplication {
 
 	TrayIcon trayIcon;
+	ConfigurableApplicationContext applicationContext;
 
 	/**
-	 * 启动内部服务
+	 * 启动服务
 	 */
 	@Override
-	protected <T> T start(String[] savedArgs) {
-		// Application.run(AppRunner.class, savedArgs);
-		return null;
+	protected CompletableFuture<Void> start(String[] savedArgs) {
+		return CompletableFuture.runAsync(() -> {
+			this.applicationContext = Application.run(AppRunner.class, savedArgs);
+		});
 	}
 
 	/**
 	 * 停止服务
 	 */
 	@Override
-	public void stop() throws Exception {
-		// Application.stop();
-		super.stop();
+	protected CompletableFuture<Void> stop(Stage stage) {
+		CompletableFuture<Void> stopFuture = new CompletableFuture<>();
+		CompletableFuture<Void> backupFuture = this.backup();
+		CompletableFuture.runAsync(() -> {
+			Application.stop();
+		}).thenAcceptBothAsync(backupFuture, (v1, v2) -> {
+			stopFuture.complete(null);
+		});
+		return stopFuture;
+	}
+
+	/**
+	 * 启动
+	 * @param stage
+	 * @return
+	 */
+	protected CompletableFuture<Void> backup() {
+		CompletableFuture<Void> closeFuture = new CompletableFuture<>();
+		ClosePage closePage = new ClosePage();
+		Display.runUI(() -> {
+			Stage closePageState = closePage.openOn(null);
+			closePage.waitClose().whenComplete((v, t) -> {
+				Display.runUI(() -> {
+					closePageState.close();
+				});
+				closeFuture.complete(null);
+			});
+		});
+		return closeFuture;
 	}
 
 	/**
@@ -106,6 +139,7 @@ public class MainApplication extends AbstractApplication {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		Platform.setImplicitExit(false);
 		launch(MainApplication.class, MainPage.class, SplashPage.class, args);
 	}
 }
