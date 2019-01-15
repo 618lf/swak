@@ -15,7 +15,7 @@ import io.vertx.core.http.HttpServerResponse;
  */
 public class JsonHttpMessageConverter implements HttpMessageConverter {
 
-	private SerializerFeature[] features = new SerializerFeature[] {};
+	private SerializerFeature[] features = new SerializerFeature[] {SerializerFeature.DisableCircularReferenceDetect};
 
 	@Override
 	public boolean canWrite(Class<?> clazz) {

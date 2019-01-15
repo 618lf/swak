@@ -12,7 +12,7 @@ import com.swak.utils.JsonMapper;
  */
 public class JsonHttpMessageConverter implements HttpMessageConverter {
 
-	private SerializerFeature[] features = new SerializerFeature[] {};
+	private SerializerFeature[] features = new SerializerFeature[] {SerializerFeature.DisableCircularReferenceDetect};
 
 	@Override
 	public boolean canWrite(Class<?> clazz) {
