@@ -36,7 +36,6 @@ public class MainPage extends Window implements EventListener {
 
 	@FXML
 	public void initialize() {
-		super.initialize();
 		double w = 1200;
 		double h = 1200 / 16 * 9;
 		if (h > Display.getScreen().getVisualBounds().getHeight()) {
@@ -55,6 +54,7 @@ public class MainPage extends Window implements EventListener {
 			}
 		});
 		Display.getEventBus().register(this);
+		super.initialize();
 	}
 	
     /**

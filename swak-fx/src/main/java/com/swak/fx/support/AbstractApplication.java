@@ -120,9 +120,13 @@ public abstract class AbstractApplication extends Application implements EventLi
 		splashIsShowing.complete(() -> {
 			splash.waitClose().whenComplete((v, t) -> {
 				Display.runUI(() -> {
-					showMainView();
-					splashStage.close();
-					splashStage.setScene(null);
+					showMainView().whenComplete((v1, t1) -> {
+						Display.runUI(() -> {
+							v1.run();
+							splashStage.close();
+							splashStage.setScene(null);
+						});
+					});
 				});
 			});
 		});
@@ -131,7 +135,8 @@ public abstract class AbstractApplication extends Application implements EventLi
 	/**
 	 * 显示主界面
 	 */
-	protected void showMainView() {
+	protected CompletableFuture<Runnable> showMainView() {
+		CompletableFuture<Runnable> mainViewInited = new CompletableFuture<>();
 		try {
 			AbstractPage page = this.createPage(mainView);
 			if (Display.getScene() == null) {
@@ -143,20 +148,25 @@ public abstract class AbstractApplication extends Application implements EventLi
 			Display.getStage().initStyle(page.getDefaultStyle());
 			Display.getStage().setScene(Display.getScene());
 			this.customStage(Display.getStage(), Display.getSystemTray());
-			Display.getStage().show();
 			page.whenInited().thenAcceptAsync(v -> {
 				this.postInitialized();
+				mainViewInited.complete(() -> {
+					Display.getStage().show();
+				});
 			});
 		} catch (Throwable t) {
 			LOGGER.error("Failed to load application: ", t);
+			mainViewInited.completeExceptionally(t);
 			showErrorAlert(t);
 		}
+		return mainViewInited;
 	}
 
 	/**
 	 * 所有初始化之后
 	 */
-	protected void postInitialized() {}
+	protected void postInitialized() {
+	}
 
 	/**
 	 * 启动错误

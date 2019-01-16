@@ -624,7 +624,6 @@ public class DownloadPane extends Control {
 							rate = 0.99;
 						}
 						this.progressProperty.set(rate);
-						Thread.sleep(1);
 					}
 					download.finish();
 					this.progressProperty.set(1.0);
