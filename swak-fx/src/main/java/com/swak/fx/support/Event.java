@@ -35,8 +35,9 @@ public class Event {
 		this.key = key;
 	}
 
-	public Object getMessage() {
-		return message;
+	@SuppressWarnings("unchecked")
+	public <T> T getMessage() {
+		return (T)message;
 	}
 
 	public void setMessage(Object message) {
