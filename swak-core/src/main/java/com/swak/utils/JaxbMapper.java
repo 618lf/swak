@@ -1,11 +1,9 @@
 package com.swak.utils;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -13,15 +11,16 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler;
+import com.swak.Constants;
+
 
 /**
  * 使用Jaxb2.0实现XML<->Java Object的Mapper.
@@ -32,10 +31,10 @@ import com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler;
  * @author calvin
  * @version 2013-01-15
  */
-@SuppressWarnings("restriction")
 public class JaxbMapper {
 
 	private static ConcurrentMap<Class<?>, JAXBContext> CONTEXT = null;
+	private static SAXParserFactory PARSER_FACTORY = SAXParserFactory.newDefaultInstance();
 	
 	/**
 	 * 池化
@@ -106,7 +105,7 @@ public class JaxbMapper {
 		Unmarshaller unmarshaller = null;
 		try {
 			unmarshaller = createUnmarshaller(clazz);
-			XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+			XMLReader xmlReader = PARSER_FACTORY.newSAXParser().getXMLReader();
 			Source Source = new SAXSource(xmlReader, new InputSource(xml));
 			return (T) unmarshaller.unmarshal(Source);
 		} catch (Exception e) {
@@ -124,10 +123,7 @@ public class JaxbMapper {
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-			marshaller.setProperty(CharacterEscapeHandler.class.getName(), new CharacterEscapeHandler() {
-                public void escape(char[] ac, int i, int j, boolean flag,Writer writer) throws IOException {
-                writer.write( ac, i, j ); }
-            });
+			marshaller.setProperty(Marshaller.JAXB_ENCODING, Constants.DEFAULT_ENCODING.name());
 			return marshaller;
 		} catch (Exception e) {
 			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz

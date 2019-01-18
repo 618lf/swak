@@ -149,7 +149,7 @@ public class AnnotationBean implements DisposableBean, BeanFactoryPostProcessor,
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             try {
-                if (!field.isAccessible()) {
+                if (!field.canAccess(bean)) {
                     field.setAccessible(true);
                 }
                 MotanReferer reference = field.getAnnotation(MotanReferer.class);

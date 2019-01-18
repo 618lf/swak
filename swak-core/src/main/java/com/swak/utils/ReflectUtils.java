@@ -171,10 +171,8 @@ public final class ReflectUtils {
 	/**
 	 * is compatible.
 	 * 
-	 * @param c
-	 *            class.
-	 * @param o
-	 *            instance.
+	 * @param c class.
+	 * @param o instance.
 	 * @return compatible or not.
 	 */
 	public static boolean isCompatible(Class<?> c, Object o) {
@@ -208,10 +206,8 @@ public final class ReflectUtils {
 	/**
 	 * is compatible.
 	 * 
-	 * @param cs
-	 *            class array.
-	 * @param os
-	 *            object array.
+	 * @param cs class array.
+	 * @param os object array.
 	 * @return compatible or not.
 	 */
 	public static boolean isCompatible(Class<?>[] cs, Object[] os) {
@@ -244,8 +240,7 @@ public final class ReflectUtils {
 	/**
 	 * get name. java.lang.Object[][].class => "java.lang.Object[][]"
 	 * 
-	 * @param c
-	 *            class.
+	 * @param c class.
 	 * @return name.
 	 */
 	public static String getName(Class<?> c) {
@@ -285,8 +280,7 @@ public final class ReflectUtils {
 	 * get method name. "void do(int)", "void do()", "int
 	 * do(java.lang.String,boolean)"
 	 * 
-	 * @param m
-	 *            method.
+	 * @param m method.
 	 * @return name.
 	 */
 	public static String getName(final Method m) {
@@ -324,8 +318,7 @@ public final class ReflectUtils {
 	/**
 	 * get constructor name. "()", "(java.lang.String,int)"
 	 * 
-	 * @param c
-	 *            constructor.
+	 * @param c constructor.
 	 * @return name.
 	 */
 	public static String getName(final Constructor<?> c) {
@@ -343,8 +336,7 @@ public final class ReflectUtils {
 	/**
 	 * get class desc. boolean[].class => "[Z" Object.class => "Ljava/lang/Object;"
 	 * 
-	 * @param c
-	 *            class.
+	 * @param c class.
 	 * @return desc.
 	 * @throws NotFoundException
 	 */
@@ -388,8 +380,7 @@ public final class ReflectUtils {
 	 * get class array desc. [int.class, boolean[].class, Object.class] =>
 	 * "I[ZLjava/lang/Object;"
 	 * 
-	 * @param cs
-	 *            class array.
+	 * @param cs class array.
 	 * @return desc.
 	 * @throws NotFoundException
 	 */
@@ -407,8 +398,7 @@ public final class ReflectUtils {
 	 * get method desc. int do(int arg1) => "do(I)I" void do(String arg1,boolean
 	 * arg2) => "do(Ljava/lang/String;Z)V"
 	 * 
-	 * @param m
-	 *            method.
+	 * @param m method.
 	 * @return desc.
 	 */
 	public static String getDesc(final Method m) {
@@ -423,8 +413,7 @@ public final class ReflectUtils {
 	/**
 	 * get constructor desc. "()V", "(Ljava/lang/String;I)V"
 	 * 
-	 * @param c
-	 *            constructor.
+	 * @param c constructor.
 	 * @return desc
 	 */
 	public static String getDesc(final Constructor<?> c) {
@@ -439,8 +428,7 @@ public final class ReflectUtils {
 	/**
 	 * get method desc. "(I)I", "()V", "(Ljava/lang/String;Z)V"
 	 * 
-	 * @param m
-	 *            method.
+	 * @param m method.
 	 * @return desc.
 	 */
 	public static String getDescWithoutMethodName(Method m) {
@@ -456,8 +444,7 @@ public final class ReflectUtils {
 	/**
 	 * get class desc. Object.class => "Ljava/lang/Object;" boolean[].class => "[Z"
 	 * 
-	 * @param c
-	 *            class.
+	 * @param c class.
 	 * @return desc.
 	 * @throws NotFoundException
 	 */
@@ -497,8 +484,7 @@ public final class ReflectUtils {
 	/**
 	 * get method desc. "do(I)I", "do()V", "do(Ljava/lang/String;Z)V"
 	 * 
-	 * @param m
-	 *            method.
+	 * @param m method.
 	 * @return desc.
 	 */
 	public static String getDesc(final CtMethod m) throws NotFoundException {
@@ -513,8 +499,7 @@ public final class ReflectUtils {
 	/**
 	 * get constructor desc. "()V", "(Ljava/lang/String;I)V"
 	 * 
-	 * @param c
-	 *            constructor.
+	 * @param c constructor.
 	 * @return desc
 	 */
 	public static String getDesc(final CtConstructor c) throws NotFoundException {
@@ -529,8 +514,7 @@ public final class ReflectUtils {
 	/**
 	 * get method desc. "(I)I", "()V", "(Ljava/lang/String;Z)V".
 	 * 
-	 * @param m
-	 *            method.
+	 * @param m method.
 	 * @return desc.
 	 */
 	public static String getDescWithoutMethodName(final CtMethod m) throws NotFoundException {
@@ -546,8 +530,7 @@ public final class ReflectUtils {
 	/**
 	 * name to desc. java.util.Map[][] => "[[Ljava/util/Map;"
 	 * 
-	 * @param name
-	 *            name.
+	 * @param name name.
 	 * @return desc.
 	 */
 	public static String name2desc(String name) {
@@ -585,8 +568,7 @@ public final class ReflectUtils {
 	/**
 	 * desc to name. "[[I" => "int[][]"
 	 * 
-	 * @param desc
-	 *            desc.
+	 * @param desc desc.
 	 * @return name.
 	 */
 	public static String desc2name(String desc) {
@@ -653,8 +635,7 @@ public final class ReflectUtils {
 	 * name to class. "boolean" => boolean.class "java.util.Map[][]" =>
 	 * java.util.Map[][].class
 	 * 
-	 * @param name
-	 *            name.
+	 * @param name name.
 	 * @return Class instance.
 	 */
 	public static Class<?> name2class(String name) throws ClassNotFoundException {
@@ -665,10 +646,8 @@ public final class ReflectUtils {
 	 * name to class. "boolean" => boolean.class "java.util.Map[][]" =>
 	 * java.util.Map[][].class
 	 * 
-	 * @param cl
-	 *            ClassLoader instance.
-	 * @param name
-	 *            name.
+	 * @param cl   ClassLoader instance.
+	 * @param name name.
 	 * @return Class instance.
 	 */
 	private static Class<?> name2class(ClassLoader cl, String name) throws ClassNotFoundException {
@@ -738,8 +717,7 @@ public final class ReflectUtils {
 	 * desc to class. "[Z" => boolean[].class "[[Ljava/util/Map;" =>
 	 * java.util.Map[][].class
 	 * 
-	 * @param desc
-	 *            desc.
+	 * @param desc desc.
 	 * @return Class instance.
 	 * @throws ClassNotFoundException
 	 */
@@ -751,10 +729,8 @@ public final class ReflectUtils {
 	 * desc to class. "[Z" => boolean[].class "[[Ljava/util/Map;" =>
 	 * java.util.Map[][].class
 	 * 
-	 * @param cl
-	 *            ClassLoader instance.
-	 * @param desc
-	 *            desc.
+	 * @param cl   ClassLoader instance.
+	 * @param desc desc.
 	 * @return Class instance.
 	 * @throws ClassNotFoundException
 	 */
@@ -802,8 +778,7 @@ public final class ReflectUtils {
 	/**
 	 * get class array instance.
 	 * 
-	 * @param desc
-	 *            desc.
+	 * @param desc desc.
 	 * @return Class class array.
 	 * @throws ClassNotFoundException
 	 */
@@ -815,10 +790,8 @@ public final class ReflectUtils {
 	/**
 	 * get class array instance.
 	 * 
-	 * @param cl
-	 *            ClassLoader instance.
-	 * @param desc
-	 *            desc.
+	 * @param cl   ClassLoader instance.
+	 * @param desc desc.
 	 * @return Class[] class array.
 	 * @throws ClassNotFoundException
 	 */
@@ -836,15 +809,12 @@ public final class ReflectUtils {
 	/**
 	 * 根据方法签名从类中找出方法。
 	 * 
-	 * @param clazz
-	 *            查找的类。
-	 * @param methodName
-	 *            方法签名，形如method1(int, String)。也允许只给方法名不参数只有方法名，形如method2。
+	 * @param clazz      查找的类。
+	 * @param methodName 方法签名，形如method1(int, String)。也允许只给方法名不参数只有方法名，形如method2。
 	 * @return 返回查找到的方法。
 	 * @throws NoSuchMethodException
 	 * @throws ClassNotFoundException
-	 * @throws IllegalStateException
-	 *             给定的方法签名找到多个方法（方法签名中没有指定参数，又有有重载的方法的情况）
+	 * @throws IllegalStateException  给定的方法签名找到多个方法（方法签名中没有指定参数，又有有重载的方法的情况）
 	 */
 	public static Method findMethodByMethodSignature(Class<?> clazz, String methodName, String[] parameterTypes)
 			throws NoSuchMethodException, ClassNotFoundException {
@@ -915,10 +885,8 @@ public final class ReflectUtils {
 	 * <p>
 	 * 不会触发到指定接口的{@link Class}，所以如果ClassLoader中没有指定接口类时，也不会出错。
 	 * 
-	 * @param obj
-	 *            要检查的对象
-	 * @param interfaceClazzName
-	 *            指定的接口名
+	 * @param obj                要检查的对象
+	 * @param interfaceClazzName 指定的接口名
 	 * @return 返回{@code true}，如果对象实现了指定接口；否则返回{@code false}。
 	 */
 	public static boolean isInstance(Object obj, String interfaceClazzName) {
@@ -973,7 +941,7 @@ public final class ReflectUtils {
 			try {
 				Object value = emptyInstances.get(returnType);
 				if (value == null) {
-					value = returnType.newInstance();
+					value = returnType.getDeclaredConstructor().newInstance();
 					emptyInstances.put(returnType, value);
 				}
 				Class<?> cls = value.getClass();
@@ -983,7 +951,7 @@ public final class ReflectUtils {
 						Object property = getEmptyObject(field.getType(), emptyInstances, level + 1);
 						if (property != null) {
 							try {
-								if (!field.isAccessible()) {
+								if (!field.canAccess(value)) {
 									field.setAccessible(true);
 								}
 								field.set(value, property);
@@ -1338,9 +1306,10 @@ public final class ReflectUtils {
 		}
 		return type;
 	}
-	
+
 	/**
 	 * 获得字段的的类型
+	 * 
 	 * @param clazz
 	 * @param type
 	 * @param fieldType
@@ -1363,7 +1332,7 @@ public final class ReflectUtils {
 			return fieldType;
 		}
 
-		Type type = (Type)clazz;
+		Type type = (Type) clazz;
 		if (!ReflectUtils.isGenericParamType(type)) {
 			return fieldType;
 		}
@@ -1409,10 +1378,10 @@ public final class ReflectUtils {
 
 		return fieldType;
 	}
-	
+
 	/**
-	 * tv    : getGenericType, getGenericReturnType, getGenericParameterTypes 
-	 * clazz : 所属的类型
+	 * tv : getGenericType, getGenericReturnType, getGenericParameterTypes clazz :
+	 * 所属的类型
 	 * 
 	 * 感觉 getFieldType 就可以获得实际的类型
 	 * 
@@ -1493,7 +1462,7 @@ public final class ReflectUtils {
 
 		return changed;
 	}
-	
+
 	private ReflectUtils() {
 	}
 }

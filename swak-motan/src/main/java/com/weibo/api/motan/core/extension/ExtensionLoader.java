@@ -16,11 +16,6 @@
 
 package com.weibo.api.motan.core.extension;
 
-import com.weibo.api.motan.common.MotanConstants;
-import com.weibo.api.motan.exception.MotanFrameworkException;
-import com.weibo.api.motan.util.LoggerUtil;
-import com.swak.utils.StringUtils;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,9 +23,19 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceConfigurationError;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import com.swak.utils.StringUtils;
+import com.weibo.api.motan.common.MotanConstants;
+import com.weibo.api.motan.exception.MotanFrameworkException;
+import com.weibo.api.motan.util.LoggerUtil;
 
 /**
  * <pre>
@@ -98,7 +103,7 @@ public class ExtensionLoader<T> {
                     return null;
                 }
 
-                return clz.newInstance();
+                return clz.getDeclaredConstructor().newInstance();
             }
         } catch (Exception e) {
             failThrows(type, "Error when getExtension " + name, e);
@@ -107,7 +112,7 @@ public class ExtensionLoader<T> {
         return null;
     }
 
-    private T getSingletonInstance(String name) throws InstantiationException, IllegalAccessException {
+    private T getSingletonInstance(String name) throws InstantiationException, Exception {
         T obj = singletonInstances.get(name);
 
         if (obj != null) {
@@ -126,7 +131,7 @@ public class ExtensionLoader<T> {
                 return obj;
             }
 
-            obj = clz.newInstance();
+            obj = clz.getDeclaredConstructor().newInstance();
             singletonInstances.put(name, obj);
         }
 

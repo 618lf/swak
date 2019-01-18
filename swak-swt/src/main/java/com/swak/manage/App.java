@@ -28,11 +28,12 @@ public abstract class App {
 		// 加载主题
 		try {
 			String windowClass = Theme.class.getPackage().getName() + ".theme." + theme.path();
-			window = (Window) (App.class.getClassLoader().loadClass(windowClass).newInstance());
+			window = (Window) (App.class.getClassLoader().loadClass(windowClass).getDeclaredConstructor()
+					.newInstance());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		// 设置主题
 		window.theme(theme);
 

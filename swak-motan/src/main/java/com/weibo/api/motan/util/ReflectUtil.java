@@ -274,7 +274,7 @@ public class ReflectUtil {
             try {
                 Object value = emptyInstances.get(returnType);
                 if (value == null) {
-                    value = returnType.newInstance();
+                    value = returnType.getDeclaredConstructor().newInstance();
                     emptyInstances.put(returnType, value);
                 }
                 Class<?> cls = value.getClass();
@@ -284,7 +284,7 @@ public class ReflectUtil {
                         Object property = getEmptyObject(field.getType(), emptyInstances, level + 1);
                         if (property != null) {
                             try {
-                                if (!field.isAccessible()) {
+                                if (!field.canAccess(value)) {
                                     field.setAccessible(true);
                                 }
                                 field.set(value, property);

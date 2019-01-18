@@ -122,7 +122,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
 			try {
-				if (!field.isAccessible()) {
+				if (!field.canAccess(bean)) {
 					field.setAccessible(true);
 				}
 				ServiceReferer reference = field.getAnnotation(ServiceReferer.class);

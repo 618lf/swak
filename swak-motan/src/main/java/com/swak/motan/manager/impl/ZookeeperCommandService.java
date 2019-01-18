@@ -19,8 +19,6 @@ package com.swak.motan.manager.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.I0Itec.zkclient.ZkClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,7 +34,6 @@ public class ZookeeperCommandService extends AbstractCommandService {
 	private ZkClientWrapper clientWrapper;
 	private ZkClient zkClient;
 
-	@PostConstruct
 	void init() {
 		zkClient = clientWrapper.getZkClient();
 	}

@@ -18,6 +18,7 @@
 
 package com.swak.zip;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,13 +61,13 @@ public class ExtraFieldUtils {
      */
     public static void register(Class<?> c) {
         try {
-            ZipExtraField ze = (ZipExtraField) c.newInstance();
+            ZipExtraField ze = (ZipExtraField) (c.getDeclaredConstructor().newInstance());
             implementations.put(ze.getHeaderId(), c);
         } catch (ClassCastException cc) {
             throw new RuntimeException(c + " doesn\'t implement ZipExtraField");
         } catch (InstantiationException ie) {
             throw new RuntimeException(c + " is not a concrete class");
-        } catch (IllegalAccessException ie) {
+        } catch (Exception ie) {
             throw new RuntimeException(c + "\'s no-arg constructor is not public");
         }
     }
@@ -78,13 +79,17 @@ public class ExtraFieldUtils {
      * @return an instance of the appropriate ExtraField
      * @exception InstantiationException if unable to instantiate the class
      * @exception IllegalAccessException if not allowed to instantiate the class
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
      * @since 1.1
      */
     public static ZipExtraField createExtraField(ZipShort headerId)
-        throws InstantiationException, IllegalAccessException {
+        throws Exception {
         Class<?> c = implementations.get(headerId);
         if (c != null) {
-            return (ZipExtraField) c.newInstance();
+            return (ZipExtraField) (c.getDeclaredConstructor().newInstance());
         }
         UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(headerId);
@@ -183,7 +188,7 @@ public class ExtraFieldUtils {
                 v.add(ze);
             } catch (InstantiationException ie) {
                 throw new ZipException(ie.getMessage());
-            } catch (IllegalAccessException iae) {
+            } catch (Exception iae) {
                 throw new ZipException(iae.getMessage());
             }
             start += (length + WORD);

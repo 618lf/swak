@@ -116,7 +116,7 @@ public class ServiceMockFilter implements Filter {
                 boolean invoke = false;
                 for (Method method : methods) {
                     if (methodDesc.equals(ReflectUtil.getMethodDesc(method))) {
-                        Object value = invoke(mockClass.newInstance(), method, request.getArguments(), info);
+                        Object value = invoke(mockClass.getDeclaredConstructor().newInstance(), method, request.getArguments(), info);
                         response.setValue(value);
                         invoke = true;
                         break;

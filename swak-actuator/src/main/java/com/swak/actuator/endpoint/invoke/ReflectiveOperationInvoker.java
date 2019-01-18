@@ -74,7 +74,7 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	 */
 	private Object resolveObject(Class<?> type, Map<String, Object> arguments) {
 		try {
-			Object obj = type.newInstance();
+			Object obj = type.getDeclaredConstructor().newInstance();
 			Field[] fields = type.getDeclaredFields();
 			for (Field field : fields) {
 				field.setAccessible(true);

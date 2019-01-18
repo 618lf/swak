@@ -11,7 +11,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -21,11 +20,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.collect.Sets;
-import com.sun.javafx.scene.control.behavior.BehaviorBase;
-import com.sun.javafx.scene.control.behavior.KeyBinding;
-import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
 import com.sun.javafx.scene.traversal.ParentTraversalEngine;
 
+import impl.org.controlsfx.ReflectionUtils;
 import javafx.animation.Animation.Status;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -52,6 +49,7 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Skin;
+import javafx.scene.control.SkinBase;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -66,7 +64,6 @@ import javafx.util.Duration;
  * 
  * @author lifeng
  */
-@SuppressWarnings("restriction")
 public class DownloadPane extends Control {
 
 	/***************************************************************************
@@ -186,15 +183,14 @@ public class DownloadPane extends Control {
 	 * 
 	 * @author lifeng
 	 */
-	public static class DownloadPaneSkin extends BehaviorSkinBase<DownloadPane, BehaviorBase<DownloadPane>> {
+	public static class DownloadPaneSkin extends SkinBase<DownloadPane> {
 
 		private DownloadParts downloadParts;
 		private Node content;
 		private Rectangle clip = new Rectangle();
 
-		@SuppressWarnings("deprecation")
 		protected DownloadPaneSkin(DownloadPane control) {
-			super(control, new BehaviorBase<>(control, Collections.<KeyBinding>emptyList()));
+			super(control);
 			downloadParts = new DownloadParts() {
 				@Override
 				public void requestContainerLayout() {
@@ -223,15 +219,29 @@ public class DownloadPane extends Control {
 			};
 			control.setClip(clip);
 			updateContent();
-			registerChangeListener(control.heightProperty(), "HEIGHT"); //$NON-NLS-1$
-			registerChangeListener(control.contentProperty(), "CONTENT"); //$NON-NLS-1$
-			registerChangeListener(control.showingProperty(), "SHOWING"); //$NON-NLS-1$
-			registerChangeListener(control.downloadsProperty(), "DOWNLOADS"); //$NON-NLS-1$
-
-			// Fix for Issue #522: Prevent DownloadPane from receiving focus
-			ParentTraversalEngine engine = new ParentTraversalEngine(getSkinnable());
-			getSkinnable().setImpl_traversalEngine(engine);
-			engine.setOverriddenFocusTraversability(false);
+			registerChangeListener(control.heightProperty(), e -> {
+				if (getSkinnable().isShowing()) {
+					downloadParts.requestLayout();
+				}
+			});
+			registerChangeListener(control.contentProperty(), e -> updateContent());
+			registerChangeListener(control.showingProperty(), e -> {
+	            if (getSkinnable().isShowing()) {
+	            	downloadParts.doShow();
+	            } else {
+	            	downloadParts.doHide();
+	            }
+	        });
+			registerChangeListener(control.downloadsProperty(), e -> {
+				this.getSkinnable().downloadsProperty().get().forEach(d -> {
+					downloadParts.newPart(d);
+				});
+	        });
+			
+			// Fix for Issue #522: Prevent NotificationPane from receiving focus
+	        ParentTraversalEngine engine = new ParentTraversalEngine(getSkinnable());
+	        ReflectionUtils.setTraversalEngine(control, engine);
+	        engine.setOverriddenFocusTraversability(false);
 		}
 
 		private void updateContent() {
@@ -243,31 +253,6 @@ public class DownloadPane extends Control {
 				getChildren().setAll(downloadParts);
 			} else {
 				getChildren().setAll(content, downloadParts);
-			}
-		}
-
-		/**
-		 * 事件更新的回调
-		 */
-		@Override
-		protected void handleControlPropertyChanged(String p) {
-			super.handleControlPropertyChanged(p);
-			if ("CONTENT".equals(p)) { //$NON-NLS-1$
-				updateContent();
-			} else if ("SHOWING".equals(p)) { //$NON-NLS-1$
-				if (getSkinnable().isShowing()) {
-					downloadParts.doShow();
-				} else {
-					downloadParts.doHide();
-				}
-			} else if ("HEIGHT".equals(p)) {
-				if (getSkinnable().isShowing()) {
-					downloadParts.requestLayout();
-				}
-			} else { // $NON-NLS-1$
-				this.getSkinnable().downloadsProperty().get().forEach(d -> {
-					downloadParts.newPart(d);
-				});
 			}
 		}
 

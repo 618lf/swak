@@ -98,8 +98,8 @@ public abstract class AbstractApplication extends Application implements EventLi
 	 * @throws InstantiationException
 	 */
 	protected AbstractPage createPage(Class<? extends AbstractPage> view)
-			throws InstantiationException, IllegalAccessException {
-		return view.newInstance();
+			throws Exception {
+		return view.getDeclaredConstructor().newInstance();
 	}
 
 	/**

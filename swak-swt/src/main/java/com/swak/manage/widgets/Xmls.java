@@ -1,9 +1,7 @@
 package com.swak.manage.widgets;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -11,8 +9,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-
-import com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler;
 
 /**
  * 使用Jaxb2.0实现XML<->Java Object的Mapper.
@@ -22,7 +18,6 @@ import com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler;
  * @author calvin
  * @version 2013-01-15
  */
-@SuppressWarnings("restriction")
 public class Xmls {
 
 	private static ConcurrentMap<Class<?>, JAXBContext> CONTEXT = null;
@@ -84,11 +79,6 @@ public class Xmls {
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-			marshaller.setProperty(CharacterEscapeHandler.class.getName(), new CharacterEscapeHandler() {
-				public void escape(char[] ac, int i, int j, boolean flag, Writer writer) throws IOException {
-					writer.write(ac, i, j);
-				}
-			});
 			return marshaller;
 		} catch (Exception e) {
 			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz + "]: " + e.getMessage(),

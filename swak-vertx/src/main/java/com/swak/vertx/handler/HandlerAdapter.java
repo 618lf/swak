@@ -177,7 +177,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		}
 		try {
 			Map<String, Object> arguments = this.getArguments(context);
-			Object obj = parameter.getParameterType().newInstance();
+			Object obj = parameter.getParameterType().getDeclaredConstructor().newInstance();
 			if (!arguments.isEmpty()) {
 				classMeta = FieldCache.get(parameter.getParameterType());
 				this.fillObjectValue(obj, classMeta.getFields(), parameter.getParameterName(), arguments);

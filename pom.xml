@@ -35,8 +35,8 @@
 		<module>swak-fx</module>
 	</modules>
 	<properties>
-		<spring-boot.version>2.1.0.RELEASE</spring-boot.version>
-		<spring.version>5.1.2.RELEASE</spring.version>
+		<spring-boot.version>2.1.2.RELEASE</spring-boot.version>
+		<spring.version>5.1.4.RELEASE</spring.version>
 		<cglib.version>3.2.6</cglib.version>
 		<javassist.version>3.22.0-GA</javassist.version>
 		<fastjson.version>1.2.49</fastjson.version>
@@ -68,7 +68,8 @@
 		<jcef.version>1.0</jcef.version>
 		<poi.version>4.0.1</poi.version>
 		<guava.version>21.0</guava.version>
-		<controlsfx.version>8.40.14</controlsfx.version>
+		<controlsfx.version>9.0.0</controlsfx.version>
+		<jaxb.version>2.3.1</jaxb.version>
 
 		<!-- test -->
 		<junit.version>4.12</junit.version>
@@ -80,7 +81,7 @@
 		<sqlite-jdbc.version>3.25.2</sqlite-jdbc.version>
 
 		<!-- other setting -->
-		<jdk.version>1.8</jdk.version>
+		<jdk.version>11</jdk.version>
 		<maven.version>3.5.4</maven.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.version>${project.version}</project.version>
