@@ -101,3 +101,6 @@ serverTimezone=GMT%2B8
 打包之后，如何将配置文件放在 jar 包之外。相对jar 的目录
 application.properties 会查找 config 目录下的文件
 可以在 application.properties 指定 logback.xml的路径 logging.config=config/logback.xml
+
+# 版本0.2.0
+来至于 0.1.2, 不会修改业务功能，目的是支持 openJdk 11。
