@@ -18,6 +18,7 @@
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx-samples</artifactId>
 			<version>${controlsfx.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -39,8 +40,29 @@
 			<artifactId>spring-core</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-
-		<!-- <dependency> <groupId>com.swak</groupId> <artifactId>swak-sample</artifactId> 
-			<scope>provided</scope> </dependency> -->
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<compilerArgs>
+						<arg>--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED</arg>
+						<arg>--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED</arg>
+						<arg>--add-exports=javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED</arg>
+						<arg>--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED</arg>
+						<arg>--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED</arg>
+						<arg>--add-exports=javafx.base/com.sun.javafx.collections=ALL-UNNAMED</arg>
+						<arg>--add-exports=javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</arg>
+						<arg>--add-exports=javafx.web/com.sun.webkit=ALL-UNNAMED</arg>
+					</compilerArgs>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

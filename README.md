@@ -103,4 +103,6 @@ application.properties 会查找 config 目录下的文件
 可以在 application.properties 指定 logback.xml的路径 logging.config=config/logback.xml
 
 # 版本0.2.0
-来至于 0.1.2, 不会修改业务功能，目的是支持 openJdk 11。
+来至于 0.1.2, 不会修改业务功能，目的是支持 openJdk 11。 jdk 11 现在还用不了，许多基础的jar 没有跟上来。wait for them
+grooxy 运行有警告
+研究下ant 中最新版的 zip 生成。 或者 jdk 的zip 是否还有乱码问题
