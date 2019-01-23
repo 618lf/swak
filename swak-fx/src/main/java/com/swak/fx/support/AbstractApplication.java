@@ -16,6 +16,7 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.Clipboard;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -109,6 +110,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 	public void start(final Stage stage) throws Exception {
 		Display.setStage(stage);
 		Display.setHostServices(this.getHostServices());
+		Display.setClipboard(Clipboard.getSystemClipboard());
 		AbstractPage splash = this.createPage(splashView);
 		final Stage splashStage = new Stage(StageStyle.TRANSPARENT);
 		final Scene splashScene = new Scene(splash.getView(), Color.TRANSPARENT);

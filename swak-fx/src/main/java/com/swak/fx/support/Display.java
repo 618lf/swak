@@ -7,6 +7,7 @@ import com.google.common.eventbus.EventBus;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.input.Clipboard;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -27,6 +28,7 @@ public enum Display {
 	private static HostServices hostServices;
 	private static SystemTray systemTray;
 	private static EventBus eventBus;
+	private static Clipboard clipboard;
 
 	public static String getTitle() {
 		return title;
@@ -78,6 +80,14 @@ public enum Display {
 
 	static void setEventBus(EventBus eventBus) {
 		Display.eventBus = eventBus;
+	}
+
+	public static Clipboard getClipboard() {
+		return clipboard;
+	}
+
+	static void setClipboard(Clipboard clipboard) {
+		Display.clipboard = clipboard;
 	}
 
 	/**
