@@ -281,11 +281,9 @@ public abstract class AbstractPage {
 	 * @return the string
 	 */
 	private static String stripEnding(final String clazz) {
-
 		if (!clazz.endsWith("view")) {
 			return clazz;
 		}
-
 		return clazz.substring(0, clazz.lastIndexOf("view"));
 	}
 
@@ -354,7 +352,7 @@ public abstract class AbstractPage {
 		newStage.initStyle(StageStyle.TRANSPARENT);
 		newStage.setTitle(this.getDefaultTitle());
 		newStage.sizeToScene();
-		newStage.show();
+		newStage.showAndWait();
 		return newStage;
 	}
 	
