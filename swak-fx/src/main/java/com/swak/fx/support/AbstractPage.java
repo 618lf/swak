@@ -352,7 +352,7 @@ public abstract class AbstractPage {
 		newStage.initStyle(StageStyle.TRANSPARENT);
 		newStage.setTitle(this.getDefaultTitle());
 		newStage.sizeToScene();
-		newStage.showAndWait();
+		newStage.show();
 		return newStage;
 	}
 	
