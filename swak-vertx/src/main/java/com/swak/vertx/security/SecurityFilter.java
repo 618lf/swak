@@ -2,6 +2,7 @@ package com.swak.vertx.security;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -44,14 +45,15 @@ public class SecurityFilter implements Filter, InitializingBean {
 
 		// 请求的地址
 		String url = context.request().uri();
-		
+
 		// 找到一个最匹配的
-		List<Handler> filters = chains.keySet().stream().filter(s -> {
+		Optional<List<Handler>> optional = chains.keySet().stream().filter(s -> {
 			return StringUtils.startsWith(url, s);
 		}).findFirst().map(s -> {
 			context.put(Handler.CHAIN_RESOLVE_PATH, s);
 			return chains.get(s);
-		}).get();
+		});
+		List<Handler> filters = optional.isPresent() ? optional.get() : null;
 
 		// 构建执行链
 		HandlerChain executeChain = new SimpleHandlerChain(filters);
@@ -106,11 +108,11 @@ public class SecurityFilter implements Filter, InitializingBean {
 
 			// url 对应的 chains
 			List<Handler> chains = Lists.newArrayList();
-			
+
 			// 多个filter 配置用，分隔
 			String[] filters = filter.split(",");
 			for (String f : filters) {
-				
+
 				String name = StringUtils.clean(f);
 				String param = null;
 
@@ -125,15 +127,15 @@ public class SecurityFilter implements Filter, InitializingBean {
 				if (handler == null) {
 					continue;
 				}
-				
+
 				// 参数设置
 				if (param != null && handler instanceof PathDefinition) {
-					PathDefinition phandler = (PathDefinition)handler;
+					PathDefinition phandler = (PathDefinition) handler;
 					phandler.pathConfig(url, param);
 				}
 				chains.add(handler);
 			}
-			
+
 			// 设置 url 对应的 chains
 			this.chains.put(url, chains);
 		}
