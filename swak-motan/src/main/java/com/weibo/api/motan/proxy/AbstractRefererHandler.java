@@ -1,5 +1,11 @@
 package com.weibo.api.motan.proxy;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.swak.utils.StringUtils;
 import com.weibo.api.motan.cluster.Cluster;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.common.URLParamType;
@@ -7,24 +13,21 @@ import com.weibo.api.motan.core.extension.ExtensionLoader;
 import com.weibo.api.motan.exception.MotanErrorMsgConstant;
 import com.weibo.api.motan.exception.MotanFrameworkException;
 import com.weibo.api.motan.exception.MotanServiceException;
-import com.weibo.api.motan.rpc.*;
+import com.weibo.api.motan.rpc.DefaultResponseFuture;
+import com.weibo.api.motan.rpc.Request;
+import com.weibo.api.motan.rpc.Response;
+import com.weibo.api.motan.rpc.ResponseFuture;
+import com.weibo.api.motan.rpc.RpcContext;
 import com.weibo.api.motan.serialize.DeserializableObject;
 import com.weibo.api.motan.switcher.Switcher;
 import com.weibo.api.motan.switcher.SwitcherService;
 import com.weibo.api.motan.util.ExceptionUtil;
 import com.weibo.api.motan.util.LoggerUtil;
 import com.weibo.api.motan.util.MotanFrameworkUtil;
-import com.swak.utils.StringUtils;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author sunnights
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public class AbstractRefererHandler<T> {
     protected List<Cluster<T>> clusters;
     protected Class<T> clz;
@@ -37,7 +40,7 @@ public class AbstractRefererHandler<T> {
         switcherService = ExtensionLoader.getExtensionLoader(SwitcherService.class).getExtension(switchName);
     }
 
-    Object invokeRequest(Request request, Class returnType, boolean async) throws Throwable {
+    Object invokeRequest(Request request, Class<?> returnType, boolean async) throws Throwable {
         RpcContext curContext = RpcContext.getContext();
         curContext.putAttribute(MotanConstants.ASYNC_SUFFIX, async);
 
@@ -74,6 +77,7 @@ public class AbstractRefererHandler<T> {
             Response response;
             boolean throwException = Boolean.parseBoolean(cluster.getUrl().getParameter(URLParamType.throwException.getName(), URLParamType.throwException.getValue()));
             try {
+                MotanFrameworkUtil.logRequestEvent(request.getRequestId(), "invoke rpc request: " + MotanFrameworkUtil.getFullMethodString(request), System.currentTimeMillis());
                 response = cluster.call(request);
                 if (async) {
                     if (response instanceof ResponseFuture) {
@@ -118,6 +122,8 @@ public class AbstractRefererHandler<T> {
                     LoggerUtil.error("RefererInvocationHandler invoke Error: uri=" + cluster.getUrl().getUri() + " " + MotanFrameworkUtil.toString(request), e);
                     throw e;
                 }
+            } finally {
+                MotanFrameworkUtil.logRequestEvent(request.getRequestId(), "rpc finish", System.currentTimeMillis());
             }
         }
         throw new MotanServiceException("Referer call Error: cluster not exist, interface=" + interfaceName + " " + MotanFrameworkUtil.toString(request), MotanErrorMsgConstant.SERVICE_UNFOUND);

@@ -27,5 +27,4 @@ package com.weibo.api.motan.config;
 public class ExtConfig extends AbstractConfig {
 
 	private static final long serialVersionUID = 1L;
-
 }

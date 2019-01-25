@@ -16,18 +16,26 @@
 
 package com.weibo.api.motan.registry.support.command;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
+
+import com.swak.utils.StringUtils;
 import com.weibo.api.motan.common.URLParamType;
 import com.weibo.api.motan.exception.MotanFrameworkException;
 import com.weibo.api.motan.registry.NotifyListener;
 import com.weibo.api.motan.rpc.URL;
-import com.weibo.api.motan.util.*;
-import com.swak.utils.StringUtils;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
-
-
+import com.weibo.api.motan.util.CollectionUtil;
+import com.weibo.api.motan.util.ConcurrentHashSet;
+import com.weibo.api.motan.util.LoggerUtil;
+import com.weibo.api.motan.util.MotanSwitcherUtil;
+import com.weibo.api.motan.util.NetUtils;
 
 public class CommandServiceManager implements CommandListener, ServiceListener {
 

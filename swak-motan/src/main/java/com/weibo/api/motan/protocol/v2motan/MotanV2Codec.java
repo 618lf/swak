@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.swak.utils.StringUtils;
-
 import com.weibo.api.motan.codec.AbstractCodec;
 import com.weibo.api.motan.codec.Serialization;
 import com.weibo.api.motan.common.URLParamType;
@@ -56,7 +55,6 @@ import com.weibo.api.motan.util.MathUtil;
 @SpiMeta(name = "motan2")
 public class MotanV2Codec extends AbstractCodec {
 
-    // private static final byte MASK = 0x07;
     private static final int HEADER_SIZE = 13;
 
 

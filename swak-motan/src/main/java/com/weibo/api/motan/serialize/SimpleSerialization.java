@@ -52,7 +52,7 @@ import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.*;
  * @author luominggang
  */
 @SpiMeta(name = "simple")
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings("rawtypes")
 public class SimpleSerialization implements Serialization {
 
     public static final class SimpleType {
@@ -116,6 +116,7 @@ public class SimpleSerialization implements Serialization {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
 	private void serialize(Object obj, GrowableByteBuffer buffer) throws IOException {
         if (obj == null) {
             buffer.put(NULL);
@@ -201,6 +202,7 @@ public class SimpleSerialization implements Serialization {
         return deserialize(buffer, clz);
     }
 
+    @SuppressWarnings("unchecked")
 	private <T> T deserialize(GrowableByteBuffer buffer, Class<T> clz) throws IOException {
         byte type = buffer.get();
         switch (type) {
@@ -514,6 +516,7 @@ public class SimpleSerialization implements Serialization {
         return readStringCollection(buffer, result);
     }
 
+	@SuppressWarnings("unchecked")
 	private <T extends Collection> T readStringCollection(GrowableByteBuffer buffer, T collection) throws IOException {
         int size = getAndCheckSize(buffer);
         if (size == 0) {
@@ -588,7 +591,8 @@ public class SimpleSerialization implements Serialization {
         return readCollection(buffer, result);
     }
 
-    private <T extends Collection> T readCollection(GrowableByteBuffer buffer, T collection) throws IOException {
+    @SuppressWarnings("unchecked")
+	private <T extends Collection> T readCollection(GrowableByteBuffer buffer, T collection) throws IOException {
         int size = getAndCheckSize(buffer);
         if (size == 0) {
             return collection;

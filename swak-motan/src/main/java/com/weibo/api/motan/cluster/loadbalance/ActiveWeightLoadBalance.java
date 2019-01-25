@@ -44,73 +44,73 @@ import com.weibo.api.motan.rpc.Request;
 @SpiMeta(name = "activeWeight")
 public class ActiveWeightLoadBalance<T> extends AbstractLoadBalance<T> {
 
-    @Override
-    protected Referer<T> doSelect(Request request) {
-        List<Referer<T>> referers = getReferers();
+	@Override
+	protected Referer<T> doSelect(Request request) {
+		List<Referer<T>> referers = getReferers();
 
-        int refererSize = referers.size();
-        int startIndex = ThreadLocalRandom.current().nextInt(refererSize);
-        int currentCursor = 0;
-        int currentAvailableCursor = 0;
+		int refererSize = referers.size();
+		int startIndex = ThreadLocalRandom.current().nextInt(refererSize);
+		int currentCursor = 0;
+		int currentAvailableCursor = 0;
 
-        Referer<T> referer = null;
+		Referer<T> referer = null;
 
-        while (currentAvailableCursor < MAX_REFERER_COUNT && currentCursor < refererSize) {
-            Referer<T> temp = referers.get((startIndex + currentCursor) % refererSize);
-            currentCursor++;
+		while (currentAvailableCursor < MAX_REFERER_COUNT && currentCursor < refererSize) {
+			Referer<T> temp = referers.get((startIndex + currentCursor) % refererSize);
+			currentCursor++;
 
-            if (!temp.isAvailable()) {
-                continue;
-            }
+			if (!temp.isAvailable()) {
+				continue;
+			}
 
-            currentAvailableCursor++;
+			currentAvailableCursor++;
 
-            if (referer == null) {
-                referer = temp;
-            } else {
-                if (compare(referer, temp) > 0) {
-                    referer = temp;
-                }
-            }
-        }
+			if (referer == null) {
+				referer = temp;
+			} else {
+				if (compare(referer, temp) > 0) {
+					referer = temp;
+				}
+			}
+		}
 
-        return referer;
-    }
+		return referer;
+	}
 
-    @Override
-    protected void doSelectToHolder(Request request, List<Referer<T>> refersHolder) {
-        List<Referer<T>> referers = getReferers();
+	@Override
+	protected void doSelectToHolder(Request request, List<Referer<T>> refersHolder) {
+		List<Referer<T>> referers = getReferers();
 
-        int refererSize = referers.size();
-        int startIndex = ThreadLocalRandom.current().nextInt(refererSize);
-        int currentCursor = 0;
-        int currentAvailableCursor = 0;
+		int refererSize = referers.size();
+		int startIndex = ThreadLocalRandom.current().nextInt(refererSize);
+		int currentCursor = 0;
+		int currentAvailableCursor = 0;
 
-        while (currentAvailableCursor < MAX_REFERER_COUNT && currentCursor < refererSize) {
-            Referer<T> temp = referers.get((startIndex + currentCursor) % refererSize);
-            currentCursor++;
+		while (currentAvailableCursor < MAX_REFERER_COUNT && currentCursor < refererSize) {
+			Referer<T> temp = referers.get((startIndex + currentCursor) % refererSize);
+			currentCursor++;
 
-            if (!temp.isAvailable()) {
-                continue;
-            }
+			if (!temp.isAvailable()) {
+				continue;
+			}
 
-            currentAvailableCursor++;
+			currentAvailableCursor++;
 
-            refersHolder.add(temp);
-        }
+			refersHolder.add(temp);
+		}
 
-        Collections.sort(refersHolder, new LowActivePriorityComparator<T>());
-    }
+		Collections.sort(refersHolder, new LowActivePriorityComparator<T>());
+	}
 
-    private int compare(Referer<T> referer1, Referer<T> referer2) {
-        return referer1.activeRefererCount() - referer2.activeRefererCount();
-    }
+	private int compare(Referer<T> referer1, Referer<T> referer2) {
+		return referer1.activeRefererCount() - referer2.activeRefererCount();
+	}
 
-    static class LowActivePriorityComparator<T> implements Comparator<Referer<T>> {
-        @Override
-        public int compare(Referer<T> referer1, Referer<T> referer2) {
-            return referer1.activeRefererCount() - referer2.activeRefererCount();
-        }
-    }
+	static class LowActivePriorityComparator<T> implements Comparator<Referer<T>> {
+		@Override
+		public int compare(Referer<T> referer1, Referer<T> referer2) {
+			return referer1.activeRefererCount() - referer2.activeRefererCount();
+		}
+	}
 
 }

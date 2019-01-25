@@ -5,7 +5,6 @@ import com.weibo.api.motan.rpc.Request;
 /**
  * @author sunnights
  */
-@SuppressWarnings({ "rawtypes" })
 public interface CommonHandler {
     /**
      * call a service method with general handler
@@ -16,7 +15,7 @@ public interface CommonHandler {
      * @return
      * @throws Throwable
      */
-    Object call(String methodName, Object[] arguments, Class returnType) throws Throwable;
+    Object call(String methodName, Object[] arguments, Class<?> returnType) throws Throwable;
 
     /**
      * async call a service with general handler
@@ -27,7 +26,7 @@ public interface CommonHandler {
      * @return
      * @throws Throwable
      */
-    Object asyncCall(String methodName, Object[] arguments, Class returnType) throws Throwable;
+    Object asyncCall(String methodName, Object[] arguments, Class<?> returnType) throws Throwable;
 
     /**
      * call a service method with request
@@ -36,7 +35,7 @@ public interface CommonHandler {
      * @param returnType
      * @return
      */
-    Object call(Request request, Class returnType) throws Throwable;
+    Object call(Request request, Class<?> returnType) throws Throwable;
 
     /**
      * async call a service with request
@@ -45,7 +44,7 @@ public interface CommonHandler {
      * @param returnType
      * @return
      */
-    Object asyncCall(Request request, Class returnType) throws Throwable;
+    Object asyncCall(Request request, Class<?> returnType) throws Throwable;
 
     /**
      * build request with methodName and arguments

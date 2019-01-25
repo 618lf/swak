@@ -16,6 +16,10 @@
 
 package com.weibo.api.motan.transport;
 
+import java.util.ArrayList;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.weibo.api.motan.common.URLParamType;
 import com.weibo.api.motan.core.DefaultThreadFactory;
 import com.weibo.api.motan.core.StandardThreadExecutor;
@@ -24,86 +28,86 @@ import com.weibo.api.motan.rpc.URL;
 import com.weibo.api.motan.util.LoggerUtil;
 import com.weibo.api.motan.util.MathUtil;
 
-import java.util.ArrayList;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * @author sunnights
  */
+@SuppressWarnings("rawtypes")
 public abstract class AbstractSharedPoolClient extends AbstractClient {
-    private static final ThreadPoolExecutor executor = new StandardThreadExecutor(1, 300, 20000,
-            new DefaultThreadFactory("AbstractPoolClient-initPool-", true));
-    private final AtomicInteger idx = new AtomicInteger();
-    protected SharedObjectFactory<Channel> factory;
-    protected ArrayList<Channel> channels;
-    protected int connections;
+	private static final ThreadPoolExecutor executor = new StandardThreadExecutor(1, 300, 20000,
+			new DefaultThreadFactory("AbstractPoolClient-initPool-", true));
+	private final AtomicInteger idx = new AtomicInteger();
+	protected SharedObjectFactory factory;
+	protected ArrayList<Channel> channels;
+	protected int connections;
 
-    public AbstractSharedPoolClient(URL url) {
-        super(url);
-        connections = url.getIntParameter(URLParamType.minClientConnection.getName(), URLParamType.minClientConnection.getIntValue());
-        if (connections <= 0) {
-            connections = URLParamType.minClientConnection.getIntValue();
-        }
-    }
+	public AbstractSharedPoolClient(URL url) {
+		super(url);
+		connections = url.getIntParameter(URLParamType.minClientConnection.getName(),
+				URLParamType.minClientConnection.getIntValue());
+		if (connections <= 0) {
+			connections = URLParamType.minClientConnection.getIntValue();
+		}
+	}
 
-    protected void initPool() {
-        factory = createChannelFactory();
+	protected void initPool() {
+		factory = createChannelFactory();
 
-        channels = new ArrayList<>(connections);
-        for (int i = 0; i < connections; i++) {
-            channels.add((Channel) factory.makeObject());
-        }
+		channels = new ArrayList<>(connections);
+		for (int i = 0; i < connections; i++) {
+			channels.add((Channel) factory.makeObject());
+		}
 
-        initConnections(url.getBooleanParameter(URLParamType.asyncInitConnection.getName(), URLParamType.asyncInitConnection.getBooleanValue()));
-    }
+		initConnections(url.getBooleanParameter(URLParamType.asyncInitConnection.getName(),
+				URLParamType.asyncInitConnection.getBooleanValue()));
+	}
 
-    protected abstract SharedObjectFactory<Channel> createChannelFactory();
+	protected abstract SharedObjectFactory<?> createChannelFactory();
 
-    protected void initConnections(boolean async) {
-        if (async) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    createConnections();
-                }
-            });
-        } else {
-            createConnections();
-        }
-    }
+	protected void initConnections(boolean async) {
+		if (async) {
+			executor.execute(new Runnable() {
+				@Override
+				public void run() {
+					createConnections();
+				}
+			});
+		} else {
+			createConnections();
+		}
+	}
 
-    private void createConnections() {
-        for (Channel channel : channels) {
-            try {
-                channel.open();
-            } catch (Exception e) {
-                LoggerUtil.error("NettyClient init pool create connect Error: url=" + url.getUri(), e);
-            }
-        }
-    }
+	private void createConnections() {
+		for (Channel channel : channels) {
+			try {
+				channel.open();
+			} catch (Exception e) {
+				LoggerUtil.error("NettyClient init pool create connect Error: url=" + url.getUri(), e);
+			}
+		}
+	}
 
-    protected Channel getChannel() throws MotanServiceException {
-        int index = MathUtil.getNonNegative(idx.getAndIncrement());
-        Channel channel;
+	@SuppressWarnings("unchecked")
+	protected Channel getChannel() throws MotanServiceException {
+		int index = MathUtil.getNonNegativeRange24bit(idx.getAndIncrement());
+		Channel channel;
 
-        for (int i = index; i < connections + index; i++) {
-            channel = channels.get(i % connections);
-            if (channel.isAvailable()) {
-                return channel;
-            } else {
-                factory.rebuildObject(channel);
-            }
-        }
+		for (int i = index; i < connections + index; i++) {
+			channel = channels.get(i % connections);
+			if (channel.isAvailable()) {
+				return channel;
+			} else {
+				factory.rebuildObject(channel);
+			}
+		}
 
-        String errorMsg = this.getClass().getSimpleName() + " getChannel Error: url=" + url.getUri();
-        LoggerUtil.error(errorMsg);
-        throw new MotanServiceException(errorMsg);
-    }
+		String errorMsg = this.getClass().getSimpleName() + " getChannel Error: url=" + url.getUri();
+		LoggerUtil.error(errorMsg);
+		throw new MotanServiceException(errorMsg);
+	}
 
-    protected void closeAllChannels() {
-        for (Channel channel : channels) {
-            channel.close();
-        }
-    }
+	protected void closeAllChannels() {
+		for (Channel channel : channels) {
+			channel.close();
+		}
+	}
 }

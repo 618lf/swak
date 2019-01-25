@@ -19,20 +19,21 @@ package com.weibo.api.motan.config.springsupport;
 import org.springframework.beans.factory.BeanNameAware;
 
 import com.weibo.api.motan.config.RegistryConfig;
+
 /**
  * @author fld
  *
- * Created by fld on 16/5/13.
+ *         Created by fld on 16/5/13.
  */
 public class RegistryConfigBean extends RegistryConfig implements BeanNameAware {
 
 	private static final long serialVersionUID = 1L;
 
 	@Override
-    public void setBeanName(String name) {
-        setId(name);
-        setName(name);
-        MotanNamespaceHandler.registryDefineNames.add(name);
-    }
+	public void setBeanName(String name) {
+		setId(name);
+		setName(name);
+		MotanNamespaceHandler.registryDefineNames.add(name);
+	}
 
 }

@@ -16,8 +16,11 @@
 
 package com.weibo.api.motan.config.springsupport;
 
-import com.weibo.api.motan.config.*;
-import com.swak.utils.StringUtils;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -32,10 +35,12 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.HashSet;
-import java.util.Set;
+import com.swak.utils.StringUtils;
+import com.weibo.api.motan.config.BasicRefererInterfaceConfig;
+import com.weibo.api.motan.config.BasicServiceInterfaceConfig;
+import com.weibo.api.motan.config.MethodConfig;
+import com.weibo.api.motan.config.ProtocolConfig;
+import com.weibo.api.motan.config.RegistryConfig;
 
 /**
  *

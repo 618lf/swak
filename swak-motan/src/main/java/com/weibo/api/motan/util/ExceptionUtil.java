@@ -17,8 +17,12 @@
 package com.weibo.api.motan.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.weibo.api.motan.exception.*;
 import com.swak.utils.StringUtils;
+import com.weibo.api.motan.exception.MotanAbstractException;
+import com.weibo.api.motan.exception.MotanBizException;
+import com.weibo.api.motan.exception.MotanErrorMsg;
+import com.weibo.api.motan.exception.MotanFrameworkException;
+import com.weibo.api.motan.exception.MotanServiceException;
 
 /**
  * @author maijunsheng
@@ -29,38 +33,28 @@ public class ExceptionUtil {
     public static final StackTraceElement[] REMOTE_MOCK_STACK = new StackTraceElement[]{new StackTraceElement("remoteClass",
             "remoteMethod", "remoteFile", 1)};
 
-//    /**
-//     * 判定是否是业务方的逻辑抛出的异常
-//     * <p>
-//     * <pre>
-//     * 		true: 来自业务方的异常
-//     * 		false: 来自框架本身的异常
-//     * </pre>
-//     *
-//     * @param e
-//     * @return
-//     */
-//    @Deprecated
-//    public static boolean isBizException(Exception e) {
-//        return e instanceof MotanBizException;
-//    }
-
+    /**
+     * 判定是否是业务方的逻辑抛出的异常
+     * <p>
+     * <pre>
+     * 		true: 来自业务方的异常
+     * 		false: 来自框架本身的异常
+     * </pre>
+     *
+     * @param e
+     * @return
+     */
     public static boolean isBizException(Throwable t) {
         return t instanceof MotanBizException;
     }
 
-//
-//    /**
-//     * 是否框架包装过的异常
-//     *
-//     * @param e
-//     * @return
-//     */
-//    @Deprecated
-//    public static boolean isMotanException(Exception e) {
-//        return e instanceof MotanAbstractException;
-//    }
 
+    /**
+     * 是否框架包装过的异常
+     *
+     * @param e
+     * @return
+     */
     public static boolean isMotanException(Throwable t) {
         return t instanceof MotanAbstractException;
     }

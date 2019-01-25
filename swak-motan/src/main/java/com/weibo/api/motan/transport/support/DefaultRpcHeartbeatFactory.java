@@ -103,10 +103,12 @@ public class DefaultRpcHeartbeatFactory implements HeartbeatFactory {
 	}
 
 	static class HeartbeatResponse extends DefaultResponse {
+
 		private static final long serialVersionUID = 1L;
 	}
 
 	static class HeartbeatRequest extends DefaultRequest {
+
 		private static final long serialVersionUID = 1L;
 	}
 }

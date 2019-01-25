@@ -16,15 +16,15 @@
 
 package com.weibo.api.motan.registry.support.command;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.swak.utils.StringUtils;
 import com.weibo.api.motan.registry.NotifyListener;
 import com.weibo.api.motan.registry.support.FailbackRegistry;
 import com.weibo.api.motan.rpc.URL;
 import com.weibo.api.motan.util.LoggerUtil;
-import com.swak.utils.StringUtils;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class CommandFailbackRegistry extends FailbackRegistry {
 

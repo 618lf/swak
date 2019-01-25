@@ -20,6 +20,14 @@ import com.swak.entity.SortAble;
 public class Lists {
 
 	/**
+	 * The index value when an element is not found in a list or array: {@code -1}.
+	 * This value is returned by methods in this class and can also be used in
+	 * comparisons with values returned by various method from
+	 * {@link java.util.List}.
+	 */
+	public static final int INDEX_NOT_FOUND = -1;
+
+	/**
 	 * 默认值
 	 * 
 	 * @param l1
@@ -168,5 +176,94 @@ public class Lists {
 	 */
 	public static <T> void sort(List<T> list, Comparator<? super T> c) {
 		list.sort(c);
+	}
+
+	/**
+	 * <p>
+	 * Checks if the object is in the given array.
+	 * </p>
+	 *
+	 * <p>
+	 * The method returns {@code false} if a {@code null} array is passed in.
+	 * </p>
+	 *
+	 * @param array
+	 *            the array to search through
+	 * @param objectToFind
+	 *            the object to find
+	 * @return {@code true} if the array contains the object
+	 */
+	public static boolean contains(Object[] array, Object objectToFind) {
+		return indexOf(array, objectToFind) != INDEX_NOT_FOUND;
+	}
+
+	// -----------------------------------------------------------------------
+	/**
+	 * <p>
+	 * Finds the index of the given object in the array.
+	 * </p>
+	 *
+	 * <p>
+	 * This method returns {@link #INDEX_NOT_FOUND} ({@code -1}) for a {@code null}
+	 * input array.
+	 * </p>
+	 *
+	 * @param array
+	 *            the array to search through for the object, may be {@code null}
+	 * @param objectToFind
+	 *            the object to find, may be {@code null}
+	 * @return the index of the object within the array, {@link #INDEX_NOT_FOUND}
+	 *         ({@code -1}) if not found or {@code null} array input
+	 */
+	public static int indexOf(Object[] array, Object objectToFind) {
+		return indexOf(array, objectToFind, 0);
+	}
+
+	/**
+	 * <p>
+	 * Finds the index of the given object in the array starting at the given index.
+	 * </p>
+	 *
+	 * <p>
+	 * This method returns {@link #INDEX_NOT_FOUND} ({@code -1}) for a {@code null}
+	 * input array.
+	 * </p>
+	 *
+	 * <p>
+	 * A negative startIndex is treated as zero. A startIndex larger than the array
+	 * length will return {@link #INDEX_NOT_FOUND} ({@code -1}).
+	 * </p>
+	 *
+	 * @param array
+	 *            the array to search through for the object, may be {@code null}
+	 * @param objectToFind
+	 *            the object to find, may be {@code null}
+	 * @param startIndex
+	 *            the index to start searching at
+	 * @return the index of the object within the array starting at the index,
+	 *         {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null}
+	 *         array input
+	 */
+	public static int indexOf(Object[] array, Object objectToFind, int startIndex) {
+		if (array == null) {
+			return INDEX_NOT_FOUND;
+		}
+		if (startIndex < 0) {
+			startIndex = 0;
+		}
+		if (objectToFind == null) {
+			for (int i = startIndex; i < array.length; i++) {
+				if (array[i] == null) {
+					return i;
+				}
+			}
+		} else if (array.getClass().getComponentType().isInstance(objectToFind)) {
+			for (int i = startIndex; i < array.length; i++) {
+				if (objectToFind.equals(array[i])) {
+					return i;
+				}
+			}
+		}
+		return INDEX_NOT_FOUND;
 	}
 }

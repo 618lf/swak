@@ -34,65 +34,64 @@ import com.weibo.api.motan.config.springsupport.util.SpringBeanUtil;
  *         <p>
  *         Created by fld on 16/5/13.
  */
-public class BasicRefererConfigBean extends BasicRefererInterfaceConfig implements BeanNameAware, InitializingBean, BeanFactoryAware {
+public class BasicRefererConfigBean extends BasicRefererInterfaceConfig
+		implements BeanNameAware, InitializingBean, BeanFactoryAware {
 
 	private static final long serialVersionUID = 1L;
-	
 	private String protocolNames;
-    private String registryNames;
-    private BeanFactory beanFactory;
+	private String registryNames;
+	private BeanFactory beanFactory;
 
-    @Override
-    public void setBeanName(String name) {
-        setId(name);
-        MotanNamespaceHandler.basicRefererConfigDefineNames.add(name);
-    }
+	@Override
+	public void setBeanName(String name) {
+		setId(name);
+		MotanNamespaceHandler.basicRefererConfigDefineNames.add(name);
+	}
 
-    public void setProtocol(String protocolNames) {
-        this.protocolNames = protocolNames;
-    }
+	public void setProtocol(String protocolNames) {
+		this.protocolNames = protocolNames;
+	}
 
-    public void setRegistry(String registryNames) {
-        this.registryNames = registryNames;
-    }
+	public void setRegistry(String registryNames) {
+		this.registryNames = registryNames;
+	}
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        setRegistries(extractRegistries(registryNames, beanFactory));
-        setProtocols(extractProtocols(protocolNames, beanFactory));
-    }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		setRegistries(extractRegistries(registryNames, beanFactory));
+		setProtocols(extractProtocols(protocolNames, beanFactory));
+	}
 
-    public List<ProtocolConfig> extractProtocols(String protocols, BeanFactory beanFactory) {
-        if (protocols != null && protocols.length() > 0) {
-            List<ProtocolConfig> protocolConfigList = SpringBeanUtil.getMultiBeans(beanFactory, protocols,
-                    SpringBeanUtil.COMMA_SPLIT_PATTERN, ProtocolConfig.class);
-            return protocolConfigList;
-        } else {
-            return null;
-        }
-    }
+	public List<ProtocolConfig> extractProtocols(String protocols, BeanFactory beanFactory) {
+		if (protocols != null && protocols.length() > 0) {
+			List<ProtocolConfig> protocolConfigList = SpringBeanUtil.getMultiBeans(beanFactory, protocols,
+					SpringBeanUtil.COMMA_SPLIT_PATTERN, ProtocolConfig.class);
+			return protocolConfigList;
+		} else {
+			return null;
+		}
+	}
 
-    public List<RegistryConfig> extractRegistries(String registries, BeanFactory beanFactory) {
-        if (registries != null && registries.length() > 0) {
-            List<RegistryConfig> registryConfigList = SpringBeanUtil.getMultiBeans(beanFactory, registries,
-                    SpringBeanUtil.COMMA_SPLIT_PATTERN, RegistryConfig.class);
-            return registryConfigList;
-        } else {
-            return null;
-        }
-    }
+	public List<RegistryConfig> extractRegistries(String registries, BeanFactory beanFactory) {
+		if (registries != null && registries.length() > 0) {
+			List<RegistryConfig> registryConfigList = SpringBeanUtil.getMultiBeans(beanFactory, registries,
+					SpringBeanUtil.COMMA_SPLIT_PATTERN, RegistryConfig.class);
+			return registryConfigList;
+		} else {
+			return null;
+		}
+	}
 
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;
+	}
 
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
-    }
+	public void setCheck(boolean value) {
+		setCheck(String.valueOf(value));
+	}
 
-    public void setCheck(boolean value) {
-        setCheck(String.valueOf(value));
-    }
-
-    public void setAccessLog(boolean value) {
-        setAccessLog(String.valueOf(value));
-    }
+	public void setAccessLog(boolean value) {
+		setAccessLog(String.valueOf(value));
+	}
 }

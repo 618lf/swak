@@ -16,14 +16,14 @@
 
 package com.weibo.api.motan.rpc;
 
-import com.weibo.api.motan.util.ReflectUtil;
-import com.swak.utils.StringUtils;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.swak.utils.StringUtils;
+import com.weibo.api.motan.util.ReflectUtil;
 
 /**
  * @author maijunsheng

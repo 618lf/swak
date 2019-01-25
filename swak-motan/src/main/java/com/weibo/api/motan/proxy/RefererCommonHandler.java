@@ -1,17 +1,16 @@
 package com.weibo.api.motan.proxy;
 
+import java.util.List;
+import java.util.Map;
+
 import com.weibo.api.motan.cluster.Cluster;
 import com.weibo.api.motan.rpc.DefaultRequest;
 import com.weibo.api.motan.rpc.Request;
 import com.weibo.api.motan.util.RequestIdGenerator;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * @author sunnights
  */
-@SuppressWarnings({ "rawtypes" })
 public class RefererCommonHandler<T> extends AbstractRefererHandler<T> implements CommonHandler {
 
     public RefererCommonHandler(String interfaceName, List<Cluster<T>> clusters) {
@@ -20,7 +19,7 @@ public class RefererCommonHandler<T> extends AbstractRefererHandler<T> implement
         init();
     }
 
-    public Object call(String methodName, Object[] arguments, Class returnType, Map<String, String> attachments, boolean async) throws Throwable {
+    public Object call(String methodName, Object[] arguments, Class<?> returnType, Map<String, String> attachments, boolean async) throws Throwable {
         DefaultRequest request = new DefaultRequest();
         request.setRequestId(RequestIdGenerator.getRequestId());
         request.setInterfaceName(interfaceName);
@@ -31,22 +30,22 @@ public class RefererCommonHandler<T> extends AbstractRefererHandler<T> implement
     }
 
     @Override
-    public Object call(String methodName, Object[] arguments, Class returnType) throws Throwable {
+    public Object call(String methodName, Object[] arguments, Class<?> returnType) throws Throwable {
         return call(methodName, arguments, returnType, null, false);
     }
 
     @Override
-    public Object asyncCall(String methodName, Object[] arguments, Class returnType) throws Throwable {
+    public Object asyncCall(String methodName, Object[] arguments, Class<?> returnType) throws Throwable {
         return call(methodName, arguments, returnType, null, true);
     }
 
     @Override
-    public Object call(Request request, Class returnType) throws Throwable {
+    public Object call(Request request, Class<?> returnType) throws Throwable {
         return invokeRequest(request, returnType, false);
     }
 
     @Override
-    public Object asyncCall(Request request, Class returnType) throws Throwable {
+    public Object asyncCall(Request request, Class<?> returnType) throws Throwable {
         return invokeRequest(request, returnType, true);
     }
 

@@ -18,6 +18,12 @@
 
 package com.weibo.api.motan.rpc;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import com.weibo.api.motan.common.FutureState;
 import com.weibo.api.motan.exception.MotanErrorMsgConstant;
 import com.weibo.api.motan.exception.MotanFrameworkException;
@@ -27,12 +33,6 @@ import com.weibo.api.motan.serialize.DeserializableObject;
 import com.weibo.api.motan.util.LoggerUtil;
 import com.weibo.api.motan.util.MotanFrameworkUtil;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by zhanglei28 on 2017/9/11.
  */
@@ -40,7 +40,7 @@ public class DefaultResponseFuture implements ResponseFuture {
 
     protected volatile FutureState state = FutureState.DOING;
 
-    protected Object lock = new Object();
+    protected final Object lock = new Object();
 
     protected Object result = null;
     protected Exception exception = null;

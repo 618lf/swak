@@ -14,24 +14,15 @@
  *    limitations under the License.
  */
 
-package com.weibo.api.motan.config.springsupport;
+package com.weibo.api.motan.registry.zookeeper;
 
-import org.springframework.beans.factory.BeanNameAware;
+import com.weibo.api.motan.core.extension.SpiMeta;
+import org.I0Itec.zkclient.ZkClient;
 
-import com.weibo.api.motan.config.ProtocolConfig;
-
-/**
- * @author fld
- *
- *         Created by fld on 16/5/13.
- */
-public class ProtocolConfigBean extends ProtocolConfig implements BeanNameAware {
-
-	private static final long serialVersionUID = 1L;
-
-	@Override
-	public void setBeanName(String name) {
-		setId(name);
-		MotanNamespaceHandler.protocolDefineNames.add(name);
-	}
+@SpiMeta(name = "zk")
+public class ZookeeperStringSerializerRegistryFactory extends ZookeeperRegistryFactory {
+    @Override
+    protected ZkClient createInnerZkClient(String zkServers, int sessionTimeout, int connectionTimeout) {
+        return new ZkClient(zkServers, sessionTimeout, connectionTimeout, new StringSerializer());
+    }
 }

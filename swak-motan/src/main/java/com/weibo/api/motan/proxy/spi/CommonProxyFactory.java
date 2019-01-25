@@ -16,12 +16,12 @@
 
 package com.weibo.api.motan.proxy.spi;
 
+import java.util.List;
+
 import com.weibo.api.motan.cluster.Cluster;
 import com.weibo.api.motan.core.extension.SpiMeta;
 import com.weibo.api.motan.proxy.ProxyFactory;
 import com.weibo.api.motan.proxy.RefererCommonHandler;
-
-import java.util.List;
 
 /**
  * common proxy
