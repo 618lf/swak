@@ -339,9 +339,9 @@ public class ExtensionLoader<T> {
     @SuppressWarnings("unchecked")
     private ConcurrentMap<String, Class<T>> loadClass(List<String> classNames) {
         ConcurrentMap<String, Class<T>> map = new ConcurrentHashMap<String, Class<T>>();
-
         for (String className : classNames) {
             try {
+            	 System.out.println(className);
                 Class<T> clz;
                 if (classLoader == null) {
                     clz = (Class<T>) Class.forName(className);
