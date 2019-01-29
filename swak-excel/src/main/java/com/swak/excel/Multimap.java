@@ -20,7 +20,7 @@ public class Multimap<K, T> {
 	 * @param k
 	 * @return
 	 */
-	public Iterable<T> get(K k) {
+	public List<T> get(K k) {
 		return values.get(k);
 	}
 

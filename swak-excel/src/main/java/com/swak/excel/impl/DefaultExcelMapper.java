@@ -208,7 +208,7 @@ public abstract class DefaultExcelMapper<T> implements ExcelMapper<T>, ExcelExec
 	 * 列映射
 	 */
 	@Override
-	public Iterable<ColumnMapper> getColumnMappers(String column) {
+	public List<ColumnMapper> getColumnMappers(String column) {
 		if (rowMapper == null) {
 			rowMapper = new Multimap<String, ColumnMapper>();
 			List<ColumnMapper> columns = this.getRowMapper();

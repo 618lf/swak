@@ -44,12 +44,11 @@ public class DefaultExcelExecuter implements ExcelExecuter<ExcelRow> {
 		return result;
 	}
 
-	private Boolean processRow(ImportResult<ExcelRow> result, int iRow, Row row) throws Exception {
+	private void processRow(ImportResult<ExcelRow> result, int iRow, Row row) throws Exception {
 		int _row = iRow, _cell = 0;
 		try {
-			Boolean isEmptyRow = Boolean.TRUE;
 			if (row == null) {
-				return Boolean.TRUE;
+				return;
 			}
 			ExcelRow excelRow = new ExcelRow(iRow);
 			for (int i = row.getFirstCellNum(), j = row.getLastCellNum(); i < j; i++) {
@@ -57,19 +56,11 @@ public class DefaultExcelExecuter implements ExcelExecuter<ExcelRow> {
 				Object tempValue = getCellValue(row.getCell(i));
 				String cellvalue = StringUtils
 						.trimToNull(tempValue == null ? StringUtils.EMPTY : String.valueOf(tempValue));
-				if (StringUtils.isNotBlank(cellvalue)) {
-					isEmptyRow = Boolean.FALSE;
-				}
 				excelRow.add(ExcelCol.me(_row, _cell, cellvalue).merged(this.hasMerged(row.getCell(i))));
 			}
-			if (isEmptyRow) {
-				return Boolean.TRUE;
-			}
 			result.addSucessRow(excelRow);
-			return Boolean.TRUE;
 		} catch (Exception e) {
 			result.addError(_row, ExcelUtils.indexToColumn(_cell + 1), e.getMessage());
-			return Boolean.TRUE;
 		}
 	}
 
@@ -165,6 +156,20 @@ public class DefaultExcelExecuter implements ExcelExecuter<ExcelRow> {
 
 		public boolean isMerged() {
 			if (merged != null && (merged.firstRow != this.row || merged.firstCol != this.col)) {
+				return true;
+			}
+			return false;
+		}
+		
+		public boolean isRowSpan() {
+			if (merged != null && merged.firstRow != this.row) {
+				return true;
+			}
+			return false;
+		}
+		
+		public boolean isColSpan() {
+			if (merged != null && merged.firstCol != this.col) {
 				return true;
 			}
 			return false;

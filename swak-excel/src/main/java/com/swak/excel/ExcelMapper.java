@@ -1,5 +1,6 @@
 package com.swak.excel;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Sheet;
@@ -33,7 +34,7 @@ public interface ExcelMapper<T> {
 	 * @param column
 	 * @return
 	 */
-	Iterable<ColumnMapper> getColumnMappers(String column);
+	List<ColumnMapper> getColumnMappers(String column);
 
 	/**
 	 * 得到Excel的数据

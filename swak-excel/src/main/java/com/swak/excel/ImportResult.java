@@ -2,7 +2,6 @@ package com.swak.excel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 
@@ -17,7 +16,6 @@ public class ImportResult<T> {
 	private Integer totalCount = 0;
 	private List<Error> errors;
 	private List<T> sucessRows;
-	private Map<String, Object> attributes;
 	private String msg;
 	private String sheet;
 
@@ -67,14 +65,6 @@ public class ImportResult<T> {
 
 	public void setSucessRows(List<T> sucessRows) {
 		this.sucessRows = sucessRows;
-	}
-
-	public Map<String, Object> getAttributes() {
-		return attributes;
-	}
-
-	public void setAttributes(Map<String, Object> attributes) {
-		this.attributes = attributes;
 	}
 
 	public String getMsg() {
