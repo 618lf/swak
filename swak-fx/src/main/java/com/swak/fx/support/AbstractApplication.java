@@ -216,7 +216,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 
 		Application.launch(appClass, args);
 	}
-	
+
 	/**
 	 * Launch App - No Splash
 	 * 

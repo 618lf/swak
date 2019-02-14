@@ -9,6 +9,7 @@ public class Event {
 
 	public static Event CLOSE = new Event("close");
 	public static Event EXIT = new Event("exit");
+	public static Event UPGRADE = new Event("upgrade");
 	public static Event DOWNLOAD = new Event("DOWNLOAD");
 	public static Event URL = new Event("url");
 
