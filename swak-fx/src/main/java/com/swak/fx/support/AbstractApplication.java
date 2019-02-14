@@ -111,27 +111,39 @@ public abstract class AbstractApplication extends Application implements EventLi
 		Display.setStage(stage);
 		Display.setHostServices(this.getHostServices());
 		Display.setClipboard(Clipboard.getSystemClipboard());
-		AbstractPage splash = this.createPage(splashView);
-		final Stage splashStage = new Stage(StageStyle.TRANSPARENT);
-		final Scene splashScene = new Scene(splash.getView(), Color.TRANSPARENT);
-		this.customStage(splashStage, null);
-		splashStage.setScene(splashScene);
-		splashStage.initStyle(StageStyle.TRANSPARENT);
-		splashStage.show();
+		if (splashView != null) {
+			AbstractPage splash = this.createPage(splashView);
+			final Stage splashStage = new Stage(StageStyle.TRANSPARENT);
+			final Scene splashScene = new Scene(splash.getView(), Color.TRANSPARENT);
+			this.customStage(splashStage, null);
+			splashStage.setScene(splashScene);
+			splashStage.initStyle(StageStyle.TRANSPARENT);
+			splashStage.show();
 
-		splashIsShowing.complete(() -> {
-			splash.waitClose().whenComplete((v, t) -> {
-				Display.runUI(() -> {
-					showMainView().whenComplete((v1, t1) -> {
-						Display.runUI(() -> {
-							v1.run();
-							splashStage.close();
-							splashStage.setScene(null);
+			splashIsShowing.complete(() -> {
+				splash.waitClose().whenComplete((v, t) -> {
+					Display.runUI(() -> {
+						showMainView().whenComplete((v1, t1) -> {
+							Display.runUI(() -> {
+								v1.run();
+								splashStage.close();
+								splashStage.setScene(null);
+							});
 						});
 					});
 				});
 			});
-		});
+		} else {
+			splashIsShowing.complete(() -> {
+				Display.runUI(() -> {
+					showMainView().whenComplete((v1, t1) -> {
+						Display.runUI(() -> {
+							v1.run();
+						});
+					});
+				});
+			});
+		}
 	}
 
 	/**
@@ -202,6 +214,24 @@ public abstract class AbstractApplication extends Application implements EventLi
 			Display.setSystemTray(SystemTray.getSystemTray());
 		}
 
+		Application.launch(appClass, args);
+	}
+	
+	/**
+	 * Launch App - No Splash
+	 * 
+	 * @param appClass
+	 * @param mainClass
+	 * @param splashScreen
+	 * @param args
+	 */
+	public static void launch(final Class<? extends Application> appClass,
+			final Class<? extends AbstractPage> mainClass, final String[] args) {
+		mainView = mainClass;
+		savedArgs = args;
+		if (SystemTray.isSupported()) {
+			Display.setSystemTray(SystemTray.getSystemTray());
+		}
 		Application.launch(appClass, args);
 	}
 }
