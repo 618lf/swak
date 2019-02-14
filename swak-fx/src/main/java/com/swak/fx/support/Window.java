@@ -58,6 +58,9 @@ public class Window extends AbstractPage {
 	 * 隐藏， 默认这两个是一致的，但如果设置
 	 * Platform.setImplicitExit(false); 就不一致
 	 * 
+	 * 如果设置了上面的配置则需要使用如下的退出方式
+	 * Platform.exit();
+	 * 
 	 * @param evt
 	 */
 	@FXML
