@@ -25,7 +25,6 @@ import com.sun.javafx.scene.control.behavior.BehaviorBase;
 import com.sun.javafx.scene.control.behavior.KeyBinding;
 import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
 import com.sun.javafx.scene.traversal.ParentTraversalEngine;
-import com.swak.OS;
 
 import javafx.animation.Animation.Status;
 import javafx.animation.Interpolator;
@@ -578,6 +577,17 @@ public class DownloadPane extends Control {
 					Notifys.error("提醒", "文档下载失败！", Pos.CENTER);
 					return;
 				}
+				this.showInFolder();
+			});
+		}
+
+		/**
+		 * 在文件夹中显示此文件
+		 */
+		private void showInFolder() {
+			if (OS.me() == OS.windows) {
+				OS.run("cmd /c explorer " + download.getFile().toFile().getAbsolutePath());
+			} else {
 				DirectoryChooser chooser = new DirectoryChooser();
 				chooser.setTitle("文件另存为");
 				File dir = chooser.showDialog(Display.getStage());
@@ -586,7 +596,7 @@ public class DownloadPane extends Control {
 				} else if (dir != null) {
 					Notifys.error("提醒", "文档下载错误！", Pos.CENTER);
 				}
-			});
+			}
 		}
 
 		/**
