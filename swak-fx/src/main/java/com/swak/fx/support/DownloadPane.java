@@ -586,7 +586,7 @@ public class DownloadPane extends Control {
 		 */
 		private void showInFolder() {
 			if (OS.me() == OS.windows) {
-				OS.run("explorer " + download.getFile().toFile().getParentFile().getAbsolutePath());
+				OS.run("explorer /select, " + download.getFile().toFile().getAbsolutePath());
 			} else {
 				DirectoryChooser chooser = new DirectoryChooser();
 				chooser.setTitle("文件另存为");
