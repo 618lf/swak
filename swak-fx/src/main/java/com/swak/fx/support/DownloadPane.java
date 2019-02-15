@@ -586,7 +586,7 @@ public class DownloadPane extends Control {
 		 */
 		private void showInFolder() {
 			if (OS.me() == OS.windows) {
-				OS.run("cmd /c explorer " + download.getFile().toFile().getAbsolutePath());
+				OS.run("explorer " + download.getFile().toFile().getParentFile().getAbsolutePath());
 			} else {
 				DirectoryChooser chooser = new DirectoryChooser();
 				chooser.setTitle("文件另存为");
@@ -649,6 +649,9 @@ public class DownloadPane extends Control {
 						}
 						this.progressProperty.set(rate);
 					}
+					read.close();
+					write.close();
+					connection.disconnect();
 					this.call_success();
 					this.progressProperty.set(1.0);
 				} else {
@@ -658,17 +661,6 @@ public class DownloadPane extends Control {
 			} catch (Exception e) {
 				this.call_failure();
 				return download;
-			} finally {
-				try {
-					if (read != null) {
-						read.close();
-					}
-					if (write != null) {
-						write.close();
-					}
-					connection.disconnect();
-				} catch (IOException e) {
-				}
 			}
 		}
 
