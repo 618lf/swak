@@ -101,3 +101,7 @@ serverTimezone=GMT%2B8
 打包之后，如何将配置文件放在 jar 包之外。相对jar 的目录
 application.properties 会查找 config 目录下的文件
 可以在 application.properties 指定 logback.xml的路径 logging.config=config/logback.xml
+
+# 版本0.1.2_swt
+这个版本是在 0.1.2 的基础上保留 swt 的版本，在主版本 0.1.2 中删除 swt
+因为swt不会使用到了，但保留作为备用。
