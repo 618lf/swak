@@ -25,17 +25,20 @@ import com.sun.javafx.scene.control.behavior.BehaviorBase;
 import com.sun.javafx.scene.control.behavior.KeyBinding;
 import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
 import com.sun.javafx.scene.traversal.ParentTraversalEngine;
+import com.swak.OS;
 
 import javafx.animation.Animation.Status;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlySetProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
@@ -524,11 +527,13 @@ public class DownloadPane extends Control {
 
 		private final Download download;
 		private final DoubleProperty progressProperty;
+		private final BooleanProperty successProperty;
 		private volatile Future<Download> _task;
 
 		public DownloadPart(Download download) {
 			this.download = download;
 			this.progressProperty = new SimpleDoubleProperty(0);
+			this.successProperty = new SimpleBooleanProperty(true);
 			title = new Label(download.getName());
 			progress = new ProgressIndicator(0);
 			this.getChildren().add(title);
@@ -551,6 +556,15 @@ public class DownloadPane extends Control {
 					this.layoutChildren();
 				});
 			});
+			this.successProperty.addListener((observable, oldValue, newValue) -> {
+				Display.runUI(() -> {
+					if (!newValue) {
+						this.title.getStyleClass().add("part-title--error");
+						this.progress.setDisable(true);
+					}
+					this.layoutChildren();
+				});
+			});
 			title.setAlignment(Pos.CENTER);
 			HBox.setHgrow(title, Priority.ALWAYS);
 			HBox.setHgrow(progress, Priority.NEVER);
@@ -567,7 +581,7 @@ public class DownloadPane extends Control {
 				DirectoryChooser chooser = new DirectoryChooser();
 				chooser.setTitle("文件另存为");
 				File dir = chooser.showDialog(Display.getStage());
-				if (dir != null && download.renameto(dir)) {
+				if (dir != null && download.renameto(dir, false)) {
 					Notifys.info("提醒", "文档下载完成！");
 				} else if (dir != null) {
 					Notifys.error("提醒", "文档下载错误！", Pos.CENTER);
@@ -625,11 +639,14 @@ public class DownloadPane extends Control {
 						}
 						this.progressProperty.set(rate);
 					}
-					download.finish();
+					this.call_success();
 					this.progressProperty.set(1.0);
+				} else {
+					this.call_failure();
 				}
 				return download;
 			} catch (Exception e) {
+				this.call_failure();
 				return download;
 			} finally {
 				try {
@@ -643,6 +660,17 @@ public class DownloadPane extends Control {
 				} catch (IOException e) {
 				}
 			}
+		}
+
+		// 执行成功
+		private void call_success() {
+			download.finish();
+		}
+
+		// 执行失败
+		private void call_failure() {
+			download.error();
+			this.successProperty.setValue(Boolean.FALSE);
 		}
 	}
 
@@ -671,27 +699,43 @@ public class DownloadPane extends Control {
 
 		private Path createTempFile() {
 			try {
+				File dir = this.userDownloadPath();
+				if (dir.exists() && dir.isDirectory()) {
+					return new File(dir, "downloading." + nums.getAndIncrement() + ".tmp").toPath();
+				}
 				return Files.createTempFile("downloading", "." + nums.getAndIncrement() + ".tmp");
 			} catch (Exception e) {
 				return null;
 			}
 		}
 
+		private File userDownloadPath() {
+			return new File(OS.home(), "Downloads");
+		}
+
 		public void finish() {
-			if (this.renameto(this.file.getParent().toFile())) {
+			if (this.renameto(this.file.getParent().toFile(), true)) {
 				this.success = true;
 			}
 		}
 
-		public boolean renameto(File dir) {
+		public void error() {
+			this.success = false;
+		}
+
+		public boolean renameto(File dir, boolean del) {
 			File dest = new File(dir, this.prefix + this.suffix);
 			int num = 1;
 			while (dest.exists()) {
 				dest = new File(dir, String.format("%s(%s)%s", this.prefix, num++, this.suffix));
 			}
 			try {
-				if (this.file.toFile().exists()) {
+				File src = this.file.toFile();
+				if (src.exists()) {
 					Files.copy(this.file, dest.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+					if (del) {
+						src.delete();
+					}
 					this.file = dest.toPath();
 					return true;
 				}

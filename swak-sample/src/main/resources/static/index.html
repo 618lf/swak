@@ -8,7 +8,7 @@ $(function() {
 	$(document).on('click', '.download', function() {
 		var href = $(this).data('href');
 		if ($App) {
-			$App.download(href)
+			$App.download(href, '张国荣', '', '')
 		}
 	});
 })

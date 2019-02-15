@@ -83,6 +83,9 @@
   -fx-background-color: #204d74;
   -fx-border-color: #122b40;
 }
+.download-panel .part-title--error {
+  -fx-text-fill: #999;
+}
 /******************************************************************************
  * 
  * Close button

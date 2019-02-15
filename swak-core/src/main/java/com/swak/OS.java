@@ -61,4 +61,13 @@ public enum OS {
 			return Constants.LOCALHOST;
 		}
 	}
+	
+	/**
+	 * 当前用户的home
+	 * 
+	 * @return
+	 */
+	public static String home() {
+		return System.getProperty("user.home");
+	}
 }
