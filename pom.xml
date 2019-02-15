@@ -28,7 +28,6 @@
 		<module>swak-sample-vertx</module>
 		<module>swak-qrcode</module>
 		<module>swak-quartz</module>
-		<module>swak-swt</module>
 		<module>swak-package</module>
 		<module>swak-excel</module>
 		<module>swak-wechat</module>
@@ -64,7 +63,6 @@
 		<zkclient.version>0.10</zkclient.version>
 		<metrics.version>4.0.2</metrics.version>
 		<quartz.version>2.2.3</quartz.version>
-		<swt.version>1.0</swt.version>
 		<jcef.version>1.0</jcef.version>
 		<poi.version>4.0.1</poi.version>
 		<guava.version>21.0</guava.version>
