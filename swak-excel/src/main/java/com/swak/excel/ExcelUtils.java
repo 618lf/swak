@@ -104,7 +104,7 @@ public abstract class ExcelUtils {
 	}
 
 	// ########### 读取Excel 数据 ################
-	
+
 	/**
 	 * 获取数据
 	 * 
@@ -116,7 +116,7 @@ public abstract class ExcelUtils {
 	public static <T> Result read(DefaultExcelMapper<T> mapper, File file) {
 		return read(mapper, file, false);
 	}
-	
+
 	/**
 	 * 获取数据
 	 * 
@@ -185,7 +185,7 @@ public abstract class ExcelUtils {
 		}
 		return Result.error("数据导入错误,未读取到数据");
 	}
-	
+
 	/**
 	 * 无模板读取excel内容
 	 * 
@@ -215,7 +215,7 @@ public abstract class ExcelUtils {
 					} else {
 						return Result.error(result.getMsg(), result.getErrors());
 					}
-					
+
 					// read first sheet
 					break;
 				}
@@ -240,16 +240,16 @@ public abstract class ExcelUtils {
 	 * @param startRow
 	 * @return
 	 */
-	public static File write(String fileName, String title, List<ColumnMapper> columns,
+	public static File write(File dir, String fileName, String title, List<ColumnMapper> columns,
 			List<Map<String, Object>> vaules, String templateName, Integer startRow) {
 		try {
-			return ExportFile.def().templateName(templateName).startRow(startRow).fileName(fileName).fileTitle(title)
+			return ExportFile.def(dir).templateName(templateName).startRow(startRow).fileName(fileName).fileTitle(title)
 					.columns(columns).values(vaules).build();
 		} catch (Exception e) {
 			return null;
 		}
 	}
-	
+
 	// ########### ZIP ################
 	/**
 	 * 创建zip 文件
@@ -263,7 +263,7 @@ public abstract class ExcelUtils {
 		ZipOutputStream objZipOutputStream = null;
 		try {
 			objZipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
-			objZipOutputStream.setEncoding("UTF-8"); 
+			objZipOutputStream.setEncoding("UTF-8");
 			for (File file : files) {
 				objZipOutputStream.putNextEntry(new ZipEntry(file.getName()));
 				objInputStream = new FileInputStream(file);

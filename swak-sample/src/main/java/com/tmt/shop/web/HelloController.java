@@ -21,6 +21,7 @@ import com.swak.excel.ExcelUtils;
 import com.swak.excel.impl.DefaultExcelMapper;
 import com.swak.executor.Workers;
 import com.swak.http.builder.RequestBuilder;
+import com.swak.incrementer.UUIdGenerator;
 import com.swak.persistence.QueryCondition;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.web.WebUtils;
@@ -297,7 +298,8 @@ public class HelloController {
 		return Workers.future(() -> {
 
 			// 创建文件
-			File excelFile = ExcelUtils.write("测试创建文件", "测试创建文件", toMapper(), toValues(), null, null);
+			File excelFile = ExcelUtils.write(new File(System.getProperty("java.io.tmpdir"), UUIdGenerator.uuid()),
+					"测试创建文件", "测试创建文件", toMapper(), toValues(), null, null);
 
 			// 读取文件
 			Result result = ExcelUtils.read(new DefaultExcelMapper<Excel>() {

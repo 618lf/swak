@@ -55,7 +55,7 @@ public enum URLParamType {
     /************************** SPI start ******************************/
 
     /** serialize **/
-    serialize("serialization", "hessian2"),
+    serialize("serialization", "kryo"),
     /** codec **/
     codec("codec", "motan"),
     /** endpointFactory **/

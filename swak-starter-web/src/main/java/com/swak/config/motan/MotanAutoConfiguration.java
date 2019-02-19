@@ -49,9 +49,9 @@ import com.weibo.api.motan.config.springsupport.RegistryConfigBean;
 public class MotanAutoConfiguration {
 
 	/** 注册中心配置bean名称 */
-	private static final String REGISTRY_CONFIG_BEAN_NAME = "_spring-boot-starter-motan-registry_";
+	private static final String REGISTRY_CONFIG_BEAN_NAME = "_swak-motan-registry_";
 	/** 协议配置bean名称 */
-	private static final String PROTOCOL_CONFIG_BEAN_NAME = "_spring-boot-starter-motan-protocol_";
+	private static final String PROTOCOL_CONFIG_BEAN_NAME = "_swak-motan-protocol_";
 
 	public MotanAutoConfiguration() {
 		APP_LOGGER.debug("Loading Motan Client");

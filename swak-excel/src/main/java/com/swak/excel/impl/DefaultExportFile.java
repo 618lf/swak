@@ -1,7 +1,6 @@
 package com.swak.excel.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,8 +28,6 @@ import com.swak.utils.IOUtils;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
-import com.swak.zip.ZipEntry;
-import com.swak.zip.ZipOutputStream;
 
 /**
  * 默认的导出工具类
@@ -38,6 +35,12 @@ import com.swak.zip.ZipOutputStream;
  * @author lifeng
  */
 public class DefaultExportFile implements ExportFile {
+
+	private String DEFAULT_TEMPLATE_NAME = "defaultTemplate.xls";
+	private String EXPORT_TEMPLATE_PATH = "classpath:/excel/";
+	private Integer MAX_ROWS = 65535;
+	private String XLS = ".xls";
+	private String ZIP = ".zip";
 
 	private String fileName;
 	private String fileTitle;
@@ -47,6 +50,13 @@ public class DefaultExportFile implements ExportFile {
 	private Integer startRow;
 	private Map<String, CellStyle> cellStyles;
 	private StyleHandler styleHandler;
+
+	// 创建文件的目录
+	private final File dir;
+
+	public DefaultExportFile(File dir) {
+		this.dir = dir;
+	}
 
 	public DefaultExportFile fileName(String fileName) {
 		this.fileName = fileName;
@@ -140,7 +150,7 @@ public class DefaultExportFile implements ExportFile {
 
 	// 创建文件
 	private File createFile(InputStream templateFile, List<Map<String, Object>> values) {
-		File outFile = FileUtils.tempFile(this.fileName + XLS);
+		File outFile = this.touch(dir, this.fileName, XLS);
 		FileOutputStream out = null;
 		try {
 			Workbook template = ExcelUtils.load(templateFile);
@@ -154,6 +164,26 @@ public class DefaultExportFile implements ExportFile {
 			IOUtils.closeQuietly(out);
 		}
 		return outFile;
+	}
+
+	/**
+	 * 创建文件
+	 * 
+	 * @param dir
+	 * @param prefix
+	 * @param suffix
+	 * @return
+	 */
+	public File touch(File dir, String prefix, String suffix) {
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		File dest = new File(dir, prefix + suffix);
+		int num = 1;
+		while (dest.exists()) {
+			dest = new File(dir, String.format("%s(%s)%s", prefix, num++, suffix));
+		}
+		return dest;
 	}
 
 	// 写入数据
@@ -419,32 +449,13 @@ public class DefaultExportFile implements ExportFile {
 	 * @return
 	 */
 	private File buildZip(List<File> files) {
-		File zipFile = FileUtils.tempFile(this.fileName + ZIP);
-		InputStream objInputStream = null;
-		ZipOutputStream objZipOutputStream = null;
 		try {
-			objZipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
-			objZipOutputStream.setEncoding("GBK");
-			for (File file : files) {
-				objZipOutputStream.putNextEntry(new ZipEntry(file.getName()));
-				objInputStream = new FileInputStream(file);
-				byte[] blobbytes = new byte[10240];
-				int bytesRead = 0;
-				while ((bytesRead = objInputStream.read(blobbytes)) != -1) {
-					objZipOutputStream.write(blobbytes, 0, bytesRead);
-				}
-				// 重要，每次必须关闭此流，不然下面的临时文件是删不掉的
-				if (objInputStream != null) {
-					objInputStream.close();
-				}
-				objZipOutputStream.closeEntry();
-			}
-			return zipFile;
-		} catch (Exception e) {
-			throw new BaseRuntimeException(e.getMessage());
+			File zipFile = this.touch(dir, this.fileName, ZIP);
+			return ExcelUtils.buildZip(files, zipFile);
 		} finally {
-			IOUtils.closeQuietly(objInputStream);
-			IOUtils.closeQuietly(objZipOutputStream);
+			for (File file : files) {
+				file.delete();
+			}
 		}
 	}
 }
