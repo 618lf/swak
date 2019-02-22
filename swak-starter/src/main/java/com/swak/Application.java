@@ -1,5 +1,7 @@
 package com.swak;
 
+import java.util.Collection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -43,9 +45,6 @@ public class Application extends SpringApplication {
 	public Application(Class<?>... primarySources) {
 		super(primarySources);
 
-		// 启动的类
-		Constants.BOOT_CLASSES.add(primarySources[0]);
-
 		// 重新识别配置
 		this.setWebApplicationType(this.deduceWebApplicationType());
 	}
@@ -73,6 +72,17 @@ public class Application extends SpringApplication {
 			return (ConfigurableApplicationContext) BeanUtils.instantiateClass(ReactiveServerApplicationContext.class);
 		}
 		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(AnnotationConfigApplicationContext.class);
+	}
+
+	/**
+	 * 设置启动的类
+	 */
+	@Override
+	public void addPrimarySources(Collection<Class<?>> additionalPrimarySources) {
+		super.addPrimarySources(additionalPrimarySources);
+		if (additionalPrimarySources != null && additionalPrimarySources.size() > 0) {
+			Constants.BOOT_CLASSES.add(additionalPrimarySources.iterator().next());
+		}
 	}
 
 	/**
