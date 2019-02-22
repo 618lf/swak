@@ -32,6 +32,7 @@
 		<module>swak-excel</module>
 		<module>swak-wechat</module>
 		<module>swak-fx</module>
+		<module>swak-test</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.1.0.RELEASE</spring-boot.version>
@@ -201,6 +202,11 @@
 			</dependency>
 
 			<!-- 测试 -->
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-test</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>com.swak</groupId>
 				<artifactId>swak-sample-api</artifactId>
