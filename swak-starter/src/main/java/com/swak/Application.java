@@ -45,6 +45,11 @@ public class Application extends SpringApplication {
 	public Application(Class<?>... primarySources) {
 		super(primarySources);
 
+		// 设置启动的类
+		if (primarySources != null) {
+			Constants.BOOT_CLASSES.add(primarySources[0]);
+		}
+
 		// 重新识别配置
 		this.setWebApplicationType(this.deduceWebApplicationType());
 	}
