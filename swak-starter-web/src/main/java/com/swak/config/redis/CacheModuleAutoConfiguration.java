@@ -45,7 +45,7 @@ public class CacheModuleAutoConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@ConditionalOnMissingBean(EventBusConfigurationSupport.class)
 	@AutoConfigureAfter(CacheAutoConfiguration.class)
-	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableEventBus", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableEventBus", matchIfMissing = false)
 	public static class EventBusAutoConfiguration extends EventBusConfigurationSupport {
 		public EventBusAutoConfiguration() {
 			APP_LOGGER.debug("Loading Event bus");
