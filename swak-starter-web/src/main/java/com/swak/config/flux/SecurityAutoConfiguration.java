@@ -23,7 +23,7 @@ import com.swak.security.mgt.SecurityManager;
 import com.swak.security.mgt.support.DefaultFilterChainManager;
 import com.swak.security.mgt.support.DefaultSecurityManager;
 import com.swak.security.principal.PrincipalStrategy;
-import com.swak.security.principal.support.TokenPrincipalStrategy;
+import com.swak.security.principal.TokenPrincipalStrategy;
 
 /**
  * 安全配置

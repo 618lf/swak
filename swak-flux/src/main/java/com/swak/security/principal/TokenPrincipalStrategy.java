@@ -1,4 +1,4 @@
-package com.swak.security.principal.support;
+package com.swak.security.principal;
 
 import java.io.Serializable;
 
