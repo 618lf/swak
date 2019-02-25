@@ -46,7 +46,7 @@ public class Application extends SpringApplication {
 		super(primarySources);
 
 		// 设置启动的类
-		if (primarySources != null) {
+		if (primarySources != null && primarySources.length >0) {
 			Constants.BOOT_CLASSES.add(primarySources[0]);
 		}
 
