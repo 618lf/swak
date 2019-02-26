@@ -17,6 +17,7 @@ public class Reactor {
 	 * mono
 	 * 
 	 * 监控返回值，不会阻塞线程
+	 * 
 	 * @param future
 	 * @return
 	 */
@@ -31,15 +32,24 @@ public class Reactor {
 			});
 		});
 	}
-	
+
 	/**
 	 * CompletableFuture
 	 * 
 	 * 监控返回值，不会阻塞线程
+	 * 
 	 * @param future
 	 * @return
 	 */
 	public static CompletableFuture<Object> future(ResponseFuture future) {
-		return mono(future).toFuture();
+		CompletableFuture<Object> completableFuture = new CompletableFuture<>();
+		future.addListener(f -> {
+			if (f.isSuccess()) {
+				completableFuture.complete(f.getValue());
+			} else {
+				completableFuture.completeExceptionally(f.getException());
+			}
+		});
+		return completableFuture;
 	}
 }
