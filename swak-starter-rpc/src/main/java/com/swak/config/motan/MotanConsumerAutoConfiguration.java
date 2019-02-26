@@ -43,7 +43,7 @@ import com.weibo.api.motan.util.LoggerUtil;
  */
 @Configuration
 @ConditionalOnClass({ BasicServiceConfigProperties.class })
-@AutoConfigureAfter(MotanAutoConfiguration.class)
+@AutoConfigureAfter({ MotanAutoConfiguration.class, MotanProviderAutoConfiguration.class })
 @EnableConfigurationProperties({ BasicServiceConfigProperties.class, ProtocolConfigProperties.class,
 		RegistryConfigProperties.class })
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMotan", matchIfMissing = true)
@@ -57,7 +57,7 @@ public class MotanConsumerAutoConfiguration implements DisposableBean {
 	public MotanConsumerAutoConfiguration() {
 		APP_LOGGER.debug("Loading Motan Consumer");
 	}
-	
+
 	@Bean
 	public BeanPostProcessor beanPostProcessor() {
 		return new BeanPostProcessor() {
