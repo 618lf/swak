@@ -1,7 +1,5 @@
 package com.swak.security;
 
-import com.swak.reactivex.transport.http.Subject;
-import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.security.mgt.SecurityManager;
 /**
  * 主要是获取Subject
@@ -14,15 +12,6 @@ public abstract class SecurityUtils {
 	 * 系统唯一的一个在系统初始化时设置
 	 */
 	private static SecurityManager securityManager = null;
-	
-	/**
-	 * 只能在 request 中获取 身份
-	 * 
-	 * @return
-	 */
-	public static Subject getSubject(HttpServerRequest request) {
-		return request.getSubject();
-	}
 	
 	/**
 	 * 直接返回默认的管理器

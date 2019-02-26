@@ -11,17 +11,19 @@ import com.swak.reactivex.web.method.MethodParameter;
 
 /**
  * 处理器的集合 -- 支持缓存
+ * 
  * @author lifeng
  */
 public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgumentResolver {
 
 	private List<HandlerMethodArgumentResolver> resolvers = new ArrayList<HandlerMethodArgumentResolver>();
-	
+
 	private final Map<MethodParameter, HandlerMethodArgumentResolver> argumentResolverCache = new ConcurrentHashMap<MethodParameter, HandlerMethodArgumentResolver>(
 			256);
 
 	/**
 	 * 添加處理器
+	 * 
 	 * @param resolvers
 	 * @return
 	 */
@@ -41,7 +43,7 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 	}
 
 	@Override
-	public Object resolveArgument(MethodParameter parameter, HttpServerRequest webRequest){
+	public Object resolveArgument(MethodParameter parameter, HttpServerRequest webRequest) {
 		HandlerMethodArgumentResolver resolver = getArgumentResolver(parameter);
 		if (resolver == null) {
 			throw new IllegalArgumentException(
@@ -52,6 +54,7 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 
 	/**
 	 * 具有缓存机制
+	 * 
 	 * @param parameter
 	 * @return
 	 */

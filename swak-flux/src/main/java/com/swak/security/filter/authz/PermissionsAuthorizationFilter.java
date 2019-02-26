@@ -3,7 +3,6 @@ package com.swak.security.filter.authz;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
-import com.swak.security.SecurityUtils;
 
 import reactor.core.publisher.Mono;
 
@@ -20,7 +19,7 @@ public class PermissionsAuthorizationFilter extends AuthorizationFilter {
 	@Override
 	protected Mono<Boolean> isAccessAllowed(HttpServerRequest request, HttpServerResponse response,
 			Object mappedValue) {
-		Subject subject = SecurityUtils.getSubject(request);
+		Subject subject = request.getSubject();
 		if (subject.getPrincipal() == null) {
 			return Mono.just(false);
 		}

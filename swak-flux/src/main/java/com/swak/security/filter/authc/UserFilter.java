@@ -7,7 +7,6 @@ import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.Result;
-import com.swak.security.SecurityUtils;
 import com.swak.security.filter.AccessControllerFilter;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -22,13 +21,13 @@ public class UserFilter extends AccessControllerFilter {
 	@Override
 	protected Mono<Boolean> isAccessAllowed(HttpServerRequest request,
 			HttpServerResponse response, Object mappedValue) {
-		Subject subject = SecurityUtils.getSubject(request);
+		Subject subject = request.getSubject();
 		return Mono.just(subject.getPrincipal() != null);
 	}
 
 	@Override
 	protected Mono<Boolean> onAccessDenied(HttpServerRequest request, HttpServerResponse response) {
-		Subject subject = SecurityUtils.getSubject(request);
+		Subject subject = request.getSubject();
 		ErrorCode code = ErrorCode.NO_USER;
 		if (StringUtils.hasText(subject.getReason())) {
 			try {

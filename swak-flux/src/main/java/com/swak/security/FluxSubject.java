@@ -181,7 +181,7 @@ public class FluxSubject implements Subject {
 
 	@Override
 	public CompletionStage<Boolean> runAs(Principal principal) {
-		return CompletableFuture.supplyAsync(() ->{
+		return CompletableFuture.supplyAsync(() -> {
 			if (this.getPrincipal() == null || principal == null || this.getPrincipal().equals(principal)) {
 				return false;
 			}
@@ -211,7 +211,7 @@ public class FluxSubject implements Subject {
 	 */
 	@Override
 	public CompletionStage<Principal> releaseRunAs() {
-		return CompletableFuture.supplyAsync(() ->{
+		return CompletableFuture.supplyAsync(() -> {
 			if (this.isRunAs()) {
 				Principal principal = runAsPrincipals.pop();
 				if (runAsPrincipals.isEmpty()) {

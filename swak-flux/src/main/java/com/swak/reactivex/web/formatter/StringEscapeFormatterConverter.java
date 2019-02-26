@@ -1,4 +1,4 @@
-package com.swak.reactivex.web.converter;
+package com.swak.reactivex.web.formatter;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.StringUtils;

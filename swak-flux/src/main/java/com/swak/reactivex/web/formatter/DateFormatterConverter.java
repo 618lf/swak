@@ -1,4 +1,4 @@
-package com.swak.reactivex.web.converter;
+package com.swak.reactivex.web.formatter;
 
 import java.text.ParseException;
 import java.text.ParsePosition;

@@ -5,7 +5,6 @@ import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.Result;
-import com.swak.security.SecurityUtils;
 import com.swak.security.exception.AuthenticationException;
 
 import reactor.core.publisher.Mono;
@@ -25,7 +24,7 @@ public class AuthenticatingFilter extends AuthenticationFilter {
 			HttpServerResponse response) {
 		
 		// 已登录直接返回
-		boolean authenticated = SecurityUtils.getSubject(request).isAuthenticated();
+		boolean authenticated = request.getSubject().isAuthenticated();
 		if (authenticated) {
 			response.json().ok().buffer(Result.success().toJson());
 			return Mono.just(false);
@@ -43,7 +42,7 @@ public class AuthenticatingFilter extends AuthenticationFilter {
 	 * @throws Exception
 	 */
 	protected Mono<Boolean> executeLogin(HttpServerRequest request, HttpServerResponse response) {
-		Subject subject = SecurityUtils.getSubject(request);
+		Subject subject = request.getSubject();
 		return subject.login(request, response).doOnSuccess(v -> {
 			onLoginSuccess(subject, request, response);
 		}).onErrorResume(e->{
