@@ -56,7 +56,7 @@ public class MotanAutoConfiguration {
 	private static final String PROTOCOL_CONFIG_BEAN_NAME = "_swak-motan-protocol_";
 
 	public MotanAutoConfiguration() {
-		APP_LOGGER.debug("Loading Motan Client");
+		APP_LOGGER.debug("Loading Motan");
 	}
 
 	/**
@@ -231,7 +231,6 @@ public class MotanAutoConfiguration {
 		if (!StringUtils.isEmpty(basicServiceConfig.getExport())) {
 			config.setExport(basicServiceConfig.getExport());
 		} else {
-			// 未设置export，使用ProtocolConfigBeanName : port暴露
 			if (StringUtils.isEmpty(basicServiceConfig.getExportPort())) {
 				throw new RuntimeException("need service export port...");
 			}

@@ -19,11 +19,13 @@ package com.swak.config;
 import static com.swak.Application.APP_LOGGER;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
+import com.swak.Constants;
 import com.swak.motan.properties.AnnotationBeanConfigProperties;
 import com.swak.motan.properties.BasicRefererConfigProperties;
 import com.swak.motan.properties.BasicServiceConfigProperties;
@@ -44,16 +46,15 @@ import com.weibo.api.motan.config.springsupport.RegistryConfigBean;
 @Configuration
 @ConditionalOnClass({ BasicServiceConfigProperties.class })
 @EnableConfigurationProperties({ AnnotationBeanConfigProperties.class, BasicServiceConfigProperties.class,
-		BasicRefererConfigProperties.class, ProtocolConfigProperties.class, RegistryConfigProperties.class })
+	BasicRefererConfigProperties.class, ProtocolConfigProperties.class, RegistryConfigProperties.class })
+@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMotan", matchIfMissing = true)
 public class MotanAutoConfiguration {
 
-	/** 注册中心配置bean名称 */
-	private static final String REGISTRY_CONFIG_BEAN_NAME = "_spring-boot-starter-motan-registry_";
-	/** 协议配置bean名称 */
-	private static final String PROTOCOL_CONFIG_BEAN_NAME = "_spring-boot-starter-motan-protocol_";
+	private static final String REGISTRY_CONFIG_BEAN_NAME = "_swak-motan-registry_";
+	private static final String PROTOCOL_CONFIG_BEAN_NAME = "_swak-motan-protocol_";
 
 	public MotanAutoConfiguration() {
-		APP_LOGGER.debug("Loading Motan Server");
+		APP_LOGGER.debug("Loading Motan");
 	}
 
 	/**
