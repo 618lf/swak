@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 
 import com.swak.config.jdbc.DataSourceAutoConfiguration;
 import com.swak.config.jdbc.DataSourceTransactionManagerConfiguration;
-import com.swak.config.motan.MotanAutoConfiguration;
 
 /**
  * Web 服务配置
@@ -18,7 +17,7 @@ import com.swak.config.motan.MotanAutoConfiguration;
 @Configuration
 @ConditionalOnMissingBean(WebConfigurationSupport.class)
 @AutoConfigureAfter({ SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class,
-	DataSourceTransactionManagerConfiguration.class, MotanAutoConfiguration.class })
+	DataSourceTransactionManagerConfiguration.class})
 public class WebHandlerAutoConfiguration extends WebConfigurationSupport {
 	public WebHandlerAutoConfiguration() {
 		APP_LOGGER.debug("Loading Web Flux");

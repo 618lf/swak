@@ -46,6 +46,7 @@ import com.weibo.api.motan.util.LoggerUtil;
  *         <p>
  *         Created by fld on 16/5/13.
  */
+@Deprecated
 public class AnnotationBean
 		implements DisposableBean, BeanFactoryPostProcessor, BeanPostProcessor, BeanFactoryAware, Ordered {
 

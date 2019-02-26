@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.swak.config;
+package com.swak.config.motan;
 
 import static com.swak.Application.APP_LOGGER;
 
@@ -32,21 +32,22 @@ import com.swak.motan.properties.BasicServiceConfigProperties;
 import com.swak.motan.properties.ProtocolConfigProperties;
 import com.swak.motan.properties.RegistryConfigProperties;
 import com.weibo.api.motan.config.ExtConfig;
-import com.weibo.api.motan.config.springsupport.AnnotationBean;
 import com.weibo.api.motan.config.springsupport.BasicRefererConfigBean;
 import com.weibo.api.motan.config.springsupport.BasicServiceConfigBean;
 import com.weibo.api.motan.config.springsupport.ProtocolConfigBean;
 import com.weibo.api.motan.config.springsupport.RegistryConfigBean;
+import com.weibo.api.motan.rpc.init.Initializable;
+import com.weibo.api.motan.rpc.init.InitializationFactory;
 
 /**
- * RPC 客户端的配置
+ * Motan 配置
  * 
  * @author lifeng
  */
 @Configuration
 @ConditionalOnClass({ BasicServiceConfigProperties.class })
 @EnableConfigurationProperties({ AnnotationBeanConfigProperties.class, BasicServiceConfigProperties.class,
-	BasicRefererConfigProperties.class, ProtocolConfigProperties.class, RegistryConfigProperties.class })
+		BasicRefererConfigProperties.class, ProtocolConfigProperties.class, RegistryConfigProperties.class })
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMotan", matchIfMissing = true)
 public class MotanAutoConfiguration {
 
@@ -54,19 +55,9 @@ public class MotanAutoConfiguration {
 	private static final String PROTOCOL_CONFIG_BEAN_NAME = "_swak-motan-protocol_";
 
 	public MotanAutoConfiguration() {
+		Initializable initialization = InitializationFactory.getInitialization();
+		initialization.init();
 		APP_LOGGER.debug("Loading Motan");
-	}
-
-	/**
-	 * define AnnotationBean
-	 */
-	@Bean
-	public AnnotationBean annotationBean(AnnotationBeanConfigProperties properties) {
-		AnnotationBean annotationBean = new AnnotationBean();
-		if (!StringUtils.isEmpty(properties.getScanPackage())) {
-			annotationBean.setPackage(properties.getScanPackage());
-		}
-		return annotationBean;
 	}
 
 	/**

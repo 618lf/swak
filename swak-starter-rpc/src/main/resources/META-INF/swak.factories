@@ -2,6 +2,8 @@
 # see all spring.factories
 
 # Auto Configuration, SWAK only load Auto Configuration 
-com.swak.ApplicationBoot=\
-com.swak.config.MotanAutoConfiguration,\
-com.swak.config.MotanCommandLineRunner
+com.swak.config.motan.EnableMotanConfiguration=\
+com.swak.config.motan.MotanAutoConfiguration,\
+com.swak.config.motan.MotanProviderAutoConfiguration,\
+com.swak.config.motan.MotanConsumerAutoConfiguration,\
+com.swak.config.motan.MotanCommandLineRunner

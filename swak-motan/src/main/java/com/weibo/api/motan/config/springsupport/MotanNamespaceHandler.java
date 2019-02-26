@@ -35,6 +35,7 @@ public class MotanNamespaceHandler extends NamespaceHandlerSupport {
     public final static Set<String> basicRefererConfigDefineNames = new ConcurrentHashSet<String>();
 
     @Override
+    @Deprecated
     public void init() {
         registerBeanDefinitionParser("referer", new MotanBeanDefinitionParser(RefererConfigBean.class, false));
         registerBeanDefinitionParser("service", new MotanBeanDefinitionParser(ServiceConfigBean.class, true));
