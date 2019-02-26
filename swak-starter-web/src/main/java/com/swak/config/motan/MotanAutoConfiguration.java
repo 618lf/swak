@@ -45,8 +45,8 @@ import com.weibo.api.motan.config.springsupport.RegistryConfigBean;
  */
 @Configuration
 @ConditionalOnClass({ BasicRefererConfigProperties.class })
-@EnableConfigurationProperties({ AnnotationBeanConfigProperties.class, BasicRefererConfigProperties.class,
-		ProtocolConfigProperties.class, RegistryConfigProperties.class })
+@EnableConfigurationProperties({ AnnotationBeanConfigProperties.class, BasicServiceConfigProperties.class,
+		BasicRefererConfigProperties.class, ProtocolConfigProperties.class, RegistryConfigProperties.class })
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMotan", matchIfMissing = true)
 public class MotanAutoConfiguration {
 
@@ -58,7 +58,7 @@ public class MotanAutoConfiguration {
 	public MotanAutoConfiguration() {
 		APP_LOGGER.debug("Loading Motan Client");
 	}
-	
+
 	/**
 	 * define AnnotationBean
 	 */
