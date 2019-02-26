@@ -17,11 +17,18 @@ import org.springframework.stereotype.Controller;
 public @interface RestController {
 	
 	/**
+	 * 设置 bean name， 不能用其他的替换，识别不到
+	 * @return
+	 */
+	@AliasFor(annotation = Controller.class, attribute="value")
+	String value() default "";
+	
+	/**
 	 * 支持的 path
 	 * @return
 	 */
-	@AliasFor(annotation = RequestMapping.class)
-	String[] value() default {};
+	@AliasFor(annotation = RequestMapping.class, value="value")
+	String[] path() default {};
 	
 	/**
 	 * 支持的 method
