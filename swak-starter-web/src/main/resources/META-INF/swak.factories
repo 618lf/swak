@@ -3,7 +3,6 @@
 
 # Auto Configuration, SWAK only load Auto Configuration 
 com.swak.ApplicationBoot=\
-com.swak.config.motan.MotanAutoConfiguration,\
 com.swak.config.jdbc.DataSourceAutoConfiguration,\
 com.swak.config.jdbc.JdbcTemplateAutoConfiguration,\
 com.swak.config.jdbc.DataSourceTransactionManagerConfiguration,\

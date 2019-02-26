@@ -1,5 +1,7 @@
 package com.swak.config.motan;
 
+import static com.swak.Application.APP_LOGGER;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -22,7 +24,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.Constants;
-import com.swak.motan.properties.AnnotationBeanConfigProperties;
 import com.swak.motan.properties.BasicServiceConfigProperties;
 import com.swak.motan.properties.ProtocolConfigProperties;
 import com.swak.motan.properties.RegistryConfigProperties;
@@ -43,8 +44,8 @@ import com.weibo.api.motan.util.LoggerUtil;
 @Configuration
 @ConditionalOnClass({ BasicServiceConfigProperties.class })
 @AutoConfigureAfter(MotanAutoConfiguration.class)
-@EnableConfigurationProperties({ AnnotationBeanConfigProperties.class, BasicServiceConfigProperties.class,
-		ProtocolConfigProperties.class, RegistryConfigProperties.class })
+@EnableConfigurationProperties({ BasicServiceConfigProperties.class, ProtocolConfigProperties.class,
+		RegistryConfigProperties.class })
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMotan", matchIfMissing = true)
 public class MotanConsumerAutoConfiguration implements DisposableBean {
 
@@ -53,6 +54,10 @@ public class MotanConsumerAutoConfiguration implements DisposableBean {
 	@SuppressWarnings("rawtypes")
 	private final ConcurrentMap<String, RefererConfigBean> referenceConfigs = new ConcurrentHashMap<String, RefererConfigBean>();
 
+	public MotanConsumerAutoConfiguration() {
+		APP_LOGGER.debug("Loading Motan Consumer");
+	}
+	
 	@Bean
 	public BeanPostProcessor beanPostProcessor() {
 		return new BeanPostProcessor() {

@@ -1,5 +1,7 @@
 package com.swak.config.motan;
 
+import static com.swak.Application.APP_LOGGER;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +19,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.Constants;
-import com.swak.motan.properties.AnnotationBeanConfigProperties;
 import com.swak.motan.properties.BasicServiceConfigProperties;
 import com.swak.motan.properties.ProtocolConfigProperties;
 import com.swak.motan.properties.RegistryConfigProperties;
@@ -41,14 +42,18 @@ import com.weibo.api.motan.util.LoggerUtil;
 @Configuration
 @ConditionalOnClass({ BasicServiceConfigProperties.class })
 @AutoConfigureAfter(MotanAutoConfiguration.class)
-@EnableConfigurationProperties({ AnnotationBeanConfigProperties.class, BasicServiceConfigProperties.class,
-		ProtocolConfigProperties.class, RegistryConfigProperties.class })
+@EnableConfigurationProperties({ BasicServiceConfigProperties.class, ProtocolConfigProperties.class,
+		RegistryConfigProperties.class })
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMotan", matchIfMissing = true)
 public class MotanProviderAutoConfiguration implements DisposableBean {
 
 	@Autowired
 	private ApplicationContext applicationContext;
 	private final Set<ServiceConfigBean<?>> serviceConfigs = new ConcurrentHashSet<ServiceConfigBean<?>>();
+
+	public MotanProviderAutoConfiguration() {
+		APP_LOGGER.debug("Loading Motan Provider");
+	}
 
 	@PostConstruct
 	public void init() throws Exception {
@@ -210,7 +215,7 @@ public class MotanProviderAutoConfiguration implements DisposableBean {
 	private boolean isProxyBean(Object bean) {
 		return AopUtils.isAopProxy(bean);
 	}
-	
+
 	/**
 	 * release service/reference
 	 *

@@ -26,7 +26,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 import com.swak.Constants;
-import com.swak.motan.properties.AnnotationBeanConfigProperties;
 import com.swak.motan.properties.BasicRefererConfigProperties;
 import com.swak.motan.properties.BasicServiceConfigProperties;
 import com.swak.motan.properties.ProtocolConfigProperties;
@@ -46,7 +45,7 @@ import com.weibo.api.motan.rpc.init.InitializationFactory;
  */
 @Configuration
 @ConditionalOnClass({ BasicServiceConfigProperties.class })
-@EnableConfigurationProperties({ AnnotationBeanConfigProperties.class, BasicServiceConfigProperties.class,
+@EnableConfigurationProperties({BasicServiceConfigProperties.class,
 		BasicRefererConfigProperties.class, ProtocolConfigProperties.class, RegistryConfigProperties.class })
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMotan", matchIfMissing = true)
 public class MotanAutoConfiguration {
