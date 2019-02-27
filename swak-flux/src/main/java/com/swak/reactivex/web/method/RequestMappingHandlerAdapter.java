@@ -22,10 +22,7 @@ import com.swak.reactivex.web.method.resolver.HttpCookieValueMethodArgumentResol
 import com.swak.reactivex.web.method.resolver.MultipartParamMethodArgumentResoler;
 import com.swak.reactivex.web.method.resolver.PathVariableMethodArgumentResolver;
 import com.swak.reactivex.web.method.resolver.RequestHeaderMethodArgumentResolver;
-import com.swak.reactivex.web.method.resolver.RequestParamMethodArgumentResolver;
 import com.swak.reactivex.web.method.resolver.ServerModelMethodArgumentResolver;
-import com.swak.reactivex.web.method.resolver.ServerRequestMethodArgumentResolver;
-import com.swak.reactivex.web.method.resolver.ServerResponseMethodArgumentResolver;
 
 /**
  * 请求处理器
@@ -51,9 +48,6 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 		resolvers.add(new MultipartParamMethodArgumentResoler(conversionService));
 		resolvers.add(new RequestHeaderMethodArgumentResolver(conversionService));
 		resolvers.add(new HttpCookieValueMethodArgumentResolver(conversionService));
-		resolvers.add(new RequestParamMethodArgumentResolver(conversionService));
-		resolvers.add(new ServerRequestMethodArgumentResolver());
-		resolvers.add(new ServerResponseMethodArgumentResolver());
 		resolvers.add(new ServerModelMethodArgumentResolver(conversionService));
 		this.argumentResolver = new HandlerMethodArgumentResolverComposite().addResolvers(resolvers);
 	}

@@ -1,6 +1,9 @@
 package com.swak.reactivex.web.method.resolver;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,8 +14,13 @@ import org.springframework.core.convert.ConversionService;
 import com.swak.asm.FieldCache;
 import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
+import com.swak.reactivex.transport.http.Subject;
+import com.swak.reactivex.transport.http.multipart.MultipartFile;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
+import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.method.MethodParameter;
+import com.swak.reactivex.web.template.Model;
+import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 
 /**
@@ -29,18 +37,49 @@ public class ServerModelMethodArgumentResolver extends AbstractMethodArgumentRes
 	}
 
 	/**
-	 * 只要不是基础类型
+	 * 托底处理
 	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
-		return !BeanUtils.isSimpleProperty(parameter.getParameterType());
+		return true;
+	}
+
+	/**
+	 * 对特殊类型特殊处理
+	 */
+	@Override
+	protected Object resolveArgumentInternal(MethodParameter parameter, HttpServerRequest request) {
+		Class<?> parameterType = parameter.getParameterType();
+		if (Map.class.isAssignableFrom(parameter.getParameterType())) {
+			return this.getArguments(request);
+		} else if (List.class.isAssignableFrom(parameter.getParameterType())) {
+			String resolvedName = parameter.getParameterName();
+			return request.getParameterValues(resolvedName);
+		} else if (MultipartFile.class.isAssignableFrom(parameter.getParameterType())) {
+			return Maps.getFirst(request.getMultipartFiles());
+		} else if (BeanUtils.isSimpleProperty(parameterType)) {
+			return request.getParameter(parameter.getParameterName());
+		} else if (HttpServerRequest.class.isAssignableFrom(parameterType)) {
+			return request;
+		} else if (InputStream.class.isAssignableFrom(parameterType)) {
+			return request.getInputStream();
+		} else if (HttpServerResponse.class.isAssignableFrom(parameterType)) {
+			return request.getResponse();
+		} else if (OutputStream.class.isAssignableFrom(parameterType)) {
+			return request.getResponse().getOutputStream();
+		} else if (parameterType == Subject.class) {
+			return request.getSubject();
+		} else if (parameterType == Model.class) {
+			return new Model();
+		} else {
+			return this.resolveObject(parameter, request);
+		}
 	}
 
 	/**
 	 * 只做第一层解析 调用 set 方法来初始化
 	 */
-	@Override
-	protected Object resolveArgumentInternal(MethodParameter parameter, HttpServerRequest request) {
+	private Object resolveObject(MethodParameter parameter, HttpServerRequest request) {
 		ClassMeta classMeta = FieldCache.get(parameter.getParameterType());
 		if (classMeta == null) {
 			return null;
