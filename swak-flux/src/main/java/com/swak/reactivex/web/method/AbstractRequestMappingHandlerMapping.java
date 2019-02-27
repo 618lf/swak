@@ -27,7 +27,6 @@ import org.springframework.util.MultiValueMap;
 import com.swak.asm.FieldCache;
 import com.swak.reactivex.transport.http.HttpConst;
 import com.swak.reactivex.transport.http.Principal;
-import com.swak.reactivex.transport.http.Session;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
@@ -35,6 +34,7 @@ import com.swak.reactivex.web.AbstractHandlerMapping;
 import com.swak.reactivex.web.HandlerMapping;
 import com.swak.reactivex.web.annotation.RequestMethod;
 import com.swak.reactivex.web.method.pattern.UrlPathHelper;
+import com.swak.reactivex.web.template.Model;
 import com.swak.utils.Maps;
 
 public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandlerMapping
@@ -245,7 +245,7 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 		// 只覆盖支持的类型：自定义的实体类
 		private void initField(Class<?> parameterType) {
 			if (parameterType == HttpServerRequest.class || parameterType == HttpServerResponse.class
-					|| parameterType == Subject.class || parameterType == Session.class
+					|| parameterType == Subject.class || parameterType == Model.class
 					|| parameterType == Principal.class || BeanUtils.isSimpleProperty(parameterType)
 					|| parameterType.isAssignableFrom(Collection.class) || parameterType.isAssignableFrom(Map.class)) {
 				return;

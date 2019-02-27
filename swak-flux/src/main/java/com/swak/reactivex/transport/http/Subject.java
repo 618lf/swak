@@ -15,47 +15,6 @@ import reactor.core.publisher.Mono;
 public interface Subject {
 
 	/**
-	 * session 失效的原因
-	 * @return
-	 */
-	String getReason();
-	
-	/**
-	 * session 失效的原因
-	 * @return
-	 */
-	void setReason(String reason);
-	
-	/**
-	 * 能唯一标识一个用户登录有效的字符串
-	 * cookieSession 中的sessionId
-	 * token 中的 key
-	 * 有 SessionId 不一定有session（或许根本不需要）
-	 * @return
-	 */
-	String getSessionId();
-	
-	/**
-	 * 能唯一标识一个用户登录有效的字符串
-	 * cookieSession 中的sessionId
-	 * token 中的 key
-	 * @return
-	 */
-	void setSessionId(String sessionId);
-	
-	/**
-	 * 相关Session
-	 * @return
-	 */
-	Session getSession();
-	
-	/**
-	 * 设置主体的session
-	 * @param session
-	 */
-	void setSession(Session session);
-	
-	/**
 	 * 得到身份
 	 * @return
 	 */

@@ -1,7 +1,5 @@
 package com.swak.security.filter.authc;
 
-import org.springframework.util.StringUtils;
-
 import com.swak.exception.ErrorCode;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
@@ -27,14 +25,7 @@ public class UserFilter extends AccessControllerFilter {
 
 	@Override
 	protected Mono<Boolean> onAccessDenied(HttpServerRequest request, HttpServerResponse response) {
-		Subject subject = request.getSubject();
 		ErrorCode code = ErrorCode.NO_USER;
-		if (StringUtils.hasText(subject.getReason())) {
-			try {
-				code = code.clone();
-			} catch (CloneNotSupportedException e) {}
-			code.setReason(subject.getReason());
-		}
 		response.json().status(HttpResponseStatus.OK).buffer(Result.error(code).toJson());
 		return Mono.just(false);
 	}

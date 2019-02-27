@@ -2,15 +2,12 @@ package com.swak.security.principal;
 
 import java.io.Serializable;
 
-import com.swak.codec.Digests;
 import com.swak.reactivex.transport.http.Principal;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
-import com.swak.reactor.publisher.MonoTrue;
 import com.swak.security.JwtAuthProvider;
 import com.swak.security.jwt.JWTPayload;
-import com.swak.security.principal.PrincipalStrategy;
 import com.swak.utils.StringUtils;
 
 import reactor.core.publisher.Mono;
@@ -56,8 +53,6 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 		payload.put("account", subject.getPrincipal().getAccount());
 		String token = jwt.generateToken(payload);
 		response.header(this.getTokenName(), token);
-		String sessionId = this.getKey(token);
-		subject.setSessionId(sessionId);
 		return Mono.just(subject);
 	}
 
@@ -84,9 +79,6 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 			return Mono.just(subject);
 		}
 
-		// 获取加密的key 根据token 获取
-		String sessionId = this.getKey(token);
-		
 		// 获取身份,解析错误会抛出异常
 		JWTPayload payload = jwt.verifyToken(token);
 		Serializable id = payload.getValue("id");
@@ -95,25 +87,6 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 		principal.setAccount(account);
 		principal.setId(id);
 		subject.setPrincipal(principal);
-		subject.setSessionId(sessionId);
 		return Mono.just(subject);
-	}
-
-	/**
-	 * 将此sessionId 无效
-	 */
-	@Override
-	public Mono<Boolean> invalidatePrincipal(String sessionId) {
-		return MonoTrue.instance();
-	}
-
-	/**
-	 * 获得缓存的key值
-	 * 
-	 * @param token
-	 * @return
-	 */
-	protected String getKey(String token) {
-		return Digests.md5(token);
 	}
 }

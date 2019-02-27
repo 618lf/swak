@@ -6,7 +6,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import com.swak.reactivex.transport.http.Principal;
-import com.swak.reactivex.transport.http.Session;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
@@ -23,7 +22,6 @@ public class FluxSubject implements Subject {
 	private boolean authenticated;
 	private Set<String> roles;
 	private Set<String> permissions;
-	private Session session;
 	private String reason;
 
 	public String getReason() {
@@ -40,22 +38,6 @@ public class FluxSubject implements Subject {
 
 	public void setSessionId(String sessionId) {
 		this.sessionId = sessionId;
-	}
-
-	@Override
-	public Session getSession() {
-		return session;
-	}
-
-	@Override
-	public void setSession(Session session) {
-		this.session = session;
-		if (this.session != null) {
-			this.sessionId = this.session.getId();
-			this.principal = this.session.getPrincipal();
-			this.authenticated = this.session.isAuthenticated();
-			this.runAsPrincipals = this.session.getRunAsPrincipals();
-		}
 	}
 
 	@Override
@@ -193,7 +175,6 @@ public class FluxSubject implements Subject {
 
 			// 添加到顶部
 			runAsPrincipals.push(principal);
-			this.getSession().setRunAsPrincipals(runAsPrincipals);
 			return true;
 		});
 	}
@@ -217,7 +198,6 @@ public class FluxSubject implements Subject {
 				if (runAsPrincipals.isEmpty()) {
 					runAsPrincipals = null;
 				}
-				this.getSession().setRunAsPrincipals(runAsPrincipals);
 				return principal;
 			}
 			return this.getPrimaryPrincipal();
@@ -230,9 +210,5 @@ public class FluxSubject implements Subject {
 		this.roles = null;
 		this.principal = null;
 		this.permissions = null;
-		if (this.session != null) {
-			this.session.destory();
-		}
-		this.session = null;
 	}
 }

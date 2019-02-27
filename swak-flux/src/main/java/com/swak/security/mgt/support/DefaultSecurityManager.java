@@ -217,16 +217,6 @@ public class DefaultSecurityManager implements SecurityManager {
 	}
 
 	/**
-	 * 将此身份失效
-	 */
-	@Override
-	public Mono<Boolean> invalidate(String sessionId, String reason) {
-		return principalStrategy.invalidatePrincipal(sessionId).doOnSuccess((v) -> {
-			realm.onInvalidate(sessionId, reason);
-		});
-	}
-
-	/**
 	 * 登录成功
 	 * 
 	 * @param subject

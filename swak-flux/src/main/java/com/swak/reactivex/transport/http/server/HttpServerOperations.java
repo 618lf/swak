@@ -25,7 +25,6 @@ import com.swak.reactivex.transport.channel.ContextHandler;
 import com.swak.reactivex.transport.channel.GmtDateKit;
 import com.swak.reactivex.transport.channel.ServerContextHandler;
 import com.swak.reactivex.transport.http.HttpConst;
-import com.swak.reactivex.transport.http.Session;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.multipart.FileProps;
 import com.swak.reactivex.transport.http.multipart.MimeType;
@@ -899,22 +898,6 @@ public class HttpServerOperations extends ChannelOperations<HttpServerRequest, H
 	 * @param response
 	 */
 	protected void sendData(HttpResponse response) {
-		Session session = null;
-		if (this.getSubject() != null && (session = this.getSubject().getSession()) != null) {
-			session.onCommit().doOnSuccessOrError((s, e) -> {
-				this._sendData(response);
-			});
-		} else {
-			this._sendData(response);
-		}
-	}
-
-	/**
-	 * 输出数据，并设置是否关闭连接
-	 * 
-	 * @param response
-	 */
-	protected void _sendData(HttpResponse response) {
 		ChannelFuture future = channel().writeAndFlush(response);
 		future.addListener(new ChannelFutureListener() {
 			@Override

@@ -37,12 +37,4 @@ public interface PrincipalStrategy {
 	 * @param response
 	 */
 	Mono<Subject> resolvePrincipal(Subject subject, HttpServerRequest request, HttpServerResponse response);
-
-	/**
-	 * 将此 sessionId 对应的 身份失效
-	 * 
-	 * @param request
-	 * @param response
-	 */
-	Mono<Boolean> invalidatePrincipal(String sessionId);
 }
