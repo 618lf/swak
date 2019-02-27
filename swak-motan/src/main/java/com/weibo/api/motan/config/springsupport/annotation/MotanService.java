@@ -1,13 +1,13 @@
 
 package com.weibo.api.motan.config.springsupport.annotation;
 
+import org.springframework.stereotype.Component;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.springframework.stereotype.Service;
 
 /**
  * @author fld
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@Service
+@Component
 public @interface MotanService {
 
     Class<?> interfaceClass() default void.class;

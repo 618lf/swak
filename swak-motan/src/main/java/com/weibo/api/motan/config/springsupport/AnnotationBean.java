@@ -1,28 +1,5 @@
 package com.weibo.api.motan.config.springsupport;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import org.springframework.aop.support.AopUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.core.Ordered;
-import org.springframework.util.ClassUtils;
-
-import com.swak.utils.StringUtils;
 import com.weibo.api.motan.cluster.support.ClusterSupport;
 import com.weibo.api.motan.config.BasicRefererInterfaceConfig;
 import com.weibo.api.motan.config.BasicServiceInterfaceConfig;
@@ -38,6 +15,29 @@ import com.weibo.api.motan.rpc.init.InitializationFactory;
 import com.weibo.api.motan.util.ConcurrentHashSet;
 import com.weibo.api.motan.util.LoggerUtil;
 
+import com.swak.utils.StringUtils;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.core.Ordered;
+import org.springframework.util.ClassUtils;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 /**
  * @author fld
  *
@@ -47,6 +47,7 @@ import com.weibo.api.motan.util.LoggerUtil;
  *         Created by fld on 16/5/13.
  */
 @Deprecated
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class AnnotationBean
 		implements DisposableBean, BeanFactoryPostProcessor, BeanPostProcessor, BeanFactoryAware, Ordered {
 
@@ -65,7 +66,6 @@ public class AnnotationBean
 
 	private final Set<ServiceConfigBean<?>> serviceConfigs = new ConcurrentHashSet<ServiceConfigBean<?>>();
 
-	@SuppressWarnings("rawtypes")
 	private final ConcurrentMap<String, RefererConfigBean> referenceConfigs = new ConcurrentHashMap<String, RefererConfigBean>();
 	static {
 		// custom Initializable before motan beans inited
@@ -173,7 +173,6 @@ public class AnnotationBean
 	 * @return
 	 * @throws BeansException
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (!isMatchPackage(bean)) {
@@ -355,7 +354,6 @@ public class AnnotationBean
 	 * @param <T>
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	private <T> Object refer(MotanReferer reference, Class<?> referenceClass) {
 		String interfaceName;
 		if (!void.class.equals(reference.interfaceClass())) {
@@ -517,7 +515,7 @@ public class AnnotationBean
 		if (annotationPackages == null || annotationPackages.length == 0) {
 			return true;
 		}
-		Class<?> clazz = bean.getClass();
+		Class clazz = bean.getClass();
 		if (isProxyBean(bean)) {
 			clazz = AopUtils.getTargetClass(bean);
 		}

@@ -17,3 +17,4 @@
 com.weibo.api.motan.registry.support.LocalRegistryFactory
 com.weibo.api.motan.registry.support.DirectRegistryFactory
 com.weibo.api.motan.registry.zookeeper.ZookeeperRegistryFactory
+com.weibo.api.motan.registry.zookeeper.ZookeeperStringSerializerRegistryFactory

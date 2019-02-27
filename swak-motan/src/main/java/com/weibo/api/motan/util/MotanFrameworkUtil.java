@@ -16,7 +16,6 @@
 
 package com.weibo.api.motan.util;
 
-import com.swak.utils.StringUtils;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.common.URLParamType;
 import com.weibo.api.motan.config.ProtocolConfig;
@@ -25,6 +24,7 @@ import com.weibo.api.motan.rpc.DefaultResponse;
 import com.weibo.api.motan.rpc.Request;
 import com.weibo.api.motan.rpc.Response;
 import com.weibo.api.motan.rpc.URL;
+import com.swak.utils.StringUtils;
 
 /**
  * 提供框架内部一些约定处理

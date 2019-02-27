@@ -69,6 +69,7 @@ public class ZookeeperRegistry extends CommandFailbackRegistry implements Closab
 
 			@Override
 			public void handleSessionEstablishmentError(Throwable error) throws Exception {
+				// TODO Auto-generated method stub
 
 			}
 		};

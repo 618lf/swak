@@ -29,11 +29,11 @@ import com.weibo.api.motan.proxy.RefererCommonHandler;
  * @author sunnight
  */
 @SpiMeta(name = "common")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class CommonProxyFactory implements ProxyFactory {
 
-    @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T> T getProxy(Class<T> clz, List<Cluster<T>> clusters) {
-        return (T) new RefererCommonHandler(clusters.get(0).getUrl().getPath(), clusters);
-    }
+	@Override
+	public <T> T getProxy(Class<T> clz, List<Cluster<T>> clusters) {
+		return (T) new RefererCommonHandler(clusters.get(0).getUrl().getPath(), clusters);
+	}
 }

@@ -31,6 +31,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import com.swak.utils.StringUtils;
+
 import com.weibo.api.motan.codec.AbstractCodec;
 import com.weibo.api.motan.codec.Serialization;
 import com.weibo.api.motan.common.MotanConstants;

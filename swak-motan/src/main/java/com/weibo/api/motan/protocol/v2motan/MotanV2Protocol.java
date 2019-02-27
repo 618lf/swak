@@ -18,25 +18,20 @@
 
 package com.weibo.api.motan.protocol.v2motan;
 
-import static com.weibo.api.motan.common.MotanConstants.M2_PROXY_PROTOCOL;
-
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.swak.utils.StringUtils;
 import com.weibo.api.motan.common.URLParamType;
 import com.weibo.api.motan.core.extension.SpiMeta;
 import com.weibo.api.motan.exception.MotanServiceException;
 import com.weibo.api.motan.protocol.AbstractProtocol;
 import com.weibo.api.motan.protocol.rpc.DefaultRpcExporter;
 import com.weibo.api.motan.protocol.rpc.DefaultRpcReferer;
-import com.weibo.api.motan.rpc.Exporter;
-import com.weibo.api.motan.rpc.Provider;
-import com.weibo.api.motan.rpc.Referer;
-import com.weibo.api.motan.rpc.Request;
-import com.weibo.api.motan.rpc.Response;
-import com.weibo.api.motan.rpc.URL;
+import com.weibo.api.motan.rpc.*;
 import com.weibo.api.motan.transport.ProviderMessageRouter;
 import com.weibo.api.motan.transport.TransportException;
+import com.swak.utils.StringUtils;
+
+import java.util.concurrent.ConcurrentHashMap;
+
+import static com.weibo.api.motan.common.MotanConstants.M2_PROXY_PROTOCOL;
 
 /**
  * Created by zhanglei28 on 2017/4/27.

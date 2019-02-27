@@ -23,15 +23,18 @@ import com.weibo.api.motan.config.ProtocolConfig;
 /**
  * @author fld
  *
- *         Created by fld on 16/5/13.
+ * Created by fld on 16/5/13.
  */
 public class ProtocolConfigBean extends ProtocolConfig implements BeanNameAware {
 
+    /**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void setBeanName(String name) {
-		setId(name);
-		MotanNamespaceHandler.protocolDefineNames.add(name);
-	}
+    public void setBeanName(String name) {
+        setId(name);
+        MotanNamespaceHandler.protocolDefineNames.add(name);
+    }
 }

@@ -18,16 +18,35 @@
 
 package com.weibo.api.motan.serialize;
 
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.ARRAY;
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.BOOL;
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.BYTE;
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.BYTE_ARRAY;
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.FLOAT32;
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.FLOAT64;
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.INT16;
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.INT32;
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.INT64;
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.MAP;
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.NULL;
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.STRING;
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.STRING_ARRAY;
+import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.STRING_MAP;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.weibo.api.motan.codec.Serialization;
 import com.weibo.api.motan.core.extension.SpiMeta;
 import com.weibo.api.motan.exception.MotanServiceException;
 import com.weibo.api.motan.protocol.v2motan.GrowableByteBuffer;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.*;
-
-import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.*;
 
 /**
  * Created by zhanglei28 on 2017/6/8. <br/>
@@ -52,7 +71,7 @@ import static com.weibo.api.motan.serialize.SimpleSerialization.SimpleType.*;
  * @author luominggang
  */
 @SpiMeta(name = "simple")
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class SimpleSerialization implements Serialization {
 
     public static final class SimpleType {
@@ -116,7 +135,6 @@ public class SimpleSerialization implements Serialization {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
 	private void serialize(Object obj, GrowableByteBuffer buffer) throws IOException {
         if (obj == null) {
             buffer.put(NULL);
@@ -202,8 +220,7 @@ public class SimpleSerialization implements Serialization {
         return deserialize(buffer, clz);
     }
 
-    @SuppressWarnings("unchecked")
-	private <T> T deserialize(GrowableByteBuffer buffer, Class<T> clz) throws IOException {
+    private <T> T deserialize(GrowableByteBuffer buffer, Class<T> clz) throws IOException {
         byte type = buffer.get();
         switch (type) {
             default:
@@ -516,8 +533,7 @@ public class SimpleSerialization implements Serialization {
         return readStringCollection(buffer, result);
     }
 
-	@SuppressWarnings("unchecked")
-	private <T extends Collection> T readStringCollection(GrowableByteBuffer buffer, T collection) throws IOException {
+    private <T extends Collection> T readStringCollection(GrowableByteBuffer buffer, T collection) throws IOException {
         int size = getAndCheckSize(buffer);
         if (size == 0) {
             return collection;
@@ -591,8 +607,7 @@ public class SimpleSerialization implements Serialization {
         return readCollection(buffer, result);
     }
 
-    @SuppressWarnings("unchecked")
-	private <T extends Collection> T readCollection(GrowableByteBuffer buffer, T collection) throws IOException {
+    private <T extends Collection> T readCollection(GrowableByteBuffer buffer, T collection) throws IOException {
         int size = getAndCheckSize(buffer);
         if (size == 0) {
             return collection;

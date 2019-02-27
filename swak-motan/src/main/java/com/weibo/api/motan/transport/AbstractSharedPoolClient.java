@@ -31,7 +31,7 @@ import com.weibo.api.motan.util.MathUtil;
 /**
  * @author sunnights
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class AbstractSharedPoolClient extends AbstractClient {
 	private static final ThreadPoolExecutor executor = new StandardThreadExecutor(1, 300, 20000,
 			new DefaultThreadFactory("AbstractPoolClient-initPool-", true));
@@ -61,7 +61,7 @@ public abstract class AbstractSharedPoolClient extends AbstractClient {
 				URLParamType.asyncInitConnection.getBooleanValue()));
 	}
 
-	protected abstract SharedObjectFactory<?> createChannelFactory();
+	protected abstract SharedObjectFactory createChannelFactory();
 
 	protected void initConnections(boolean async) {
 		if (async) {
@@ -86,7 +86,6 @@ public abstract class AbstractSharedPoolClient extends AbstractClient {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected Channel getChannel() throws MotanServiceException {
 		int index = MathUtil.getNonNegativeRange24bit(idx.getAndIncrement());
 		Channel channel;

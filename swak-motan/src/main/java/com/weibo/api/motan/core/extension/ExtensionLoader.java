@@ -339,6 +339,7 @@ public class ExtensionLoader<T> {
     @SuppressWarnings("unchecked")
     private ConcurrentMap<String, Class<T>> loadClass(List<String> classNames) {
         ConcurrentMap<String, Class<T>> map = new ConcurrentHashMap<String, Class<T>>();
+
         for (String className : classNames) {
             try {
                 Class<T> clz;

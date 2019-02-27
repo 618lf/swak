@@ -7,8 +7,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.swak.motan.util.Pair;
 import com.weibo.api.motan.util.LoggerUtil;
-import com.weibo.api.motan.util.Pair;
 
 /**
  * @author sunnights

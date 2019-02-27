@@ -36,69 +36,76 @@ import com.weibo.api.motan.config.springsupport.util.SpringBeanUtil;
  *         <p>
  *         Created by fld on 16/5/13.
  */
-public class BasicServiceConfigBean extends BasicServiceInterfaceConfig
-		implements BeanNameAware, InitializingBean, BeanFactoryAware {
+public class BasicServiceConfigBean extends BasicServiceInterfaceConfig implements BeanNameAware,
+        InitializingBean, BeanFactoryAware {
 
+    /**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
+
 
 	private String registryNames;
 
-	BeanFactory beanFactory;
 
-	@Override
-	public void setBeanName(String name) {
-		setId(name);
+    BeanFactory beanFactory;
 
-		MotanNamespaceHandler.basicServiceConfigDefineNames.add(name);
-	}
+    @Override
+    public void setBeanName(String name) {
+        setId(name);
 
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
-	}
+        MotanNamespaceHandler.basicServiceConfigDefineNames.add(name);
+    }
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		String protocol = ConfigUtil.extractProtocols(getExport());
-		setRegistries(extractRegistries(registryNames, beanFactory));
-		setProtocols(extractProtocols(protocol, beanFactory));
-	}
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
 
-	public List<ProtocolConfig> extractProtocols(String protocols, BeanFactory beanFactory) {
-		if (protocols != null && protocols.length() > 0) {
-			List<ProtocolConfig> protocolConfigList = SpringBeanUtil.getMultiBeans(beanFactory, protocols,
-					SpringBeanUtil.COMMA_SPLIT_PATTERN, ProtocolConfig.class);
 
-			return protocolConfigList;
-		} else {
-			return null;
-		}
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        String protocol = ConfigUtil.extractProtocols(getExport());
+        setRegistries(extractRegistries(registryNames, beanFactory));
+        setProtocols(extractProtocols(protocol, beanFactory));
+    }
 
-	public List<RegistryConfig> extractRegistries(String registries, BeanFactory beanFactory) {
-		if (registries != null && registries.length() > 0) {
-			if (!registries.contains(",")) {
-				RegistryConfig registryConfig = beanFactory.getBean(registries, RegistryConfig.class);
-				return Collections.singletonList(registryConfig);
-			} else {
-				List<RegistryConfig> registryConfigList = SpringBeanUtil.getMultiBeans(beanFactory, registries,
-						SpringBeanUtil.COMMA_SPLIT_PATTERN, RegistryConfig.class);
-				return registryConfigList;
-			}
-		} else {
-			return null;
-		}
-	}
+    public List<ProtocolConfig> extractProtocols(String protocols, BeanFactory beanFactory) {
+        if (protocols != null && protocols.length() > 0) {
+            List<ProtocolConfig> protocolConfigList = SpringBeanUtil.getMultiBeans(beanFactory, protocols,
+                    SpringBeanUtil.COMMA_SPLIT_PATTERN, ProtocolConfig.class);
 
-	public void setRegistry(String registryNames) {
-		this.registryNames = registryNames;
-	}
+            return protocolConfigList;
+        } else {
+            return null;
+        }
+    }
 
-	public void setCheck(boolean value) {
-		setCheck(String.valueOf(value));
-	}
+    public List<RegistryConfig> extractRegistries(String registries, BeanFactory beanFactory) {
+        if (registries != null && registries.length() > 0) {
+            if (!registries.contains(",")) {
+                RegistryConfig registryConfig = beanFactory.getBean(registries, RegistryConfig.class);
+                return Collections.singletonList(registryConfig);
+            } else {
+                List<RegistryConfig> registryConfigList = SpringBeanUtil.getMultiBeans(beanFactory, registries,
+                        SpringBeanUtil.COMMA_SPLIT_PATTERN, RegistryConfig.class);
+                return registryConfigList;
+            }
+        } else {
+            return null;
+        }
+    }
 
-	public void setAccessLog(boolean value) {
-		setAccessLog(String.valueOf(value));
-	}
+
+    public void setRegistry(String registryNames) {
+        this.registryNames = registryNames;
+    }
+
+    public void setCheck(boolean value) {
+        setCheck(String.valueOf(value));
+    }
+
+    public void setAccessLog(boolean value) {
+        setAccessLog(String.valueOf(value));
+    }
 }

@@ -16,18 +16,18 @@
 
 package com.weibo.api.motan.config;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.List;
-import java.util.Map;
-
-import com.swak.utils.StringUtils;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.config.annotation.ConfigDesc;
 import com.weibo.api.motan.exception.MotanErrorMsgConstant;
 import com.weibo.api.motan.exception.MotanFrameworkException;
 import com.weibo.api.motan.util.LoggerUtil;
+import com.swak.utils.StringUtils;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 

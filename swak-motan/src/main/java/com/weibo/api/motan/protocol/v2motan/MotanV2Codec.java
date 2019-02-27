@@ -55,6 +55,8 @@ import com.weibo.api.motan.util.MathUtil;
 @SpiMeta(name = "motan2")
 public class MotanV2Codec extends AbstractCodec {
 
+    @SuppressWarnings("unused")
+	private static final byte MASK = 0x07;
     private static final int HEADER_SIZE = 13;
 
 

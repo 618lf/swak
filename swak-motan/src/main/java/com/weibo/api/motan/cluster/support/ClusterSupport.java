@@ -16,12 +16,6 @@
 
 package com.weibo.api.motan.cluster.support;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.swak.utils.ObjectUtils;
-import com.swak.utils.StringUtils;
 import com.weibo.api.motan.cluster.Cluster;
 import com.weibo.api.motan.cluster.HaStrategy;
 import com.weibo.api.motan.cluster.LoadBalance;
@@ -40,6 +34,12 @@ import com.weibo.api.motan.rpc.URL;
 import com.weibo.api.motan.util.CollectionUtil;
 import com.weibo.api.motan.util.LoggerUtil;
 import com.weibo.api.motan.util.StringTools;
+import com.swak.utils.ObjectUtils;
+import com.swak.utils.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Notify cluster the referers have changed.

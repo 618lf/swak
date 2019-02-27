@@ -16,9 +16,6 @@
 
 package com.weibo.api.motan.cluster.ha;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.weibo.api.motan.cluster.LoadBalance;
 import com.weibo.api.motan.common.URLParamType;
 import com.weibo.api.motan.core.extension.SpiMeta;
@@ -31,6 +28,9 @@ import com.weibo.api.motan.rpc.URL;
 import com.weibo.api.motan.util.ExceptionUtil;
 import com.weibo.api.motan.util.LoggerUtil;
 import com.weibo.api.motan.util.MotanFrameworkUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Failover ha strategy.

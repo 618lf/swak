@@ -1,9 +1,9 @@
 package com.weibo.api.motan.closable;
 
-import com.weibo.api.motan.util.LoggerUtil;
-
 import java.util.ArrayList;
 import java.util.Collections;
+
+import com.weibo.api.motan.util.LoggerUtil;
 
 /**
  * @author zhanran Date: 2017/5/24 add a shutDownHook to close some global

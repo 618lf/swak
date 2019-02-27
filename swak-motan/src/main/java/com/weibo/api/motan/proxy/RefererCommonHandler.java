@@ -1,12 +1,12 @@
 package com.weibo.api.motan.proxy;
 
-import java.util.List;
-import java.util.Map;
-
 import com.weibo.api.motan.cluster.Cluster;
 import com.weibo.api.motan.rpc.DefaultRequest;
 import com.weibo.api.motan.rpc.Request;
 import com.weibo.api.motan.util.RequestIdGenerator;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author sunnights

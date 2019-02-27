@@ -76,6 +76,16 @@ public class MotanAutoConfiguration {
 	}
 
 	/**
+	 * define ShutDownHookListener
+	 * 
+	 * @return
+	 */
+	@Bean
+	public MotanShutDownHookListener shutDownHookListener() {
+		return new MotanShutDownHookListener();
+	}
+
+	/**
 	 * define RegistryConfigBean
 	 */
 	@Bean(name = REGISTRY_CONFIG_BEAN_NAME)
