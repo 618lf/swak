@@ -1,7 +1,5 @@
 package com.swak.config.motan;
 
-import static com.swak.Application.APP_LOGGER;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -13,20 +11,13 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 
-import com.swak.Constants;
-import com.swak.motan.properties.BasicServiceConfigProperties;
-import com.swak.motan.properties.ProtocolConfigProperties;
-import com.swak.motan.properties.RegistryConfigProperties;
+import com.swak.utils.ConcurrentHashSet;
 import com.weibo.api.motan.config.BasicRefererInterfaceConfig;
 import com.weibo.api.motan.config.ExtConfig;
 import com.weibo.api.motan.config.ProtocolConfig;
@@ -37,77 +28,111 @@ import com.weibo.api.motan.config.springsupport.util.SpringBeanUtil;
 import com.weibo.api.motan.util.LoggerUtil;
 
 /**
- * Motan 配置
+ * 消费者启动
  * 
  * @author lifeng
  */
-@Configuration
-@ConditionalOnClass({ BasicServiceConfigProperties.class })
-@AutoConfigureAfter({ MotanAutoConfiguration.class, MotanProviderAutoConfiguration.class })
-@EnableConfigurationProperties({ BasicServiceConfigProperties.class, ProtocolConfigProperties.class,
-		RegistryConfigProperties.class })
-@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMotan", matchIfMissing = true)
-public class MotanConsumerAutoConfiguration implements DisposableBean {
+public class MotanConsumerPostProcessor implements ApplicationContextAware, BeanPostProcessor, DisposableBean,
+		ApplicationListener<ContextRefreshedEvent> {
 
-	@Autowired
 	private ApplicationContext applicationContext;
 	@SuppressWarnings("rawtypes")
 	private final ConcurrentMap<String, RefererConfigBean> referenceConfigs = new ConcurrentHashMap<String, RefererConfigBean>();
+	private final ConcurrentHashSet<Object> referenceBeans = new ConcurrentHashSet<>();
 
-	public MotanConsumerAutoConfiguration() {
-		APP_LOGGER.debug("Loading Motan Consumer");
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 
-	@Bean
-	public BeanPostProcessor beanPostProcessor() {
-		return new BeanPostProcessor() {
-			@Override
-			public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-				Class<?> clazz = bean.getClass();
-				if (isProxyBean(bean)) {
-					clazz = AopUtils.getTargetClass(bean);
+	/**
+	 * 收集需要处理的对象
+	 */
+	@Override
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+		Class<?> clazz = bean.getClass();
+		if (isProxyBean(bean)) {
+			clazz = AopUtils.getTargetClass(bean);
+		}
+		Method[] methods = clazz.getMethods();
+		for (Method method : methods) {
+			String name = method.getName();
+			if (name.length() > 3 && name.startsWith("set") && method.getParameterTypes().length == 1
+					&& Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers())) {
+				MotanReferer reference = method.getAnnotation(MotanReferer.class);
+				if (reference != null) {
+					referenceBeans.add(bean);
 				}
-				Method[] methods = clazz.getMethods();
-				for (Method method : methods) {
-					String name = method.getName();
-					if (name.length() > 3 && name.startsWith("set") && method.getParameterTypes().length == 1
-							&& Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers())) {
-						try {
-							MotanReferer reference = method.getAnnotation(MotanReferer.class);
-							if (reference != null) {
-								Object value = refer(reference, method.getParameterTypes()[0]);
-								if (value != null) {
-									method.invoke(bean, new Object[] { value });
-								}
-							}
-						} catch (Exception e) {
-							throw new BeanInitializationException("Failed to init remote service reference at method "
-									+ name + " in class " + bean.getClass().getName(), e);
-						}
-					}
-				}
-
-				Field[] fields = clazz.getDeclaredFields();
-				for (Field field : fields) {
-					try {
-						if (!field.isAccessible()) {
-							field.setAccessible(true);
-						}
-						MotanReferer reference = field.getAnnotation(MotanReferer.class);
-						if (reference != null) {
-							Object value = refer(reference, field.getType());
-							if (value != null) {
-								field.set(bean, value);
-							}
-						}
-					} catch (Exception e) {
-						throw new BeanInitializationException("Failed to init remote service reference at filed "
-								+ field.getName() + " in class " + bean.getClass().getName(), e);
-					}
-				}
-				return bean;
 			}
-		};
+		}
+
+		Field[] fields = clazz.getDeclaredFields();
+		for (Field field : fields) {
+			if (!field.isAccessible()) {
+				field.setAccessible(true);
+			}
+			MotanReferer reference = field.getAnnotation(MotanReferer.class);
+			if (reference != null) {
+				referenceBeans.add(bean);
+			}
+		}
+		return bean;
+	}
+
+	/**
+	 * 服务启动后设置引用
+	 */
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent arg0) {
+		referenceBeans.stream().forEach(bean -> {
+			initConsumerBean(bean);
+		});
+	}
+
+	// 初始化引用
+	private void initConsumerBean(Object bean) {
+		Class<?> clazz = bean.getClass();
+		if (isProxyBean(bean)) {
+			clazz = AopUtils.getTargetClass(bean);
+		}
+		Method[] methods = clazz.getMethods();
+		for (Method method : methods) {
+			String name = method.getName();
+			if (name.length() > 3 && name.startsWith("set") && method.getParameterTypes().length == 1
+					&& Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers())) {
+				try {
+					MotanReferer reference = method.getAnnotation(MotanReferer.class);
+					if (reference != null) {
+						Object value = refer(reference, method.getParameterTypes()[0]);
+						if (value != null) {
+							method.invoke(bean, new Object[] { value });
+						}
+					}
+				} catch (Exception e) {
+					throw new BeanInitializationException("Failed to init remote service reference at method " + name
+							+ " in class " + bean.getClass().getName(), e);
+				}
+			}
+		}
+
+		Field[] fields = clazz.getDeclaredFields();
+		for (Field field : fields) {
+			try {
+				if (!field.isAccessible()) {
+					field.setAccessible(true);
+				}
+				MotanReferer reference = field.getAnnotation(MotanReferer.class);
+				if (reference != null) {
+					Object value = refer(reference, field.getType());
+					if (value != null) {
+						field.set(bean, value);
+					}
+				}
+			} catch (Exception e) {
+				throw new BeanInitializationException("Failed to init remote service reference at filed "
+						+ field.getName() + " in class " + bean.getClass().getName(), e);
+			}
+		}
 	}
 
 	/**
@@ -280,11 +305,7 @@ public class MotanConsumerAutoConfiguration implements DisposableBean {
 		return AopUtils.isAopProxy(bean);
 	}
 
-	/**
-	 * release service/reference
-	 *
-	 * @throws Exception
-	 */
+	@Override
 	public void destroy() throws Exception {
 		for (RefererConfigBean<?> referenceConfig : referenceConfigs.values()) {
 			try {

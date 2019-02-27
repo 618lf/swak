@@ -45,8 +45,8 @@ import com.weibo.api.motan.rpc.init.InitializationFactory;
  */
 @Configuration
 @ConditionalOnClass({ BasicServiceConfigProperties.class })
-@EnableConfigurationProperties({BasicServiceConfigProperties.class,
-		BasicRefererConfigProperties.class, ProtocolConfigProperties.class, RegistryConfigProperties.class })
+@EnableConfigurationProperties({ BasicServiceConfigProperties.class, BasicRefererConfigProperties.class,
+		ProtocolConfigProperties.class, RegistryConfigProperties.class })
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMotan", matchIfMissing = true)
 public class MotanAutoConfiguration {
 
@@ -57,6 +57,22 @@ public class MotanAutoConfiguration {
 		Initializable initialization = InitializationFactory.getInitialization();
 		initialization.init();
 		APP_LOGGER.debug("Loading Motan");
+	}
+
+	/**
+	 * define ProviderPostProcessor
+	 */
+	@Bean
+	public MotanProviderPostProcessor providerPostProcessor() {
+		return new MotanProviderPostProcessor();
+	}
+
+	/**
+	 * define ConsumerPostProcessor
+	 */
+	@Bean
+	public MotanConsumerPostProcessor consumerPostProcessor() {
+		return new MotanConsumerPostProcessor();
 	}
 
 	/**
