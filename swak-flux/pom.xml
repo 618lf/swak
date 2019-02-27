@@ -13,8 +13,9 @@
 			<artifactId>swak-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.swak</groupId>
-			<artifactId>swak-redis</artifactId>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>${freemarker.version}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
