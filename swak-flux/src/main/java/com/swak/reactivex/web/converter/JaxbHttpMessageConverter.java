@@ -12,7 +12,7 @@ import com.swak.utils.JaxbMapper;
  * 需要对象中包含 @XmlRootElement 或者 @XmlType
  * @author lifeng
  */
-public class Jaxb2RootElementHttpMessageConverter implements HttpMessageConverter {
+public class JaxbHttpMessageConverter implements HttpMessageConverter {
 
 	@Override
 	public boolean canWrite(Class<?> clazz) {

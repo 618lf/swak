@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -28,9 +29,10 @@ import com.swak.reactivex.web.DispatcherHandler;
 import com.swak.reactivex.web.HandlerAdapter;
 import com.swak.reactivex.web.HandlerMapping;
 import com.swak.reactivex.web.HandlerResultHandler;
-import com.swak.reactivex.web.converter.Jaxb2RootElementHttpMessageConverter;
+import com.swak.reactivex.web.converter.JaxbHttpMessageConverter;
 import com.swak.reactivex.web.converter.JsonHttpMessageConverter;
 import com.swak.reactivex.web.converter.StringHttpMessageConverter;
+import com.swak.reactivex.web.converter.TemplateHttpMessageConverter;
 import com.swak.reactivex.web.formatter.DateFormatterConverter;
 import com.swak.reactivex.web.formatter.StringEscapeFormatterConverter;
 import com.swak.reactivex.web.function.HandlerFunctionAdapter;
@@ -133,15 +135,20 @@ public class WebConfigurationSupport implements ApplicationContextAware {
 	// ---------- handlerResult ---------
 
 	@Bean
-	public HandlerResultHandler requestMappingHandlerResult() {
+	public HandlerResultHandler requestMappingHandlerResult(
+			ObjectProvider<TemplateHttpMessageConverter> httpMessageConverter) {
 		HandlerResultHandler result = new RequestBodyHandlerResult();
+		TemplateHttpMessageConverter converter = httpMessageConverter.getIfAvailable();
+		if (converter != null) {
+			result.addConverter(converter);
+		}
 		addMessageConverters(result);
 		return result;
 	}
 
 	protected void addMessageConverters(HandlerResultHandler result) {
 		result.addConverter(new StringHttpMessageConverter());
-		result.addConverter(new Jaxb2RootElementHttpMessageConverter());
+		result.addConverter(new JaxbHttpMessageConverter());
 		result.addConverter(new JsonHttpMessageConverter());
 	}
 
