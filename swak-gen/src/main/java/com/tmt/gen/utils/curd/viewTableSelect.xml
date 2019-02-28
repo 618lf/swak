@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE xml>
+<template>
+	<name>viewTableSelect</name>
+	<filePath>/${moduleName}/${subModuleName}/</filePath>
+	<fileName>${className}TableSelect.jsp</fileName>
+	<templatePath>template/viewTableSelect.ftl</templatePath>
+</template>

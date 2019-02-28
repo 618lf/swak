@@ -1,0 +1,23 @@
+<html>
+<head>
+<title>h</title>
+<script type="text/javascript">var webRoot = '';var base = '';</script>
+<script src="/static/js/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(function() {
+	$(document).on('click', '.download', function() {
+		var href = $(this).data('href');
+		if ($App) {
+			$App.download(href, '张国荣', '', '')
+		}
+	});
+})
+</script>
+</head>
+<body>
+	<div>不错--11</div>
+	<div>
+		<a class="download" data-href="/static/img/zgr.jpg">下载</a>
+	</div>
+</body>
+</html>

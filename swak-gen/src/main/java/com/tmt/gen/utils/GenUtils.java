@@ -1,14 +1,8 @@
-package com.swak.gen;
+package com.tmt.gen.utils;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,39 +11,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.swak.Constants;
-import com.swak.exception.BaseRuntimeException;
-import com.swak.freemarker.FreeMarkerConfigurer;
-import com.swak.gen.config.Category;
-import com.swak.gen.config.Config;
-import com.swak.gen.config.Scheme;
-import com.swak.gen.config.TableColumn;
-import com.swak.gen.config.Template;
 import com.swak.utils.IOUtils;
 import com.swak.utils.JaxbMapper;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
+import com.swak.utils.SpringContextHolder;
 import com.swak.utils.StringUtils;
 import com.swak.utils.time.DateUtils;
-
-import freemarker.template.Configuration;
+import com.tmt.gen.entity.Category;
+import com.tmt.gen.entity.Config;
+import com.tmt.gen.entity.Scheme;
+import com.tmt.gen.entity.Table;
+import com.tmt.gen.entity.TableColumn;
+import com.tmt.gen.entity.Template;
+import com.tmt.gen.service.TableService;
 
 public class GenUtils {
 
 	private static String REMOVE = "_RM_";
+	private static String srcFilePath = null;
+	private static TableService tableService = SpringContextHolder.getBean(TableService.class);
 	private static Logger logger = LoggerFactory.getLogger(GenUtils.class);
-	private static Configuration configuration = null;
+
 	private static Config config = null;
 
 	// 读取文件
 	private static String readFile(String fileName) {
 		try {
-
-			// 模板配置
-			FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
-			configurer.setDefaultEncoding(Constants.DEFAULT_ENCODING.name());
-			configuration = configurer.getConfiguration();
-
-			// 配置文件
 			InputStream is = GenUtils.class.getResourceAsStream(fileName);
 			List<String> lines = IOUtils.readLines(is, "UTF-8");
 			StringBuilder sb = new StringBuilder();
@@ -271,12 +259,25 @@ public class GenUtils {
 	}
 
 	/**
+	 * 获取要生成的表
+	 * 
+	 * @param scheme
+	 * @return
+	 */
+	private static Table getTableWithColumns(Scheme scheme) {
+		return tableService.getWithColumns(scheme.getGenTableId());
+	}
+
+	/**
 	 * 生成代码
 	 * 
 	 * @param scheme
 	 * @return
 	 */
 	public static Boolean genCode(Scheme scheme) {
+		// 要生成的表的配置
+		Table table = GenUtils.getTableWithColumns(scheme);
+		scheme.setTable(table);
 
 		// 获取模型数据
 		Map<String, Object> model = GenUtils.getDataModel(scheme);
@@ -285,9 +286,9 @@ public class GenUtils {
 		List<Template> templates = GenUtils.getTemplateList(scheme.getCategory());
 		for (Template template : templates) {
 			if (!"viewTableSelect".equals(template.getName())) {
-				GenUtils.genToFile(scheme, template, model);
+				GenUtils.genToFile(template, model);
 			} else if (scheme.getTableSelect() != null && Scheme.YES == scheme.getTableSelect()) {
-				GenUtils.genToFile(scheme, template, model);
+				GenUtils.genToFile(template, model);
 			}
 		}
 		return Boolean.TRUE;
@@ -300,13 +301,13 @@ public class GenUtils {
 		model.put("packageName", scheme.getPackageName());
 		model.put("moduleName", scheme.getModuleName());
 		model.put("subModuleName", scheme.getSubModuleName());
-		model.put("functionName", lowerCaseFirstOne(scheme.getFunctionName()));
+		model.put("functionName", Kits.lowerCaseFirstOne(scheme.getFunctionName()));
 		model.put("functionNameSimple", scheme.getFunctionNameSimple());
 		model.put("functionAuthor", scheme.getFunctionAuthor());
 		model.put("functionVersion", DateUtils.getTodayStr());
 
 		// 功能名的大小
-		model.put("className", upperCaseFirstOne(scheme.getFunctionName()));
+		model.put("className", Kits.upperCaseFirstOne(scheme.getFunctionName()));
 		model.put("tableName", StringUtils.upperCase(scheme.getTable().getName()));
 		model.put("pk", scheme.getTable().getPkJavaType());
 
@@ -341,30 +342,44 @@ public class GenUtils {
 		return model;
 	}
 
+	// 得到src目录
+	private static File getSrcFolder(Template template) {
+		if (srcFilePath == null) {
+			String parentpath = new File(".").getAbsolutePath();
+			File parentFile = new File(parentpath);
+			if (parentFile != null && parentFile.exists()) {
+				parentFile = parentFile.getParentFile();
+			}
+			File srcFile = new File(parentFile, "src");
+			if (!srcFile.exists()) {
+				srcFile = new File(parentFile, "java");
+			}
+			srcFilePath = srcFile.getAbsolutePath();
+		}
+		return new File(srcFilePath);
+	}
+
 	// 生成具体的代码
-	private static String genToFile(Scheme scheme, Template template, Map<String, Object> model) {
+	private static String genToFile(Template template, Map<String, Object> model) {
 		try {
-			File srcFile = new File(scheme.getOutputPath());
+			File srcFile = getSrcFolder(template);
 			String fileName = new StringBuilder(srcFile.getAbsolutePath())
-					.append(StringUtils.replaceEach(processContent(template.getFilePath(), model),
+					.append(StringUtils.replaceEach(Kits.processContent(template.getFilePath(), model),
 							new String[] { "//", "/", "." },
 							new String[] { File.separator, File.separator, File.separator }))
-					.append(processContent(template.getFileName(), model)).toString();
+					.append(Kits.processContent(template.getFileName(), model)).toString();
 			fileName = StringUtils.replace(fileName, File.separator + REMOVE, "");
 			logger.debug(" fileName === " + fileName);
 
-			String content = processContent(template.getContent(), model);
+			String content = Kits.processContent(template.getContent(), model);
 
 			// 处理问题
 			content = StringUtils.replaceEach(content, new String[] { "/" + REMOVE, "." + REMOVE },
 					new String[] { "", "" });
+			Kits.deleteFile(fileName);
 
-			// 删除文件
-			deleteFile(fileName);
-
-			// 创建文件
-			if (createFile(fileName)) {
-				writeFile(new File(fileName), content, Constants.DEFAULT_ENCODING);
+			if (Kits.createFile(fileName)) {
+				Kits.writeFile(new File(fileName), content, Constants.DEFAULT_ENCODING);
 				logger.debug(" file create === " + fileName);
 				return fileName;
 			} else {
@@ -375,118 +390,5 @@ public class GenUtils {
 			logger.error("生成文件出错: ", e);
 			return null;
 		}
-	}
-
-	// 生成数据错误
-	private static String processContent(String content, Map<String, Object> model) {
-		StringWriter out = new StringWriter();
-		try {
-			new freemarker.template.Template("template", new StringReader(content), configuration).process(model, out);
-		} catch (Exception localIOException) {
-			throw new BaseRuntimeException("生成数据错误", localIOException);
-		}
-		return out.toString();
-	}
-
-	/**
-	 * 写文件
-	 * 
-	 * @param file
-	 * @param content
-	 * @param encoding
-	 * @throws IOException
-	 */
-	private static void writeFile(File file, String content, Charset encoding) throws IOException {
-		OutputStream out = null;
-		try {
-			out = new FileOutputStream(file, true);
-			out.write(content.getBytes(encoding));
-			out.close();
-		} finally {
-			IOUtils.closeQuietly(out);
-		}
-	}
-
-	/**
-	 * 
-	 * 删除单个文件
-	 * 
-	 * @param fileName
-	 *            被删除的文件名
-	 * @return 如果删除成功，则返回true，否则返回false
-	 */
-	private static boolean deleteFile(String fileName) {
-		File file = new File(fileName);
-		if (file.exists() && file.isFile()) {
-			if (file.delete()) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return true;
-		}
-	}
-
-	/**
-	 * 创建单个文件
-	 * 
-	 * @param descFileName
-	 *            文件名，包含路径
-	 * @return 如果创建成功，则返回true，否则返回false
-	 */
-	public static boolean createFile(String descFileName) {
-		File file = new File(descFileName);
-		if (file.exists()) {
-			return false;
-		}
-		if (descFileName.endsWith(File.separator)) {
-			return false;
-		}
-		if (!file.getParentFile().exists()) {
-			// 如果文件所在的目录不存在，则创建目录
-			if (!file.getParentFile().mkdirs()) {
-				return false;
-			}
-		}
-
-		// 创建文件
-		try {
-			if (file.createNewFile()) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-
-	}
-
-	/**
-	 * 首字母转小写
-	 * 
-	 * @param s
-	 * @return
-	 */
-	private static String lowerCaseFirstOne(String s) {
-		if (Character.isLowerCase(s.charAt(0)))
-			return s;
-		else
-			return (new StringBuilder()).append(Character.toLowerCase(s.charAt(0))).append(s.substring(1)).toString();
-	}
-
-	/**
-	 * 首字母转大写
-	 * 
-	 * @param s
-	 * @return
-	 */
-	private static String upperCaseFirstOne(String s) {
-		if (Character.isUpperCase(s.charAt(0)))
-			return s;
-		else
-			return (new StringBuilder()).append(Character.toUpperCase(s.charAt(0))).append(s.substring(1)).toString();
 	}
 }

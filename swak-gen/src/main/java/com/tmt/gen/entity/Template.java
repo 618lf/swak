@@ -1,4 +1,4 @@
-package com.swak.gen.config;
+package com.tmt.gen.entity;
 
 import java.io.Serializable;
 

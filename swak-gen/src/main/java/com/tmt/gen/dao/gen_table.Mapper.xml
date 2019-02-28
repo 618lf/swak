@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tmt.gen.dao.TableDao">
+
+  <resultMap id="BaseResult" type="com.tmt.gen.entity.Table" >
+    <result column="ID" property="id" jdbcType="BIGINT" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="COMMENTS" property="comments" jdbcType="VARCHAR" />
+    <result column="CLASS_NAME" property="className" jdbcType="VARCHAR" />
+    <result column="PARENT_TABLE" property="parentTable" jdbcType="VARCHAR" />
+    <result column="PARENT_TABLE_FK" property="parentTableFk" jdbcType="VARCHAR" />
+    <result column="CREATE_ID" property="createId" jdbcType="BIGINT" />
+    <result column="CREATE_NAME" property="createName" jdbcType="VARCHAR" />
+    <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_ID" property="updateId" jdbcType="BIGINT" />
+    <result column="UPDATE_NAME" property="updateName" jdbcType="VARCHAR" />
+    <result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="REMARKS" property="remarks" jdbcType="VARCHAR" />
+    <result column="DEL_FLAG" property="delFlag" jdbcType="TINYINT" />
+  </resultMap>
+  
+  <select id="get" resultMap="BaseResult" parameterType="long" >
+    SELECT ID, NAME, COMMENTS, CLASS_NAME, PARENT_TABLE, PARENT_TABLE_FK, CREATE_ID, CREATE_NAME,
+           CREATE_DATE, UPDATE_ID, UPDATE_NAME, UPDATE_DATE, REMARKS, DEL_FLAG
+      FROM GEN_TABLE
+     WHERE ID = #{id}
+  </select>
+  
+  <select id="getAll" resultMap="BaseResult">
+    SELECT ID, NAME, COMMENTS, CLASS_NAME, PARENT_TABLE, PARENT_TABLE_FK, CREATE_ID, CREATE_NAME,
+           CREATE_DATE, UPDATE_ID, UPDATE_NAME, UPDATE_DATE, REMARKS, DEL_FLAG
+      FROM GEN_TABLE
+  </select>
+  
+  <select id="findByCondition" resultMap="BaseResult" parameterType="queryCondition" >
+    SELECT ID, NAME, COMMENTS, CLASS_NAME, PARENT_TABLE, PARENT_TABLE_FK, CREATE_ID, CREATE_NAME,
+           CREATE_DATE, UPDATE_ID, UPDATE_NAME, UPDATE_DATE, REMARKS, DEL_FLAG
+      FROM GEN_TABLE
+    <include refid="COMMON.whereClause"/>
+    <if test="orderByClause != null">ORDER BY ${orderByClause}</if>
+  </select>
+  
+  <delete id="delete" parameterType="com.tmt.gen.entity.Table" >
+    DELETE FROM GEN_TABLE WHERE ID = #{id}
+  </delete>
+  
+  <insert id="insert" parameterType="com.tmt.gen.entity.Table" >
+    INSERT INTO GEN_TABLE (ID, NAME, COMMENTS, CLASS_NAME, PARENT_TABLE, PARENT_TABLE_FK, CREATE_ID,
+      CREATE_NAME, CREATE_DATE, UPDATE_ID, UPDATE_NAME, UPDATE_DATE, REMARKS, DEL_FLAG)
+    VALUES (#{id}, #{name}, #{comments}, #{className}, #{parentTable}, #{parentTableFk}, #{createId}, #{createName},
+      #{createDate}, #{updateId}, #{updateName}, #{updateDate}, #{remarks}, #{delFlag})
+  </insert>
+  
+  <insert id="batchInsert" parameterType="java.util.List">
+    INSERT INTO GEN_TABLE (ID, NAME, COMMENTS, CLASS_NAME, PARENT_TABLE, PARENT_TABLE_FK, CREATE_ID,
+      CREATE_NAME, CREATE_DATE, UPDATE_ID, UPDATE_NAME, UPDATE_DATE, REMARKS, DEL_FLAG)
+    VALUES
+   <foreach collection="list" item="item" index="index" separator="," >  
+   (#{item.id}, #{item.name}, #{item.comments}, #{item.className}, #{item.parentTable}, #{item.parentTableFk}, #{item.createId}, #{item.createName},
+    #{item.createDate}, #{item.updateId}, #{item.updateName}, #{item.updateDate}, #{item.remarks}, #{item.delFlag})
+   </foreach> 
+  </insert>
+  
+  <update id="update" parameterType="com.tmt.gen.entity.Table" >
+   UPDATE GEN_TABLE
+      SET NAME = #{name},
+	      COMMENTS = #{comments},
+	      CLASS_NAME = #{className},
+	      PARENT_TABLE = #{parentTable},
+	      PARENT_TABLE_FK = #{parentTableFk},
+	      UPDATE_ID = #{updateId},
+	      UPDATE_NAME = #{updateName},
+	      UPDATE_DATE = #{updateDate},
+	      REMARKS = #{remarks},
+	      DEL_FLAG = #{delFlag}
+    WHERE ID = #{id}
+  </update>
+  
+  <select id="findByConditionStat" parameterType="queryCondition" resultType="int" >
+    SELECT COUNT(1) FROM GEN_TABLE D
+    <include refid="COMMON.whereClause" />
+  </select>
+  
+  <!-- 物理表 -->
+  <resultMap id="DbBaseResult" type="com.tmt.gen.entity.Table" >
+    <result column="NAME" property="name"/>
+    <result column="COMMENTS" property="comments"/>
+  </resultMap>
+ 
+  <select id="findDbTables" resultMap="DbBaseResult" parameterType="string">
+    SELECT T.TABLE_NAME AS NAME, T.TABLE_COMMENT AS COMMENTS 
+      FROM INFORMATION_SCHEMA.`TABLES` T 
+     WHERE T.TABLE_SCHEMA = (SELECT DATABASE())
+     <if test="name != null">AND T.TABLE_NAME = upper(#{name})</if> 
+     ORDER BY T.TABLE_NAME
+  </select>
+</mapper>

@@ -107,6 +107,11 @@
 		<dependencies>
 			<dependency>
 				<groupId>com.swak</groupId>
+				<artifactId>swak-fx</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
 				<artifactId>swak-http</artifactId>
 				<version>${project.version}</version>
 			</dependency>

@@ -1,7 +1,7 @@
 /**
  * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
-package com.swak.gen.config;
+package com.tmt.gen.entity;
 
 import java.io.Serializable;
 import java.util.List;

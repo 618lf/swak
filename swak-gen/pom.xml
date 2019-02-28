@@ -8,13 +8,23 @@
 	</parent>
 	<artifactId>swak-gen</artifactId>
 	<dependencies>
-		<dependency>
+	    <dependency>
 			<groupId>com.swak</groupId>
-			<artifactId>swak-core</artifactId>
+			<artifactId>swak-starter-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-jdbc</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.alibaba</groupId>
+					<artifactId>druid</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-fx</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.freemarker</groupId>

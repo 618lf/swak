@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE xml>
+<template>
+	<name>viewList</name>
+	<filePath>/${moduleName}/${subModuleName}/</filePath>
+	<fileName>${prefix?cap_first}Tree.jsp</fileName>
+	<templatePath>template/viewTree.ftl</templatePath> 
+</template>

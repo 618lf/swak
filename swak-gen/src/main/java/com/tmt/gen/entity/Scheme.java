@@ -1,4 +1,4 @@
-package com.swak.gen.config;
+package com.tmt.gen.entity;
 
 import java.io.Serializable;
 
@@ -6,8 +6,8 @@ import com.swak.entity.BaseEntity;
 
 /**
  * 方案
- * 
  * @author lifeng
+ *
  */
 public class Scheme extends BaseEntity<Long> implements Serializable{
     
@@ -37,9 +37,6 @@ public class Scheme extends BaseEntity<Long> implements Serializable{
     private Integer flag = 0;
     private Table table;//当前生成的table
     
-    // 输出路径
-    private String outputPath;
-    
 	@Override
 	public Long getId() {
 		return this.id;
@@ -47,12 +44,6 @@ public class Scheme extends BaseEntity<Long> implements Serializable{
 	@Override
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public String getAuthor() {
-		return author;
-	}
-	public void setAuthor(String author) {
-		this.author = author;
 	}
 	public String getRightTable() {
 		return rightTable;
@@ -156,10 +147,10 @@ public class Scheme extends BaseEntity<Long> implements Serializable{
 	public void setTableSelect(Byte tableSelect) {
 		this.tableSelect = tableSelect;
 	}
-	public String getOutputPath() {
-		return outputPath;
+	public String getAuthor() {
+		return author;
 	}
-	public void setOutputPath(String outputPath) {
-		this.outputPath = outputPath;
+	public void setAuthor(String author) {
+		this.author = author;
 	}
 }
