@@ -3,7 +3,9 @@ package com.swak.reactivex.web.method;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Controller;
@@ -14,34 +16,26 @@ import com.swak.reactivex.web.annotation.RequestMapping;
  * 请求处理以及
  * 
  * @author lifeng
- */	
-public class RequestMappingHandlerMapping extends AbstractRequestMappingHandlerMapping implements Ordered {
+ */
+public class RequestMappingHandlerMapping extends AbstractRequestMappingHandlerMapping
+		implements BeanPostProcessor, Ordered {
 
 	/**
-	 * 自动加载
-	 * @param applicationContext
+	 * 处理请求
 	 */
 	@Override
-	protected void initRequestMappings(ApplicationContext applicationContext) {
-        String[] beanNames = applicationContext.getBeanNamesForAnnotation(Controller.class);
-		for (String beanName : beanNames) {
-			Object handler = null;
-			try {
-				handler = applicationContext.getBean(beanName);
-			} catch (Throwable ex) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("Could not resolve target class for bean with name '" + beanName + "'", ex);
-				}
-			}
-			// 校验 handler
-		    if (handler == null) {
-		    	throw new IllegalStateException(
-						"Invalid mapping on handler class [" + beanName  + "]");
-		    }
-			this.registryMapping(handler);
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+		Class<?> clazz = bean.getClass();
+		if (AopUtils.isAopProxy(bean)) {
+			clazz = AopUtils.getTargetClass(bean);
 		}
+		Controller controller = clazz.getAnnotation(Controller.class);
+		if (controller != null) {
+			this.registryMapping(bean);
+		}
+		return bean;
 	}
-	
+
 	@Override
 	protected RequestMappingInfo getMappingForMethod(Object handler, Method method, Class<?> handlerType) {
 		RequestMappingInfo info = createRequestMappingInfo(method);

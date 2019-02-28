@@ -16,9 +16,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -31,14 +28,12 @@ import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.AbstractHandlerMapping;
-import com.swak.reactivex.web.HandlerMapping;
 import com.swak.reactivex.web.annotation.RequestMethod;
 import com.swak.reactivex.web.method.pattern.UrlPathHelper;
 import com.swak.reactivex.web.template.Model;
 import com.swak.utils.Maps;
 
-public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandlerMapping
-		implements ApplicationContextAware, HandlerMapping {
+public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandlerMapping {
 
 	private Map<String, Match> matchLookup = new HashMap<String, Match>();
 	private MappingRegistry mappingRegistry = new MappingRegistry();
@@ -46,19 +41,6 @@ public abstract class AbstractRequestMappingHandlerMapping extends AbstractHandl
 	public MappingRegistry getMappingRegistry() {
 		return mappingRegistry;
 	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.initRequestMappings(applicationContext);
-		mappingRegistry.readWriteLock = null;
-	}
-
-	/**
-	 * 初始化
-	 * 
-	 * @param applicationContext
-	 */
-	protected abstract void initRequestMappings(ApplicationContext applicationContext);
 
 	/**
 	 * 将一个对象注册为mapping

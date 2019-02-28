@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 
 import com.swak.Constants;
@@ -31,6 +30,7 @@ public class WebEndpointHandlerMapping extends AbstractRequestMappingHandlerMapp
 	public WebEndpointHandlerMapping(WebEndpointsSupplier webEndpointsSupplier) {
 		this.webEndpointsSupplier = webEndpointsSupplier;
 		this.endpoints = webEndpointsSupplier.getEndpoints();
+		this.initRequestMappings();
 	}
 
 	@Override
@@ -38,8 +38,7 @@ public class WebEndpointHandlerMapping extends AbstractRequestMappingHandlerMapp
 		return Ordered.LOWEST_PRECEDENCE;
 	}
 
-	@Override
-	protected void initRequestMappings(ApplicationContext applicationContext) {
+	protected void initRequestMappings() {
 		for (ExposableWebEndpoint endpoint : this.endpoints) {
 			for (WebOperation operation : endpoint.getOperations()) {
 				registerMappingForOperation(operation);
