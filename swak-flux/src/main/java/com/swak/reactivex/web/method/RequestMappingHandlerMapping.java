@@ -8,9 +8,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.stereotype.Controller;
 
 import com.swak.reactivex.web.annotation.RequestMapping;
+import com.swak.reactivex.web.annotation.RestController;
 
 /**
  * 请求处理以及
@@ -29,7 +29,7 @@ public class RequestMappingHandlerMapping extends AbstractRequestMappingHandlerM
 		if (AopUtils.isAopProxy(bean)) {
 			clazz = AopUtils.getTargetClass(bean);
 		}
-		Controller controller = clazz.getAnnotation(Controller.class);
+		RestController controller = clazz.getAnnotation(RestController.class);
 		if (controller != null) {
 			this.registryMapping(bean);
 		}

@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
  * 区域管理
  * @author root
  */
-@RestController(value = "/admin/system/area")
+@RestController(path = "/admin/system/area")
 public class AreaController {
 
 	/**

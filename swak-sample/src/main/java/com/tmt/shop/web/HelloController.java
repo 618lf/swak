@@ -42,7 +42,7 @@ import reactor.core.publisher.Mono;
  * 
  * @author lifeng
  */
-@RestController("/admin/hello")
+@RestController(path = "/admin/hello")
 public class HelloController {
 
 	@Autowired

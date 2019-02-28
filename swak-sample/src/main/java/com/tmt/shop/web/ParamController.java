@@ -13,7 +13,7 @@ import com.tmt.shop.entity.Shop;
  * 
  * @author lifeng
  */
-@RestController("/admin/hello/param")
+@RestController(path = "/admin/hello/param")
 public class ParamController {
 
 	/**

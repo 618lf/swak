@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
  * 需要用户才能访问
  * @author lifeng
  */
-@RestController("/admin/user")
+@RestController(path = "/admin/user")
 public class UserController {
 
 	/**

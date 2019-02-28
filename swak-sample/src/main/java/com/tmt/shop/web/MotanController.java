@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
  * 
  * @author lifeng
  */
-@RestController("/admin/motan")
+@RestController(path = "/admin/motan")
 public class MotanController {
 
 	@MotanReferer

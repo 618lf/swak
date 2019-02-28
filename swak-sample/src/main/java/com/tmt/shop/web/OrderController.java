@@ -15,7 +15,7 @@ import com.tmt.shop.service.OrderService;
  * 
  * @author lifeng
  */
-@RestController("/api/order")
+@RestController(path = "/api/order")
 public class OrderController {
 
 	@Autowired
