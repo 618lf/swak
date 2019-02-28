@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.Constants;
+import com.swak.freemarker.FreeMarkerConfigurationFactory;
+import com.swak.freemarker.FreeMarkerConfigurer;
 import com.swak.reactivex.web.converter.TemplateHttpMessageConverter;
-import com.swak.reactivex.web.template.FreeMarkerConfigurationFactory;
-import com.swak.reactivex.web.template.FreeMarkerConfigurer;
 
 import freemarker.template.Template;
 

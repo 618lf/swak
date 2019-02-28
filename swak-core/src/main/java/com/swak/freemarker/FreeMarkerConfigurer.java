@@ -1,4 +1,4 @@
-package com.swak.reactivex.web.template;
+package com.swak.freemarker;
 
 import java.util.Iterator;
 import java.util.List;

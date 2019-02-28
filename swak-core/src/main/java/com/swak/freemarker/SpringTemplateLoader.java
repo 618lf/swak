@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.swak.reactivex.web.template;
+package com.swak.freemarker;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
