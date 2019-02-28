@@ -14,6 +14,8 @@ import com.swak.reactivex.web.converter.TemplateHttpMessageConverter;
 import com.swak.reactivex.web.template.FreeMarkerConfigurationFactory;
 import com.swak.reactivex.web.template.FreeMarkerConfigurer;
 
+import freemarker.template.Template;
+
 /**
  * Configuration for FreeMarker when used in a servlet web context.
  *
@@ -21,7 +23,7 @@ import com.swak.reactivex.web.template.FreeMarkerConfigurer;
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnClass({ FreeMarkerConfigurer.class })
+@ConditionalOnClass({ Template.class })
 @EnableConfigurationProperties(FreeMarkerProperties.class)
 public class FreeMarkerAutoConfiguration {
 
