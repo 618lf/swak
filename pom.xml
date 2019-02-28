@@ -289,18 +289,21 @@
 				<includes>
 					<include>**/*.properties</include>
 					<include>**/*.xml</include>
+					<include>**/*.fxml</include>
 					<include>**/*.tld</include>
 					<include>**/*.ftl</include>
 					<include>**/*.js</include>
+					<include>**/*.css</include>
+					<include>**/*.html</include>
 					<include>**/*.json</include>
 					<include>**/*.dic</include>
 					<include>**/*.conf</include>
 					<include>**/*.groovy</include>
 					<include>**/*.png</include>
+					<include>**/*.gif</include>
 					<include>**/*.factories</include>
 					<include>**/*.db</include>
 					<include>**/*.jceks</include>
-					<include>**/*.html</include>
 				</includes>
 				<filtering>false</filtering>
 			</resource>

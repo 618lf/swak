@@ -17,7 +17,6 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.web.*?>
-<?import com.swak.fx.support.DownloadPane?>
 
 <BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity"
 	minHeight="-Infinity" minWidth="-Infinity" styleClass="panel,panel-primary" xmlns="http://javafx.com/javafx/8"
@@ -30,7 +29,7 @@
 				<ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
 					preserveRatio="true">
 					<image>
-						<Image url="/com/tmt/starter/page/logo.png" />
+						<Image url="/com/tmt/page/logo.png" />
 					</image>
 				</ImageView>
 				<Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
@@ -39,16 +38,10 @@
 						</Label>
 					</children>
 				</Pane>
-				<ImageView onMouseClicked="#openSettings" styleClass="image-btn,image-settings" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
-					preserveRatio="true">
-					<image>
-						<Image url="/com/tmt/starter/page/设置.png" />
-					</image>
-				</ImageView>
 				<ImageView styleClass="image-btn" onMouseClicked="#minimize" fitHeight="24.0"
 					fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
 					<image>
-						<Image url="/com/tmt/starter/page/最小化.png" />
+						<Image url="/com/tmt/page/最小化.png" />
 					</image>
 					<HBox.margin>
 						<Insets left="5.0" right="5.0" />
@@ -57,7 +50,7 @@
 				<ImageView styleClass="image-btn" onMouseClicked="#maximize" fitHeight="24.0"
 					fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
 					<image>
-						<Image url="/com/tmt/starter/page/最大化.png" />
+						<Image url="/com/tmt/page/最大化.png" />
 					</image>
 					<HBox.margin>
 						<Insets left="5.0" right="5.0" />
@@ -66,7 +59,7 @@
 				<ImageView styleClass="image-btn" onMouseClicked="#onClose" fitHeight="24.0"
 					fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
 					<image>
-						<Image url="/com/tmt/starter/page/关闭.png" />
+						<Image url="/com/tmt/page/关闭.png" />
 					</image>
 					<HBox.margin>
 						<Insets left="5.0"/>

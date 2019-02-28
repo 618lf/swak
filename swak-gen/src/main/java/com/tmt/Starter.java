@@ -4,11 +4,9 @@ import java.awt.SystemTray;
 import java.util.concurrent.CompletableFuture;
 
 import com.swak.Application;
-import com.swak.MainApp;
 import com.swak.fx.support.AbstractApplication;
 import com.swak.fx.support.Display;
 import com.swak.fx.support.Event;
-import com.swak.hello.SplashPage;
 import com.tmt.page.MainPage;
 
 import javafx.application.Platform;
@@ -68,7 +66,7 @@ public class Starter extends AbstractApplication {
 	@Override
 	protected void customStage(Stage stage, SystemTray tray) {
 		stage.setTitle("个税易客户端");
-		stage.getIcons().add(new Image(Display.load(MainApp.class, "logo.png").toExternalForm()));
+		stage.getIcons().add(new Image(Display.load(MainPage.class, "logo.png").toExternalForm()));
 		stage.sizeToScene();
 		stage.setOnCloseRequest(event -> {
 			Display.getEventBus().post(Event.CLOSE);
@@ -92,6 +90,6 @@ public class Starter extends AbstractApplication {
 	 */
 	public static void main(String[] args) {
 		Platform.setImplicitExit(false);
-		launch(Starter.class, MainPage.class, SplashPage.class, args);
+		launch(Starter.class, MainPage.class, args);
 	}
 }
