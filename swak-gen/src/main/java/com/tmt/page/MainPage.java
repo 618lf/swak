@@ -28,7 +28,7 @@ import netscape.javascript.JSObject;
  * 
  * @author lifeng
  */
-@FXMLView(title = "代码生成工具", value = "MainPage.fxml", css = "MainPage.css", stageStyle = "TRANSPARENT")
+@FXMLView(title = "开发管理工具", value = "MainPage.fxml", css = "MainPage.css", stageStyle = "TRANSPARENT")
 public class MainPage extends Window implements EventListener {
 
 	@FXML

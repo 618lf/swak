@@ -1,0 +1,376 @@
+/********* 文件管理 ************/
+html, body.white {
+ padding-left: 0;
+ background-color: #fff;
+}
+.file-manager,
+.file-manager * {
+  position: relative;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.file-manager .file-manager-toolbar {
+  background: #F7F7F7;
+  height: 50px;
+  line-height: 50px;
+  border-bottom: 1px solid #d2d2d2;
+  padding-left: 20px;
+  padding-right: 20px;
+  background: #f4f4f4;
+  overflow: hidden;
+}
+.file-manager .file-manager-toolbar .btn i {
+  margin-right: 5px;
+  font-size: 18px;
+}
+.file-manager .file-manager-toolbar .btn-group {
+  display: none;
+}
+.file-manager .file-manager-toolbar .btn-group.show {
+  display: inline-block;
+}
+.file-manager .file-manager-toolbar .btn-group .btn i {
+  font-size: 14px;
+}
+.file-manager .file-manager-toolbar .input-append {
+  margin: 0;
+  padding: 0;
+  height: 32px;
+  line-height: 32px;
+  margin-left: 20px;
+  float: right;
+  margin-top: 10px;
+}
+.file-manager .file-manager-toolbar .input-append input[type="text"],
+.file-manager .file-manager-toolbar .input-append .btn{
+  height: 32px;
+}
+.file-manager .file-manager-toolbar .btn-view,
+.file-manager .file-manager-toolbar .btn-list {
+  display: block;
+  float: right;
+  font-size: 18px;
+  border: 1px solid #ddd;
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
+  text-align: center;
+  margin-left: -1px;
+  margin-top: 10px;
+  color: #B7B7B7;
+  background-color: #fff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+  background-repeat: repeat-x;
+  border: 1px solid #cccccc;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  border-bottom-color: #b3b3b3;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.file-manager .file-manager-toolbar .btn-view.on,
+.file-manager .file-manager-toolbar .btn-list.on {
+  color: #fff;
+  background: #CACACA;
+}
+.file-manager .file-path{
+  color: #666;
+  font-size: 13px;
+  padding: 5px;
+  padding-left: 20px;
+  padding-right: 100px;
+  line-height: 31px;
+  height: 41px;
+  border-bottom: 1px solid transparent;
+  position: relative;
+}
+.file-manager .file-path.box-show {
+  border-bottom: 1px solid #ddd;
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.file-manager .file-path .back {
+  border-right: 1px solid #cad5e3;
+  color: #3083eb;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 0 6px 0 0;
+  padding-right: 12px;
+  width: 55px;
+}
+.file-manager .file-path .path-item {
+  color: #3083eb;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 0 6px 0 0;
+  max-width: 15%;
+  overflow: hidden;
+  padding-right: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+}
+.file-manager .file-path .path-item:AFTER {
+  content: "/";
+  height: 1px;
+  position: absolute;
+  right: 0;
+  top:50%;
+  color: #333;
+  height: 1px;
+  text-align: center;
+  display: block;
+  height: 16px;
+  line-height: 16px;
+  margin-top: -8px;
+}
+.file-manager .file-path .path-item.last-item a{
+  color: #333;
+  cursor: default;
+}
+.file-manager .file-path .path-item.last-item:AFTER{
+  display: none;
+}
+.file-manager .file-path .file-opts {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+.file-manager .file-path .file-opts .btn {
+  color: #337ab7;
+  display: block;
+  padding: 4px 7px;
+}
+.file-manager .file-path .file-opts .btn:HOVER {
+  background-color: #337ab7;
+  color: #fff;
+}
+.file-manager .file-items-title{
+  background: #F7F7F7;
+  border-radius: 2px;
+  border: 1px solid #D2D2D2;
+  color: #888;
+  height: 41px;
+  padding-right: 15px;
+}
+.file-manager .file-items-title .title-col {
+  float: left;
+  line-height: 41px;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #e5e5e5;
+  font-size: 14px;
+}
+.file-manager .file-items-title .title-col:FIRST-CHILD {
+  border-left: 0;
+}
+.file-manager .file-items-title .title-col:LAST-CHILD {
+  border-right: 0;
+}
+.file-manager .file-items-title .title-col .name {
+  padding-left: 30px;
+  font-size: 14px;
+  position: relative;
+}
+.file-manager .file-items-title .title-col .name i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  font-size: 20px;
+  margin-top: -10px;
+}
+.file-manager .file-items-title .title-col .size {
+  padding-left: 10px;
+}
+.file-manager .file-items-title .title-col .date {
+  padding-left: 10px;
+}
+.file-manager .file-items-list {
+  min-height: 300px;
+}
+.file-manager .file-items-list .file {
+  background: #fff;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  color: #888;
+  height: 41px;
+  border-bottom: 1px solid #D2D2D2;
+}
+.file-manager .file-items-list .file-col {
+  float: left;
+  line-height: 41px;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+  font-size: 14px;
+}
+.file-manager .file-items-list .file-col:FIRST-CHILD {
+  border-left: 0;
+}
+.file-manager .file-items-list .file-col:LAST-CHILD {
+  border-right: 0;
+}
+.file-manager .file-items-list .file-col .name {
+  padding-left: 30px;
+  font-size: 14px;
+  position: relative;
+}
+.file-manager .file-items-list .file-col .name i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  font-size: 20px;
+  margin-top: -10px;
+}
+.file-manager .file-items-list .file-col .size {
+  padding-left: 10px;
+}
+.file-manager .file-items-list .file-col .date {
+  padding-left: 10px;
+}
+/********* 大图 ************/
+.file-manager .file-items {
+  padding: 10px;
+  margin: 0;
+  padding-left: 20px;
+}
+.file-manager .file-items li {
+  background: url(/static/webuploader/img/bg.png) no-repeat;
+  text-align: center;
+  margin: 0 8px 20px 0;
+  position: relative;
+  float: left;
+  overflow: hidden;
+  font-size: 12px;
+}
+.file-manager .file-items li.file-loader {
+  width: 100%;
+  font-size: 16px;
+}
+.file-manager .file-items li.file-loader img {
+  margin-right: 10px;
+}
+.file-manager .file-items li.file-null {
+  font-size: 16px;
+  height: 300px;
+  border: 3px dotted #ddd;
+  width: 100%;
+  padding-top: 150px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font: 300 16px/20px "microsoft yahei";
+  color: #999;
+  text-align: center;
+}
+.file-manager .file-items li .selected {
+  display: none;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 40px;
+  width: 100%;
+  z-index: 2;
+  background: url(/static/webuploader/img/success.png) no-repeat right bottom;
+}
+.file-manager .file-items li.active .selected {
+  display: block;
+}
+.file-manager .file-items li .img-wrap {
+  position: relative;
+  display: block;
+  z-index: 2;
+  vertical-align: middle;
+  overflow: hidden;
+  width: 122px;
+  height: 142px;
+  padding: 2px 0 0 0;
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 2px;
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -o-transform-origin: 50% 50%;
+  -ms-transform-origin: 50% 50%;
+  transform-origin: 50% 50%;
+  -webit-transition: 200ms ease-out;
+  -moz-transition: 200ms ease-out;
+  -o-transition: 200ms ease-out;
+  -ms-transition: 200ms ease-out;
+  transition: 200ms ease-out;
+}
+.file-manager .file-items li .img-wrap:HOVER,
+.file-manager .file-items li.active .img-wrap{
+  background-color: #EFF3F9;
+  border: 1px solid #bcccde;
+}
+.file-manager .file-items li .img-wrap img {
+  max-width: inherit;
+  max-height: inherit;
+  height: 100px;
+}
+.file-manager .file-items li .img-wrap .file-title {
+  color: #333;
+  position: absolute;
+  bottom: 1px;
+  width: 100px;
+  left: 50%;
+  margin-left: -50px;
+  background-color: transparent;
+  text-align: center;
+  height: 36px;
+  overflow: hidden;
+  word-break:break-all;
+  word-wrap:break-word;
+}
+.file-manager .file-items li .file-panel {
+  position: absolute;
+  height: 30px;
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#80000000', endColorstr='#80000000')\0;
+  background: rgba( 0, 0, 0, 0.5 );
+  width: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 300;
+  display: none;
+}
+.file-manager .file-items li:HOVER .file-panel{
+  display: block;
+}
+
+.file-manager .file-items .file-panel span.cancel {
+  background-position: -48px -24px;
+}
+.file-manager .file-items .file-panel span {
+  width: 24px;
+  height: 24px;
+  display: inline;
+  float: right;
+  text-indent: -9999px;
+  overflow: hidden;
+  background: url(/static/webuploader/img/icons.png) no-repeat;
+  margin: 5px 1px 1px;
+  cursor: pointer;
+}
+.file-manager .file-items li a {
+  padding: 0;
+}
+/********* 文件管理 ************/
+.file-tabs {
+  margin-top: 10px;
+}
+.file-tabs li>a {
+  border-radius:0;
+  padding: 7px 10px;
+}

@@ -1,0 +1,65 @@
+body{background:#fff;color:#333;overflow:hidden}*{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}:after,:before{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}a:focus,a:hover{outline:0;text-decoration:none}a{text-decoration:none;font-size:13px}#container{width:100%;margin:0 auto}#container .sidebar{width:95px;z-index:99;background:url(../img/side_rp.png) repeat-y -3px 0;float:left}#container .content{overflow:hidden;position:relative}#content .content-head{position:relative;z-index:2;height:46px;padding:0 18px 0;font-family:'Microsoft Yahei';overflow:hidden}#content .content-body{overflow:hidden;zoom:1}#content .runas{position:absolute;padding:5px 5px 5px 5px;margin-left:-31px;left:50%;cursor:pointer;z-index:999}#content .runas .bd{position:absolute;width:100%;height:100%;background-color:#bd362f;filter:alpha(opacity=1);-moz-opacity:1;opacity:1;left:0;top:0;border-radius:0 0 6px 6px;z-index:1}#content .runas .runas-exit{display:block;color:#fff;z-index:2;position:relative}#userMenuNav{padding:0;padding-top:46px}#userMenuNav:AFTER{clear:both;display:block;content:""}#userMenuNav>li{position:relative;float:left;width:100%}#userMenuNav>li>a{position:relative;display:block;height:80px;width:100%;background-color:transparent;padding:0;margin:0;float:left;padding-top:50px;text-align:center;color:#B3CFDF;font-size:16px}#userMenuNav>li>a:HOVER{color:#fff;background-color:#265F7F}#userMenuNav>li>a.top-catalog:BEFORE{content:" ";position:absolute;right:-7px;top:50%;width:14px;height:14px;margin-top:-7px;border:2px solid #fff;border-width:2px 0 0 2px;background-color:#fff;-webkit-transform:rotate(-45deg);-ms-transform:rotate(-45deg);transform:rotate(-45deg);z-index:1;display:none}#userMenuNav>li a>.menu{position:absolute;font-size:34px;top:15px;display:block;left:50%;margin-left:-17px}#userMenuNav>li a>.menu-text{background-color:transparent}#userMenuNav>li a>.arrow{position:absolute;font-size:10px;right:3px}#userMenuNav .submenu-wrap{position:absolute;left:95px;width:130px;border:4px solid #c7c7c7;border-color:rgba(0,0,0,.2);border-left:0;border-top-right-radius:4px;border-bottom-right-radius:4px;background-color:#fff;z-index:9999;display:none;min-height:80px}#userMenuNav .submenu{margin:0;background-color:#fff;padding:10px 0 5px;line-height:24px;z-index:2;position:relative}#userMenuNav .submenu>li{padding-bottom:8px}#userMenuNav .submenu>li>a{padding-left:15px;display:block;color:#888;zoom:1}#userMenuNav .submenu>li>a:hover{background-color:#eee;color:#555}#userMenuNav li:HOVER>.submenu-wrap{display:block}#userMenuNav li:HOVER>a:BEFORE{display:block}#userMenuNav li:HOVER>a>.arrow{display:none}#userMenuNav .group-submenu{padding:15px 0;width:auto}#userMenuNav .group-submenu .group-item{float:left;width:130px;border-right:1px dashed #ccc}#userMenuNav .group-submenu .group-item:LAST-CHILD{border-right:0}#userMenuNav .group-submenu .group-item:FIRST-CHILD{border-left:0}#userMenuNav .group-submenu h3{padding:0;margin:0;margin-left:15px;font-size:14px;line-height:20px}#userMenuNav .group-submenu .submenu-wrap{display:block;left:0;top:0;position:relative;border:0;width:auto;border-top-right-radius:0;border-bottom-right-radius:0}#userMenuNav .group-submenu .submenu{padding-bottom:0}#content-head .title{margin-right:10px;font:700 24px/1.5 'Microsoft Yahei';text-shadow:0 0 1px rgba(0,0,0,.2);max-width:360px;float:left;overflow:hidden}#content-head .user-menu{float:right;margin:3px 0 0 0}#content-head .user-menu li{float:left;display:inline;position:relative;font-family:'\5b8b\4f53';font-weight:400}#content-head .user-menu a{display:block;height:100%;width:auto;overflow:hidden;color:#555}#content-head .user-menu li.space{margin:0 10px;color:#CCC;vertical-align:middle}#content-head .user-menu i{font-size:14px;margin-right:5px}#content-head .user-menu i.message{color:#F4D999}#switch_users{padding:10px}#switch_users .radio.inline{font-size:16px;line-height:32px;padding-left:0}#switch_users .radio.inline input[type=radio]{height:18px;width:18px;margin:6px 3px 0}#icon-vension {display: block;position: absolute;top: 0;left: 0;z-index: 999;}.l-tab-links{margin:0 0 -1px 18px;}.l-tab-links ul{padding:2px 0 0 1px}.l-tab-links li.l-selected{height:32px;top:-2px;border:1px solid #E5E5E5;border-top:2px solid #3DA8B9;border-bottom:1px solid #f5f5f5;border-top-left-radius:2px;border-top-right-radius:2px;background:#f4f4f4}.l-tab-links li{margin-left:-1px;height:28px;line-height:28px;border:1px solid #E5E5E5}.l-tab-links li a{color:#aaa}.l-tab-links li.l-selected a{color:#555}.l-tab-links li:first-child{border-top-left-radius:2px}.l-tab-links li:last-child{border-top-right-radius:2px}.l-tab-links-left,.l-tab-links-right{top:2px;height:28px;background:#fff;border:1px solid #dedede}.l-tab-links-left i{border-color:#FFF #555 #FFF #FFF}.l-tab-links-right i{border-color:#FFF #FFF #FFF #555;}.l-tab-content{border-top:1px solid #E5E5E5}.l-tab-links .l-tab-links-item-close-over{background-color:#ddd}
+#userMenuNav .submenu .-menu {padding-left: 5px;}
+.logout-reason-wrap {
+  text-align: center;
+  padding: 20px;
+}
+.logout-reason-wrap .logout-reason {
+   font-size: 18px;
+   text-align: center;
+   height: 200px;
+}
+/**
+ * 主题
+ */
+#container .sidebar-0 {
+   width: 85px;
+}
+#container .sidebar-0 #userMenuNav>li>a {
+   height: 72px;
+}
+#container .sidebar-0 #userMenuNav .submenu-wrap {
+   left: 85px;
+}
+#container .sidebar-0 #userMenuNav .group-submenu .submenu-wrap {
+   left: 0px;
+}
+#container .sidebar-1 {
+   width: 75px;
+}
+#container .sidebar-1 #userMenuNav>li>a {
+   height: 60px;
+   padding-top: 40px;
+   font-size: 14px;
+}
+#container .sidebar-1 #userMenuNav>li a>.menu {
+   font-size: 26px;
+   margin-left: -13px;
+}
+#container .sidebar-1 #userMenuNav .submenu-wrap {
+   left: 75px;
+}
+#container .sidebar-1 #userMenuNav .group-submenu .submenu-wrap {
+   left: 0px;
+}
+#container .sidebar-2 {
+   width: 55px;
+}
+#container .sidebar-2 #userMenuNav>li>a {
+   height: 50px;
+   padding-top: 35px;
+   font-size: 10px;
+}
+#container .sidebar-2 #userMenuNav>li a>.menu {
+   font-size: 20px;
+   margin-left: -11px;
+}
+#container .sidebar-2 #userMenuNav .submenu-wrap {
+   left: 55px;
+}
+#container .sidebar-2 #userMenuNav .group-submenu .submenu-wrap {
+   left: 0px;
+}
+#container .sidebar-2 > #icon-vension {
+   max-width: 55px;
+}

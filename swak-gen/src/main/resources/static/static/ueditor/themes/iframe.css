@@ -1,0 +1,339 @@
+@charset "utf-8";
+/********* 纠正 bootstrap 3对ueditor 样式的覆盖 ************/
+.ueditor-bs h1, .ueditor-bs h2, .ueditor-bs h3, ueditor-bs h4, .ueditor-bs h5, .ueditor-bs h6 {
+  display: block;
+  font-weight: bold;
+}
+.ueditor-bs h1 {
+  font-size: 2em;
+}
+.ueditor-bs h2 {
+  font-size: 1.5em;
+}
+.ueditor-bs h3 {
+  font-size: 1.17em;
+}
+.ueditor-bs h4 {
+  font-size: 16px;
+}
+.ueditor-bs h5 {
+  font-size: 0.83em;
+}
+.ueditor-bs h6 {
+  font-size: 0.67em;
+}
+.ueditor-bs * {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;	
+}
+.ueditor-bs table {
+  border-spacing: 2px;
+  border-color: gray;
+  margin-bottom: 10px;
+  border-collapse: collapse;
+  display: table;
+}
+.ueditor-bs tbody {
+ display: table-row-group;
+ vertical-align: middle;
+ border-color: inherit;
+ -webkit-box-sizing: content-box;
+ -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+.ueditor-bs tr {
+  display: table-row;
+  vertical-align: inherit;
+  border-color: inherit;
+  -webkit-box-sizing: content-box;
+ -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+.ueditor-bs td, .ueditor-bs th {
+ padding: 5px 10px;
+ border: 1px solid #DDD;
+ -webkit-box-sizing: content-box;
+ -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+.ueditor-bs td p {
+ margin: 0;
+ padding: 0;
+ line-height: 1em;
+ font-family: sans-serif;
+ font-size: 16px;
+}
+.ueditor-bs a {
+  color: #337ab7;
+  text-decoration: underline;
+}
+.ueditor-bs a:HOVER, .ueditor-bs a:HOVER{
+  color: #337ab7;
+  text-decoration: none;
+}
+/********* 加入对投票的支持 ************/
+.vote-wrap {
+  margin: 0 auto;
+  padding: 0 10px; 
+}
+.vote-wrap .vote-header {
+  position: relative;
+  margin-bottom: 12px;
+  margin: 0 -10px;
+}
+.vote-wrap .vote-name {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.4);
+  color: #fff;
+  padding: 9px 14px;
+  text-align: right;
+}
+.vote-wrap .vote-image {
+  margin-bottom: 10px;
+}
+.vote-wrap .vote-image>img {
+  max-width: 100%;
+}
+.vote-wrap .vote-remarks {
+  margin-bottom: 12px;
+}
+.vote-simple {
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding: 10px;
+}
+.vote-simple .vote-state {
+  text-align: center;
+  font-size: 16px;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  margin-left: -10px;
+  margin-right: -10px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  display: none;
+}
+.vote-simple .vote-meta {
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 10px;
+}
+.vote-simple .vote-meta:last-child {
+  border-bottom: 0px solid #ddd;
+}
+.vote-simple .vote-meta>.title{
+  line-height: 30px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  position: relative;
+  padding-left: 5px;
+}
+.vote-simple .vote-meta>.title:BEFORE {
+  content: " ";
+  position: absolute;
+  display: block;
+  top: 50%;
+  width: 3px;
+  height: 20px;
+  left: -5px;
+  background-color: #51a351;
+  margin-top: -10px;
+}
+.vote-simple .vote-meta .option {
+  position: relative;
+  display: block;
+  padding: 10px;
+  padding-left: 25px;
+  line-height: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-right: 50px;
+  font-weight: normal;
+}
+.vote-simple .vote-meta .option:LAST-CHILD {
+  border-bottom: 0px solid #ddd;
+}
+.vote-simple .vote-meta .option:HOVER {
+  background-color: #F7F7F7;
+}
+.vote-simple .vote-meta .option .option-input {
+  position: absolute;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  padding: 6px 4px;
+  top: 50%;
+  margin-top: -9px;
+}
+.vote-simple .vote-meta .option .option-label {
+  font-size: 14px;
+  color: #555;
+  font-weight: normal;
+  display: block;
+  position: relative;
+  padding-bottom: 5px;
+}
+.vote-simple .vote-meta .option .option-label .title {
+  display: block;
+  font-size: 14px;
+  padding: 0;
+  margin: 0;
+}
+.vote-simple .vote-meta .option .option-label .remarks {
+  display: block;
+  font-size: 14px;
+  color: #999999;
+}
+.vote-simple .vote-meta .option .option-label.option-image {
+  padding-left: 130px;
+  height: 89px;
+}
+.vote-simple .vote-meta .option .option-image>img{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 110px;
+  height: 89px;
+}
+.vote-simple .vote-meta .option .option-hits {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  margin-top: -10px;
+  color: #555;
+}
+.vote-simple .vote-toolbar {
+  text-align: center;
+  padding: 10px;
+}
+.vote-simple .vote-toolbar .but {
+  display: inline-block;
+  padding: 4px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(255,255,255,0.75);
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+  border-bottom-color: #b3b3b3;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff',endColorstr='#ffe6e6e6',GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.05);
+  -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.05);
+  color: #fff;
+  background-color: #51a351;
+}
+.vote-simple .vote-toolbar .but:hover,
+.vote-simple .vote-toolbar .but:focus {
+  text-decoration: none;
+}
+.vote-login {
+  margin-top: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+.vote-login .vote-login-btn {
+  cursor: pointer;
+}
+/********* 投票  default  ************/
+.vote-default .vote-meta .option {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  border-radius: 2px;
+  margin-bottom: 12px;
+  background-color: #f4f8fa;
+  padding-right: 3px;
+}
+.vote-default .vote-meta .option .option-input {
+  top:12px;
+  margin-top: 0;
+}
+.vote-default .vote-meta .option .option-num {
+  display: block;
+  position: relative;
+  padding-right: 70px;
+}
+.vote-default .vote-meta .option .option-progress {
+  height: 12px;
+  border-radius: 2px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+  display: block;
+}
+.vote-default .vote-meta .option .option-progress-bar {
+  line-height: 12px;
+  float: left;
+  width: 0;
+  height: 100%;
+  font-size: 12px;
+  color: #fff;
+  text-align: center;
+  background-color: #337ab7;
+  -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+  -webkit-transition: width .6s ease;
+  -o-transition: width .6s ease;
+  transition: width .6s ease;
+}
+.vote-default .vote-meta .options .option:nth-child(1n) .option-progress-bar {
+  background-color: #058dc7;
+}
+/********* 红包  default  ************/
+.redenvelope-wrap {
+  border: 2px solid #5CB85C;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+.redenvelope-default {
+  display: block;
+  padding: 5px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.redenvelope-default span {
+  display: block;
+  position: relative;
+}
+.redenvelope-default .title{
+  font-size: 16px;
+  line-height: 20px;
+  margin-bottom: 5px;
+  color: #333;
+}
+.redenvelope-default .news {
+  padding-left: 85px;
+  height: 80px;
+  text-align: left;
+  font-size: 14px;
+  color: #8c8c8c;
+  max-height: 80px;
+  overflow: hidden;
+  text-indent: 0;
+  margin-top: 0;
+}
+.redenvelope-default .image {
+  width: 78px;
+  height: 78px;
+  position: absolute;
+  left: 0;
+}
