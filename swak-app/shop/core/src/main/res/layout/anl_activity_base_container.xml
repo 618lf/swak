@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Activity基类布局容器 -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_page_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <!-- 标题栏 -->
+    <com.swak.app.core.ui.WindowTitle
+        android:id="@+id/ll_page_title"
+        android:layout_width="match_parent"
+        android:background="@color/common_module_actionbar_bg"
+        android:layout_height="@dimen/anl_common_title_height_44dp"/>
+
+    <!-- 内容区域 -->
+    <FrameLayout
+        android:id="@+id/fl_page_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/common_module_common_bg"
+        android:layout_below="@+id/ll_page_title" />
+
+</RelativeLayout>

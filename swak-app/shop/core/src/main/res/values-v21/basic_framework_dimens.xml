@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 5.0 版本后lineSpacingExtra 最下边不占对应空间，5.0以前却会占 因此使用因方法作适配 author xmz -->
+    <dimen name="text_sp14_last_line_space">5dp</dimen>
+    <dimen name="text_sp17_last_line_space">7dp</dimen>
+</resources>

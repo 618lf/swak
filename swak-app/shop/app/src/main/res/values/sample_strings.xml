@@ -1,0 +1,201 @@
+<resources>
+
+    <string name="app_name">AjavaSample</string>
+    <string name="about_library">关于该控件</string>
+    <string name="about_author">关于开发者</string>
+
+    <!-- Android样例锦集label(开始) -->
+    <string name="MainActivity">Android样例锦集</string>
+    <string name="GuideActivity">引导界面</string>
+    <string name="WebPageActivity">网页界面</string>
+    <string name="FeedbackActivity">意见反馈</string>
+    <string name="PopDialogMenuActivity">底部泡泡菜单</string>
+    <string name="LineChartActivity">Achartengine带泡泡提示的曲线图</string>
+    <string name="ImageListviewActivity">异步加载图片+防错位DEMO</string>
+    <string name="CameraPictureActivity">直接启动摄像头拍照</string>
+    <string name="DBDemoActivity">Sqlite增删改查操作</string>
+    <string name="ZxingGenBinActivity">生成二维码/验证码</string>
+    <string name="ZxingSacnnerActivity">竖屏扫描二维码/条形码</string>
+    <string name="SOAP">调用WebService示例</string>
+    <string name="PhoneValidateCodeActivity">发送手机短信验证码</string>
+    <string name="ProgressBarActivity">垂直+水平+圆形进度条</string>
+    <string name="AutoGainFormActivity">自动获取表单数据示例</string>
+    <string name="AnimationInActivity">Activity切换过场动画示例</string>
+    <string name="SMSOperationActivity">发送短信/拦截示例</string>
+    <string name="BasicTestActivity">基本常用操作测试样例</string>
+    <string name="DrawerLayoutActivity">DrawerLayout侧滑菜单</string>
+    <string name="HVScorllListviewActivity">水平/垂直滚动+首行首列固定+翻页Listview</string>
+    <string name="PulldownViewActivity">下拉ScrollView背景回弹效果</string>
+    <string name="FadingActionBar">FadingActionBar官方DEMO</string>
+    <string name="PullToReresh">PullToReresh官方DEMO</string>
+    <string name="SquareAutoFitGridviewActivity">正方形Item的网格</string>
+    <string name="FileDownloadUploadActivity">带进度文件上传/下载</string>
+    <string name="ImageBlurActivity">图片高斯模糊效果JNI/Java实现</string>
+    <string name="LoadHTMLActivity">网页加载示例DEMO</string>
+    <string name="DialogEffectActivity">dialog各种特效DEMO</string>
+    <string name="NumberPbActivity">带数字的进度条样例</string>
+    <string name="BaiduLocationActivity">百度地图定位演示DEMO</string>
+    <string name="BaiduMarkerActivity">百度地图定位至指定经纬度+标注</string>
+    <string name="AudioManagerActivity">控制系统音量样例</string>
+    <string name="Lock9DemoActivity">九宫格解锁样例</string>
+    <string name="PictureViewerActivity">图片缩放查看器样例</string>
+    <string name="CamreaPictureDemoActivity">拍照/相册选择图片样例</string>
+    <string name="MainVPTabActivity">基于ViewPager实现的Tabs标签页效果样例 </string>
+    <string name="ScaleViewPagerActivity">ViewPager缩放切换动画效果样例 </string>
+    <string name="DynamicPageDemoActivity">模板动态构建页面样例</string>
+    <string name="VpAnimMainActivity">VP界面切换动画样例</string>
+    <string name="MPChartActivity">MPChart图表样例</string>
+    <string name="RecyclerViewActivity">RecyclerView样例一</string>
+    <string name="MainTabActivity">CoordinatorTabLayout样例</string>
+    <!-- Android样例锦集label(结束) -->
+
+
+    <!-- 短信验证码/拦截示例（开始） -->
+    <string name="sms_timer">获取验证码（%1$s）</string>
+    <!-- 短信验证码/拦截示例(结束) -->
+
+
+    <!-- 自动获取表单示例（开始） -->
+    <string name="tv_account">帐号：</string>
+    <string name="tv_password">密码：</string>
+    <string name="btn_show">显示</string>
+    <string name="tv_school">毕业院校：</string>
+    <string name="rg_sex">性别：</string>
+    <string name="sex_male">男</string>
+    <string name="sex_female">女</string>
+    <string name="tv_hoby">兴趣爱好：</string>
+    <string name="hoby_sleep">睡觉</string>
+    <string name="hoby_boll">打球</string>
+    <string name="hoby_read">看小说</string>
+    <string name="remark">备注</string>
+    <string name="hint_remark">请输入备注内容</string>
+    <string name="auto_gain_form_data">自动获取表单示例</string>
+    <string name="et_password_hint">请输入密码</string>
+    <string name="et_account_hint">请输入您的手机号\邮箱\用户名</string>
+    <string name="btn_auto_gaindata">提交表单</string>
+    <!-- 自动获取表单示例（结束） -->
+
+
+    <!-- 短信操作示例（开始） -->
+    <string name="tv_phonenumber">手机号码：</string>
+    <string name="et_phonenumber_hint">请输入需要拦截/发送的手机号</string>
+    <string name="tv_smscontent">短信内容</string>
+    <string name="tv_content">请输入要发送的短信内容</string>
+    <string name="btn_send">发送短信</string>
+    <string name="btn_bind">绑定拦截</string>
+    <string name="btn_choice">选择</string>
+    <!-- 短信操作示例（结束） -->
+
+
+    <!-- common意见反馈示例（开始） -->
+    <string name="btn_submit">提交</string>
+    <string name="hint_feedback">期待您的宝贵建议(1000字)</string>
+    <!-- common意见反馈示例（结束） -->
+
+
+    <!-- 基本操作示例（开始） -->
+    <string name="btn_opengps">强制打开GPS</string>
+    <string name="btn_call">直接拨打电话</string>
+    <string name="btn_photo">照片选择界面</string>
+    <string name="btn_carema">启动照相机</string>
+    <string name="btn_setting">到系统设置界面</string>
+    <string name="btn_contact">到联系人选择界面</string>
+    <!-- 基本操作示例（结束） -->
+
+
+    <!-- DrawerLayout抽屉菜单示例（开始） -->
+    <string name="drawer_close">关闭</string>
+    <string name="drawer_open">打开</string>
+    <!-- DrawerLayout抽屉菜单示例（结束） -->
+
+
+    <!-- 债券查询结果表头 -->
+    <string name="bound_search_result_head_zqmc">债券名称</string>
+    <string name="bound_search_result_head_zqjc">债券简称</string>
+    <string name="bound_search_result_head_zqdm">债券代码</string>
+    <string name="bound_search_result_head_fxjc">发行人简称</string>
+    <string name="bound_search_result_head_ksr">发行日期</string>
+    <string name="bound_search_result_head_fxjg">发行价格(元)</string>
+    <string name="bound_search_result_head_sjfxze">实际发行总额(亿元)</string>
+    <string name="bound_search_result_head_jxfs">计息方式</string>
+    <string name="bound_search_result_head_fxzq">付息周期/付息频率</string>
+    <string name="bound_search_result_head_pmll">票面利率(%)</string>
+    <string name="bound_search_result_head_lc">利差(%)</string>
+    <string name="bound_search_result_head_zjll">基准利率(%)</string>
+    <string name="bound_search_result_head_zqqx">证券期限</string>
+    <string name="bound_search_result_head_zqpj">信用评级一</string>
+    <string name="bound_search_result_head_ztpj">信用评级二</string>
+    <string name="bound_search_result_head_zqpjjg">评级机构一</string>
+    <string name="bound_search_result_head_ztpjjg">评级机构二</string>
+    <string name="bound_search_result_head_zqzwdjr">债券债务登记日</string>
+    <string name="bound_search_result_head_ltr">交易流通起始日</string>
+    <string name="bound_search_result_head_jzghr">交易流通终止日</string>
+    <string name="bound_search_result_head_qxr">起息日</string>
+    <string name="bound_search_result_head_dqr">兑付日</string>
+
+    <!-- 数据库增删改查界面 -->
+    <string name="title_favorite">我的收藏</string>
+    <string name="list_publish_date">2014/07/25</string>
+    <string name="list_category">【财经新闻】</string>
+    <string name="list_title">企业市场供给压力不足为惧企业市场供给压力不足为惧企业市场供给压力不足为惧</string>
+    <string name="menu_delete">删除</string>
+
+    <!-- ActionBar按钮 -->
+    <string name="action_about">关于</string>
+    <string name="action_scan">扫一扫</string>
+    <string name="action_search">搜索</string>
+    <string name="action_setting">设置</string>
+    <string name="action_favrate">收藏</string>
+    <string name="action_share">分享</string>
+    <string name="action_refresh">刷新</string>
+    <string name="action_submit">提交</string>
+    <string name="action_feedback">意见反馈</string>
+
+    <!-- 带回弹效果的ScrollView -->
+    <string name="add_attention">加关注</string>
+    <string name="user_post">职位：产品经理</string>
+    <string name="user_book">书单：25本</string>
+    <string name="user_name">Ajava攻城师</string>
+    <string name="user_des">谁能像优乐美一样把我捧在手心，我就能让他的儿子长的更帅女儿长的更漂亮</string>
+    <string name="user_recommend_tip">TA推荐的好书</string>
+
+    <!-- FadingActionBar官方DEMO -->
+    <string name="action_settings">Settings</string>
+    <string name="new_york_city">New York City</string>
+    <string name="activity_title_scrollview">ScrollView sample</string>
+    <string name="activity_title_listview">ListView sample</string>
+    <string name="activity_title_light_bg">Light background sample</string>
+    <string name="activity_title_light_ab">Light action bar sample</string>
+    <string name="activity_title_fragment">Fragment sample</string>
+    <string name="activity_title_no_parallax">No parallax sample</string>
+    <string name="activity_title_navigation">Navigation Drawer Example</string>
+    <string name="loren_ipsum">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, quis gravida magna mi a libero. Fusce vulputate eleifend sapien. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus. Nullam accumsan lorem in dui. Cras ultricies mi eu turpis hendrerit fringilla. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; In ac dui quis mi consectetuer lacinia. Nam pretium turpis et arcu. Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Sed aliquam ultrices mauris. Integer ante arcu, accumsan a, consectetuer eget, posuere ut, mauris. Praesent adipiscing. Phasellus ullamcorper ipsum rutrum nunc. Nunc nonummy metus. Vestibulum volutpat pretium libero. Cras id dui. Aenean ut eros et nisl sagittis vestibulum. Nullam nulla eros, ultricies sit amet, nonummy id, imperdiet feugiat, pede. Sed lectus. Donec mollis hendrerit risus. Phasellus nec sem in justo pellentesque facilisis. Etiam imperdiet imperdiet orci. Nunc nec neque. Phasellus leo dolor, tempus non, auctor et, hendrerit quis, nisi. Curabitur ligula sapien, tincidunt non, euismod vitae, posuere imperdiet, leo. Maecenas malesuada. Praesent congue erat at massa. Sed cursus turpis vitae tortor. Donec posuere vulputate arcu. Phasellus accumsan cursus velit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed aliquam, nisi quis porttitor congue, elit erat euismod orci, ac placerat dolor lectus quis orci. Phasellus consectetuer vestibulum elit. Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc. Vestibulum fringilla pede sit amet augue. In turpis. Pellentesque posuere. Praesent turpis. Aenean posuere, tortor sed cursus feugiat, nunc augue blandit nunc, eu sollicitudin urna dolor sagittis lacus. Donec elit libero, sodales nec, volutpat a, suscipit non, turpis. Nullam sagittis. Suspendisse pulvinar, augue ac venenatis condimentum, sem libero volutpat nibh, nec pellentesque velit pede quis nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce id purus. Ut varius tincidunt libero. Phasellus dolor. Maecenas vestibulum mollis diam. Pellentesque ut neque. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In dui magna, posuere eget, vestibulum et, tempor auctor, justo. In ac felis quis tortor malesuada pretium. Pellentesque auctor neque nec urna. Proin sapien ipsum, porta a, auctor quis, euismod ut, mi. Aenean viverra rhoncus pede. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut non enim eleifend felis pretium feugiat. Vivamus quis mi. Phasellus a est. Phasellus magna. In hac habitasse platea dictumst. Curabitur at lacus ac velit ornare lobortis. Curabitur a felis in nunc fringilla tristique.</string>
+    <string name="short_text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</string>
+    <string name="activity_title_header_overlay">Header Overlay Example</string>
+    <string name="activity_title_short_content">Short Content Example (ScrollView)</string>
+    <string name="choose_city">Choose a city</string>
+    <string name="action_change_dataset">Change dataset</string>
+    <string name="activity_title_webview">WebView sample</string>
+
+    <!-- Widget_PullToRefresh -->
+    <string name="filler_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sollicitudin mauris varius lacus porttitor eget blandit massa facilisis. Nulla pellentesque odio sed purus fermentum vitae viverra orci faucibus. Sed ullamcorper condimentum vulputate. Curabitur sit amet convallis velit. Vestibulum posuere eleifend risus ac adipiscing. Nam pulvinar nulla a velit faucibus imperdiet. Praesent eget nisi ac justo blandit sagittis. Maecenas at leo nisi, nec varius nisl.\nIn hac habitasse platea dictumst. Morbi neque tortor, vestibulum sed viverra a, luctus vel lorem. Nunc turpis eros, varius eget commodo et, euismod at eros. Sed tincidunt mi purus, vel posuere dui. Vestibulum ante lectus, porta sed mattis bibendum, scelerisque cursus sapien. Cras ultrices imperdiet fermentum. Aenean nisi nulla, euismod non blandit ac, dictum quis libero. Morbi consectetur tempor mollis. Suspendisse eget nunc arcu, vel ullamcorper augue. Integer malesuada, diam nec faucibus mollis, nisl velit euismod enim, ac mattis justo neque sit amet mauris. Vivamus pretium imperdiet pharetra.\nInteger sagittis augue sit amet lectus pulvinar sit amet commodo tortor mattis. Maecenas quis tellus eget ante eleifend sollicitudin non et nibh. Maecenas luctus euismod tristique. Fusce in odio nec diam blandit facilisis. Sed nec arcu eros. Vivamus quis tortor a metus tempus aliquam eget volutpat magna. Pellentesque id ultrices dolor. Sed blandit aliquet quam. Phasellus dapibus euismod vulputate. Aenean blandit, elit vitae vestibulum tincidunt, metus dui accumsan nulla, sit amet vehicula mauris lacus in est. Etiam dignissim pellentesque nulla vel malesuada. Cras vel lorem justo.\nSed condimentum nisl sit amet libero vestibulum hendrerit. Duis auctor tempus placerat. Proin velit ante, ornare nec dictum nec, hendrerit eu arcu. Etiam ut diam ornare quam venenatis pulvinar vitae vel leo. Vivamus consectetur, ante id interdum rhoncus, magna eros pulvinar lacus, a gravida nibh arcu vitae eros. Nulla scelerisque laoreet feugiat. Mauris sit amet gravida felis.\nNulla ac dolor sapien, vestibulum venenatis justo. Cras placerat velit vitae nibh pellentesque ultricies. Suspendisse adipiscing enim eu justo iaculis eu pretium urna fermentum. Duis porttitor nunc non nunc mattis vestibulum. Etiam elit tellus, feugiat in bibendum eget, adipiscing nec metus. Ut ut sem lacus, quis faucibus diam. Curabitur a nulla fermentum tortor dignissim posuere. Fusce faucibus ante ut sem imperdiet imperdiet eget vitae lorem. Etiam fringilla ornare ipsum, in sagittis quam ornare vitae. Nullam venenatis orci sit amet sapien adipiscing gravida. Proin turpis lectus, hendrerit vitae vehicula ut, auctor ac lectus. Pellentesque sollicitudin blandit ligula quis commodo. Mauris vulputate lectus in velit luctus aliquam. Quisque eget tincidunt elit. Quisque et augue quam, sed scelerisque eros.</string>
+
+    <!-- zxing(start) -->
+    <string name="placeHolder">placeHolder</string>
+    <string name="seekbar_add">+</string>
+    <string name="seekbar_minus">-</string>
+    <string name="create">生成</string>
+    <string name="scan_failed">扫描失败</string>
+    <string name="bottom_hint">建议与镜头保持10CM距离，尽量避免逆光和阴影</string>
+    <string name="top_hint">将条形码或二维码置于取景框内系统会自动扫描</string>
+    <string name="cancel">取消</string>
+    <string name="msg_camera_framework_bug">抱歉，Android相机出现问题。您可能需要重启设备。</string>
+    <string name="button_ok">确定</string>
+    <!-- zxing(end) -->
+
+    <!-- 九宫格锁屏控件（开始） -->
+    <string name="normal_demo">Normal Demo</string>
+    <string name="android_l_style">Android L Style</string>
+    <!-- 九宫格锁屏控件（结束） -->
+
+</resources>

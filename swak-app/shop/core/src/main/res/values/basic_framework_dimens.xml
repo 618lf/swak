@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 自定义dialog特效对话框 -->
+    <dimen name="anl_dialog_padding">25dp</dimen>
+
+    <!-- 多行文本5.0以前不需要间隙-->
+    <dimen name="text_sp14_last_line_space">0dp</dimen>
+</resources>

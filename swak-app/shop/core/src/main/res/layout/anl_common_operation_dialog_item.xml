@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 共通机能-操作对话框item条目布局 -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/common_module_selector_btn_white_grally_nobold"
+                android:paddingLeft="@dimen/anl_common_padding_48px"
+    >
+
+    <!-- 左侧标题 -->
+
+    <LinearLayout
+        android:id="@+id/ll_item_left"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/tv_item_ltitle1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="left|center_vertical"
+            android:maxLines="2"
+            android:text=""
+            android:visibility="gone"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_item_ltitle2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:ellipsize="end"
+            android:gravity="left|center_vertical"
+            android:maxLines="2"
+            android:text=""
+            android:visibility="gone"
+            android:textColor="#999999"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <!-- 中间标题 -->
+
+    <TextView
+        android:id="@+id/tv_item_center_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text=""
+        android:visibility="gone"
+        android:textColor="@color/anl_black"
+        android:textSize="20sp" />
+
+    <!-- 右侧标题+图标 -->
+
+    <LinearLayout
+        android:id="@+id/ll_item_right"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:gravity="center_vertical"
+        android:layout_marginRight="@dimen/anl_common_padding_48px"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/tv_item_rtitle1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text=""
+            android:visibility="gone"
+            android:textColor="#359df5"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/ib_item_right_go"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:background="@android:color/transparent"
+            android:visibility="gone"
+            android:src="@drawable/anl_right_arrow_bold" />
+
+        <ImageButton
+            android:id="@+id/ib_item_right_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:visibility="gone"
+            android:background="@android:color/transparent"
+            android:src="@drawable/anl_item_choose_icon" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/buttom_line"
+        android:layout_width="match_parent"
+        android:layout_height="0.33dp"
+        android:layout_alignParentBottom="true"
+        android:background="#dddddd"
+        android:visibility="visible" />
+
+</RelativeLayout>

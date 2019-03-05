@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- view_pull_refresh(start) -->
+    <declare-styleable name="Widget_PullToRefresh">
+
+        <!-- A drawable to use as the background of the Refreshable View -->
+        <attr name="anl_ptrRefreshableViewBackground" format="reference|color" />
+        <!-- A drawable to use as the background of the Header and Footer Loading Views -->
+        <attr name="anl_ptrHeaderBackground" format="reference|color" />
+        <!-- Text Color of the Header and Footer Loading Views -->
+        <attr name="anl_ptrHeaderTextColor" format="reference|color" />
+        <!-- Text Color of the Header and Footer Loading Views Sub Header -->
+        <attr name="anl_ptrHeaderSubTextColor" format="reference|color" />
+        <!-- Mode of Pull-to-Refresh that should be used -->
+        <attr name="anl_ptrMode">
+            <flag name="disabled" value="0x0" />
+            <flag name="pullFromStart" value="0x1" />
+            <flag name="pullFromEnd" value="0x2" />
+            <flag name="both" value="0x3" />
+            <flag name="manualOnly" value="0x4" />
+            <!-- These last two are depreacted -->
+            <flag name="pullDownFromTop" value="0x1" />
+            <flag name="pullUpFromBottom" value="0x2" />
+        </attr>
+
+        <!-- Whether the Indicator overlay(s) should be used -->
+        <attr name="anl_ptrShowIndicator" format="reference|boolean" />
+        <!-- Drawable to use as Loading Indicator. Changes both Header and Footer. -->
+        <attr name="anl_ptrDrawable" format="reference" />
+        <!-- Drawable to use as Loading Indicator in the Header View. Overrides value set in ptrDrawable. -->
+        <attr name="anl_ptrDrawableStart" format="reference" />
+        <!-- Drawable to use as Loading Indicator in the Footer View. Overrides value set in ptrDrawable. -->
+        <attr name="anl_ptrDrawableEnd" format="reference" />
+        <!-- Whether Android's built-in Over Scroll should be utilised for Pull-to-Refresh. -->
+        <attr name="anl_ptrOverScroll" format="reference|boolean" />
+        <!-- Base text color, typeface, size, and style for Header and Footer Loading Views -->
+        <attr name="anl_ptrHeaderTextAppearance" format="reference" />
+        <!-- Base text color, typeface, size, and style for Header and Footer Loading Views Sub Header -->
+        <attr name="anl_ptrSubHeaderTextAppearance" format="reference" />
+        <!-- Style of Animation should be used displayed when pulling. -->
+        <attr name="anl_ptrAnimationStyle">
+            <flag name="rotate" value="0x0" />
+            <flag name="flip" value="0x1" />
+        </attr>
+        <!-- Whether the user can scroll while the View is Refreshing -->
+        <attr name="anl_ptrScrollingWhileRefreshingEnabled" format="reference|boolean" />
+        <!--
+        	Whether PullToRefreshListView has it's extras enabled. This allows the user to be
+        	able to scroll while refreshing, and behaves better. It acheives this by adding
+        	Header and/or Footer Views to the ListView.
+        -->
+        <attr name="anl_ptrListViewExtrasEnabled" format="reference|boolean" />
+
+        <!--
+        	Whether the Drawable should be continually rotated as you pull. This only
+        	takes effect when using the 'Rotate' Animation Style.
+        -->
+        <attr name="anl_ptrRotateDrawableWhilePulling" format="reference|boolean" />
+        <!-- BELOW HERE ARE DEPRECEATED. DO NOT USE. -->
+        <attr name="anl_ptrAdapterViewBackground" format="reference|color" />
+        <attr name="anl_ptrDrawableTop" format="reference" />
+        <attr name="anl_ptrDrawableBottom" format="reference" />
+    </declare-styleable>
+    <!-- view_pull_refresh(end) -->
+
+
+    <!-- Widget_SlidingMenu(start) -->
+    <declare-styleable name="Widget_SlidingMenu">
+        <attr name="anl_mode">
+            <enum name="left" value="0" />
+            <enum name="right" value="1" />
+        </attr>
+        <attr name="anl_viewAbove" format="reference" />
+        <attr name="anl_viewBehind" format="reference" />
+        <attr name="anl_behindOffset" format="dimension" />
+        <attr name="anl_behindWidth" format="dimension" />
+        <attr name="anl_behindScrollScale" format="float" />
+        <attr name="anl_touchModeAbove">
+            <enum name="margin" value="0" />
+            <enum name="fullscreen" value="1" />
+            <enum name="none" value="2" />
+        </attr>
+        <attr name="anl_touchModeBehind">
+            <enum name="margin" value="0" />
+            <enum name="fullscreen" value="1" />
+            <enum name="none" value="2" />
+        </attr>
+        <attr name="anl_shadowDrawable" format="reference" />
+        <attr name="anl_shadowWidth" format="dimension" />
+        <attr name="anl_fadeEnabled" format="boolean" />
+        <attr name="anl_fadeDegree" format="float" />
+        <attr name="anl_selectorEnabled" format="boolean" />
+        <attr name="anl_selectorDrawable" format="reference" />
+    </declare-styleable>
+    <!-- Widget_SlidingMenu(end) -->
+
+
+    <!-- 圆角进度条（开始） -->
+    <declare-styleable name="Widget_RoundProgressBar">
+        <attr name="anl_roundColor" format="color" />
+        <attr name="anl_roundProgressColor" format="color" />
+        <attr name="anl_roundWidth" format="dimension"></attr>
+        <attr name="anl_textColor" format="color" />
+        <attr name="anl_textSize" format="dimension" />
+        <attr name="anl_max" format="integer"></attr>
+        <attr name="anl_textIsDisplayable" format="boolean"></attr>
+        <attr name="anl_style">
+            <enum name="STROKE" value="0"></enum>
+            <enum name="FILL" value="1"></enum>
+        </attr>
+    </declare-styleable>
+    <!-- 圆角进度条（结束） -->
+
+
+    <!-- 圆形图片（开始） -->
+    <declare-styleable name="Widget_RoundedImageView">
+        <attr name="anl_border_thickness" format="dimension"></attr>
+        <attr name="anl_border_outside_color" format="color" />
+        <attr name="anl_border_inside_color" format="color" />
+    </declare-styleable>
+    <!-- 圆形图片（结束） -->
+
+
+    <!-- 圆角图片（开始） -->
+    <declare-styleable name="Widget_RoundAngleImageView">
+        <attr name="anl_rWidth" format="dimension" />
+        <attr name="anl_rHeight" format="dimension" />
+    </declare-styleable>
+    <!-- 圆角图片（结束） -->
+
+
+    <!-- 滑动删除列表 -->
+    <declare-styleable name="Widget_SwipeListviewStyle">
+        <attr name="anl_right_width" format="dimension"></attr>
+    </declare-styleable>
+
+    <!-- Widget_TextView（RadioButton/CheckBox）共通value（开始） -->
+    <declare-styleable name="Widget_TextView">
+        <attr name="anl_key" format="string" />
+        <attr name="anl_value" format="string" />
+    </declare-styleable>
+    <!-- Widget_TextView（RadioButton/CheckBox）共通value（结束） -->
+
+
+    <!-- 下拉背景图回弹Scrollview（开始） -->
+    <declare-styleable name="Widget_PullScrollView">
+        <attr name="anl_header" format="reference" />
+        <attr name="anl_headerHeight" format="dimension" />
+        <attr name="anl_headerVisibleHeight" format="dimension" />
+    </declare-styleable>
+    <!-- 下拉背景图回弹Scrollview（结束） -->
+
+
+    <!-- 中英文混排对齐TextView（开始） -->
+    <declare-styleable name="Widget_AlignTextView">
+        <attr name="anl_align" format="string" />
+        <attr name="anl_text" format="string" />
+    </declare-styleable>
+    <!-- 中英文混排对齐TextView（结束） -->
+
+
+    <!-- 自定义软键盘（开始） -->
+    <declare-styleable name="Widget_Keyboard">
+        <attr name="anl_xml" format="reference" />
+        <attr name="anl_randomkeys" format="reference|boolean"></attr>
+    </declare-styleable>
+    <!-- 自定义软键盘（结束） -->
+
+
+    <!-- 带数字的进度条（开始） -->
+    <declare-styleable name="Widget_NumberProgressBar">
+        <attr name="anl_progress_current" format="integer" />
+        <attr name="anl_progress_max" format="integer" />
+        <attr name="anl_progress_unreached_color" format="color" />
+        <attr name="anl_progress_reached_color" format="color" />
+        <attr name="anl_progress_reached_bar_height" format="dimension" />
+        <attr name="anl_progress_unreached_bar_height" format="dimension" />
+        <attr name="anl_progress_label" format="string" />
+        <attr name="anl_progress_text_size" format="dimension" />
+        <attr name="anl_progress_text_color" format="color" />
+        <attr name="anl_progress_text_background_radius" format="dimension" />
+        <attr name="anl_progress_text_background_color" format="color" />
+        <attr name="anl_progress_text_stroke_color" format="color" />
+        <attr name="anl_progress_text_stroke_width" format="dimension" />
+        <attr name="anl_progress_text_offset" format="dimension" />
+        <attr name="anl_progress_text_visibility" format="enum">
+            <enum name="visible" value="0" />
+            <enum name="invisible" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="Widget_Themes">
+        <attr name="anl_numberProgressBarStyle" format="reference" />
+    </declare-styleable>
+    <!-- 带数字的进度条（结束） -->
+
+
+    <!-- 九宫格锁屏控件（开始） -->
+    <declare-styleable name="Widget_Lock9View">
+        <attr name="anl_lock9_nodeSrc" format="color|reference" />
+        <attr name="anl_lock9_nodeOnSrc" format="color|reference" />
+        <attr name="anl_lock9_nodeSize" format="dimension" />
+        <attr name="anl_lock9_nodeAreaExpand" format="dimension" />
+        <attr name="anl_lock9_nodeOnAnim" format="reference" />
+        <attr name="anl_lock9_lineColor" format="color" />
+        <attr name="anl_lock9_lineWidth" format="dimension" />
+        <attr name="anl_lock9_padding" format="dimension" />
+        <attr name="anl_lock9_spacing" format="dimension" />
+        <attr name="anl_lock9_enableVibrate" format="boolean" />
+        <attr name="anl_lock9_vibrateTime" format="integer" />
+    </declare-styleable>
+    <!-- 九宫格锁屏控件（结束） -->
+
+
+    <!-- ViewPager指示器 -->
+    <declare-styleable name="Widget_PagerSlidingTabStrip">
+        <attr name="anl_pstsTabSelectedTextColor" format="color" />
+        <attr name="anl_pstsIndicatorColor" format="color" />
+        <attr name="anl_pstsUnderlineColor" format="color" />
+        <attr name="anl_pstsDividerColor" format="color" />
+        <attr name="anl_pstsTabTextSize" format="dimension" />
+        <attr name="anl_pstsIndicatorHeight" format="dimension" />
+        <attr name="anl_pstsUnderlineHeight" format="dimension" />
+        <attr name="anl_pstsDividerPadding" format="dimension" />
+        <attr name="anl_pstsTabPaddingLeftRight" format="dimension" />
+        <attr name="anl_pstsScrollOffset" format="dimension" />
+        <attr name="anl_pstsTabBackground" format="reference" />
+        <attr name="anl_pstsShouldExpand" format="boolean" />
+        <attr name="anl_pstsTextAllCaps" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="Widget_MaxHeightScrollView">
+        <attr name="maxRatioByScreenHeight" format="reference|float" />
+        <attr name="maxHeight" format="reference|dimension" />
+    </declare-styleable>
+
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 共通机能-标题栏[黑色]分享按钮选择器（nomal+pressed+checked/selected），分享暂时不需要选中状态，默认和常态一样 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/anl_common_nav_share_black_p" android:state_pressed="true"/>
+<!--     <item android:drawable="@drawable/anl_common_nav_share_black_p" android:state_checked="true"/> -->
+<!--     <item android:drawable="@drawable/anl_common_nav_share_black_p" android:state_selected="true"/> -->
+    <item android:drawable="@drawable/anl_common_nav_share_black_n"></item>
+
+</selector>

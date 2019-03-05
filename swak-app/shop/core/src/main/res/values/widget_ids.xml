@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- view_pull_refresh(start) -->
+    <item name="widget_gridview" type="id"/>
+    <item name="widget_webview" type="id"/>
+    <item name="widget_scrollview" type="id"/>
+    <item name="widget_viewpager" type="id"/>
+    <!-- view_pull_refresh(end) -->
+
+
+    <!-- table_fix_headers(start) -->
+    <item name="widget_tag_type_view" type="id"/>
+    <item name="widget_tag_row" type="id"/>
+    <item name="widget_tag_column" type="id"/>
+    <!-- table_fix_headers(end) -->
+
+
+    <!--SwipeRefresh系列id -->
+    <item name="widget_srl_listview" type="id"/>
+    <item name="widget_srl_scrollview" type="id"/>
+
+</resources>

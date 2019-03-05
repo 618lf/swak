@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 共通机能-蓝色按钮选择器 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true" android:state_pressed="false" android:drawable="@drawable/common_module_shape_blue_btn_n" />
+    <item android:state_focused="true" android:state_pressed="true" android:drawable="@drawable/common_module_shape_blue_btn_p" />
+    <item android:state_focused="false" android:state_pressed="false" android:drawable="@drawable/common_module_shape_blue_btn_n" />
+    <item android:state_pressed="true" android:drawable="@drawable/common_module_shape_blue_btn_p" />
+</selector>

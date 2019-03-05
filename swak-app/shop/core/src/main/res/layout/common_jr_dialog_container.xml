@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_dialog_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <!-- 为了可以做动画需外界包裹一层全屏的容器-->
+    <LinearLayout
+        android:id="@+id/ll_jr_dialog_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@color/anl_white"
+        android:orientation="vertical">
+
+        <!-- windows标题（带close） -->
+        <RelativeLayout
+            android:id="@+id/rl_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#f5f5f5"
+            android:minHeight="70dp"
+            android:paddingLeft="@dimen/common_module_padding_48px"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tv_main_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/ib_close"
+                android:gravity="left|center_vertical"
+                android:paddingTop="@dimen/common_module_padding_48px"
+                android:text=""
+                android:textColor="@color/anl_black_333333"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_sub_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_main_title"
+                android:layout_marginTop="6dp"
+                android:layout_toLeftOf="@+id/ib_close"
+                android:gravity="left|center_vertical"
+                android:paddingBottom="@dimen/common_module_padding_48px"
+                android:text=""
+                android:textColor="@color/anl_black_666666"
+                android:textSize="14sp"
+                android:visibility="visible" />
+
+            <ImageButton
+                android:id="@+id/ib_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
+                android:src="@drawable/anl_selector_common_grally_close_btn" />
+
+        </RelativeLayout>
+
+        <!--限高滚动区域 -->
+        <!--<com.jd.jrapp.library.widget.scrollview.MaxHeightScrollView xmlns:app="http://schemas.android.com/apk/res-auto"-->
+            <!--android:id="@+id/sv_msg_container"-->
+            <!--style="@style/scrollbar_dialog_style"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:visibility="visible"-->
+            <!--app:maxHeight="280dp">-->
+
+            <!--窗体内容区域区域 -->
+            <LinearLayout
+                android:id="@+id/ll_dialog_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+
+        <!--</com.jd.jrapp.library.widget.scrollview.MaxHeightScrollView>-->
+
+        <!-- 水平展开操作按钮[确定]/[取消] -->
+        <LinearLayout
+            android:id="@+id/ll_h_opreation_btns"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/anl_shape_common_btn_white_bold_n"
+            android:orientation="horizontal"
+            android:padding="0.5dp"
+            android:visibility="gone" />
+
+        <!-- 垂直展开操作按钮[确定]/[取消] -->
+        <LinearLayout
+            android:id="@+id/ll_v_opreation_btns"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/anl_shape_common_btn_white_bold_n"
+            android:orientation="vertical"
+            android:visibility="gone" />
+
+        <!-- 底部占位View -->
+        <android.support.v4.widget.Space
+            android:id="@+id/space_buttom"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="#F5F5F5"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</RelativeLayout>

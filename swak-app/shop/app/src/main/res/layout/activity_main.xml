@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/anl_white"
+    tools:context=".MainActivity">
+
+    <ListView
+        android:id="@+id/lv_demos"
+        style="@style/Anl_CommonListStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:choiceMode="singleChoice"
+        android:divider="@color/anl_lightgray"
+        android:dividerHeight="1.5dp"
+        android:focusable="true"
+        android:scrollbars="vertical" />
+
+</RelativeLayout>

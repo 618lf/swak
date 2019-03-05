@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--共通对话框关闭消失动画 -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shareInterpolator="@android:anim/accelerate_interpolator">
+    <translate
+        android:duration="400"
+        android:fromYDelta="0%p"
+        android:toYDelta="100%p" />
+
+    <alpha
+        android:duration="400"
+        android:fromAlpha="1.0"
+        android:toAlpha="0.25" />
+
+    <scale
+        android:duration="400"
+        android:fromXScale="1.0"
+        android:fromYScale="1.0"
+        android:pivotX="50%p"
+        android:pivotY="50%p"
+        android:toXScale="0.75"
+        android:toYScale="0.75" />
+</set>

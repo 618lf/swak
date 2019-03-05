@@ -1,0 +1,190 @@
+<!--
+  ~     Android基础开发个人积累、沉淀、封装、整理共通
+  ~     Copyright (c) 2016. 曾繁添 <zftlive@163.com>
+  ~     Github：https://github.com/zengfantian || http://git.oschina.net/zftlive
+  ~
+  ~     Licensed under the Apache License, Version 2.0 (the "License");
+  ~     you may not use this file except in compliance with the License.
+  ~     You may obtain a copy of the License at
+  ~
+  ~         http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~     Unless required by applicable law or agreed to in writing, software
+  ~     distributed under the License is distributed on an "AS IS" BASIS,
+  ~     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~     See the License for the specific language governing permissions and
+  ~     limitations under the License.
+  -->
+
+<resources>
+
+    <style name="Widget_FullScreen">
+
+        <!-- 设置无标题 -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 设置全屏 -->
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="Widget_ProgressBar_Mini" parent="@android:style/Widget.ProgressBar.Horizontal">
+        <item name="android:maxHeight">50dip</item>
+        <item name="android:minHeight">8dip</item>
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:indeterminateDrawable">@android:drawable/progress_indeterminate_horizontal</item>
+        <item name="android:progressDrawable">@drawable/widget_layer_list_progressbar_mini</item>
+    </style>
+
+    <!-- 自定义CheckBox样式 -->
+    <style name="Widget_Checkbox" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:button">@drawable/widget_selector_checkbox</item>
+    </style>
+
+    <!-- 自定义软键盘弹出动画样式 -->
+    <style name="Widget_KeyboardAnimationFade">
+        <item name="android:windowEnterAnimation">@anim/widget_kb_dialog_enter</item>
+        <item name="android:windowExitAnimation">@anim/widget_kb_dialog_exit</item>
+    </style>
+
+    <!-- 自定义dialog特效对话框样式（开始） -->
+    <style name="Widget_DialogWindowTitle">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/widget_text_color</item>
+    </style>
+
+    <style name="Widget_DialogTran" parent="android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:backgroundDimAmount">0.4</item>
+    </style>
+
+    <style name="Widget_Dialog_Untran" parent="Widget_DialogTran">
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="Widget_Dialog_Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:background">@drawable/widget_selector_dialog_effect_btn</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <!-- 自定义dialog特效对话框样式（结束） -->
+
+
+    <!-- 带数字的进度条（开始） -->
+    <style name="Widget_NumberProgressBar_Default">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="anl_progress_max">100</item>
+        <item name="anl_progress_current">0</item>
+        <item name="anl_progress_unreached_color">#CCCCCC</item>
+        <item name="anl_progress_reached_color">#3498DB</item>
+        <item name="anl_progress_text_size">10sp</item>
+        <item name="anl_progress_text_color">#3498DB</item>
+        <item name="anl_progress_reached_bar_height">1.5dp</item>
+        <item name="anl_progress_unreached_bar_height">0.75dp</item>
+    </style>
+
+    <style name="Widget_NumberProgressBar_Passing_Green">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="anl_progress_max">100</item>
+        <item name="anl_progress_current">0</item>
+        <item name="anl_progress_unreached_color">#CCCCCC</item>
+        <item name="anl_progress_reached_color">#70A800</item>
+        <item name="anl_progress_text_size">10sp</item>
+        <item name="anl_progress_text_color">#70A800</item>
+        <item name="anl_progress_reached_bar_height">1.5dp</item>
+        <item name="anl_progress_unreached_bar_height">0.75dp</item>
+    </style>
+
+    <style name="Widget_NumberProgressBar_Beauty_Red">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="anl_progress_max">100</item>
+        <item name="anl_progress_current">0</item>
+        <item name="anl_progress_unreached_color">#CCCCCC</item>
+        <item name="anl_progress_reached_color">#FF3D7F</item>
+        <item name="anl_progress_text_size">10sp</item>
+        <item name="anl_progress_text_color">#FF3D7F</item>
+        <item name="anl_progress_reached_bar_height">1.5dp</item>
+        <item name="anl_progress_unreached_bar_height">0.75dp</item>
+    </style>
+
+    <style name="Widget_NumberProgressBar_Warning_Red">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="anl_progress_max">100</item>
+        <item name="anl_progress_current">0</item>
+        <item name="anl_progress_unreached_color">#CCCCCC</item>
+        <item name="anl_progress_reached_color">#E74C3C</item>
+        <item name="anl_progress_text_size">10sp</item>
+        <item name="anl_progress_text_color">#E74C3C</item>
+        <item name="anl_progress_reached_bar_height">1.5dp</item>
+        <item name="anl_progress_unreached_bar_height">0.75dp</item>
+    </style>
+
+    <style name="Widget_NumberProgressBar_Relax_Blue">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="anl_progress_max">100</item>
+        <item name="anl_progress_current">0</item>
+        <item name="anl_progress_unreached_color">#CCCCCC</item>
+        <item name="anl_progress_reached_color">#6DBCDB</item>
+        <item name="anl_progress_text_size">10sp</item>
+        <item name="anl_progress_text_color">#6DBCDB</item>
+        <item name="anl_progress_reached_bar_height">1.5dp</item>
+        <item name="anl_progress_unreached_bar_height">0.75dp</item>
+    </style>
+
+    <style name="Widget_NumberProgressBar_Grace_Yellow">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="anl_progress_max">100</item>
+        <item name="anl_progress_current">0</item>
+        <item name="anl_progress_unreached_color">#CCCCCC</item>
+        <item name="anl_progress_reached_color">#FFC73B</item>
+        <item name="anl_progress_text_size">10sp</item>
+        <item name="anl_progress_text_color">#FFC73B</item>
+        <item name="anl_progress_reached_bar_height">1.5dp</item>
+        <item name="anl_progress_unreached_bar_height">0.75dp</item>
+    </style>
+
+    <style name="Widget_NumberProgressBar_Funny_Orange">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="anl_progress_max">100</item>
+        <item name="anl_progress_current">0</item>
+        <item name="anl_progress_unreached_color">#CCCCCC</item>
+        <item name="anl_progress_reached_color">#FF530D</item>
+        <item name="anl_progress_text_size">10sp</item>
+        <item name="anl_progress_text_color">#FF530D</item>
+        <item name="anl_progress_reached_bar_height">1.5dp</item>
+        <item name="anl_progress_unreached_bar_height">0.75dp</item>
+    </style>
+
+    <style name="Widget_NumberProgressBar_Twinkle_Night">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="anl_progress_max">100</item>
+        <item name="anl_progress_current">0</item>
+        <item name="anl_progress_unreached_color">#CCCCCC</item>
+        <item name="anl_progress_reached_color">#ECF0F1</item>
+        <item name="anl_progress_text_size">10sp</item>
+        <item name="anl_progress_text_color">#ECF0F1</item>
+        <item name="anl_progress_reached_bar_height">1.5dp</item>
+        <item name="anl_progress_unreached_bar_height">0.75dp</item>
+    </style>
+    <!-- 带数字的进度条（结束） -->
+
+</resources>

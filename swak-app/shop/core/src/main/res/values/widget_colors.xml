@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- table_fix_headers(start) -->
+    <color name="widget_shadow_start">#80000000</color>
+    <color name="widget_shadow_end">#00000000</color>
+    <color name="widget_item_n">#ffffff</color>
+    <color name="widget_item_p">#fafafa</color>
+    <color name="widget_table_header">#d7d7d7</color>
+    <!-- table_fix_headers(end) -->
+
+    <!-- 自定义软键盘背景颜色 -->
+    <drawable name="widget_key_normal_color">#fcfcfc</drawable>
+    <drawable name="widget_key_selected_color">#b8bcc0</drawable>
+    <drawable name="widget_opkey_selected_color">#cbcfd5</drawable>
+    <drawable name="widget_keyboard_bg_color">#acb3b6</drawable>
+
+    <!-- 自定义dialog特效对话框样式 -->
+    <color name="widget_text_color">#FFFFFF</color>
+    <color name="widget_divider_color">#11000000</color>
+    <color name="widget_msg_color">#FFFFFFFF</color>
+    <color name="widget_dialog_bg">#ffe74c3c</color>
+    <color name="widget_btn_press_color">#66000000</color>
+    <color name="widget_btn_unpress_color">#22000000</color>
+
+</resources>

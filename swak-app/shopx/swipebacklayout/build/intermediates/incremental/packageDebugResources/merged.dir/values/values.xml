@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">library</string>
+    <style name="Theme.Swipe.Back.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+    <declare-styleable name="SwipeBackLayout">
+        <attr format="float" name="swipeBackFactor"/>
+        <attr format="integer" name="maskAlpha"/>
+        <attr format="boolean" name="isSwipeFromEdge"/>
+        <attr name="directionMode">
+            <enum name="left" value="1"/>
+            <enum name="right" value="2"/>
+            <enum name="top" value="4"/>
+            <enum name="bottom" value="8"/>
+        </attr>
+    </declare-styleable>
+</resources>

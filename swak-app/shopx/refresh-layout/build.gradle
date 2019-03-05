@@ -1,0 +1,80 @@
+apply plugin: 'com.android.library'
+
+android {
+
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+// 打包源码jar
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    failOnError  false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+
+// 打包文档jar
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestImplementation 'junit:junit:4.12'
+    //noinspection GradleDependency
+    implementation 'com.android.support:support-annotations:26+'
+    //noinspection GradleDependency,GradleCompatible
+    implementation('com.android.support:support-v4:22.1.0') {
+        exclude group: 'com.android.support'
+    }
+    //noinspection GradleDependency,GradleCompatible
+    implementation('com.android.support:recyclerview-v7:21.0.0') {
+        exclude group: 'com.android.support'
+    }
+    implementation('com.android.support:design:26+') {
+        exclude group: 'com.android.support'
+    }
+}
+//
+//publish {
+//    userOrg = 'scwang90'
+//    groupId = 'com.scwang.smartrefresh'
+//    artifactId = 'SmartRefreshLayout'
+//    version = '1.1.0-alpha-4'
+//    description = 'An intelligent refresh layout'
+//    website = "https://github.com/scwang90/${rootProject.name}"
+//}
