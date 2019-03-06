@@ -143,12 +143,24 @@ public class DataSourceProperties {
 		if (!StringUtils.isBlank(driverClassName) || db == null) {
 			return;
 		}
-		if (db == Database.mysql) {
-			this.driverClassName = "com.mysql.cj.jdbc.Driver";
+		if (db == Database.mysql || db == Database.sharding) {
+			this.driverFitMysql();
 		} else if (db == Database.h2) {
 			this.driverClassName = "org.h2.Driver";
-		} else if (db == Database.sharding) {
+		}
+	}
+
+	// mysql 驱动的自动发现
+	private void driverFitMysql() {
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			this.driverClassName = "com.mysql.cj.jdbc.Driver";
+		} catch (ClassNotFoundException e) {
+		}
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			this.driverClassName = "com.mysql.jdbc.Driver";
+		} catch (ClassNotFoundException e) {
 		}
 	}
 
