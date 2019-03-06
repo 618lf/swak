@@ -58,7 +58,7 @@ public class FirstStartActivity extends BaseActivity {
                 //设置标识表示app不再是第一次启动,我为了测试,数据有效期为一天,实际可以将ACache.TIME_DAY去掉,也可以用SPTools,对应的也的做出相应修改
                 ACache.get(getContext()).put(AppConstant.FIRST_TIME, "true", ACache.TIME_DAY);
                 SPTools.put(getContext(), AppConstant.FIRST_TIME, false);
-                //MainActivity.startAction(context);
+                MainActivity.startAction(getContext());
             }
         });
     }

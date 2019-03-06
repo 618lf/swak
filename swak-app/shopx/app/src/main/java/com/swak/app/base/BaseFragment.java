@@ -29,11 +29,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends FragmentBase
     protected AntiShake antiShake;//防止重复点击
 
     //获取布局文件
-    protected abstract int getLayoutId();
-
-    //简单页面无需mvp就不用管此方法即可,完美兼容各种实际场景的变通
-    // mPresenter.setVM(this);
-    public abstract void initPresenter();
+    protected abstract int bindLayout();
 
     //初始化view
     protected abstract void initView(Bundle savedInstanceState);
@@ -41,8 +37,8 @@ public abstract class BaseFragment<T extends BasePresenter> extends FragmentBase
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (rootView == null && getLayoutId() != 0) {
-            rootView = inflater.inflate(getLayoutId(), container, false);
+        if (rootView == null && bindLayout() != 0) {
+            rootView = inflater.inflate(bindLayout(), container, false);
             unbinder = ButterKnife.bind(this, rootView);
         }
         mRxManager = new RxManager();
@@ -58,6 +54,12 @@ public abstract class BaseFragment<T extends BasePresenter> extends FragmentBase
         return rootView;
     }
 
+    //简单页面无需mvp就不用管此方法即可,完美兼容各种实际场景的变通
+    public void initPresenter() {
+        if (mPresenter != null) {
+            ((BasePresenter) mPresenter).setVM(this);
+        }
+    }
 
     @Override
     public void onDestroyView() {

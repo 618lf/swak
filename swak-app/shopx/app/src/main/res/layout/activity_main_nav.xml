@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/whitesmoke">
+
+    <FrameLayout
+        android:id="@+id/main_nav_head_layout"
+        android:layout_width="match_parent"
+        android:layout_height="173dp">
+
+        <ImageView
+            android:id="@+id/main_nav_bg_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@mipmap/homepage_header"/>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/main_nav_community"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/hight_48"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/selectorbtn_white_whitesmoke"
+        android:drawablePadding="@dimen/hight_15"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="圈子"
+        android:textSize="@dimen/font_15" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_px"
+        android:background="@color/silver"/>
+
+    <TextView
+        android:id="@+id/main_nav_scan_address"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/hight_48"
+        android:background="@drawable/selectorbtn_white_whitesmoke"
+        android:drawablePadding="@dimen/hight_15"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="关于我们"
+        android:textSize="@dimen/font_15" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_px"
+        android:background="@color/silver"/>
+    <TextView
+        android:id="@+id/main_nav_feedback"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/hight_48"
+        android:background="@drawable/selectorbtn_white_whitesmoke"
+        android:drawablePadding="@dimen/hight_15"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="问题反馈"
+        android:textSize="@dimen/font_15" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_px"
+        android:background="@color/silver"/>
+    <TextView
+        android:id="@+id/main_nav_exit"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/hight_48"
+        android:background="@drawable/selectorbtn_white_whitesmoke"
+        android:drawablePadding="@dimen/hight_15"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="退出应用"
+        android:textSize="@dimen/font_15" />
+
+</LinearLayout>
