@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 图片点击变色选择器[普通50%透明度]+[按下70%透明度] -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/common_module_black_70_alpha" android:state_pressed="true"/>
+    <item android:drawable="@color/common_module_black_50_alpha"/>
+</selector>

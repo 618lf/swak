@@ -1,0 +1,11 @@
+ext {
+
+    android = [compileSdkVersion: 27,
+               buildToolsVersion: "28.0.3",
+               applicationId    : "com.swak.app",
+               minSdkVersion    : 16,
+               targetSdkVersion : 27,
+               versionCode      : 10000,
+               versionName      : "1.0.0"]
+
+}

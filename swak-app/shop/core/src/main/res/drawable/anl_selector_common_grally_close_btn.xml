@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 共通机能-灰色[x]关闭按钮选择器 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/anl_common_nav_close_grally_p" android:state_pressed="true"/>
+    <!-- <item android:drawable="@drawable/anl_common_nav_fav_blue_c" android:state_checked="true"/> -->
+    <!-- <item android:drawable="@drawable/anl_common_nav_fav_blue_c" android:state_selected="true"/> -->
+    <item android:drawable="@drawable/anl_common_nav_close_grally_n"></item>
+
+</selector>

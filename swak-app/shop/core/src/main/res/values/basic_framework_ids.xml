@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 共通点击按钮id -->
+    <item type="id" name="anl_common_ok"/>
+    <item type="id" name="anl_common_cancel"/>
+    <item type="id" name="anl_view_templet"/>
+    <item type="id" name="statusbarutil_fake_status_bar_view" />
+    <item type="id" name="statusbarutil_translucent_view" />
+
+    <!--卡片数据源位置索引 -->
+    <item name="anl_templet_index" type="id" />
+    <!--卡片数据源 -->
+    <item name="anl_templet_data_source" type="id" />
+    <!--动态页面相关id -->
+    <item name="anl_dynamic_view_templet" type="id" />
+    <!-- 跳转数据-->
+    <item name="anl_dynamic_jump_data" type="id" />
+    <!-- 埋点统计分析数据-->
+    <item name="anl_dynamic_analysis_data" type="id" />
+    <!-- 元素唯一id标识-->
+    <item name="anl_dynamic_elelemt_id" type="id" />
+</resources>

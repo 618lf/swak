@@ -1,0 +1,74 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+    defaultConfig {
+        applicationId rootProject.ext.android.applicationId
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
+        flavorDimensions "versionCode"
+        vectorDrawables.useSupportLibrary = true
+        ndk {
+            //APP的build.gradle设置支持的SO库架构
+            abiFilters 'armeabi', 'armeabi-v7a', 'x86', 'x86_64'
+        }
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            //混淆
+            minifyEnabled false
+            //Zipalign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //apk命名
+            android.applicationVariants.all { variant ->
+                variant.outputs.all { output ->
+                    //这里修改apk文件名
+                    outputFileName = "${defaultConfig.applicationId}_v${defaultConfig.versionCode}.apk"
+                }
+            }
+        }
+        debug {
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation 'junit:junit:4.12'
+    implementation project(':tools-library')
+    //下拉刷新上拉加载
+    implementation project(':recycler-adapter-helper')
+    implementation project(':refresh-layout')
+    // 手势交互
+    implementation project(':patternlockview')
+    implementation project(':patternlockview-reactive')
+    //侧滑退出
+    implementation project(':swipebacklayout')
+
+    //微信
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
+    //SVG描边动画
+    implementation 'com.jaredrummler:animated-svg-view:1.0.5'
+    // banner
+    implementation 'cn.bingoogolapple:bga-banner:2.2.4'
+    //底部导航按钮点击效果
+    implementation 'com.aurelhubert:ahbottomnavigation:2.1.0'
+    //图片选择
+    implementation 'me.iwf.photopicker:PhotoPicker:0.9.12@aar'
+    //view注解
+    implementation 'com.jakewharton:butterknife:8.0.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.0.1'
+}

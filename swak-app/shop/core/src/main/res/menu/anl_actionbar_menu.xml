@@ -1,0 +1,47 @@
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_about"
+        android:icon="@drawable/anl_selector_common_setting_white_btn"
+        android:orderInCategory="10"
+        android:showAsAction="ifRoom"
+        android:title="@string/anl_action_about"
+        tools:ignore="AppCompatResource" />
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/anl_selector_common_search_white_btn"
+        android:orderInCategory="20"
+        android:showAsAction="ifRoom"
+        tools:ignore="AppCompatResource"
+        android:title="@string/anl_action_search"/>
+    <item
+        android:id="@+id/action_fav"
+        android:icon="@drawable/anl_selector_common_fav_white_btn"
+        android:orderInCategory="30"
+        android:showAsAction="ifRoom"
+        tools:ignore="AppCompatResource"
+        android:title="@string/anl_action_favrate"/>
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/anl_selector_common_setting_white_btn"
+        android:orderInCategory="40"
+        android:showAsAction="ifRoom"
+        tools:ignore="AppCompatResource"
+        android:title="@string/anl_action_setting"/>
+    <item
+        android:id="@+id/action_submit"
+        android:icon="@drawable/anl_selector_common_setting_white_btn"
+        android:orderInCategory="50"
+        android:showAsAction="ifRoom"
+        tools:ignore="AppCompatResource"
+        android:title="@string/anl_action_submit"/>
+    <item
+        android:id="@+id/action_share"
+        android:icon="@drawable/anl_selector_common_share_white_btn"
+        android:orderInCategory="60"
+        android:showAsAction="ifRoom"
+        tools:ignore="AppCompatResource"
+        android:title="@string/anl_action_share"/>
+
+</menu>

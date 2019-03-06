@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="black_80_alpha">#cc000000</color>
+
+    <style name="share_dialog_animation" parent="@android:style/Animation.Dialog">
+        <item name="android:windowEnterAnimation">@anim/share_push_bottom_in</item>
+        <item name="android:windowExitAnimation">@anim/share_push_bottom_out</item>
+    </style>
+
+    <!-- 操作对话框（开始） -->
+    <style name="Share_CommonDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item><!-- 边框 -->
+        <item name="android:windowNoTitle">true</item><!-- 无标题 -->
+        <item name="android:windowIsTranslucent">false</item><!-- 是否透明 -->
+        <item name="android:windowIsFloating">true</item><!-- 是否浮现在activity之上 -->
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:windowBackground">@color/black_80_alpha</item><!-- 自己想要的背景 -->
+        <item name="android:backgroundDimEnabled">true</item><!-- 模糊 -->
+    </style>
+
+    <style name="Share_DialogTopButtomAnimation" parent="Share_CommonDialog">
+        <item name="android:windowAnimationStyle">@style/share_dialog_animation</item>
+    </style>
+
+    <style name="Share_DialogNoAnimation" parent="Share_CommonDialog">
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+    </style>
+    <!-- 操作对话框（结束） -->
+
+</resources>

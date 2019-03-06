@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 共通机能-按下背景5%透明度按钮选择器 [按下]+[普通]状态-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/anl_black_5_alpha" android:state_pressed="true"/>
+    <item android:drawable="@color/anl_transparent" />
+</selector>

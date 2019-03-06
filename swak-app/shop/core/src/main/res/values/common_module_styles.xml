@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~     Android基础开发个人积累、沉淀、封装、整理共通
+  ~     Copyright (c) 2016. 曾繁添 <zftlive@163.com>
+  ~     Github：https://github.com/zengfantian || http://git.oschina.net/zftlive
+  ~
+  ~     Licensed under the Apache License, Version 2.0 (the "License");
+  ~     you may not use this file except in compliance with the License.
+  ~     You may obtain a copy of the License at
+  ~
+  ~         http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~     Unless required by applicable law or agreed to in writing, software
+  ~     distributed under the License is distributed on an "AS IS" BASIS,
+  ~     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~     See the License for the specific language governing permissions and
+  ~     limitations under the License.
+  ~
+  -->
+
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="Common_Module_CommonDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item><!-- 边框 -->
+        <item name="android:windowNoTitle">true</item><!-- 无标题 -->
+        <item name="android:windowIsTranslucent">false</item><!-- 是否透明 -->
+        <item name="android:windowIsFloating">true</item><!-- 是否浮现在activity之上 -->
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:windowBackground">@color/common_module_black_80_alpha</item><!-- 自己想要的背景 -->
+        <item name="android:backgroundDimEnabled">true</item><!-- 模糊 -->
+    </style>
+
+    <style name="Common_Module_DialogAnimation" parent="@android:style/Animation.Dialog">
+        <item name="android:windowEnterAnimation">@anim/common_module_push_bottom_in</item>
+        <item name="android:windowExitAnimation">@anim/common_module_push_bottom_out</item>
+    </style>
+
+    <style name="Common_Module_DialogTopButtomAnimation" parent="Common_Module_CommonDialog">
+        <item name="android:windowAnimationStyle">@style/Common_Module_DialogAnimation</item>
+    </style>
+
+    <style name="Common_Module_DialogNoAnimation" parent="Common_Module_CommonDialog">
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+    </style>
+    <!-- 操作对话框（结束） -->
+
+    <!-- 去除Listview/Gridview两端阴影样式 -->
+    <style name="Common_Module_NoShadowListStyle">
+        <item name="android:overScrollMode">never</item>
+        <item name="android:fadingEdge">none</item>
+        <item name="android:cacheColorHint">@android:color/transparent</item>
+        <item name="android:listSelector">@android:color/transparent</item>
+    </style>
+
+    <!-- 无滚动条无分隔线 样式 -->
+    <style name="Common_Module_NoScrollBarStyle" parent="Common_Module_NoShadowListStyle">
+        <item name="android:scrollbars">none</item>
+        <item name="android:divider">@null</item>
+        <item name="android:dividerHeight">0dp</item>
+    </style>
+
+    <!-- 普通listview样式 样式 -->
+    <style name="Common_Module_CommonListStyle" parent="Common_Module_NoShadowListStyle">
+        <item name="android:divider">@null</item>
+        <item name="android:dividerHeight">0dp</item>
+        <item name="android:scrollbarSize">5dp</item>
+        <item name="android:scrollbarThumbVertical">@drawable/common_module_scrollbar_vertical</item>
+        <item name="android:smoothScrollbar">true</item>
+    </style>
+
+    <style name="Common_Module_Textview_Singleline_Ellipsize">
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <!-- 28px多行文本共通样式（字号+行间距） -->
+    <style name="Common_Module_Text_28pt_14sp_MutilLine_Style">
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingExtra">7dp</item>
+    </style>
+
+    <!-- 32px多行文本共通样式（字号+行间距） -->
+    <style name="Common_Module_Text_32pt_16sp_MutilLine_Style">
+        <item name="android:textSize">16sp</item>
+        <item name="android:lineSpacingExtra">5dp</item>
+    </style>
+
+    <!-- 36px多行文本共通样式（字号+行间距） -->
+    <style name="Common_Module_Text_36pt_18sp_MutilLine_Style">
+        <item name="android:textSize">18sp</item>
+        <item name="android:lineSpacingExtra">6dp</item>
+    </style>
+
+    <!-- 24px多行文本共通样式（字号+行间距） -->
+    <style name="Common_Module_Text_24pt_12sp_MutilLine_Style">
+        <item name="android:textSize">12sp</item>
+        <item name="android:lineSpacingExtra">5dp</item>
+    </style>
+
+</resources>

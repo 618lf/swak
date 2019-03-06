@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?><!-- 共通机能-操作对话框[带关闭][带Item点击][带标题][带ICON] -->
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:background="@drawable/common_module_selector_btn_white_grally_nobold"
+    android:gravity="center"
+    android:text=""
+    android:maxLines="1"
+    android:textColor="@color/anl_black_666666"
+    android:textSize="17sp" />

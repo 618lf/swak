@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 共通机能-item点击变色选择器（nomal+pressed+checked/selected） -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@color/common_module_grally_f2f2f2" android:state_focused="true"/>
+    <item android:drawable="@color/common_module_grally_f2f2f2" android:state_pressed="true"/>
+    <!-- <item android:drawable="@color/common_module_grally_f2f2f2" android:state_checked="true"/> -->
+    <!-- <item android:drawable="@color/common_module_grally_f2f2f2" android:state_selected="true"/> -->
+    <item android:drawable="@color/common_module_white"></item>
+
+</selector>

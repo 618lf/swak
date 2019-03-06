@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><!-- 共通机能-操作对话框[带关闭][带Item点击][带标题][带ICON] -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tv_main_title"
+    style="@style/anl_style_textview_size_17"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:paddingBottom="3dp"
+    android:paddingTop="3dp"
+    android:text=""
+    android:textColor="@color/anl_black_333333" />

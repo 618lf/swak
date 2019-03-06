@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~
+  ~     京东金融团队Android基础开发库积累、沉淀、封装、共同整理
+  ~
+  ~     Copyright (c) 2017. @ 京东金融移动研发团队
+  ~
+  ~     技术支持：曾繁添<zengfantian@jd.com>
+  -->
+
+<!-- 共通标题栏[左-中-右 典型布局] -->
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_title_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 左边按钮容器 -->
+
+    <LinearLayout
+        android:id="@+id/ll_left_btns"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:gravity="left|center_vertical"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <!-- 返回按钮 -->
+
+        <ImageButton
+            android:id="@+id/ib_back"
+            android:layout_width="@dimen/anl_common_title_height_44dp"
+            android:layout_height="@dimen/anl_common_title_height_44dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/anl_selector_common_back_white_btn"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <!-- 中间区域 -->
+    <LinearLayout
+        android:id="@+id/ll_center_content"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@+id/ll_right_btns"
+        android:layout_toRightOf="@+id/ll_left_btns"
+        android:gravity="left|center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_window_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="10dp"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="left|center_vertical"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@color/anl_white"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+    </LinearLayout>
+
+
+    <!-- 右侧按钮容器 -->
+
+    <LinearLayout
+        android:id="@+id/ll_right_btns"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:gravity="right|center_vertical"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <!-- 收藏按钮 -->
+
+        <ImageButton
+            android:id="@+id/iv_fav"
+            android:layout_width="@dimen/anl_common_title_height_44dp"
+            android:layout_height="@dimen/anl_common_title_height_44dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/anl_common_nav_fav_white_n"
+            android:visibility="gone" />
+
+
+        <!-- 分享按钮 -->
+        <ImageButton
+            android:id="@+id/iv_share"
+            android:layout_width="@dimen/anl_common_title_height_44dp"
+            android:layout_height="@dimen/anl_common_title_height_44dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/anl_common_nav_share_white_n"
+            android:visibility="gone" />
+
+        <!-- 完成/提交共用按钮-图片类型 -->
+        <ImageButton
+            android:id="@+id/iv_done"
+            android:layout_width="@dimen/anl_common_title_height_44dp"
+            android:layout_height="@dimen/anl_common_title_height_44dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+        <!-- 完成/提交共用按钮-文本类型 -->
+        <Button
+            android:id="@+id/btn_done"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/anl_common_title_height_44dp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <!-- 底部线 -->
+
+    <View
+        android:id="@+id/title_buttom_line"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_alignParentBottom="true"
+        android:background="#dddddd"
+        android:visibility="visible" />
+
+    <!--Web页面需要进度条 -->
+    <ProgressBar
+        android:id="@+id/pb_load_progress"
+        style="@style/Anl_Web_ProgressBar_Mini"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_alignParentBottom="true"
+        android:indeterminateOnly="false"
+        android:max="100"
+        android:visibility="gone" />
+
+</merge>

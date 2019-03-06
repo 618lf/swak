@@ -1,0 +1,1 @@
+include ':app', ':refresh-layout', ':tools-library', ':recycler-adapter-helper', ':patternlockview', ':patternlockview-reactive', ':swipebacklayout'

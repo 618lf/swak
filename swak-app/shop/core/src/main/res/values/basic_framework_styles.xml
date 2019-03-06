@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ActionBar -->
+    <style name="Anl_CustomActionBar" parent="@android:style/Widget.DeviceDefault.ActionBar">
+        <item name="android:titleTextStyle">@style/Anl_ActionBarTitle</item>
+        <item name="android:background">@color/common_module_actionbar_bg</item>
+        <item name="android:subtitleTextStyle">@style/Anl_ActionBarSubtitle</item>
+        <item name="android:selectableItemBackground">@drawable/anl_selector_actionbar_selectable_item_bg</item>
+        <item name="android:actionButtonStyle">@style/Anl_ActionBarActionButtonStyle</item>
+        <item name="android:actionBarTabStyle">@style/Anl_ActionBarTabStyle</item>
+        <item name="android:actionBarTabTextStyle">@style/Anl_ActionBarTabTextStyle</item>
+        <item name="android:actionDropDownStyle">@style/Anl_ActionBarDropDownNav</item>
+        <item name="android:dropDownListViewStyle">@style/Anl_ActionBarDropDownListView</item>
+    </style>
+    <!-- ActionBar菜单文字样式 -->
+    <style name="Anl_ActionBarMenu" parent="@android:style/TextAppearance.Holo.Large">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <!-- ActionBar标题的样式 -->
+    <style name="Anl_ActionBarTitle" parent="@android:style/TextAppearance.Holo.Large">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:gravity">left</item>
+    </style>
+
+    <!-- ActionBar自定义中间标题的样式 -->
+    <style name="Anl_ActionBarCenterTitle" parent="@android:style/TextAppearance.Holo.Large">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <!-- ActionBar副标题的样式 -->
+    <style name="Anl_ActionBarSubtitle" parent="@android:style/TextAppearance.Holo.Medium">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <!-- ActionBar操作项元素的样式 -->
+    <style name="Anl_ActionBarActionButtonStyle" parent="@android:style/Widget.Holo.ActionButton">
+        <item name="android:paddingLeft">12dip</item>
+        <item name="android:paddingRight">12dip</item>
+    </style>
+
+    <!-- ActionBarTab选项标签的样式 -->
+    <style name="Anl_ActionBarTabStyle" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">
+        <item name="android:background">@drawable/anl_selector_actionbar_tab_bg</item>
+        <item name="android:paddingLeft">22dp</item>
+        <item name="android:paddingRight">22dp</item>
+    </style>
+
+    <!-- Tab选项标签字体的样式 -->
+    <style name="Anl_ActionBarTabTextStyle" parent="@android:style/Widget.Holo.Light.ActionBar.TabText">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <!-- ActionBar下拉导航外部按钮的样式 -->
+    <style name="Anl_ActionBarDropDownNav" parent="@android:style/Widget.Holo.Light.Spinner">
+        <item name="android:background">@drawable/anl_selector_actionbar_spinner_bg</item>
+        <item name="android:popupBackground">@drawable/anl_actionbar_menu_dropdown_panel</item>
+        <item name="android:dropDownSelector">@drawable/anl_selector_actionbar_selectable_item_bg</item>
+    </style>
+
+    <!-- ActionBar下拉导航内部按钮的样式 -->
+    <style name="Anl_ActionBarDropDownListView" parent="@android:style/Widget.Holo.ListView.DropDown">
+        <item name="android:listSelector">@drawable/anl_selector_actionbar_selectable_item_bg</item>
+    </style>
+
+    <!--网页加载进度样式 -->
+    <style name="Anl_Web_ProgressBar_Mini" parent="@android:style/Widget.ProgressBar.Horizontal">
+        <item name="android:maxHeight">50dip</item>
+        <item name="android:minHeight">8dip</item>
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:indeterminateDrawable">
+            @android:drawable/progress_indeterminate_horizontal
+        </item>
+        <item name="android:progressDrawable">@drawable/anl_webview_progressbar_bg</item>
+    </style>
+
+</resources>

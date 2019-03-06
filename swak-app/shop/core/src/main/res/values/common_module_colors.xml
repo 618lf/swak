@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~     Android基础开发个人积累、沉淀、封装、整理共通
+  ~     Copyright (c) 2016. 曾繁添 <zftlive@163.com>
+  ~     Github：https://github.com/zengfantian || http://git.oschina.net/zftlive
+  ~
+  ~     Licensed under the Apache License, Version 2.0 (the "License");
+  ~     you may not use this file except in compliance with the License.
+  ~     You may obtain a copy of the License at
+  ~
+  ~         http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~     Unless required by applicable law or agreed to in writing, software
+  ~     distributed under the License is distributed on an "AS IS" BASIS,
+  ~     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~     See the License for the specific language governing permissions and
+  ~     limitations under the License.
+  ~
+  -->
+
+<resources>
+    <!-- 共通灰色背景 -->
+    <color name="common_module_common_bg">#EFEFF4</color>
+    <!-- 错误页面背景颜色 -->
+    <color name="common_module_error_bg">#ebebeb</color>
+    <!-- 错误页面文字颜色 -->
+    <color name="common_module_error_text">#979797</color>
+    <!-- ActionBar背景颜色 -->
+    <color name="common_module_actionbar_bg">#3ca0ec</color>
+    <!-- 共通背景色-->
+    <color name="anl_common_bg">#EFEFF4</color>
+    <!-- 分割线颜色-->
+    <color name="anl_common_divider">#EEEEEE</color>
+
+    <color name="common_module_white">#FFFFFF</color>
+    <color name="common_module_black">#000000</color>
+    <color name="common_module_black_333333">#333333</color>
+    <color name="common_module_black_666666">#666666</color>
+    <color name="common_module_black_999999">#999999</color>
+    <color name="common_module_black_eeeeee">#eeeeee</color>
+    <color name="common_module_black_efeff4">#efeff4</color>
+    <color name="common_module_black_cccccc">#cccccc</color>
+    <color name="common_module_black_dddddd">#dddddd</color>
+    <color name="common_module_black_alpha">#70000000</color>
+    <color name="common_module_black_5_alpha">#0c000000</color>
+    <color name="common_module_black_20_alpha">#33000000</color>
+    <color name="common_module_black_40_alpha">#66000000</color>
+    <color name="common_module_black_50_alpha">#7f000000</color>
+    <color name="common_module_black_60_alpha">#99000000</color>
+    <color name="common_module_black_70_alpha">#b2000000</color>
+    <color name="common_module_black_80_alpha">#cc000000</color>
+    <color name="common_module_grally_f4f4f4">#f4f4f4</color>
+    <color name="common_module_grally_f2f2f2">#f2f2f2</color>
+    <color name="common_module_blue_359df5">#359df5</color>
+    <color name="common_module_blue_359df5_60_alpha">#99359df5</color>
+    <color name="common_module_blue_3295e9">#3295e9</color>
+    <color name="common_module_blue_508cee">#508cee</color>
+
+    <color name="anl_white">#FFFFFF</color>
+    <color name="anl_black">#000000</color>
+    <color name="anl_black_333333">#333333</color>
+    <color name="anl_black_666666">#666666</color>
+    <color name="anl_black_999999">#999999</color>
+    <color name="anl_black_eeeeee">#eeeeee</color>
+    <color name="anl_black_efeff4">#efeff4</color>
+    <color name="anl_black_cccccc">#cccccc</color>
+    <color name="anl_black_dddddd">#dddddd</color>
+    <color name="anl_black_alpha">#70000000</color>
+    <color name="anl_black_5_alpha">#0c000000</color>
+    <color name="anl_black_20_alpha">#33000000</color>
+    <color name="anl_black_40_alpha">#66000000</color>
+    <color name="anl_black_50_alpha">#7f000000</color>
+    <color name="anl_black_60_alpha">#99000000</color>
+    <color name="anl_black_70_alpha">#b2000000</color>
+    <color name="anl_black_80_alpha">#cc000000</color>
+    <color name="anl_grally_f4f4f4">#f4f4f4</color>
+    <color name="anl_grally_f2f2f2">#f2f2f2</color>
+    <color name="anl_blue_359df5">#359df5</color>
+    <color name="anl_blue_359df5_60_alpha">#99359df5</color>
+    <color name="anl_blue_3295e9">#3295e9</color>
+    <color name="anl_blue_508cee">#508cee</color>
+    <color name="anl_deepgray">#ff3b3b3b</color>
+
+    <color name="anl_holo_blue">#FF34E5B5</color>
+    <color name="anl_grally_d5d5d5">#d5d5d5</color>
+    <color name="anl_black_fafafa">#FAFAFA</color>
+    <color name="anl_black_f5f5f5">#F5F5F5</color>
+    <color name="anl_black_3_alpha">#08000000</color>
+    <color name="anl_black_000000">#000000</color>
+    <color name="anl_black_1d1d1d">#1d1d1d</color>
+    <color name="anl_black_5A616D">#5A616D</color>
+    <color name="anl_black_1b1b1b">#1b1b1b</color>
+    <color name="anl_black_262626">#262626</color>
+    <color name="anl_black_222222">#222222</color>
+    <color name="anl_black_5F6773">#5F6773</color>
+    <color name="anl_black_4E5D74">#4E5D74</color>
+    <color name="anl_black_b2333333">#b2333333</color>
+    <color name="anl_black_424954">#424954</color>
+    <color name="anl_black_464646">#464646</color>
+    <color name="anl_black_444444">#444444</color>
+    <color name="anl_black_4b4b4b">#4b4b4b</color>
+    <color name="anl_black_848484">#848484</color>
+    <color name="anl_black_555555">#555555</color>
+    <color name="anl_black_7C869A">#7C869A</color>
+    <color name="anl_black_787878">#787878</color>
+    <color name="anl_black_888888">#888888</color>
+    <color name="anl_black_C2C2C2">#C2C2C2</color>
+    <color name="anl_black_949AA4">#949AA4</color>
+    <color name="anl_black_9E9E9E">#999999</color>
+    <color name="anl_black_aaaaaa">#aaaaaa</color>
+    <color name="anl_black_303948">#303948</color>
+    <color name="anl_yellow_999999">#FF801A</color>
+    <color name="anl_black_565E6B">#565E6B</color>
+    <color name="anl_black_68687f">#68687f</color>
+    <color name="anl_black_80dddddd">#80dddddd</color>
+    <color name="anl_black_B0B0B0">#B0B0B0</color>
+    <color name="anl_black_b2b2b2">#b2b2b2</color>
+    <color name="anl_black_bbbbbb">#bbbbbb</color>
+    <color name="anl_black_a9a9a9">#a9a9a9</color>
+    <color name="anl_black_f0f0f0">#f0f0f0</color>
+    <color name="anl_black_f9f9f9">#f9f9f9</color>
+    <color name="anl_black_ececec">#ececec</color>
+    <color name="anl_black_f6f6f6">#f6f6f6</color>
+    <color name="anl_balck_1F1F1F">#1F1F1F</color>
+    <color name="anl_black_9b9b9b">#9b9b9b</color>
+    <color name="anl_black_bdbdca">#bdbdca</color>
+    <color name="anl_black_bdbdbd">#bdbdbd</color>
+    <color name="anl_black_F0292A2E">#F0292A2E</color>
+    <color name="anl_blue_6B8BB2">#6B8BB2</color>
+    <color name="anl_blue_89a2c1">#89a2c1</color>
+    <color name="anl_blue_5491f5">#5491f5</color>
+    <color name="anl_blue_49A7F6">#49A7F6</color>
+    <color name="anl_blue_tran60_359df5">#99359df5</color>
+    <color name="anl_blue_508CEE">#508CEE</color>
+    <color name="anl_blue_508CEE_trans06">#99508CEE</color>
+    <color name="anl_blue_B9D1F8">#B9D1F8</color>
+    <color name="anl_blue_4B84E1">#4B84E1</color>
+    <color name="anl_blue_66A0F3">#66A0F3</color>
+    <color name="anl_blue_6AA2FF">#6AA2FF</color>
+    <color name="anl_blue_4783E5">#4783E5</color>
+    <color name="anl_blue_4D7FF7">#4D7FF7</color>
+    <color name="anl_blue_4D7BFE">#4D7BFE</color>
+    <color name="anl_blue_4D5EFF">#4D5EFF</color>
+    <color name="anl_blue_4148E2">#4148E2</color>
+    <color name="anl_blue_tran60_508cee">#99508cee</color>
+    <color name="anl_shadow_color">#dddddd</color>
+    <color name="anl_gray">#aaaaaa</color>
+    <color name="anl_gray_acacac">#acacac</color>
+    <color name="anl_gray_d6d6d6">#d6d6d6</color>
+    <color name="anl_gray_9292a4">#9292a4</color>
+    <color name="anl_gray_efeff4">#efeff4</color>
+    <color name="anl_gray_FFDDDDDD">#FFDDDDDD</color>
+    <color name="anl_gray_FFEFEFF4">#FFEFEFF4 </color>
+    <color name="anl_gray_aeaeae">#AEAEAE</color>
+    <color name="anl_gray_adadad">#adadad</color>
+    <color name="anl_gray_BBBBBB">#BBBBBB</color>
+    <color name="anl_gray_e8e8e8">#e8e8e8</color>
+    <color name="anl_gray_bababa">#bababa</color>
+    <color name="anl_gray_c9c9c9">#c9c9c9</color>
+    <color name="anl_gray_c9c9c9_50_alpha">#7fc9c9c9</color>
+    <color name="anl_gray_4dc6c6c6">#4dc6c6c6</color>
+    <color name="anl_gray_c6c6c6">#c6c6c6</color>
+    <color name="anl_red_FD6E65">#FD6E65</color>
+    <color name="anl_red">#fc3438</color>
+    <color name="anl_red_FC3438">#fc3438</color>
+    <color name="anl_red_F4614E">#f4614e</color>
+    <color name="anl_red_FFDBD6">#FFDBD6</color>
+    <color name="anl_red_F6AFA9">#F6AFA9</color>
+    <color name="anl_red_FF6E3D">#FF6E3D</color>
+    <color name="anl_red_EA3F56">#EA3F56</color>
+    <color name="anl_red_FF4F0E">#FF4F0E</color>
+    <color name="anl_red_EE5740">#EE5740</color>
+    <color name="anl_red_DB5E15">#DB5E15</color>
+    <color name="anl_red_EB4156">#EB4156</color>
+    <color name="anl_orange_fe8652">#fe8652</color>
+    <color name="anl_yellow_property">#ff801a</color>
+    <color name="anl_yellow_FFFC8113">#FFFC8113</color>
+    <color name="anl_yellow_FF9911">#FF9911</color>
+    <color name="anl_yellow_FFF45B">#FFF45B</color>
+    <color name="anl_yellow_FF801a">#FF801a</color>
+    <color name="anl_yellow_CE5F1A">#CE5F1A</color>
+    <color name="anl_yellow_FF8F59">#FF8F59</color>
+    <color name="anl_yellow_FF8545">#FF8545</color>
+    <color name="anl_yellow_FFD150">#FFD150</color>
+    <color name="anl_yellow_FFB540">#FFB540</color>
+    <color name="anl_yellow_DAAB63">#DAAB63</color>
+    <color name="anl_yellow_FFFBF5">#FFFBF5</color>
+    <color name="anl_yellow_FFF5E1">#FFF5E1</color>
+    <color name="anl_yellow_FFF7E9">#FFF7E9</color>
+    <color name="anl_yellow_FFF7EA">#FFF7EA</color>
+    <color name="anl_yellow_fef300">#fef300</color>
+    <color name="anl_yellow_fff300">#fff300</color>
+    <color name="anl_green_44BF97">#44BF97</color>
+    <color name="anl_green_08B998">#08B998</color>
+    <color name="anl_red_FFFF3153">#FFFF3153</color>
+    <color name="anl_red_e93a3a">#e93a3a</color>
+    <color name="anl_red_FF5841">#FF5841</color>
+    <color name="anl_red_FF4C36">#FF4C36</color>
+    <color name="anl_red_btn">#e93a3a</color>
+    <color name="anl_red_text">#e93a3a</color>
+    <color name="anl_red_f04e4e">#f04e4e</color>
+    <color name="anl_gray_b5b5b5">#b5b5b5</color>
+    <color name="anl_gray_f8f8f8">#f8f8f8</color>
+    <color name="anl_gray_fbfbfb">#fbfbfb</color>
+    <color name="anl_gray_e4e4e4">#e4e4e4</color>
+    <color name="anl_gray_dddddd">#dddddd</color>
+    <color name="anl_gray_f7f7f7">#f7f7f7</color>
+    <color name="anl_gray_F9F9F9">#F9F9F9</color>
+    <color name="anl_gray_f7f9fc">#f7f9fc</color>
+    <color name="anl_gray_f0eff5">#f0eff5</color>
+    <color name="anl_grally_817070">#817070</color>
+    <color name="anl_gray_f5f5f5">#f5f5f5</color>
+    <color name="anl_green_7BBF55">#7BBF55</color>
+    <color name="anl_green_2BB78E">#2BB78E</color>
+    <color name="anl_green_19c49e">#19c49e</color>
+    <color name="anl_gray_f9f9f9">#f9f9f9</color>
+    <color name="anl_blue_text"> #5fb2f9</color>
+    <color name="anl_gray_d4d4d4"> #d4d4d4</color>
+    <color name="anl_gray_cbcbcb"> #cbcbcb</color>
+    <color name="anl_gray_d8d8d8"> #d8d8d8</color>
+    <color name="anl_gray_80d8d8d8"> #80d8d8d8</color>
+    <color name="anl_gray_e2e2e2"> #e2e2e2</color>
+    <color name="anl_gray_9FA5AE">#9FA5AE</color>
+    <color name="anl_gray_a5aab2">#a5aab2</color>
+    <color name="anl_gray_4d535c">#4d535c</color>
+    <color name="anl_gray_F1F1F1">#F1F1F1</color>
+    <color name="anl_blue_52b0ff"> #52b0ff</color>
+    <color name="anl_blue_B6CCF0">#B6CCF0</color>
+    <color name="anl_blue_4ea7f2"> #4ea7f2</color>
+    <color name="anl_transparent_05"> #0c000000</color>
+    <color name="anl_transparent">#00000000</color>
+    <color name="anl_transparent60_999999">#99999999</color>
+    <color name="anl_transparent40_000000">#66000000</color>
+    <color name="anl_grey_ebebeb"> #ebebeb</color>
+    <color name="anl_blue_40cff3"> #40cff3</color>
+    <color name="anl_blue_31bce2"> #31bce2</color>
+    <color name="anl_blue_308ddc"> #308ddc</color>
+    <color name="anl_blue_2C89D7"> #2C89D7</color>
+    <color name="anl_blue_c4d1e0"> #c4d1e0</color>
+    <color name="anl_blue_4980d9"> #4980D9</color>
+
+    <!-- 公共颜色值 -->
+    <color name="anl_common_red">#e93a3a</color>
+    <color name="anl_gold_CDA76E">#CDA76E</color>
+    <color name="anl_gold_C29E68">#C29E68</color>
+    <color name="anl_gold_B7945E">#B7945E</color>
+    <color name="anl_gold_F0E4D3">#F0E4D3</color>
+    <color name="anl_gold_BD9E6F">#BD9E6F</color>
+    <color name="anl_gold_EABC5D">#EABC5D</color>
+    <color name="anl_gold_DFAD60">#DFAD60</color>
+    <color name="anl_gold_FFEDC7">#FFEDC7</color>
+    <color name="anl_gold_D0A666">#D0A666</color>
+    <color name="anl_gold_FFF9EB">#FFF9EB</color>
+    <color name="anl_gold_D7B88B">#D7B88B</color>
+    <color name="anl_dlg_btn_color">#097cff</color>
+    <color name="anl_while_96_alpha">#b0ffffff</color>
+    <color name="anl_white_80_alpha">#c8ffffff</color>
+    <color name="anl_white_90_alpha">#e5ffffff</color>
+    <color name="anl_white_70_alpha">#b3ffffff</color>
+    <color name="anl_white_60_alpha">#99ffffff</color>
+    <color name="anl_white_42_alpha">#6Bffffff</color>
+    <color name="anl_white_30_alpha">#4Dffffff</color>
+    <color name="anl_white_36_alpha">#5cffffff</color>
+    <color name="anl_white_64_alpha">#A6ffffff</color>
+    <color name="anl_white_50_alpha">#80ffffff</color>
+    <color name="anl_white_20_alpha">#33ffffff</color>
+    <color name="anl_white_15_alpha">#26ffffff</color>
+    <color name="anl_white_10_alpha">#1Affffff</color>
+    <color name="anl_white_09_alpha">#17ffffff</color>
+    <color name="anl_white_08_alpha">#14ffffff</color>
+    <color name="anl_white_05_alpha">#0cffffff</color>
+
+    <!-- 黑色30%透明度 -->
+    <color name="anl_black_999999_alpha30">#4C999999</color>
+    <!-- 黑色3%透明度 -->
+    <color name="anl_black_alpha03">#07000000</color>
+    <!-- 黑色30%透明度 -->
+    <color name="anl_black_alpha30">#4C000000</color>
+    <!-- 黑色40%透明度 -->
+    <color name="anl_black_alpha40">#66000000</color>
+    <!-- 黑色50%透明度 -->
+    <color name="anl_black_alpha50">#7F000000</color>
+    <!-- 黑色60%透明度 -->
+    <color name="anl_black_alpha60">#99000000</color>
+    <!-- 黑色70%透明度 -->
+    <color name="anl_black_alpha70">#B2000000</color>
+</resources>
