@@ -13,7 +13,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.view.View;
 
-import com.veni.tools.LogTools;
 import com.veni.tools.R;
 
 import java.io.Serializable;
@@ -26,7 +25,6 @@ import java.util.List;
  * 当前类注释:
  * Activity跳转管理类
  */
-
 public class ActivityJumpOptionsTool {
     public enum Type {
         NEW_TASK,
@@ -49,7 +47,7 @@ public class ActivityJumpOptionsTool {
     private Type actionTag = Type.NEW_TASK;//intent标识
 
     /**
-     *  设置上次下文
+     * 设置上次下文
      */
     public ActivityJumpOptionsTool setContext(Context context) {
         this.context = context;
@@ -57,7 +55,7 @@ public class ActivityJumpOptionsTool {
     }
 
     /**
-     *  设置跳转目标Class
+     * 设置跳转目标Class
      */
     public ActivityJumpOptionsTool setClass(Class<?> clas) {
         this.clas = clas;
@@ -65,7 +63,7 @@ public class ActivityJumpOptionsTool {
     }
 
     /**
-     *  设置跳转参数
+     * 设置跳转参数
      */
     public ActivityJumpOptionsTool setBundle(String key, Object value) {
         if (this.bundle == null) {
@@ -107,11 +105,12 @@ public class ActivityJumpOptionsTool {
 
     /**
      * 是否关闭act
+     *
      * @param finish ture 关闭
      * @return
      */
     public ActivityJumpOptionsTool setFinish(boolean finish) {
-        if(finish){
+        if (finish) {
             actionTag = ActivityJumpOptionsTool.Type.CLEAR_TASK;
         }
         return this;
