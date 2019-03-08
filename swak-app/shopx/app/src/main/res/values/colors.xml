@@ -3,4 +3,20 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="dark_red">#ce3835</color>
+    <color name="background">#ececec</color>
+    <color name="e0">#e0e0e0</color>
+
+    <color name="google_red">#EA4335</color>
+    <color name="google_yellow">#FBBC05</color>
+    <color name="google_blue">#4285F4</color>
+    <color name="google_green">#34A853</color>
+
+    <color name="alpha_85_white">#d8ffffff</color>
+    <color name="alpha_10_black">#1A000000</color>
+    <color name="alpha_75_gray">#c08a8a8a</color>
+    <color name="light_colorPrimary">#57a2fd</color>
+    <color name="alpha_85_colorPrimary">#d84285F4</color>
+    <color name="alpha_75_colorPrimary">#c04285F4</color>
 </resources>

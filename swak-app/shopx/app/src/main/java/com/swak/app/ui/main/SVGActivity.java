@@ -1,5 +1,6 @@
 package com.swak.app.ui.main;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,7 +16,6 @@ import com.swak.app.model.PersonalBean;
 import com.swak.app.ui.main.contract.SVGContract;
 import com.swak.app.ui.main.presenter.SVGPresenter;
 import com.veni.tools.ACache;
-import com.veni.tools.LogTools;
 import com.veni.tools.SPTools;
 import com.veni.tools.StatusBarTools;
 
@@ -47,12 +47,6 @@ public class SVGActivity extends BaseActivity<SVGPresenter> implements SVGContra
     @Override
     public int getLayoutId() {
         return R.layout.activity_svg;
-    }
-
-    /*启用MVP一定要设置这句*/
-    @Override
-    public void initPresenter() {
-        mPresenter.setVM(this);
     }
 
     @Override

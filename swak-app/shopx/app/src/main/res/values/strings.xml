@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">swak-shop</string>
     <string name="loading">请稍后...</string>
+    <string name="homepage">首页</string>
+    <string name="trade">购物</string>
+    <string name="personal">我</string>
+    <string name="login">登录</string>
 </resources>

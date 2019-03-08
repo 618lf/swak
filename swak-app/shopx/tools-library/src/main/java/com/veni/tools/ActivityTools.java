@@ -12,7 +12,6 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Stack;
 
-
 /**
  * Created by kkan on 2016/1/24.
  * 封装Activity操作相关工具类
@@ -39,7 +38,6 @@ public class ActivityTools {
     private volatile static ActivityTools instance;
 
     private ActivityTools() {
-
     }
 
     /**
@@ -53,7 +51,6 @@ public class ActivityTools {
                     instance.activitys = new Stack<>();
                 }
             }
-
         }
         return instance;
     }
@@ -182,17 +179,18 @@ public class ActivityTools {
 
     /**
      * 退出应用程序
-     *
+     * require android.permission.KILL_BACKGROUND_PROCESSES
      * @param context      上下文
      * @param isBackground 是否开开启后台运行
      */
-    public void AppExit(Context context, Boolean isBackground) {
+    public void appExit(Context context, Boolean isBackground) {
         try {
             finishAllActivity();
             ActivityManager activityMgr = (ActivityManager) context
                     .getSystemService(Context.ACTIVITY_SERVICE);
             if (activityMgr != null) {
-                activityMgr.restartPackage(context.getPackageName());
+                //activityMgr.restartPackage(context.getPackageName());
+                activityMgr.killBackgroundProcesses(context.getPackageName());
             }
         } catch (Exception ignored) {
         } finally {
@@ -261,5 +259,4 @@ public class ActivityTools {
         }
         return "no " + packageName;
     }
-
 }

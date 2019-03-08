@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.gw.swipeback.SwipeBackLayout;
-import com.veni.tools.BuildConfig;
+import com.swak.app.BuildConfig;
 import com.veni.tools.base.ActivityBase;
 import com.veni.tools.base.BasePresenter;
 import com.veni.tools.base.TUtil;
@@ -51,10 +51,9 @@ public abstract class BaseActivity<T extends BasePresenter> extends ActivityBase
     //简单页面无需mvp就不用管此方法即可,完美兼容各种实际场景的变通
     public void initPresenter() {
         if (mPresenter != null) {
-            ((BasePresenter) mPresenter).setVM(this);
+            mPresenter.setVM(this);
         }
     }
-
 
     /**
      * 设置layout前配置
@@ -62,8 +61,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends ActivityBase
     private void doBeforeSetcontentView() {
         mRxManager = new RxManager();
         antiShake = new AntiShake();
-        // 设置竖屏(总导致失败)
-        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     /**
@@ -149,5 +146,4 @@ public abstract class BaseActivity<T extends BasePresenter> extends ActivityBase
         }
         return super.onOptionsItemSelected(item);
     }
-
 }
