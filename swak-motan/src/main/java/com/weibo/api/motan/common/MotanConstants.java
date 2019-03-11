@@ -89,7 +89,7 @@ public class MotanConstants {
     // share channel max worker thread
     public static final int NETTY_SHARECHANNEL_MAX_WORKDER = 800;
     // share channel min worker thread
-    public static final int NETTY_SHARECHANNEL_MIN_WORKDER = 40;
+    public static final int NETTY_SHARECHANNEL_MIN_WORKDER = 20;
     // don't share channel max worker thread
     public static final int NETTY_NOT_SHARECHANNEL_MAX_WORKDER = 200;
     // don't share channel min worker thread

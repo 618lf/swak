@@ -32,6 +32,8 @@ public class StandardOptionsAutoConfiguration {
 			vertxOptions.setPreferNativeTransport(true);
 		}
 		vertxOptions.setEventLoopPoolSize(properties.getEventLoopPoolSize());
+		vertxOptions.setWorkerPoolSize(properties.getWorkerThreads());
+		vertxOptions.setInternalBlockingPoolSize(properties.getInternalBlockingThreads());
 		return vertxOptions;
 	}
 	

@@ -74,7 +74,7 @@ public class AppConfiguration {
 				router.route().handler(BodyHandler.create(properties.getUploadDirectory())
 							  .setBodyLimit(properties.getBodyLimit())
 							  .setDeleteUploadedFilesOnEnd(properties.isDeleteUploadedFilesOnEnd()));
-				router.route().handler(StaticHandler.create("static"));
+				router.route().handler(StaticHandler.create("static")); // 使用内部阻塞线程处理和work线程不是同一种线程
 				router.route().handler(JwtAuthHandler.create(jwtAuth, securityFilter));
 			}
 		};

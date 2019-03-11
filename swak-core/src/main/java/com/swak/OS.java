@@ -61,7 +61,7 @@ public enum OS {
 			return Constants.LOCALHOST;
 		}
 	}
-	
+
 	/**
 	 * 当前用户的home
 	 * 

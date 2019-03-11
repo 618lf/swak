@@ -15,7 +15,6 @@
 		<module>swak-actuator</module>
 		<module>swak-sample</module>
 		<module>swak-starter-web</module>
-		<module>swak-rpc</module>
 		<module>swak-starter-rpc</module>
 		<module>swak-sample-rpc</module>
 		<module>swak-groovy</module>

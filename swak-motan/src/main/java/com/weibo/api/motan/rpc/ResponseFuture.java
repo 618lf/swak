@@ -13,12 +13,32 @@
  */
 package com.weibo.api.motan.rpc;
 
-public interface ResponseFuture extends Future, Response{
-    void onSuccess(Response response);
+import java.util.concurrent.CompletableFuture;
 
-    void onFailure(Response response) ;
-    
-    long getCreateTime();
+public interface ResponseFuture extends Future, Response {
+	void onSuccess(Response response);
 
-    void setReturnType(Class<?> clazz);
+	void onFailure(Response response);
+
+	long getCreateTime();
+
+	void setReturnType(Class<?> clazz);
+	
+	/**
+	 * 转换为 CompletionStage 方便后面的代码串接起来
+	 * 
+	 * @return
+	 */
+	default CompletableFuture<Object> toFuture() {
+		CompletableFuture<Object> completableFuture = new CompletableFuture<>();
+		this.addListener(f -> {
+			if (f.isSuccess()) {
+				completableFuture.complete(f.getValue());
+			} else {
+				completableFuture.completeExceptionally(f.getException());
+			}
+		});
+		return completableFuture;
+	}
+
 }

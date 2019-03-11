@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
  * 
  * @author lifeng
  */
-public interface GoodsServiceFacadeAsync {
+public interface GoodsServiceFacadeAsyncx {
 
 	/**
 	 * 就这样执行

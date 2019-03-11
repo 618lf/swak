@@ -1,5 +1,10 @@
 package com.weibo.api.motan.transport.netty4;
 
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.swak.reactivex.transport.resources.LoopResources;
 import com.weibo.api.motan.common.ChannelState;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.common.URLParamType;
@@ -15,175 +20,189 @@ import com.weibo.api.motan.transport.TransportException;
 import com.weibo.api.motan.util.LoggerUtil;
 import com.weibo.api.motan.util.StatisticCallback;
 import com.weibo.api.motan.util.StatsUtil;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
 
 /**
  * @author sunnights
  */
 public class NettyServer extends AbstractServer implements StatisticCallback {
-    protected NettyServerChannelManage channelManage = null;
-    private EventLoopGroup bossGroup;
-    private EventLoopGroup workerGroup;
-    private Channel serverChannel;
-    private MessageHandler messageHandler;
-    private StandardThreadExecutor standardThreadExecutor = null;
-    private List<StatisticCallback> statisticCallbackList = new ArrayList<>();
+	protected NettyServerChannelManage channelManage = null;
+	private EventLoopGroup bossGroup;
+	private EventLoopGroup workerGroup;
+	private Channel serverChannel;
+	private MessageHandler messageHandler;
+	private StandardThreadExecutor standardThreadExecutor = null;
+	private List<StatisticCallback> statisticCallbackList = new ArrayList<>();
+	private LoopResources loopResources;
 
-    public NettyServer(URL url, MessageHandler messageHandler) {
-        super(url);
-        this.messageHandler = messageHandler;
-    }
+	public NettyServer(URL url, MessageHandler messageHandler) {
+		super(url);
+		this.messageHandler = messageHandler;
+		this.loopResources = EventLoopResources.me();
+	}
 
-    @Override
-    public boolean isBound() {
-        return serverChannel != null && serverChannel.isActive();
-    }
+	@Override
+	public boolean isBound() {
+		return serverChannel != null && serverChannel.isActive();
+	}
 
-    @Override
-    public Response request(Request request) throws TransportException {
-        throw new MotanFrameworkException("NettyServer request(Request request) method not support: url: " + url);
-    }
+	@Override
+	public Response request(Request request) throws TransportException {
+		throw new MotanFrameworkException("NettyServer request(Request request) method not support: url: " + url);
+	}
 
-    @Override
-    public boolean open() {
-        if (isAvailable()) {
-            LoggerUtil.warn("NettyServer ServerChannel already Open: url=" + url);
-            return state.isAliveState();
-        }
-        if (bossGroup == null) {
-            bossGroup = new NioEventLoopGroup(1);
-            workerGroup = new NioEventLoopGroup();
-        }
+	@Override
+	public boolean open() {
+		if (isAvailable()) {
+			LoggerUtil.warn("NettyServer ServerChannel already Open: url=" + url);
+			return state.isAliveState();
+		}
+		if (bossGroup == null) {
+			bossGroup = loopResources.onServerSelect();
+			workerGroup = loopResources.onServer();
+		}
 
-        LoggerUtil.info("NettyServer ServerChannel start Open: url=" + url);
-        boolean shareChannel = url.getBooleanParameter(URLParamType.shareChannel.getName(), URLParamType.shareChannel.getBooleanValue());
-        final int maxContentLength = url.getIntParameter(URLParamType.maxContentLength.getName(), URLParamType.maxContentLength.getIntValue());
-        int maxServerConnection = url.getIntParameter(URLParamType.maxServerConnection.getName(), URLParamType.maxServerConnection.getIntValue());
-        int workerQueueSize = url.getIntParameter(URLParamType.workerQueueSize.getName(), URLParamType.workerQueueSize.getIntValue());
+		LoggerUtil.info("NettyServer ServerChannel start Open: url=" + url);
+		boolean shareChannel = url.getBooleanParameter(URLParamType.shareChannel.getName(),
+				URLParamType.shareChannel.getBooleanValue());
+		final int maxContentLength = url.getIntParameter(URLParamType.maxContentLength.getName(),
+				URLParamType.maxContentLength.getIntValue());
+		int maxServerConnection = url.getIntParameter(URLParamType.maxServerConnection.getName(),
+				URLParamType.maxServerConnection.getIntValue());
+		int workerQueueSize = url.getIntParameter(URLParamType.workerQueueSize.getName(),
+				URLParamType.workerQueueSize.getIntValue());
 
-        int minWorkerThread, maxWorkerThread;
+		int minWorkerThread, maxWorkerThread;
 
-        if (shareChannel) {
-            minWorkerThread = url.getIntParameter(URLParamType.minWorkerThread.getName(), MotanConstants.NETTY_SHARECHANNEL_MIN_WORKDER);
-            maxWorkerThread = url.getIntParameter(URLParamType.maxWorkerThread.getName(), MotanConstants.NETTY_SHARECHANNEL_MAX_WORKDER);
-        } else {
-            minWorkerThread = url.getIntParameter(URLParamType.minWorkerThread.getName(), MotanConstants.NETTY_NOT_SHARECHANNEL_MIN_WORKDER);
-            maxWorkerThread = url.getIntParameter(URLParamType.maxWorkerThread.getName(), MotanConstants.NETTY_NOT_SHARECHANNEL_MAX_WORKDER);
-        }
+		if (shareChannel) {
+			minWorkerThread = url.getIntParameter(URLParamType.minWorkerThread.getName(),
+					MotanConstants.NETTY_SHARECHANNEL_MIN_WORKDER);
+			maxWorkerThread = url.getIntParameter(URLParamType.maxWorkerThread.getName(),
+					MotanConstants.NETTY_SHARECHANNEL_MAX_WORKDER);
+		} else {
+			minWorkerThread = url.getIntParameter(URLParamType.minWorkerThread.getName(),
+					MotanConstants.NETTY_NOT_SHARECHANNEL_MIN_WORKDER);
+			maxWorkerThread = url.getIntParameter(URLParamType.maxWorkerThread.getName(),
+					MotanConstants.NETTY_NOT_SHARECHANNEL_MAX_WORKDER);
+		}
 
-        standardThreadExecutor = (standardThreadExecutor != null && !standardThreadExecutor.isShutdown()) ? standardThreadExecutor
-                : new StandardThreadExecutor(minWorkerThread, maxWorkerThread, workerQueueSize, new DefaultThreadFactory("NettyServer-" + url.getServerPortStr(), true));
-        standardThreadExecutor.prestartAllCoreThreads();
+		standardThreadExecutor = (standardThreadExecutor != null && !standardThreadExecutor.isShutdown())
+				? standardThreadExecutor
+				: new StandardThreadExecutor(minWorkerThread, maxWorkerThread, workerQueueSize,
+						new DefaultThreadFactory("Motan.NettyServer-" + url.getServerPortStr(), true));
+		standardThreadExecutor.prestartAllCoreThreads();
 
-        channelManage = new NettyServerChannelManage(maxServerConnection);
+		channelManage = new NettyServerChannelManage(maxServerConnection);
 
-        ServerBootstrap serverBootstrap = new ServerBootstrap();
-        serverBootstrap.group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) throws Exception {
-                        ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast("channel_manage", channelManage);
-                        pipeline.addLast("decoder", new NettyDecoder(codec, NettyServer.this, maxContentLength));
-                        pipeline.addLast("encoder", new NettyEncoder());
-                        NettyChannelHandler handler = new NettyChannelHandler(NettyServer.this, messageHandler, standardThreadExecutor);
-                        pipeline.addLast("handler", handler);
-                        addStatisticCallback(handler);
-                    }
-                });
-        serverBootstrap.childOption(ChannelOption.TCP_NODELAY, true);
-        serverBootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
-        ChannelFuture channelFuture = serverBootstrap.bind(new InetSocketAddress(url.getPort()));
-        channelFuture.syncUninterruptibly();
-        serverChannel = channelFuture.channel();
-        state = ChannelState.ALIVE;
-        addStatisticCallback(this);
-        LoggerUtil.info("NettyServer ServerChannel finish Open: url=" + url);
-        return state.isAliveState();
-    }
+		ServerBootstrap serverBootstrap = new ServerBootstrap();
+		serverBootstrap.group(bossGroup, workerGroup).channel(loopResources.onServerChannel())
+				.childHandler(new ChannelInitializer<SocketChannel>() {
+					@Override
+					protected void initChannel(SocketChannel ch) throws Exception {
+						ChannelPipeline pipeline = ch.pipeline();
+						pipeline.addLast("channel_manage", channelManage);
+						pipeline.addLast("decoder", new NettyDecoder(codec, NettyServer.this, maxContentLength));
+						pipeline.addLast("encoder", new NettyEncoder());
+						NettyChannelHandler handler = new NettyChannelHandler(NettyServer.this, messageHandler,
+								standardThreadExecutor);
+						pipeline.addLast("handler", handler);
+						addStatisticCallback(handler);
+					}
+				});
+		serverBootstrap.childOption(ChannelOption.TCP_NODELAY, true);
+		serverBootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
+		ChannelFuture channelFuture = serverBootstrap.bind(new InetSocketAddress(url.getPort()));
+		channelFuture.syncUninterruptibly();
+		serverChannel = channelFuture.channel();
+		state = ChannelState.ALIVE;
+		addStatisticCallback(this);
+		LoggerUtil.info("NettyServer ServerChannel finish Open: url=" + url);
+		return state.isAliveState();
+	}
 
-    @Override
-    public synchronized void close() {
-        close(0);
-    }
+	@Override
+	public synchronized void close() {
+		close(0);
+	}
 
-    @Override
-    public synchronized void close(int timeout) {
-        if (state.isCloseState()) {
-            LoggerUtil.info("NettyServer close fail: already close, url={}", url.getUri());
-            return;
-        }
+	@Override
+	public synchronized void close(int timeout) {
+		if (state.isCloseState()) {
+			LoggerUtil.info("NettyServer close fail: already close, url={}", url.getUri());
+			return;
+		}
 
-        if (state.isUnInitState()) {
-            LoggerUtil.info("NettyServer close Fail: don't need to close because node is unInit state: url={}", url.getUri());
-            return;
-        }
+		if (state.isUnInitState()) {
+			LoggerUtil.info("NettyServer close Fail: don't need to close because node is unInit state: url={}",
+					url.getUri());
+			return;
+		}
 
-        try {
-            // close listen socket
-            if (serverChannel != null) {
-                serverChannel.close();
-                bossGroup.shutdownGracefully();
-                workerGroup.shutdownGracefully();
-                bossGroup = null;
-                workerGroup = null;
-            }
-            // close all clients's channel
-            if (channelManage != null) {
-                channelManage.close();
-            }
-            // shutdown the threadPool
-            if (standardThreadExecutor != null) {
-                standardThreadExecutor.shutdownNow();
-            }
-            // 设置close状态
-            state = ChannelState.CLOSE;
-            // 取消统计回调的注册
-            clearStatisticCallback();
-            LoggerUtil.info("NettyServer close Success: url={}", url.getUri());
-        } catch (Exception e) {
-            LoggerUtil.error("NettyServer close Error: url=" + url.getUri(), e);
-        }
-    }
+		try {
+			// close listen socket
+			if (serverChannel != null) {
+				serverChannel.close();
+				bossGroup.shutdownGracefully();
+				workerGroup.shutdownGracefully();
+				bossGroup = null;
+				workerGroup = null;
+			}
+			// close all clients's channel
+			if (channelManage != null) {
+				channelManage.close();
+			}
+			// shutdown the threadPool
+			if (standardThreadExecutor != null) {
+				standardThreadExecutor.shutdownNow();
+			}
+			// 设置close状态
+			state = ChannelState.CLOSE;
+			// 取消统计回调的注册
+			clearStatisticCallback();
+			LoggerUtil.info("NettyServer close Success: url={}", url.getUri());
+		} catch (Exception e) {
+			LoggerUtil.error("NettyServer close Error: url=" + url.getUri(), e);
+		}
+	}
 
-    @Override
-    public boolean isClosed() {
-        return state.isCloseState();
-    }
+	@Override
+	public boolean isClosed() {
+		return state.isCloseState();
+	}
 
-    @Override
-    public boolean isAvailable() {
-        return state.isAliveState();
-    }
+	@Override
+	public boolean isAvailable() {
+		return state.isAliveState();
+	}
 
-    @Override
-    public URL getUrl() {
-        return url;
-    }
+	@Override
+	public URL getUrl() {
+		return url;
+	}
 
-    @Override
-    public String statisticCallback() {
-        return String.format("identity: %s connectionCount: %s taskCount: %s queueCount: %s maxThreadCount: %s maxTaskCount: %s",
-                url.getIdentity(), channelManage.getChannels().size(), standardThreadExecutor.getSubmittedTasksCount(),
-                standardThreadExecutor.getQueue().size(), standardThreadExecutor.getMaximumPoolSize(),
-                standardThreadExecutor.getMaxSubmittedTaskCount());
-    }
+	@Override
+	public String statisticCallback() {
+		return String.format(
+				"identity: %s connectionCount: %s taskCount: %s queueCount: %s maxThreadCount: %s maxTaskCount: %s",
+				url.getIdentity(), channelManage.getChannels().size(), standardThreadExecutor.getSubmittedTasksCount(),
+				standardThreadExecutor.getQueue().size(), standardThreadExecutor.getMaximumPoolSize(),
+				standardThreadExecutor.getMaxSubmittedTaskCount());
+	}
 
-    private void addStatisticCallback(StatisticCallback callback) {
-        StatsUtil.registryStatisticCallback(callback);
-        statisticCallbackList.add(callback);
-    }
+	private void addStatisticCallback(StatisticCallback callback) {
+		StatsUtil.registryStatisticCallback(callback);
+		statisticCallbackList.add(callback);
+	}
 
-    private void clearStatisticCallback() {
-        StatsUtil.unRegistryStatisticCallbacks(statisticCallbackList);
-    }
+	private void clearStatisticCallback() {
+		StatsUtil.unRegistryStatisticCallbacks(statisticCallbackList);
+	}
 }

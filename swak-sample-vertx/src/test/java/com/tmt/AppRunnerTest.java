@@ -6,7 +6,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.swak.test.ApplicationTest;
 import com.swak.vertx.annotation.ServiceReferer;
-import com.tmt.api.facade.GoodsServiceFacadeAsync;
+import com.tmt.api.facade.GoodsServiceFacadeAsyncx;
 
 /**
  * 系统测试的启动
@@ -18,7 +18,7 @@ import com.tmt.api.facade.GoodsServiceFacadeAsync;
 public class AppRunnerTest {
 	
 	@ServiceReferer
-	private GoodsServiceFacadeAsync goodsService;
+	private GoodsServiceFacadeAsyncx goodsService;
 	
 	@Test
 	public void contextLoads() {

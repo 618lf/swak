@@ -3,11 +3,14 @@ package com.tmt.api.web;
 import java.util.concurrent.CompletableFuture;
 
 import com.swak.Constants;
+import com.swak.entity.Result;
 import com.swak.vertx.annotation.GetMapping;
 import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.annotation.ServiceReferer;
 import com.tmt.api.entity.Goods;
 import com.tmt.api.facade.GoodsServiceFacadeAsync;
+import com.tmt.api.facade.GoodsServiceFacadeAsyncx;
+import com.weibo.api.motan.config.springsupport.annotation.MotanReferer;
 
 import io.vertx.ext.web.RoutingContext;
 
@@ -20,8 +23,21 @@ import io.vertx.ext.web.RoutingContext;
 public class GoodsController {
 
 	@ServiceReferer
-	private GoodsServiceFacadeAsync goodsService;
-	
+	private GoodsServiceFacadeAsyncx goodsService;
+	@MotanReferer
+	private GoodsServiceFacadeAsync goodsServiceRpc;
+
+	/**
+	 * 通过 rpc 获取数据
+	 * 
+	 * @param context
+	 * @return
+	 */
+	@GetMapping("/rpc_get")
+	public CompletableFuture<Result> rpc_get(RoutingContext context) {
+		System.out.println("接口:" + Thread.currentThread());
+		return goodsServiceRpc.sayHelloAsync().toFuture().thenApply(o -> Result.success(o));
+	}
 
 	/**
 	 * get参数或 post 参数 get 参数： ?name=xxx post参数： xxx=yyy

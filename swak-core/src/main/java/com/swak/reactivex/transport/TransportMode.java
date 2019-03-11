@@ -19,5 +19,5 @@ public enum TransportMode {
     /**
      * OS Adaptation, Linux us EPOLL, Others use NIO
      */
-    OS,
+    OS;
 }

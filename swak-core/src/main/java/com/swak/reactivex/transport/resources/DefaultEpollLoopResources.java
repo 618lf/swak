@@ -25,14 +25,14 @@ public class DefaultEpollLoopResources extends DefaultLoopResources {
 	}
 	
 	@Override
-	public Class<? extends Channel> onChannel() {
+	public Class<? extends Channel> onClientChannel() {
 		return EpollSocketChannel.class;
 	}
 
 	@Override
 	public EventLoopGroup onServerSelect() {
 		if (this.serverSelectLoops == null) {
-			this.serverSelectLoops = new EpollEventLoopGroup(selectCount, threadFactory(this, "epoll-select"));
+			this.serverSelectLoops = new EpollEventLoopGroup(selectCount, threadFactory(this, "epoll-acceptor-"));
 		}
 		return this.serverSelectLoops;
 	}
@@ -40,7 +40,7 @@ public class DefaultEpollLoopResources extends DefaultLoopResources {
 	@Override
 	public EventLoopGroup onServer() {
 		if (this.serverLoops == null) {
-			this.serverLoops = new EpollEventLoopGroup(workerCount, threadFactory(this, "epoll-server"));
+			this.serverLoops = new EpollEventLoopGroup(workerCount, threadFactory(this, "epoll-eventloop-"));
 		}
 		return this.serverLoops;
 	}

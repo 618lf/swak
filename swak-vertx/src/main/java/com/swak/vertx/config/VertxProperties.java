@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.swak.OS;
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.utils.Maps;
 
@@ -21,7 +22,8 @@ public class VertxProperties {
 	private int port = 8888;
 	private TransportMode mode = TransportMode.NIO;
 	private int eventLoopPoolSize = 2 * CpuCoreSensor.availableProcessors();
-	private int workerThreads = 20; // vertx 自定义使用
+	private int workerThreads = 10; // vertx 自定义使用
+	private int internalBlockingThreads = 10;// vertx 内部使用
 	private int extWorkerThreads = 10;// workers 外部使用
 	private Map<String, Integer> workers = Maps.newHashMap();
 	private boolean metricAble = true;
@@ -217,7 +219,18 @@ public class VertxProperties {
 		this.eventLoopPoolSize = eventLoopPoolSize;
 	}
 	public TransportMode getMode() {
+		if (TransportMode.OS == mode) {
+			return this.getModeByOS();
+		}
 		return mode;
+	}
+
+	public TransportMode getModeByOS() {
+		OS os = OS.me();
+		if (os == OS.linux) {
+			return TransportMode.EPOLL;
+		}
+		return TransportMode.NIO;
 	}
 	public void setMode(TransportMode mode) {
 		this.mode = mode;
@@ -239,5 +252,11 @@ public class VertxProperties {
 	}
 	public void setExtWorkerThreads(int extWorkerThreads) {
 		this.extWorkerThreads = extWorkerThreads;
+	}
+	public int getInternalBlockingThreads() {
+		return internalBlockingThreads;
+	}
+	public void setInternalBlockingThreads(int internalBlockingThreads) {
+		this.internalBlockingThreads = internalBlockingThreads;
 	}
 }

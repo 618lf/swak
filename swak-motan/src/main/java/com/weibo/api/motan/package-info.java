@@ -16,5 +16,7 @@
  * com.weibo.api.motan.codec.Serialization
  * 修改：
  * MotanService @Service
+ * 修改：
+ * NettyServer
  */
 package com.weibo.api.motan;
