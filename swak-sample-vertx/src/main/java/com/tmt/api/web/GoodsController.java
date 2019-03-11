@@ -21,6 +21,7 @@ public class GoodsController {
 
 	@ServiceReferer
 	private GoodsServiceFacadeAsync goodsService;
+	
 
 	/**
 	 * get参数或 post 参数 get 参数： ?name=xxx post参数： xxx=yyy
