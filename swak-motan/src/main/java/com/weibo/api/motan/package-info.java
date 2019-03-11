@@ -14,5 +14,7 @@
  * 
  * 修改：
  * com.weibo.api.motan.codec.Serialization
+ * 修改：
+ * MotanService @Service
  */
 package com.weibo.api.motan;

@@ -1,5 +1,7 @@
 package com.swak.config;
 
+import static com.swak.Application.APP_LOGGER;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +10,6 @@ import org.springframework.context.annotation.Import;
 
 import com.swak.config.options.MetricsOptionsAutoConfiguration;
 import com.swak.config.options.StandardOptionsAutoConfiguration;
-import com.swak.config.vertx.ClusterVertxAutoConfiguration;
 import com.swak.config.vertx.StandardVerxAutoConfiguration;
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.VertxProperties;
@@ -24,8 +25,12 @@ import com.swak.vertx.transport.ReactiveServer;
 @ConditionalOnClass(VertxProperties.class)
 @EnableConfigurationProperties(VertxProperties.class)
 @Import({ MetricsOptionsAutoConfiguration.class, StandardOptionsAutoConfiguration.class,
-		ClusterVertxAutoConfiguration.class, StandardVerxAutoConfiguration.class })
+		StandardVerxAutoConfiguration.class })
 public class VertxAutoConfiguration {
+
+	public VertxAutoConfiguration() {
+		APP_LOGGER.debug("Loading Verx");
+	}
 
 	/**
 	 * 加载服务器的配置
