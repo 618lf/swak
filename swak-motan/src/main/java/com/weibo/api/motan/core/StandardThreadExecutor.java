@@ -16,7 +16,6 @@
 
 package com.weibo.api.motan.core;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -45,7 +44,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 
  * @author maijunsheng
  * @version 创建时间：2013-6-20
- * 
  */
 public class StandardThreadExecutor extends ThreadPoolExecutor {
 
@@ -56,28 +54,8 @@ public class StandardThreadExecutor extends ThreadPoolExecutor {
 	protected AtomicInteger submittedTasksCount;	// 正在处理的任务数 
 	private int maxSubmittedTaskCount;				// 最大允许同时处理的任务数
 
-	public StandardThreadExecutor() {
-		this(DEFAULT_MIN_THREADS, DEFAULT_MAX_THREADS);
-	}
-
-	public StandardThreadExecutor(int coreThread, int maxThreads) {
-		this(coreThread, maxThreads, maxThreads);
-	}
-
-	public StandardThreadExecutor(int coreThread, int maxThreads, long keepAliveTime, TimeUnit unit) {
-		this(coreThread, maxThreads, keepAliveTime, unit, maxThreads);
-	}
-
-	public StandardThreadExecutor(int coreThreads, int maxThreads, int queueCapacity) {
-		this(coreThreads, maxThreads, queueCapacity, Executors.defaultThreadFactory());
-	}
-
 	public StandardThreadExecutor(int coreThreads, int maxThreads, int queueCapacity, ThreadFactory threadFactory) {
 		this(coreThreads, maxThreads, DEFAULT_MAX_IDLE_TIME, TimeUnit.MILLISECONDS, queueCapacity, threadFactory);
-	}
-
-	public StandardThreadExecutor(int coreThreads, int maxThreads, long keepAliveTime, TimeUnit unit, int queueCapacity) {
-		this(coreThreads, maxThreads, keepAliveTime, unit, queueCapacity, Executors.defaultThreadFactory());
 	}
 
 	public StandardThreadExecutor(int coreThreads, int maxThreads, long keepAliveTime, TimeUnit unit,

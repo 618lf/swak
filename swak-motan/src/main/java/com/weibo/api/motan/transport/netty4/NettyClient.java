@@ -13,6 +13,7 @@ import com.swak.reactivex.transport.resources.LoopResources;
 import com.weibo.api.motan.common.ChannelState;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.common.URLParamType;
+import com.weibo.api.motan.core.DefaultThreadFactory;
 import com.weibo.api.motan.exception.MotanAbstractException;
 import com.weibo.api.motan.exception.MotanErrorMsgConstant;
 import com.weibo.api.motan.exception.MotanFrameworkException;
@@ -50,7 +51,7 @@ public class NettyClient extends AbstractSharedPoolClient implements StatisticCa
 	/**
 	 * 回收过期任务
 	 */
-	private static ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
+	private static ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1, new DefaultThreadFactory("Motan.ClientTimeMonitor", true));
 	/**
 	 * 异步的request，需要注册callback future 触发remove的操作有： 1) service的返回结果处理。 2) timeout
 	 * thread cancel

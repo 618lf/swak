@@ -39,6 +39,7 @@ import com.weibo.api.motan.closable.Closable;
 import com.weibo.api.motan.closable.ShutDownHook;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.common.URLParamType;
+import com.weibo.api.motan.core.DefaultThreadFactory;
 import com.weibo.api.motan.util.StatsUtil.AccessStatus;
 
 /**
@@ -49,7 +50,7 @@ import com.weibo.api.motan.util.StatsUtil.AccessStatus;
 public class StatsUtil {
 
     public static final String HISTOGRAM_NAME = MetricRegistry.name(AccessStatisticItem.class, "costTimeMillis");
-    public static ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+    public static ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1, new DefaultThreadFactory("Motan.Statistic", true));
     public static String SEPARATE = "\\|";
     protected static ConcurrentMap<String, AccessStatisticItem> accessStatistics = new ConcurrentHashMap<String, AccessStatisticItem>();
     protected static List<StatisticCallback> statisticCallbacks = new CopyOnWriteArrayList<StatisticCallback>();

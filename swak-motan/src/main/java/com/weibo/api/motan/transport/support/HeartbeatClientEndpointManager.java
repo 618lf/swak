@@ -29,6 +29,7 @@ import com.weibo.api.motan.closable.Closable;
 import com.weibo.api.motan.closable.ShutDownHook;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.common.URLParamType;
+import com.weibo.api.motan.core.DefaultThreadFactory;
 import com.weibo.api.motan.core.extension.ExtensionLoader;
 import com.weibo.api.motan.exception.MotanFrameworkException;
 import com.weibo.api.motan.rpc.URL;
@@ -53,7 +54,7 @@ public class HeartbeatClientEndpointManager implements EndpointManager{
     @SuppressWarnings("rawtypes")
 	@Override
     public void init() {
-        executorService = Executors.newScheduledThreadPool(1);
+        executorService = Executors.newScheduledThreadPool(1, new DefaultThreadFactory("Motan.Heartbeat", true));
         executorService.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {

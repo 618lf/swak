@@ -17,13 +17,8 @@
 package com.weibo.api.motan.rpc;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-
-import com.weibo.api.motan.closable.Closable;
-import com.weibo.api.motan.closable.ShutDownHook;
 
 /**
  * 
@@ -32,8 +27,6 @@ import com.weibo.api.motan.closable.ShutDownHook;
  * @author fishermen
  * @version V1.0 created at: 2013-5-23
  */
-
-@SuppressWarnings("rawtypes")
 public class RpcStats {
 
     private static final String SEPERATOR_METHOD_AND_PARAM = "|";
@@ -42,17 +35,17 @@ public class RpcStats {
     private static ConcurrentHashMap<String, ConcurrentHashMap<String, StatInfo>> methodStat =
             new ConcurrentHashMap<String, ConcurrentHashMap<String, StatInfo>>();
 
-    private static ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
-    static{
-        ShutDownHook.registerShutdownHook(new Closable() {
-            @Override
-            public void close() {
-                if(!scheduledExecutor.isShutdown()){
-                    scheduledExecutor.shutdown();
-                }
-            }
-        });
-    }
+//    private static ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
+//    static{
+//        ShutDownHook.registerShutdownHook(new Closable() {
+//            @Override
+//            public void close() {
+//                if(!scheduledExecutor.isShutdown()){
+//                    scheduledExecutor.shutdown();
+//                }
+//            }
+//        });
+//    }
     /**
      * call before invoke the request
      * 

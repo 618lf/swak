@@ -18,5 +18,7 @@
  * MotanService @Service
  * 修改：
  * NettyServer
+ * 修改：
+ * 统一命名线程池 参考vert.x的线程池设计
  */
 package com.weibo.api.motan;

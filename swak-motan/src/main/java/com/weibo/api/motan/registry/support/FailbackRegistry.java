@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import com.weibo.api.motan.closable.Closable;
 import com.weibo.api.motan.closable.ShutDownHook;
 import com.weibo.api.motan.common.URLParamType;
+import com.weibo.api.motan.core.DefaultThreadFactory;
 import com.weibo.api.motan.exception.MotanFrameworkException;
 import com.weibo.api.motan.registry.NotifyListener;
 import com.weibo.api.motan.rpc.URL;
@@ -43,7 +44,6 @@ import com.weibo.api.motan.util.LoggerUtil;
  * @author fishermen
  * @version V1.0 created at: 2013-5-28
  */
-
 @SuppressWarnings("rawtypes")
 public abstract class FailbackRegistry extends AbstractRegistry {
 
@@ -54,7 +54,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
     private ConcurrentHashMap<URL, ConcurrentHashSet<NotifyListener>> failedUnsubscribed =
             new ConcurrentHashMap<URL, ConcurrentHashSet<NotifyListener>>();
 
-    private static ScheduledExecutorService retryExecutor = Executors.newScheduledThreadPool(1);
+    private static ScheduledExecutorService retryExecutor = Executors.newScheduledThreadPool(1, new DefaultThreadFactory("Motan.FailedRegisteredRetry", true));
     static{
         ShutDownHook.registerShutdownHook(new Closable() {
             @Override
