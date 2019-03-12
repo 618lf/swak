@@ -1,0 +1,59 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+    defaultConfig {
+        applicationId rootProject.ext.android.applicationId
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
+        flavorDimensions "versionCode"
+        vectorDrawables.useSupportLibrary = true
+        ndk {
+            abiFilters 'armeabi', 'armeabi-v7a', 'x86', 'x86_64'
+        }
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            //混淆
+            minifyEnabled false
+            //Zipalign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //apk命名
+            android.applicationVariants.all { variant ->
+                variant.outputs.all { output ->
+                    //这里修改apk文件名
+                    outputFileName = "${defaultConfig.applicationId}_v${defaultConfig.versionCode}.apk"
+                }
+            }
+        }
+        debug {
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            applicationIdSuffix ".debug"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation 'junit:junit:4.12'
+    implementation project(':core')
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    implementation "com.mikepenz:iconics-core:3.0.4"
+    implementation 'com.mikepenz:material-design-iconic-typeface:2.2.0.5@aar'
+}

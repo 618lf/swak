@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--加载动画-->
+    <attr name="SpinKitViewStyle" format="reference" />
+    <declare-styleable name="SpinKitView">
+        <attr name="SpinKit_Style">
+            <enum name="DoubleBounce" value="0" />
+            <enum name="Wave" value="1" />
+            <enum name="WanderingCubes" value="2" />
+            <enum name="Pulse" value="3" />
+            <enum name="ChasingDots" value="4" />
+            <enum name="ThreeBounce" value="5" />
+            <enum name="Circle" value="6" />
+            <enum name="CubeGrid" value="7" />
+            <enum name="FadingCircle" value="8" />
+            <enum name="FoldingCube" value="9" />
+            <enum name="MultiplePulse" value="10" />
+            <enum name="PulseRing" value="11" />
+            <enum name="MultiplePulseRing" value="12" />
+        </attr>
+        <attr name="SpinKit_Color" format="color" />
+    </declare-styleable>
+    <!-- swipe back -->
+    <declare-styleable name="SwipeBackLayout">
+        <attr name="swipeBackFactor" format="float"></attr>
+        <attr name="maskAlpha" format="integer"></attr>
+        <attr name="isSwipeFromEdge" format="boolean"></attr>
+        <attr name="directionMode">
+            <enum name="left" value="1" />
+            <enum name="right" value="2" />
+            <enum name="top" value="4" />
+            <enum name="bottom" value="8" />
+        </attr>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_dialog_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center_horizontal|bottom"
+            android:text="温馨提示"
+            android:textColor="@color/deep_gray_2"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/dialog_message_tv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:padding="15dp"
+            android:text=""
+            android:textColor="@color/deep_gray_2"
+            android:textSize="15sp" />
+
+
+        <TextView
+            android:id="@+id/dialog_line_h"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/light_gray" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/dialog_leftbtn"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="确定"
+                android:textColor="@color/dodgerblue"
+                android:textSize="15sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/dialog_line_v"
+                android:layout_width="1dp"
+                android:layout_height="45dp"
+                android:background="@color/light_gray"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/dialog_rightbtn"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="取消"
+                android:textColor="@color/gray"
+                android:textSize="15sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>
