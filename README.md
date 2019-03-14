@@ -106,3 +106,6 @@ application.properties 会查找 config 目录下的文件
 
 # 版本0.1.3
 升级 netty 和 springboot 和相关的jar
+
+# 版本0.1.3.1
+简化配置
