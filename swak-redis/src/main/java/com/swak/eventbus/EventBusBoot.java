@@ -16,7 +16,7 @@ public class EventBusBoot extends AbstractBoot {
 	
 	@Override
 	public String describe() {
-		return "事件总线";
+		return "基于 REDIS 的事件";
 	}
 
 	@Override

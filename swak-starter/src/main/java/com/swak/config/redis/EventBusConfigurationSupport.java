@@ -10,7 +10,7 @@ import com.swak.eventbus.EventBusBoot;
 import com.swak.eventbus.EventConsumer;
 import com.swak.eventbus.EventProducer;
 import com.swak.eventbus.RedisEventBus;
-import com.swak.eventbus.impl.RedisEventProducer;
+import com.swak.eventbus.RedisEventProducer;
 
 /**
  * EventBus 自动配置

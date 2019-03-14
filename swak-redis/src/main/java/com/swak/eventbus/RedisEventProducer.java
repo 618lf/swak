@@ -1,4 +1,4 @@
-package com.swak.eventbus.impl;
+package com.swak.eventbus;
 
 import java.util.concurrent.CompletionStage;
 

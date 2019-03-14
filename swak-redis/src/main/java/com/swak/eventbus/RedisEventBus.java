@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.RedisUtils;
+import com.swak.eventbus.EventConsumer;
 import com.swak.utils.Lists;
 
 import io.lettuce.core.pubsub.RedisPubSubListener;
@@ -14,7 +15,7 @@ import io.lettuce.core.pubsub.RedisPubSubListener;
  * 基于 Redis 的 event bus
  * @author lifeng
  */
-public class RedisEventBus implements RedisPubSubListener<byte[], byte[]>, EventBus{
+public class RedisEventBus implements RedisPubSubListener<byte[], byte[]>, EventBus {
 	
     private Map<String, List<EventConsumer>> consumers = new ConcurrentHashMap<>(2);
 	
