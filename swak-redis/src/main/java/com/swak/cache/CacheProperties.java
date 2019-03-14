@@ -3,13 +3,14 @@ package com.swak.cache;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.swak.Constants;
+import com.swak.reactivex.transport.TransportProperties;
 
 /**
  * 缓存属性配置
  * @author lifeng
  */
 @ConfigurationProperties(prefix = Constants.CACHE_PREFIX)
-public class CacheProperties {
+public class CacheProperties extends TransportProperties{
 
 	private String hosts;
 	private String password;

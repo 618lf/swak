@@ -4,8 +4,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.swak.OS;
-import com.swak.reactivex.transport.TransportMode;
+import com.swak.reactivex.transport.TransportProperties;
 import com.swak.utils.Maps;
 
 import io.vertx.core.impl.cpu.CpuCoreSensor;
@@ -16,16 +15,14 @@ import io.vertx.core.impl.cpu.CpuCoreSensor;
  * @author lifeng
  */
 @ConfigurationProperties(prefix = "spring.vertx")
-public class VertxProperties {
+public class VertxProperties extends TransportProperties {
 
 	private String host = null;
 	private int port = 8888;
-	private TransportMode mode = TransportMode.NIO;
 	private int eventLoopPoolSize = 2 * CpuCoreSensor.availableProcessors();
-	private int workerThreads = 10; // vertx 自定义使用
-	private int internalBlockingThreads = 10;// vertx 内部使用
-	private int extWorkerThreads = 10;// workers 外部使用
-	private Map<String, Integer> workers = Maps.newHashMap();
+	private int internalBlockingThreads = 10;// vertx Blocking 内部使用
+	private int workerThreads = 10; // vertx Verticle 内部使用
+	private Map<String, Integer> workers = Maps.newHashMap(); // vertx Verticle 内部使用
 	private boolean metricAble = true;
 	
 	// event bus 的超时时间默认
@@ -218,23 +215,6 @@ public class VertxProperties {
 	public void setEventLoopPoolSize(int eventLoopPoolSize) {
 		this.eventLoopPoolSize = eventLoopPoolSize;
 	}
-	public TransportMode getMode() {
-		if (TransportMode.OS == mode) {
-			return this.getModeByOS();
-		}
-		return mode;
-	}
-
-	public TransportMode getModeByOS() {
-		OS os = OS.me();
-		if (os == OS.linux) {
-			return TransportMode.EPOLL;
-		}
-		return TransportMode.NIO;
-	}
-	public void setMode(TransportMode mode) {
-		this.mode = mode;
-	}
 	public int getWorkerThreads() {
 		return workerThreads;
 	}
@@ -246,12 +226,6 @@ public class VertxProperties {
 	}
 	public void setPort(int port) {
 		this.port = port;
-	}
-	public int getExtWorkerThreads() {
-		return extWorkerThreads;
-	}
-	public void setExtWorkerThreads(int extWorkerThreads) {
-		this.extWorkerThreads = extWorkerThreads;
 	}
 	public int getInternalBlockingThreads() {
 		return internalBlockingThreads;

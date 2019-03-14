@@ -3,8 +3,7 @@ package com.swak.reactivex.transport.http.server;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.swak.Constants;
-import com.swak.OS;
-import com.swak.reactivex.transport.TransportMode;
+import com.swak.reactivex.transport.TransportProperties;
 
 import io.netty.handler.codec.http.multipart.DiskAttribute;
 import io.netty.handler.codec.http.multipart.DiskFileUpload;
@@ -17,10 +16,9 @@ import io.netty.util.ResourceLeakDetector.Level;
  * @author lifeng
  */
 @ConfigurationProperties(prefix = Constants.HTTP_SERVER_PREFIX)
-public class HttpServerProperties {
+public class HttpServerProperties extends TransportProperties {
 
 	private String name = "SWAK-HTTP-SERVER";
-	private TransportMode mode = TransportMode.OS;
 	private LogLevel serverLogLevel = null;
 	private Level leakDetectionLevel = Level.DISABLED;
 	private boolean threadCache = true;
@@ -136,25 +134,6 @@ public class HttpServerProperties {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public TransportMode getMode() {
-		if (TransportMode.OS == mode) {
-			return this.getModeByOS();
-		}
-		return mode;
-	}
-
-	public TransportMode getModeByOS() {
-		OS os = OS.me();
-		if (os == OS.linux) {
-			return TransportMode.EPOLL;
-		}
-		return TransportMode.NIO;
-	}
-
-	public void setMode(TransportMode mode) {
-		this.mode = mode;
 	}
 
 	public LogLevel getServerLogLevel() {

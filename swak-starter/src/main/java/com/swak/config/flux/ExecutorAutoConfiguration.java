@@ -1,4 +1,4 @@
-package com.swak.config;
+package com.swak.config.flux;
 
 import static com.swak.Application.APP_LOGGER;
 
@@ -16,7 +16,7 @@ import com.swak.Constants;
 import com.swak.executor.ConfigableExecutor;
 import com.swak.executor.NamedThreadFactory;
 import com.swak.executor.Workers;
-import com.swak.vertx.config.VertxProperties;
+import com.swak.reactivex.transport.http.server.HttpServerProperties;
 
 /**
  * Worker Executor 配置
@@ -25,12 +25,12 @@ import com.swak.vertx.config.VertxProperties;
  */
 @Configuration
 @ConditionalOnMissingBean(Executor.class)
-@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableWorkers", matchIfMissing = false)
-@EnableConfigurationProperties(VertxProperties.class)
+@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableWorkers", matchIfMissing = true)
+@EnableConfigurationProperties(HttpServerProperties.class)
 public class ExecutorAutoConfiguration {
 
 	@Autowired
-	private VertxProperties properties;
+	private HttpServerProperties properties;
 
 	public ExecutorAutoConfiguration() {
 		APP_LOGGER.debug("Loading Worker Executor");
@@ -43,23 +43,17 @@ public class ExecutorAutoConfiguration {
 	 */
 	@Bean
 	public ConfigableExecutor configableExecutor() {
-		ConfigableExecutor ce = this.configable();
+		ConfigableExecutor ce = new ConfigableExecutor();
+		this.configable(ce);
 		Workers.executor(ce);
 		return ce;
 	}
 
-	/**
-	 * 配置执行器
-	 * 
-	 * @return
-	 */
-	private ConfigableExecutor configable() {
-
-		ConfigableExecutor executor = new ConfigableExecutor();
+	private void configable(ConfigableExecutor executor) {
 
 		// 默认
-		if (properties.getExtWorkerThreads() != -1) {
-			Executor _executor = Executors.newFixedThreadPool(properties.getExtWorkerThreads(),
+		if (properties.getWorkerThreads() != -1) {
+			Executor _executor = Executors.newFixedThreadPool(properties.getWorkerThreads(),
 					new NamedThreadFactory("SWAK-worker-default", true));
 			executor.setExecutor(Constants.default_pool, _executor);
 		}
@@ -67,7 +61,5 @@ public class ExecutorAutoConfiguration {
 		// 单个
 		Executor _executor = Executors.newFixedThreadPool(1, new NamedThreadFactory("SWAK-worker-single", true));
 		executor.setExecutor(Constants.single_pool, _executor);
-
-		return executor;
 	}
 }

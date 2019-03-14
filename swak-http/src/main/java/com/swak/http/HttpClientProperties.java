@@ -3,6 +3,7 @@ package com.swak.http;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.swak.Constants;
+import com.swak.reactivex.transport.TransportProperties;
 
 /**
  * httpclient 配置
@@ -10,7 +11,7 @@ import com.swak.Constants;
  * @author lifeng
  */
 @ConfigurationProperties(prefix = Constants.HTTP_CLIENT_PREFIX)
-public class HttpClientProperties {
+public class HttpClientProperties extends TransportProperties {
 
 	private String userAgent = "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.186 Safari/535.1";
     private int connectTimeout = 60000;
