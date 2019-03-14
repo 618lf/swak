@@ -1,7 +1,0 @@
-# spring boot auto load Initializers and Application Listeners 
-# see all spring.factories
-
-# Auto Configuration, SWAK only load Auto Configuration 
-com.swak.ApplicationBoot=\
-com.swak.config.motan.MotanAutoConfiguration,\
-com.swak.config.motan.MotanCommandLineRunner

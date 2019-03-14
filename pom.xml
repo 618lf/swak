@@ -14,15 +14,12 @@
 		<module>swak-http</module>
 		<module>swak-actuator</module>
 		<module>swak-sample</module>
-		<module>swak-starter-web</module>
-		<module>swak-starter-rpc</module>
 		<module>swak-sample-rpc</module>
 		<module>swak-groovy</module>
 		<module>swak-storage</module>
 		<module>swak-motan</module>
 		<module>swak-sample-api</module>
 		<module>swak-vertx</module>
-		<module>swak-starter-vertx</module>
 		<module>swak-starter</module>
 		<module>swak-sample-vertx</module>
 		<module>swak-qrcode</module>
