@@ -15,7 +15,7 @@ import io.netty.util.ResourceLeakDetector.Level;
  * 
  * @author lifeng
  */
-@ConfigurationProperties(prefix = Constants.HTTP_SERVER_PREFIX)
+@ConfigurationProperties(prefix = Constants.FLUX_SERVER_PREFIX)
 public class HttpServerProperties extends TransportProperties {
 
 	private String name = "SWAK-HTTP-SERVER";
