@@ -5,6 +5,7 @@ import static com.swak.Application.APP_LOGGER;
 import java.net.Socket;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,7 @@ import io.netty.handler.codec.http.multipart.DiskFileUpload;
  * @author lifeng
  */
 @Configuration
+@ConditionalOnClass(ReactiveServer.class)
 @EnableConfigurationProperties(HttpServerProperties.class)
 @AutoConfigureAfter({ WebHandlerAutoConfiguration.class })
 public class HttpServerAutoConfiguration {

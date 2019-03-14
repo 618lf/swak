@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 import com.swak.Constants;
 import com.swak.reactivex.handler.WebFilter;
 import com.swak.reactivex.transport.http.server.HttpServerProperties;
+import com.swak.reactivex.transport.http.server.ReactiveServer;
 import com.swak.security.JwtAuthProvider;
 import com.swak.security.SecurityFilter;
 import com.swak.security.SecurityUtils;
@@ -30,6 +32,7 @@ import com.swak.security.principal.TokenPrincipalStrategy;
  * @author lifeng
  */
 @Configuration
+@ConditionalOnClass(ReactiveServer.class)
 @ConditionalOnBean({ SecurityConfigurationSupport.class })
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableSecurity", matchIfMissing = true)
 public class SecurityAutoConfiguration {

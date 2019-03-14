@@ -19,7 +19,7 @@ import com.swak.vertx.transport.ReactiveServer;
  * @author lifeng
  */
 @Configuration
-@ConditionalOnClass(VertxProperties.class)
+@ConditionalOnClass(ReactiveServer.class)
 @EnableConfigurationProperties(VertxProperties.class)
 @Import({ MetricsOptionsAutoConfiguration.class, StandardOptionsAutoConfiguration.class,
 		StandardVerxAutoConfiguration.class })

@@ -6,6 +6,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -17,6 +18,7 @@ import com.swak.executor.ConfigableExecutor;
 import com.swak.executor.NamedThreadFactory;
 import com.swak.executor.Workers;
 import com.swak.reactivex.transport.http.server.HttpServerProperties;
+import com.swak.reactivex.transport.http.server.ReactiveServer;
 
 /**
  * Worker Executor 配置
@@ -24,6 +26,7 @@ import com.swak.reactivex.transport.http.server.HttpServerProperties;
  * @author lifeng
  */
 @Configuration
+@ConditionalOnClass(ReactiveServer.class)
 @ConditionalOnMissingBean(Executor.class)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableWorkers", matchIfMissing = true)
 @EnableConfigurationProperties(HttpServerProperties.class)

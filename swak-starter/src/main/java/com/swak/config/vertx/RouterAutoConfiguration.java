@@ -18,8 +18,7 @@ import com.swak.vertx.handler.converter.StreamMessageConverter;
 import com.swak.vertx.handler.converter.StringHttpMessageConverter;
 import com.swak.vertx.handler.formatter.DateFormatter;
 import com.swak.vertx.handler.formatter.StringEscapeFormatter;
-
-import io.vertx.ext.web.Router;
+import com.swak.vertx.transport.ReactiveServer;
 
 /**
  * 路由配置
@@ -27,7 +26,7 @@ import io.vertx.ext.web.Router;
  * @author lifeng
  */
 @Configuration
-@ConditionalOnClass(Router.class)
+@ConditionalOnClass({ReactiveServer.class})
 @EnableConfigurationProperties(VertxProperties.class)
 public class RouterAutoConfiguration {
 
