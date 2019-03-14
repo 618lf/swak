@@ -154,16 +154,6 @@
 			</dependency>
 			<dependency>
 				<groupId>com.swak</groupId>
-				<artifactId>swak-starter-web</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.swak</groupId>
-				<artifactId>swak-rpc</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.swak</groupId>
 				<artifactId>swak-quartz</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -187,18 +177,6 @@
 				<artifactId>swak-vertx</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-
-			<dependency>
-				<groupId>com.swak</groupId>
-				<artifactId>swak-starter-rpc</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.swak</groupId>
-				<artifactId>swak-starter-vertx</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-
 			<dependency>
 				<groupId>com.swak</groupId>
 				<artifactId>swak-starter</artifactId>
@@ -213,12 +191,12 @@
 			</dependency>
 			<dependency>
 				<groupId>com.swak</groupId>
-				<artifactId>swak-sample-api</artifactId>
+				<artifactId>swak-sample</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.swak</groupId>
-				<artifactId>swak-sample</artifactId>
+				<artifactId>swak-sample-api</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
