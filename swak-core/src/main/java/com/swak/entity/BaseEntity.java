@@ -35,8 +35,6 @@ public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializabl
     protected Long updateId;//修改人ID
     protected String updateName;//修改人名称
 	protected Date updateDate;//修改时间
-    protected Byte delFlag = DEL_FLAG_NORMAL; // 删除标记（0：正常；1：删除；2：审核）
-    protected String remarks;//描述 
     
 	public String getName() {
 		return name;
@@ -81,18 +79,6 @@ public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializabl
 	}
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
-	}
-	public Byte getDelFlag() {
-		return delFlag;
-	}
-	public void setDelFlag(Byte delFlag) {
-		this.delFlag = delFlag;
-	}
-	public String getRemarks() {
-		return remarks;
-	}
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
 	}
 	
 	/**
