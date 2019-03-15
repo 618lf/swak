@@ -13,6 +13,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.Assert;
 
 import com.swak.Constants;
+import com.swak.meters.ExecutorMetrics;
 import com.swak.utils.Maps;
 
 /**
@@ -20,7 +21,7 @@ import com.swak.utils.Maps;
  * 
  * @author lifeng
  */
-public class ConfigableExecutor implements Executor, DisposableBean {
+public class ConfigableExecutor implements Executor, ExecutorMetrics, DisposableBean {
 
 	private Map<String, Executor> executors = Maps.newHashMap();
 	private Logger logger = LoggerFactory.getLogger(ConfigableExecutor.class);
@@ -93,53 +94,18 @@ public class ConfigableExecutor implements Executor, DisposableBean {
 	public Map<String, Object> metrics() {
 		Map<String, Object> metrics = Maps.newHashMap();
 		executors.keySet().stream().forEach(name -> {
-			Map<String, Object> one_metrics = Maps.newHashMap();
 			Executor executor = executors.get(name);
-			if (executor instanceof ThreadPoolExecutor) {
-				ThreadPoolExecutor _executor = (ThreadPoolExecutor) executor;
-				one_metrics.put("maxPoolSize", _executor.getMaximumPoolSize());
-				one_metrics.put("corePoolSize", _executor.getCorePoolSize());
-				one_metrics.put("poolSize", _executor.getPoolSize());
-				one_metrics.put("taskCount", _executor.getTaskCount());
-				one_metrics.put("activeCount", _executor.getActiveCount());
-				one_metrics.put("completedTaskCount", _executor.getCompletedTaskCount());
-				one_metrics.put("queueSize", _executor.getQueue().size());
-				one_metrics.put("largestPoolSize", _executor.getLargestPoolSize());
-			}
-			metrics.put(name, one_metrics);
+			metrics.put(name, this.metrics(executor));
 		});
-
 		// 默认的线程池 (参数名称需要修改)
 		ForkJoinPool commonPool = ForkJoinPool.commonPool();
-		Map<String, Object> one_metrics = Maps.newHashMap();
-		one_metrics.put("parallelism", commonPool.getParallelism());
-		one_metrics.put("commonPoolParallelism", ForkJoinPool.getCommonPoolParallelism());
-		one_metrics.put("poolSize", commonPool.getPoolSize());
-		one_metrics.put("stealCount", commonPool.getStealCount());
-		one_metrics.put("activeThreadCount", commonPool.getActiveThreadCount());
-		one_metrics.put("queuedSubmissionCount", commonPool.getQueuedSubmissionCount());
-		one_metrics.put("queuedTaskCount", commonPool.getQueuedTaskCount());
-		one_metrics.put("runningThreadCount", commonPool.getRunningThreadCount());
-		metrics.put("forkjoinpool", one_metrics);
-
+		metrics.put("forkjoinpool", this.metrics(commonPool));
 		return metrics;
 	}
 
 	public Map<String, Object> metrics(String name) {
-		Map<String, Object> one_metrics = Maps.newHashMap();
 		Executor executor = executors.get(name);
-		if (executor instanceof ThreadPoolExecutor) {
-			ThreadPoolExecutor _executor = (ThreadPoolExecutor) executor;
-			one_metrics.put("maxPoolSize", _executor.getMaximumPoolSize());
-			one_metrics.put("corePoolSize", _executor.getCorePoolSize());
-			one_metrics.put("poolSize", _executor.getPoolSize());
-			one_metrics.put("taskCount", _executor.getTaskCount());
-			one_metrics.put("activeCount", _executor.getActiveCount());
-			one_metrics.put("completedTaskCount", _executor.getCompletedTaskCount());
-			one_metrics.put("queueSize", _executor.getQueue().size());
-			one_metrics.put("largestPoolSize", _executor.getLargestPoolSize());
-		}
-		return one_metrics;
+		return this.metrics(executor);
 	}
 
 	/**

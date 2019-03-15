@@ -1,112 +1,59 @@
 package com.swak.lock.redis;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 
-import java.util.Map;
+import org.springframework.beans.factory.DisposableBean;
 
-import com.swak.Constants;
-import com.swak.cache.SafeEncoder;
-import com.swak.eventbus.EventConsumer;
-import com.swak.eventbus.EventProducer;
-import com.swak.lock.LockEntity;
-
-import reactor.core.Exceptions;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoSink;
-import reactor.core.publisher.Operators;
+import com.swak.meters.ExecutorMetrics;
+import com.swak.reactivex.transport.resources.EventLoopFactory;
 
 /**
- * 基于 redis 的 local
+ * 基于 redis 的一把锁 可以用于分布式的环境
+ * 
  * @author lifeng
+ *
+ * @param <T>
  */
-public class RedisLock implements EventConsumer {
-	
-	// 需要改为 可以多线程操作的集合
-	private Map<String, LockEntity<?>> entitys;
-	private EventProducer eventProducer;
-	
-	/**
-	 * 尝试去获取锁 获取之后才能继续后面的操作
-	 * 获取不到锁则 立即返回，适时激活
-	 * @param resource
-	 * @return
-	 */
-    public <T> Mono<T> tryLock(LockEntity<T> entity) {
-    	return Mono.create((sink) -> {
-    		tryLock(sink, entity);
-    	});
-    }
-    
-    private <T> void tryLock(MonoSink<T> sink, LockEntity<T> entity) {
-    	if (lock(entity)) {
-    		entity.doHandle().thenApply((v) ->{
-    			this.unlock(entity);
-    			return v;
-    		}).whenComplete((v, e) -> {
-			 try {
-	                if (e != null) {
-	                	sink.error(e);
-	                }
-	                else if (v != null) {
-	                    sink.success(v);
-	                }
-	                else {
-	                    sink.success();
-	                }
-	            }
-	            catch (Throwable e1) {
-	                Operators.onErrorDropped(e1, sink.currentContext());
-	                throw Exceptions.bubble(e1);
-	            }
-			});
-    		
-    		// 返回
-    		return;
-    	}
-    	
-    	// 需要启动一个线程来处理这个，检查超时
-    	entitys.put(entity.getResource() + "@" + entity.hashCode(), entity.sink(sink));
-    }
-    
-    /**
-     * 获取资源的实现
-     * @param resource
-     * @return
-     */
-    private <T> boolean lock(LockEntity<T> entity) {
-    	return true;
-    }
-    
-    /**
-     * 获取资源的实现
-     * --- 通知其他 Sink 可以处理了
-     * @param resource
-     * @return
-     */
-    private <T> boolean unlock(LockEntity<T> entity) {
-    	try {
-    		return true;
-    	}finally {
-        	eventProducer.publish(getChannel(), SafeEncoder.encode(entity.getResource()));
-		}
-    }
+public class RedisLock implements ExecutorMetrics, DisposableBean {
 
-    /**
-     * 订阅这个主题
-     */
-	@Override
-	public String getChannel() {
-		return Constants.LOCK_TOPIC;
+	private static AtomicLong counter = new AtomicLong(0);
+
+	private ExecutorService executor;
+	private StrictRedisLock _lock;
+
+	public RedisLock(String name) {
+		executor = Executors.newFixedThreadPool(1, new EventLoopFactory(true, "SWAK.lock-thread", counter));
+		_lock = new StrictRedisLock(name);
 	}
 
 	/**
-	 * 激活 entitys 中的 sink
+	 * 执行代码 后续代码必须切换线程执行
+	 * 
+	 * @param handler
+	 * @return
+	 */
+	public <T> CompletableFuture<T> execute(Supplier<T> handler) {
+		CompletableFuture<T> future = new CompletableFuture<>();
+		executor.execute(() -> {
+			T value = null;
+			try  {
+				value = _lock.doHandler(handler);
+			}catch (Exception e) {
+			}
+			future.complete(value);
+		});
+		return future;
+	}
+
+	/**
+	 * 销毁
 	 */
 	@Override
-	public void onMessge(byte[] message) {
-		String resource = new String(message);
-		entitys.keySet().stream().filter(s -> s.startsWith(resource)).forEach(s ->{
-			// LockEntity<?> entity = entitys.get(s);
-			// this.tryLock(entity.sink(), entity);
-		});
+	public void destroy() throws Exception {
+		executor.shutdown();
 	}
 }

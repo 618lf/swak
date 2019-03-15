@@ -43,6 +43,15 @@ public class AsyncOperations {
 	}
 	
 	/**
+	 * setnx
+	 * @param key
+	 * @return
+	 */
+	public static CompletionStage<Boolean> setnx(String key, byte[] value) {
+		return RedisUtils.async(connect -> connect.setnx(SafeEncoder.encode(key), value));
+	}
+	
+	/**
 	 * set 
 	 * @param key
 	 * @return
