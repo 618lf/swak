@@ -1,10 +1,10 @@
-package com.swak.security.web.captcha.builder;
+package com.swak.captcha.builder;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
-import com.swak.security.web.captcha.Captcha;
+import com.swak.captcha.Captcha;
 
 /**
  * 验证码创建者实体类B。该类是一个未完成的实现。请后续开发者完善。

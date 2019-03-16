@@ -1,4 +1,4 @@
-package com.swak.security.web.captcha.builder;
+package com.swak.captcha.builder;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.swak.security.web.captcha.Captcha;
+import com.swak.captcha.Captcha;
 
 /**
  *

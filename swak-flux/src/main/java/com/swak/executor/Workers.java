@@ -1,22 +1,9 @@
 package com.swak.executor;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Executor;
-import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
-import org.springframework.util.Assert;
-
-import com.swak.Constants;
-
-import reactor.core.Exceptions;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoSink;
-import reactor.core.publisher.Operators;
-import reactor.core.scheduler.Schedulers;
+import com.swak.reactivex.transport.resources.EventLoops;
 
 /**
  * 
@@ -43,33 +30,6 @@ import reactor.core.scheduler.Schedulers;
  */
 public class Workers {
 
-	/** 线城池： 设置、获取 */
-	public static ConfigableExecutor DEFAULT;
-	public static Executor WRITE;
-	public static Executor READ;
-	public static Executor SINGLE;
-	public static void executor(ConfigableExecutor executor) {
-		Workers.DEFAULT = executor;
-		Workers.WRITE = executor.getExecutor(Constants.write_pool);
-		Workers.READ = executor.getExecutor(Constants.read_pool);
-		Workers.SINGLE = executor.getExecutor(Constants.single_pool);
-	}
-	public static Executor executor(String name) {
-		return DEFAULT.getExecutor(name);
-	}
-	// ----------------- 内置线程池执行代码 --------------------------
-    public static <U> CompletableFuture<U> execute(Supplier<U> supplier) {
-    	return CompletableFuture.supplyAsync(supplier, DEFAULT);
-    }
-    public static <U> CompletableFuture<U> write(Supplier<U> supplier) {
-    	return CompletableFuture.supplyAsync(supplier, WRITE);
-    }
-    public static <U> CompletableFuture<U> read(Supplier<U> supplier) {
-    	return CompletableFuture.supplyAsync(supplier, READ);
-    }
-    public static <U> CompletableFuture<U> single(Supplier<U> supplier) {
-    	return CompletableFuture.supplyAsync(supplier, SINGLE);
-    }
 	// ----------------- 异步执行代码(命名线程池) --------------------------
 	/**
 	 * 异步执行代码 -- 有返回值
@@ -78,8 +38,7 @@ public class Workers {
 	 * @return
 	 */
 	public static <T> CompletableFuture<T> future(String name, Supplier<T> supplier) {
-		Assert.notNull(DEFAULT, "please init Worker Executor");
-		return CompletableFuture.supplyAsync(supplier, DEFAULT.getExecutor(name));
+		return CompletableFuture.supplyAsync(supplier, EventLoops.fetch(name));
 	}
 	
 	/**
@@ -89,198 +48,6 @@ public class Workers {
 	 * @return
 	 */
 	public static CompletableFuture<Void> future(String name, Runnable runnable) {
-		Assert.notNull(DEFAULT, "please init Worker Executor");
-		return CompletableFuture.runAsync(runnable, DEFAULT.getExecutor(name));
-	}
-	// ----------------- 异步执行代码(默认线程池) --------------------------
-	/**
-	 * 异步执行代码 -- 有返回值
-	 * 
-	 * @param supplier
-	 * @return
-	 */
-	public static <T> CompletableFuture<T> future(Supplier<T> supplier) {
-		Assert.notNull(DEFAULT, "please init Worker Executor");
-		return CompletableFuture.supplyAsync(supplier, DEFAULT);
-	}
-
-	/**
-	 * 异步执行代码 -- 无返回值
-	 * 
-	 * @param supplier
-	 * @return
-	 */
-	public static CompletableFuture<Void> future(Runnable runnable) {
-		Assert.notNull(DEFAULT, "please init Worker Executor");
-		return CompletableFuture.runAsync(runnable, DEFAULT);
-	}
-
-	/**
-	 * 异步执行代码 -- 有返回值
-	 * 
-	 * @param supplier
-	 * @return
-	 */
-	@Deprecated
-	public static <T> Mono<T> reactive(Supplier<T> supplier) {
-		Assert.notNull(DEFAULT, "please init Worker Executor");
-		return Mono.fromCompletionStage(CompletableFuture.supplyAsync(supplier, DEFAULT));
-	}
-
-	/**
-	 * 异步执行代码 -- 有返回值
-	 * 
-	 * @param supplier
-	 * @return
-	 */
-	@Deprecated
-	public static Mono<Void> reactive(Runnable runnable) {
-		Assert.notNull(DEFAULT, "please init Worker Executor");
-		return Mono.fromCompletionStage(CompletableFuture.runAsync(runnable, DEFAULT));
-	}
-
-	/**
-	 * 异步执行代码 -- 有返回值 通过sink
-	 * 
-	 * @param supplier
-	 * @return
-	 */
-	@Deprecated
-	public static <T, R> Mono<R> sink(CompletionStage<T> future, Function<T, R> func) {
-		return Mono.create(sink -> {
-			future.whenComplete((v, e) -> {
-				try {
-					if (e != null) {
-						sink.error(e);
-						return;
-					}
-					R r = func.apply(v);
-					if (r != null) {
-						sink.success(r);
-					} else {
-						sink.success();
-					}
-				} catch (Throwable e1) {
-					sink.error(e1);
-				}
-			});
-		});
-	}
-
-	/**
-	 * 异步执行代码 -- 有返回值 通过sink
-	 * 
-	 * @param supplier
-	 * @return
-	 */
-	@Deprecated
-	public static <T> void sink(CompletionStage<T> future, MonoSink<T> sink) {
-		future.whenComplete((v, e) -> {
-			try {
-				if (e != null) {
-					sink.error(e);
-				} else if (v != null) {
-					sink.success(v);
-				} else {
-					sink.success();
-				}
-			} catch (Throwable e1) {
-				Operators.onErrorDropped(e1, sink.currentContext());
-				throw Exceptions.bubble(e1);
-			}
-		});
-	}
-
-	/**
-	 * 异步执行代码 -- 有返回值 通过sink
-	 * 
-	 * @param supplier
-	 * @return
-	 */
-	@Deprecated
-	public static <T> Mono<T> sink(Supplier<T> supplier) {
-		Assert.notNull(DEFAULT, "please init Worker Executor");
-		return Mono.create((sink) -> {
-			CompletableFuture.supplyAsync(supplier, DEFAULT).whenComplete((v, e) -> {
-				try {
-					if (e != null) {
-						sink.error(e);
-					} else if (v != null) {
-						sink.success(v);
-					} else {
-						sink.success();
-					}
-				} catch (Throwable e1) {
-					Operators.onErrorDropped(e1, sink.currentContext());
-					throw Exceptions.bubble(e1);
-				}
-			});
-		});
-	}
-
-	/**
-	 * 异步执行代码 -- 无返回值 通过sink
-	 * 
-	 * @param supplier
-	 * @return
-	 */
-	@Deprecated
-	public static Mono<Void> sink(Runnable runnable) {
-		Assert.notNull(DEFAULT, "please init Worker Executor");
-		return Mono.create((sink) -> {
-			CompletableFuture.runAsync(runnable, DEFAULT).whenComplete((v, e) -> {
-				try {
-					if (e != null) {
-						sink.error(e);
-					} else {
-						sink.success();
-					}
-				} catch (Throwable e1) {
-					Operators.onErrorDropped(e1, sink.currentContext());
-					throw Exceptions.bubble(e1);
-				}
-			});
-		});
-	}
-
-	/**
-	 * 注意： 代码不是延迟执行的，所以不要在构建 optional 中执行耗时的操作
-	 * 
-	 * 异步执行代码 -- 对 optional 的支持
-	 * 
-	 * @param supplier
-	 * @return
-	 */
-	@Deprecated
-	public static <T> Mono<T> optional(Optional<T> optional) {
-		return sink(() -> {
-			return optional.get();
-		});
-	}
-
-	/**
-	 * 注意：代码是延迟执行的
-	 * 
-	 * 异步执行代码 -- 对 Stream 的支持, 注意只能返回一个值
-	 * 
-	 * @param supplier
-	 * @return
-	 */
-	@Deprecated
-	public static <T> Mono<T> stream(Stream<T> stream) {
-		return sink(() -> {
-			return stream.findFirst().get();
-		});
-	}
-
-	/**
-	 * 切换线程
-	 * 
-	 * @param mono
-	 * @return
-	 */
-	@Deprecated
-	public static <T> Mono<T> mono(Mono<T> mono) {
-		return mono.subscribeOn(Schedulers.fromExecutor(DEFAULT));
+		return CompletableFuture.runAsync(runnable, EventLoops.fetch(name));
 	}
 }

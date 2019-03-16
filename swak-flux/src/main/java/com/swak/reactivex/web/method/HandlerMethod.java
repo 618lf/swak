@@ -5,10 +5,7 @@ import java.lang.reflect.Method;
 import org.springframework.util.ClassUtils;
 
 import com.swak.reactivex.web.Handler;
-import com.swak.reactivex.web.annotation.Async;
 import com.swak.reactivex.web.annotation.Auth;
-
-import reactor.core.publisher.Mono;
 
 /**
  * 也是一个执行链，没有拦截器； 可以将 handler 定义默认的前置执行器
@@ -21,7 +18,6 @@ public class HandlerMethod implements Handler {
 	private final Method method;
 	private final Class<?> beanType;
 	private final MethodParameter[] parameters;
-	private final Async async;
 	private final Auth auth;
 
 	/**
@@ -32,14 +28,7 @@ public class HandlerMethod implements Handler {
 		this.beanType = ClassUtils.getUserClass(bean);
 		this.method = method;
 		this.parameters = initMethodParameters();
-		this.async = this.method.getAnnotation(Async.class);
 		this.auth = this.method.getAnnotation(Auth.class);
-
-		// Mono Can Not Use With Async
-		if (method.getReturnType().isAssignableFrom(Mono.class) && this.async != null) {
-			throw new RuntimeException(
-					"Mono Can Not Use With Async in Api:[" + bean.getClass() + "." + method.getName() + "]");
-		}
 	}
 
 	private MethodParameter[] initMethodParameters() {
@@ -65,10 +54,6 @@ public class HandlerMethod implements Handler {
 
 	public MethodParameter[] getParameters() {
 		return parameters;
-	}
-
-	public Async getAsync() {
-		return async;
 	}
 
 	public Auth getAuth() {

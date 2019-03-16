@@ -1,11 +1,11 @@
-package com.swak.security.web.captcha.builder;
+package com.swak.captcha.builder;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
-import com.swak.security.web.captcha.Captcha;
+import com.swak.captcha.Captcha;
 
 /**
  * 验证码创建者抽象类。它只实现了@see pub.greenbamboo.captcha.Captcha接口。

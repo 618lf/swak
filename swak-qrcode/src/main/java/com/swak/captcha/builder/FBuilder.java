@@ -1,27 +1,33 @@
-package com.swak.security.web.captcha.builder;
+package com.swak.captcha.builder;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
-import com.swak.security.web.captcha.Captcha;
+import com.swak.captcha.Captcha;
 
 /**
  *
  * <pre>
- * 作者：ZSF
- * 项目：GreenBamboo-CAPTCHA
- * 类说明：生成算数验证码
- * 日期：2016年5月18日
+ * 作者：haibin
+ * 项目：SpringWind-CaptchaSystem
+ * 类说明：生成中文算数验证码
+ * 日期：2016年5月20日
  * 备注：
  * </pre>
  */
-public class EBuilder extends AbstractBuilder {
+public class FBuilder extends AbstractBuilder {
 
+	// 验证码数据源[?是否考虑将生成不同验证码类型的源数据统一放到一个map,key是验证码类型,value：是数据源]
+	private String captchaCodeSource = "零壹贰叁肆伍陆柒捌玖拾";
+	// 验证码运算数据（使用 Java Unicode code，加减乘除）
+	private String captchaOperation = "加减乘";
 	// 验证码运算符等于
-	private String captchaEqualCode = "=";
-	// 验证码运算数据（使用 Java Unicode code，加减乘）
-	private String captchaOperationSource = "\u52A0\u51CF\u4E58";
+	private String captchaEqualOperation = "等于";
+	// 验证码个数
+	int codeLength = 5;
+	// 验证码图片长度
+	int width = 100;
 
 	/**
 	 * 返回用于构成验证码的字符
@@ -33,8 +39,8 @@ public class EBuilder extends AbstractBuilder {
 		StringBuilder sb = new StringBuilder();
 		// 随即数据
 		int result = 0;
-		int rand0 = random.nextInt(10);
-		int rand1 = random.nextInt(10);
+		int rand0 = random.nextInt(11);
+		int rand1 = random.nextInt(11);
 
 		// 是加法还是减法
 		int math = random.nextInt(3);
@@ -52,7 +58,8 @@ public class EBuilder extends AbstractBuilder {
 		} else if (math == 2) {
 			result = rand0 * rand1;
 		}
-		sb.append(rand0).append(captchaOperationSource.charAt(math)).append(rand1).append(captchaEqualCode);
+		sb.append(captchaCodeSource.charAt(rand0)).append(captchaOperation.charAt(math))
+				.append(captchaCodeSource.charAt(rand1)).append(captchaEqualOperation);
 		return new Captcha(sb.toString(), String.valueOf(result));
 	}
 

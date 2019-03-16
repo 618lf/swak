@@ -16,7 +16,6 @@ com.swak.config.BaseFuntionAutoConfiguration,\
 com.swak.config.freemarker.FreeMarkerAutoConfiguration,\
 com.swak.config.motan.MotanAutoConfiguration,\
 com.swak.config.motan.MotanCommandLineRunner,\
-com.swak.config.flux.ExecutorAutoConfiguration,\
 com.swak.config.flux.SecurityAutoConfiguration,\
 com.swak.config.flux.WebHandlerAutoConfiguration,\
 com.swak.config.flux.HttpServerAutoConfiguration,\

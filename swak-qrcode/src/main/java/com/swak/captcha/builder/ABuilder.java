@@ -1,10 +1,10 @@
-package com.swak.security.web.captcha.builder;
+package com.swak.captcha.builder;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
-import com.swak.security.web.captcha.Captcha;
+import com.swak.captcha.Captcha;
 
 /**
  * 验证码创建者实体类A。该类是一个加干扰线白底随机颜色字符的通用验证码实体类。

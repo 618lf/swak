@@ -1,6 +1,6 @@
-package com.swak.security.web.captcha.builder;
+package com.swak.captcha.builder;
 
-import com.swak.security.web.captcha.Captcha;
+import com.swak.captcha.Captcha;
 
 /**
  * 验证码创建者接口。 它拥有获取验证码

@@ -1,5 +1,6 @@
 package com.swak.reactivex.transport.resources;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -32,7 +33,8 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 
 	DefaultLoopResources(String prefix, int selectCount, int workerCount, boolean daemon) {
 		this.daemon = daemon;
-		this.workerCount = workerCount == -1 ? Math.max(Runtime.getRuntime().availableProcessors() * 2, 4) : workerCount;
+		this.workerCount = workerCount == -1 ? Math.max(Runtime.getRuntime().availableProcessors() * 2, 4)
+				: workerCount;
 		this.selectCount = selectCount == -1 ? this.workerCount : selectCount;
 		this.prefix = prefix;
 	}
@@ -51,6 +53,7 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 	public EventLoopGroup onServerSelect() {
 		if (serverSelectLoops == null) {
 			this.serverSelectLoops = new NioEventLoopGroup(selectCount, threadFactory(this, "acceptor-"));
+			this.monitor("acceptor", this.serverSelectLoops);
 		}
 		return serverSelectLoops;
 	}
@@ -59,6 +62,7 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 	public EventLoopGroup onServer() {
 		if (this.serverLoops == null) {
 			this.serverLoops = new NioEventLoopGroup(workerCount, threadFactory(this, "eventloop-"));
+			this.monitor("eventloop", this.serverLoops);
 		}
 		return serverLoops;
 	}
@@ -79,6 +83,16 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 				: Mono.empty();
 		Mono<?> slMono = serverLoops != null ? FutureMono.from((Future) serverLoops.terminationFuture()) : Mono.empty();
 		return Mono.when(sslMono, slMono);
+	}
+
+	/**
+	 * 注册监控
+	 * 
+	 * @param name
+	 * @param executor
+	 */
+	protected void monitor(String name, Executor executor) {
+		EventLoops.register(this.prefix + name, executor);
 	}
 
 	/**

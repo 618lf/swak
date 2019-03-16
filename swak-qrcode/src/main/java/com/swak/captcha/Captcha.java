@@ -1,4 +1,4 @@
-package com.swak.security.web.captcha;
+package com.swak.captcha;
 
 import java.awt.image.BufferedImage;
 

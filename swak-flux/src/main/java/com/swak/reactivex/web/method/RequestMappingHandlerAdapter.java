@@ -9,13 +9,11 @@ import org.springframework.core.convert.ConversionService;
 
 import com.swak.entity.Result;
 import com.swak.exception.ErrorCode;
-import com.swak.executor.Workers;
 import com.swak.reactivex.transport.http.Subject;
 import com.swak.reactivex.transport.http.server.HttpServerRequest;
 import com.swak.reactivex.transport.http.server.HttpServerResponse;
 import com.swak.reactivex.web.Handler;
 import com.swak.reactivex.web.HandlerAdapter;
-import com.swak.reactivex.web.annotation.Async;
 import com.swak.reactivex.web.annotation.Auth;
 import com.swak.reactivex.web.method.resolver.HandlerMethodArgumentResolverComposite;
 import com.swak.reactivex.web.method.resolver.HttpCookieValueMethodArgumentResolver;
@@ -68,8 +66,6 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 	}
 
 	/**
-	 * 如果添加注解 Async 则会异步执行代码
-	 * Async 与 mono 不要一起使用
 	 * 
 	 * @param handler
 	 * @param args
@@ -77,19 +73,14 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 	 */
 	protected Object doHandle(HttpServerRequest request, HandlerMethod handler, Object[] args) {
 		Auth auth = handler.getAuth();
-		Async async = handler.getAsync();
 		if (auth != null && request.getSubject() != null) {
-			return doHandle(request.getSubject(), auth, async, handler, args);
-		} else if (async != null) {
-			return Workers.future(async.value(), () -> {
-				return handler.doInvoke(args);
-			});
+			return doHandle(request.getSubject(), auth, handler, args);
 		}
 		return handler.doInvoke(args);
 	}
 
 	// 加入权限验证
-	protected Object doHandle(Subject subject, Auth auth, Async async, HandlerMethod handler, Object[] args) {
+	protected Object doHandle(Subject subject, Auth auth, HandlerMethod handler, Object[] args) {
 		CompletionStage<Boolean> authFuture = null;
 		if (auth.roles().length > 0) {
 			authFuture = subject.hasAllRoles(auth.roles());
@@ -97,14 +88,6 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter {
 			authFuture = subject.isPermittedAll(auth.permissions());
 		} else {
 			authFuture = CompletableFuture.completedFuture(true);
-		}
-		if (async != null) {
-			return authFuture.thenApplyAsync((b) -> {
-				if (b) {
-					return handler.doInvoke(args);
-				}
-				return Result.error(ErrorCode.ACCESS_DENIED);
-			}, Workers.executor(async.value()));
 		}
 		return authFuture.thenApply((b) -> {
 			if (b) {

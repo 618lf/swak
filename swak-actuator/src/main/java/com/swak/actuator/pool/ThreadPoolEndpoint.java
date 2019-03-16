@@ -5,7 +5,7 @@ import java.util.Map;
 import com.swak.actuator.endpoint.annotation.Endpoint;
 import com.swak.actuator.endpoint.annotation.Operation;
 import com.swak.actuator.endpoint.annotation.Selector;
-import com.swak.executor.Workers;
+import com.swak.reactivex.transport.resources.EventLoops;
 
 /**
  * {@link Endpoint} to expose details of an netty PoolAllocator status context.
@@ -23,7 +23,7 @@ public class ThreadPoolEndpoint {
 	 */
 	@Operation
 	public Map<String, Object> metrics() {
-		return Workers.DEFAULT.metrics();
+		return EventLoops.me().metrics();
 	}
 	
 	/**
@@ -32,33 +32,6 @@ public class ThreadPoolEndpoint {
 	 */
 	@Operation
 	public Map<String, Object> metrics(@Selector String name) {
-		return Workers.DEFAULT.metrics(name);
-	}
-	
-	/**
-	 * 设置指标
-	 * @return
-	 */
-	@Operation
-	public void poolSize(String name, int maxSize) {
-		Workers.DEFAULT.poolSize(name, maxSize);
-	}
-	
-	/**
-	 * 设置指标
-	 * @return
-	 */
-	@Operation
-	public void coreSize(String name, int maxSize) {
-		Workers.DEFAULT.coreSize(name, maxSize);
-	}
-	
-	/**
-	 * 设置指标
-	 * @return
-	 */
-	@Operation
-	public void timeSeconds(String name, int maxSize) {
-		Workers.DEFAULT.timeSeconds(name, maxSize);
+		return EventLoops.me().metrics(name);
 	}
 }

@@ -33,6 +33,7 @@ public class DefaultEpollLoopResources extends DefaultLoopResources {
 	public EventLoopGroup onServerSelect() {
 		if (this.serverSelectLoops == null) {
 			this.serverSelectLoops = new EpollEventLoopGroup(selectCount, threadFactory(this, "epoll-acceptor-"));
+			this.monitor("acceptor", this.serverSelectLoops);
 		}
 		return this.serverSelectLoops;
 	}
@@ -41,6 +42,7 @@ public class DefaultEpollLoopResources extends DefaultLoopResources {
 	public EventLoopGroup onServer() {
 		if (this.serverLoops == null) {
 			this.serverLoops = new EpollEventLoopGroup(workerCount, threadFactory(this, "epoll-eventloop-"));
+			this.monitor("eventloop", this.serverLoops);
 		}
 		return this.serverLoops;
 	}
