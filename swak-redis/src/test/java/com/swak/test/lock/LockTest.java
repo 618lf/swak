@@ -4,7 +4,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
 
-import com.swak.lock.redis.RedisLock;
+import com.swak.lock.redis.OrderRedisLock;
 import com.swak.test.RedisTest;
 
 /**
@@ -25,7 +25,7 @@ public class LockTest extends RedisTest {
 	public void simpleLock() throws InterruptedException {
 		Long start_time = System.currentTimeMillis();
 		CountDownLatch latch = new CountDownLatch(10000);
-		RedisLock lock = new RedisLock("wx");
+		OrderRedisLock lock = new OrderRedisLock("wx");
 		for (int i = 0; i < 10000; i++) {
 			lock.execute(() -> {
 				count++;

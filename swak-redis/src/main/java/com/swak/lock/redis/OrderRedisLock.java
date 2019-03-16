@@ -8,25 +8,25 @@ import java.util.function.Supplier;
 
 import org.springframework.beans.factory.DisposableBean;
 
-import com.swak.meters.ExecutorMetrics;
 import com.swak.reactivex.transport.resources.EventLoopFactory;
+import com.swak.reactivex.transport.resources.EventLoops;
 
 /**
  * 基于 redis 的一把锁 可以用于分布式的环境
+ * 按顺序执行代码，每次執行都會獲取鎖，之後在釋放鎖
  * 
  * @author lifeng
- *
- * @param <T>
  */
-public class RedisLock implements ExecutorMetrics, DisposableBean {
+public class OrderRedisLock implements DisposableBean {
 
 	private static AtomicLong counter = new AtomicLong(0);
 
-	private ExecutorService executor;
-	private StrictRedisLock _lock;
+	protected ExecutorService executor;
+	protected StrictRedisLock _lock;
 
-	public RedisLock(String name) {
-		executor = Executors.newFixedThreadPool(1, new EventLoopFactory(true, "SWAK.lock-thread", counter));
+	public OrderRedisLock(String name) {
+		executor = Executors.newFixedThreadPool(1, new EventLoopFactory(true, "SWAK.lock-" + name + "-", counter));
+		EventLoops.register("lcok-" + name, executor);
 		_lock = new StrictRedisLock(name);
 	}
 
@@ -40,15 +40,15 @@ public class RedisLock implements ExecutorMetrics, DisposableBean {
 		CompletableFuture<T> future = new CompletableFuture<>();
 		executor.execute(() -> {
 			T value = null;
-			try  {
+			try {
 				value = _lock.doHandler(handler);
-			}catch (Exception e) {
+			} catch (Exception e) {
 			}
 			future.complete(value);
 		});
 		return future;
 	}
-
+	
 	/**
 	 * 销毁
 	 */

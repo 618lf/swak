@@ -9,6 +9,7 @@ import com.swak.exception.LockTimeOutException;
 
 /**
  * 严格的 redis 的锁 需要使用单独的线程池来执行，根据锁的个数来决定线程池的大小
+ * 不建議單獨使用
  * 
  * @author lifeng
  */

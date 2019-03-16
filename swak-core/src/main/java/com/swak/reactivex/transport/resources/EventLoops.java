@@ -21,12 +21,15 @@ public class EventLoops implements ExecutorMetrics {
 	private EventLoops() {
 		executors = Maps.newHashMap();
 	}
+
 	private void addExecutor(String name, Executor executor) {
 		executors.put(name, executor);
 	}
+
 	private Executor getExecutor(String name) {
 		return executors.get(name);
 	}
+
 	public Map<String, Object> metrics() {
 		Map<String, Object> metrics = Maps.newHashMap();
 		executors.keySet().stream().forEach(name -> {
@@ -38,11 +41,12 @@ public class EventLoops implements ExecutorMetrics {
 		metrics.put("forkjoinpool", this.metrics(commonPool));
 		return metrics;
 	}
+
 	public Map<String, Object> metrics(String name) {
 		Executor executor = executors.get(name);
 		return this.metrics(executor);
 	}
-	
+
 	/**
 	 * 唯一实例
 	 * 
@@ -51,7 +55,7 @@ public class EventLoops implements ExecutorMetrics {
 	public static EventLoops me() {
 		return instance;
 	}
-	
+
 	/**
 	 * 获取执行器
 	 * 
@@ -69,6 +73,9 @@ public class EventLoops implements ExecutorMetrics {
 	 * @param executor
 	 */
 	public static void register(String name, Executor executor) {
+		if (me().getExecutor(name) != null) {
+			throw new RuntimeException("EventLoop Name Exists");
+		}
 		instance.addExecutor(name, executor);
 	}
 }
