@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ConditionRedisLock extends OrderRedisLock {
 
-	LinkedTransferQueue<CompletableFuture> queue;
+	private LinkedTransferQueue<CompletableFuture> queue;
 
 	public ConditionRedisLock(String name) {
 		super(name);
