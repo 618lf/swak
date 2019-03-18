@@ -33,11 +33,11 @@ public class HttpVerticle extends AbstractVerticle {
 
 		// 发布服务
 		if (StringUtils.isBlank(host)) {
-			vertx.createHttpServer().requestHandler(router::accept).listen(port, res -> {
+			vertx.createHttpServer().requestHandler(router::handle).listen(port, res -> {
 				startFuture.complete();
 			});
 		} else {
-			vertx.createHttpServer().requestHandler(router::accept).listen(port, host, res -> {
+			vertx.createHttpServer().requestHandler(router::handle).listen(port, host, res -> {
 				startFuture.complete();
 			});
 		}

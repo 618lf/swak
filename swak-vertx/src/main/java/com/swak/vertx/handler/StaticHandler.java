@@ -10,9 +10,11 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,12 +31,15 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.file.FileProps;
 import io.vertx.core.file.FileSystem;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.http.HttpVersion;
+import io.vertx.core.http.impl.HttpUtils;
 import io.vertx.core.http.impl.MimeMapping;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.net.impl.URIDecoder;
 import io.vertx.ext.web.Http2PushMapping;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.impl.LRUCache;
@@ -47,7 +52,7 @@ import io.vertx.ext.web.impl.Utils;
  */
 public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 
-	private Logger log = LoggerFactory.getLogger(StaticHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(StaticHandler.class);
 
 	private Map<String, CacheEntry> propsCache;
 	private String webRoot = DEFAULT_WEB_ROOT;
@@ -77,14 +82,18 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 	private long numServesBlocking;
 	private boolean useAsyncFS;
 	private long nextAvgCheck = NUM_SERVES_TUNING_FS_ACCESS;
-	private ClassLoader classLoader;
+	private Set<String> compressedMediaTypes = Collections.emptySet();
+	private Set<String> compressedFileSuffixes = Collections.emptySet();
 
-	public StaticHandler() {
-
-	}
+	private final ClassLoader classLoader;
 
 	public StaticHandler(String root) {
-		this.webRoot = root;
+		classLoader = null;
+		setRoot(root);
+	}
+
+	public StaticHandler() {
+		classLoader = null;
 	}
 
 	private String directoryTemplate(Vertx vertx) {
@@ -110,12 +119,12 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 		if (cachingEnabled) {
 			// We use cache-control and last-modified
 			// We *do not use* etags and expires (since they do the same thing - redundant)
-			headers.set("cache-control", "public, max-age=" + maxAgeSeconds);
-			headers.set("last-modified", GmtDateKit.format(props.lastModifiedTime()));
+			Utils.addToMapIfAbsent(headers, "cache-control", "public, max-age=" + maxAgeSeconds);
+			Utils.addToMapIfAbsent(headers, "last-modified", GmtDateKit.format(props.lastModifiedTime()));
 			// We send the vary header (for intermediate caches)
 			// (assumes that most will turn on compression when using static handler)
 			if (sendVaryHeader && request.headers().contains("accept-encoding")) {
-				headers.set("vary", "accept-encoding");
+				Utils.addToMapIfAbsent(headers, "vary", "accept-encoding");
 			}
 		}
 
@@ -131,28 +140,13 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 				log.trace("Not GET or HEAD so ignoring request");
 			context.next();
 		} else {
-			// we are trying to match a URL path to a Filesystem path, so the first step
-			// is to url decode the normalized path so avoid misinterpretations
-			String path = Utils.urlDecode(context.normalisedPath(), false);
-
+			String path = HttpUtils.removeDots(URIDecoder.decodeURIComponent(context.normalisedPath(), false));
+			// if the normalized path is null it cannot be resolved
 			if (path == null) {
-				// if the normalized path is null it cannot be resolved
 				log.warn("Invalid path: " + context.request().path());
 				context.next();
 				return;
 			}
-
-			if (File.separatorChar != '/') {
-				// although forward slashes are not path separators according to the rfc3986 if
-				// used directly to access the filesystem on Windows, they would be treated as
-				// such
-				// Instead of relying on the usual normalized method, all forward slashes must
-				// be
-				// replaced by backslashes in this handler.
-				path = path.replace(File.separatorChar, '/');
-			}
-			// clean the .. sequences according to rfc3986
-			path = Utils.removeDots(path);
 
 			// only root is known for sure to be a directory. all other directories must be
 			// identified as such.
@@ -182,23 +176,14 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 		}
 
 		// Look in cache
-		CacheEntry entry;
-		if (cachingEnabled) {
-			entry = propsCache().get(path);
-			if (entry != null) {
-				HttpServerRequest request = context.request();
-				if ((filesReadOnly || !entry.isOutOfDate()) && entry.shouldUseCached(request)) {
-					context.response().setStatusCode(NOT_MODIFIED.code()).end();
-					return;
-				}
-			}
+		CacheEntry entry = cachingEnabled ? propsCache().get(path) : null;
+		if (entry != null && (filesReadOnly || !entry.isOutOfDate()) && entry.shouldUseCached(context.request())) {
+			context.response().setStatusCode(NOT_MODIFIED.code()).end();
+			return;
 		}
 
-		if (file == null) {
-			file = getFile(path, context);
-		}
-
-		final String sfile = file;
+		final boolean dirty = cachingEnabled && entry != null;
+		final String sfile = file == null ? getFile(path, context) : file;
 
 		// verify if the file exists
 		isFileExisting(context, sfile, exists -> {
@@ -209,6 +194,9 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 
 			// file does not exist, continue...
 			if (!exists.result()) {
+				if (dirty) {
+					removeCache(path);
+				}
 				context.next();
 				return;
 			}
@@ -219,11 +207,24 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 					FileProps fprops = res.result();
 					if (fprops == null) {
 						// File does not exist
+						if (dirty) {
+							removeCache(path);
+						}
 						context.next();
 					} else if (fprops.isDirectory()) {
+						if (dirty) {
+							removeCache(path);
+						}
 						sendDirectory(context, path, sfile);
 					} else {
-						propsCache().put(path, new CacheEntry(fprops, System.currentTimeMillis()));
+						if (cachingEnabled) {
+							CacheEntry now = new CacheEntry(fprops, System.currentTimeMillis());
+							propsCache().put(path, now);
+							if (now.shouldUseCached(context.request())) {
+								context.response().setStatusCode(NOT_MODIFIED.code()).end();
+								return;
+							}
+						}
 						sendFile(context, sfile, fprops);
 					}
 				} else {
@@ -392,8 +393,8 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 				// Wrap the sendFile operation into a TCCL switch, so the file resolver would
 				// find the file from the set
 				// classloader (if any).
-				final Long finalOffset = offset;
-				final Long finalEnd = end;
+				final long finalOffset = offset;
+				final long finalLength = end + 1 - offset;
 				wrapInTCCLSwitch(() -> {
 					// guess content type
 					String contentType = MimeMapping.getMimeTypeForFilename(file);
@@ -406,7 +407,7 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 						}
 					}
 
-					return request.response().sendFile(file, finalOffset, finalEnd + 1, res2 -> {
+					return request.response().sendFile(file, finalOffset, finalLength, res2 -> {
 						if (res2.failed()) {
 							context.fail(res2.cause());
 						}
@@ -418,7 +419,11 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 				// classloader (if any).
 				wrapInTCCLSwitch(() -> {
 					// guess content type
-					String contentType = MimeMapping.getMimeTypeForFilename(file);
+					String extension = getFileExtension(file);
+					String contentType = MimeMapping.getMimeTypeForExtension(extension);
+					if (compressedMediaTypes.contains(contentType) || compressedFileSuffixes.contains(extension)) {
+						request.response().putHeader(HttpHeaders.CONTENT_ENCODING, HttpHeaders.IDENTITY);
+					}
 					if (contentType != null) {
 						if (contentType.startsWith("text")) {
 							request.response().putHeader("Content-Type",
@@ -586,8 +591,25 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 
 	@Override
 	public StaticHandler setHttp2PushMapping(List<Http2PushMapping> http2PushMap) {
-		if (http2PushMap != null)
+		if (http2PushMap != null) {
 			this.http2PushMappings = new ArrayList<>(http2PushMap);
+		}
+		return this;
+	}
+
+	@Override
+	public StaticHandler skipCompressionForMediaTypes(Set<String> mediaTypes) {
+		if (mediaTypes != null) {
+			this.compressedMediaTypes = new HashSet<>(mediaTypes);
+		}
+		return this;
+	}
+
+	@Override
+	public StaticHandler skipCompressionForSuffixes(Set<String> fileSuffixes) {
+		if (fileSuffixes != null) {
+			this.compressedFileSuffixes = new HashSet<>(fileSuffixes);
+		}
 		return this;
 	}
 
@@ -623,6 +645,12 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 			propsCache = new LRUCache<>(maxCacheSize);
 		}
 		return propsCache;
+	}
+
+	private void removeCache(String path) {
+		if (propsCache != null) {
+			propsCache.remove(path);
+		}
 	}
 
 	private String getFile(String path, RoutingContext context) {
@@ -737,6 +765,15 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 		});
 	}
 
+	private String getFileExtension(String file) {
+		int li = file.lastIndexOf(46);
+		if (li != -1 && li != file.length() - 1) {
+			return file.substring(li + 1);
+		} else {
+			return null;
+		}
+	}
+
 	// TODO make this static and use Java8 DateTimeFormatter
 	private final class CacheEntry {
 		final FileProps props;
@@ -763,8 +800,9 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 		boolean isOutOfDate() {
 			return System.currentTimeMillis() - createDate > cacheEntryTimeout;
 		}
+
 	}
-	
+
 	/**
 	 * 创建一个静态处理器
 	 * 

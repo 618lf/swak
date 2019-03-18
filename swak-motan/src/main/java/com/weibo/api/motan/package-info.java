@@ -1,6 +1,6 @@
 /**
  * 代码全部取至 motan 的源码
- * https://github.com/weibocom/motan
+ * https://github.com/weibocom/motan 1.1.3
  * 
  * 引入：
  * com.weibo.api.motan.core
