@@ -10,14 +10,15 @@ import com.swak.vertx.config.VertxProperties;
 
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
+import io.vertx.micrometer.MicrometerMetricsOptions;
+import io.vertx.micrometer.VertxJmxMetricsOptions;
 
 /**
  * 代有监控 options
  * @author lifeng
  */
 @ConditionalOnMissingBean(VertxOptions.class)
-@ConditionalOnClass(DropwizardMetricsOptions.class)
+@ConditionalOnClass(MicrometerMetricsOptions.class)
 @EnableConfigurationProperties(VertxProperties.class)
 public class MetricsOptionsAutoConfiguration {
 
@@ -30,10 +31,12 @@ public class MetricsOptionsAutoConfiguration {
 	public VertxOptions vertxOptions(VertxProperties properties) {
 		VertxOptions vertxOptions = new VertxOptions();
 
-		// Dropwizard Metrics
+		// Metrics
 		if (properties.isMetricAble()) {
+			VertxJmxMetricsOptions jmxOptions = new VertxJmxMetricsOptions();
+			jmxOptions.setEnabled(true).setDomain("vertx-metrics");
 			vertxOptions.setMetricsOptions(
-					new DropwizardMetricsOptions().setEnabled(true).setJmxEnabled(true).setJmxDomain("vertx-metrics"));
+					new MicrometerMetricsOptions().setEnabled(true).setJmxMetricsOptions(jmxOptions));
 		}
 
 		// pool config

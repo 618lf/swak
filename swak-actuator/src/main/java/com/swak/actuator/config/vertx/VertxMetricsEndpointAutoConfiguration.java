@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import com.swak.actuator.vertx.VertxEndpoint;
 
 import io.vertx.core.Vertx;
-import io.vertx.ext.dropwizard.MetricsService;
 import io.vertx.ext.web.Router;
+import io.vertx.micrometer.MetricsService;
 
 @Configuration
 @ConditionalOnClass(MetricsService.class)
