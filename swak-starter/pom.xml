@@ -39,18 +39,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.vertx</groupId>
-			<artifactId>vertx-micrometer-metrics</artifactId>
-			<version>${vertx.version}</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>io.vertx</groupId>
-					<artifactId>vertx-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-jdbc</artifactId>
 			<scope>provided</scope>

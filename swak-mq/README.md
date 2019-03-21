@@ -10,4 +10,9 @@ rabbitmq-server -detached #后台运行
 rabbitmq-server stop
 rabbitmqctl status
 
-还有就是开启管理界面可以通过命令：rabbitmq-plugins enable rabbitmq_management 
+还有就是开启管理界面可以通过命令：rabbitmq-plugins enable rabbitmq_management
+http://127.0.0.1:15672/
+
+
+之后可以研究：
+wireshark 抓包

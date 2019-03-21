@@ -21,6 +21,7 @@
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-starter</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
