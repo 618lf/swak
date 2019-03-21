@@ -2,6 +2,7 @@ package com.swak.cache.redis;
 
 import java.lang.reflect.Array;
 
+import org.ehcache.core.EhcacheBase;
 import org.springframework.beans.factory.DisposableBean;
 
 import com.swak.Constants;
@@ -9,34 +10,31 @@ import com.swak.cache.Cache;
 import com.swak.cache.Entity;
 import com.swak.eventbus.EventConsumer;
 import com.swak.eventbus.EventProducer;
-import com.swak.utils.Lists;
-
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
+import com.swak.utils.Sets;
 
 /**
  * 本地缓存
+ * 
  * @author root
  */
 public class RedisLocalCache implements Cache<Object>, EventConsumer, DisposableBean {
 
-	private final Ehcache cache;
-	private final CacheManager cacheManager;
+	private final EhcacheBase<String, Object> cache;
+	private final String name;
 	private EventProducer producer;
 
-	public RedisLocalCache(CacheManager cacheManager, Ehcache local) {
-		this.cacheManager = cacheManager;
+	public RedisLocalCache(String name, EhcacheBase<String, Object> local) {
+		this.name = name;
 		this.cache = local;
 	}
-	
+
 	public void setProducer(EventProducer producer) {
 		this.producer = producer;
 	}
 
 	@Override
 	public String getName() {
-		return cache.getName();
+		return this.name;
 	}
 
 	@Override
@@ -46,7 +44,7 @@ public class RedisLocalCache implements Cache<Object>, EventConsumer, Disposable
 
 	@Override
 	public Entity<Object> putObject(String key, Object value) {
-		this.cache.put(new Element(key, value));
+		this.cache.put(key, value);
 		return new Entity<Object>(key, value);
 	}
 
@@ -59,48 +57,46 @@ public class RedisLocalCache implements Cache<Object>, EventConsumer, Disposable
 	@Override
 	public Long delete(String... keys) {
 		if (keys != null && keys.length != 0) {
-			this.cache.removeAll(Lists.newArrayList(keys));
+			this.cache.removeAll(Sets.newHashSet(keys));
 		}
-		return keys != null ? (long)keys.length : 0;
+		return keys != null ? (long) keys.length : 0;
 	}
 
 	@Override
 	public Boolean exists(String key) {
-		return this.cache.isKeyInCache(key);
+		return this.cache.containsKey(key);
 	}
 
 	@Override
 	public Object getObject(String key) {
-		Element element = this.cache.get(key);
-		return (element != null ? (element.getObjectValue()) : null);
+		return this.cache.get(key);
 	}
 
 	@Override
 	public String getString(String key) {
-		Element element = this.cache.get(key);
-		return (element != null ? (String) (element.getObjectValue()) : null);
+		Object value = this.cache.get(key);
+		if (value != null) {
+			return String.valueOf(value);
+		}
+		return null;
 	}
 
 	@Override
 	public Entity<String> putString(String key, String value) {
-		this.cache.put(new Element(key, value));
+		this.cache.put(key, value);
 		return new Entity<String>(key, value);
 	}
 
 	@Override
 	public Long ttl(String key) {
-		Element element = this.cache.get(key);
-		if (element != null && element.getTimeToLive() != 0) {
-			return (element.getExpirationTime() - System.currentTimeMillis()) / 1000;
-		}
 		return -2L;
 	}
-	
+
 	// ------------ 销毁 ----------
 
 	@Override
 	public void destroy() throws Exception {
-		cacheManager.shutdown();
+		this.cache.close();
 	}
 
 	// ------------- 消息订阅 -------------
@@ -145,11 +141,11 @@ public class RedisLocalCache implements Cache<Object>, EventConsumer, Disposable
 	 */
 	protected void onDeleteCacheKey(Object key) {
 		if (key instanceof Array)
-			cache.remove((String[]) key);
+			cache.removeAll(Sets.newHashSet((String[]) key));
 		else
 			cache.remove((String) key);
 	}
-	
+
 	// --------------- 发布事件 ----------------
 	/**
 	 * 发送清除缓存的广播命令

@@ -13,8 +13,8 @@
 			<artifactId>swak-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
+			<groupId>org.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
 			<version>${ehcache.version}</version>
 			<exclusions>
 				<exclusion>

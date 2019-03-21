@@ -2,8 +2,17 @@ package com.swak.config.redis;
 
 import static com.swak.Application.APP_LOGGER;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.function.Supplier;
 
+import org.ehcache.config.CacheConfiguration;
+import org.ehcache.config.builders.CacheConfigurationBuilder;
+import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.ehcache.core.EhcacheBase;
+import org.ehcache.core.EhcacheManager;
+import org.ehcache.expiry.ExpiryPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -22,52 +31,52 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DefaultClientResources;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.config.CacheConfiguration;
-import net.sf.ehcache.config.Configuration;
 
 /**
  * 缓存配置
+ * 
  * @author lifeng
  */
 public class CacheConfigurationSupport {
 
 	@Autowired
 	private CacheProperties cacheProperties;
-	
+
 	public CacheConfigurationSupport() {
 		APP_LOGGER.debug("Loading Redis Cache");
 	}
-	
+
 	/**
 	 * 可以配置 event loop 等相关
+	 * 
 	 * @return
 	 */
 	@Bean(destroyMethod = "shutdown")
-    public ClientResources clientResources() {
+	public ClientResources clientResources() {
 		// 设置属性 -- lettuce 会根据属性决定启动什么类型 event loop
 		System.setProperty("io.lettuce.core.epoll", "false");
 		System.setProperty("io.lettuce.core.kqueue", "false");
 		if (cacheProperties.getMode() == TransportMode.EPOLL) {
 			System.setProperty("io.lettuce.core.epoll", "true");
 		}
-        return DefaultClientResources.create();
-    }
-	
+		return DefaultClientResources.create();
+	}
+
 	/**
 	 * 配置 RedisClient
+	 * 
 	 * @param clientResources
 	 * @return
 	 */
 	@Bean(destroyMethod = "shutdown")
-    public RedisClient redisClient(ClientResources clientResources) {
+	public RedisClient redisClient(ClientResources clientResources) {
 		List<RedisURI> nodes = this.nodes();
-        return RedisClient.create(clientResources, nodes.get(0));
-    }
-	
+		return RedisClient.create(clientResources, nodes.get(0));
+	}
+
 	/**
 	 * 创建 PoolFactory
+	 * 
 	 * @param cachePoolConfig
 	 * @param client
 	 * @return
@@ -79,32 +88,55 @@ public class CacheConfigurationSupport {
 		RedisUtils.setRedisConnectionFactory(cachePoolFactory);
 		return cachePoolFactory;
 	}
-	
+
 	/**
-	 * 配置 本地缓存
-	 * 会订阅 Event
+	 * 配置 EhcacheManager
+	 * 
 	 * @return
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public RedisLocalCache redisLocalCache() {
-		 Configuration configuration = new Configuration();
-		 CacheConfiguration cacheConfiguration = new CacheConfiguration();
-		 cacheConfiguration.setName(cacheProperties.getLocalName());
-		 cacheConfiguration.setMemoryStoreEvictionPolicy("LRU");
-	     cacheConfiguration.setMaxEntriesLocalHeap(cacheProperties.getLocalElements());
-	     cacheConfiguration.setMaxEntriesLocalDisk(0);
-	     cacheConfiguration.setTimeToIdleSeconds(0);
-	     cacheConfiguration.setTimeToLiveSeconds(cacheProperties.getLocalLiveSeconds());
-	     cacheConfiguration.setEternal(false);
-		 configuration.addCache(cacheConfiguration);
-		 CacheManager cacheManager = CacheManager.newInstance(configuration);
-		 Ehcache ehcache = cacheManager.getCache(cacheProperties.getLocalName());
-		 return new RedisLocalCache(cacheManager, ehcache);
+	public EhcacheManager ehcacheManager() {
+		EhcacheManager cacheManager = (EhcacheManager) CacheManagerBuilder.newCacheManagerBuilder().build(true);
+		return cacheManager;
 	}
-	
+
+	/**
+	 * 配置 本地缓存 会订阅 Event
+	 * 
+	 * @return
+	 */
+	@Bean
+	@ConditionalOnMissingBean
+	public RedisLocalCache redisLocalCache(EhcacheManager ehcacheManager) {
+		CacheConfiguration<String, Object> configuration = CacheConfigurationBuilder
+				.newCacheConfigurationBuilder(String.class, Object.class, ResourcePoolsBuilder.heap(1000))
+				.withExpiry(new ExpiryPolicy<String, Object>() {
+					@Override
+					public Duration getExpiryForCreation(String key, Object value) {
+						return null;
+					}
+
+					@Override
+					public Duration getExpiryForAccess(String key, Supplier<? extends Object> value) {
+						return null;
+					}
+
+					@Override
+					public Duration getExpiryForUpdate(String key, Supplier<? extends Object> oldValue,
+							Object newValue) {
+						return null;
+					}
+				}).build();
+
+		EhcacheBase<String, Object> ehcache = (EhcacheBase<String, Object>) ehcacheManager
+				.createCache(cacheProperties.getLocalName(), configuration);
+		return new RedisLocalCache(cacheProperties.getLocalName(), ehcache);
+	}
+
 	/**
 	 * 配置redis 缓存管理，并设置二级缓存
+	 * 
 	 * @return
 	 */
 	@Bean
@@ -113,12 +145,12 @@ public class CacheConfigurationSupport {
 		CacheManagers.setCacheManager(new RedisCacheManager(localCache));
 		return CacheManagers.manager();
 	}
-	
+
 	private List<RedisURI> nodes() {
 		List<RedisURI> nodes = Lists.newArrayList();
 		String hosts = cacheProperties.getHosts().replaceAll("\\s", "");
 		String[] hostPorts = hosts.split(",");
-		for(String hostPort : hostPorts) {
+		for (String hostPort : hostPorts) {
 			String[] hostPortArr = hostPort.split(":");
 			RedisURI node = RedisURI.create(hostPortArr[0], Integer.parseInt(hostPortArr[1]));
 			node.setPassword(cacheProperties.getPassword());
