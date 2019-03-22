@@ -32,9 +32,9 @@ public interface CacheManager {
 	<T> Cache<T> getCache(String name, int timeToIdle, boolean idleAble);
 	
 	/**
-	 * 包括缓存
-	 * @param cache
+	 * 获得本地缓存
+	 * 
 	 * @return
 	 */
-	<T> Cache<T> wrap(Cache<T> cache);
+	LocalCache<Object> getLocalCache();
 }

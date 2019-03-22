@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 import com.swak.cache.AsyncCache;
+import com.swak.cache.CacheManager;
 import com.swak.cache.Cons;
 import com.swak.cache.Entity;
+import com.swak.cache.LocalCache;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.operations.AsyncOperations;
 import com.swak.serializer.SerializationUtils;
@@ -15,25 +17,30 @@ import io.lettuce.core.ScriptOutputType;
 
 public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 
+	private CacheManager cacheManager;
+
 	/**
 	 * 默认不过期
+	 * 
 	 * @param name
 	 */
 	public AsyncRedisCache(String name) {
 		super(name);
 	}
-	
+
 	/**
 	 * 指定过期时间
+	 * 
 	 * @param name
 	 * @param timeToIdle
 	 */
 	public AsyncRedisCache(String name, int timeToIdle) {
 		super(name, timeToIdle);
 	}
-	
+
 	/**
 	 * 指定过期时间, 过期方式
+	 * 
 	 * @param name
 	 * @param timeToIdle
 	 * @param ideaAble
@@ -42,29 +49,43 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 		super(name, timeToIdle, ideaAble);
 	}
 
+	/**
+	 * 获得缓存管理器
+	 * 
+	 * @return
+	 */
+	public CacheManager getCacheManager() {
+		return cacheManager;
+	}
+
+	public AsyncRedisCache<T> setCacheManager(CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
+		return this;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public CompletionStage<T> getObject(String key) {
 		if (!idleAble()) {
-			return this._get(key).thenApply((bs) ->{
+			return this._get(key).thenApply((bs) -> {
 				return (T) SerializationUtils.deserialize(bs);
-			}); 
+			});
 		}
-		return this._hget(key).thenApply((bs) ->{
+		return this._hget(key).thenApply((bs) -> {
 			return (T) SerializationUtils.deserialize(bs);
-		}); 
+		});
 	}
 
 	@Override
 	public CompletionStage<String> getString(String key) {
 		if (!idleAble()) {
-			return this._get(key).thenApply((bs) ->{
+			return this._get(key).thenApply((bs) -> {
 				return SafeEncoder.encode(bs);
-			}); 
+			});
 		}
-		return this._hget(key).thenApply((bs) ->{
+		return this._hget(key).thenApply((bs) -> {
 			return SafeEncoder.encode(bs);
-		}); 
+		});
 	}
 
 	@Override
@@ -87,14 +108,14 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 
 	@Override
 	public CompletionStage<Entity<T>> putObject(String key, T value) {
-		return this._set(key, SerializationUtils.serialize(value)).thenApply(s ->{
+		return this._set(key, SerializationUtils.serialize(value)).thenApply(s -> {
 			return new Entity<T>(key, value);
 		});
 	}
 
 	@Override
 	public CompletionStage<Entity<String>> putString(String key, String value) {
-		return this._set(key, SafeEncoder.encode(value)).thenApply(s ->{
+		return this._set(key, SafeEncoder.encode(value)).thenApply(s -> {
 			return new Entity<String>(key, value);
 		});
 	}
@@ -103,7 +124,7 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 	public CompletionStage<Long> ttl(String key) {
 		return AsyncOperations.ttl(getKeyName(key));
 	}
-	
+
 	/**
 	 * 原生的获取
 	 * 
@@ -114,18 +135,20 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 		String keyName = this.getKeyName(key);
 		return AsyncOperations.get(keyName);
 	}
-	
+
 	/**
 	 * 高性能get
+	 * 
 	 * @param key
 	 * @return
 	 */
 	protected CompletionStage<byte[]> _hget(String key) {
 		String script = Cons.GET_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
+		byte[][] values = new byte[][] { SafeEncoder.encode(this.getKeyName(key)),
+				SafeEncoder.encode(String.valueOf(this.getLifeTime())) };
 		return AsyncOperations.runScript(script, ScriptOutputType.VALUE, values);
 	}
-	
+
 	/**
 	 * 原生的设置
 	 * 
@@ -141,7 +164,7 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 			return AsyncOperations.set(keyName, value);
 		}
 	}
-	
+
 	/**
 	 * 删除当前的key
 	 */
@@ -150,7 +173,7 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 			return AsyncOperations.del(this.getKeyName(keys[0]));
 		} else {
 			List<String> _keys = Lists.newArrayList(keys.length);
-			for(String key: keys) {
+			for (String key : keys) {
 				_keys.add(this.getKeyName(key));
 			}
 			return AsyncOperations.del(_keys.toArray(keys));
@@ -163,15 +186,26 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 	protected CompletionStage<Long> _exists(String key) {
 		return AsyncOperations.exists(this.getKeyName(key));
 	}
-	
+
 	/**
 	 * 高性能get
+	 * 
 	 * @param key
 	 * @return
 	 */
 	protected CompletionStage<Long> _hexists(String key) {
 		String script = Cons.EXISTS_LUA;
-		byte[][] values = new byte[][] {SafeEncoder.encode(this.getKeyName(key)), SafeEncoder.encode(String.valueOf(this.getLifeTime()))};
+		byte[][] values = new byte[][] { SafeEncoder.encode(this.getKeyName(key)),
+				SafeEncoder.encode(String.valueOf(this.getLifeTime())) };
 		return AsyncOperations.runScript(script, ScriptOutputType.INTEGER, values);
+	}
+
+	/**
+	 * 转换为二级缓存
+	 */
+	@Override
+	public AsyncCache<T> wrapLocal() {
+		LocalCache<Object> local = this.cacheManager.getLocalCache();
+		return new AsyncRedisCacheChannel<T>(this, local);
 	}
 }

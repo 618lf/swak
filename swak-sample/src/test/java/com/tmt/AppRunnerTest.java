@@ -7,7 +7,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.swak.cache.redis.RedisLocalCache;
+import com.swak.cache.Cache;
+import com.swak.cache.CacheManager;
 import com.swak.test.ApplicationTest;
 import com.swak.test.utils.MultiThreadTest;
 
@@ -21,22 +22,26 @@ import com.swak.test.utils.MultiThreadTest;
 public class AppRunnerTest {
 
 	@Autowired(required = false)
-	private RedisLocalCache localCache;
+	private CacheManager cacheManager;
 
 	@Test
-	public void localCacheTest() {
+	public void localCacheTest() throws InterruptedException {
+
+		// 创建一个二级缓存
+		Cache<Object> lfCache = cacheManager.getCache("lifeng").wrapLocal();
+		
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		MultiThreadTest.run(() -> {
 			while (true) {
 				try {
-					if (localCache != null) {
-						localCache.putObject("name", "ifeng");
-					}
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
+					lfCache.putString("name", "ifeng");
+					Thread.sleep(2000);
+					lfCache.delete("name");
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
-		}, 3, "测试存储数据");
-		countDownLatch.countDown();
+		}, 1, "测试存储数据");
+		countDownLatch.await();
 	}
 }

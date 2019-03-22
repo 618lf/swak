@@ -2,6 +2,7 @@ package com.swak.cache.redis;
 
 import com.swak.cache.AbstractCacheManager;
 import com.swak.cache.Cache;
+import com.swak.cache.LocalCache;
 
 /**
  * 
@@ -26,12 +27,16 @@ public class RedisCacheManager extends AbstractCacheManager {
 	 */
 	@Override
 	public <T> Cache<T> createCache(String name, int timeToIdle, boolean idleAble) {
-		RedisCache<T> cache = new RedisCache<T>(name, timeToIdle, idleAble);
-		return cache;
+		return new RedisCache<T>(name, timeToIdle, idleAble).setCacheManager(this);
 	}
 
+	/**
+	 * 返回二级缓存
+	 * 
+	 * @return
+	 */
 	@Override
-	protected RedisLocalCache getLocalCache() {
+	public LocalCache<Object> getLocalCache() {
 		return localCache;
 	}
 }

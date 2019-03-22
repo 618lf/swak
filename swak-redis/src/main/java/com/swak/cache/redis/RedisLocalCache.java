@@ -6,8 +6,8 @@ import org.ehcache.core.EhcacheBase;
 import org.springframework.beans.factory.DisposableBean;
 
 import com.swak.Constants;
-import com.swak.cache.Cache;
 import com.swak.cache.Entity;
+import com.swak.cache.LocalCache;
 import com.swak.cache.SafeEncoder;
 import com.swak.pubsub.RedisPubSubHandler;
 import com.swak.serializer.SerializationUtils;
@@ -18,7 +18,7 @@ import com.swak.utils.Sets;
  * 
  * @author root
  */
-public class RedisLocalCache extends RedisPubSubHandler implements Cache<Object>, DisposableBean {
+public class RedisLocalCache extends RedisPubSubHandler implements LocalCache<Object>, DisposableBean {
 
 	private final EhcacheBase<String, byte[]> cache;
 	private final String name;

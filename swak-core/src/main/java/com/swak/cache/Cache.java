@@ -88,4 +88,13 @@ public interface Cache<T> {
 	default ReactiveCache<T> reactive() {
 		return null;
 	}
+	
+	/**
+	 * 转为二级缓存
+	 * 
+	 * @return
+	 */
+	default Cache<T> wrapLocal() {
+		return null;
+	}
 }

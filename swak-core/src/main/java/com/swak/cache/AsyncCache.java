@@ -81,4 +81,13 @@ public interface AsyncCache<T> {
 	 * @return
 	 */
 	CompletionStage<Long> ttl(String key);
+	
+	/**
+	 * 转为二级缓存
+	 * 
+	 * @return
+	 */
+	default AsyncCache<T> wrapLocal() {
+		return null;
+	}
 }

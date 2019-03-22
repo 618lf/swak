@@ -4,34 +4,27 @@ import java.util.List;
 
 import com.swak.cache.Cache;
 import com.swak.cache.Entity;
+import com.swak.cache.LocalCache;
 import com.swak.utils.Lists;
 
 /**
- * 如果本地缓存还有，但是远程缓存删除了--怎么处理
- * 二级缓存功能
+ * 如果本地缓存还有，但是远程缓存删除了--怎么处理 二级缓存功能
+ * 
  * @author root
  */
 public class RedisCacheChannel<T> implements Cache<T> {
 
-	// 本地缓存
-	private RedisLocalCache local;
-	
-	// 远程缓存
-	private RedisCache<T> remote;
-	
-	/**
-	 * 必须设置这两级缓存
-	 * @param local
-	 */
-	public void setLocal(RedisLocalCache local) {
-		this.local = local;
-	}
-	public void setRemote(RedisCache<T> remote) {
+	private final LocalCache<Object> local;
+	private final RedisCache<T> remote;
+
+	public RedisCacheChannel(RedisCache<T> remote, LocalCache<Object> local) {
 		this.remote = remote;
+		this.local = local;
 	}
 
 	/**
 	 * 远程缓存的命名规则
+	 * 
 	 * @param key
 	 * @return
 	 */
@@ -59,10 +52,10 @@ public class RedisCacheChannel<T> implements Cache<T> {
 	public Long ttl(String key) {
 		return remote.ttl(key);
 	}
-	
+
 	// 以下实现了使用本地缓存的方法
 	/**
-	 * 优先从1级缓存获取数据。 
+	 * 优先从1级缓存获取数据。
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -71,16 +64,16 @@ public class RedisCacheChannel<T> implements Cache<T> {
 		Object t = local.getObject(localKey);
 		if (t == null) {
 			T o = remote.getObject(key);
-			if (o != null){
+			if (o != null) {
 				t = o;
 				local.putObject(localKey, t);
 			}
 		}
-		return (T)t;
+		return (T) t;
 	}
-	
+
 	/**
-	 * 优先从1级缓存获取数据。 
+	 * 优先从1级缓存获取数据。
 	 */
 	@Override
 	public String getString(String key) {
@@ -88,7 +81,7 @@ public class RedisCacheChannel<T> implements Cache<T> {
 		String t = local.getString(localKey);
 		if (t == null) {
 			String o = remote.getString(key);
-			if (o != null){
+			if (o != null) {
 				t = o;
 				local.putString(localKey, t);
 			}
@@ -103,7 +96,7 @@ public class RedisCacheChannel<T> implements Cache<T> {
 		local.putObject(localKey, value);
 		return remote.putObject(key, value);
 	}
-	
+
 	@Override
 	public Entity<String> putString(String key, String value) {
 		String localKey = this.getKeyName(key);
@@ -120,25 +113,24 @@ public class RedisCacheChannel<T> implements Cache<T> {
 		return remote.delete(key);
 	}
 
-
 	@Override
-	public Long delete(String ... keys) {
+	public Long delete(String... keys) {
 		List<String> _keys = this._delete(keys);
-		local.delete(keys);
 		if (_keys != null && _keys.size() != 0) {
 			_sendEvictCmd(_keys);
 		}
-		return _keys != null ? (long)_keys.size() : 0;
+		return remote.delete(keys);
 	}
-	
+
 	// 返回整理好的keys
-	private List<String> _delete(String ... keys) {
+	private List<String> _delete(String... keys) {
 		if (keys != null && keys.length != 0) {
 			List<String> _keys = Lists.newArrayList();
-			for(String key: keys) {
-				_keys.add(this.getKeyName(key));
+			for (String key : keys) {
+				String _key = this.getKeyName(key);
+				_keys.add(_key);
+				local.delete(_key);
 			}
-			remote.delete(_keys.toArray(new String[]{}));
 			return _keys;
 		}
 		return null;
