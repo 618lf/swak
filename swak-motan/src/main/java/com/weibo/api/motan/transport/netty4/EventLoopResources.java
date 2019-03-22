@@ -38,6 +38,11 @@ public class EventLoopResources implements LoopResources, Closable<EventLoopReso
 	public EventLoopGroup onServer() {
 		return loopResources.onServer();
 	}
+	
+	@Override
+	public EventLoopGroup onClient() {
+		return loopResources.onClient();
+	}
 
 	@Override
 	public Class<? extends Channel> onClientChannel() {

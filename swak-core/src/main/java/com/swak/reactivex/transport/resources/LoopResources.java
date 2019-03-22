@@ -25,9 +25,7 @@ public interface LoopResources extends Disposable {
 	EventLoopGroup onServerSelect();
 	EventLoopGroup onServer();
 	Class<? extends Channel> onClientChannel();
-	default EventLoopGroup onClient() {
-		return this.onServer();
-	}
+	EventLoopGroup onClient();
 	default void dispose() {
 		disposeLater().subscribe();
 	}

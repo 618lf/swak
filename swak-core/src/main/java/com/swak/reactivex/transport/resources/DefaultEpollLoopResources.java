@@ -46,4 +46,13 @@ public class DefaultEpollLoopResources extends DefaultLoopResources {
 		}
 		return this.serverLoops;
 	}
+	
+	@Override
+	public EventLoopGroup onClient() {
+		if (this.serverLoops == null) {
+			this.serverLoops = new EpollEventLoopGroup(workerCount, threadFactory(this, "epoll-client-"));
+			this.monitor("client", this.serverLoops);
+		}
+		return this.serverLoops;
+	}
 }

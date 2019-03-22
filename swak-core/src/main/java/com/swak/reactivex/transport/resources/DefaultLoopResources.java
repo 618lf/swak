@@ -67,6 +67,15 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 		return serverLoops;
 	}
 
+	@Override
+	public EventLoopGroup onClient() {
+		if (this.serverLoops == null) {
+			this.serverLoops = new NioEventLoopGroup(workerCount, threadFactory(this, "client-"));
+			this.monitor("client", this.serverLoops);
+		}
+		return serverLoops;
+	}
+
 	/**
 	 * 关闭资源
 	 */

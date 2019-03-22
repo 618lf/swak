@@ -2,18 +2,29 @@ package com.swak.pubsub;
 
 import java.util.concurrent.CompletionStage;
 
+import com.swak.boot.Boot;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.RedisUtils;
 import com.swak.serializer.SerializationUtils;
 
-import io.lettuce.core.pubsub.RedisPubSubListener;
+import io.lettuce.core.pubsub.RedisPubSubAdapter;
 
 /**
  * 基本的消息订阅
  * 
  * @author lifeng
  */
-public abstract class RedisPubSubHandler implements RedisPubSubListener<byte[], byte[]> {
+public abstract class RedisPubSubHandler extends RedisPubSubAdapter<byte[], byte[]> implements Boot {
+
+	@Override
+	public void start() {
+		RedisUtils.listener(this, this.getChannel());
+	}
+
+	@Override
+	public String describe() {
+		return "启动 Redis 订阅服务：" + this.getChannel();
+	}
 
 	/**
 	 * 订阅消息
@@ -21,7 +32,7 @@ public abstract class RedisPubSubHandler implements RedisPubSubListener<byte[], 
 	 * @param channels
 	 */
 	protected void subscribe(String... channels) {
-		RedisUtils.subscribe(channels);
+		RedisUtils.listener(this, channels);
 	}
 
 	/**
@@ -37,7 +48,7 @@ public abstract class RedisPubSubHandler implements RedisPubSubListener<byte[], 
 	public CompletionStage<Long> publish(String channel, Object obj) {
 		return this.publish(channel, SerializationUtils.serialize(obj));
 	}
-	
+
 	/**
 	 * 处理消息
 	 * 
@@ -45,6 +56,8 @@ public abstract class RedisPubSubHandler implements RedisPubSubListener<byte[], 
 	 * @param message
 	 */
 	public abstract void onMessage(String channel, byte[] message);
+
+	public abstract String getChannel();
 
 	@Override
 	public void message(byte[] channel, byte[] message) {
@@ -54,25 +67,5 @@ public abstract class RedisPubSubHandler implements RedisPubSubListener<byte[], 
 	@Override
 	public void message(byte[] pattern, byte[] channel, byte[] message) {
 		this.onMessage(SafeEncoder.encode(channel), message);
-	}
-
-	@Override
-	public void subscribed(byte[] channel, long count) {
-
-	}
-
-	@Override
-	public void psubscribed(byte[] pattern, long count) {
-
-	}
-
-	@Override
-	public void unsubscribed(byte[] channel, long count) {
-
-	}
-
-	@Override
-	public void punsubscribed(byte[] pattern, long count) {
-
 	}
 }

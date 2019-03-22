@@ -50,20 +50,9 @@ public class RedisUtils {
 	 * @param key
 	 * @return
 	 */
-	public static boolean listener(RedisPubSubListener<byte[], byte[]> subscriber) {
+	public static CompletionStage<Void> listener(RedisPubSubListener<byte[], byte[]> subscriber, String ... channels) {
 		return subscribe(connect -> {
 			connect.addListener(subscriber);
-			return true;
-		});
-	}
-	
-	/**
-	 * 订阅此主题
-	 * @param key
-	 * @return
-	 */
-	public static CompletionStage<Void> subscribe(String ... channels) {
-		return subscribe(connect -> {
 			return connect.async().subscribe(SafeEncoder.encodeMany(channels));
 		});
 	}
