@@ -4,12 +4,12 @@ import java.lang.reflect.Array;
 
 import org.ehcache.core.EhcacheBase;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
 import com.swak.Constants;
 import com.swak.cache.Cache;
 import com.swak.cache.Entity;
-import com.swak.eventbus.EventConsumer;
-import com.swak.eventbus.EventProducer;
+import com.swak.pubsub.RedisPubSubHandler;
 import com.swak.utils.Sets;
 
 /**
@@ -17,19 +17,14 @@ import com.swak.utils.Sets;
  * 
  * @author root
  */
-public class RedisLocalCache implements Cache<Object>, EventConsumer, DisposableBean {
+public class RedisLocalCache extends RedisPubSubHandler implements Cache<Object>, InitializingBean, DisposableBean {
 
 	private final EhcacheBase<String, Object> cache;
 	private final String name;
-	private EventProducer producer;
 
 	public RedisLocalCache(String name, EhcacheBase<String, Object> local) {
 		this.name = name;
 		this.cache = local;
-	}
-
-	public void setProducer(EventProducer producer) {
-		this.producer = producer;
 	}
 
 	@Override
@@ -92,7 +87,12 @@ public class RedisLocalCache implements Cache<Object>, EventConsumer, Disposable
 		return -2L;
 	}
 
-	// ------------ 销毁 ----------
+	// ------------ 初始化 - 销毁 ----------
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.subscribe(Constants.LOCAL_CACHE_TOPIC);
+	}
 
 	@Override
 	public void destroy() throws Exception {
@@ -100,34 +100,24 @@ public class RedisLocalCache implements Cache<Object>, EventConsumer, Disposable
 	}
 
 	// ------------- 消息订阅 -------------
-
 	@Override
-	public String getChannel() {
-		return Constants.LOCAL_CACHE_TOPIC;
-	}
-
-	/**
-	 * 获取订阅的消息
-	 */
-	@Override
-	public void onMessge(byte[] message) {
-
-		// 无效消息
-		if (message != null && message.length <= 0) {
-			return;
-		}
-
-		try {
-			Command cmd = Command.parse(message);
-			if (cmd == null || cmd.isLocalCommand()) {
+	public void onMessage(String channel, byte[] message) {
+		if (channel.equals(Constants.LOCAL_CACHE_TOPIC)) {
+			if (message != null && message.length <= 0) {
 				return;
 			}
-			switch (cmd.getOperator()) {
-			case Command.OPT_DELETE_KEY:
-				onDeleteCacheKey(cmd.getKey());
-				break;
+			try {
+				Command cmd = Command.parse(message);
+				if (cmd == null || cmd.isLocalCommand()) {
+					return;
+				}
+				switch (cmd.getOperator()) {
+				case Command.OPT_DELETE_KEY:
+					onDeleteCacheKey(cmd.getKey());
+					break;
+				}
+			} catch (Exception e) {
 			}
-		} catch (Exception e) {
 		}
 	}
 
@@ -159,7 +149,7 @@ public class RedisLocalCache implements Cache<Object>, EventConsumer, Disposable
 		if (key != null) {
 			// 发送广播
 			Command cmd = new Command(Command.OPT_DELETE_KEY, key);
-			producer.publish(this.getChannel(), cmd.toBuffers());
+			this.publish(Constants.LOCAL_CACHE_TOPIC, cmd.toBuffers());
 		}
 	}
 }

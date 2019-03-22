@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.config.flux.SecurityConfigurationSupport;
-import com.tmt.consumer.UpdateEventConsumer;
 import com.tmt.realm.SimpleRealm;
 
 /**
@@ -14,16 +13,6 @@ import com.tmt.realm.SimpleRealm;
  */
 @Configuration
 public class AppConfiguration {
-
-	/**
-	 * 注册消费者
-	 * 
-	 * @return
-	 */
-	@Bean
-	public UpdateEventConsumer updateEventConsumer() {
-		return new UpdateEventConsumer();
-	}
 
 	/**
 	 * 配置安全管理

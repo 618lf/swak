@@ -1,8 +1,5 @@
 package com.swak.config.redis;
 
-import static com.swak.Application.APP_LOGGER;
-
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -30,14 +27,4 @@ public class CacheModuleAutoConfiguration {
 	@ConditionalOnMissingBean(CacheConfigurationSupport.class)
 	@EnableConfigurationProperties(CacheProperties.class)
 	public static class CacheAutoConfiguration extends CacheConfigurationSupport {}
-	
-	@Configuration
-	@ConditionalOnMissingBean(EventBusConfigurationSupport.class)
-	@AutoConfigureAfter(CacheAutoConfiguration.class)
-	@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableEventBus", matchIfMissing = false)
-	public static class EventBusAutoConfiguration extends EventBusConfigurationSupport {
-		public EventBusAutoConfiguration() {
-			APP_LOGGER.debug("Loading Redis Event bus");
-		}
-	}
 }
