@@ -22,6 +22,24 @@
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>
+			<artifactId>swak-jdbc</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.alibaba</groupId>
+					<artifactId>druid</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-http</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
 			<artifactId>swak-test</artifactId>
 			<scope>test</scope>
 		</dependency>
