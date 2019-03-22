@@ -16,11 +16,20 @@ public class CacheProperties extends TransportProperties{
 	private String password;
 	
 	// 本地缓存
+	private int localPoolSize = 3;
 	private String localName = "LOCAL";
-	private int localElements = 2000;
+	private int localHeadSize = 200; // 个
+	private int localOffHeadMB = 5; // MB
+	private int localDiskMB = 10;// MB
 	private int localLiveSeconds = 60;
 	private String localDiskPath = "cache";
 	
+	public int getLocalPoolSize() {
+		return localPoolSize;
+	}
+	public void setLocalPoolSize(int localPoolSize) {
+		this.localPoolSize = localPoolSize;
+	}
 	public String getLocalDiskPath() {
 		return localDiskPath;
 	}
@@ -39,11 +48,23 @@ public class CacheProperties extends TransportProperties{
 	public void setLocalName(String localName) {
 		this.localName = localName;
 	}
-	public int getLocalElements() {
-		return localElements;
+	public int getLocalHeadSize() {
+		return localHeadSize;
 	}
-	public void setLocalElements(int localElements) {
-		this.localElements = localElements;
+	public int getLocalOffHeadMB() {
+		return localOffHeadMB;
+	}
+	public int getLocalDiskMB() {
+		return localDiskMB;
+	}
+	public void setLocalHeadSize(int localHeadSize) {
+		this.localHeadSize = localHeadSize;
+	}
+	public void setLocalOffHeadMB(int localOffHeadMB) {
+		this.localOffHeadMB = localOffHeadMB;
+	}
+	public void setLocalDiskMB(int localDiskMB) {
+		this.localDiskMB = localDiskMB;
 	}
 	public String getHosts() {
 		return hosts;

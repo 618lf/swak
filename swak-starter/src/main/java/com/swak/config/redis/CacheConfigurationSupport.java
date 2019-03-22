@@ -11,6 +11,7 @@ import org.ehcache.config.CacheConfiguration;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.ehcache.config.units.MemoryUnit;
 import org.ehcache.core.EhcacheBase;
 import org.ehcache.core.EhcacheManager;
 import org.ehcache.impl.config.executor.PooledExecutionServiceConfiguration;
@@ -105,10 +106,11 @@ public class CacheConfigurationSupport {
 	@ConditionalOnMissingBean
 	public EhcacheManager ehcacheManager() {
 		PooledExecutionServiceConfiguration serviceConfiguration = new PooledExecutionServiceConfiguration();
-		serviceConfiguration.addDefaultPool("Ehcache", 1, 5);
+		serviceConfiguration.addDefaultPool("Daemon", 1, cacheProperties.getLocalPoolSize());
 		EhcacheManager ehcacheManager = (EhcacheManager) CacheManagerBuilder.newCacheManagerBuilder()
 				.using(serviceConfiguration).with(new CacheManagerPersistenceConfiguration(getCacheDiskPath()))
-				.build(true);
+				.withDefaultDiskStoreThreadPool("Daemon").withDefaultEventListenersThreadPool("Daemon")
+				.withDefaultWriteBehindThreadPool("Daemon").build(true);
 		return ehcacheManager;
 	}
 
@@ -131,9 +133,12 @@ public class CacheConfigurationSupport {
 	@ConditionalOnMissingBean
 	public RedisLocalCache redisLocalCache(EhcacheManager ehcacheManager) {
 		CacheConfiguration<String, byte[]> configuration = CacheConfigurationBuilder
-				.newCacheConfigurationBuilder(String.class, byte[].class, ResourcePoolsBuilder.heap(1000))
+				.newCacheConfigurationBuilder(String.class, byte[].class,
+						ResourcePoolsBuilder.heap(cacheProperties.getLocalHeadSize())
+								.offheap(cacheProperties.getLocalOffHeadMB(), MemoryUnit.MB)
+								.disk(cacheProperties.getLocalDiskMB(), MemoryUnit.MB, true))
 				.withExpiry(ExpiryPolicys.fixedExpiryPolicy(Duration.ofSeconds(cacheProperties.getLocalLiveSeconds())))
-				.withDiskStoreThreadPool("Ehcache", 2).build();
+				.build();
 
 		EhcacheBase<String, byte[]> ehcache = (EhcacheBase<String, byte[]>) ehcacheManager
 				.createCache(cacheProperties.getLocalName(), configuration);
