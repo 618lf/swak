@@ -30,88 +30,38 @@ public class HttpServerOptions extends ServerOptions {
 		this.enableCompression = builder.enableCompression;
 	}
 
-	/**
-	 * 开启压缩
-	 * 
-	 * @return
-	 */
 	public boolean enabledCompression() {
 		return enableCompression;
 	}
 
-	/**
-	 * 开启跨域
-	 * 
-	 * @return
-	 */
 	public boolean enableCors() {
 		return enableCors;
 	}
 
-	/**
-	 * 开启读取超时 -- 对于服务器而言（服务器的处理时长）
-	 * 
-	 * @return
-	 */
 	public boolean enableReadIdle() {
 		return this.getReadTimeoutMillis() != -1;
 	}
-	
-	/**
-	 * 开启写超时
-	 * 
-	 * @return
-	 */
+
 	public boolean enableWriteIdle() {
 		return this.getWriteTimeoutMillis() != -1;
 	}
 
-	/**
-	 * Returns the maximum length configured for the initial HTTP line.
-	 *
-	 * @return the initial HTTP line maximum length
-	 * @see io.netty.handler.codec.http.HttpServerCodec
-	 */
 	public int httpCodecMaxInitialLineLength() {
 		return maxInitialLineLength;
 	}
 
-	/**
-	 * Returns the configured HTTP header maximum size.
-	 *
-	 * @return the configured HTTP header maximum size
-	 * @see io.netty.handler.codec.http.HttpServerCodec
-	 */
 	public int httpCodecMaxHeaderSize() {
 		return maxHeaderSize;
 	}
 
-	/**
-	 * Returns the configured HTTP chunk maximum size.
-	 *
-	 * @return the configured HTTP chunk maximum size
-	 * @see io.netty.handler.codec.http.HttpServerCodec
-	 */
 	public int httpCodecMaxChunkSize() {
 		return maxChunkSize;
 	}
 
-	/**
-	 * Returns the HTTP validate headers flag.
-	 *
-	 * @return true if the HTTP codec validates headers, false otherwise
-	 * @see io.netty.handler.codec.http.HttpServerCodec
-	 */
 	public boolean httpCodecValidateHeaders() {
 		return validateHeaders;
 	}
 
-	/**
-	 * Returns the configured HTTP codec initial buffer size.
-	 *
-	 * @return the configured HTTP codec initial buffer size
-	 * @see io.netty.handler.codec.http.HttpServerCodec
-	 */
 	public int httpCodecInitialBufferSize() {
 		return initialBufferSize;
 	}

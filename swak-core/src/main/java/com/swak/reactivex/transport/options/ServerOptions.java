@@ -6,16 +6,13 @@ import java.util.function.Consumer;
 
 import com.swak.reactivex.transport.resources.LoopResources;
 
-import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.AttributeKey;
@@ -26,9 +23,6 @@ public class ServerOptions extends NettyOptions<ServerBootstrap> {
 	private EventLoop dateServer;
 	private LogLevel logLevel;
 
-	/**
-	 * Build a new {@link ServerOptions}.
-	 */
 	protected ServerOptions(ServerOptions.Builder builder) {
 		super(builder);
 		if (Objects.isNull(builder.host)) {
@@ -98,62 +92,26 @@ public class ServerOptions extends NettyOptions<ServerBootstrap> {
 					.childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, 30000);
 		}
 
-		/**
-		 * The host on which this server should listen.
-		 *
-		 * @param host
-		 *            The host to bind to.
-		 * @return {@code this}
-		 */
 		public final Builder host(String host) {
 			this.host = host;
 			return this;
 		}
 
-		/**
-		 * The port on which this server should listen, assuming it should bind to all
-		 * available addresses.
-		 *
-		 * @param port
-		 *            The port to listen on.
-		 * @return {@code this}
-		 */
 		public final Builder port(int port) {
 			this.port = Objects.requireNonNull(port, "port");
 			return this;
 		}
 
-		/**
-		 * set server log level
-		 * 
-		 * @param logLevel
-		 * @return
-		 */
 		public final Builder logLevel(LogLevel logLevel) {
 			this.logLevel = logLevel;
 			return this;
 		}
 
-		/**
-		 * Enable SSL service with a self-signed certificate
-		 *
-		 * @return {@code this}
-		 */
 		public final Builder sslSelfSigned() {
 			return sslSelfSigned(c -> {
 			});
 		}
 
-		/**
-		 * Enable SSL service with a self-signed certificate and allows extra
-		 * parameterization of the self signed {@link SslContextBuilder}. The builder is
-		 * then used to invoke {@link #sslContext(SslContext)}.
-		 *
-		 * @param configurator
-		 *            the builder callback to setup the self-signed
-		 *            {@link SslContextBuilder}
-		 * @return {@code this}
-		 */
 		public final Builder sslSelfSigned(Consumer<? super SslContextBuilder> configurator) {
 			Objects.requireNonNull(configurator, "configurator");
 			SelfSignedCertificate ssc;
@@ -168,39 +126,11 @@ public class ServerOptions extends NettyOptions<ServerBootstrap> {
 			}
 		}
 
-		/**
-		 * Attribute default attribute to the future {@link Channel} connection. They
-		 * will be available via
-		 * {@link reactor.ipc.netty.NettyInbound#attr(AttributeKey)}.
-		 *
-		 * @param key
-		 *            the attribute key
-		 * @param value
-		 *            the attribute value
-		 * @param <T>
-		 *            the attribute type
-		 * @return {@code this}
-		 * @see Bootstrap#attr(AttributeKey, Object)
-		 */
 		public final <T> Builder childAttr(AttributeKey<T> key, T value) {
 			this.bootstrapTemplate.childAttr(key, value);
 			return this;
 		}
 
-		/**
-		 * Set a {@link ChannelOption} value for low level connection settings like
-		 * SO_TIMEOUT or SO_KEEPALIVE. This will apply to each new channel from remote
-		 * peer.
-		 *
-		 * @param key
-		 *            the option key
-		 * @param value
-		 *            the option value
-		 * @param <T>
-		 *            the option type
-		 * @return {@code this}
-		 * @see Bootstrap#option(ChannelOption, Object)
-		 */
 		public final <T> Builder childOption(ChannelOption<T> key, T value) {
 			this.bootstrapTemplate.childOption(key, value);
 			return this;

@@ -52,7 +52,7 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 	@Override
 	public EventLoopGroup onServerSelect() {
 		if (serverSelectLoops == null) {
-			this.serverSelectLoops = new NioEventLoopGroup(selectCount, threadFactory(this, "acceptor-"));
+			this.serverSelectLoops = new NioEventLoopGroup(selectCount, threadFactory(this, "Acceptor-"));
 			this.monitor("acceptor", this.serverSelectLoops);
 		}
 		return serverSelectLoops;
@@ -61,7 +61,7 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 	@Override
 	public EventLoopGroup onServer() {
 		if (this.serverLoops == null) {
-			this.serverLoops = new NioEventLoopGroup(workerCount, threadFactory(this, "eventloop-"));
+			this.serverLoops = new NioEventLoopGroup(workerCount, threadFactory(this, "Eventloop-"));
 			this.monitor("eventloop", this.serverLoops);
 		}
 		return serverLoops;
@@ -70,7 +70,7 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 	@Override
 	public EventLoopGroup onClient() {
 		if (this.serverLoops == null) {
-			this.serverLoops = new NioEventLoopGroup(workerCount, threadFactory(this, "client-"));
+			this.serverLoops = new NioEventLoopGroup(workerCount, threadFactory(this, "Client-"));
 			this.monitor("client", this.serverLoops);
 		}
 		return serverLoops;

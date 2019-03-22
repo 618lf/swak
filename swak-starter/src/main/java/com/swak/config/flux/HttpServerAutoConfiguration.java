@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.swak.config.flux.WebHandlerAutoConfiguration;
+import com.swak.Constants;
 import com.swak.reactivex.handler.HttpHandler;
 import com.swak.reactivex.transport.http.server.HttpServer;
 import com.swak.reactivex.transport.http.server.HttpServerProperties;
@@ -89,7 +89,7 @@ public class HttpServerAutoConfiguration {
 	// 校验是否可以用
 	private boolean useable(int port) {
 		try {
-			Socket socket = new Socket("127.0.0.1", port);
+			Socket socket = new Socket(Constants.LOCALHOST, port);
 			socket.close();
 			return false;
 		} catch (Exception e) {

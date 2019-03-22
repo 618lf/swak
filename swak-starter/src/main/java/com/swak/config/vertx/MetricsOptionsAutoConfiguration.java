@@ -11,10 +11,10 @@ import com.swak.vertx.config.VertxProperties;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.micrometer.MicrometerMetricsOptions;
-import io.vertx.micrometer.VertxJmxMetricsOptions;
 
 /**
  * 代有监控 options
+ * 
  * @author lifeng
  */
 @ConditionalOnMissingBean(VertxOptions.class)
@@ -24,6 +24,7 @@ public class MetricsOptionsAutoConfiguration {
 
 	/**
 	 * 构建配置
+	 * 
 	 * @param properties
 	 * @return
 	 */
@@ -33,10 +34,7 @@ public class MetricsOptionsAutoConfiguration {
 
 		// Metrics
 		if (properties.isMetricAble()) {
-			VertxJmxMetricsOptions jmxOptions = new VertxJmxMetricsOptions();
-			jmxOptions.setEnabled(true).setDomain("vertx-metrics");
-			vertxOptions.setMetricsOptions(
-					new MicrometerMetricsOptions().setEnabled(true).setJmxMetricsOptions(jmxOptions));
+			vertxOptions.setMetricsOptions(new MicrometerMetricsOptions().setEnabled(true));
 		}
 
 		// pool config
@@ -48,9 +46,10 @@ public class MetricsOptionsAutoConfiguration {
 		vertxOptions.setInternalBlockingPoolSize(properties.getInternalBlockingThreads());
 		return vertxOptions;
 	}
-	
+
 	/**
 	 * 构建配置
+	 * 
 	 * @param properties
 	 * @return
 	 */

@@ -32,7 +32,7 @@ public class HelloController {
 	@Autowired
 	private ShopService shopService;
 
-	@Autowired
+	@Autowired(required = false)
 	private CacheManager cacheManager;
 
 	/**
@@ -153,49 +153,50 @@ public class HelloController {
 		});
 	}
 
-//	/**
-//	 * 返回 mono 对象
-//	 * 
-//	 * @return
-//	 */
-//	@GetMapping("/say/future")
-//	public Mono<Result> sayFuture(String name) {
-//		Shop shop = new Shop();
-//		shop.setName(name);
-//		return Mono.fromFuture(Workers.future(() -> shopService.save(shop))).map(s -> Result.success(s));
-//	}
+	// /**
+	// * 返回 mono 对象
+	// *
+	// * @return
+	// */
+	// @GetMapping("/say/future")
+	// public Mono<Result> sayFuture(String name) {
+	// Shop shop = new Shop();
+	// shop.setName(name);
+	// return Mono.fromFuture(Workers.future(() -> shopService.save(shop))).map(s ->
+	// Result.success(s));
+	// }
 
-//	/**
-//	 * 返回 mono 对象
-//	 * 
-//	 * @return
-//	 */
-//	@Async
-//	@GetMapping("/say/future2")
-//	public Result sayFuture2(String name) {
-//		Shop shop = new Shop();
-//		shop.setName(name);
-//		shopService.save(shop);
-//		return Result.success();
-//	}
+	// /**
+	// * 返回 mono 对象
+	// *
+	// * @return
+	// */
+	// @Async
+	// @GetMapping("/say/future2")
+	// public Result sayFuture2(String name) {
+	// Shop shop = new Shop();
+	// shop.setName(name);
+	// shopService.save(shop);
+	// return Result.success();
+	// }
 
-//	/**
-//	 * 返回 mono 对象
-//	 * 
-//	 * @return
-//	 */
-//	@SuppressWarnings("deprecation")
-//	@GetMapping("/say/stream")
-//	public Mono<Result> sayStream(String name) {
-//		Stream<CompletableFuture<Shop>> optional = Stream.of(name).map(s -> {
-//			Shop shop = new Shop();
-//			shop.setName(name);
-//			return shop;
-//		}).map(s -> {
-//			return Workers.future(() -> shopService.save(s));
-//		});
-//		return Workers.stream(optional).map(s -> Result.success(s));
-//	}
+	// /**
+	// * 返回 mono 对象
+	// *
+	// * @return
+	// */
+	// @SuppressWarnings("deprecation")
+	// @GetMapping("/say/stream")
+	// public Mono<Result> sayStream(String name) {
+	// Stream<CompletableFuture<Shop>> optional = Stream.of(name).map(s -> {
+	// Shop shop = new Shop();
+	// shop.setName(name);
+	// return shop;
+	// }).map(s -> {
+	// return Workers.future(() -> shopService.save(s));
+	// });
+	// return Workers.stream(optional).map(s -> Result.success(s));
+	// }
 
 	/**
 	 * 返回 mono 对象
@@ -235,92 +236,94 @@ public class HelloController {
 	// });
 	// }
 
-//	/**
-//	 * 输出string 类型
-//	 * 
-//	 * @return
-//	 * @throws IOException
-//	 */
-//	@SuppressWarnings("deprecation")
-//	@GetMapping("/say/compute")
-//	public Mono<String> sayCompute(HttpServerRequest request) throws IOException {
-//		String biaodashi = WebUtils.getCleanParam(request, "name");
-//		if (StringUtils.isNotBlank(biaodashi) && biaodashi.equals("1 1")) {
-//			return Workers.sink(() -> {
-//				try {
-//					// 模拟计算一分钟，其实和实际的计算是有差别的，sleep 之后这个线程不能做其他的事情了
-//					Thread.sleep(60000);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//				return "lifeng say 2";
-//			});
-//		}
-//		return Mono.just("lifeng say 1");
-//	}
+	// /**
+	// * 输出string 类型
+	// *
+	// * @return
+	// * @throws IOException
+	// */
+	// @SuppressWarnings("deprecation")
+	// @GetMapping("/say/compute")
+	// public Mono<String> sayCompute(HttpServerRequest request) throws IOException
+	// {
+	// String biaodashi = WebUtils.getCleanParam(request, "name");
+	// if (StringUtils.isNotBlank(biaodashi) && biaodashi.equals("1 1")) {
+	// return Workers.sink(() -> {
+	// try {
+	// // 模拟计算一分钟，其实和实际的计算是有差别的，sleep 之后这个线程不能做其他的事情了
+	// Thread.sleep(60000);
+	// } catch (InterruptedException e) {
+	// e.printStackTrace();
+	// }
+	// return "lifeng say 2";
+	// });
+	// }
+	// return Mono.just("lifeng say 1");
+	// }
 
-//	/**
-//	 * 返回 mono 对象
-//	 * 
-//	 * @return
-//	 */
-//	@GetMapping("/say/excel")
-//	public CompletableFuture<Result> sayExcel() {
-//		return Workers.future(() -> {
-//
-//			// 创建文件
-//			File excelFile = ExcelUtils.write(new File(System.getProperty("java.io.tmpdir"), UUIdGenerator.uuid()),
-//					"测试创建文件", "测试创建文件", toMapper(), toValues(), null, null);
-//
-//			// 读取文件
-//			Result result = ExcelUtils.read(new DefaultExcelMapper<Excel>() {
-//				@Override
-//				protected List<ColumnMapper> getRowMapper() {
-//					return toMapper();
-//				}
-//			}, excelFile);
-//			return result;
-//		});
-//	}
+	// /**
+	// * 返回 mono 对象
+	// *
+	// * @return
+	// */
+	// @GetMapping("/say/excel")
+	// public CompletableFuture<Result> sayExcel() {
+	// return Workers.future(() -> {
+	//
+	// // 创建文件
+	// File excelFile = ExcelUtils.write(new
+	// File(System.getProperty("java.io.tmpdir"), UUIdGenerator.uuid()),
+	// "测试创建文件", "测试创建文件", toMapper(), toValues(), null, null);
+	//
+	// // 读取文件
+	// Result result = ExcelUtils.read(new DefaultExcelMapper<Excel>() {
+	// @Override
+	// protected List<ColumnMapper> getRowMapper() {
+	// return toMapper();
+	// }
+	// }, excelFile);
+	// return result;
+	// });
+	// }
 
-//	private List<Map<String, Object>> toValues() {
-//		List<Map<String, Object>> excels = Lists.newArrayList();
-//		Map<String, Object> excel = Maps.newHashMap();
-//		excel.put("a", "A1");
-//		excel.put("b", "B1");
-//		excel.put("c", "12");
-//		excels.add(excel);
-//		excel = Maps.newHashMap();
-//		excel.put("a", "A2");
-//		excel.put("b", "B2");
-//		excel.put("c", "12.0");
-//		excels.add(excel);
-//		return excels;
-//	}
-//
-//	// 创建模板
-//	private List<ColumnMapper> toMapper() {
-//		List<ColumnMapper> mappers = Lists.newArrayList();
-//		ColumnMapper mapper = new ColumnMapper();
-//		mapper.setTitle("A列");
-//		mapper.setColumn("A");
-//		mapper.setDataType(DataType.STRING);
-//		mapper.setProperty("a");
-//		mappers.add(mapper);
-//		mapper = new ColumnMapper();
-//		mapper.setTitle("B列");
-//		mapper.setColumn("B");
-//		mapper.setDataType(DataType.STRING);
-//		mapper.setProperty("b");
-//		mappers.add(mapper);
-//		mapper = new ColumnMapper();
-//		mapper.setTitle("C列");
-//		mapper.setColumn("C");
-//		mapper.setDataType(DataType.STRING);
-//		mapper.setProperty("c");
-//		mappers.add(mapper);
-//		return mappers;
-//	}
+	// private List<Map<String, Object>> toValues() {
+	// List<Map<String, Object>> excels = Lists.newArrayList();
+	// Map<String, Object> excel = Maps.newHashMap();
+	// excel.put("a", "A1");
+	// excel.put("b", "B1");
+	// excel.put("c", "12");
+	// excels.add(excel);
+	// excel = Maps.newHashMap();
+	// excel.put("a", "A2");
+	// excel.put("b", "B2");
+	// excel.put("c", "12.0");
+	// excels.add(excel);
+	// return excels;
+	// }
+	//
+	// // 创建模板
+	// private List<ColumnMapper> toMapper() {
+	// List<ColumnMapper> mappers = Lists.newArrayList();
+	// ColumnMapper mapper = new ColumnMapper();
+	// mapper.setTitle("A列");
+	// mapper.setColumn("A");
+	// mapper.setDataType(DataType.STRING);
+	// mapper.setProperty("a");
+	// mappers.add(mapper);
+	// mapper = new ColumnMapper();
+	// mapper.setTitle("B列");
+	// mapper.setColumn("B");
+	// mapper.setDataType(DataType.STRING);
+	// mapper.setProperty("b");
+	// mappers.add(mapper);
+	// mapper = new ColumnMapper();
+	// mapper.setTitle("C列");
+	// mapper.setColumn("C");
+	// mapper.setDataType(DataType.STRING);
+	// mapper.setProperty("c");
+	// mappers.add(mapper);
+	// return mappers;
+	// }
 
 	// excel 数据
 	public static class Excel {

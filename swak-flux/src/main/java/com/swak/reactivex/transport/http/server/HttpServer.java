@@ -55,11 +55,11 @@ public class HttpServer extends TcpServer {
 	public void start(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler) {
 		try {
 			this.context = this.connector(handler).subscribeOn(Schedulers.immediate())
-					.doOnNext(ctx -> LOG.debug("Started {} on {}", "http-server", ctx.address())).block();
+					.doOnNext(ctx -> LOG.debug("Started {} on {}", "Flux", ctx.address())).block();
 			this.startDaemonAwaitThread();
 		} catch (Exception ex) {
 			this.stop();
-			throw new ServerException("Unable to start Netty", ex);
+			throw new ServerException("Unable to start Flux", ex);
 		}
 	}
 
@@ -69,7 +69,7 @@ public class HttpServer extends TcpServer {
 	 * @param nettyContext
 	 */
 	private void startDaemonAwaitThread() {
-		Thread awaitThread = new Thread("SWAK-server-closeAwait") {
+		Thread awaitThread = new Thread("Flux.Server-closeAwait") {
 			@Override
 			public void run() {
 				context.onClose().block();
@@ -201,6 +201,7 @@ public class HttpServer extends TcpServer {
 	/**
 	 * JVM Hook
 	 */
+	@Deprecated
 	public void installShutdownHook() {
 		// don't return the hook to discourage uninstalling it externally
 		if (this.shutdownHook != null) {
@@ -209,7 +210,7 @@ public class HttpServer extends TcpServer {
 		this.shutdownHook = new Thread(this::shutdownFromJVM, "SWAK - ShutdownHook - jvm");
 		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
 	}
-
+	@Deprecated
 	protected void shutdownFromJVM() {
 		if (context.isDisposed()) {
 			return;
@@ -224,7 +225,7 @@ public class HttpServer extends TcpServer {
 						context.address(), hookDesc))
 				.block();
 	}
-
+	@Deprecated
 	protected boolean removeShutdownHook() {
 		if (this.shutdownHook != null && Thread.currentThread() != this.shutdownHook) {
 			Thread sdh = this.shutdownHook;

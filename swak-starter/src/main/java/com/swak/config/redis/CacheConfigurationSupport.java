@@ -2,9 +2,10 @@ package com.swak.config.redis;
 
 import static com.swak.Application.APP_LOGGER;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.ehcache.config.CacheConfiguration;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
@@ -12,10 +13,13 @@ import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.core.EhcacheBase;
 import org.ehcache.core.EhcacheManager;
-import org.ehcache.expiry.ExpiryPolicy;
+import org.ehcache.impl.config.executor.PooledExecutionServiceConfiguration;
+import org.ehcache.impl.config.persistence.CacheManagerPersistenceConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 import com.swak.cache.CacheManagers;
 import com.swak.cache.CacheProperties;
@@ -24,6 +28,7 @@ import com.swak.cache.redis.RedisLocalCache;
 import com.swak.cache.redis.RedisUtils;
 import com.swak.cache.redis.factory.RedisClientDecorator;
 import com.swak.cache.redis.factory.RedisConnectionPoolFactory;
+import com.swak.cache.redis.policy.ExpiryPolicys;
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.utils.Lists;
 
@@ -41,6 +46,8 @@ public class CacheConfigurationSupport {
 
 	@Autowired
 	private CacheProperties cacheProperties;
+	@Autowired
+	private ResourceLoader resourceLoader;
 
 	public CacheConfigurationSupport() {
 		APP_LOGGER.debug("Loading Redis Cache");
@@ -97,8 +104,22 @@ public class CacheConfigurationSupport {
 	@Bean
 	@ConditionalOnMissingBean
 	public EhcacheManager ehcacheManager() {
-		EhcacheManager cacheManager = (EhcacheManager) CacheManagerBuilder.newCacheManagerBuilder().build(true);
-		return cacheManager;
+		PooledExecutionServiceConfiguration serviceConfiguration = new PooledExecutionServiceConfiguration();
+		serviceConfiguration.addDefaultPool("Ehcache", 1, 5);
+		EhcacheManager ehcacheManager = (EhcacheManager) CacheManagerBuilder.newCacheManagerBuilder()
+				.using(serviceConfiguration).with(new CacheManagerPersistenceConfiguration(getCacheDiskPath()))
+				.build(true);
+		return ehcacheManager;
+	}
+
+	// 本地缓存存储目录
+	private File getCacheDiskPath() {
+		try {
+			Resource resource = resourceLoader.getResource(cacheProperties.getLocalDiskPath());
+			return resource != null ? resource.getFile() : null;
+		} catch (IOException e) {
+		}
+		return new File(cacheProperties.getLocalDiskPath());
 	}
 
 	/**
@@ -109,27 +130,12 @@ public class CacheConfigurationSupport {
 	@Bean
 	@ConditionalOnMissingBean
 	public RedisLocalCache redisLocalCache(EhcacheManager ehcacheManager) {
-		CacheConfiguration<String, Object> configuration = CacheConfigurationBuilder
-				.newCacheConfigurationBuilder(String.class, Object.class, ResourcePoolsBuilder.heap(1000))
-				.withExpiry(new ExpiryPolicy<String, Object>() {
-					@Override
-					public Duration getExpiryForCreation(String key, Object value) {
-						return null;
-					}
+		CacheConfiguration<String, byte[]> configuration = CacheConfigurationBuilder
+				.newCacheConfigurationBuilder(String.class, byte[].class, ResourcePoolsBuilder.heap(1000))
+				.withExpiry(ExpiryPolicys.fixedExpiryPolicy(Duration.ofSeconds(cacheProperties.getLocalLiveSeconds())))
+				.withDiskStoreThreadPool("Ehcache", 2).build();
 
-					@Override
-					public Duration getExpiryForAccess(String key, Supplier<? extends Object> value) {
-						return null;
-					}
-
-					@Override
-					public Duration getExpiryForUpdate(String key, Supplier<? extends Object> oldValue,
-							Object newValue) {
-						return null;
-					}
-				}).build();
-
-		EhcacheBase<String, Object> ehcache = (EhcacheBase<String, Object>) ehcacheManager
+		EhcacheBase<String, byte[]> ehcache = (EhcacheBase<String, byte[]>) ehcacheManager
 				.createCache(cacheProperties.getLocalName(), configuration);
 		return new RedisLocalCache(cacheProperties.getLocalName(), ehcache);
 	}

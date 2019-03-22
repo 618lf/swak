@@ -8,7 +8,9 @@ import org.springframework.beans.factory.DisposableBean;
 import com.swak.Constants;
 import com.swak.cache.Cache;
 import com.swak.cache.Entity;
+import com.swak.cache.SafeEncoder;
 import com.swak.pubsub.RedisPubSubHandler;
+import com.swak.serializer.SerializationUtils;
 import com.swak.utils.Sets;
 
 /**
@@ -18,10 +20,10 @@ import com.swak.utils.Sets;
  */
 public class RedisLocalCache extends RedisPubSubHandler implements Cache<Object>, DisposableBean {
 
-	private final EhcacheBase<String, Object> cache;
+	private final EhcacheBase<String, byte[]> cache;
 	private final String name;
 
-	public RedisLocalCache(String name, EhcacheBase<String, Object> local) {
+	public RedisLocalCache(String name, EhcacheBase<String, byte[]> local) {
 		this.name = name;
 		this.cache = local;
 	}
@@ -38,7 +40,7 @@ public class RedisLocalCache extends RedisPubSubHandler implements Cache<Object>
 
 	@Override
 	public Entity<Object> putObject(String key, Object value) {
-		this.cache.put(key, value);
+		this.cache.put(key, SerializationUtils.serialize(value));
 		return new Entity<Object>(key, value);
 	}
 
@@ -63,21 +65,19 @@ public class RedisLocalCache extends RedisPubSubHandler implements Cache<Object>
 
 	@Override
 	public Object getObject(String key) {
-		return this.cache.get(key);
+		byte[] value = this.cache.get(key);
+		return SerializationUtils.deserialize(value);
 	}
 
 	@Override
 	public String getString(String key) {
-		Object value = this.cache.get(key);
-		if (value != null) {
-			return String.valueOf(value);
-		}
-		return null;
+		byte[] value = this.cache.get(key);
+		return SafeEncoder.encode(value);
 	}
 
 	@Override
 	public Entity<String> putString(String key, String value) {
-		this.cache.put(key, value);
+		this.cache.put(key, SafeEncoder.encode(value));
 		return new Entity<String>(key, value);
 	}
 

@@ -15,11 +15,18 @@ public class CacheProperties extends TransportProperties{
 	private String hosts;
 	private String password;
 	
-	// 二级缓存
+	// 本地缓存
 	private String localName = "LOCAL";
 	private int localElements = 2000;
-	private int localLiveSeconds = 600;
+	private int localLiveSeconds = 60;
+	private String localDiskPath = "cache";
 	
+	public String getLocalDiskPath() {
+		return localDiskPath;
+	}
+	public void setLocalDiskPath(String localDiskPath) {
+		this.localDiskPath = localDiskPath;
+	}
 	public int getLocalLiveSeconds() {
 		return localLiveSeconds;
 	}

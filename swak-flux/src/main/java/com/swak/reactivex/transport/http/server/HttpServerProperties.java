@@ -18,7 +18,7 @@ import io.netty.util.ResourceLeakDetector.Level;
 @ConfigurationProperties(prefix = Constants.FLUX_SERVER_PREFIX)
 public class HttpServerProperties extends TransportProperties {
 
-	private String name = "SWAK-HTTP-SERVER";
+	private String name = "Flux.";
 	private LogLevel serverLogLevel = null;
 	private Level leakDetectionLevel = Level.DISABLED;
 	private boolean threadCache = true;
