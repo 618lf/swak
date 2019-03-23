@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>swak-mq</artifactId>
 	<dependencies>
-	    <dependency>
+		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-core</artifactId>
 		</dependency>
@@ -16,6 +16,11 @@
 			<groupId>com.rabbitmq</groupId>
 			<artifactId>amqp-client</artifactId>
 			<version>${rabbitmq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-redis</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>

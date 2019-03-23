@@ -89,6 +89,16 @@ public class RabbitMQTemplate
 		this.metricsCollector = metricsCollector;
 		return this;
 	}
+	
+	public RabbitMQTemplate setConfirmCallback(ConfirmCallback confirmCallback) {
+		this.confirmCallback = confirmCallback;
+		return this;
+	}
+
+	public RabbitMQTemplate setReturnCallback(ReturnCallback returnCallback) {
+		this.returnCallback = returnCallback;
+		return this;
+	}
 
 	/**
 	 * 创建连接管理器
@@ -296,11 +306,12 @@ public class RabbitMQTemplate
 	}
 
 	/////////////////// 簡單的發送消息/////////
-	public void basicPublish(String exchange, String routingKey, Message message) throws AmqpException {
-		execute(channel -> {
-			channel.addPendingConfirm(channel.getNextPublishSeqNo(), new PendingConfirm(message.getId()));
+	public PendingConfirm basicPublish(String exchange, String routingKey, Message message) throws AmqpException {
+		return execute(channel -> {
+			PendingConfirm pendingConfirm = new PendingConfirm(message.getId());
+			channel.addPendingConfirm(channel.getNextPublishSeqNo(), pendingConfirm);
 			channel.basicPublish(exchange, routingKey, true, message.getProperties(), message.getPayload());
-			return null;
+			return pendingConfirm;
 		});
 	}
 
