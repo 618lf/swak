@@ -109,3 +109,14 @@ application.properties 会查找 config 目录下的文件
 
 # 版本0.1.3.1
 简化配置， 二级缓存，redis订阅的自动恢复，MQ 客户端。MQ 客户端和缓存的结合，发送时将消息存储在缓存中，应答超时或者应答失败，将消息重新发送。消费者需要做消息的冥等校验。
+
+备注下Workers，此类已删除
+用来执行耗时的操作。例如：数据库、文件IO、耗时计算（生成图片）
+https://yq.aliyun.com/articles/591627
+通过线城池 executor来异步执行任务，提供不同的获取结果的方式
+延迟： stream 、mono 延迟执行，只有最后终端操作时才会触发整个执行链 future 、optional 立即执行
+可重用： future、optional、mono 可重用 stream 不可重用
+异步： future、mono 异步执行 stream、optional 不可异步
+推模式还是拉模式： Stream 、Optional 是拉模式的 Future、mono 推模式
+重要性： Mono、Optional、future 是可以重用的 意味着：可以多次获取结果，而不会重复计算
+注意： sink 中返回的值不能为 null， 不然事件发送不出去

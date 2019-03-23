@@ -1,5 +1,8 @@
 package com.swak.rabbit;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+
 import com.swak.rabbit.message.Message;
 import com.swak.rabbit.message.PendingConfirm;
 import com.swak.rabbit.retry.RetryStrategy;
@@ -37,6 +40,18 @@ public class TemplateSender {
 	}
 
 	/**
+	 * 异步发送消息
+	 * 
+	 * @param message
+	 * @return
+	 */
+	public CompletableFuture<Void> send(Message message, Executor executor) {
+		return CompletableFuture.runAsync(() -> {
+			this.send(message);
+		}, executor);
+	}
+
+	/**
 	 * 发送消息
 	 * 
 	 * @param exchange
@@ -47,7 +62,7 @@ public class TemplateSender {
 		PendingConfirm pendingConfirm = null;
 		try {
 			pendingConfirm = this.template.basicPublish(exchange, routingKey, message);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			pendingConfirm = new PendingConfirm(message.getId());
 		}
 		if (this.retry != null) {
@@ -55,7 +70,7 @@ public class TemplateSender {
 			this.retry.add(pendingConfirm);
 		}
 	}
-	
+
 	// 将 message 绑定到 pendingConfirm 中
 	private void bindPendingConfirm(PendingConfirm pendingConfirm, Message message) {
 		pendingConfirm.setDeliveryMode(message.getProperties().getDeliveryMode());
