@@ -8,6 +8,10 @@
 	</parent>
 	<artifactId>swak-test</artifactId>
 	<dependencies>
+	    <dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-starter</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -20,7 +24,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>
-			<artifactId>swak-starter</artifactId>
+			<artifactId>swak-redis</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-mq</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

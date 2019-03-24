@@ -1,4 +1,4 @@
-package com.swak.test.lock;
+package com.swak.redis.lock;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import com.swak.lock.redis.ConditionRedisLock;
 import com.swak.lock.redis.OrderRedisLock;
-import com.swak.test.RedisTest;
+import com.swak.redis.RedisTest;
 
 /**
  * 测试锁

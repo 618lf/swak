@@ -172,6 +172,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.swak</groupId>
+				<artifactId>swak-mq</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
 				<artifactId>swak-wechat</artifactId>
 				<version>${project.version}</version>
 			</dependency>

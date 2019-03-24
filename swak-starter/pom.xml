@@ -12,7 +12,7 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-core</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -61,6 +61,11 @@
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-motan</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-mq</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

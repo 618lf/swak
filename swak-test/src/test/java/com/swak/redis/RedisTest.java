@@ -1,4 +1,4 @@
-package com.swak.test;
+package com.swak.redis;
 
 import org.junit.Before;
 

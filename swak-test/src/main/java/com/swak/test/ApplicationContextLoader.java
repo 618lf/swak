@@ -67,24 +67,9 @@ public class ApplicationContextLoader extends AbstractContextLoader {
 		application.setInitializers(initializers);
 		return application.run();
 	}
-
-	/**
-	 * Builds new {@link org.springframework.boot.SpringApplication} instance. You
-	 * can override this method to add custom behavior
-	 * 
-	 * @return {@link org.springframework.boot.SpringApplication} instance
-	 */
 	protected Application getSpringApplication() {
 		return new Application();
 	}
-
-	/**
-	 * Builds a new {@link ConfigurableEnvironment} instance. You can override this
-	 * method to return something other than {@link StandardEnvironment} if
-	 * necessary.
-	 * 
-	 * @return a {@link ConfigurableEnvironment} instance
-	 */
 	protected ConfigurableEnvironment getEnvironment() {
 		return new StandardEnvironment();
 	}
@@ -118,22 +103,6 @@ public class ApplicationContextLoader extends AbstractContextLoader {
 		return new MapConfigurationPropertySource(
 				TestPropertySourceUtils.convertInlinedPropertiesToMap(StringUtils.toStringArray(properties)));
 	}
-
-	/**
-	 * Return the {@link ApplicationContextInitializer initializers} that will be
-	 * applied to the context. By default this method will adapt
-	 * {@link ContextCustomizer context customizers}, add
-	 * {@link SpringApplication#getInitializers() application initializers} and add
-	 * {@link MergedContextConfiguration#getContextInitializerClasses() initializers
-	 * specified on the test}.
-	 * 
-	 * @param config
-	 *            the source context configuration
-	 * @param application
-	 *            the application instance
-	 * @return the initializers to apply
-	 * @since 2.0.0
-	 */
 	protected List<ApplicationContextInitializer<?>> getInitializers(MergedContextConfiguration config,
 			SpringApplication application) {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
@@ -163,18 +132,6 @@ public class ApplicationContextLoader extends AbstractContextLoader {
 			configAttributes.setClasses(defaultConfigClasses);
 		}
 	}
-
-	/**
-	 * Detect the default configuration classes for the supplied test class. By
-	 * default simply delegates to
-	 * {@link AnnotationConfigContextLoaderUtils#detectDefaultConfigurationClasses}.
-	 * 
-	 * @param declaringClass
-	 *            the test class that declared {@code @ContextConfiguration}
-	 * @return an array of default configuration classes, potentially empty but
-	 *         never {@code null}
-	 * @see AnnotationConfigContextLoaderUtils
-	 */
 	protected Class<?>[] detectDefaultConfigurationClasses(Class<?> declaringClass) {
 		return AnnotationConfigContextLoaderUtils.detectDefaultConfigurationClasses(declaringClass);
 	}
@@ -234,5 +191,4 @@ public class ApplicationContextLoader extends AbstractContextLoader {
 		}
 
 	}
-
 }

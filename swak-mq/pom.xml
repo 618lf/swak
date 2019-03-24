@@ -22,10 +22,5 @@
 			<artifactId>swak-redis</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.swak</groupId>
-			<artifactId>swak-test</artifactId>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 </project>
