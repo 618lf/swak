@@ -3,17 +3,15 @@ package com.swak.actuator.endpoint;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.context.ApplicationContext;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.MethodIntrospector.MetadataLookup;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -27,81 +25,67 @@ import com.swak.actuator.endpoint.annotation.Endpoint;
 import com.swak.actuator.endpoint.invoke.OperationMethod;
 import com.swak.actuator.endpoint.invoke.OperationParameterResoler;
 import com.swak.actuator.endpoint.invoke.ReflectiveOperationInvoker;
+import com.swak.utils.Sets;
 import com.swak.utils.StringUtils;
 
 /**
  * 获得 Endpoints
+ * 
  * @author lifeng
  * @param <E>
  * @param <O>
  */
-public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O extends Operation> implements EndpointsSupplier<E> {
+public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O extends Operation>
+		implements EndpointsSupplier<E>, BeanPostProcessor {
 
-	private final ApplicationContext applicationContext;
 	private volatile Collection<E> endpoints;
 	private final OperationParameterResoler operationParameterResoler;
-	
-	public EndpointDiscoverer(ApplicationContext applicationContext, OperationParameterResoler operationParameterResoler) {
-		this.applicationContext  = applicationContext;
+
+	public EndpointDiscoverer(OperationParameterResoler operationParameterResoler) {
+		endpoints = Sets.newHashSet();
 		this.operationParameterResoler = operationParameterResoler;
 	}
-	
+
 	@Override
 	public Collection<E> getEndpoints() {
-		if (this.endpoints == null) {
-			this.endpoints = discoverEndpoints();
-		}
 		return this.endpoints;
 	}
-	
-	private Collection<E> discoverEndpoints() {
-		Collection<EndpointBean> endpointBeans = createEndpointBeans();
-		return convertToEndpoints(endpointBeans);
-	}
-	
-	private Collection<EndpointBean> createEndpointBeans() {
-		Map<String, EndpointBean> byId = new LinkedHashMap<>();
-		String[] beanNames = BeanFactoryUtils.beanNamesForAnnotationIncludingAncestors(
-				this.applicationContext, Endpoint.class);
-		for (String beanName : beanNames) {
-			EndpointBean endpointBean = createEndpointBean(beanName);
-			EndpointBean previous = byId.putIfAbsent(endpointBean.getId(), endpointBean);
-			Assert.state(previous == null,
-					() -> "Found two endpoints with the id '" + endpointBean.getId()
-							+ "': '" + endpointBean.getBeanName() + "' and '"
-							+ previous.getBeanName() + "'");
+
+	/**
+	 * 收集所有的EndPoint
+	 */
+	@Override
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+		Class<?> clazz = bean.getClass();
+		if (AopUtils.isAopProxy(bean)) {
+			clazz = AopUtils.getTargetClass(bean);
 		}
-		return byId.values();
-	}
-	
-	private EndpointBean createEndpointBean(String beanName) {
-		Object bean = this.applicationContext.getBean(beanName);
-		return new EndpointBean(beanName, bean);
-	}
-	
-	private Collection<E> convertToEndpoints(Collection<EndpointBean> endpointBeans) {
-		Set<E> endpoints = new LinkedHashSet<>();
-		for (EndpointBean endpointBean : endpointBeans) {
-			if (isEndpointExposed(endpointBean)) {
-				endpoints.add(convertToEndpoint(endpointBean));
-			}
+		Endpoint endpoint = clazz.getAnnotation(Endpoint.class);
+		if (endpoint != null) {
+			this.createEndpointBean(beanName, bean);
 		}
-		return Collections.unmodifiableSet(endpoints);
+		return bean;
 	}
-	
+
+	private void createEndpointBean(String beanName, Object bean) {
+		EndpointBean endpointBean = new EndpointBean(beanName, bean);
+		if (isEndpointExposed(endpointBean)) {
+			endpoints.add(convertToEndpoint(endpointBean));
+		}
+	}
+
 	private boolean isEndpointExposed(EndpointBean endpointBean) {
 		return endpointBean.isEnabledByDefault();
 	}
-	
+
 	private E convertToEndpoint(EndpointBean endpointBean) {
 		MultiValueMap<OperationKey, O> indexed = new LinkedMultiValueMap<>();
 		addOperations(indexed, endpointBean, false);
-		List<O> operations = indexed.values().stream().map(this::getLast)
-				.filter(Objects::nonNull).collect(Collectors.collectingAndThen(
-						Collectors.toList(), Collections::unmodifiableList));
+		List<O> operations = indexed.values().stream().map(this::getLast).filter(Objects::nonNull)
+				.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
 		return createEndpoint(endpointBean, operations);
 	}
-	
+
 	private void addOperations(MultiValueMap<OperationKey, O> indexed, EndpointBean endpointBean, boolean replaceLast) {
 		Set<OperationKey> replacedLast = new HashSet<>();
 		Collection<O> operations = this.createOperations(endpointBean);
@@ -114,12 +98,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			indexed.add(key, operation);
 		}
 	}
-	
-	/**
-	 * 创建 operations
-	 * @param endpointBean
-	 * @return
-	 */
+
 	private Collection<O> createOperations(EndpointBean endpointBean) {
 		return MethodIntrospector.selectMethods(endpointBean.getBean().getClass(), (MetadataLookup<O>) (method) -> {
 			AnnotationAttributes annotationAttributes = AnnotatedElementUtils.getMergedAnnotationAttributes(method,
@@ -128,56 +107,26 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 				return null;
 			}
 			OperationMethod operationMethod = new OperationMethod(endpointBean.getBean(), method);
-			ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(operationParameterResoler, operationMethod);
+			ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(operationParameterResoler,
+					operationMethod);
 			return createOperation(endpointBean, invoker);
 		}).values().stream().filter((i) -> i != null).collect(Collectors.toList());
 	}
-	
-	/**
-	 * 创建 Endpoint
-	 * @param endpointBean
-	 * @param id
-	 * @param enabledByDefault
-	 * @param operations
-	 * @return
-	 */
+
 	protected abstract E createEndpoint(EndpointBean endpointBean, Collection<O> operations);
 
-	/**
-	 * 创建 Operation
-	 * @param endpointBean
-	 * @param method
-	 * @return
-	 */
 	protected abstract O createOperation(EndpointBean endpointBean, ReflectiveOperationInvoker invoker);
-	
-	/**
-	 * Create a {@link OperationKey} for the given operation.
-	 * @param operation the source operation
-	 * @return the operation key
-	 */
+
 	protected abstract OperationKey createOperationKey(O operation);
-	
-	
+
 	private <T> T getLast(List<T> list) {
 		return (CollectionUtils.isEmpty(list) ? null : list.get(list.size() - 1));
 	}
-	
-	/**
-	 * A key generated for an {@link Operation} based on specific criteria from the actual
-	 * operation implementation.
-	 */
+
 	public static final class OperationKey {
-
 		private final Object key;
-
 		private final Supplier<String> description;
 
-		/**
-		 * Create a new {@link OperationKey} instance.
-		 * @param key the underlying key for the operation
-		 * @param description a human readable description of the key
-		 */
 		public OperationKey(Object key, Supplier<String> description) {
 			Assert.notNull(key, "Key must not be null");
 			Assert.notNull(description, "Description must not be null");
@@ -207,13 +156,9 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		}
 
 	}
-	
-	/**
-	 * EndpointBean
-	 * @author lifeng
-	 */
+
 	public static class EndpointBean {
-		
+
 		private final String beanName;
 
 		private final Object bean;
@@ -221,18 +166,16 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		private final String id;
 
 		private boolean enabledByDefault;
-		
+
 		EndpointBean(String beanName, Object bean) {
-			AnnotationAttributes attributes = AnnotatedElementUtils
-					.findMergedAnnotationAttributes(bean.getClass(), Endpoint.class, true,
-							true);
+			AnnotationAttributes attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(bean.getClass(),
+					Endpoint.class, true, true);
 			this.beanName = beanName;
 			this.bean = bean;
 			this.id = attributes.getString("id");
 			this.enabledByDefault = (Boolean) attributes.get("enableByDefault");
 			Assert.state(StringUtils.hasText(this.id),
-					() -> "No @Endpoint id attribute specified for "
-							+ bean.getClass().getName());
+					() -> "No @Endpoint id attribute specified for " + bean.getClass().getName());
 		}
 
 		public boolean isEnabledByDefault() {

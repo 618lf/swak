@@ -2,23 +2,22 @@ package com.swak.actuator.endpoint.web;
 
 import java.util.Collection;
 
-import org.springframework.context.ApplicationContext;
-
 import com.swak.actuator.endpoint.EndpointDiscoverer;
 import com.swak.actuator.endpoint.invoke.OperationParameterResoler;
 import com.swak.actuator.endpoint.invoke.ReflectiveOperationInvoker;
 
 /**
  * 基于web 的 endpoint
+ * 
  * @author lifeng
  */
-public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoint, WebOperation> implements WebEndpointsSupplier{
+public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoint, WebOperation>
+		implements WebEndpointsSupplier {
 
-    private final String rootPath;
-	
-	public WebEndpointDiscoverer(String rootPath, ApplicationContext applicationContext, 
-			OperationParameterResoler operationParameterResoler) {
-		super(applicationContext, operationParameterResoler);
+	private final String rootPath;
+
+	public WebEndpointDiscoverer(String rootPath, OperationParameterResoler operationParameterResoler) {
+		super(operationParameterResoler);
 		this.rootPath = rootPath;
 	}
 
@@ -29,7 +28,7 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 
 	@Override
 	protected ExposableWebEndpoint createEndpoint(EndpointBean endpointBean, Collection<WebOperation> operations) {
-		return new DiscoveredWebEndpoint(this, endpointBean, rootPath,  operations);
+		return new DiscoveredWebEndpoint(this, endpointBean, rootPath, operations);
 	}
 
 	@Override

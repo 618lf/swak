@@ -1,13 +1,10 @@
 package com.swak.actuator.config;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 
 import com.swak.actuator.endpoint.web.WebEndpointHandlerRouter;
 import com.swak.actuator.endpoint.web.WebEndpointsSupplier;
@@ -23,8 +20,6 @@ import com.swak.vertx.transport.ReactiveServer;
  * @author lifeng
  */
 @Configuration
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @ConditionalOnClass(ReactiveServer.class)
 @AutoConfigureAfter(WebEndpointAutoConfiguration.class)
 public class VertxEndpointAutoConfiguration {

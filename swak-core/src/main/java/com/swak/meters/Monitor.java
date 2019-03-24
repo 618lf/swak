@@ -8,6 +8,9 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 
 /**
  * 用于统计系统指标 -- 只有加载了 actuator 才会生效
+ * @see SimpleMeterRegistry    但是这些数据不会发布到其他系统，也就是数据是位于应用的内存中的
+ * @see CompositeMeterRegistry 多个MeterRegistry聚合，内部维护了一个MeterRegistry的列表
+ * @see Metrics 中持有一个静态final的CompositeMeterRegistry实例globalRegistry
  * @author lifeng
  */
 public class Monitor implements MeterBinder{

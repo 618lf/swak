@@ -27,6 +27,7 @@ public class PoolAllocatorEndpoint {
 
 	/**
 	 * 内存分配和回收
+	 * 
 	 * @return
 	 */
 	@Operation
@@ -48,7 +49,7 @@ public class PoolAllocatorEndpoint {
 
 		return metrics;
 	}
-	
+
 	private Map<String, Object> metricsOfPoolArena(final PoolArenaMetric poolArenaMetric) {
 		final Map<String, Object> metrics = new HashMap<>();
 
@@ -249,6 +250,7 @@ public class PoolAllocatorEndpoint {
 
 	/**
 	 * 已分配
+	 * 
 	 * @return
 	 */
 	@Operation
@@ -305,9 +307,10 @@ public class PoolAllocatorEndpoint {
 	private int activeAllocationsInBytes(final PoolChunkMetric chunkMetric) {
 		return chunkMetric.chunkSize() - chunkMetric.freeBytes();
 	}
-	
+
 	/**
 	 * 只显示重要的指标
+	 * 
 	 * @return
 	 */
 	@Operation
@@ -329,7 +332,7 @@ public class PoolAllocatorEndpoint {
 
 		return metrics;
 	}
-	
+
 	private Map<String, Object> important_metricsOfPoolArena(final PoolArenaMetric poolArenaMetric) {
 		final Map<String, Object> metrics = new HashMap<>();
 		/**

@@ -19,25 +19,23 @@ import com.swak.actuator.metrics.web.WebTagsProvider;
 import io.micrometer.core.instrument.MeterRegistry;
 
 @Configuration
-@ConditionalOnClass(name={"com.swak.reactivex.transport.http.server.ReactiveServer"})
-@AutoConfigureAfter({ MetricsAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@ConditionalOnClass(name = { "com.swak.reactivex.transport.http.server.ReactiveServer" })
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnBean(MeterRegistry.class)
 public class WebMetricsAutoConfiguration {
-	
+
 	@Bean
 	@ConditionalOnMissingBean(WebTagsProvider.class)
 	public WebTagsProvider webTagConfigurer() {
 		return (exchange, ex) -> {
-			return Arrays.asList(WebFluxTags.method(exchange), WebFluxTags.uri(exchange),
-					WebFluxTags.exception(ex), WebFluxTags.status(exchange)); 
+			return Arrays.asList(WebFluxTags.method(exchange), WebFluxTags.uri(exchange), WebFluxTags.exception(ex),
+					WebFluxTags.status(exchange));
 		};
 	}
 
 	@Bean
-	public MetricsWebFilter webfluxMetrics(MeterRegistry registry,
-			WebTagsProvider tagConfigurer, MetricsProperties properties) {
-		return new MetricsWebFilter(registry, tagConfigurer,
-				properties.getRequestsMetricName());
+	public MetricsWebFilter webfluxMetrics(MeterRegistry registry, WebTagsProvider tagConfigurer,
+			MetricsProperties properties) {
+		return new MetricsWebFilter(registry, tagConfigurer, properties.getRequestsMetricName());
 	}
 }
