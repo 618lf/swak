@@ -8,6 +8,7 @@ import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 
 /**
  * 基于 NIO 的异步链接，自动重链
+ * 
  * @author lifeng
  */
 public interface RedisConnectionFactory<K, V> extends DisposableBean {

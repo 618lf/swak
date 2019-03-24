@@ -33,8 +33,8 @@ import com.swak.cache.redis.policy.ExpiryPolicys;
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.utils.Lists;
 
-import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
+import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DefaultClientResources;
 
@@ -77,9 +77,9 @@ public class CacheConfigurationSupport {
 	 * @return
 	 */
 	@Bean(destroyMethod = "shutdown")
-	public RedisClient redisClient(ClientResources clientResources) {
+	public RedisClusterClient redisClient(ClientResources clientResources) {
 		List<RedisURI> nodes = this.nodes();
-		return RedisClient.create(clientResources, nodes.get(0));
+		return RedisClusterClient.create(clientResources, nodes);
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class CacheConfigurationSupport {
 	 * @return
 	 */
 	@Bean
-	public RedisConnectionPoolFactory cachePoolFactory(RedisClient client) {
+	public RedisConnectionPoolFactory cachePoolFactory(RedisClusterClient client) {
 		RedisClientDecorator decorator = new RedisClientDecorator(client);
 		RedisConnectionPoolFactory cachePoolFactory = new RedisConnectionPoolFactory(decorator);
 		RedisUtils.setRedisConnectionFactory(cachePoolFactory);

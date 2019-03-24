@@ -63,7 +63,7 @@ public class Monitors implements MeterBinder {
 	 */
 	public static void counter(String name, String... tags) {
 		if (instance != null) {
-			instance.registry().counter(name, tags);
+			instance.registry().counter(name, tags).increment();
 		}
 	}
 
