@@ -14,6 +14,7 @@ com.swak.config.quartz.ScheduleAutoConfiguration,\
 com.swak.config.AppListenerAutoConfiguration,\
 com.swak.config.BaseFuntionAutoConfiguration,\
 com.swak.config.freemarker.FreeMarkerAutoConfiguration,\
+com.swak.config.mq.RabbitMqAutoConfiguration,\
 com.swak.config.motan.MotanAutoConfiguration,\
 com.swak.config.motan.MotanCommandLineRunner,\
 com.swak.config.flux.SecurityAutoConfiguration,\

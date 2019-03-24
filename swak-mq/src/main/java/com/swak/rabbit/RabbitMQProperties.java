@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import com.rabbitmq.client.Address;
 import com.rabbitmq.client.ConnectionFactory;
+import com.swak.Constants;
 
 /**
  * RabbitMQ client options, most
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
+@ConfigurationProperties(prefix = Constants.RABBITMQ_PREFIX)
 public class RabbitMQProperties {
 
 	/**
