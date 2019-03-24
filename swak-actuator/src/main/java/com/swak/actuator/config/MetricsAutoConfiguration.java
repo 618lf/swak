@@ -12,7 +12,7 @@ import org.springframework.core.annotation.Order;
 import com.swak.actuator.config.metrics.MeterRegistryPostProcessor;
 import com.swak.actuator.config.metrics.MetricsProperties;
 import com.swak.actuator.config.metrics.PropertiesMeterFilter;
-import com.swak.meters.Monitor;
+import com.swak.meters.Monitors;
 
 import ch.qos.logback.classic.LoggerContext;
 import io.micrometer.core.annotation.Timed;
@@ -43,68 +43,68 @@ public class MetricsAutoConfiguration {
 	public Clock micrometerClock() {
 		return Clock.SYSTEM;
 	}
-	
+
 	@Bean
 	@Order(0)
 	public PropertiesMeterFilter propertiesMeterFilter(MetricsProperties properties) {
 		return new PropertiesMeterFilter(properties);
 	}
-	
+
 	@Bean
-	public MeterRegistryPostProcessor meterRegistryPostProcessor(
-			ApplicationContext context) {
+	public MeterRegistryPostProcessor meterRegistryPostProcessor(ApplicationContext context) {
 		return new MeterRegistryPostProcessor(context);
 	}
-	
+
 	/**
-	 *  jvm 
+	 * jvm
+	 * 
 	 * @author lifeng
-	 *
 	 */
 	@Configuration
 	@ConditionalOnProperty(value = "spring.metrics.binders.jvm.enabled", matchIfMissing = true)
 	static class JvmMeterBindersConfiguration {
-		
+
 		@Bean
 		@ConditionalOnMissingBean
 		public JvmGcMetrics jvmGcMetrics() {
 			return new JvmGcMetrics();
 		}
-		
+
 		@Bean
 		@ConditionalOnMissingBean
 		public JvmMemoryMetrics jvmMemoryMetrics() {
 			return new JvmMemoryMetrics();
 		}
-		
+
 		@Bean
 		@ConditionalOnMissingBean
 		public JvmThreadMetrics jvmThreadMetrics() {
 			return new JvmThreadMetrics();
 		}
-		
+
 		@Bean
 		@ConditionalOnMissingBean
 		public ClassLoaderMetrics classLoaderMetrics() {
 			return new ClassLoaderMetrics();
 		}
 	}
-	
+
 	/**
 	 * 程序资源
+	 * 
 	 * @author lifeng
 	 */
 	@Configuration
 	static class MeterBindersConfiguration {
-		
+
 		@Bean
-		@ConditionalOnClass({LoggerContext.class})
+		@ConditionalOnClass({ LoggerContext.class })
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty(value = "spring.metrics.binders.logback.enabled", matchIfMissing = true)
 		public LogbackMetrics logbackMetrics() {
 			return new LogbackMetrics();
 		}
-		
+
 		@Bean
 		@ConditionalOnProperty(value = "spring.metrics.binders.uptime.enabled", matchIfMissing = true)
 		@ConditionalOnMissingBean
@@ -126,19 +126,20 @@ public class MetricsAutoConfiguration {
 			return new FileDescriptorMetrics();
 		}
 	}
-	
+
 	/**
 	 * 程序状态
+	 * 
 	 * @author lifeng
 	 */
 	@Configuration
 	@ConditionalOnProperty(value = "spring.metrics.binders.system.enabled", matchIfMissing = true)
 	static class SystemMeterBindersConfiguration {
-		
+
 		@Bean
 		@ConditionalOnMissingBean
-		public Monitor meterCenter() {
-			return new Monitor();
+		public Monitors meterCenter() {
+			return Monitors.me();
 		}
 	}
 }
