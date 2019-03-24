@@ -13,12 +13,17 @@ import com.swak.serializer.SerializationUtils;
  */
 public class RedisRetryStrategy extends AbstractRetryStrategy {
 
+	private final RabbitMQTemplate template;
 	private String confirms = "Retry.Ids";
 	private String _confirms = "Retry.Confirms";
 
+	public RedisRetryStrategy(RabbitMQTemplate template) {
+		this.template = template;
+	}
+
 	@Override
 	public RabbitMQTemplate getSender() {
-		return null;
+		return template;
 	}
 
 	@Override
