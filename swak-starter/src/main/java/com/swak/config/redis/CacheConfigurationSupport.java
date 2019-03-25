@@ -32,6 +32,7 @@ import com.swak.cache.redis.factory.RedisClientDecorator;
 import com.swak.cache.redis.factory.RedisConnectionPoolFactory;
 import com.swak.cache.redis.policy.ExpiryPolicys;
 import com.swak.reactivex.transport.TransportMode;
+import com.swak.reactivex.transport.resources.EventLoops;
 import com.swak.utils.Lists;
 
 import io.lettuce.core.RedisClient;
@@ -69,13 +70,16 @@ public class CacheConfigurationSupport {
 		if (cacheProperties.getMode() == TransportMode.EPOLL) {
 			System.setProperty("io.lettuce.core.epoll", "true");
 		}
-		
+
 		// 如果没有配置则不启用
 		CommandLatencyCollector commandLatencyCollector = commandLatencyCollectorProvider.getIfAvailable();
 		if (commandLatencyCollector == null) {
 			commandLatencyCollector = CommandLatencyCollector.disabled();
 		}
-		return DefaultClientResources.builder().commandLatencyCollector(commandLatencyCollector).build();
+		ClientResources clientResources = DefaultClientResources.builder()
+				.commandLatencyCollector(commandLatencyCollector).build();
+		EventLoops.register("Lettuce", clientResources.eventExecutorGroup());
+		return clientResources;
 	}
 
 	/**
@@ -102,7 +106,6 @@ public class CacheConfigurationSupport {
 	 */
 	@Bean
 	public RedisConnectionPoolFactory cachePoolFactory(RedisClientDecorator decorator) {
-
 		RedisConnectionPoolFactory cachePoolFactory = new RedisConnectionPoolFactory(decorator);
 		RedisUtils.setRedisConnectionFactory(cachePoolFactory);
 		return cachePoolFactory;
