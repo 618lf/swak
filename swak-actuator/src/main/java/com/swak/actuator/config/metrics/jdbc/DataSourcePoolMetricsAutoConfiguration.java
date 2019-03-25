@@ -12,16 +12,14 @@ import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
-import com.swak.actuator.config.MetricsAutoConfiguration;
-import com.swak.actuator.config.metrics.export.SimpleMetricsExportAutoConfiguration;
+import com.swak.actuator.config.metrics.export.MetricsExportAutoConfiguration;
 import com.swak.actuator.metrics.jdbc.DataSourcePoolMetrics;
 import com.swak.config.jdbc.DataSourceAutoConfiguration;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
 @Configuration
-@AutoConfigureAfter({ MetricsAutoConfiguration.class, DataSourceAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureAfter({ MetricsExportAutoConfiguration.class, DataSourceAutoConfiguration.class})
 @ConditionalOnBean({ DataSource.class, MeterRegistry.class })
 public class DataSourcePoolMetricsAutoConfiguration {
 

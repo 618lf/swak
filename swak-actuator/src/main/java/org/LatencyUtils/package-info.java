@@ -59,8 +59,9 @@
  * {@link org.LatencyUtils.LatencyStats} will transparently produce corrected histogram values for the
  * recorded latency behavior.
  *
+ * 修改：
+ * 主要将线程名称重新定义，其他不做修改
  */
-
 package org.LatencyUtils;
 
 

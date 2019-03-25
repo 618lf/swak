@@ -12,7 +12,6 @@ import org.springframework.core.annotation.Order;
 import com.swak.actuator.config.metrics.MeterRegistryPostProcessor;
 import com.swak.actuator.config.metrics.MetricsProperties;
 import com.swak.actuator.config.metrics.PropertiesMeterFilter;
-import com.swak.meters.Monitors;
 
 import ch.qos.logback.classic.LoggerContext;
 import io.micrometer.core.annotation.Timed;
@@ -124,22 +123,6 @@ public class MetricsAutoConfiguration {
 		@ConditionalOnMissingBean
 		public FileDescriptorMetrics fileDescriptorMetrics() {
 			return new FileDescriptorMetrics();
-		}
-	}
-
-	/**
-	 * 程序状态
-	 * 
-	 * @author lifeng
-	 */
-	@Configuration
-	@ConditionalOnProperty(value = "spring.metrics.binders.system.enabled", matchIfMissing = true)
-	static class SystemMeterBindersConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		public Monitors meterCenter() {
-			return Monitors.me();
 		}
 	}
 }

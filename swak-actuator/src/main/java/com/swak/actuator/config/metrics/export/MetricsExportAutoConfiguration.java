@@ -16,7 +16,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 /**
- * SimpleMeterRegistry
+ * MeterRegistry
+ * 
  * @author lifeng
  */
 @Configuration
@@ -25,10 +26,17 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 @EnableConfigurationProperties(SimpleProperties.class)
 @ConditionalOnMissingBean(MeterRegistry.class)
 @ConditionalOnProperty(prefix = Constants.ACTUATOR_METRICS + ".export.simple", name = "enabled", havingValue = "true", matchIfMissing = true)
-public class SimpleMetricsExportAutoConfiguration {
+public class MetricsExportAutoConfiguration {
 
+	/**
+	 * 统一使用此 MeterRegistry
+	 * 
+	 * @param config
+	 * @param clock
+	 * @return
+	 */
 	@Bean
-	public SimpleMeterRegistry simpleMeterRegistry(SimpleProperties config, Clock clock) {
+	public MeterRegistry simpleMeterRegistry(SimpleProperties config, Clock clock) {
 		return new SimpleMeterRegistry(config, clock);
 	}
 }

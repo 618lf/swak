@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.swak.actuator.config.metrics.export.SimpleMetricsExportAutoConfiguration;
+import com.swak.actuator.config.metrics.export.MetricsExportAutoConfiguration;
 import com.swak.actuator.metrics.MetricsEndpoint;
 
 import io.micrometer.core.annotation.Timed;
@@ -21,7 +21,7 @@ import io.micrometer.core.instrument.MeterRegistry;
  */
 @Configuration
 @ConditionalOnClass(Timed.class)
-@AutoConfigureAfter({ MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureAfter({MetricsExportAutoConfiguration.class })
 public class MetricsEndpointAutoConfiguration {
 
 	public MetricsEndpointAutoConfiguration() {
