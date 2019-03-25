@@ -16,6 +16,7 @@ import org.ehcache.core.EhcacheBase;
 import org.ehcache.core.EhcacheManager;
 import org.ehcache.impl.config.executor.PooledExecutionServiceConfiguration;
 import org.ehcache.impl.config.persistence.CacheManagerPersistenceConfiguration;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,7 @@ import com.swak.utils.Lists;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
+import io.lettuce.core.metrics.CommandLatencyCollector;
 import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DefaultClientResources;
 
@@ -61,14 +63,19 @@ public class CacheConfigurationSupport {
 	 * @return
 	 */
 	@Bean(destroyMethod = "shutdown")
-	public ClientResources clientResources() {
-		// 设置属性 -- lettuce 会根据属性决定启动什么类型 event loop
+	public ClientResources clientResources(ObjectProvider<CommandLatencyCollector> commandLatencyCollectorProvider) {
 		System.setProperty("io.lettuce.core.epoll", "false");
 		System.setProperty("io.lettuce.core.kqueue", "false");
 		if (cacheProperties.getMode() == TransportMode.EPOLL) {
 			System.setProperty("io.lettuce.core.epoll", "true");
 		}
-		return DefaultClientResources.create();
+		
+		// 如果没有配置则不启用
+		CommandLatencyCollector commandLatencyCollector = commandLatencyCollectorProvider.getIfAvailable();
+		if (commandLatencyCollector == null) {
+			commandLatencyCollector = CommandLatencyCollector.disabled();
+		}
+		return DefaultClientResources.builder().commandLatencyCollector(commandLatencyCollector).build();
 	}
 
 	/**
@@ -95,7 +102,7 @@ public class CacheConfigurationSupport {
 	 */
 	@Bean
 	public RedisConnectionPoolFactory cachePoolFactory(RedisClientDecorator decorator) {
-		
+
 		RedisConnectionPoolFactory cachePoolFactory = new RedisConnectionPoolFactory(decorator);
 		RedisUtils.setRedisConnectionFactory(cachePoolFactory);
 		return cachePoolFactory;
