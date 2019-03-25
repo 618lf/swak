@@ -4,6 +4,7 @@ com.swak.actuator.config.MetricsAutoConfiguration,\
 com.swak.actuator.config.metrics.export.SimpleMetricsExportAutoConfiguration,\
 com.swak.actuator.config.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration,\
 com.swak.actuator.config.metrics.jdbc.HikariDataSourceMetricsConfiguration,\
+com.swak.actuator.config.metrics.vertx.VerxMetricsOptionsAutoConfiguration,\
 com.swak.actuator.config.metrics.web.WebMetricsAutoConfiguration,\
 com.swak.actuator.config.beans.BeansEndpointAutoConfiguration,\
 com.swak.actuator.config.dump.DumpEndpointAutoConfiguration,\

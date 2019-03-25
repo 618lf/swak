@@ -21,8 +21,7 @@ import com.swak.vertx.transport.ReactiveServer;
 @Configuration
 @ConditionalOnClass(ReactiveServer.class)
 @EnableConfigurationProperties(VertxProperties.class)
-@Import({ MetricsOptionsAutoConfiguration.class, StandardOptionsAutoConfiguration.class,
-		StandardVerxAutoConfiguration.class })
+@Import({ StandardOptionsAutoConfiguration.class, StandardVerxAutoConfiguration.class })
 public class VertxAutoConfiguration {
 
 	public VertxAutoConfiguration() {

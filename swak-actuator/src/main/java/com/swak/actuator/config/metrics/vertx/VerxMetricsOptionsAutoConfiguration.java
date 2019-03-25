@@ -1,15 +1,15 @@
-package com.swak.config.vertx;
+package com.swak.actuator.config.metrics.vertx;
 
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import com.swak.reactivex.transport.TransportMode;
+import com.swak.config.vertx.StandardOptionsAutoConfiguration;
 import com.swak.vertx.config.VertxProperties;
 
 import io.vertx.core.VertxOptions;
-import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.micrometer.MicrometerMetricsOptions;
 
 /**
@@ -19,44 +19,22 @@ import io.vertx.micrometer.MicrometerMetricsOptions;
  */
 @ConditionalOnMissingBean(VertxOptions.class)
 @ConditionalOnClass(MicrometerMetricsOptions.class)
+@AutoConfigureBefore(StandardOptionsAutoConfiguration.class)
 @EnableConfigurationProperties(VertxProperties.class)
-public class MetricsOptionsAutoConfiguration {
+public class VerxMetricsOptionsAutoConfiguration extends StandardOptionsAutoConfiguration {
 
 	/**
-	 * 构建配置
+	 * 构建配置, 添加指标的支持
 	 * 
 	 * @param properties
 	 * @return
 	 */
 	@Bean
 	public VertxOptions vertxOptions(VertxProperties properties) {
-		VertxOptions vertxOptions = new VertxOptions();
-
-		// Metrics
+		VertxOptions vertxOptions = super.vertxOptions(properties);
 		if (properties.isMetricAble()) {
 			vertxOptions.setMetricsOptions(new MicrometerMetricsOptions().setEnabled(true));
 		}
-
-		// pool config
-		if (properties.getMode() == TransportMode.EPOLL) {
-			vertxOptions.setPreferNativeTransport(true);
-		}
-		vertxOptions.setEventLoopPoolSize(properties.getEventLoopPoolSize());
-		vertxOptions.setWorkerPoolSize(properties.getWorkerThreads());
-		vertxOptions.setInternalBlockingPoolSize(properties.getInternalBlockingThreads());
 		return vertxOptions;
-	}
-
-	/**
-	 * 构建配置
-	 * 
-	 * @param properties
-	 * @return
-	 */
-	@Bean
-	public DeliveryOptions deliveryOptions(VertxProperties properties) {
-		DeliveryOptions deliveryOptions = new DeliveryOptions();
-		deliveryOptions.setSendTimeout(properties.getSendTimeout());
-		return deliveryOptions;
 	}
 }
