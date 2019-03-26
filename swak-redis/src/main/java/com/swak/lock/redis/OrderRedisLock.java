@@ -3,6 +3,7 @@ package com.swak.lock.redis;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
@@ -12,8 +13,7 @@ import com.swak.reactivex.transport.resources.EventLoopFactory;
 import com.swak.reactivex.transport.resources.EventLoops;
 
 /**
- * 基于 redis 的一把锁 可以用于分布式的环境
- * 按顺序执行代码，每次執行都會獲取鎖，之後在釋放鎖
+ * 基于 redis 的一把锁 可以用于分布式的环境 按顺序执行代码，每次執行都會獲取鎖，之後在釋放鎖
  * 
  * @author lifeng
  */
@@ -21,6 +21,7 @@ public class OrderRedisLock implements DisposableBean {
 
 	private static AtomicLong counter = new AtomicLong(0);
 
+	private int awaitTime = 30; // 30s
 	protected ExecutorService executor;
 	protected StrictRedisLock _lock;
 
@@ -48,12 +49,23 @@ public class OrderRedisLock implements DisposableBean {
 		});
 		return future;
 	}
-	
+
 	/**
 	 * 销毁
 	 */
 	@Override
 	public void destroy() throws Exception {
-		executor.shutdown();
+		try {
+			executor.shutdown();
+			if (!executor.awaitTermination(awaitTime, TimeUnit.SECONDS)) {
+				executor.shutdownNow();
+			}
+		} catch (InterruptedException e) {
+			executor.shutdownNow();
+		}
+		try {
+			_lock.unlock();
+		} catch (Exception e) {
+		}
 	}
 }

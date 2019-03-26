@@ -11,7 +11,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;
 
 /**
- * 获取客户端或者服务器的线程模型 添加到 ShutDownHook 中
+ * 获取客户端或者服务器的线程模型 添加到 ShutDownHook 中, 不使用后台线程，主动关闭
  * 
  * @author lifeng
  */
@@ -20,7 +20,7 @@ public class EventLoopResources implements LoopResources, Closable<EventLoopReso
 	private LoopResources loopResources;
 
 	private EventLoopResources() {
-		loopResources = LoopResources.create(transportModeFitOs(), 1, -1, "Motan.");
+		loopResources = LoopResources.create(transportModeFitOs(), 1, -1, "Motan.", false);
 		ShutDownHook.registerShutdownHook(this);
 	}
 
@@ -38,7 +38,7 @@ public class EventLoopResources implements LoopResources, Closable<EventLoopReso
 	public EventLoopGroup onServer() {
 		return loopResources.onServer();
 	}
-	
+
 	@Override
 	public EventLoopGroup onClient() {
 		return loopResources.onClient();

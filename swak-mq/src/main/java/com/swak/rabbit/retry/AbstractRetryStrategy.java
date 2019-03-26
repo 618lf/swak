@@ -6,9 +6,12 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.beans.factory.DisposableBean;
+
 import com.swak.rabbit.message.Message;
 import com.swak.rabbit.message.PendingConfirm;
 import com.swak.reactivex.transport.resources.EventLoopFactory;
+import com.swak.reactivex.transport.resources.EventLoops;
 import com.swak.utils.Ints;
 import com.swak.utils.JsonMapper;
 
@@ -17,11 +20,12 @@ import com.swak.utils.JsonMapper;
  * 
  * @author lifeng
  */
-public abstract class AbstractRetryStrategy implements RetryStrategy, Runnable {
+public abstract class AbstractRetryStrategy implements RetryStrategy, Runnable, DisposableBean {
 
 	private ScheduledExecutorService executor;
 	private int threadPool = 1;
 	private int minutes = 1;
+	private int awaitTime = 30; // 30s
 
 	public AbstractRetryStrategy() {
 		start();
@@ -37,9 +41,10 @@ public abstract class AbstractRetryStrategy implements RetryStrategy, Runnable {
 	 * 启动服务
 	 */
 	protected void start() {
-		ThreadFactory threadFactory = new EventLoopFactory(true, "Retry.", new AtomicLong());
+		ThreadFactory threadFactory = new EventLoopFactory(false, "Retry.", new AtomicLong());
 		executor = Executors.newScheduledThreadPool(threadPool, threadFactory);
 		executor.scheduleAtFixedRate(this, 3, minutes, TimeUnit.MINUTES);
+		EventLoops.register("Retry", executor);
 	}
 
 	/**
@@ -99,6 +104,21 @@ public abstract class AbstractRetryStrategy implements RetryStrategy, Runnable {
 		}
 		pendingConfirm.setRetryTimes(Ints.add(pendingConfirm.getRetryTimes(), 1));
 		this.add(pendingConfirm);
+	}
+
+	/**
+	 * 关闭服务
+	 */
+	@Override
+	public void destroy() throws Exception {
+		try {
+			executor.shutdown();
+			if (!executor.awaitTermination(awaitTime, TimeUnit.SECONDS)) {
+				executor.shutdownNow();
+			}
+		} catch (InterruptedException e) {
+			executor.shutdownNow();
+		}
 	}
 
 	/**

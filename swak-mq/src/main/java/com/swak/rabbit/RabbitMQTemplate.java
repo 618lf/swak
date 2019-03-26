@@ -367,7 +367,10 @@ public class RabbitMQTemplate
 	public interface ReturnCallback {
 		void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey);
 	}
-
+	
+	/**
+	 * 等待关闭
+	 */
 	@Override
 	public void destroy() throws Exception {
 		synchronized (this.connectionMonitor) {

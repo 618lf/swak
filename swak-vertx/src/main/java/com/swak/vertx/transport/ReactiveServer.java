@@ -78,6 +78,9 @@ public class ReactiveServer implements Server {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
+			
+			// 整个 vertx 关闭
+			vertx.close();
 		});
 	}
 

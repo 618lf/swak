@@ -124,3 +124,4 @@ https://yq.aliyun.com/articles/591627
 指标库：
 http://throwable.coding.me/2018/11/17/jvm-micrometer-prometheus/
 
+核心服务不能设置为后台进程，需要能关闭

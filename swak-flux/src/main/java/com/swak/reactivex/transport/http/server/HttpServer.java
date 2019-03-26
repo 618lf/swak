@@ -74,7 +74,6 @@ public class HttpServer extends TcpServer {
 			public void run() {
 				context.onClose().block();
 			}
-
 		};
 		awaitThread.setContextClassLoader(getClass().getClassLoader());
 		awaitThread.setDaemon(false);
