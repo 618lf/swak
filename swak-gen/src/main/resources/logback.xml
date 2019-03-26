@@ -36,11 +36,6 @@
 	    <appender-ref ref="ERROR"/>
 	</root>
 	
-	<!-- 访问日志 -->
-	<logger name="ACCESS_TRACE" level="info" additivity="false">
-		<appender-ref ref="ACCESS"/>
-	</logger>
-	
 	<!-- 常用的应用程序的日志 -->
 	<logger name="com.swak.Application" level="DEBUG"/>
 </configuration>
