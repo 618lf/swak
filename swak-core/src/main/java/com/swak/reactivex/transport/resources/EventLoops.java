@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 
+import com.swak.closable.Closable;
+import com.swak.closable.ShutDownHook;
 import com.swak.meters.ExecutorMetrics;
 import com.swak.utils.Maps;
 
@@ -73,10 +75,23 @@ public class EventLoops implements ExecutorMetrics {
 	 * @param executor
 	 */
 	public static void register(String name, Executor executor) {
+		EventLoops.register(name, executor, null);
+	}
+
+	/**
+	 * 注册管理
+	 * 
+	 * @param name
+	 * @param executor
+	 */
+	public static void register(String name, Executor executor, Closable closable) {
 		if (me().getExecutor(name) != null) {
 			throw new RuntimeException("EventLoop Name Exists");
 		}
 		instance.addExecutor(name, executor);
+		if (closable != null) {
+			ShutDownHook.registerShutdownHook(closable);
+		}
 	}
 
 	/**

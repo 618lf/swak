@@ -28,7 +28,7 @@ import com.swak.utils.SpringContextHolder;
 public class ApplicationAutoConfiguration {
 	
 	public ApplicationAutoConfiguration(ApplicationContext context, ApplicationProperties properties) {
-		APP_LOGGER.debug("Loading AppBooter And Shutdowner");
+		APP_LOGGER.debug("Loading AppBooter");
 		this.springContextHolder(context);
 		this.serializer(properties);
 		this.idGenerator(properties);
