@@ -1,7 +1,5 @@
 package com.swak.config.flux;
 
-import static com.swak.Application.APP_LOGGER;
-
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -23,7 +21,4 @@ import com.swak.reactivex.transport.http.server.ReactiveServer;
 @AutoConfigureAfter({ FreeMarkerAutoConfiguration.class, SecurityAutoConfiguration.class,
 		DataSourceAutoConfiguration.class, DataSourceTransactionManagerConfiguration.class })
 public class WebHandlerAutoConfiguration extends WebConfigurationSupport {
-	public WebHandlerAutoConfiguration() {
-		APP_LOGGER.debug("Loading Web Flux");
-	}
 }

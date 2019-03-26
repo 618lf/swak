@@ -39,7 +39,7 @@ public class HttpServerAutoConfiguration {
 	public HttpServerAutoConfiguration(HttpServerProperties properties) {
 		this.properties = properties;
 		this.adaptablePort();
-		APP_LOGGER.debug("Loading Http Server");
+		APP_LOGGER.debug("Loading Web Flux");
 	}
 
 	/**
