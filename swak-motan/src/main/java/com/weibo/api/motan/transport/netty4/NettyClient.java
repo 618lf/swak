@@ -9,6 +9,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.swak.reactivex.transport.resources.EventLoops;
 import com.swak.reactivex.transport.resources.LoopResources;
 import com.weibo.api.motan.common.ChannelState;
 import com.weibo.api.motan.common.MotanConstants;
@@ -51,7 +52,11 @@ public class NettyClient extends AbstractSharedPoolClient implements StatisticCa
 	/**
 	 * 回收过期任务
 	 */
-	private static ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1, new DefaultThreadFactory("Motan.ClientTimeMonitor", true));
+	private static ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1,
+			new DefaultThreadFactory("Motan.ClientRecovery", true));
+	static {
+		EventLoops.register("Motan.ClientRecovery", scheduledExecutor);
+	}
 	/**
 	 * 异步的request，需要注册callback future 触发remove的操作有： 1) service的返回结果处理。 2) timeout
 	 * thread cancel

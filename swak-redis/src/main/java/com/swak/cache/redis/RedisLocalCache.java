@@ -89,7 +89,6 @@ public class RedisLocalCache extends RedisPubSubHandler implements LocalCache<Ob
 	// ------------ 初始化 - 销毁 ----------
 	@Override
 	public void destroy() throws Exception {
-		this.cache.close();
 	}
 
 	// ------------- 消息订阅 -------------

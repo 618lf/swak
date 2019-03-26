@@ -9,8 +9,10 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.Ordered;
 
 import com.swak.utils.StringUtils;
+import com.weibo.api.motan.closable.ShutDownHook;
 import com.weibo.api.motan.config.BasicServiceInterfaceConfig;
 import com.weibo.api.motan.config.ConfigUtil;
 import com.weibo.api.motan.config.ExtConfig;
@@ -31,12 +33,23 @@ public class MotanProviderPostProcessor implements ApplicationContextAware, Bean
 
 	private ApplicationContext applicationContext;
 	private final Set<ServiceConfigBean<?>> serviceConfigs = new ConcurrentHashSet<ServiceConfigBean<?>>();
-	
+	private volatile boolean closed = false;
+
+	// 注册关闭程序
+	public MotanProviderPostProcessor() {
+		ShutDownHook.registerShutdownHook(() -> {
+			try {
+				this.destroy();
+			} catch (Exception e) {
+			}
+		}, Ordered.LOWEST_PRECEDENCE); // 和spring 的排序方式不一致
+	}
+
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
-	
+
 	/**
 	 * service 可以直接发布
 	 */
@@ -86,16 +99,16 @@ public class MotanProviderPostProcessor implements ApplicationContextAware, Bean
 				}
 
 				if (!StringUtils.isBlank(protocolValue)) {
-					List<ProtocolConfig> protocolConfigs = SpringBeanUtil.getMultiBeans(applicationContext, protocolValue,
-							SpringBeanUtil.COMMA_SPLIT_PATTERN, ProtocolConfig.class);
+					List<ProtocolConfig> protocolConfigs = SpringBeanUtil.getMultiBeans(applicationContext,
+							protocolValue, SpringBeanUtil.COMMA_SPLIT_PATTERN, ProtocolConfig.class);
 					serviceConfig.setProtocols(protocolConfigs);
 				}
 
 				// String[] methods() default {};
 
 				if (service.registry() != null && service.registry().length() > 0) {
-					List<RegistryConfig> registryConfigs = SpringBeanUtil.getMultiBeans(applicationContext, service.registry(),
-							SpringBeanUtil.COMMA_SPLIT_PATTERN, RegistryConfig.class);
+					List<RegistryConfig> registryConfigs = SpringBeanUtil.getMultiBeans(applicationContext,
+							service.registry(), SpringBeanUtil.COMMA_SPLIT_PATTERN, RegistryConfig.class);
 					serviceConfig.setRegistries(registryConfigs);
 				}
 
@@ -198,7 +211,11 @@ public class MotanProviderPostProcessor implements ApplicationContextAware, Bean
 	 *
 	 * @throws Exception
 	 */
-	public void destroy() throws Exception {
+	@Override
+	public synchronized void destroy() throws Exception {
+		if (closed) {
+			return;
+		}
 		for (ServiceConfigBean<?> serviceConfig : serviceConfigs) {
 			try {
 				serviceConfig.unexport();

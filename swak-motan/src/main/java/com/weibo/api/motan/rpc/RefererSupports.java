@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.swak.reactivex.transport.resources.EventLoops;
 import com.weibo.api.motan.closable.Closable;
 import com.weibo.api.motan.closable.ShutDownHook;
 import com.weibo.api.motan.core.DefaultThreadFactory;
@@ -35,7 +36,9 @@ import com.weibo.api.motan.util.LoggerUtil;
 public class RefererSupports {
 
     private static ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(10, new DefaultThreadFactory("Motan.RefererDestroy", true));
-
+    static {
+    	EventLoops.register("Motan.RefererDestroy", scheduledExecutor);
+    }
     // 正常情况下请求超过1s已经是能够忍耐的极限值了，delay 1s进行destroy
     private static final int DELAY_TIME = 1000;
     static{

@@ -78,4 +78,11 @@ public class EventLoops implements ExecutorMetrics {
 		}
 		instance.addExecutor(name, executor);
 	}
+
+	/**
+	 * 清理数据
+	 */
+	public static void clear() {
+		me().executors.clear();
+	}
 }

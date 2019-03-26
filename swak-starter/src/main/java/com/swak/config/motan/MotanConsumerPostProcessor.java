@@ -16,8 +16,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.Ordered;
 
 import com.swak.utils.ConcurrentHashSet;
+import com.weibo.api.motan.closable.ShutDownHook;
 import com.weibo.api.motan.config.BasicRefererInterfaceConfig;
 import com.weibo.api.motan.config.ExtConfig;
 import com.weibo.api.motan.config.ProtocolConfig;
@@ -39,6 +41,17 @@ public class MotanConsumerPostProcessor implements ApplicationContextAware, Bean
 	@SuppressWarnings("rawtypes")
 	private final ConcurrentMap<String, RefererConfigBean> referenceConfigs = new ConcurrentHashMap<String, RefererConfigBean>();
 	private final ConcurrentHashSet<Object> referenceBeans = new ConcurrentHashSet<>();
+	private volatile boolean closed = false;
+
+	// 注册关闭程序
+	public MotanConsumerPostProcessor() {
+		ShutDownHook.registerShutdownHook(() -> {
+			try {
+				this.destroy();
+			} catch (Exception e) {
+			}
+		}, Ordered.LOWEST_PRECEDENCE); // 和spring 的排序方式不一致
+	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -306,7 +319,10 @@ public class MotanConsumerPostProcessor implements ApplicationContextAware, Bean
 	}
 
 	@Override
-	public void destroy() throws Exception {
+	public synchronized void destroy() throws Exception {
+		if (closed) {
+			return;
+		}
 		for (RefererConfigBean<?> referenceConfig : referenceConfigs.values()) {
 			try {
 				referenceConfig.destroy();

@@ -17,7 +17,7 @@ public class ShutDownHook extends Thread {
 	// only global resource should be register to ShutDownHook,don't register
 	// connections to it.
 	private static ShutDownHook instance;
-	private ArrayList<closableObject> resourceList = new ArrayList<closableObject>();
+	private ArrayList<ClosableObject> resourceList = new ArrayList<ClosableObject>();
 
 	private ShutDownHook() {
 	}
@@ -47,7 +47,7 @@ public class ShutDownHook extends Thread {
 		if (instance == null) {
 			init();
 		}
-		instance.resourceList.add(new closableObject(closable, priority));
+		instance.resourceList.add(new ClosableObject(closable, priority));
 		LoggerUtil.info("add resource " + closable.getClass() + " to list");
 	}
 
@@ -60,7 +60,7 @@ public class ShutDownHook extends Thread {
 	private synchronized void closeAll() {
 		Collections.sort(resourceList);
 		LoggerUtil.info("Start to close global resource due to priority");
-		for (closableObject resource : resourceList) {
+		for (ClosableObject resource : resourceList) {
 			try {
 				resource.closable.close();
 			} catch (Exception e) {
@@ -72,17 +72,17 @@ public class ShutDownHook extends Thread {
 		resourceList.clear();
 	}
 
-	private static class closableObject implements Comparable<closableObject> {
+	private static class ClosableObject implements Comparable<ClosableObject> {
 		Closable<?> closable;
 		int priority;
 
-		public closableObject(Closable<?> closable, int priority) {
+		public ClosableObject(Closable<?> closable, int priority) {
 			this.closable = closable;
 			this.priority = priority;
 		}
 
 		@Override
-		public int compareTo(closableObject o) {
+		public int compareTo(ClosableObject o) {
 			if (this.priority > o.priority) {
 				return -1;
 			} else if (this.priority == o.priority) {

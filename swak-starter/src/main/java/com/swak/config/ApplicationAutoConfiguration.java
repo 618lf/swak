@@ -1,10 +1,15 @@
 package com.swak.config;
 
+import static com.swak.Application.APP_LOGGER;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.ApplicationProperties;
+import com.swak.booter.AppBooter;
+import com.swak.booter.AppShuter;
 import com.swak.incrementer.IdGen;
 import com.swak.serializer.JavaSerializer;
 import com.swak.serializer.KryoPoolSerializer;
@@ -14,25 +19,21 @@ import com.swak.serializer.Serializer;
 import com.swak.utils.SpringContextHolder;
 
 /**
- * 基础组件
+ * 系统配置 - 启动和关闭
  * 
  * @author lifeng
  */
 @Configuration
 @EnableConfigurationProperties(ApplicationProperties.class)
-public class BaseFuntionAutoConfiguration {
-
-	/**
-	 * 基础配置
-	 * 
-	 * @param context
-	 */
-	public BaseFuntionAutoConfiguration(ApplicationContext context, ApplicationProperties properties) {
+public class ApplicationAutoConfiguration {
+	
+	public ApplicationAutoConfiguration(ApplicationContext context, ApplicationProperties properties) {
+		APP_LOGGER.debug("Loading AppBooter And Shutdowner");
 		this.springContextHolder(context);
 		this.serializer(properties);
 		this.idGenerator(properties);
 	}
-
+	
 	/**
 	 * SpringContextHolder
 	 * 
@@ -69,5 +70,25 @@ public class BaseFuntionAutoConfiguration {
 
 		// 公共引用
 		SerializationUtils.g_ser = g_ser;
+	}
+
+	/**
+	 * 启动
+	 * 
+	 * @return
+	 */
+	@Bean
+	public AppBooter appBooter() {
+		return new AppBooter();
+	}
+	
+	/**
+	 * 关闭
+	 * 
+	 * @return
+	 */
+	@Bean
+	public AppShuter appShuter() {
+		return new AppShuter();
 	}
 }

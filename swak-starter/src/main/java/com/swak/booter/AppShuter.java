@@ -6,29 +6,33 @@ import java.util.Arrays;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextClosedEvent;
 
 import com.swak.boot.Boot;
+import com.swak.reactivex.transport.resources.EventLoops;
 
 /**
- * 系统启动后需要做的工作
+ * 系统关闭， 資源清理
  * 
  * @author lifeng
  */
-public class AppBooter implements ApplicationListener<ContextRefreshedEvent> {
+public class AppShuter implements ApplicationListener<ContextClosedEvent> {
 
 	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
+	public void onApplicationEvent(ContextClosedEvent event) {
 		ApplicationContext context = event.getApplicationContext();
 		String[] boots = context.getBeanNamesForType(Boot.class);
 		if (boots != null && boots.length > 0) {
-			APP_LOGGER.debug("======== system startup loading ========");
+			APP_LOGGER.debug("======== system startup Destorying ========");
 			Arrays.stream(boots).forEach(s -> {
 				Boot boot = context.getBean(s, Boot.class);
-				APP_LOGGER.debug("Async loading - {}", boot.describe());
-				boot.start();
+				APP_LOGGER.debug("Sync destory - {}", boot.describe());
+				boot.destory();
 			});
-			APP_LOGGER.debug("======== system startup loaded  ========");
+			APP_LOGGER.debug("======== system startup Destoryed  ========");
 		}
+		
+		// 清理资源
+		EventLoops.clear();
 	}
 }

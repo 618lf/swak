@@ -116,7 +116,7 @@ public class CacheConfigurationSupport {
 	 * 
 	 * @return
 	 */
-	@Bean
+	@Bean(destroyMethod = "close")
 	@ConditionalOnMissingBean
 	public EhcacheManager ehcacheManager() {
 		PooledExecutionServiceConfiguration serviceConfiguration = new PooledExecutionServiceConfiguration();
@@ -153,7 +153,6 @@ public class CacheConfigurationSupport {
 								.disk(cacheProperties.getLocalDiskMB(), MemoryUnit.MB, true))
 				.withExpiry(ExpiryPolicys.fixedExpiryPolicy(Duration.ofSeconds(cacheProperties.getLocalLiveSeconds())))
 				.build();
-
 		EhcacheBase<String, byte[]> ehcache = (EhcacheBase<String, byte[]>) ehcacheManager
 				.createCache(cacheProperties.getLocalName(), configuration);
 		return new RedisLocalCache(cacheProperties.getLocalName(), ehcache);

@@ -23,7 +23,7 @@ public abstract class RedisPubSubHandler extends RedisPubSubAdapter<byte[], byte
 
 	@Override
 	public String describe() {
-		return "启动 Redis 订阅服务：" + this.getChannel();
+		return "Redis 订阅：" + this.getChannel();
 	}
 
 	/**

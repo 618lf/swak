@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.swak.reactivex.transport.resources.EventLoops;
 import com.weibo.api.motan.closable.Closable;
 import com.weibo.api.motan.closable.ShutDownHook;
 import com.weibo.api.motan.common.MotanConstants;
@@ -77,6 +78,7 @@ public class HeartbeatClientEndpointManager implements EndpointManager{
 
             }
         }, MotanConstants.HEARTBEAT_PERIOD, MotanConstants.HEARTBEAT_PERIOD, TimeUnit.MILLISECONDS);
+        EventLoops.register("Motan.Heartbeat", executorService);
         ShutDownHook.registerShutdownHook(new Closable() {
             @Override
             public void close() {

@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.swak.reactivex.transport.resources.EventLoops;
 import com.swak.reactivex.transport.resources.LoopResources;
 import com.weibo.api.motan.common.ChannelState;
 import com.weibo.api.motan.common.MotanConstants;
@@ -99,6 +100,7 @@ public class NettyServer extends AbstractServer implements StatisticCallback {
 				: new StandardThreadExecutor(minWorkerThread, maxWorkerThread, workerQueueSize,
 						new DefaultThreadFactory("Motan.NettyServer-" + url.getServerPortStr(), true));
 		standardThreadExecutor.prestartAllCoreThreads();
+		EventLoops.register("Motan.NettyServer", standardThreadExecutor);
 
 		channelManage = new NettyServerChannelManage(maxServerConnection);
 

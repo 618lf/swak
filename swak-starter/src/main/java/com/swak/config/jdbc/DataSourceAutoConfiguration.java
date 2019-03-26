@@ -27,5 +27,4 @@ import com.swak.config.jdbc.sharding.ShardingJdbcConfiguration;
 @Import({ ShardingJdbcConfiguration.class, SqlLiteDataSourceAutoConfiguration.class,
 		DruidDataSourceAutoConfiguration.class, HikariDataSourceAutoConfiguration.class })
 public class DataSourceAutoConfiguration {
-
 }

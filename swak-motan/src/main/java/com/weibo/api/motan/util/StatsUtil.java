@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Snapshot;
+import com.swak.reactivex.transport.resources.EventLoops;
 import com.swak.utils.StringUtils;
 import com.weibo.api.motan.closable.Closable;
 import com.weibo.api.motan.closable.ShutDownHook;
@@ -69,6 +70,7 @@ public class StatsUtil {
                 logStatisticCallback();
             }
         }, MotanConstants.STATISTIC_PEROID, MotanConstants.STATISTIC_PEROID, TimeUnit.SECONDS);
+        EventLoops.register("Motan.Statistic", executorService);
         ShutDownHook.registerShutdownHook(new Closable() {
             @Override
             public void close() {

@@ -1,7 +1,7 @@
 com.swak.ApplicationBoot=\
 com.swak.actuator.config.WebEndpointAutoConfiguration,\
 com.swak.actuator.config.MetricsAutoConfiguration,\
-com.swak.actuator.config.metrics.export.SimpleMetricsExportAutoConfiguration,\
+com.swak.actuator.config.metrics.export.MetricsExportAutoConfiguration,\
 com.swak.actuator.config.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration,\
 com.swak.actuator.config.metrics.jdbc.HikariDataSourceMetricsConfiguration,\
 com.swak.actuator.config.metrics.vertx.VerxMetricsOptionsAutoConfiguration,\
