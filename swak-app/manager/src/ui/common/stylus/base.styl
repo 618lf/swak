@@ -1,0 +1,333 @@
+@require "./variable.styl"
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video, input {
+  margin: 0
+  padding: 0
+  border: 0
+  vertical-align: baseline;
+}
+
+html {
+  -webkit-font-feature-settings: 'kern' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height 100%;
+}
+
+body {
+  height 100%;
+  color: $color-font;
+  overflow-x hidden;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, .1)
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, .3)
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, .5)
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: rgba(0, 0, 0, .7)
+}
+
+.thin-scroll::-webkit-scrollbar-track {
+  background-color: #E5E5E5;
+  border-left: 2px solid transparent
+}
+
+.thin-scroll::-webkit-scrollbar-thumb {
+  background-color: #A6A6A6;
+  border-left: 2px solid transparent
+}
+
+.thin-scroll::-webkit-scrollbar {
+  width: 7px
+}
+
+/**
+ * color
+ */
+.red {
+  color $color-red;
+}
+
+/**
+ * table
+ */
+.table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 0;
+  background-color: transparent;
+  border-collapse: collapse;
+  line-height 1.5;
+  th, td {
+    padding: .75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+  }
+
+  thead {
+    th {
+      vertical-align: bottom;
+      border-bottom: 1px solid #dee2e6;
+    }
+  }
+}
+
+.table-bordered {
+  border: 1px solid #dee2e6;
+
+  th, td {
+    border: 1px solid #dee2e6;
+  }
+
+  thead {
+    th, td {
+      border-bottom-width: 1px;
+    }
+  }
+}
+
+.sample-table.table {
+  & > thead {
+    & > tr {
+      & > th {
+        color $color-font;
+        background-color: #f5fbff;
+        text-align left;
+      }
+    }
+  }
+  .td-ops {
+    text-align center;
+    a {
+      margin-right 3px;
+      cursor pointer;
+      color $color-primary
+    }
+  }
+  .td-none {
+    color $color-light-grey;
+    text-align center;
+  }
+  .td-tip {
+    color $color-light-grey;
+    font-style: italic;
+    font-size 14px;
+  }
+  .td-tc {
+    text-align center;
+  }
+  .td-text {
+    padding 0;
+    .td-text_input {
+      width 100%;
+      height 100%;
+      .el-input {
+        width 100%;
+        height 100%;
+      }
+      input {
+        width 100%;
+        height 100%;
+        padding-left 3px;
+        box-sizing border-box;
+        border-radius: 0;
+        border-width 0;
+        display block;
+        line-height 100%;
+      }
+    }
+  }
+  .td-error {
+    font-size 14px;
+    color $color-red;
+    font-style: italic;
+  }
+}
+
+.el-table__header {
+  th {
+    background-color: #f5fbff;
+    color $color-font;
+  }
+  .el-table-column--selection {
+    text-align center;
+  }
+}
+
+.el-table__body {
+  .el-table-column--selection {
+    text-align center;
+  }
+}
+
+/**
+* app-content
+*/
+.app-content {
+  background-color #f6f8f9;
+  height 100%;
+  .inner {
+    width: 90%;
+    max-width: 1600px;
+    margin 0 auto;
+  }
+  .main {
+    margin-bottom 40px;
+    .title {
+      margin 30px 0;
+      font-size $fontsize-large-xxxx;
+    }
+  }
+}
+
+/**
+* page
+*/
+.tax-page {
+  h4 {
+    font-size 22px;
+    margin-bottom 20px;
+    font-weight normal;
+    span {
+      color $color-light-grey
+      margin 0 20px;
+      b {
+        font-size 22px;
+        margin-right 5px;
+        color $color-red;
+      }
+    }
+  }
+  .content {
+    background-color $color-white;
+    min-height 600px;
+    padding 40px;
+  }
+  .options {
+    padding 20px 0;
+    padding-top 0px;
+    & > span {
+      color $color-light-grey;
+      margin-right 20px;
+      line-height 40px;
+    }
+    .conditions {
+      float left;
+      .condition {
+        width 240px;
+        display flex;
+        float left;
+        margin-right 10px;
+        label {
+          width 80px;
+          line-height 40px;
+        }
+        .el-input {
+          flex: 1;
+        }
+      }
+      &::after {
+        display block;
+        content "";
+        clear: both;
+      }
+    }
+    .btns {
+      float right;
+    }
+    &::after {
+      display block;
+      content "";
+      clear: both;
+    }
+  }
+  .pagination {
+    margin-top 20px;
+    margin-left -10px;
+    display flex;
+    .pagination-ext {
+      width 120px;
+      line-height 32px;
+      color $color-light-grey;
+      span {
+        margin 0 5px;
+      }
+    }
+  }
+}
+
+/**
+* from
+*/
+.form-tip {
+  color $color-light-grey;
+  line-height 24px;
+}
+
+/**
+* types
+*/
+.types {
+  a {
+    display inline-block;
+    padding 3px 10px;
+    background-color $color-light-grey-s
+    margin-right 10px;
+    line-height 30px
+  }
+  .cur {
+    background-color $color-success;
+    color $color-white;
+  }
+}
+
+/**
+* vip error
+*/
+.vip-error {
+  width 240px;
+  margin 0 auto;
+  margin-top 120px;
+  text-align center;
+  .icon {
+    font-size 80px;
+    display block;
+    color $color-warning;
+    margin-bottom 15px;
+  }
+  .name {
+    font-size $fontsize-large-x;
+    margin-bottom 20px;
+  }
+  .ops {
+    a {
+      display block;
+    }
+  }
+}

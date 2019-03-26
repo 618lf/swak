@@ -98,7 +98,7 @@ public class NettyServer extends AbstractServer implements StatisticCallback {
 		standardThreadExecutor = (standardThreadExecutor != null && !standardThreadExecutor.isShutdown())
 				? standardThreadExecutor
 				: new StandardThreadExecutor(minWorkerThread, maxWorkerThread, workerQueueSize,
-						new DefaultThreadFactory("Motan.NettyServer-" + url.getServerPortStr(), true));
+						new DefaultThreadFactory("Motan.NettyServer-" + url.getServerPortStr(), false));
 		standardThreadExecutor.prestartAllCoreThreads();
 		EventLoops.register("Motan.NettyServer", standardThreadExecutor);
 
