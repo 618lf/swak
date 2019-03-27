@@ -18,7 +18,7 @@ import com.swak.rabbit.message.Message;
  * 
  * @author lifeng
  */
-public class TemplateConsumer implements Consumer {
+class TemplateConsumer implements Consumer {
 
 	private final Logger logger = LoggerFactory.getLogger(TemplateConsumer.class);
 	private final String queue;

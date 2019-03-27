@@ -52,7 +52,7 @@ public class MethodCache {
 		private final Class<?> nestedReturnType;
 		private final int timeOut;
 
-		private MethodMeta(Method method) {
+		public MethodMeta(Method method) {
 			this.methodDesc = ReflectUtils.getMethodDesc(method);
 			this.methodName = method.getName();
 			this.returnType = method.getReturnType();
@@ -61,11 +61,11 @@ public class MethodCache {
 			TimeOut timeOut = method.getAnnotation(TimeOut.class);
 			this.timeOut = timeOut != null ? timeOut.value() : -1;
 		}
-		
+
 		private Class<?> initNestedReturnType(Method method) {
 			Type type = method.getGenericReturnType();
 			if (type instanceof ParameterizedType) {
-				ParameterizedType pType = (ParameterizedType)type;
+				ParameterizedType pType = (ParameterizedType) type;
 				return ReflectUtils.getClass(pType.getActualTypeArguments()[0]);
 			}
 			return returnType;
@@ -93,6 +93,20 @@ public class MethodCache {
 
 		public Class<?> getNestedReturnType() {
 			return nestedReturnType;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.methodDesc.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o instanceof MethodMeta) {
+				MethodMeta ident = (MethodMeta) o;
+				return this.methodDesc.equals(ident.methodDesc);
+			}
+			return false;
 		}
 	}
 }

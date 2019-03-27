@@ -1,9 +1,12 @@
 package com.swak.config.mq;
 
+import static com.swak.Application.APP_LOGGER;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -12,8 +15,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.Constants;
+import com.swak.rabbit.EventBus;
 import com.swak.rabbit.RabbitMQProperties;
 import com.swak.rabbit.RabbitMQTemplate;
+import com.swak.rabbit.retry.RetryStrategy;
 import com.swak.reactivex.transport.resources.EventLoopFactory;
 import com.swak.reactivex.transport.resources.EventLoops;
 
@@ -32,6 +37,20 @@ public class RabbitMqAutoConfiguration {
 	private RabbitMQProperties properties;
 	private ExecutorService executor;
 	private EventLoopFactory threadFactory;
+
+	public RabbitMqAutoConfiguration() {
+		APP_LOGGER.debug("Loading MQ");
+	}
+
+	/**
+	 * 自动注册消费者
+	 * 
+	 * @return
+	 */
+	@Bean
+	public RabbitMqPostProcessor rabbitMqPostProcessor() {
+		return new RabbitMqPostProcessor();
+	}
 
 	/**
 	 * 默认的生产者模板， 默认是不需要自动恢复生产者连接
@@ -76,5 +95,28 @@ public class RabbitMqAutoConfiguration {
 			template.setConsumerWorkServiceExecutor(executor).setShutdownExecutor(executor)
 					.setTopologyRecoveryExecutor(executor).setDaemonFactory(threadFactory);
 		}
+	}
+
+	/**
+	 * 注册Event Bus
+	 * 
+	 * @param templateForSender
+	 * @param templateForConsumerProvider
+	 * @param retryStrategyProvider
+	 * @return
+	 */
+	@Bean
+	public EventBus rabbitEventBus(RabbitMQTemplate templateForSender,
+			ObjectProvider<RabbitMQTemplate> templateForConsumerProvider,
+			ObjectProvider<RetryStrategy> retryStrategyProvider) {
+		RetryStrategy retryStrategy = retryStrategyProvider.getIfAvailable();
+		if (retryStrategy != null) {
+			retryStrategy.bindSender(templateForSender);
+		}
+		RabbitMQTemplate templateForConsumer = templateForConsumerProvider.getIfAvailable(() -> {
+			return templateForSender;
+		});
+		return new EventBus.Builder().setStrategy(retryStrategy).setTemplateForConsumer(templateForConsumer)
+				.setTemplateForSender(templateForSender).build();
 	}
 }

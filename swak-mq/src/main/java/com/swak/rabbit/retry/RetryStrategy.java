@@ -20,6 +20,13 @@ public interface RetryStrategy extends ConfirmCallback, ReturnCallback {
 	Logger LOGGER = LoggerFactory.getLogger(RetryStrategy.class);
 	
 	/**
+	 * 绑定消息发送器
+	 * 
+	 * @param sender
+	 */
+	void bindSender(RabbitMQTemplate template);
+	
+	/**
 	 * 获得消息发送器
 	 * 
 	 * @param sender

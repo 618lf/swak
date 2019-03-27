@@ -2,7 +2,6 @@ package com.swak.rabbit.retry;
 
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.operations.SyncOperations;
-import com.swak.rabbit.RabbitMQTemplate;
 import com.swak.rabbit.message.PendingConfirm;
 import com.swak.serializer.SerializationUtils;
 
@@ -13,18 +12,8 @@ import com.swak.serializer.SerializationUtils;
  */
 public class RedisRetryStrategy extends AbstractRetryStrategy {
 
-	private final RabbitMQTemplate template;
 	private String confirms = "Retry.Ids";
 	private String _confirms = "Retry.Confirms";
-
-	public RedisRetryStrategy(RabbitMQTemplate template) {
-		this.template = template;
-	}
-
-	@Override
-	public RabbitMQTemplate getSender() {
-		return template;
-	}
 
 	@Override
 	public void add(PendingConfirm pendingConfirm) {

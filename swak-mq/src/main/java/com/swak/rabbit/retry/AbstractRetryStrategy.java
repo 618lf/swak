@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.DisposableBean;
 
+import com.swak.rabbit.RabbitMQTemplate;
 import com.swak.rabbit.message.Message;
 import com.swak.rabbit.message.PendingConfirm;
 import com.swak.reactivex.transport.resources.EventLoopFactory;
@@ -22,6 +23,7 @@ import com.swak.utils.JsonMapper;
  */
 public abstract class AbstractRetryStrategy implements RetryStrategy, Runnable, DisposableBean {
 
+	private RabbitMQTemplate template;
 	private ScheduledExecutorService executor;
 	private int threadPool = 1;
 	private int minutes = 1;
@@ -35,6 +37,15 @@ public abstract class AbstractRetryStrategy implements RetryStrategy, Runnable, 
 		this.threadPool = threadPool;
 		this.minutes = minutes;
 		start();
+	}
+
+	public void bindSender(RabbitMQTemplate template) {
+		this.template = template;
+	}
+
+	@Override
+	public RabbitMQTemplate getSender() {
+		return template;
 	}
 
 	/**

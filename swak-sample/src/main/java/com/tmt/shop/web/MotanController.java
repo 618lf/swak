@@ -1,6 +1,5 @@
 package com.tmt.shop.web;
 
-import com.swak.motan.reactor.Reactor;
 import com.swak.reactivex.web.annotation.RequestMapping;
 import com.swak.reactivex.web.annotation.RestController;
 import com.tmt.shop.service.FooService;
@@ -39,6 +38,6 @@ public class MotanController {
 	 */
 	@RequestMapping("say/async")
 	public Mono<Object> asyncSay() {
-		return Reactor.mono(fooServiceAsync.helloAsync("123"));
+		return Mono.fromCompletionStage(fooServiceAsync.helloAsync("123").toFuture());
 	}
 }

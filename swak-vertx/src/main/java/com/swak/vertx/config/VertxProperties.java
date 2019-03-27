@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.swak.Constants;
 import com.swak.reactivex.transport.TransportProperties;
 import com.swak.utils.Maps;
 
@@ -14,7 +15,7 @@ import io.vertx.core.impl.cpu.CpuCoreSensor;
  * 
  * @author lifeng
  */
-@ConfigurationProperties(prefix = "spring.vertx")
+@ConfigurationProperties(prefix = Constants.VERTX_SERVER_PREFIX)
 public class VertxProperties extends TransportProperties {
 
 	private String host = null;

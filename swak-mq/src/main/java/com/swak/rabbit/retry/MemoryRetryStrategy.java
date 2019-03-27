@@ -3,7 +3,6 @@ package com.swak.rabbit.retry;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TransferQueue;
 
-import com.swak.rabbit.RabbitMQTemplate;
 import com.swak.rabbit.message.PendingConfirm;
 import com.swak.utils.ConcurrentHashSet;
 
@@ -13,18 +12,13 @@ import com.swak.utils.ConcurrentHashSet;
  * @author lifeng
  */
 public class MemoryRetryStrategy extends AbstractRetryStrategy {
-	private RabbitMQTemplate template;
+	
 	private ConcurrentHashSet<String> confirms = new ConcurrentHashSet<>();
 	private TransferQueue<PendingConfirm> _confirms;
 
 	public MemoryRetryStrategy() {
 		confirms = new ConcurrentHashSet<>();
 		_confirms = new LinkedTransferQueue<>();
-	}
-
-	@Override
-	public RabbitMQTemplate getSender() {
-		return template;
 	}
 
 	@Override
