@@ -5,6 +5,7 @@ import static com.swak.Application.APP_LOGGER;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,10 +119,18 @@ public class RabbitMqAutoConfiguration {
 		if (configurationSupport != null && (retryStrategy = configurationSupport.getRetryStrategy()) != null) {
 			retryStrategy.bindSender(templateForSender);
 		}
+		Function<RabbitMQTemplate, Boolean> apply = null;
+		if (configurationSupport != null) {
+			apply = configurationSupport.getApply();
+		}
+		if (apply == null) {
+			apply = (t) -> true;
+		}
 		RabbitMQTemplate templateForConsumer = templateForConsumerProvider.getIfAvailable(() -> {
 			return templateForSender;
 		});
 		return new EventBus.Builder().setStrategy(retryStrategy).setTemplateForConsumer(templateForConsumer)
-				.setTemplateForSender(templateForSender).setExecutor(configurationSupport.getExecutor()).build();
+				.setTemplateForSender(templateForSender).setApply(apply).setExecutor(configurationSupport.getExecutor())
+				.build();
 	}
 }

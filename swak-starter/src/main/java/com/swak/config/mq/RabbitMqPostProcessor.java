@@ -21,7 +21,6 @@ public class RabbitMqPostProcessor implements BeanPostProcessor, ApplicationList
 
 	private final ConcurrentHashSet<Object> referenceBeans = new ConcurrentHashSet<>();
 	private EventBus eventBus;
-	private volatile boolean inited = false;
 
 	/**
 	 * 保留EventBus对象
@@ -58,11 +57,12 @@ public class RabbitMqPostProcessor implements BeanPostProcessor, ApplicationList
 	 */
 	@Override
 	public synchronized void onApplicationEvent(ContextRefreshedEvent arg0) {
-		if (eventBus != null && !inited) {
-			referenceBeans.stream().forEach(bean -> {
-				eventBus.register(bean);
+		if (eventBus != null) {
+			eventBus.init(t -> {
+				referenceBeans.stream().forEach(bean -> {
+					eventBus.register(bean);
+				});
 			});
 		}
-		inited = true;
 	}
 }

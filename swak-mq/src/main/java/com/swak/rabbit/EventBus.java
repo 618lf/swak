@@ -4,8 +4,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.asm.Wrapper;
@@ -25,16 +28,29 @@ import com.swak.utils.Maps;
 public class EventBus {
 
 	private static EventBus me = null;
+	private volatile boolean inited = false;
 	private RabbitMQTemplate templateForSender;
 	private RabbitMQTemplate templateForConsumer;
 	private RetryStrategy retryStrategy;
 	private Executor executor;
+	private Function<RabbitMQTemplate, Boolean> apply;
 
 	private EventBus(RabbitMQTemplate templateForSender, RabbitMQTemplate templateForConsumer, RetryStrategy strategy,
-			Executor executor) {
+			Executor executor, Function<RabbitMQTemplate, Boolean> apply) {
 		this.templateForConsumer = templateForConsumer;
 		this.templateForSender = (templateForSender);
 		this.retryStrategy = strategy;
+		this.apply = apply;
+	}
+
+	/**
+	 * 初始化,返回当前是否已初始化
+	 */
+	public synchronized void init(Consumer<Boolean> register) {
+		if (!inited) {
+			Optional.of(templateForSender).map(apply).ifPresent(register);
+		}
+		inited = true;
 	}
 
 	/**
@@ -133,6 +149,7 @@ public class EventBus {
 		private RabbitMQTemplate templateForConsumer;
 		private RetryStrategy strategy;
 		private Executor executor;
+		private Function<RabbitMQTemplate, Boolean> apply;
 
 		public Builder setTemplateForSender(RabbitMQTemplate templateForSender) {
 			this.templateForSender = templateForSender;
@@ -154,9 +171,14 @@ public class EventBus {
 			return this;
 		}
 
+		public Builder setApply(Function<RabbitMQTemplate, Boolean> apply) {
+			this.apply = apply;
+			return this;
+		}
+
 		public EventBus build() {
 			EventBus eventBus = new EventBus(templateForSender,
-					templateForConsumer == null ? templateForSender : templateForConsumer, strategy, executor);
+					templateForConsumer == null ? templateForSender : templateForConsumer, strategy, executor, apply);
 			me = eventBus;
 			return eventBus;
 		}
