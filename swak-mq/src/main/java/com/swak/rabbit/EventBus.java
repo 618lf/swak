@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.asm.Wrapper;
@@ -24,10 +26,12 @@ public class EventBus {
 
 	private static EventBus me = null;
 	private RabbitMQTemplate templateForSender;
-	private RetryStrategy retryStrategy;
 	private RabbitMQTemplate templateForConsumer;
+	private RetryStrategy retryStrategy;
+	private Executor executor;
 
-	private EventBus(RabbitMQTemplate templateForSender, RabbitMQTemplate templateForConsumer, RetryStrategy strategy) {
+	private EventBus(RabbitMQTemplate templateForSender, RabbitMQTemplate templateForConsumer, RetryStrategy strategy,
+			Executor executor) {
 		this.templateForConsumer = templateForConsumer;
 		this.templateForSender = (templateForSender);
 		this.retryStrategy = strategy;
@@ -72,6 +76,24 @@ public class EventBus {
 	}
 
 	/**
+	 * 异步 - 发送消息
+	 * 
+	 * @param exchange
+	 * @param routingKey
+	 * @param message
+	 */
+	public CompletableFuture<Void> postAsync(String exchange, String routingKey, Message message) {
+		if (executor == null) {
+			return CompletableFuture.runAsync(() -> {
+				this.post(exchange, routingKey, message);
+			});
+		}
+		return CompletableFuture.runAsync(() -> {
+			this.post(exchange, routingKey, message);
+		}, executor);
+	}
+
+	/**
 	 * 发送消息
 	 * 
 	 * @param exchange
@@ -110,6 +132,7 @@ public class EventBus {
 		private RabbitMQTemplate templateForSender;
 		private RabbitMQTemplate templateForConsumer;
 		private RetryStrategy strategy;
+		private Executor executor;
 
 		public Builder setTemplateForSender(RabbitMQTemplate templateForSender) {
 			this.templateForSender = templateForSender;
@@ -126,9 +149,14 @@ public class EventBus {
 			return this;
 		}
 
+		public Builder setExecutor(Executor executor) {
+			this.executor = executor;
+			return this;
+		}
+
 		public EventBus build() {
 			EventBus eventBus = new EventBus(templateForSender,
-					templateForConsumer == null ? templateForSender : templateForConsumer, strategy);
+					templateForConsumer == null ? templateForSender : templateForConsumer, strategy, executor);
 			me = eventBus;
 			return eventBus;
 		}

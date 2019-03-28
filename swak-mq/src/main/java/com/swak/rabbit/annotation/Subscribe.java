@@ -8,6 +8,11 @@ import java.lang.annotation.Target;
 
 import io.netty.util.internal.StringUtil;
 
+/**
+ * 定义方法为消费者
+ * @see RabbitMqPostProcessor
+ * @author lifeng
+ */
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

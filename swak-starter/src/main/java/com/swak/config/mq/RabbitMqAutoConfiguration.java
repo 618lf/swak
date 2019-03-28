@@ -90,7 +90,11 @@ public class RabbitMqAutoConfiguration {
 			if (threadFactory == null) {
 				threadFactory = new EventLoopFactory(true, "RabbitMQ-Daemons-", new AtomicLong());
 				executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, threadFactory);
-				EventLoops.register("RabbitMQ-Daemons", executor);
+				EventLoops.register("RabbitMQ-Daemons", executor, () -> {
+					if (!executor.isShutdown()) {
+						executor.shutdownNow();
+					}
+				});
 			}
 			template.setConsumerWorkServiceExecutor(executor).setShutdownExecutor(executor)
 					.setTopologyRecoveryExecutor(executor).setDaemonFactory(threadFactory);
@@ -108,15 +112,16 @@ public class RabbitMqAutoConfiguration {
 	@Bean
 	public EventBus rabbitEventBus(RabbitMQTemplate templateForSender,
 			ObjectProvider<RabbitMQTemplate> templateForConsumerProvider,
-			ObjectProvider<RetryStrategy> retryStrategyProvider) {
-		RetryStrategy retryStrategy = retryStrategyProvider.getIfAvailable();
-		if (retryStrategy != null) {
+			ObjectProvider<RabbitMqConfigurationSupport> configurationProvider) {
+		RabbitMqConfigurationSupport configurationSupport = configurationProvider.getIfAvailable();
+		RetryStrategy retryStrategy = null;
+		if (configurationSupport != null && (retryStrategy = configurationSupport.getRetryStrategy()) != null) {
 			retryStrategy.bindSender(templateForSender);
 		}
 		RabbitMQTemplate templateForConsumer = templateForConsumerProvider.getIfAvailable(() -> {
 			return templateForSender;
 		});
 		return new EventBus.Builder().setStrategy(retryStrategy).setTemplateForConsumer(templateForConsumer)
-				.setTemplateForSender(templateForSender).build();
+				.setTemplateForSender(templateForSender).setExecutor(configurationSupport.getExecutor()).build();
 	}
 }
