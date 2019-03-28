@@ -8,6 +8,7 @@ import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.StringUtils;
+import com.swak.vertx.Constants;
 import com.swak.vertx.annotation.InvokerAddress;
 import com.swak.vertx.transport.codec.Msg;
 
@@ -45,8 +46,8 @@ public class InvokerHandler implements InvocationHandler {
 			address = type.getName();
 		}
 
-		// 约定去掉后面的 Async
-		return StringUtils.substringBeforeLast(address, "Async");
+		// 约定去掉后面的 Asyncx
+		return StringUtils.substringBeforeLast(address, Constants.ASYNC_SUFFIX);
 	}
 
 	private void initMethods() {
