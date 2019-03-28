@@ -1,6 +1,5 @@
 package com.swak.rabbit;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +8,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.asm.Wrapper;
@@ -27,6 +29,7 @@ import com.swak.utils.Maps;
  */
 public class EventBus {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(EventBus.class);
 	private static EventBus me = null;
 	private volatile boolean inited = false;
 	private RabbitMQTemplate templateForSender;
@@ -218,7 +221,8 @@ public class EventBus {
 			Object[] args = new Object[] { message };
 			try {
 				wrapper.invokeMethod(listener, method.getName(), types, args);
-			} catch (NoSuchMethodException | InvocationTargetException e) {
+			} catch (Exception e) {
+				LOGGER.error("handle message error: {}", e);
 				return false;
 			}
 			return true;
