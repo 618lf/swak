@@ -2,7 +2,6 @@ package com.swak.pubsub;
 
 import java.util.concurrent.CompletionStage;
 
-import com.swak.boot.Boot;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.RedisUtils;
 import com.swak.serializer.SerializationUtils;
@@ -14,16 +13,13 @@ import io.lettuce.core.pubsub.RedisPubSubAdapter;
  * 
  * @author lifeng
  */
-public abstract class RedisPubSubHandler extends RedisPubSubAdapter<byte[], byte[]> implements Boot {
+public abstract class RedisPubSubHandler extends RedisPubSubAdapter<byte[], byte[]> {
 
-	@Override
+	/**
+	 * 开启订阅
+	 */
 	public void start() {
 		RedisUtils.listener(this, this.getChannel());
-	}
-
-	@Override
-	public String describe() {
-		return "Redis 订阅：" + this.getChannel();
 	}
 
 	/**

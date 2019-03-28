@@ -8,7 +8,7 @@ com.swak.config.jdbc.JdbcTemplateAutoConfiguration,\
 com.swak.config.jdbc.DataSourceTransactionManagerConfiguration,\
 com.swak.config.jdbc.MybatisAutoConfiguration,\
 com.swak.config.http.HttpClientAutoConfiguration,\
-com.swak.config.redis.CacheModuleAutoConfiguration,\
+com.swak.config.redis.CacheAutoConfiguration,\
 com.swak.config.storage.StorageAutoConfiguration,\
 com.swak.config.quartz.ScheduleAutoConfiguration,\
 com.swak.config.ApplicationAutoConfiguration,\

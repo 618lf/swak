@@ -18,7 +18,6 @@ import org.ehcache.impl.config.executor.PooledExecutionServiceConfiguration;
 import org.ehcache.impl.config.persistence.CacheManagerPersistenceConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -53,6 +52,7 @@ public class CacheConfigurationSupport {
 	private CacheProperties cacheProperties;
 	@Autowired
 	private ResourceLoader resourceLoader;
+	private RedisLocalCache redisLocalCache;
 
 	public CacheConfigurationSupport() {
 		APP_LOGGER.debug("Loading Redis Cache");
@@ -117,7 +117,6 @@ public class CacheConfigurationSupport {
 	 * @return
 	 */
 	@Bean(destroyMethod = "close")
-	@ConditionalOnMissingBean
 	public EhcacheManager ehcacheManager() {
 		PooledExecutionServiceConfiguration serviceConfiguration = new PooledExecutionServiceConfiguration();
 		serviceConfiguration.addDefaultPool("Daemon", 1, cacheProperties.getLocalPoolSize());
@@ -144,7 +143,6 @@ public class CacheConfigurationSupport {
 	 * @return
 	 */
 	@Bean
-	@ConditionalOnMissingBean
 	public RedisLocalCache redisLocalCache(EhcacheManager ehcacheManager) {
 		CacheConfiguration<String, byte[]> configuration = CacheConfigurationBuilder
 				.newCacheConfigurationBuilder(String.class, byte[].class,
@@ -155,7 +153,8 @@ public class CacheConfigurationSupport {
 				.build();
 		EhcacheBase<String, byte[]> ehcache = (EhcacheBase<String, byte[]>) ehcacheManager
 				.createCache(cacheProperties.getLocalName(), configuration);
-		return new RedisLocalCache(cacheProperties.getLocalName(), ehcache);
+		this.redisLocalCache = new RedisLocalCache(cacheProperties.getLocalName(), ehcache);
+		return this.redisLocalCache;
 	}
 
 	/**
@@ -164,7 +163,6 @@ public class CacheConfigurationSupport {
 	 * @return
 	 */
 	@Bean
-	@ConditionalOnMissingBean
 	public com.swak.cache.CacheManager redisCacheManager(RedisLocalCache localCache) {
 		CacheManagers.setCacheManager(new RedisCacheManager(localCache));
 		return CacheManagers.manager();
@@ -181,5 +179,14 @@ public class CacheConfigurationSupport {
 			nodes.add(node);
 		}
 		return nodes;
+	}
+
+	/**
+	 * 初始化
+	 */
+	protected void init() {
+		if (this.redisLocalCache != null) {
+			this.redisLocalCache.start();
+		}
 	}
 }

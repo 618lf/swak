@@ -48,7 +48,7 @@ public class EventBus {
 	 */
 	public synchronized void init(Consumer<Boolean> register) {
 		if (!inited) {
-			Optional.of(templateForSender).map(apply).ifPresent(register);
+			Optional.of(templateForConsumer).map(apply).ifPresent(register);
 		}
 		inited = true;
 	}
