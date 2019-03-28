@@ -3,6 +3,7 @@ package com.swak.rabbit.message;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.swak.Constants;
 import com.swak.rabbit.AmqpException;
+import com.swak.serializer.SerializationUtils;
 
 import io.netty.util.internal.StringUtil;
 
@@ -68,6 +69,28 @@ public class Message {
 	public Message setPayload(byte[] payload) {
 		this.payload = payload;
 		return this;
+	}
+	
+	/**
+	 * 将 object 序列化为 字节码，使用默認的序列化方式
+	 * 
+	 * @param payload
+	 * @return
+	 */
+	public Message object2Payload(Object payload) {
+		this.payload = SerializationUtils.serialize(payload);
+		return this;
+	}
+	
+	/**
+	 * 将 object 序列化为 字节码，使用默認的序列化方式
+	 * 
+	 * @param payload
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T payload2Object() {
+		return (T) SerializationUtils.deserialize(payload);
 	}
 
 	/**
