@@ -38,7 +38,7 @@ public interface Constants {
 	String STORAGE_PREFIX = "spring.storage";
 	String MOTAN_PREFIX = "spring.motan";
 	String QUARTZ_PREFIX = "spring.quartz";
-	String RABBITMQ_PREFIX = "spring.rabbitMQ";
+	String RABBITMQ_PREFIX = "spring.rabbitmq";
 	
 	/** 保留ID **/
 	long ROOT = 0L;
