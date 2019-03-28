@@ -6,8 +6,7 @@ package com.swak.vertx;
  * @author lifeng
  */
 public interface Constants {
-
 	String SUBJECT_NAME = "X-Subject";
 	String TOKEN_NAME = "X-Token";
-	String ASYNC_SUFFIX = "Async";
+	String ASYNC_SUFFIX = "Asyncx";
 }
