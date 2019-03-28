@@ -1,7 +1,5 @@
 package com.swak.config.jdbc;
 
-import static com.swak.Application.APP_LOGGER;
-
 import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -46,7 +44,6 @@ public class JdbcTemplateAutoConfiguration {
 		private final JdbcProperties properties;
 
 		JdbcTemplateConfiguration(DataSource dataSource, JdbcProperties properties) {
-			APP_LOGGER.debug("Loading Jdbc Template");
 			this.dataSource = dataSource;
 			this.properties = properties;
 		}
