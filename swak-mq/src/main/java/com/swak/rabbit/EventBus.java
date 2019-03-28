@@ -144,6 +144,10 @@ public class EventBus {
 		return me;
 	}
 
+	public static Builder builder() {
+		return new Builder();
+	}
+
 	public static class Builder {
 		private RabbitMQTemplate templateForSender;
 		private RabbitMQTemplate templateForConsumer;

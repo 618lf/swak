@@ -2,6 +2,7 @@ package com.swak.config.mq;
 
 import static com.swak.Application.APP_LOGGER;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -9,6 +10,7 @@ import java.util.function.Function;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -88,8 +90,7 @@ public class RabbitMqAutoConfiguration {
 	 */
 	private void initTemplate(RabbitMQTemplate template, boolean autoRecovery) {
 		if (autoRecovery) {
-			if (threadFactory == null) {
-				threadFactory = new EventLoopFactory(true, "RabbitMQ-Daemons-", new AtomicLong());
+			if (executor == null) {
 				executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, threadFactory);
 				EventLoops.register("RabbitMQ-Daemons", executor, () -> {
 					if (!executor.isShutdown()) {
@@ -98,8 +99,12 @@ public class RabbitMqAutoConfiguration {
 				});
 			}
 			template.setConsumerWorkServiceExecutor(executor).setShutdownExecutor(executor)
-					.setTopologyRecoveryExecutor(executor).setDaemonFactory(threadFactory);
+					.setTopologyRecoveryExecutor(executor);
 		}
+		if (threadFactory == null) {
+			threadFactory = new EventLoopFactory(true, "RabbitMQ-Daemons-", new AtomicLong());
+		}
+		template.setDaemonFactory(threadFactory);
 	}
 
 	/**
@@ -111,17 +116,20 @@ public class RabbitMqAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public EventBus rabbitEventBus(RabbitMQTemplate templateForSender,
-			ObjectProvider<RabbitMQTemplate> templateForConsumerProvider,
+	public EventBus rabbitEventBus(@Qualifier("templateForSender") RabbitMQTemplate templateForSender,
+			@Qualifier("templateForConsumer") ObjectProvider<RabbitMQTemplate> templateForConsumerProvider,
 			ObjectProvider<RabbitMqConfigurationSupport> configurationProvider) {
 		RabbitMqConfigurationSupport configurationSupport = configurationProvider.getIfAvailable();
 		RetryStrategy retryStrategy = null;
-		if (configurationSupport != null && (retryStrategy = configurationSupport.getRetryStrategy()) != null) {
-			retryStrategy.bindSender(templateForSender);
-		}
 		Function<RabbitMQTemplate, Boolean> apply = null;
+		Executor executor = null;
 		if (configurationSupport != null) {
+			retryStrategy = configurationSupport.getRetryStrategy();
 			apply = configurationSupport.getApply();
+			executor = configurationSupport.getExecutor();
+		}
+		if (retryStrategy != null) {
+			retryStrategy.bindSender(templateForSender);
 		}
 		if (apply == null) {
 			apply = (t) -> true;
@@ -129,8 +137,7 @@ public class RabbitMqAutoConfiguration {
 		RabbitMQTemplate templateForConsumer = templateForConsumerProvider.getIfAvailable(() -> {
 			return templateForSender;
 		});
-		return new EventBus.Builder().setStrategy(retryStrategy).setTemplateForConsumer(templateForConsumer)
-				.setTemplateForSender(templateForSender).setApply(apply).setExecutor(configurationSupport.getExecutor())
-				.build();
+		return EventBus.builder().setStrategy(retryStrategy).setTemplateForConsumer(templateForConsumer)
+				.setTemplateForSender(templateForSender).setApply(apply).setExecutor(executor).build();
 	}
 }

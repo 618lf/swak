@@ -89,7 +89,7 @@ public class RabbitMQTemplate
 		this.metricsCollector = metricsCollector;
 		return this;
 	}
-	
+
 	public RabbitMQTemplate setConfirmCallback(ConfirmCallback confirmCallback) {
 		this.confirmCallback = confirmCallback;
 		return this;
@@ -367,7 +367,7 @@ public class RabbitMQTemplate
 	public interface ReturnCallback {
 		void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey);
 	}
-	
+
 	/**
 	 * 等待关闭
 	 */
