@@ -12,6 +12,12 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-motan</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.squareup</groupId>
+			<artifactId>javapoet</artifactId>
+			<version>${javapoet.version}</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

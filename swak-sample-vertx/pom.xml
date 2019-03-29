@@ -39,6 +39,12 @@
 			<artifactId>swak-redis</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.squareup</groupId>
+			<artifactId>javapoet</artifactId>
+			<version>${javapoet.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-test</artifactId>
 			<scope>test</scope>
