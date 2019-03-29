@@ -47,7 +47,9 @@ public class GoodsController {
 	 */
 	@GetMapping("/get")
 	public CompletableFuture<String> get(RoutingContext context) {
-		return goodsService.sayHello();
+		return goodsService.sayHello().thenApply(msg -> {
+			return msg.getResult();
+		});
 	}
 
 	/**
@@ -59,7 +61,9 @@ public class GoodsController {
 	@GetMapping("/get/:id")
 	public CompletableFuture<String> get(String id) {
 		System.out.println(id);
-		return goodsService.sayHello();
+		return goodsService.sayHello().thenApply(msg -> {
+			return msg.getResult();
+		});
 	}
 
 	/**
@@ -72,7 +76,9 @@ public class GoodsController {
 	public CompletableFuture<String> get(Goods goods) {
 		System.out.println("内部序列:" + goods.getId());
 		System.out.println("内部序列:" + goods.getName());
-		return goodsService.sayHello();
+		return goodsService.sayHello().thenApply(msg -> {
+			return msg.getResult();
+		});
 	}
 
 	/**

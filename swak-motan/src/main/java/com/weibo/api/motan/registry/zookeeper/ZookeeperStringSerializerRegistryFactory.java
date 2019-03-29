@@ -20,6 +20,7 @@ import com.weibo.api.motan.core.extension.SpiMeta;
 import org.I0Itec.zkclient.ZkClient;
 
 @SpiMeta(name = "zk")
+@Deprecated
 public class ZookeeperStringSerializerRegistryFactory extends ZookeeperRegistryFactory {
     @Override
     protected ZkClient createInnerZkClient(String zkServers, int sessionTimeout, int connectionTimeout) {
