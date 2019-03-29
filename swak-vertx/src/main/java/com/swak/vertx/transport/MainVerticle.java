@@ -98,7 +98,9 @@ public class MainVerticle extends AbstractVerticle {
 		
 		// 启动监听服务
 		List<Future<String>> futures = Lists.newArrayList();
-		DeploymentOptions options = new DeploymentOptions();
+		
+		// 以EventLoop 的方式发布
+		DeploymentOptions options = new DeploymentOptions().setWorker(false);
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
 			futures.add(Future.<String>future(s -> {

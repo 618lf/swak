@@ -13,6 +13,8 @@ import com.swak.utils.StringUtils;
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.VertxProperties;
 
+import io.vertx.core.DeploymentOptions;
+
 /**
  * 发布服务的一个入口
  * 
@@ -35,7 +37,12 @@ public class ReactiveServer implements Server {
 	public void start() throws ServerException {
 		this.annotation.getVertx().apply(vertx -> {
 			CompletableFuture<Void> startFuture = new CompletableFuture<>();
-			vertx.deployVerticle(mainVerticle, res -> {
+			
+			// 以worker 的方式发布
+			DeploymentOptions options = new DeploymentOptions().setWorker(true);
+			
+			// 发布启动 主服务
+			vertx.deployVerticle(mainVerticle, options, res -> {
 				if (res.succeeded()) {
 					startFuture.complete(null);
 				} else {
