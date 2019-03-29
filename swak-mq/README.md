@@ -6,7 +6,7 @@ rpm -Uvh rabbitmq-server-3.7.13-1.el7.noarch.rpm
 
 /usr/sbin/rabbitmq-server
 rabbitmq-server start
-rabbitmq-server -detached #后台运行
+rabbitmq-server -detached #后台运行(这个可行)
 rabbitmq-server stop
 rabbitmqctl status
 rabbitmqctl start_app
