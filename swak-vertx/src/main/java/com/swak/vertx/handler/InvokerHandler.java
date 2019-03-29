@@ -47,7 +47,7 @@ public class InvokerHandler implements InvocationHandler {
 		}
 
 		// 约定去掉后面的 Asyncx
-		return StringUtils.substringBeforeLast(address, Constants.ASYNC_SUFFIX);
+		return StringUtils.substringBeforeLast(address, Constants._ASYNC_SUFFIX);
 	}
 
 	private void initMethods() {
