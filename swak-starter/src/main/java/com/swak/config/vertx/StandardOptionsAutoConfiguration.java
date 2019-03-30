@@ -12,33 +12,36 @@ import io.vertx.core.eventbus.DeliveryOptions;
 
 /**
  * 基础的 options
+ * 
  * @author lifeng
  */
 @ConditionalOnMissingBean(VertxOptions.class)
 @EnableConfigurationProperties(VertxProperties.class)
 public class StandardOptionsAutoConfiguration {
-	
+
 	/**
 	 * 构建配置
+	 * 
 	 * @param properties
 	 * @return
 	 */
 	@Bean
 	public VertxOptions vertxOptions(VertxProperties properties) {
 		VertxOptions vertxOptions = new VertxOptions();
-
-		// pool config
 		if (properties.getMode() == TransportMode.EPOLL) {
 			vertxOptions.setPreferNativeTransport(true);
 		}
 		vertxOptions.setEventLoopPoolSize(properties.getEventLoopPoolSize());
 		vertxOptions.setWorkerPoolSize(properties.getWorkerThreads());
 		vertxOptions.setInternalBlockingPoolSize(properties.getInternalBlockingThreads());
+		vertxOptions.setMaxEventLoopExecuteTime(properties.getMaxEventLoopExecuteTime());
+		vertxOptions.setMaxWorkerExecuteTime(properties.getMaxWorkerExecuteTime());
 		return vertxOptions;
 	}
-	
+
 	/**
 	 * 构建配置
+	 * 
 	 * @param properties
 	 * @return
 	 */

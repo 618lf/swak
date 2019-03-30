@@ -8,7 +8,7 @@ import com.swak.Constants;
 import com.swak.reactivex.transport.TransportProperties;
 import com.swak.utils.Maps;
 
-import io.vertx.core.impl.cpu.CpuCoreSensor;
+import io.vertx.core.VertxOptions;
 
 /**
  * Vertx 的属性配置
@@ -20,11 +20,14 @@ public class VertxProperties extends TransportProperties {
 
 	private String host = null;
 	private int port = 8888;
-	private int eventLoopPoolSize = 2 * CpuCoreSensor.availableProcessors();
+	private int eventLoopPoolSize = VertxOptions.DEFAULT_EVENT_LOOP_POOL_SIZE;
 	private int internalBlockingThreads = 10;// vertx Blocking 内部使用
 	private int workerThreads = 10; // vertx Verticle 内部使用
 	private Map<String, Integer> workers = Maps.newHashMap(); // vertx Verticle 内部使用
 	private boolean metricAble = true;
+	private long maxEventLoopExecuteTime = VertxOptions.DEFAULT_MAX_EVENT_LOOP_EXECUTE_TIME;
+	private long maxWorkerExecuteTime = VertxOptions.DEFAULT_MAX_WORKER_EXECUTE_TIME;
+	
 	
 	// event bus 的超时时间默认
 	private int sendTimeout = 5 * 60 * 1000; // 5min
@@ -34,13 +37,6 @@ public class VertxProperties extends TransportProperties {
 	private int bodyLimit = -1; // 无限制
 	private boolean deleteUploadedFilesOnEnd = false; // 是否删除
 
-	// 集群配置
-	private boolean clusterable = false;
-	private String clusterHost = "127.0.0.1";
-	private int clusterPort = 8472;
-	private int clusterPingInterval = 1000;
-	private int clusterPingIntervalReply = 1000;
-	private String zookeeperHosts = "127.0.0.1";
 	private String rootPath = "io.vertx";
 	private int sessionTimeout = 20000;
 	private int connectTimeout = 3000;
@@ -50,16 +46,23 @@ public class VertxProperties extends TransportProperties {
 	private int retryIntervalTimes = 10000;
 	private int retryMaxTimes = 5;
 	
-	// 高可用
-	private boolean haEnabled = true;
-	private String haGroup = "_VERTX_GROUP_";
-	private int quorumSize = 1;
-	
 	// 授权
 	private String keyStorePath; // keyStore 的路径
 	private String keyStorePass = "secret"; // keyStore 的密码
 	private String jwtTokenName = "X-Token";
 
+	public long getMaxEventLoopExecuteTime() {
+		return maxEventLoopExecuteTime;
+	}
+	public long getMaxWorkerExecuteTime() {
+		return maxWorkerExecuteTime;
+	}
+	public void setMaxEventLoopExecuteTime(long maxEventLoopExecuteTime) {
+		this.maxEventLoopExecuteTime = maxEventLoopExecuteTime;
+	}
+	public void setMaxWorkerExecuteTime(long maxWorkerExecuteTime) {
+		this.maxWorkerExecuteTime = maxWorkerExecuteTime;
+	}
 	public String getUploadDirectory() {
 		return uploadDirectory;
 	}
@@ -137,60 +140,6 @@ public class VertxProperties extends TransportProperties {
 	}
 	public void setRetryMaxTimes(int retryMaxTimes) {
 		this.retryMaxTimes = retryMaxTimes;
-	}
-	public boolean isClusterable() {
-		return clusterable;
-	}
-	public void setClusterable(boolean clusterable) {
-		this.clusterable = clusterable;
-	}
-	public String getClusterHost() {
-		return clusterHost;
-	}
-	public void setClusterHost(String clusterHost) {
-		this.clusterHost = clusterHost;
-	}
-	public int getClusterPort() {
-		return clusterPort;
-	}
-	public void setClusterPort(int clusterPort) {
-		this.clusterPort = clusterPort;
-	}
-	public int getClusterPingInterval() {
-		return clusterPingInterval;
-	}
-	public void setClusterPingInterval(int clusterPingInterval) {
-		this.clusterPingInterval = clusterPingInterval;
-	}
-	public int getClusterPingIntervalReply() {
-		return clusterPingIntervalReply;
-	}
-	public void setClusterPingIntervalReply(int clusterPingIntervalReply) {
-		this.clusterPingIntervalReply = clusterPingIntervalReply;
-	}
-	public String getZookeeperHosts() {
-		return zookeeperHosts;
-	}
-	public void setZookeeperHosts(String zookeeperHosts) {
-		this.zookeeperHosts = zookeeperHosts;
-	}
-	public boolean isHaEnabled() {
-		return haEnabled;
-	}
-	public void setHaEnabled(boolean haEnabled) {
-		this.haEnabled = haEnabled;
-	}
-	public String getHaGroup() {
-		return haGroup;
-	}
-	public void setHaGroup(String haGroup) {
-		this.haGroup = haGroup;
-	}
-	public int getQuorumSize() {
-		return quorumSize;
-	}
-	public void setQuorumSize(int quorumSize) {
-		this.quorumSize = quorumSize;
 	}
 	public String getHost() {
 		return host;
