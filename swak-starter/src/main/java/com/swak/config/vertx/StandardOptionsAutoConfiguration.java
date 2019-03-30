@@ -31,6 +31,7 @@ public class StandardOptionsAutoConfiguration {
 		if (properties.getMode() == TransportMode.EPOLL) {
 			vertxOptions.setPreferNativeTransport(true);
 		}
+		System.setProperty("vertx.disableWebsockets", Boolean.TRUE.toString());
 		vertxOptions.setEventLoopPoolSize(properties.getEventLoopPoolSize());
 		vertxOptions.setWorkerPoolSize(properties.getWorkerThreads());
 		vertxOptions.setInternalBlockingPoolSize(properties.getInternalBlockingThreads());
