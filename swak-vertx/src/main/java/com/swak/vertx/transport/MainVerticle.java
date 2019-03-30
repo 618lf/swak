@@ -89,22 +89,23 @@ public class MainVerticle extends AbstractVerticle {
 
 	// 发布为Http 服务
 	private List<Future<String>> startHttp(ServiceBean service) {
-		
+
 		// Router 处理器
-		RouterHandler routerHandler = (RouterHandler)service.getService();
-		
+		RouterHandler routerHandler = (RouterHandler) service.getService();
+
 		// 初始化 router
 		routerHandler.initRouter(vertx, annotation);
-		
+
 		// 启动监听服务
 		List<Future<String>> futures = Lists.newArrayList();
-		
+
 		// 以EventLoop 的方式发布
 		DeploymentOptions options = new DeploymentOptions().setWorker(false);
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
 			futures.add(Future.<String>future(s -> {
-				vertx.deployVerticle(new HttpVerticle(routerHandler, properties.getHost(), properties.getPort()), options, s);
+				vertx.deployVerticle(new HttpVerticle(routerHandler, properties.getHost(), properties.getPort()),
+						options, s);
 			}));
 		}
 		return futures;
@@ -119,16 +120,16 @@ public class MainVerticle extends AbstractVerticle {
 		// 以worker 的方式发布
 		DeploymentOptions options = new DeploymentOptions().setWorker(true);
 
-		// 设置了运行的线程池
+		// 设置了运行的线程池(如果没有配置则，默认只有一个)
 		String usePool = service.getUse_pool();
 		Integer poolSize = properties.getWorkers().get(usePool);
-		if (StringUtils.isNotBlank(usePool) && poolSize != null && poolSize > 0) {
-			options.setWorkerPoolName(HttpConst.workerPrex + usePool);
-			options.setWorkerPoolSize(poolSize);
+		if (StringUtils.isNotBlank(usePool)) {
+			options.setWorkerPoolName("vert.x-worker-" + usePool + "-thread");
+			options.setWorkerPoolSize(poolSize == null ? 1 : poolSize);
 		} else {
 			options.setWorkerPoolSize(properties.getWorkerThreads());
 		}
-		
+
 		// 配置发布多个服务
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
@@ -138,9 +139,10 @@ public class MainVerticle extends AbstractVerticle {
 		}
 		return futures;
 	}
-	
+
 	/**
 	 * 获得发布个数
+	 * 
 	 * @return
 	 */
 	private int getDeploymentIntstances(ServiceBean service) {
