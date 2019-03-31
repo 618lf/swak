@@ -1,4 +1,4 @@
-package com.swak.vertx.transport;
+package com.swak.vertx.transport.server;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -12,6 +12,7 @@ import com.swak.reactivex.context.ServerException;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.VertxProperties;
+import com.swak.vertx.transport.MainVerticle;
 
 import io.vertx.core.DeploymentOptions;
 

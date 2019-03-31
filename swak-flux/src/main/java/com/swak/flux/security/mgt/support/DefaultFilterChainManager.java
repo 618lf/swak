@@ -17,7 +17,7 @@ import com.swak.flux.security.filter.authc.UserFilter;
 import com.swak.flux.security.filter.authz.PermissionsAuthorizationFilter;
 import com.swak.flux.security.filter.authz.RolesAuthorizationFilter;
 import com.swak.flux.security.mgt.FilterChainManager;
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerRequest;
 import com.swak.flux.web.method.pattern.PathMatcherHelper;
 import com.swak.utils.CharSequenceUtils;
 import com.swak.utils.StringUtils;

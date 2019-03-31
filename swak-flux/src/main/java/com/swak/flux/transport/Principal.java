@@ -1,4 +1,4 @@
-package com.swak.flux.transport.http;
+package com.swak.flux.transport;
 
 import java.io.Externalizable;
 import java.io.IOException;

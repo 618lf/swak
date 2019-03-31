@@ -18,7 +18,7 @@ import com.swak.vertx.handler.converter.StreamMessageConverter;
 import com.swak.vertx.handler.converter.StringHttpMessageConverter;
 import com.swak.vertx.handler.formatter.DateFormatter;
 import com.swak.vertx.handler.formatter.StringEscapeFormatter;
-import com.swak.vertx.transport.ReactiveServer;
+import com.swak.vertx.transport.server.ReactiveServer;
 
 /**
  * 路由配置

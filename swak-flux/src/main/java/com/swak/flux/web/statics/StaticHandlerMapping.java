@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.springframework.core.Ordered;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerRequest;
 import com.swak.flux.web.Handler;
 import com.swak.flux.web.HandlerMapping;
 

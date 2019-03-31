@@ -2,7 +2,7 @@ package com.swak.flux.web.interceptor;
 
 import org.springframework.util.PathMatcher;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerRequest;
 import com.swak.flux.web.method.pattern.PathMatcherHelper;
 import com.swak.flux.web.method.pattern.UrlPathHelper;
 

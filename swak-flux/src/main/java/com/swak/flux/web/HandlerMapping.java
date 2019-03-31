@@ -2,7 +2,7 @@ package com.swak.flux.web;
 
 import java.io.Closeable;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerRequest;
 
 /**
  * 根据请求获取Handler的执行链

@@ -8,8 +8,8 @@ import com.swak.cache.AsyncCache;
 import com.swak.cache.Cache;
 import com.swak.cache.CacheManager;
 import com.swak.flux.security.context.AuthorizationInfo;
-import com.swak.flux.transport.http.Principal;
-import com.swak.flux.transport.http.Subject;
+import com.swak.flux.transport.Principal;
+import com.swak.flux.transport.Subject;
 
 /**
  * 提供缓存的支持

@@ -1,4 +1,4 @@
-package com.swak.flux.transport.http.server;
+package com.swak.flux.transport.server;
 
 import java.io.Closeable;
 import java.io.IOException;

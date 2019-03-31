@@ -1,9 +1,9 @@
-package com.swak.flux.transport.http.multipart;
+package com.swak.flux.transport.multipart;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.swak.flux.transport.http.HttpConst;
+import com.swak.flux.transport.HttpConst;
 import com.swak.utils.StringUtils;
 
 /**

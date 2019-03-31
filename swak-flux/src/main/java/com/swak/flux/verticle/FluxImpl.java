@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.swak.closable.ShutDownHook;
-import com.swak.flux.transport.http.server.HttpServerProperties;
+import com.swak.flux.transport.server.HttpServerProperties;
 import com.swak.reactivex.transport.resources.EventLoopFactory;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;

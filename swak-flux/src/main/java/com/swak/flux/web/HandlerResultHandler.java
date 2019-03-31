@@ -1,7 +1,7 @@
 package com.swak.flux.web;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerResponse;
 import com.swak.flux.web.converter.HttpMessageConverter;
 
 import reactor.core.publisher.Mono;

@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.core.annotation.AnnotationUtils;
 
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.server.HttpServerResponse;
 import com.swak.utils.JaxbMapper;
 
 /**

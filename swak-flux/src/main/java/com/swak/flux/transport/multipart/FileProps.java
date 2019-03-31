@@ -1,4 +1,4 @@
-package com.swak.flux.transport.http.multipart;
+package com.swak.flux.transport.multipart;
 
 import java.io.Closeable;
 import java.io.File;

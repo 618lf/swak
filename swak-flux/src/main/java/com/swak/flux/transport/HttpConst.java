@@ -1,9 +1,9 @@
-package com.swak.flux.transport.http;
+package com.swak.flux.transport;
 
 import java.nio.charset.Charset;
 
-import com.swak.flux.transport.http.multipart.MimeType;
-import com.swak.flux.transport.http.server.ResponseStatusException;
+import com.swak.flux.transport.multipart.MimeType;
+import com.swak.flux.transport.server.ResponseStatusException;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.AsciiString;

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.springframework.core.convert.ConversionService;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerRequest;
 import com.swak.flux.web.annotation.PathVariable;
 import com.swak.flux.web.method.MethodParameter;
 import com.swak.utils.StringUtils;

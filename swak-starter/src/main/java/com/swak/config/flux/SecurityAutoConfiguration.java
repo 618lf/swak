@@ -23,8 +23,8 @@ import com.swak.flux.security.mgt.support.DefaultFilterChainManager;
 import com.swak.flux.security.mgt.support.DefaultSecurityManager;
 import com.swak.flux.security.principal.PrincipalStrategy;
 import com.swak.flux.security.principal.TokenPrincipalStrategy;
-import com.swak.flux.transport.http.server.HttpServerProperties;
-import com.swak.flux.transport.http.server.ReactiveServer;
+import com.swak.flux.transport.server.HttpServerProperties;
+import com.swak.flux.transport.server.ReactiveServer;
 import com.swak.security.JwtAuthProvider;
 
 /**

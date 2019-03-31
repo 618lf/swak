@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Import;
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.handler.VertxHandler;
-import com.swak.vertx.transport.ReactiveServer;
+import com.swak.vertx.transport.server.ReactiveServer;
 
 /**
  * vertx 服务器配置

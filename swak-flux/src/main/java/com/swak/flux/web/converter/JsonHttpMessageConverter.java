@@ -2,7 +2,7 @@ package com.swak.flux.web.converter;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.server.HttpServerResponse;
 import com.swak.utils.JsonMapper;
 
 /**

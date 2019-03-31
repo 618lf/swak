@@ -3,8 +3,8 @@ package com.swak.flux.handler;
 import java.util.Arrays;
 import java.util.List;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerResponse;
 
 import reactor.core.publisher.Mono;
 

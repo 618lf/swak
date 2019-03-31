@@ -3,7 +3,7 @@ package com.swak.flux.web;
 import java.util.List;
 import java.util.Map;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerRequest;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;

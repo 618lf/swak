@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Configuration;
 
 import com.swak.flux.config.AnnotationBean;
 import com.swak.flux.handler.HttpHandler;
-import com.swak.flux.transport.http.server.HttpServer;
-import com.swak.flux.transport.http.server.HttpServerProperties;
-import com.swak.flux.transport.http.server.ReactiveServer;
+import com.swak.flux.transport.server.HttpServer;
+import com.swak.flux.transport.server.HttpServerProperties;
+import com.swak.flux.transport.server.ReactiveServer;
 import com.swak.flux.verticle.Flux;
 import com.swak.flux.verticle.FluxImpl;
 

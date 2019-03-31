@@ -3,8 +3,8 @@ package com.swak.actuator.trace;
 import java.time.Instant;
 import java.util.Map;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerResponse;
 
 /**
  * http trace

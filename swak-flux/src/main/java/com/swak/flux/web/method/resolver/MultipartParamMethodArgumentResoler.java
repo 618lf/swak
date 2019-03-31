@@ -4,8 +4,8 @@ import java.util.Map;
 
 import org.springframework.core.convert.ConversionService;
 
-import com.swak.flux.transport.http.multipart.MultipartFile;
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.multipart.MultipartFile;
+import com.swak.flux.transport.server.HttpServerRequest;
 import com.swak.flux.web.annotation.MultipartParam;
 import com.swak.flux.web.method.MethodParameter;
 

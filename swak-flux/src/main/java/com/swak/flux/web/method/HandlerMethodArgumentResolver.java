@@ -1,6 +1,6 @@
 package com.swak.flux.web.method;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerRequest;
 
 /**
  * 实现参数的自动绑定

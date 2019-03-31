@@ -1,5 +1,6 @@
 package com.tmt.shop.service;
 
+import com.swak.flux.verticle.annotation.FluxService;
 import com.tmt.shop.entity.Foo;
 import com.weibo.api.motan.config.springsupport.annotation.MotanService;
 
@@ -8,6 +9,7 @@ import com.weibo.api.motan.config.springsupport.annotation.MotanService;
  * @author lifeng
  */
 @MotanService
+@FluxService
 public class FooServiceImpl implements FooService {
 
 	@Override

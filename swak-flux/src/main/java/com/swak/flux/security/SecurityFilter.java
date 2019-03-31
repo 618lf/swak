@@ -6,9 +6,9 @@ import com.swak.flux.handler.WebFilter;
 import com.swak.flux.handler.WebFilterChain;
 import com.swak.flux.security.mgt.FilterChainManager;
 import com.swak.flux.security.mgt.SecurityManager;
-import com.swak.flux.transport.http.Subject;
-import com.swak.flux.transport.http.server.HttpServerRequest;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.Subject;
+import com.swak.flux.transport.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerResponse;
 
 import reactor.core.publisher.Mono;
 

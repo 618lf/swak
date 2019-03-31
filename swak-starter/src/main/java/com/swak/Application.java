@@ -31,8 +31,8 @@ public class Application extends SpringApplication {
 	/**
 	 * 是否是 WEB 环境
 	 */
-	private static final String REACTIVE_FLUX_ENVIRONMENT_CLASS = "com.swak.reactivex.transport.http.server.ReactiveServer";
-	private static final String REACTIVE_VERT_ENVIRONMENT_CLASS = "com.swak.vertx.transport.ReactiveServer";
+	private static final String REACTIVE_FLUX_ENVIRONMENT_CLASS = "com.swak.flux.transport.server.ReactiveServer";
+	private static final String REACTIVE_VERT_ENVIRONMENT_CLASS = "com.swak.vertx.transport.server.ReactiveServer";
 
 	/**
 	 * 全局的 context

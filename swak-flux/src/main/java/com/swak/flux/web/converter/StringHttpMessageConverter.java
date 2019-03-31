@@ -1,7 +1,7 @@
 package com.swak.flux.web.converter;
 
 import com.swak.Constants;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.server.HttpServerResponse;
 import com.swak.utils.StringUtils;
 
 import io.netty.handler.codec.http.HttpHeaderNames;

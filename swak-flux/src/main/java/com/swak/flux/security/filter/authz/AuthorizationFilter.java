@@ -2,8 +2,8 @@ package com.swak.flux.security.filter.authz;
 
 import com.swak.exception.ErrorCode;
 import com.swak.flux.security.filter.AccessControllerFilter;
-import com.swak.flux.transport.http.server.HttpServerRequest;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerResponse;
 import com.swak.flux.web.Result;
 
 import io.netty.handler.codec.http.HttpResponseStatus;

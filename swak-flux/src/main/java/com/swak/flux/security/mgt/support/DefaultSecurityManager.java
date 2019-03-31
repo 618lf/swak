@@ -11,10 +11,10 @@ import com.swak.flux.security.exception.AuthenticationException;
 import com.swak.flux.security.mgt.SecurityManager;
 import com.swak.flux.security.principal.PrincipalStrategy;
 import com.swak.flux.security.realm.Realm;
-import com.swak.flux.transport.http.Principal;
-import com.swak.flux.transport.http.Subject;
-import com.swak.flux.transport.http.server.HttpServerRequest;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.Principal;
+import com.swak.flux.transport.Subject;
+import com.swak.flux.transport.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerResponse;
 
 import reactor.core.publisher.Mono;
 

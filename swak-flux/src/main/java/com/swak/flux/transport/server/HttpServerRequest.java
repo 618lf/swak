@@ -1,4 +1,4 @@
-package com.swak.flux.transport.http.server;
+package com.swak.flux.transport.server;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -7,9 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.swak.flux.transport.http.Subject;
-import com.swak.flux.transport.http.multipart.FileProps;
-import com.swak.flux.transport.http.multipart.MultipartFile;
+import com.swak.flux.transport.Subject;
+import com.swak.flux.transport.multipart.FileProps;
+import com.swak.flux.transport.multipart.MultipartFile;
 import com.swak.reactivex.transport.NettyInbound;
 
 import io.netty.handler.codec.http.HttpMethod;

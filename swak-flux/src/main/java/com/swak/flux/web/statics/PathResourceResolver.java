@@ -12,7 +12,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.StringUtils;
 
-import com.swak.flux.transport.http.HttpConst;
+import com.swak.flux.transport.HttpConst;
 
 import reactor.core.publisher.Mono;
 

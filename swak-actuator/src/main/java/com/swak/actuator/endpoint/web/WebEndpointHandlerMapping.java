@@ -10,7 +10,7 @@ import org.springframework.core.Ordered;
 
 import com.swak.Constants;
 import com.swak.actuator.endpoint.InvocationContext;
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerRequest;
 import com.swak.flux.web.annotation.RequestMethod;
 import com.swak.flux.web.method.AbstractRequestMappingHandlerMapping;
 import com.swak.flux.web.method.RequestMappingInfo;

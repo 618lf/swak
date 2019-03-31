@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerRequest;
 
 public abstract class UrlPathHelper {
 

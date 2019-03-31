@@ -1,7 +1,7 @@
 package com.swak.flux.web.function;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerResponse;
 import com.swak.flux.web.Handler;
 import com.swak.flux.web.HandlerAdapter;
 

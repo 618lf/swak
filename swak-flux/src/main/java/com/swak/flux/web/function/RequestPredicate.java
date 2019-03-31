@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.util.Assert;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerRequest;
 
 /**
  * 请求的条件匹配

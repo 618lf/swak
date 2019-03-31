@@ -7,8 +7,8 @@ import java.util.function.Function;
 
 import org.springframework.util.Assert;
 
-import com.swak.flux.transport.http.HttpConst;
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.HttpConst;
+import com.swak.flux.transport.server.HttpServerRequest;
 import com.swak.flux.web.function.pattern.PathContainer;
 import com.swak.flux.web.function.pattern.PathPattern;
 import com.swak.flux.web.function.pattern.PathPatternParser;

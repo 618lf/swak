@@ -8,9 +8,9 @@ import com.swak.cache.AsyncCache;
 import com.swak.cache.CacheManagers;
 import com.swak.codec.Encodes;
 import com.swak.flux.security.web.token.TokenProvider;
-import com.swak.flux.transport.http.SimpleCookie;
-import com.swak.flux.transport.http.server.HttpServerRequest;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.SimpleCookie;
+import com.swak.flux.transport.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerResponse;
 import com.swak.utils.StringUtils;
 
 import io.netty.handler.codec.http.cookie.Cookie;

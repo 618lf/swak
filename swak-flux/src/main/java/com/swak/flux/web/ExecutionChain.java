@@ -2,8 +2,8 @@ package com.swak.flux.web;
 
 import java.util.List;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerResponse;
 import com.swak.flux.web.interceptor.HandlerInterceptor;
 
 import reactor.core.publisher.Mono;

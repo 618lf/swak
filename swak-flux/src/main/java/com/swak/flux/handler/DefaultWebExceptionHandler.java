@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.swak.exception.ErrorCode;
-import com.swak.flux.transport.http.server.HttpServerRequest;
-import com.swak.flux.transport.http.server.HttpServerResponse;
-import com.swak.flux.transport.http.server.ResponseStatusException;
+import com.swak.flux.transport.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerResponse;
+import com.swak.flux.transport.server.ResponseStatusException;
 
 import reactor.core.publisher.Mono;
 

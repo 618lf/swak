@@ -3,9 +3,9 @@ package com.swak.flux.web;
 import java.util.List;
 
 import com.swak.flux.handler.WebHandler;
-import com.swak.flux.transport.http.HttpConst;
-import com.swak.flux.transport.http.server.HttpServerRequest;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.HttpConst;
+import com.swak.flux.transport.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerResponse;
 import com.swak.flux.web.interceptor.HandlerInterceptor;
 import com.swak.flux.web.interceptor.MappedInterceptor;
 

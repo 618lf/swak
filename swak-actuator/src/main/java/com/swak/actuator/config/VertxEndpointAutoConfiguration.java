@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import com.swak.actuator.endpoint.web.WebEndpointHandlerRouter;
 import com.swak.actuator.endpoint.web.WebEndpointsSupplier;
 import com.swak.vertx.handler.HandlerAdapter;
-import com.swak.vertx.transport.ReactiveServer;
+import com.swak.vertx.transport.server.ReactiveServer;
 
 
 /**

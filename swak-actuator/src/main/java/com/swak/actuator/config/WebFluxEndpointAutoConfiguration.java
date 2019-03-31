@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.swak.actuator.endpoint.web.WebEndpointHandlerMapping;
 import com.swak.actuator.endpoint.web.WebEndpointsSupplier;
-import com.swak.flux.transport.http.server.ReactiveServer;
+import com.swak.flux.transport.server.ReactiveServer;
 
 /**
  * 将 endpoint 映射为 url。

@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.swak.flux.handler.WebFilter;
 import com.swak.flux.handler.WebFilterChain;
-import com.swak.flux.transport.http.server.HttpServerRequest;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerResponse;
 
 import reactor.core.publisher.Mono;
 

@@ -2,7 +2,7 @@ package com.swak.flux.web.converter;
 
 import java.io.IOException;
 
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.server.HttpServerResponse;
 
 /**
  * 消息转换器

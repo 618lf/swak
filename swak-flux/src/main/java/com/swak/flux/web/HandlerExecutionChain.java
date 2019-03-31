@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.util.ObjectUtils;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
-import com.swak.flux.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerResponse;
 import com.swak.flux.web.interceptor.HandlerInterceptor;
 import com.swak.reactor.publisher.MonoTrue;
 import com.swak.utils.Lists;

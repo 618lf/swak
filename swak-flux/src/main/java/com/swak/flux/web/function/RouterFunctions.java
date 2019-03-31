@@ -2,7 +2,7 @@ package com.swak.flux.web.function;
 
 import org.springframework.util.Assert;
 
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.server.HttpServerRequest;
 
 /**
  * 构建 RouterFunction 的入口

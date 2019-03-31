@@ -2,8 +2,8 @@ package com.swak.actuator.metrics.web;
 
 import org.springframework.util.StringUtils;
 
-import com.swak.flux.transport.http.HttpConst;
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.HttpConst;
+import com.swak.flux.transport.server.HttpServerRequest;
 import com.swak.flux.web.HandlerMapping;
 
 import io.micrometer.core.instrument.Tag;

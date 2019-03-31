@@ -11,9 +11,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import com.swak.Constants;
-import com.swak.flux.transport.http.HttpConst;
-import com.swak.flux.transport.http.multipart.FileProps;
-import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.HttpConst;
+import com.swak.flux.transport.multipart.FileProps;
+import com.swak.flux.transport.server.HttpServerRequest;
 import com.swak.flux.web.Handler;
 import com.swak.utils.Sets;
 import com.swak.utils.StringUtils;
