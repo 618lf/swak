@@ -20,7 +20,7 @@
 			<groupId>com.squareup</groupId>
 			<artifactId>javapoet</artifactId>
 			<version>${javapoet.version}</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<build>

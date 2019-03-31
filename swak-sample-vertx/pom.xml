@@ -42,7 +42,7 @@
 			<groupId>com.squareup</groupId>
 			<artifactId>javapoet</artifactId>
 			<version>${javapoet.version}</version>
-			<scope>compile</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>

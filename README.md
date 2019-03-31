@@ -125,3 +125,4 @@ https://yq.aliyun.com/articles/591627
 http://throwable.coding.me/2018/11/17/jvm-micrometer-prometheus/
 
 核心服务不能设置为后台进程，需要能关闭
+关于 javapoet 自动生成异步接口，先maven clean。然后mvn compile来生成代码， scope 至少为 provided。
