@@ -14,7 +14,12 @@ public class FooServiceImpl implements FooService {
 
 	@Override
 	public String hello(String name) {
-		System.out.println(name);
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println("当前执行的线程1: " + Thread.currentThread().getName());
 		return "Hello " + name + "!";
 	}
 

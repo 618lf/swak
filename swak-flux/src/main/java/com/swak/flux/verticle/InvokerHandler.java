@@ -3,6 +3,7 @@ package com.swak.flux.verticle;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
+import com.swak.Constants;
 import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.exception.BaseRuntimeException;
@@ -37,7 +38,7 @@ public class InvokerHandler implements InvocationHandler {
 		}
 
 		// 约定去掉后面的 Asyncx
-		return StringUtils.substringBeforeLast(address, "Async");
+		return StringUtils.substringBeforeLast(address, Constants.ASYNC_SUFFIX);
 	}
 
 	private void initMethods() {
@@ -59,7 +60,6 @@ public class InvokerHandler implements InvocationHandler {
 
 		// 发送消息，处理相应结果
 		return flux.sendMessage(this.address, request, meta.getTimeOut()).thenApply(res -> {
-
 			// 约定的通讯协议
 			Msg result = (Msg) res;
 

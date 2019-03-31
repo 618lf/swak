@@ -73,9 +73,10 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 	protected Object refer(FluxReferer reference, Class<?> interfaceType) {
 		Object referenceBean = references.get(interfaceType.getName());
 		if (referenceBean == null) {
-			references.put(interfaceType.getName(), newRefer(interfaceType));
+			referenceBean = newRefer(interfaceType);
+			references.put(interfaceType.getName(), referenceBean);
 		}
-		return referenceBean;
+		return referenceBean; 
 	}
 
 	private Object newRefer(Class<?> interfaceType) {
