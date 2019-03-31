@@ -23,11 +23,13 @@ import com.swak.utils.StringUtils;
  */
 public class FluxImpl implements Flux {
 
+	private final HttpServerProperties properties;
 	private ExecutorService workerPool;
 	private Map<String, ExecutorService> shardWorkPools;
 	private Map<String, Deployment> deployments;
 
 	public FluxImpl(HttpServerProperties properties) {
+		this.properties = properties;
 		shardWorkPools = Maps.newHashMap();
 		deployments = Maps.newHashMap();
 		workerPool = Executors.newFixedThreadPool(properties.getWorkerThreads(),
@@ -103,7 +105,10 @@ public class FluxImpl implements Flux {
 		if (!(options == null || StringUtils.isBlank(options.getWorkPoolName()))) {
 			executor = shardWorkPools.get(options.getWorkPoolName());
 			if (executor == null) {
-				executor = createShardWorkPool(options.getWorkPoolName(), options.getWorkPoolSize());
+				Integer workPoolSize = this.properties.getWorkers() != null
+						? this.properties.getWorkers().get(options.getWorkPoolName())
+						: 1;
+				executor = createShardWorkPool(options.getWorkPoolName(), workPoolSize);
 			}
 		}
 		Deployment deployment = new Deployment(verticle, executor);
@@ -118,7 +123,6 @@ public class FluxImpl implements Flux {
 	public static class DeploymentOptions implements Serializable {
 		private static final long serialVersionUID = 1L;
 		private String workPoolName;
-		private Integer workPoolSize;
 
 		public String getWorkPoolName() {
 			return workPoolName;
@@ -126,14 +130,6 @@ public class FluxImpl implements Flux {
 
 		public void setWorkPoolName(String workPoolName) {
 			this.workPoolName = workPoolName;
-		}
-
-		public Integer getWorkPoolSize() {
-			return workPoolSize;
-		}
-
-		public void setWorkPoolSize(Integer workPoolSize) {
-			this.workPoolSize = workPoolSize;
 		}
 	}
 

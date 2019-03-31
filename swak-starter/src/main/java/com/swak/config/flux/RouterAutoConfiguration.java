@@ -6,10 +6,13 @@ import java.util.List;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.FormatterRegistry;
@@ -17,6 +20,9 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.lang.Nullable;
 
+import com.swak.config.freemarker.FreeMarkerAutoConfiguration;
+import com.swak.config.jdbc.DataSourceAutoConfiguration;
+import com.swak.config.jdbc.DataSourceTransactionManagerConfiguration;
 import com.swak.exception.BaseRuntimeException;
 import com.swak.flux.handler.DefaultWebExceptionHandler;
 import com.swak.flux.handler.ExceptionHandlingWebHandler;
@@ -26,6 +32,7 @@ import com.swak.flux.handler.WebExceptionHandler;
 import com.swak.flux.handler.WebFilter;
 import com.swak.flux.handler.WebHandler;
 import com.swak.flux.transport.http.server.HttpServerProperties;
+import com.swak.flux.transport.http.server.ReactiveServer;
 import com.swak.flux.web.DispatcherHandler;
 import com.swak.flux.web.HandlerAdapter;
 import com.swak.flux.web.HandlerMapping;
@@ -49,12 +56,16 @@ import com.swak.freemarker.FreeMarkerConfigurer;
 import com.swak.utils.Lists;
 
 /**
- * web 相关的服务配置
+ * Web 服务配置
  * 
  * @author lifeng
  */
-public class WebConfigurationSupport implements ApplicationContextAware {
-
+@Configuration
+@ConditionalOnClass(ReactiveServer.class)
+@AutoConfigureAfter({ FreeMarkerAutoConfiguration.class, SecurityAutoConfiguration.class,
+		DataSourceAutoConfiguration.class, DataSourceTransactionManagerConfiguration.class })
+public class RouterAutoConfiguration implements ApplicationContextAware {
+	
 	@Nullable
 	private ApplicationContext applicationContext;
 

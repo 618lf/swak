@@ -2,19 +2,19 @@ package com.swak.config.flux;
 
 import static com.swak.Application.APP_LOGGER;
 
-import java.net.Socket;
-
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.swak.Constants;
+import com.swak.flux.config.AnnotationBean;
 import com.swak.flux.handler.HttpHandler;
 import com.swak.flux.transport.http.server.HttpServer;
 import com.swak.flux.transport.http.server.HttpServerProperties;
 import com.swak.flux.transport.http.server.ReactiveServer;
+import com.swak.flux.verticle.Flux;
+import com.swak.flux.verticle.FluxImpl;
 
 import io.netty.handler.codec.http.multipart.DiskFileUpload;
 
@@ -26,20 +26,34 @@ import io.netty.handler.codec.http.multipart.DiskFileUpload;
 @Configuration
 @ConditionalOnClass(ReactiveServer.class)
 @EnableConfigurationProperties(HttpServerProperties.class)
-@AutoConfigureAfter({ WebHandlerAutoConfiguration.class })
-public class HttpServerAutoConfiguration {
+@AutoConfigureAfter({ RouterAutoConfiguration.class })
+public class FluxAutoConfiguration {
 
 	private HttpServerProperties properties;
 
-	/**
-	 * 端口占用检测
-	 * 
-	 * @param properties
-	 */
-	public HttpServerAutoConfiguration(HttpServerProperties properties) {
+	public FluxAutoConfiguration(HttpServerProperties properties) {
 		this.properties = properties;
-		this.adaptablePort();
-		APP_LOGGER.debug("Loading Web Flux");
+		APP_LOGGER.debug("Loading Flux");
+	}
+
+	/**
+	 * webFlux 配置
+	 * 
+	 * @return
+	 */
+	@Bean
+	public Flux flux() {
+		return new FluxImpl(properties);
+	}
+
+	/**
+	 * 服务加载器
+	 * 
+	 * @return
+	 */
+	@Bean
+	public AnnotationBean annotationBean(Flux flux) {
+		return new AnnotationBean(flux);
 	}
 
 	/**
@@ -68,32 +82,5 @@ public class HttpServerAutoConfiguration {
 		// 真实的服务器，用于提供 http 服务
 		HttpServer httpServer = HttpServer.build(properties);
 		return new ReactiveServer(httpServer, handler);
-	}
-
-	/**
-	 * 适配端口
-	 */
-	private void adaptablePort() {
-		int port = properties.getPort();
-		if (port == -1) {
-			int startPort = 80;
-			while (!useable(startPort)) {
-				startPort++;
-			}
-			properties.setPort(startPort);
-		} else if (!useable(port)) {
-			throw new RuntimeException("端口占用");
-		}
-	}
-
-	// 校验是否可以用
-	private boolean useable(int port) {
-		try {
-			Socket socket = new Socket(Constants.LOCALHOST, port);
-			socket.close();
-			return false;
-		} catch (Exception e) {
-			return true;
-		}
 	}
 }

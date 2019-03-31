@@ -16,8 +16,8 @@ com.swak.config.freemarker.FreeMarkerAutoConfiguration,\
 com.swak.config.mq.RabbitMqAutoConfiguration,\
 com.swak.config.motan.MotanAutoConfiguration,\
 com.swak.config.motan.MotanCommandLineRunner,\
+com.swak.config.flux.FluxAutoConfiguration,\
 com.swak.config.flux.SecurityAutoConfiguration,\
-com.swak.config.flux.WebHandlerAutoConfiguration,\
-com.swak.config.flux.HttpServerAutoConfiguration,\
+com.swak.config.flux.RouterAutoConfiguration,\
 com.swak.config.vertx.VertxAutoConfiguration,\
 com.swak.config.vertx.RouterAutoConfiguration
