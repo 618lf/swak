@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import com.swak.config.freemarker.FreeMarkerAutoConfiguration;
 import com.swak.config.jdbc.DataSourceAutoConfiguration;
 import com.swak.config.jdbc.DataSourceTransactionManagerConfiguration;
-import com.swak.reactivex.transport.http.server.ReactiveServer;
+import com.swak.flux.transport.http.server.ReactiveServer;
 
 /**
  * Web 服务配置

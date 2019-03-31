@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.swak.test.ApplicationTest;
-import com.swak.vertx.annotation.ServiceReferer;
+import com.swak.vertx.annotation.VertxReferer;
 import com.tmt.api.facade.GoodsServiceFacadeAsyncx;
 
 /**
@@ -17,7 +17,7 @@ import com.tmt.api.facade.GoodsServiceFacadeAsyncx;
 @ApplicationTest
 public class AppRunnerTest {
 	
-	@ServiceReferer
+	@VertxReferer
 	private GoodsServiceFacadeAsyncx goodsService;
 	
 	@Test

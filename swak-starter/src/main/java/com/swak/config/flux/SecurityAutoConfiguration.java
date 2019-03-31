@@ -14,18 +14,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
 
 import com.swak.Constants;
-import com.swak.reactivex.handler.WebFilter;
-import com.swak.reactivex.transport.http.server.HttpServerProperties;
-import com.swak.reactivex.transport.http.server.ReactiveServer;
+import com.swak.flux.handler.WebFilter;
+import com.swak.flux.security.SecurityFilter;
+import com.swak.flux.security.SecurityUtils;
+import com.swak.flux.security.mgt.FilterChainManager;
+import com.swak.flux.security.mgt.SecurityManager;
+import com.swak.flux.security.mgt.support.DefaultFilterChainManager;
+import com.swak.flux.security.mgt.support.DefaultSecurityManager;
+import com.swak.flux.security.principal.PrincipalStrategy;
+import com.swak.flux.security.principal.TokenPrincipalStrategy;
+import com.swak.flux.transport.http.server.HttpServerProperties;
+import com.swak.flux.transport.http.server.ReactiveServer;
 import com.swak.security.JwtAuthProvider;
-import com.swak.security.SecurityFilter;
-import com.swak.security.SecurityUtils;
-import com.swak.security.mgt.FilterChainManager;
-import com.swak.security.mgt.SecurityManager;
-import com.swak.security.mgt.support.DefaultFilterChainManager;
-import com.swak.security.mgt.support.DefaultSecurityManager;
-import com.swak.security.principal.PrincipalStrategy;
-import com.swak.security.principal.TokenPrincipalStrategy;
 
 /**
  * 安全配置

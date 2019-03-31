@@ -74,4 +74,9 @@ public interface Constants {
 	default String temp() {
 		return System.getProperty("java.io.tmpdir");
 	}
+	
+	String SUBJECT_NAME = "X-Subject";
+	String TOKEN_NAME = "X-Token";
+	String ASYNC_SUFFIX = "Asyncx";
+	String _ASYNC_SUFFIX = "Async";
 }

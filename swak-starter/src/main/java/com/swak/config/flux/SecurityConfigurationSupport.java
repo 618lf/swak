@@ -2,8 +2,8 @@ package com.swak.config.flux;
 
 import java.util.Map;
 
-import com.swak.reactivex.handler.WebFilter;
-import com.swak.security.realm.Realm;
+import com.swak.flux.handler.WebFilter;
+import com.swak.flux.security.realm.Realm;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 

@@ -6,9 +6,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import com.swak.entity.Result;
+import com.swak.flux.web.annotation.GetMapping;
+import com.swak.flux.web.annotation.RestController;
 import com.swak.http.builder.RequestBuilder;
-import com.swak.reactivex.web.annotation.GetMapping;
-import com.swak.reactivex.web.annotation.RestController;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.tmt.shop.entity.Area;

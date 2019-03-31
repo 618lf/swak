@@ -14,13 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
+import com.swak.Constants;
 import com.swak.asm.FieldCache;
 import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.Constants;
-import com.swak.vertx.annotation.ServiceMapping;
+import com.swak.vertx.annotation.VertxService;
 import com.swak.vertx.security.Subject;
 
 import io.vertx.core.MultiMap;
@@ -34,7 +34,7 @@ import io.vertx.ext.web.RoutingContext;
  * 
  * @author lifeng
  */
-@ServiceMapping(value = "handlerAdapter", httpServer = true, instances = -1)
+@VertxService(value = "handlerAdapter", httpServer = true, instances = -1)
 public class HandlerAdapter extends AbstractRouterHandler {
 
 	@Autowired

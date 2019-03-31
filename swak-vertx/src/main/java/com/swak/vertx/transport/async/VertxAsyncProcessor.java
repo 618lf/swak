@@ -32,7 +32,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
-import com.swak.vertx.Constants;
+import com.swak.Constants;
 import com.swak.vertx.transport.codec.Msg;
 
 /**

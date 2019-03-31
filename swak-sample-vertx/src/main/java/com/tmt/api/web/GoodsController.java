@@ -6,7 +6,7 @@ import com.swak.Constants;
 import com.swak.entity.Result;
 import com.swak.vertx.annotation.GetMapping;
 import com.swak.vertx.annotation.RestController;
-import com.swak.vertx.annotation.ServiceReferer;
+import com.swak.vertx.annotation.VertxReferer;
 import com.tmt.api.entity.Goods;
 import com.tmt.api.facade.GoodsServiceFacadeAsync;
 import com.tmt.api.facade.GoodsServiceFacadeAsyncx;
@@ -22,7 +22,7 @@ import io.vertx.ext.web.RoutingContext;
 @RestController(path = "/api/goods")
 public class GoodsController {
 
-	@ServiceReferer
+	@VertxReferer
 	private GoodsServiceFacadeAsyncx goodsService;
 	@MotanReferer
 	private GoodsServiceFacadeAsync goodsServiceRpc;

@@ -1,7 +1,7 @@
 package com.swak.actuator.trace;
 
-import com.swak.reactivex.transport.http.server.HttpServerRequest;
-import com.swak.reactivex.transport.http.server.HttpServerResponse;
+import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.transport.http.server.HttpServerResponse;
 
 /**
  * HttpTrace 存储服务

@@ -1,8 +1,8 @@
 package com.swak.vertx.security;
 
+import com.swak.Constants;
 import com.swak.security.JwtAuthProvider;
 import com.swak.security.jwt.JWTPayload;
-import com.swak.vertx.Constants;
 import com.swak.vertx.security.filter.Filter;
 
 import io.vertx.core.Handler;

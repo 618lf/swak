@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.Constants;
-import com.swak.reactivex.handler.HttpHandler;
-import com.swak.reactivex.transport.http.server.HttpServer;
-import com.swak.reactivex.transport.http.server.HttpServerProperties;
-import com.swak.reactivex.transport.http.server.ReactiveServer;
+import com.swak.flux.handler.HttpHandler;
+import com.swak.flux.transport.http.server.HttpServer;
+import com.swak.flux.transport.http.server.HttpServerProperties;
+import com.swak.flux.transport.http.server.ReactiveServer;
 
 import io.netty.handler.codec.http.multipart.DiskFileUpload;
 

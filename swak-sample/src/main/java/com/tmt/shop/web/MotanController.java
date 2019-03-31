@@ -1,7 +1,7 @@
 package com.tmt.shop.web;
 
-import com.swak.reactivex.web.annotation.RequestMapping;
-import com.swak.reactivex.web.annotation.RestController;
+import com.swak.flux.web.annotation.RequestMapping;
+import com.swak.flux.web.annotation.RestController;
 import com.tmt.shop.service.FooService;
 import com.tmt.shop.service.FooServiceAsync;
 import com.weibo.api.motan.config.springsupport.annotation.MotanReferer;

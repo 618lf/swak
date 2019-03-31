@@ -23,8 +23,8 @@ import com.swak.vertx.annotation.RequestMapping;
 import com.swak.vertx.annotation.RequestMethod;
 import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.annotation.RouterSupplier;
-import com.swak.vertx.annotation.ServiceMapping;
-import com.swak.vertx.annotation.ServiceReferer;
+import com.swak.vertx.annotation.VertxReferer;
+import com.swak.vertx.annotation.VertxService;
 import com.swak.vertx.handler.VertxHandler;
 import com.swak.vertx.utils.RouterUtils;
 
@@ -125,7 +125,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 				if (!field.isAccessible()) {
 					field.setAccessible(true);
 				}
-				ServiceReferer reference = field.getAnnotation(ServiceReferer.class);
+				VertxReferer reference = field.getAnnotation(VertxReferer.class);
 				if (reference != null) {
 					Object value = refer(reference, field.getType());
 					if (value != null) {
@@ -165,7 +165,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		return new RouterBean(bean, method, result, requestMethod);
 	}
 
-	protected Object refer(ServiceReferer reference, Class<?> interfaceType) {
+	protected Object refer(VertxReferer reference, Class<?> interfaceType) {
 		ReferenceBean referenceBean = references.get(interfaceType.getName());
 		if (referenceBean == null) {
 			referenceBean = new ReferenceBean(interfaceType);
@@ -188,7 +188,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		if (AopUtils.isAopProxy(bean)) {
 			clazz = AopUtils.getTargetClass(bean);
 		}
-		ServiceMapping serviceMapping = clazz.getAnnotation(ServiceMapping.class);
+		VertxService serviceMapping = clazz.getAnnotation(VertxService.class);
 		if (serviceMapping != null) {
 			Class<?>[] classes = ClassUtils.getAllInterfacesForClass(clazz);
 			if (classes == null || classes.length == 0) {

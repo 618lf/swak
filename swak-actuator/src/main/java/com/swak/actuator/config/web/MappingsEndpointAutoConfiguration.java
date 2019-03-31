@@ -16,7 +16,7 @@ import com.swak.actuator.web.MappingsEndpoint;
 public class MappingsEndpointAutoConfiguration {
 
 	@Bean
-	public MappingsEndpoint mappingsEndpoint(com.swak.reactivex.web.DispatcherHandler dispatcherHandler) {
+	public MappingsEndpoint mappingsEndpoint(com.swak.flux.web.DispatcherHandler dispatcherHandler) {
 		return new MappingsEndpoint(dispatcherHandler);
 	}
 }

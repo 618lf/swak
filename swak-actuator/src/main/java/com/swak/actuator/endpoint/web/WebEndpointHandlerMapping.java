@@ -10,10 +10,10 @@ import org.springframework.core.Ordered;
 
 import com.swak.Constants;
 import com.swak.actuator.endpoint.InvocationContext;
-import com.swak.reactivex.transport.http.server.HttpServerRequest;
-import com.swak.reactivex.web.annotation.RequestMethod;
-import com.swak.reactivex.web.method.AbstractRequestMappingHandlerMapping;
-import com.swak.reactivex.web.method.RequestMappingInfo;
+import com.swak.flux.transport.http.server.HttpServerRequest;
+import com.swak.flux.web.annotation.RequestMethod;
+import com.swak.flux.web.method.AbstractRequestMappingHandlerMapping;
+import com.swak.flux.web.method.RequestMappingInfo;
 
 /**
  * 将edpoint 映射为 url 地址
