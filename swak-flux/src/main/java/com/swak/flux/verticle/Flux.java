@@ -29,5 +29,10 @@ public interface Flux {
 	 * @param timeout
 	 * @param handler
 	 */
-	CompletableFuture<Msg> sendMessage(String address, Msg request, int timeout);
+	CompletableFuture<Msg> sendMessage(String address, Msg request);
+	
+	/**
+	 * 关闭
+	 */
+	void close();
 }

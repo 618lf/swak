@@ -15,7 +15,6 @@ import com.swak.utils.StringUtils;
  * @author lifeng
  */
 public class InvokerHandler implements InvocationHandler {
-
 	private final Class<?> type;
 	private final String address;
 	private final Flux flux;
@@ -57,9 +56,9 @@ public class InvokerHandler implements InvocationHandler {
 
 		// 构建请求消息
 		Msg request = new Msg(meta, args);
-
+		
 		// 发送消息，处理相应结果
-		return flux.sendMessage(this.address, request, meta.getTimeOut()).thenApply(res -> {
+		return flux.sendMessage(this.address, request).thenApply(res -> {
 			// 约定的通讯协议
 			Msg result = (Msg) res;
 

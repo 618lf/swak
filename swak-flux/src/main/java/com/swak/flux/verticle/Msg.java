@@ -1,11 +1,12 @@
 package com.swak.flux.verticle;
 
 import java.io.Serializable;
+import java.util.concurrent.CompletableFuture;
 
 import com.swak.asm.MethodCache.MethodMeta;
 
 /**
- * 定义传递的消息
+ * 定义传递的消息, 默认1s的等待时间
  * 
  * @author lifeng
  */
@@ -18,15 +19,32 @@ public class Msg implements Serializable {
 	private Object[] arguments;
 	private Object result;
 	private String error;
-
-	public Msg() {
-
-	}
+	private int timeOut;
+	private long createtime;
+	private CompletableFuture<Msg> future;
 
 	public Msg(MethodMeta meta, Object[] arguments) {
+		this.timeOut = meta.getTimeOut() <= 0 ? 1000 : meta.getTimeOut();
 		this.methodName = meta.getMethodName();
 		this.methodDesc = meta.getMethodDesc();
 		this.arguments = arguments;
+		this.createtime = System.currentTimeMillis();
+	}
+
+	public int getTimeOut() {
+		return timeOut;
+	}
+
+	public long getCreatetime() {
+		return createtime;
+	}
+
+	public void setTimeOut(int timeOut) {
+		this.timeOut = timeOut;
+	}
+
+	public void setCreatetime(long createtime) {
+		this.createtime = createtime;
 	}
 
 	public String getError() {
@@ -39,7 +57,7 @@ public class Msg implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getResult() {
-		return (T)result;
+		return (T) result;
 	}
 
 	public void setResult(Object result) {
@@ -68,6 +86,26 @@ public class Msg implements Serializable {
 
 	public void setMethodName(String methodName) {
 		this.methodName = methodName;
+	}
+
+	public CompletableFuture<Msg> getFuture() {
+		return future;
+	}
+
+	public Msg setFuture(CompletableFuture<Msg> future) {
+		this.future = future;
+		return this;
+	}
+
+	public void cancel() {
+		Exception cause = new RuntimeException("Execute timeout");
+		this.cancel(cause);
+	}
+
+	public void cancel(Exception cause) {
+		if (this.future != null) {
+			this.future.completeExceptionally(cause);
+		}
 	}
 
 	public Msg reset() {
