@@ -126,3 +126,17 @@ http://throwable.coding.me/2018/11/17/jvm-micrometer-prometheus/
 
 核心服务不能设置为后台进程，需要能关闭
 关于 javapoet 自动生成异步接口，先maven clean。然后mvn compile来生成代码， scope 至少为 provided。
+
+maven 内置属性:
+${basedir}表示项目根目录，即包含pom.xml文件的目录;  
+${version}表示项目版本。
+${project.basedir}同${basedir};
+${project.build.sourceDirectory}:项目的主源码目录，默认为src/main/java/.
+${project.build.testSourceDirectory}:项目的测试源码目录，默认为/src/test/java/.
+${project.build.directory}:项目构建输出目录，默认为target/.
+${project.outputDirectory}:项目主代码编译输出目录，默认为target/classes/.
+${project.testOutputDirectory}:项目测试代码编译输出目录，默认为target/testclasses/.
+${project.groupId}:项目的groupId.
+${project.artifactId}:项目的artifactId.
+${project.version}:项目的version,于${version}等价 
+${project.build.finalName}:项目打包输出文件的名称，默认 为${project.artifactId}${project.version}.
