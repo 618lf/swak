@@ -58,7 +58,7 @@ public abstract class AbstractRouterHandler implements RouterHandler {
 
 		// 路由基本配置
 		for (IRouterConfig config : annotation.getRouterConfigs()) {
-			config.apply(router);
+			config.apply(annotation.getVertx(), router);
 		}
 
 		// 单个路由定义
