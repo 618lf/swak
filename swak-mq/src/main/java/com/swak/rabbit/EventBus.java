@@ -111,6 +111,17 @@ public class EventBus {
 			this.post(exchange, routingKey, message);
 		}, executor);
 	}
+	
+	/**
+	 * 发送消息 log 模式， 如果需要异步发布，则可以在外部包裹发布
+	 * 
+	 * @param exchange
+	 * @param routingKey
+	 * @param message
+	 */
+	public void log(String exchange, String routingKey, Message message) {
+		this.templateForSender.basicPublish(exchange, routingKey, message);
+	}
 
 	/**
 	 * 发送消息
