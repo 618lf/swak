@@ -104,8 +104,6 @@ public class MotanProviderPostProcessor implements ApplicationContextAware, Bean
 					serviceConfig.setProtocols(protocolConfigs);
 				}
 
-				// String[] methods() default {};
-
 				if (service.registry() != null && service.registry().length() > 0) {
 					List<RegistryConfig> registryConfigs = SpringBeanUtil.getMultiBeans(applicationContext,
 							service.registry(), SpringBeanUtil.COMMA_SPLIT_PATTERN, RegistryConfig.class);

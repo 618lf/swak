@@ -140,20 +140,10 @@ public class MotanAutoConfiguration {
 	@Bean(name = PROTOCOL_CONFIG_BEAN_NAME)
 	public ProtocolConfigBean protocolConfig(ProtocolConfigProperties protocolConfig) {
 		ProtocolConfigBean config = new ProtocolConfigBean();
-		// 如果未配置，则默认设置为motan
-		if (!StringUtils.isEmpty(protocolConfig.getName())) {
-			config.setName(protocolConfig.getName());
-		} else {
-			config.setName("motan");
-		}
+		config.setName(protocolConfig.getName());
 		if (!StringUtils.isEmpty(protocolConfig.getSerialization())) {
 			config.setSerialization(protocolConfig.getSerialization());
 		}
-		// config.setpayload
-		// config.setuffer
-		// config.sethearbeat
-		// config.settransporter
-		// config.setthreads
 		if (protocolConfig.getIothreads() != null) {
 			config.setIothreads(protocolConfig.getIothreads());
 		}
@@ -214,17 +204,9 @@ public class MotanAutoConfiguration {
 		if (protocolConfig.getAsync() != null) {
 			config.setAsync(protocolConfig.getAsync());
 		}
-		// config.setqueuesize
-		// config.setaccepts
-		// config.setdispatcher
-		// config.setserver
-		// config.setclient
 		if (protocolConfig.getDefaultConfig() != null) {
 			config.setDefault(protocolConfig.getDefaultConfig());
 		}
-		// config.setswitcherservice
-		// config.sethearBeatFactory
-
 		return config;
 	}
 
@@ -333,7 +315,6 @@ public class MotanAutoConfiguration {
 			config.setApplication(basicRefererConfig.getApplication());
 		}
 		if (!StringUtils.isEmpty(basicRefererConfig.getRegistry())) {
-			// 追加内部的注册配置bean
 			config.setRegistry(REGISTRY_CONFIG_BEAN_NAME + "," + basicRefererConfig.getRegistry());
 		} else {
 			config.setRegistry(REGISTRY_CONFIG_BEAN_NAME);
@@ -391,9 +372,6 @@ public class MotanAutoConfiguration {
 		if (!StringUtils.isEmpty(basicRefererConfig.getMock())) {
 			config.setMock(basicRefererConfig.getMock());
 		}
-
-		// 文档未描述的4个属性暂不处理
-
 		return config;
 	}
 }

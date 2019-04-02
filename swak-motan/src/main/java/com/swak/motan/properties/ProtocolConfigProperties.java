@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ProtocolConfigProperties {
 
 	/** 服务协议名 */
-	private String name;
+	private String name = "motan";
 	
 	/** 序列化方式, default kryo */
 	private String serialization;
