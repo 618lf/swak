@@ -120,7 +120,8 @@ public class WechatOps {
 	public static CompletableFuture<Ticket> jsSdkTicket(AccessToken token) {
 		CompletableFuture<Ticket> future = RequestBuilder.get()
 				.setUrl("https://api.weixin.qq.com/cgi-bin/ticket/getticket")
-				.addQueryParam("access_token", token.getAccess_token()).json(Ticket.class).future();
+				.addQueryParam("access_token", token.getAccess_token())
+				.addQueryParam("type","jsapi").json(Ticket.class).future();
 		return future.thenApply(ticket -> {
 			if (ticket != null) {
 				ticket.setAddTime(System.currentTimeMillis());
