@@ -9,12 +9,12 @@ import com.swak.incrementer.UUIdGenerator;
 import com.swak.utils.JaxbMapper;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
-import com.swak.wechat.base.AccessToken;
-import com.swak.wechat.base.Ticket;
 import com.swak.wechat.codec.SignUtils;
 import com.swak.wechat.pay.MchOrderquery;
 import com.swak.wechat.pay.SandboxSignKey;
 import com.swak.wechat.pay.Unifiedorder;
+import com.swak.wechat.token.AccessToken;
+import com.swak.wechat.token.Ticket;
 import com.swak.wechat.user.SnsToken;
 import com.swak.wechat.user.UserInfo;
 
@@ -96,9 +96,15 @@ public class WechatOps {
 	 * @return
 	 */
 	public static CompletableFuture<AccessToken> accessToken(WechatConfig app) {
-		return RequestBuilder.get().setUrl("https://api.weixin.qq.com/cgi-bin/token")
+		CompletableFuture<AccessToken> future = RequestBuilder.get().setUrl("https://api.weixin.qq.com/cgi-bin/token")
 				.addQueryParam("grant_type", "client_credential").addQueryParam("appid", app.getAppId())
 				.addQueryParam("secret", app.getSecret()).json(AccessToken.class).future();
+		return future.thenApply(token -> {
+			if (token != null) {
+				token.setAddTime(System.currentTimeMillis());
+			}
+			return token;
+		});
 	}
 
 	// ==========================================================
@@ -112,8 +118,15 @@ public class WechatOps {
 	 * @return
 	 */
 	public static CompletableFuture<Ticket> jsSdkTicket(AccessToken token) {
-		return RequestBuilder.get().setUrl("https://api.weixin.qq.com/cgi-bin/ticket/getticket")
+		CompletableFuture<Ticket> future = RequestBuilder.get()
+				.setUrl("https://api.weixin.qq.com/cgi-bin/ticket/getticket")
 				.addQueryParam("access_token", token.getAccess_token()).json(Ticket.class).future();
+		return future.thenApply(ticket -> {
+			if (ticket != null) {
+				ticket.setAddTime(System.currentTimeMillis());
+			}
+			return ticket;
+		});
 	}
 
 	/**
