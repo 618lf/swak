@@ -9,6 +9,8 @@ import com.swak.incrementer.UUIdGenerator;
 import com.swak.utils.JaxbMapper;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
+import com.swak.wechat.base.AccessToken;
+import com.swak.wechat.base.Ticket;
 import com.swak.wechat.codec.SignUtils;
 import com.swak.wechat.pay.MchOrderquery;
 import com.swak.wechat.pay.SandboxSignKey;
@@ -82,6 +84,62 @@ public class WechatOps {
 			}
 			return res;
 		});
+	}
+
+	// ==========================================================
+	// 调用 API 的token
+	// ==========================================================
+	/**
+	 * 获取接入系统的 accessToken
+	 * 
+	 * @param app
+	 * @return
+	 */
+	public static CompletableFuture<AccessToken> accessToken(WechatConfig app) {
+		return RequestBuilder.get().setUrl("https://api.weixin.qq.com/cgi-bin/token")
+				.addQueryParam("grant_type", "client_credential").addQueryParam("appid", app.getAppId())
+				.addQueryParam("secret", app.getSecret()).json(AccessToken.class).future();
+	}
+
+	// ==========================================================
+	// URL 签名
+	// ==========================================================
+
+	/**
+	 * URL 签名的 Ticket
+	 * 
+	 * @param token
+	 * @return
+	 */
+	public static CompletableFuture<Ticket> jsSdkTicket(AccessToken token) {
+		return RequestBuilder.get().setUrl("https://api.weixin.qq.com/cgi-bin/ticket/getticket")
+				.addQueryParam("access_token", token.getAccess_token()).json(Ticket.class).future();
+	}
+
+	/**
+	 * 对 URL 进行签名
+	 * 
+	 * @param app
+	 * @param ticket
+	 * @param url
+	 * @return
+	 */
+	public static Map<String, String> signUrl(WechatConfig app, Ticket ticket, String url) {
+		String noncestr = UUIdGenerator.uuid();
+		String timestamp = Long.toString(System.currentTimeMillis() / 1000);
+		StringBuilder signStr = new StringBuilder();
+		signStr.append("jsapi_ticket=").append(ticket.getTicket()).append("&").append("noncestr=").append(noncestr)
+				.append("&").append("timestamp=").append(timestamp).append("&").append("url=").append(url);
+
+		// 生成签名
+		String signature = SignUtils.urlSign(signStr.toString());
+		Map<String, String> reMap = Maps.newHashMap();
+		reMap.put("noncestr", noncestr);
+		reMap.put("timestamp", timestamp);
+		reMap.put("signature", signature.toLowerCase());
+		reMap.put("url", url);
+		reMap.put("appId", app.getAppId());
+		return reMap;
 	}
 
 	// ==========================================================

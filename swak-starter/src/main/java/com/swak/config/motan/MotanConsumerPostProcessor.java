@@ -200,11 +200,8 @@ public class MotanConsumerPostProcessor implements ApplicationContextAware, Bean
 				}
 
 				if (reference.client() != null && reference.client().length() > 0) {
-					// TODO?
 					// referenceConfig.setC(reference.client());
 				}
-
-				// String[] methods() default {};
 
 				if (reference.registry() != null && reference.registry().length() > 0) {
 					List<RegistryConfig> registryConfigs = SpringBeanUtil.getMultiBeans(applicationContext,
@@ -254,7 +251,6 @@ public class MotanConsumerPostProcessor implements ApplicationContextAware, Bean
 					referenceConfig.setShareChannel(reference.shareChannel());
 				}
 
-				// if throw exception when call failure，the default value is ture
 				if (reference.throwException()) {
 					referenceConfig.setThrowException(reference.throwException());
 				}

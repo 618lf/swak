@@ -40,7 +40,21 @@ public interface AsyncCache<T> {
 	 * @param key
 	 * @return
 	 */
+	CompletionStage<T> getObjectAndDel(String key);
+	
+	/**
+	 * 得到一个值
+	 * @param key
+	 * @return
+	 */
 	CompletionStage<String> getString(String key);
+	
+	/**
+	 * 得到一个值并删除
+	 * @param key
+	 * @return
+	 */
+	CompletionStage<String> getStringAndDel(String key);
 	
 	/**
 	 * 删除一个

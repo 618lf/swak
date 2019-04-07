@@ -73,6 +73,26 @@ public class AsyncRedisCacheChannel<T> implements AsyncCache<T> {
 	}
 
 	@Override
+	public CompletionStage<T> getObjectAndDel(String key) {
+		return remote.getObjectAndDel(key).thenApply(res ->{
+			String localKey = this.getKeyName(key);
+			local.delete(localKey);
+			_sendEvictCmd(localKey);
+			return res;
+		});
+	}
+
+	@Override
+	public CompletionStage<String> getStringAndDel(String key) {
+		return remote.getStringAndDel(key).thenApply(res ->{
+			String localKey = this.getKeyName(key);
+			local.delete(localKey);
+			_sendEvictCmd(localKey);
+			return res;
+		});
+	}
+
+	@Override
 	public CompletionStage<Long> delete(String key) {
 		String localKey = this.getKeyName(key);
 		local.delete(localKey);

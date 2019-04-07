@@ -1,12 +1,14 @@
 package com.swak.wechat.codec;
 
 import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.swak.codec.Digests;
+import com.swak.codec.Hex;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.wechat.Constants;
@@ -114,5 +116,24 @@ public class SignUtils {
 		Map<String, Object> params = Maps.toMap(xmlBean);
 		String sign = String.valueOf(params.get(Constants.FIELD_SIGN));
 		return generateSign(params, signType, paternerKey).equals(sign);
+	}
+
+	/**
+	 * url 签名
+	 * 
+	 * @param arr
+	 * @return
+	 */
+	public static String urlSign(String... arr) {
+		Arrays.sort(arr);
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < arr.length; i++) {
+			String a = arr[i];
+			sb.append(a);
+			if (i != arr.length - 1) {
+				sb.append('&');
+			}
+		}
+		return Hex.encodeHexString(Digests.sha1(StringUtils.getBytesUtf8(sb.toString())));
 	}
 }

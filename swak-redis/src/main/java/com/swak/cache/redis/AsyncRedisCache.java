@@ -1,6 +1,7 @@
 package com.swak.cache.redis;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import com.swak.cache.AsyncCache;
@@ -75,6 +76,21 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 			return (T) SerializationUtils.deserialize(bs);
 		});
 	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public CompletionStage<T> getObjectAndDel(String key) {
+		CompletableFuture<T> resultFuture = new CompletableFuture<>();
+		this._get(key).thenApply((bs) -> {
+			return (T) SerializationUtils.deserialize(bs);
+		}).thenAcceptBoth(this._del(key), (r, n) -> {
+			resultFuture.complete(r);
+		}).exceptionally(v -> {
+			resultFuture.completeExceptionally(v);
+			return null;
+		});
+		return resultFuture;
+	}
 
 	@Override
 	public CompletionStage<String> getString(String key) {
@@ -86,6 +102,20 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 		return this._hget(key).thenApply((bs) -> {
 			return SafeEncoder.encode(bs);
 		});
+	}
+
+	@Override
+	public CompletionStage<String> getStringAndDel(String key) {
+		CompletableFuture<String> resultFuture = new CompletableFuture<>();
+		this._get(key).thenApply((bs) -> {
+			return SafeEncoder.encode(bs);
+		}).thenAcceptBoth(this._del(key), (r, n) -> {
+			resultFuture.complete(r);
+		}).exceptionally(v -> {
+			resultFuture.completeExceptionally(v);
+			return null;
+		});
+		return resultFuture;
 	}
 
 	@Override
