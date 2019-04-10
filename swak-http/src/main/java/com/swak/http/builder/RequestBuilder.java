@@ -110,4 +110,13 @@ public class RequestBuilder extends RequestBuilderBase<RequestBuilder> {
 	public static RequestBuilder get() {
 		return new RequestBuilder(HttpMethod.GET.name());
 	}
+	
+	/**
+	 * 创建一个builder
+	 * 
+	 * @return
+	 */
+	public static RequestBuilder put() {
+		return new RequestBuilder(HttpMethod.PUT.name());
+	}
 }
