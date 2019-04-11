@@ -9,7 +9,6 @@ import org.asynchttpclient.AsyncHttpClientConfig;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig.Builder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
 import com.swak.http.HttpClientProperties;
@@ -27,9 +26,6 @@ import io.netty.channel.EventLoopGroup;
  */
 public class HttpClientConfigurationSupport {
 
-	@Autowired
-	private HttpClientProperties httpClientProperties;
-
 	public HttpClientConfigurationSupport() {
 		APP_LOGGER.debug("Loading Http client");
 	}
@@ -40,7 +36,7 @@ public class HttpClientConfigurationSupport {
 	 * @return
 	 */
 	@Bean
-	public AsyncHttpClientConfig httpClientConfig() {
+	public AsyncHttpClientConfig httpClientConfig(HttpClientProperties httpClientProperties) {
 		Builder builder = new DefaultAsyncHttpClientConfig.Builder();
 		if (httpClientProperties.getMode() == TransportMode.EPOLL) {
 			builder.setUseNativeTransport(true);
