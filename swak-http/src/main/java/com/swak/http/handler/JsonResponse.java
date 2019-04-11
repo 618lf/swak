@@ -20,7 +20,7 @@ public class JsonResponse<T> extends AbstractResponse<T>{
 			String str = response.getResponseBody(charset);
 			return JsonMapper.fromJson(str, clazz);
 		}
-		return null;
+		throw new RuntimeException(response.toString());
 	}
 	
 	/**

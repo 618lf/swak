@@ -14,7 +14,7 @@ public class TextResponse extends AbstractResponse<String>{
 		if (status >= 200 && status < 300) {
 			return response.getResponseBody(charset);
 		}
-		return null;
+	    throw new RuntimeException(response.toString());
 	}
 	
 	/**

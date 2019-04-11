@@ -21,7 +21,7 @@ public class XmlResponse<T> extends AbstractResponse<T>{
 			String str = response.getResponseBody(charset);
 			return JaxbMapper.fromXml(str, clazz);
 		}
-		return null;
+		throw new RuntimeException(response.toString());
 	}
 	
 	/**
