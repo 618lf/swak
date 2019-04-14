@@ -116,7 +116,7 @@ public class RequestBuilder extends RequestBuilderBase<RequestBuilder> {
 	 * 
 	 * @return
 	 */
-	public static RequestBuilder put() {
-		return new RequestBuilder(HttpMethod.PUT.name());
+	public static RequestBuilder method(HttpMethod method) {
+		return new RequestBuilder(method.name());
 	}
 }

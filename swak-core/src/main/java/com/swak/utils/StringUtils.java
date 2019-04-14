@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.util.ObjectUtils;
@@ -8982,6 +8983,20 @@ public class StringUtils {
 			return text.replaceAll("\\pZ", "");
 		}
 		return text;
+	}
+	
+	/**
+	 * 替换掉HTML标签方法
+	 */
+	public static String removeHtml(String html) {
+		if (isBlank(html)){
+			return "";
+		}
+		String regEx = "<[^>]+>";
+		Pattern p = Pattern.compile(regEx);
+		Matcher m = p.matcher(html);
+		String s = m.replaceAll("").replaceAll("&nbsp;", "");
+		return s;
 	}
 
 	/**
