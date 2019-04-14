@@ -4,14 +4,12 @@ import java.lang.reflect.Method;
 
 import org.springframework.util.ClassUtils;
 
-import com.swak.exception.BaseRuntimeException;
-
 /**
  * 基于 method 的执行器
  * 
  * @author lifeng
  */
-public class MethodHandler{
+public class MethodHandler {
 
 	private final Object bean;
 	private final Method method;
@@ -63,7 +61,7 @@ public class MethodHandler{
 		try {
 			return this.getMethod().invoke(this.getBean(), args);
 		} catch (Exception e) {
-			throw new BaseRuntimeException("invoke method error");
+			throw new RuntimeException("invoke method error:", e);
 		}
 	}
 }
