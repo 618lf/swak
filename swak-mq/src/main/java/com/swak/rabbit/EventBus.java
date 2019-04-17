@@ -40,10 +40,15 @@ public class EventBus {
 
 	private EventBus(RabbitMQTemplate templateForSender, RabbitMQTemplate templateForConsumer, RetryStrategy strategy,
 			Executor executor, Function<RabbitMQTemplate, Boolean> apply) {
+		this.templateForSender = templateForSender;
 		this.templateForConsumer = templateForConsumer;
-		this.templateForSender = (templateForSender);
 		this.retryStrategy = strategy;
 		this.apply = apply;
+
+		if (this.retryStrategy != null) {
+			this.templateForSender.setConfirmCallback(this.retryStrategy);
+			this.templateForSender.setReturnCallback(this.retryStrategy);
+		}
 	}
 
 	/**
@@ -111,7 +116,7 @@ public class EventBus {
 			this.post(exchange, routingKey, message);
 		}, executor);
 	}
-	
+
 	/**
 	 * 发送消息 log 模式， 如果需要异步发布，则可以在外部包裹发布
 	 * 

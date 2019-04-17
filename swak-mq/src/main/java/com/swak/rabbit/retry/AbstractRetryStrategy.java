@@ -6,6 +6,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 
 import com.swak.rabbit.RabbitMQTemplate;
@@ -23,6 +25,7 @@ import com.swak.utils.JsonMapper;
  */
 public abstract class AbstractRetryStrategy implements RetryStrategy, Runnable, DisposableBean {
 
+	private Logger logger = LoggerFactory.getLogger(RetryStrategy.class);
 	private RabbitMQTemplate template;
 	private ScheduledExecutorService executor;
 	private int threadPool = 1;
@@ -112,6 +115,7 @@ public abstract class AbstractRetryStrategy implements RetryStrategy, Runnable, 
 							.setExpiration(pendingConfirm.getExpiration()).setPriority(pendingConfirm.getPriority())
 							.setPayload(pendingConfirm.getPayload()).build());
 		} catch (Exception e) {
+			logger.error("Retry Send Message Error:", e);
 		}
 		pendingConfirm.setRetryTimes(Ints.add(pendingConfirm.getRetryTimes(), 1));
 		this.add(pendingConfirm);
