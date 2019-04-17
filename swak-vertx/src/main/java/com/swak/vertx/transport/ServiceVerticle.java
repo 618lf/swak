@@ -27,7 +27,7 @@ import io.vertx.core.eventbus.Message;
 public class ServiceVerticle extends AbstractVerticle implements Handler<Message<Msg>> {
 
 	private static Logger logger = LoggerFactory.getLogger(ServiceVerticle.class);
-	
+
 	private final Object service;
 	private final String address;
 	private final Class<?> type;
@@ -80,16 +80,16 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 					request.getArguments());
 		} catch (Exception e) {
 			error = e;
-			logger.error("执行service错误", e);
+			logger.error("Invoke [Request: {} - Method: {}] Error.", request.getMethodDesc(), method, e);
 		}
 		Msg response = request.reset();
-		
+
 		// 错误消息
 		if (error != null) {
 			response.setError(ExceptionUtils.causedMessage(error));
 			event.reply(response);
-		} 
-		
+		}
+
 		// 实现了异步接口,异步代码执行完成之后再回复
 		else if (result != null && result instanceof CompletionStage) {
 			CompletionStage<Object> resultFuture = (CompletionStage<Object>) result;
@@ -102,13 +102,13 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 				event.reply(response);
 			});
 		}
-		
-        // 可以不用异步接口
-		else if(result != null) {
+
+		// 可以不用异步接口
+		else if (result != null) {
 			response.setResult(result);
 			event.reply(response);
-		} 
-		
+		}
+
 		// 回复空消息
 		else {
 			event.reply(response);
