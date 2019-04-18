@@ -28,7 +28,7 @@ public class Parameters implements Serializable{
 	private int slider = 1;// 前后显示页面长度
 	private String funcName = "page"; // 设置点击页码调用的js函数名称，默认为page，在一页有多个分页对象时使用。
 	private String pageUrl;//分页的地址，如果设置了这个这优先使用格式?pageNO={pageIndex}&pageSize={pageSize},格式不限，但通过这两个参数获取
-	private boolean serializePage = Boolean.TRUE;//默认是序列化page
+	private boolean serializePage = Boolean.FALSE;//默认不序列化page
 	
 	/**
 	 * 以默认当前页面和页面大小构造一个分页对象。 其中，默认当前页数为1，默认页面大小为15。
