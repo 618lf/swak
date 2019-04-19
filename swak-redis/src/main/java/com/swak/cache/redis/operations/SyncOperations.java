@@ -87,6 +87,26 @@ public class SyncOperations {
 	public static Long exists(String... key) {
 		return RedisUtils.sync(connect -> connect.exists(SafeEncoder.encodeMany(key)));
 	}
+	
+	/**
+	 * incr
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public static Long incr(String key) {
+		return RedisUtils.sync(connect -> connect.incr(SafeEncoder.encode(key)));
+	}
+	
+	/**
+	 * decr
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public static Long decr(String key) {
+		return RedisUtils.sync(connect -> connect.decr(SafeEncoder.encode(key)));
+	}
 
 	/**
 	 * lPush

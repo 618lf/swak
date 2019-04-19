@@ -97,6 +97,26 @@ public class AsyncOperations {
 	public static CompletionStage<Long> exists(String... key) {
 		return RedisUtils.async(connect -> connect.exists(SafeEncoder.encodeMany(key)));
 	}
+	
+	/**
+	 * incr
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public static CompletionStage<Long> incr(String key) {
+		return RedisUtils.async(connect -> connect.incr(SafeEncoder.encode(key)));
+	}
+	
+	/**
+	 * decr
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public static CompletionStage<Long> decr(String key) {
+		return RedisUtils.async(connect -> connect.decr(SafeEncoder.encode(key)));
+	}
 
 	/**
 	 * lPush
