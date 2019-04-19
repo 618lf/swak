@@ -125,7 +125,7 @@ public class EventBus {
 	 * @param message
 	 */
 	public void log(String exchange, String routingKey, Message message) {
-		this.templateForSender.basicPublish(exchange, routingKey, message);
+		this.templateForSender.basicPublish(exchange, routingKey, message, false);
 	}
 
 	/**

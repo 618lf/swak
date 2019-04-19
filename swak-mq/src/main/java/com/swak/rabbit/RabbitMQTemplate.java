@@ -307,9 +307,17 @@ public class RabbitMQTemplate
 
 	/////////////////// 簡單的發送消息/////////
 	public PendingConfirm basicPublish(String exchange, String routingKey, Message message) throws AmqpException {
+		return basicPublish(exchange, routingKey, message, true);
+	}
+
+	public PendingConfirm basicPublish(String exchange, String routingKey, Message message, boolean confirm)
+			throws AmqpException {
 		return execute(channel -> {
-			PendingConfirm pendingConfirm = new PendingConfirm(message.getId());
-			channel.addPendingConfirm(channel.getNextPublishSeqNo(), pendingConfirm);
+			PendingConfirm pendingConfirm = null;
+			if (confirm) {
+				pendingConfirm = new PendingConfirm(message.getId());
+				channel.addPendingConfirm(channel.getNextPublishSeqNo(), pendingConfirm);
+			}
 			channel.basicPublish(exchange, routingKey, true, message.getProperties(), message.getPayload());
 			return pendingConfirm;
 		});
