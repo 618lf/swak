@@ -254,6 +254,18 @@ public class SyncOperations {
 	public static Long sRem(String key, byte[] value) {
 		return RedisUtils.sync(connect -> connect.srem(SafeEncoder.encode(key), value));
 	}
+	
+	/**
+	 * sLen
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public static Long sLen(String key) {
+		return RedisUtils.sync(connect -> connect.scard(SafeEncoder.encode(key)));
+	}
+
 
 	/**
 	 * runScript
