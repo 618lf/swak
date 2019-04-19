@@ -1,5 +1,6 @@
 package com.swak.utils.logback;
 
+import ch.qos.logback.core.joran.spi.NoAutoStart;
 import ch.qos.logback.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy;
 
 /**
@@ -7,6 +8,7 @@ import ch.qos.logback.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy
  * 
  * @author lifeng
  */
+@NoAutoStart
 public class MultipleTimeBasedFileNamingAndTriggeringPolicy<E>
 		extends DefaultTimeBasedFileNamingAndTriggeringPolicy<E> {
 
