@@ -19,6 +19,8 @@ public class Subject extends JWTObject {
 	private static String NAME_ATTR = "name";
 	private static String ROLE_ATTR = "roles";
 	private static String PERMISSION_ATTR = "permissions";
+	private static String PARENT_ID_ATTR = "pid";
+	private static String PARENT_NAME_ATTR = "pname";
 
 	/**
 	 * 必须传入 payload
@@ -77,6 +79,26 @@ public class Subject extends JWTObject {
 	}
 
 	/**
+	 * 设置所属主体的ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Subject setParentId(Long id) {
+		return this.put(PARENT_ID_ATTR, id);
+	}
+
+	/**
+	 * 设置所属主体的ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Subject setParentName(String name) {
+		return this.put(PARENT_NAME_ATTR, name);
+	}
+
+	/**
 	 * 设置主体的ID
 	 * 
 	 * @param id
@@ -115,6 +137,27 @@ public class Subject extends JWTObject {
 	 */
 	public String getName() {
 		return this.getValue(NAME_ATTR);
+	}
+	
+	/**
+	 * 得到所属主体的ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Long getParentId() {
+		String id = this.getValue(PARENT_ID_ATTR);
+		return id != null ? Long.parseLong(id) : null;
+	}
+
+	/**
+	 * 得到所属主体的ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public String getParentName() {
+		return this.getValue(PARENT_NAME_ATTR);
 	}
 
 	/**
