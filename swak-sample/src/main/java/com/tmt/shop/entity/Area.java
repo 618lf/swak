@@ -62,7 +62,6 @@ public class Area extends BaseParentEntity<Long> implements Serializable{
 			return super.prePersist();
 		}
 		this.createDate = DateUtils.getTimeStampNow();
-		this.updateDate = this.createDate;
 		return this.id;
 	}
 }
