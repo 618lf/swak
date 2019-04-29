@@ -121,9 +121,9 @@ public class MotanConsumerPostProcessor implements ApplicationContextAware, Bean
 							method.invoke(bean, new Object[] { value });
 						}
 					}
-				} catch (Exception e) {
+				} catch (Throwable t) {
 					throw new BeanInitializationException("Failed to init remote service reference at method " + name
-							+ " in class " + bean.getClass().getName(), e);
+							+ " in class " + bean.getClass().getName(), t);
 				}
 			}
 		}
@@ -141,9 +141,9 @@ public class MotanConsumerPostProcessor implements ApplicationContextAware, Bean
 						field.set(bean, value);
 					}
 				}
-			} catch (Exception e) {
+			} catch (Throwable t) {
 				throw new BeanInitializationException("Failed to init remote service reference at filed "
-						+ field.getName() + " in class " + bean.getClass().getName(), e);
+						+ field.getName() + " in class " + bean.getClass().getName(), t);
 			}
 		}
 	}
