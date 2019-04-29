@@ -16,18 +16,18 @@
 
 package com.weibo.api.motan.switcher;
 
+import com.weibo.api.motan.core.extension.SpiMeta;
+import com.weibo.api.motan.exception.MotanFrameworkException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.weibo.api.motan.core.extension.SpiMeta;
-import com.weibo.api.motan.exception.MotanFrameworkException;
-
 /**
  * @author maijunsheng
- * @version 创建时间：2013-6-14
+ * @version 创建时间：2013-6-14	
  *
  */
 @SpiMeta(name = "localSwitcherService")

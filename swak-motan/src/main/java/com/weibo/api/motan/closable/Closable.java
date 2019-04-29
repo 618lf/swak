@@ -4,6 +4,6 @@ package com.weibo.api.motan.closable;
  * @author zhanran
  * Date: 2017/5/24
  */
-public interface Closable<T> {
+public interface Closable {
     void close();
 }

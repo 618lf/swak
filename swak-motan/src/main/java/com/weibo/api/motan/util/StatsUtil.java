@@ -47,7 +47,6 @@ import com.weibo.api.motan.util.StatsUtil.AccessStatus;
  * @author maijunsheng
  * @version 创建时间：2013-6-24
  */
-@SuppressWarnings("rawtypes")
 public class StatsUtil {
 
     public static final String HISTOGRAM_NAME = MetricRegistry.name(AccessStatisticItem.class, "costTimeMillis");

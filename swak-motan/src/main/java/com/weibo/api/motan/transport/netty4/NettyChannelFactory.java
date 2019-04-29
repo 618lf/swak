@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class NettyChannelFactory implements SharedObjectFactory<NettyChannel> {
     private static final ExecutorService rebuildExecutorService = new StandardThreadExecutor(5, 30, 10L, TimeUnit.SECONDS, 100,
-            new DefaultThreadFactory("RebuildExecutorService", true),
+            new DefaultThreadFactory("Motan.RebuildExecutorService", true),
             new ThreadPoolExecutor.CallerRunsPolicy());
     private NettyClient nettyClient;
     private String factoryName;

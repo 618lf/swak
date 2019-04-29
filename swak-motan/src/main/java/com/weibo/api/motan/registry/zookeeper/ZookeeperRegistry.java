@@ -42,7 +42,6 @@ import com.weibo.api.motan.rpc.URL;
 import com.weibo.api.motan.util.ConcurrentHashSet;
 import com.weibo.api.motan.util.LoggerUtil;
 
-@SuppressWarnings("rawtypes")
 public class ZookeeperRegistry extends CommandFailbackRegistry implements Closable {
 	private final ReentrantLock clientLock = new ReentrantLock();
 	private final ReentrantLock serverLock = new ReentrantLock();
@@ -68,9 +67,7 @@ public class ZookeeperRegistry extends CommandFailbackRegistry implements Closab
 			}
 
 			@Override
-			public void handleSessionEstablishmentError(Throwable error) throws Exception {
-				// TODO Auto-generated method stub
-
+			public void handleSessionEstablishmentError(Throwable arg0) throws Exception {
 			}
 		};
 		zkClient.subscribeStateChanges(zkStateListener);
@@ -401,6 +398,7 @@ public class ZookeeperRegistry extends CommandFailbackRegistry implements Closab
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void reconnectClient() {
 		if (serviceListeners != null && !serviceListeners.isEmpty()) {
 			try {

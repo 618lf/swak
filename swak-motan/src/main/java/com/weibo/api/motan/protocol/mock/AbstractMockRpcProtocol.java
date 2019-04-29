@@ -29,7 +29,6 @@ import com.weibo.api.motan.util.MotanFrameworkUtil;
  * @date 2016-3-14
  *
  */
-@SuppressWarnings({ "unchecked" })
 public abstract class AbstractMockRpcProtocol extends AbstractProtocol {
 	private static ProviderMessageRouter mockProviderMessageRouter;
 
@@ -60,6 +59,7 @@ public abstract class AbstractMockRpcProtocol extends AbstractProtocol {
 			server = endpointFactory.createServer(url, requestRouter);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public void unexport() {
 			String protocolKey = MotanFrameworkUtil.getProtocolKey(url);

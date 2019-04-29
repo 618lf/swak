@@ -16,20 +16,19 @@
 
 package com.weibo.api.motan.config.springsupport;
 
-import java.util.Collections;
-import java.util.List;
-
+import com.weibo.api.motan.config.BasicServiceInterfaceConfig;
+import com.weibo.api.motan.config.ConfigUtil;
+import com.weibo.api.motan.config.ProtocolConfig;
+import com.weibo.api.motan.config.RegistryConfig;
+import com.weibo.api.motan.config.springsupport.util.SpringBeanUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.weibo.api.motan.config.BasicServiceInterfaceConfig;
-import com.weibo.api.motan.config.ConfigUtil;
-import com.weibo.api.motan.config.ProtocolConfig;
-import com.weibo.api.motan.config.RegistryConfig;
-import com.weibo.api.motan.config.springsupport.util.SpringBeanUtil;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author fld

@@ -16,14 +16,14 @@
 
 package com.weibo.api.motan.registry.support;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.exception.MotanFrameworkException;
 import com.weibo.api.motan.registry.NotifyListener;
 import com.weibo.api.motan.rpc.URL;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by axb on 16/6/12.
@@ -97,10 +97,10 @@ public class DirectRegistry extends AbstractRegistry {
         return createSubscribeUrl(subscribeUrl);
     }
 
-    private List<URL> createSubscribeUrl(URL subscribeUrl) {
-        @SuppressWarnings("unused")
-		URL url = this.getUrl();
-        List<URL> result = new ArrayList<>(directUrls.size());
+    @SuppressWarnings({ "unused", "rawtypes", "unchecked" })
+	private List<URL> createSubscribeUrl(URL subscribeUrl) {
+        URL url = this.getUrl();
+        List result = new ArrayList(directUrls.size());
         for (URL directUrl : directUrls) {
             URL tmp = subscribeUrl.createCopy();
             tmp.setHost(directUrl.getHost());

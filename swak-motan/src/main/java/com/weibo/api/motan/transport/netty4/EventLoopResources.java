@@ -15,7 +15,7 @@ import io.netty.channel.ServerChannel;
  * 
  * @author lifeng
  */
-public class EventLoopResources implements LoopResources, Closable<EventLoopResources> {
+public class EventLoopResources implements LoopResources, Closable {
 
 	private LoopResources loopResources;
 

@@ -16,8 +16,9 @@
 
 package com.weibo.api.motan.registry.zookeeper;
 
-import com.weibo.api.motan.core.extension.SpiMeta;
 import org.I0Itec.zkclient.ZkClient;
+
+import com.weibo.api.motan.core.extension.SpiMeta;
 
 @SpiMeta(name = "zk")
 @Deprecated

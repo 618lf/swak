@@ -45,82 +45,85 @@ import com.weibo.api.motan.util.LoggerUtil;
  * @version 创建时间：2013-6-14
  *
  */
-public class HeartbeatClientEndpointManager implements EndpointManager{
+public class HeartbeatClientEndpointManager implements EndpointManager {
 
-    private ConcurrentMap<Client, HeartbeatFactory> endpoints = new ConcurrentHashMap<Client, HeartbeatFactory>();
+	private ConcurrentMap<Client, HeartbeatFactory> endpoints = new ConcurrentHashMap<Client, HeartbeatFactory>();
 
-    // 一般这个类创建的实例会比较少，如果共享的话，容易“被影响”，如果某个任务阻塞了
-    private ScheduledExecutorService executorService = null;
+	// 一般这个类创建的实例会比较少，如果共享的话，容易“被影响”，如果某个任务阻塞了
+	private ScheduledExecutorService executorService = null;
 
-    @SuppressWarnings("rawtypes")
 	@Override
-    public void init() {
-        executorService = Executors.newScheduledThreadPool(1, new DefaultThreadFactory("Motan.Heartbeat", true));
-        executorService.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
+	public void init() {
+		executorService = Executors.newScheduledThreadPool(1, new DefaultThreadFactory("Motan.Heartbeat", true));
+		executorService.scheduleWithFixedDelay(new Runnable() {
+			@Override
+			public void run() {
 
-                for (Map.Entry<Client, HeartbeatFactory> entry : endpoints.entrySet()) {
-                    Client endpoint = entry.getKey();
+				for (Map.Entry<Client, HeartbeatFactory> entry : endpoints.entrySet()) {
+					Client endpoint = entry.getKey();
 
-                    try {
-                        // 如果节点是存活状态，那么没必要走心跳
-                        if (endpoint.isAvailable()) {
-                            continue;
-                        }
+					try {
+						// 如果节点是存活状态，那么没必要走心跳
+						if (endpoint.isAvailable()) {
+							continue;
+						}
 
-                        HeartbeatFactory factory = entry.getValue();
-                        endpoint.heartbeat(factory.createRequest());
-                    } catch (Exception e) {
-                        LoggerUtil.error("HeartbeatEndpointManager send heartbeat Error: url=" + endpoint.getUrl().getUri() + ", " + e.getMessage());
-                    }
-                }
+						HeartbeatFactory factory = entry.getValue();
+						endpoint.heartbeat(factory.createRequest());
+					} catch (Exception e) {
+						LoggerUtil.error("HeartbeatEndpointManager send heartbeat Error: url="
+								+ endpoint.getUrl().getUri() + ", " + e.getMessage());
+					}
+				}
 
-            }
-        }, MotanConstants.HEARTBEAT_PERIOD, MotanConstants.HEARTBEAT_PERIOD, TimeUnit.MILLISECONDS);
-        EventLoops.register("Motan.Heartbeat", executorService);
-        ShutDownHook.registerShutdownHook(new Closable() {
-            @Override
-            public void close() {
-                if (!executorService.isShutdown()) {
-                    executorService.shutdown();
-                }
-            }
-        });
-    }
+			}
+		}, MotanConstants.HEARTBEAT_PERIOD, MotanConstants.HEARTBEAT_PERIOD, TimeUnit.MILLISECONDS);
+		EventLoops.register("Motan.Heartbeat", executorService);
+		ShutDownHook.registerShutdownHook(new Closable() {
+			@Override
+			public void close() {
+				if (!executorService.isShutdown()) {
+					executorService.shutdown();
+				}
+			}
+		});
+	}
 
-    @Override
-    public void destroy() {
-        executorService.shutdownNow();
-    }
+	@Override
+	public void destroy() {
+		executorService.shutdownNow();
+	}
 
-    @Override
-    public void addEndpoint(Endpoint endpoint) {
-        if (!(endpoint instanceof Client)) {
-            throw new MotanFrameworkException("HeartbeatClientEndpointManager addEndpoint Error: class not support " + endpoint.getClass());
-        }
+	@Override
+	public void addEndpoint(Endpoint endpoint) {
+		if (!(endpoint instanceof Client)) {
+			throw new MotanFrameworkException(
+					"HeartbeatClientEndpointManager addEndpoint Error: class not support " + endpoint.getClass());
+		}
 
-        Client client = (Client) endpoint;
+		Client client = (Client) endpoint;
 
-        URL url = endpoint.getUrl();
+		URL url = endpoint.getUrl();
 
-        String heartbeatFactoryName = url.getParameter(URLParamType.heartbeatFactory.getName(), URLParamType.heartbeatFactory.getValue());
+		String heartbeatFactoryName = url.getParameter(URLParamType.heartbeatFactory.getName(),
+				URLParamType.heartbeatFactory.getValue());
 
-        HeartbeatFactory heartbeatFactory = ExtensionLoader.getExtensionLoader(HeartbeatFactory.class).getExtension(heartbeatFactoryName);
+		HeartbeatFactory heartbeatFactory = ExtensionLoader.getExtensionLoader(HeartbeatFactory.class)
+				.getExtension(heartbeatFactoryName);
 
-        if (heartbeatFactory == null) {
-            throw new MotanFrameworkException("HeartbeatFactory not exist: " + heartbeatFactoryName);
-        }
+		if (heartbeatFactory == null) {
+			throw new MotanFrameworkException("HeartbeatFactory not exist: " + heartbeatFactoryName);
+		}
 
-        endpoints.put(client, heartbeatFactory);
-    }
+		endpoints.put(client, heartbeatFactory);
+	}
 
-    @Override
-    public void removeEndpoint(Endpoint endpoint) {
-        endpoints.remove(endpoint);
-    }
+	@Override
+	public void removeEndpoint(Endpoint endpoint) {
+		endpoints.remove(endpoint);
+	}
 
-    public Set<Client> getClients() {
-        return Collections.unmodifiableSet(endpoints.keySet());
-    }
+	public Set<Client> getClients() {
+		return Collections.unmodifiableSet(endpoints.keySet());
+	}
 }

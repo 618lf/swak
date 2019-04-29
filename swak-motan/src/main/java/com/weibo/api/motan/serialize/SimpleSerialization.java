@@ -135,7 +135,7 @@ public class SimpleSerialization implements Serialization {
         return result;
     }
 
-	private void serialize(Object obj, GrowableByteBuffer buffer) throws IOException {
+    private void serialize(Object obj, GrowableByteBuffer buffer) throws IOException {
         if (obj == null) {
             buffer.put(NULL);
             return;

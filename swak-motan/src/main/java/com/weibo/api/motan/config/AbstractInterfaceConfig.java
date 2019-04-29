@@ -16,6 +16,14 @@
 
 package com.weibo.api.motan.config;
 
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.swak.utils.StringUtils;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.common.URLParamType;
 import com.weibo.api.motan.exception.MotanErrorMsgConstant;
@@ -26,10 +34,6 @@ import com.weibo.api.motan.rpc.URL;
 import com.weibo.api.motan.util.NetUtils;
 import com.weibo.api.motan.util.ReflectUtil;
 import com.weibo.api.motan.util.UrlUtils;
-import com.swak.utils.StringUtils;
-
-import java.net.InetAddress;
-import java.util.*;
 
 /**
  * <pre>

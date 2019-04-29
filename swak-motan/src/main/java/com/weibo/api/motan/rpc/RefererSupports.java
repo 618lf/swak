@@ -32,7 +32,6 @@ import com.weibo.api.motan.util.LoggerUtil;
  * @version 创建时间：2013-6-19
  * 
  */
-@SuppressWarnings("rawtypes")
 public class RefererSupports {
 
     private static ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(10, new DefaultThreadFactory("Motan.RefererDestroy", true));

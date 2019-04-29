@@ -34,7 +34,7 @@ import com.weibo.api.motan.util.MathUtil;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class AbstractSharedPoolClient extends AbstractClient {
 	private static final ThreadPoolExecutor executor = new StandardThreadExecutor(1, 300, 20000,
-			new DefaultThreadFactory("Motan.ClientChannelInit-thread-", true));
+			new DefaultThreadFactory("AbstractPoolClient-initPool-", true));
 	private final AtomicInteger idx = new AtomicInteger();
 	protected SharedObjectFactory factory;
 	protected ArrayList<Channel> channels;
