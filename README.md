@@ -140,3 +140,6 @@ ${project.groupId}:项目的groupId.
 ${project.artifactId}:项目的artifactId.
 ${project.version}:项目的version,于${version}等价 
 ${project.build.finalName}:项目打包输出文件的名称，默认 为${project.artifactId}${project.version}.
+
+# 版本0.1.3.2
+简化 baseEntity， 升级核心jar
