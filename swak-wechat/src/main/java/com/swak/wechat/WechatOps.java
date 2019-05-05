@@ -120,8 +120,8 @@ public class WechatOps {
 	public static CompletableFuture<Ticket> jsSdkTicket(AccessToken token) {
 		CompletableFuture<Ticket> future = RequestBuilder.get()
 				.setUrl("https://api.weixin.qq.com/cgi-bin/ticket/getticket")
-				.addQueryParam("access_token", token.getAccess_token())
-				.addQueryParam("type","jsapi").json(Ticket.class).future();
+				.addQueryParam("access_token", token.getAccess_token()).addQueryParam("type", "jsapi")
+				.json(Ticket.class).future();
 		return future.thenApply(ticket -> {
 			if (ticket != null) {
 				ticket.setAddTime(System.currentTimeMillis());
@@ -186,6 +186,14 @@ public class WechatOps {
 			return app.request(url, reqBody);
 		}).thenApply(res -> {
 			return app.process(res, unifiedorder.getSign_type());
+		}).thenApply(res -> {
+			if (unifiedorder.getTrade_type().equals("NATIVE")) {
+				return res;
+			}
+			String signed = SignUtils.generateJsPayJson(unifiedorder.getNonce_str(),
+					String.valueOf(res.get("prepay_id")), app.getAppId(), unifiedorder.getSign_type(), app.getMchKey());
+			res.put("jsPayJson", signed);
+			return res;
 		});
 	}
 
