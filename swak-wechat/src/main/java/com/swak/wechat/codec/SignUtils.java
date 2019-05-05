@@ -9,10 +9,12 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.swak.codec.Digests;
 import com.swak.codec.Hex;
+import com.swak.utils.JsonMapper;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.wechat.Constants;
 import com.swak.wechat.WechatErrorException;
+import com.swak.wechat.pay.PayJsRequest;
 
 /**
  * 签名工具类
@@ -117,6 +119,31 @@ public class SignUtils {
 		String sign = String.valueOf(params.get(Constants.FIELD_SIGN));
 		return generateSign(params, signType, paternerKey).equals(sign);
 	}
+	
+	/**
+	 * 生成支付JS请求对象
+	 * 
+	 * @param prepay_id	预支付订单号
+	 * @param appId
+	 * @param key 商户支付密钥
+	 * @return
+	 * @throws Exception 
+	 */
+	public static String generateJsPayJson(String nonceStr, String prepay_id, String appId, String signType, String paternerKey) {
+		String package_ = "prepay_id=" + prepay_id;
+		PayJsRequest payJsRequest = new PayJsRequest();
+		payJsRequest.setAppId(appId);
+		payJsRequest.setNonceStr(nonceStr);
+		payJsRequest.setPackage_(package_);
+		payJsRequest.setSignType(signType);
+		payJsRequest.setTimeStamp(System.currentTimeMillis()/1000+"");
+		Map<String, Object> mapS = Maps.toMap(payJsRequest);
+		try {
+			payJsRequest.setPaySign(SignUtils.generateSign(mapS, signType, paternerKey));
+		} catch (Exception e) {}
+		return JsonMapper.toJson(payJsRequest);
+	}
+	
 
 	/**
 	 * url 签名
