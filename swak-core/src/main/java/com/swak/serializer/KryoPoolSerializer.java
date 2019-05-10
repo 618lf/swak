@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.swak.exception.SerializeException;
 
 /**
  * Created by chenlei on 14-9-28.

@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.swak.exception.SerializeException;
 
 /**
  * 使用 Kryo 实现序列化

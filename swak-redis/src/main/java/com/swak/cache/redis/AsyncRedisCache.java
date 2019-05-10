@@ -11,6 +11,7 @@ import com.swak.cache.Entity;
 import com.swak.cache.LocalCache;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.operations.AsyncOperations;
+import com.swak.exception.SerializeException;
 import com.swak.serializer.SerializationUtils;
 import com.swak.utils.Lists;
 
@@ -70,13 +71,17 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 		if (!idleAble()) {
 			return this._get(key).thenApply((bs) -> {
 				return (T) SerializationUtils.deserialize(bs);
+			}).exceptionally(e -> {
+				return this.exceptionalOnSerialize(key, e);
 			});
 		}
 		return this._hget(key).thenApply((bs) -> {
 			return (T) SerializationUtils.deserialize(bs);
+		}).exceptionally(e -> {
+			return this.exceptionalOnSerialize(key, e);
 		});
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public CompletionStage<T> getObjectAndDel(String key) {
@@ -86,10 +91,18 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 		}).thenAcceptBoth(this._del(key), (r, n) -> {
 			resultFuture.complete(r);
 		}).exceptionally(v -> {
-			resultFuture.completeExceptionally(v);
+			resultFuture.complete(null);
+			this.exceptionalOnSerialize(key, v);
 			return null;
 		});
 		return resultFuture;
+	}
+
+	private T exceptionalOnSerialize(String key, Throwable e) {
+		if (e instanceof SerializeException) {
+			this._del(key);
+		}
+		return null;
 	}
 
 	@Override

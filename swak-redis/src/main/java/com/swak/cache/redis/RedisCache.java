@@ -11,6 +11,7 @@ import com.swak.cache.LocalCache;
 import com.swak.cache.ReactiveCache;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.operations.SyncOperations;
+import com.swak.exception.SerializeException;
 import com.swak.serializer.SerializationUtils;
 import com.swak.utils.Lists;
 
@@ -70,10 +71,15 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public T getObject(String key) {
-		if (!idleAble()) {
-			return (T) SerializationUtils.deserialize(this._get(key));
+		try {
+			if (!idleAble()) {
+				return (T) SerializationUtils.deserialize(this._get(key));
+			}
+			return (T) SerializationUtils.deserialize(this._hget(key));
+		} catch (SerializeException e) {
+			this._del(key);
+			return null;
 		}
-		return (T) SerializationUtils.deserialize(this._hget(key));
 	}
 
 	@Override

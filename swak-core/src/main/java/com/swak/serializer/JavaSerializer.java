@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import com.swak.exception.SerializeException;
+
 /**
  * 标准的 Java 序列化
  * @author winterlau

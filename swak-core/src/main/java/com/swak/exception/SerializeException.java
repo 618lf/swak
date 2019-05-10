@@ -4,7 +4,7 @@ package com.swak.exception;
  * 缓存序列化异常
  * @author lifeng
  */
-public class SerializeException extends BaseRuntimeException{
+public class SerializeException extends RuntimeException{
 	
 	private static final long serialVersionUID = 1L;
 
