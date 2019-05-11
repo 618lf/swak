@@ -2,6 +2,8 @@ package com.swak.serializer;
 
 import java.io.IOException;
 
+import com.swak.exception.SerializeException;
+
 /**
  * 对象序列化接口
  * @author lifeng

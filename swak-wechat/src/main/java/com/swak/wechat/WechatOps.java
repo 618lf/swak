@@ -13,6 +13,7 @@ import com.swak.wechat.codec.SignUtils;
 import com.swak.wechat.pay.MchOrderquery;
 import com.swak.wechat.pay.SandboxSignKey;
 import com.swak.wechat.pay.Unifiedorder;
+import com.swak.wechat.tmpmsg.TemplateMessageResult;
 import com.swak.wechat.token.AccessToken;
 import com.swak.wechat.token.Ticket;
 import com.swak.wechat.user.SnsToken;
@@ -24,6 +25,44 @@ import com.swak.wechat.user.UserInfo;
  * @author lifeng
  */
 public class WechatOps {
+
+	// ==========================================================
+	// 调用 API: userinfo
+	// ==========================================================
+	
+	/**
+	 * 获取用户信息
+	 * 
+	 * @param access_token
+	 * @param openId
+	 * @return
+	 */
+	public static CompletableFuture<UserInfo> userinfo(String access_token, String openId) {
+		CompletableFuture<UserInfo> future = RequestBuilder.post().setUrl("https://api.weixin.qq.com/cgi-bin/user/info")
+				.addFormParam("access_token", access_token).addFormParam("openid", openId).addFormParam("lang", "zh_CN")
+				.json(UserInfo.class).future();
+		return future.thenApply(res -> {
+			return res;
+		});
+	}
+
+	/**
+	 * 发送模板消息
+	 * 
+	 * @param access_token
+	 * @param messageJson
+	 * @return
+	 */
+	public static CompletableFuture<TemplateMessageResult> sendTemplateMessage(String access_token,
+			String messageJson) {
+		CompletableFuture<TemplateMessageResult> future = RequestBuilder.post()
+				.setUrl("https://api.weixin.qq.com/cgi-bin/message/template/send")
+				.addFormParam("access_token", access_token).setBody(StringUtils.getBytesUtf8(messageJson))
+				.json(UserInfo.class).future();
+		return future.thenApply(res -> {
+			return res;
+		});
+	}
 
 	// ==========================================================
 	// 网页授权登录 toAuthorize -> oauth2AccessToken -> accessToken2Userinfo
@@ -120,8 +159,8 @@ public class WechatOps {
 	public static CompletableFuture<Ticket> jsSdkTicket(AccessToken token) {
 		CompletableFuture<Ticket> future = RequestBuilder.get()
 				.setUrl("https://api.weixin.qq.com/cgi-bin/ticket/getticket")
-				.addQueryParam("access_token", token.getAccess_token())
-				.addQueryParam("type","jsapi").json(Ticket.class).future();
+				.addQueryParam("access_token", token.getAccess_token()).addQueryParam("type", "jsapi")
+				.json(Ticket.class).future();
 		return future.thenApply(ticket -> {
 			if (ticket != null) {
 				ticket.setAddTime(System.currentTimeMillis());
@@ -186,6 +225,14 @@ public class WechatOps {
 			return app.request(url, reqBody);
 		}).thenApply(res -> {
 			return app.process(res, unifiedorder.getSign_type());
+		}).thenApply(res -> {
+			if (unifiedorder.getTrade_type().equals("NATIVE")) {
+				return res;
+			}
+			String signed = SignUtils.generateJsPayJson(unifiedorder.getNonce_str(),
+					String.valueOf(res.get("prepay_id")), app.getAppId(), unifiedorder.getSign_type(), app.getMchKey());
+			res.put("jsPayJson", signed);
+			return res;
 		});
 	}
 
