@@ -9,7 +9,6 @@ import com.swak.vertx.config.VertxProperties;
 
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.logging.LoggerFactory;
 
 /**
  * 基础的 options
@@ -32,8 +31,7 @@ public class StandardOptionsAutoConfiguration {
 		if (properties.getMode() == TransportMode.EPOLL) {
 			vertxOptions.setPreferNativeTransport(true);
 		}
-		System.setProperty(LoggerFactory.LOGGER_DELEGATE_FACTORY_CLASS_NAME,
-				"io.vertx.core.logging.SLF4JLogDelegateFactory");
+		System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
 		System.setProperty("vertx.disableWebsockets", Boolean.TRUE.toString());
 		vertxOptions.setEventLoopPoolSize(properties.getEventLoopPoolSize());
 		vertxOptions.setWorkerPoolSize(properties.getWorkerThreads());
