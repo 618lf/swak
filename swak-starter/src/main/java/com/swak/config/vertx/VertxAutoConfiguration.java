@@ -26,6 +26,7 @@ public class VertxAutoConfiguration {
 
 	public VertxAutoConfiguration() {
 		APP_LOGGER.debug("Loading Verx");
+		System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
 	}
 
 	/**

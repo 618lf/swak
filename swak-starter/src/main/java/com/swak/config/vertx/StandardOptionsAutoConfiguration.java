@@ -31,7 +31,6 @@ public class StandardOptionsAutoConfiguration {
 		if (properties.getMode() == TransportMode.EPOLL) {
 			vertxOptions.setPreferNativeTransport(true);
 		}
-		System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
 		System.setProperty("vertx.disableWebsockets", Boolean.TRUE.toString());
 		vertxOptions.setEventLoopPoolSize(properties.getEventLoopPoolSize());
 		vertxOptions.setWorkerPoolSize(properties.getWorkerThreads());
