@@ -8,6 +8,8 @@ import com.swak.Constants;
 import com.swak.reactivex.transport.TransportProperties;
 import com.swak.utils.Maps;
 
+import io.netty.handler.logging.LogLevel;
+import io.netty.util.ResourceLeakDetector.Level;
 import io.vertx.core.VertxOptions;
 
 /**
@@ -20,6 +22,9 @@ public class VertxProperties extends TransportProperties {
 
 	private String host = null;
 	private int port = 8888;
+	private LogLevel serverLogLevel = null;
+	private Level leakDetectionLevel = Level.DISABLED;
+	private boolean threadCache = true;
 	private int eventLoopPoolSize = VertxOptions.DEFAULT_EVENT_LOOP_POOL_SIZE;
 	private int internalBlockingThreads = 10;// vertx Blocking 内部使用
 	private int workerThreads = 10; // vertx Verticle 内部使用
@@ -51,6 +56,24 @@ public class VertxProperties extends TransportProperties {
 	private String keyStorePass = "secret"; // keyStore 的密码
 	private String jwtTokenName = "X-Token";
 
+	public LogLevel getServerLogLevel() {
+		return serverLogLevel;
+	}
+	public Level getLeakDetectionLevel() {
+		return leakDetectionLevel;
+	}
+	public boolean isThreadCache() {
+		return threadCache;
+	}
+	public void setServerLogLevel(LogLevel serverLogLevel) {
+		this.serverLogLevel = serverLogLevel;
+	}
+	public void setLeakDetectionLevel(Level leakDetectionLevel) {
+		this.leakDetectionLevel = leakDetectionLevel;
+	}
+	public void setThreadCache(boolean threadCache) {
+		this.threadCache = threadCache;
+	}
 	public long getMaxEventLoopExecuteTime() {
 		return maxEventLoopExecuteTime;
 	}

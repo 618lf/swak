@@ -49,6 +49,16 @@ public class VertxAutoConfiguration {
 	 */
 	@Bean
 	public ReactiveServer httpServer(AnnotationBean annotationBean, VertxProperties properties) {
+		// threadCache
+		if (!properties.isThreadCache()) {
+			System.setProperty("io.netty.allocator.tinyCacheSize", "0");
+			System.setProperty("io.netty.allocator.smallCacheSize", "0");
+			System.setProperty("io.netty.allocator.normalCacheSize", "0");
+		}
+		// leakDetection
+		if (properties.getLeakDetectionLevel() != null) {
+			System.setProperty("io.netty.leakDetection.level", properties.getLeakDetectionLevel().name());
+		}
 		return new ReactiveServer(annotationBean, properties);
 	}
 }
