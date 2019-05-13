@@ -143,3 +143,9 @@ ${project.build.finalName}:项目打包输出文件的名称，默认 为${proje
 
 # 版本0.1.3.2
 简化 baseEntity， 升级核心jar
+
+vertx 的 internalBlockingThreads， workerThreads
+如果当前线程是vertx线程，则使用 executeBlocking 执行阻塞代码时会使用workerThreads 来执行
+否则会使用 internalBlockingThreads 来执行代码。
+
+例如，api 中执行executeBlocking 使用 workerThreads 来执行代码
