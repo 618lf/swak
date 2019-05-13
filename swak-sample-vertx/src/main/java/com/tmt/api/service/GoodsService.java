@@ -15,7 +15,7 @@ public class GoodsService implements GoodsServiceFacade {
 
 	@Override
 	public String sayHello() {
-		System.out.println("service:" + Thread.currentThread());
+		//System.out.println("service:" + Thread.currentThread());
 		return "Hello World!";
 	}
 }

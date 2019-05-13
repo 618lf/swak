@@ -9,7 +9,6 @@ import com.swak.security.JwtAuthProvider;
 import com.swak.utils.Sets;
 import com.swak.vertx.config.IRouterConfig;
 import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.handler.StaticHandler;
 import com.swak.vertx.handler.VertxHandler;
 import com.swak.vertx.security.JwtAuthHandler;
 import com.swak.vertx.security.SecurityFilter;
@@ -52,6 +51,7 @@ public class AppConfiguration {
 		.definition("/api/logout=anno")
 		.definition("/api/reqister=anno")
 		.definition("/api/goods=anno")
+		.definition("/api/test=anno")
 		.definition("/api/user/=user")
 		.definition("/api/manage/=user, role[admin]")
 		.definition("/=user");
@@ -75,7 +75,7 @@ public class AppConfiguration {
 				router.route().handler(BodyHandler.create(properties.getUploadDirectory())
 							  .setBodyLimit(properties.getBodyLimit())
 							  .setDeleteUploadedFilesOnEnd(properties.isDeleteUploadedFilesOnEnd()));
-				router.route().handler(StaticHandler.create("static")); // 使用内部阻塞线程处理和work线程不是同一种线程
+				// router.route().handler(StaticHandler.create("static")); // 使用内部阻塞线程处理和work线程不是同一种线程
 				router.route().handler(JwtAuthHandler.create(jwtAuth, securityFilter));
 			}
 		};
