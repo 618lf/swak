@@ -3,9 +3,11 @@ package com.swak.vertx.security;
 import com.swak.Constants;
 import com.swak.security.JwtAuthProvider;
 import com.swak.security.jwt.JWTPayload;
+import com.swak.utils.StringUtils;
 import com.swak.vertx.security.filter.Filter;
 
 import io.vertx.core.Handler;
+import io.vertx.ext.web.Cookie;
 import io.vertx.ext.web.RoutingContext;
 
 /**
@@ -32,25 +34,32 @@ public class JwtAuthHandler implements Handler<RoutingContext> {
 
 		// 主体信息
 		Subject subject = null;
-		
+
 		try {
-			
-			// 获取 token 名称
+
+			// 从header 中获取 token
 			String token = context.request().getHeader(jwtAuthProvider.getTokenName());
+
+			// 从cookie 中获取 token
+			Cookie cookie = null;
+			if (StringUtils.isBlank(token) && (cookie = context.getCookie(jwtAuthProvider.getTokenName())) != null) {
+				token = cookie.getValue();
+			}
 
 			// 获取 JWTPayload
 			JWTPayload payload = jwtAuthProvider.verifyToken(token);
 
 			// 创建主体
 			subject = new Subject(payload);
-			
-		} catch (Exception e) {}
-		
+
+		} catch (Exception e) {
+		}
+
 		// 空实现
 		if (subject == null) {
 			subject = new Subject();
 		}
-		
+
 		// 绑定当前请求
 		context.put(Constants.SUBJECT_NAME, subject);
 
