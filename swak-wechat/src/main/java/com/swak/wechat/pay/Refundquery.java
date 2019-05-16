@@ -138,7 +138,7 @@ public class Refundquery {
 	 * @param config
 	 * @throws Exception 
 	 */
-	public void checkAndSign(WechatConfig config) throws Exception {
+	public void checkAndSign(WechatConfig config) {
 		if (StringUtils.isBlank(getAppid())) {
 			this.setAppid(config.getMchApp());
 		}
