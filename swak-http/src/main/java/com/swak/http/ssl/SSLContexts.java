@@ -86,8 +86,7 @@ public class SSLContexts {
 		return this;
 	}
 
-	public SSLContexts loadTrustMaterial(final KeyStore truststore)
-			throws NoSuchAlgorithmException, KeyStoreException {
+	public SSLContexts loadTrustMaterial(final KeyStore truststore) throws NoSuchAlgorithmException, KeyStoreException {
 		final TrustManagerFactory tmfactory = TrustManagerFactory
 				.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 		tmfactory.init(truststore);
@@ -124,5 +123,14 @@ public class SSLContexts {
 		final SSLContext sslcontext = SSLContext.getInstance(this.protocol != null ? this.protocol : TLS);
 		initSSLContext(sslcontext, keymanagers, trustmanagers, secureRandom);
 		return sslcontext;
+	}
+
+	/**
+	 * 工厂对象
+	 * 
+	 * @return
+	 */
+	public static SSLContexts me() {
+		return new SSLContexts();
 	}
 }
