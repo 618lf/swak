@@ -61,7 +61,10 @@ public class Refundorder {
 	
 	@XmlElement
 	private String refund_account;
-
+	
+	@XmlElement
+	private String notify_url;
+	
 	public String getAppid() {
 		return appid;
 	}
@@ -166,7 +169,14 @@ public class Refundorder {
 		this.refund_account = refund_account;
 	}
 	
-	
+	public String getNotify_url() {
+		return notify_url;
+	}
+
+	public void setNotify_url(String notify_url) {
+		this.notify_url = notify_url;
+	}
+
 	/**
 	 * 校验并设置签名
 	 * 
@@ -174,6 +184,9 @@ public class Refundorder {
 	 * @throws Exception 
 	 */
 	public void checkAndSign(WechatConfig config) {
+		if (StringUtils.isBlank(this.getNotify_url())) {
+			this.setNotify_url(config.getRefundNotifyUrl());
+		}
 		if (StringUtils.isBlank(getAppid())) {
 			this.setAppid(config.getMchApp());
 		}

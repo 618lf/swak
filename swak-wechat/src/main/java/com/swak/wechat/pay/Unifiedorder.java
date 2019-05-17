@@ -243,7 +243,7 @@ public class Unifiedorder {
 	 */
 	public void checkAndSign(WechatConfig config) {
 		if (StringUtils.isBlank(this.getNotify_url())) {
-			this.setNotify_url(config.getNotifyUrl());
+			this.setNotify_url(config.getPayNotifyUrl());
 		}
 		if (StringUtils.isBlank(getAppid())) {
 			this.setAppid(config.getMchApp());
