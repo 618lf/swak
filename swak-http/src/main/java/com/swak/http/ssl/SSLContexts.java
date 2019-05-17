@@ -27,23 +27,20 @@
 
 package com.swak.http.ssl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
+import java.security.UnrecoverableKeyException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 
 /**
  * Builder for {@link javax.net.ssl.SSLContext} instances.
@@ -85,31 +82,22 @@ public class SSLContexts {
 		this.secureRandom = secureRandom;
 		return this;
 	}
-
-	public SSLContexts loadTrustMaterial(final KeyStore truststore) throws NoSuchAlgorithmException, KeyStoreException {
-		final TrustManagerFactory tmfactory = TrustManagerFactory
-				.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-		tmfactory.init(truststore);
-		final TrustManager[] tms = tmfactory.getTrustManagers();
-		if (tms != null) {
-			for (final TrustManager tm : tms) {
-				this.trustmanagers.add(tm);
-			}
-		}
-		return this;
-	}
-
-	public SSLContexts loadTrustMaterial(final File file, final char[] storePassword)
-			throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException {
-		final KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-		final FileInputStream instream = new FileInputStream(file);
-		try {
-			trustStore.load(instream, storePassword);
-		} finally {
-			instream.close();
-		}
-		return loadTrustMaterial(trustStore);
-	}
+    
+    public SSLContexts loadKeyMaterial(
+            final KeyStore keystore,
+            final char[] keyPassword)
+            throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+        final KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(
+                KeyManagerFactory.getDefaultAlgorithm());
+        kmfactory.init(keystore, keyPassword);
+        final KeyManager[] kms =  kmfactory.getKeyManagers();
+        if (kms != null) {
+            for (final KeyManager km : kms) {
+                keymanagers.add(km);
+            }
+        }
+        return this;
+    }
 
 	protected void initSSLContext(final SSLContext sslcontext, final Collection<KeyManager> keyManagers,
 			final Collection<TrustManager> trustManagers, final SecureRandom secureRandom)
