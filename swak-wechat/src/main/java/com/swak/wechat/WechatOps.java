@@ -11,6 +11,8 @@ import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.wechat.codec.SignUtils;
 import com.swak.wechat.pay.MchOrderquery;
+import com.swak.wechat.pay.Refundorder;
+import com.swak.wechat.pay.Refundquery;
 import com.swak.wechat.pay.SandboxSignKey;
 import com.swak.wechat.pay.Unifiedorder;
 import com.swak.wechat.tmpmsg.TemplateMessageResult;
@@ -196,7 +198,7 @@ public class WechatOps {
 	}
 
 	// ==========================================================
-	// 微信支付： 下单 -> 查询订单
+	// 微信支付： 下单 -> 查询订单 -> 退款 -> 退款查询
 	// ==========================================================
 
 	/**
@@ -222,7 +224,7 @@ public class WechatOps {
 			String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API).append(res).toString();
 			unifiedorder.checkAndSign(app);
 			String reqBody = JaxbMapper.toXml(unifiedorder);
-			return app.request(url, reqBody);
+			return app.request(url, reqBody, false);
 		}).thenApply(res -> {
 			return app.process(res, unifiedorder.getSign_type());
 		}).thenApply(res -> {
@@ -259,9 +261,67 @@ public class WechatOps {
 			String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API).append(res).toString();
 			mchOrderquery.checkAndSign(app);
 			String reqBody = JaxbMapper.toXml(mchOrderquery);
-			return app.request(url, reqBody);
+			return app.request(url, reqBody, false);
 		}).thenApply(res -> {
 			return app.process(res, mchOrderquery.getSign_type());
+		});
+	}
+	
+	/**
+	 * 退款
+	 * 
+	 * @param app
+	 * @param refund
+	 * @return
+	 */
+	public static CompletableFuture<Map<String, Object>> refundOrder(WechatConfig app, Refundorder refund) {
+		CompletableFuture<String> future = null;
+		if (app.isUseSandbox()) {
+			refund.setSign_type(Constants.MD5);
+			future = getSandboxSignKey(app, refund.getSign_type()).thenApply(res -> {
+				app.setMchKey(res);
+				return Constants.SANDBOX_REFUND_URL_SUFFIX;
+			});
+		} else {
+			refund.setSign_type(Constants.HMACSHA256);
+			future = CompletableFuture.completedFuture(Constants.REFUND_URL_SUFFIX);
+		}
+		return future.thenCompose(res -> {
+			String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API).append(res).toString();
+			refund.checkAndSign(app);
+			String reqBody = JaxbMapper.toXml(refund);
+			return app.request(url, reqBody, true);
+		}).thenApply(res -> {
+			return app.process(res, refund.getSign_type());
+		});
+	}
+	
+	/**
+	 * 退款申请查询
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public static CompletableFuture<Map<String, Object>> refundQuery(WechatConfig app,  Refundquery query) {
+		CompletableFuture<String> future = null;
+ 		if (app.isUseSandbox()) {
+ 			query.setSign_type(Constants.MD5);
+ 			future = getSandboxSignKey(app, query.getSign_type()).thenApply(res -> {
+ 				app.setMchKey(res);
+ 				return Constants.SANDBOX_REFUNDQUERY_URL_SUFFIX;
+ 			});
+ 		} else {
+ 			query.setSign_type(Constants.HMACSHA256);
+ 			future = CompletableFuture.completedFuture(Constants.REFUNDQUERY_URL_SUFFIX);
+ 		}
+		
+ 		return future.thenCompose(res -> {
+			String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API).append(res).toString();
+			query.checkAndSign(app);
+			String reqBody = JaxbMapper.toXml(query);
+			return app.request(url, reqBody, false);
+		}).thenApply(res -> {
+			return app.process(res, query.getSign_type());
 		});
 	}
 
@@ -280,7 +340,7 @@ public class WechatOps {
 		String reqBody = JaxbMapper.toXml(data);
 		String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API)
 				.append(Constants.SANDBOX_GET_SIGNKEY_SUFFIX).toString();
-		return app.request(url, reqBody).thenApply(res -> {
+		return app.request(url, reqBody, false).thenApply(res -> {
 			Map<String, Object> maps = Maps.fromXml(res);
 			return String.valueOf(maps.get("sandbox_signkey"));
 		});
