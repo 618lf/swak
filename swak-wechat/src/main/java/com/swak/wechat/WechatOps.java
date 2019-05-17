@@ -280,11 +280,11 @@ public class WechatOps {
 			refund.setSign_type(Constants.MD5);
 			future = getSandboxSignKey(app, refund.getSign_type()).thenApply(res -> {
 				app.setMchKey(res);
-				return Constants.SANDBOX_UNIFIEDORDER_URL_SUFFIX;
+				return Constants.SANDBOX_REFUND_URL_SUFFIX;
 			});
 		} else {
 			refund.setSign_type(Constants.HMACSHA256);
-			future = CompletableFuture.completedFuture(Constants.UNIFIEDORDER_URL_SUFFIX);
+			future = CompletableFuture.completedFuture(Constants.REFUND_URL_SUFFIX);
 		}
 		return future.thenCompose(res -> {
 			String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API).append(res).toString();
@@ -308,11 +308,11 @@ public class WechatOps {
  			query.setSign_type(Constants.MD5);
  			future = getSandboxSignKey(app, query.getSign_type()).thenApply(res -> {
  				app.setMchKey(res);
- 				return Constants.SANDBOX_UNIFIEDORDER_URL_SUFFIX;
+ 				return Constants.SANDBOX_REFUNDQUERY_URL_SUFFIX;
  			});
  		} else {
  			query.setSign_type(Constants.HMACSHA256);
- 			future = CompletableFuture.completedFuture(Constants.UNIFIEDORDER_URL_SUFFIX);
+ 			future = CompletableFuture.completedFuture(Constants.REFUNDQUERY_URL_SUFFIX);
  		}
 		
  		return future.thenCompose(res -> {
