@@ -18,6 +18,7 @@ import com.swak.entity.Page;
 import com.swak.entity.Parameters;
 import com.swak.persistence.BaseDao;
 import com.swak.persistence.QueryCondition;
+import com.swak.utils.SpringContextHolder;
 
 /**
  * @author TMT 封装了公用操作数据的，但查询的只能在子类内部使用
@@ -32,6 +33,11 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 */
 	@Autowired
 	protected PlatformTransactionManager transactionManager;
+
+	/**
+	 * 代理类
+	 */
+	protected Object proxy;
 
 	/**
 	 * 在子类实现此函数,为下面的CRUD操作提供DAO.
@@ -54,6 +60,22 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 			transactionManager.rollback(status);
 			throw e;
 		}
+	}
+
+	/**
+	 * 获得代理类
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	protected <U> U getProxy() {
+		if (this.proxy == null) {
+			Class<?>[] interfacess = this.getClass().getInterfaces();
+			if (interfacess != null && interfacess.length > 0) {
+				this.proxy = SpringContextHolder.getBean(interfacess[0]);
+			}
+		}
+		return (U) this.proxy;
 	}
 
 	/**
