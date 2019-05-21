@@ -18,7 +18,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 public class JsonMapper {
 
 	//序列化
-	private static SerializerFeature[] FEATURES = {SerializerFeature.DisableCircularReferenceDetect};
+	public static SerializerFeature[] FEATURES = {SerializerFeature.DisableCircularReferenceDetect};
 	
 	/**
 	 * json to List<java bean>

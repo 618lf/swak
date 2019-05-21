@@ -81,8 +81,8 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 
 		// 获取身份,解析错误会抛出异常
 		JWTPayload payload = jwt.verifyToken(token);
-		Serializable id = payload.getValue("id");
-		String account = payload.getValue("account");
+		Serializable id = payload.get("id");
+		String account = payload.get("account");
 		Principal principal = new Principal();
 		principal.setAccount(account);
 		principal.setId(id);

@@ -168,7 +168,7 @@ public final class JWT {
 		JWTHeader header = new JWTHeader(new String(base64urlDecode(headerSeg), UTF8));
 		JWTPayload payload = new JWTPayload(new String(base64urlDecode(payloadSeg), UTF8));
 
-		String alg = header.getValue("alg");
+		String alg = header.get("alg");
 
 		List<Crypto> cryptos = cryptoMap.get(alg);
 
@@ -201,14 +201,14 @@ public final class JWT {
 		final long now = (System.currentTimeMillis() / 1000);
 
 		if (jwt.containsKey("exp") && !options.isIgnoreExpiration()) {
-			Long exp = jwt.getValue("exp");
+			Long exp = jwt.getLong("exp");
 			if (now - options.getLeeway() >= exp) {
 				throw new RuntimeException("Expired JWT token: exp <= now");
 			}
 		}
 
 		if (jwt.containsKey("iat")) {
-			Long iat = jwt.getValue("iat");
+			Long iat = jwt.getLong("iat");
 			// issue at must be in the past
 			if (iat > now + options.getLeeway()) {
 				throw new RuntimeException("Invalid JWT token: iat > now");
@@ -216,7 +216,7 @@ public final class JWT {
 		}
 
 		if (jwt.containsKey("nbf")) {
-			Long nbf = jwt.getValue("nbf");
+			Long nbf = jwt.getLong("nbf");
 			// not before must be after now
 			if (nbf > now + options.getLeeway()) {
 				throw new RuntimeException("Invalid JWT token: nbf > now");
@@ -248,7 +248,7 @@ public final class JWT {
 		long timestamp = System.currentTimeMillis() / 1000;
 
 		if (!options.isNoTimestamp()) {
-			payload.put("iat", payload.getValue("iat", timestamp));
+			payload.put("iat", payload.get("iat") != null ? payload.get("iat") : timestamp);
 		}
 
 		if (options.getExpiresInSeconds() > 0) {

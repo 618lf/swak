@@ -2,7 +2,7 @@ package com.swak.security.jwt;
 
 import java.util.Map;
 
-import com.swak.utils.JsonMapper;
+import com.alibaba.fastjson.util.TypeUtils;
 
 /**
  * jwt 数据操作
@@ -24,21 +24,20 @@ public abstract class JWTObject {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T getValue(String key) {
+	public <T> T get(String key) {
 		return (T) map.get(key);
 	}
-
+	
 	/**
-	 * 获取数据
+	 * 获取数据 - Long 返回
 	 * 
 	 * @param key
 	 * @param defaultValue
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public <T> T getValue(String key, Object defaultValue) {
-		Object value = map.get(key);
-		return (T)(value == null ? defaultValue : value);
+	public Long getLong(String key) {
+		Object value = this.get(key);
+		return TypeUtils.castToLong(value);
 	}
 
 	/**
@@ -64,15 +63,6 @@ public abstract class JWTObject {
 	}
 
 	/**
-	 * Encode this JSON object as a string.
-	 *
-	 * @return the string encoding.
-	 */
-	public String encode() {
-		return JsonMapper.toJson(this.map);
-	}
-
-	/**
 	 * 当前的对象
 	 * 
 	 * @return
@@ -84,9 +74,19 @@ public abstract class JWTObject {
 
 	/**
 	 * 实际的数据
+	 * 
 	 * @return
 	 */
 	public Map<String, Object> getData() {
 		return map;
+	}
+	
+	/**
+	 * 格式化为JOSN
+	 * 
+	 * @return
+	 */
+	public String encode() {
+		return JWTEncode.encode(this.map);
 	}
 }

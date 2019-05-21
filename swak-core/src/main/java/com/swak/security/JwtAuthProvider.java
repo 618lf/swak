@@ -84,12 +84,12 @@ public class JwtAuthProvider {
 			try {
 				URL url = new URL(path);
 				return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
-			}catch (Exception e) {
+			} catch (Exception e) {
 				return new ClassPathResource(path);
 			}
 		}
 	}
-	
+
 	/**
 	 * token 失效的时间设置
 	 * 
@@ -122,12 +122,12 @@ public class JwtAuthProvider {
 		if (StringUtils.isBlank(token)) {
 			return null;
 		}
-		
+
 		// 解密token
 		JWTPayload payload = jwt.decode(token);
-		
+
 		// 验证失败会抛出异常
-		if (options.isIgnoreExpiration()) {
+		if (!options.isIgnoreExpiration()) {
 			jwt.isExpired(payload, options);
 		}
 		return payload;
