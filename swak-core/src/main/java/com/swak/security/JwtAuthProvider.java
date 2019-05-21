@@ -89,6 +89,18 @@ public class JwtAuthProvider {
 			}
 		}
 	}
+	
+	/**
+	 * token 失效的时间设置
+	 * 
+	 * @param expiresInSeconds
+	 * @return
+	 */
+	public JwtAuthProvider setExpiresInSeconds(int expiresInSeconds) {
+		options.setExpiresInSeconds(expiresInSeconds);
+		options.setIgnoreExpiration(false);
+		return this;
+	}
 
 	/**
 	 * 签名，生成 token
@@ -110,21 +122,15 @@ public class JwtAuthProvider {
 		if (StringUtils.isBlank(token)) {
 			return null;
 		}
-		return jwt.decode(token);
-	}
-
-	/**
-	 * 是否过期
-	 * 
-	 * @param token
-	 * @return
-	 */
-	public Boolean isExpired(JWTPayload payload) {
-		return jwt.isExpired(payload, options);
-	}
-
-	public JWTOptions getOptions() {
-		return options;
+		
+		// 解密token
+		JWTPayload payload = jwt.decode(token);
+		
+		// 验证失败会抛出异常
+		if (options.isIgnoreExpiration()) {
+			jwt.isExpired(payload, options);
+		}
+		return payload;
 	}
 
 	public String getTokenName() {

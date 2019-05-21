@@ -14,7 +14,7 @@ public class JWTOptions {
 	private static final JWTHeader EMPTY = new JWTHeader();
 
 	private int leeway = 0;
-	private boolean ignoreExpiration;
+	private boolean ignoreExpiration = true; // 默认不会验证有效期
 	private String algorithm = "HS512";
 	private JWTHeader header = EMPTY;
 	private boolean noTimestamp;
