@@ -17,7 +17,7 @@ public class JWTOptions {
 	private boolean ignoreExpiration = true; // 默认不会验证有效期
 	private String algorithm = "HS512";
 	private JWTHeader header = EMPTY;
-	private boolean noTimestamp;
+	private boolean noTimestamp = true; // 不需要校验是否后创建的token
 	private int expiresInSeconds;
 	private List<String> audience;
 	private String issuer;
