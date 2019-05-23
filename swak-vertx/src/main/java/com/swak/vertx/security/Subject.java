@@ -1,12 +1,8 @@
 package com.swak.vertx.security;
 
-import java.util.HashMap;
-
 import com.swak.security.jwt.JWTObject;
 import com.swak.security.jwt.JWTPayload;
-import com.swak.utils.JsonMapper;
 import com.swak.utils.Maps;
-import com.swak.utils.StringUtils;
 
 /**
  * 授权主体
@@ -37,20 +33,6 @@ public class Subject extends JWTObject {
 	public Subject(JWTPayload payload) {
 		if (payload != null) {
 			this.map = payload.getData();
-		} else {
-			this.map = Maps.newHashMap();
-		}
-	}
-
-	/**
-	 * 必须传入 payload
-	 * 
-	 * @param payload
-	 */
-	@SuppressWarnings("unchecked")
-	public Subject(String payload) {
-		if (StringUtils.isNotBlank(payload)) {
-			this.map = JsonMapper.fromJson(payload, HashMap.class);
 		} else {
 			this.map = Maps.newHashMap();
 		}
@@ -103,8 +85,7 @@ public class Subject extends JWTObject {
 	 * @return
 	 */
 	public Long getId() {
-		String id = this.get(ID_ATTR);
-		return id != null ? Long.parseLong(id) : null;
+		return this.getLong(ID_ATTR);
 	}
 
 	/**

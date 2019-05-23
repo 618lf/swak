@@ -150,5 +150,12 @@ vertx 的 internalBlockingThreads， workerThreads
 
 例如，api 中执行executeBlocking 使用 workerThreads 来执行代码
 
+vertx：
+RouteImpl --  具体的某个路由
+RouterImpl -- 所有的路由集合
+RoutingContextImpl -- 请求对应的路由执行链
+Http1xServerConnection -- 一次请求的处理
+
 问题1： 找遍了spring aop 中的 exposeProxy，之后测试是否使用另一种方式的aop。发现默认aop没有设置的地方。
 不知道以后会不会提供。也可以重新从spring中获取代理类
+
