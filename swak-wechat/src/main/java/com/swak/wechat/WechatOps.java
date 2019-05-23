@@ -15,6 +15,7 @@ import com.swak.wechat.pay.Refundorder;
 import com.swak.wechat.pay.Refundquery;
 import com.swak.wechat.pay.SandboxSignKey;
 import com.swak.wechat.pay.Unifiedorder;
+import com.swak.wechat.tmpmsg.TemplateMessage;
 import com.swak.wechat.tmpmsg.TemplateMessageResult;
 import com.swak.wechat.token.AccessToken;
 import com.swak.wechat.token.Ticket;
@@ -60,7 +61,7 @@ public class WechatOps {
 		CompletableFuture<TemplateMessageResult> future = RequestBuilder.post()
 				.setUrl("https://api.weixin.qq.com/cgi-bin/message/template/send")
 				.addFormParam("access_token", access_token).setBody(StringUtils.getBytesUtf8(messageJson))
-				.json(UserInfo.class).future();
+				.json(TemplateMessage.class).future();
 		return future.thenApply(res -> {
 			return res;
 		});
