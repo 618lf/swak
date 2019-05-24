@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * 
  * @author lifeng
  */
-@Target({ ElementType.FIELD })
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Json {

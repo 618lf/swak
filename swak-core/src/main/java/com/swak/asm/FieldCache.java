@@ -144,7 +144,7 @@ public class FieldCache {
 			this.propertyName = propertyName;
 			this.method = method;
 			this.field = field;
-			this.isJson = field.getAnnotation(Json.class) != null;
+			this.isJson = field.getAnnotation(Json.class) != null || method.getAnnotation(Json.class) != null;
 
 			// 只有一个参数
 			Type fieldType = method.getGenericParameterTypes()[0];
