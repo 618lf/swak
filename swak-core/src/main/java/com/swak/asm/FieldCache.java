@@ -9,6 +9,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.swak.annotation.Json;
 import com.swak.utils.Maps;
 import com.swak.utils.ReflectUtils;
 
@@ -134,13 +135,16 @@ public class FieldCache {
 		private final String propertyName;
 		private final Method method;
 		private final Field field;
+		private final boolean isJson;
 		private Class<?> fieldClass;
+		private Class<?> nestedFieldClass;
 		private Type fieldType;
 
 		public FieldMeta(Class<?> clazz, String propertyName, Method method, Field field) {
 			this.propertyName = propertyName;
 			this.method = method;
 			this.field = field;
+			this.isJson = field.getAnnotation(Json.class) != null;
 
 			// 只有一个参数
 			Type fieldType = method.getGenericParameterTypes()[0];
@@ -170,6 +174,15 @@ public class FieldCache {
 
 			this.fieldType = genericFieldType;
 			this.fieldClass = fieldClass;
+			this.nestedFieldClass = initNestedfieldClass();
+		}
+
+		private Class<?> initNestedfieldClass() {
+			if (this.fieldType instanceof ParameterizedType) {
+				ParameterizedType pType = (ParameterizedType) this.fieldType;
+				return ReflectUtils.getClass(pType.getActualTypeArguments()[0]);
+			}
+			return this.fieldClass;
 		}
 
 		public String getPropertyName() {
@@ -190,6 +203,18 @@ public class FieldCache {
 
 		public Type getFieldType() {
 			return fieldType;
+		}
+
+		public Class<?> getNestedFieldClass() {
+			return nestedFieldClass;
+		}
+
+		public void setNestedFieldClass(Class<?> nestedFieldClass) {
+			this.nestedFieldClass = nestedFieldClass;
+		}
+
+		public boolean isJson() {
+			return isJson;
 		}
 	}
 }

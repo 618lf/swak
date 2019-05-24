@@ -1,6 +1,7 @@
 package com.swak.vertx.handler;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ import com.swak.Constants;
 import com.swak.asm.FieldCache;
 import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
+import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.annotation.VertxService;
@@ -215,7 +217,9 @@ public class HandlerAdapter extends AbstractRouterHandler {
 
 			// 设置值
 			try {
-				if (field != null) {
+				if (field != null && field.isJson()) {
+					field.getField().set(obj, this.doJsonMapper(value, field));
+				} else if (field != null) {
 					field.getField().set(obj, this.doConvert(value, field.getFieldClass()));
 				}
 			} catch (Exception e) {
@@ -231,6 +235,23 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			arguments.put(entry.getKey(), entry.getValue());
 		});
 		return arguments;
+	}
+
+	/**
+	 * 执行JSON转换
+	 * 
+	 * @param value
+	 * @param field
+	 * @return
+	 */
+	protected Object doJsonMapper(Object json, FieldMeta field) {
+		Class<?> fieldClass = field.getFieldClass();
+		if (fieldClass.isAssignableFrom(List.class)) {
+			return JsonMapper.fromJsonToList(json.toString(), field.getNestedFieldClass());
+		} else if (fieldClass.isAssignableFrom(Map.class)) {
+			return JsonMapper.fromJson(json.toString(), HashMap.class);
+		}
+		return JsonMapper.fromJson(json.toString(), field.getFieldClass());
 	}
 
 	/**
