@@ -40,23 +40,28 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 	private final Map<String, ReferenceBean> references = Maps.newOrderMap();
 	private final Set<IRouterSupplier> routerSuppliers = Sets.newOrderSet();
 	private final Set<IRouterConfig> routerConfigs = Sets.newOrderSet();
-    private final VertxHandler vertx;
-	
-    public AnnotationBean(VertxHandler vertx) {
-    	this.vertx = vertx;
-    }
+	private final VertxHandler vertx;
+
+	public AnnotationBean(VertxHandler vertx) {
+		this.vertx = vertx;
+	}
+
 	public VertxHandler getVertx() {
 		return vertx;
 	}
+
 	public Set<ServiceBean> getServices() {
 		return services;
 	}
+
 	public Set<RouterBean> getRouters() {
 		return routers;
 	}
+
 	public Set<IRouterSupplier> getRouterSuppliers() {
 		return routerSuppliers;
 	}
+
 	public Set<IRouterConfig> getRouterConfigs() {
 		return routerConfigs;
 	}
@@ -84,12 +89,13 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		// registry router
 		RestController controller = clazz.getAnnotation(RestController.class);
 		if (controller != null) {
-			
+
 			// 定义错误
 			if (StringUtils.contains(beanName, "/")) {
-				throw new BaseRuntimeException("Use @RestController like this: @RestController(path='/api/goods', value='goodsApi') or @RestController(path='/api/goods')");
+				throw new BaseRuntimeException(
+						"Use @RestController like this: @RestController(path='/api/goods', value='goodsApi') or @RestController(path='/api/goods')");
 			}
-			
+
 			RequestMapping classMapping = AnnotatedElementUtils.findMergedAnnotation(clazz, RequestMapping.class);
 			Method[] methods = clazz.getDeclaredMethods();
 			for (Method method : methods) {
@@ -111,7 +117,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 			IRouterSupplier rs = (IRouterSupplier) bean;
 			routerSuppliers.add(rs);
 		}
-		
+
 		// registry config routers
 		if (bean instanceof IRouterConfig) {
 			IRouterConfig rs = (IRouterConfig) bean;
@@ -190,13 +196,21 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		}
 		VertxService serviceMapping = clazz.getAnnotation(VertxService.class);
 		if (serviceMapping != null) {
+			if (serviceMapping.isAop() && !AopUtils.isAopProxy(bean)) {
+				throw new BeanInitializationException("Failed to init service " + beanName + " in class "
+						+ bean.getClass().getName() + ", that need use aop proxy");
+			}
 			Class<?>[] classes = ClassUtils.getAllInterfacesForClass(clazz);
 			if (classes == null || classes.length == 0) {
 				throw new BeanInitializationException("Failed to init service " + beanName + " in class "
 						+ bean.getClass().getName() + ", that need realize one interface");
 			}
 			for (Class<?> inter : classes) {
-				ServiceBean serviceBean = new ServiceBean(bean, serviceMapping.httpServer(), serviceMapping.instances(), serviceMapping.use_pool(), inter);
+				if (inter.getName().startsWith("org.springframework.")) {
+					continue;
+				}
+				ServiceBean serviceBean = new ServiceBean(bean, serviceMapping.httpServer(), serviceMapping.instances(),
+						serviceMapping.use_pool(), inter);
 				services.add(serviceBean);
 			}
 		}
