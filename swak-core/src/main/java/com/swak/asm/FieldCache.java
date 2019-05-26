@@ -1,5 +1,6 @@
 package com.swak.asm;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -9,7 +10,6 @@ import java.lang.reflect.TypeVariable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.swak.annotation.Json;
 import com.swak.utils.Maps;
 import com.swak.utils.ReflectUtils;
 
@@ -135,16 +135,16 @@ public class FieldCache {
 		private final String propertyName;
 		private final Method method;
 		private final Field field;
-		private final boolean isJson;
 		private Class<?> fieldClass;
 		private Class<?> nestedFieldClass;
 		private Type fieldType;
+		private Annotation[] annotations;
 
 		public FieldMeta(Class<?> clazz, String propertyName, Method method, Field field) {
 			this.propertyName = propertyName;
 			this.method = method;
 			this.field = field;
-			this.isJson = field.getAnnotation(Json.class) != null || method.getAnnotation(Json.class) != null;
+			this.annotations = field.getAnnotations();
 
 			// 只有一个参数
 			Type fieldType = method.getGenericParameterTypes()[0];
@@ -213,8 +213,39 @@ public class FieldCache {
 			this.nestedFieldClass = nestedFieldClass;
 		}
 
-		public boolean isJson() {
-			return isJson;
+		public Annotation[] getAnnotations() {
+			Annotation[] anns = this.annotations;
+			if (anns == null) {
+				Map<Class<?>, Annotation> maps = Maps.newHashMap();
+				Annotation[] fields = this.field.getAnnotations();
+				Annotation[] methods = this.method.getAnnotations();
+				if (fields != null) {
+					for (Annotation ann : fields) {
+						maps.put(ann.getClass(), ann);
+					}
+				}
+				if (methods != null) {
+					for (Annotation ann : methods) {
+						maps.put(ann.getClass(), ann);
+					}
+				}
+				anns = new Annotation[maps.size()];
+				this.annotations = maps.values().toArray(anns);
+			}
+			return this.annotations;
+		}
+
+		public <A extends Annotation> boolean hasAnnotation(Class<A> annotationType) {
+			Annotation[] paramAnns = this.getAnnotations();
+			if (paramAnns != null) {
+				for (Annotation ann : paramAnns) {
+					if (annotationType.isInstance(ann)) {
+						return true;
+					}
+				}
+				return false;
+			}
+			return false;
 		}
 	}
 }

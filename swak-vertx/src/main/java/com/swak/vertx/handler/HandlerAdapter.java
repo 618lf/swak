@@ -16,14 +16,17 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
 import com.swak.Constants;
+import com.swak.annotation.Json;
+import com.swak.annotation.Valid;
 import com.swak.asm.FieldCache;
 import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
+import com.swak.validator.Validator;
+import com.swak.validator.errors.BindErrors;
 import com.swak.vertx.annotation.VertxService;
-import com.swak.vertx.handler.validate.BindErrors;
 import com.swak.vertx.security.Subject;
 
 import io.vertx.core.MultiMap;
@@ -40,6 +43,8 @@ import io.vertx.ext.web.RoutingContext;
 @VertxService(value = "handlerAdapter", httpServer = true, instances = -1)
 public class HandlerAdapter extends AbstractRouterHandler {
 
+	@Autowired(required = false)
+	private Validator validator;
 	@Autowired
 	private ConversionService conversionService;
 	@Autowired
@@ -162,27 +167,26 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		// 解析参数
 		Object result = this.resolveObject(parameter, context);
 
-//		// 如果标示了需要验证参数
-//		if (parameter.hasParameterAnnotation(Valid.class) && validator != null) {
-//			BindErrors errors = this.validateObject(result, context);
-//			context.put(Constants.VALIDATE_NAME, errors);
-//		}
+		// 如果标示了需要验证参数
+		if (parameter.hasParameterAnnotation(Valid.class) && validator != null) {
+			BindErrors errors = this.validateObject(result, context);
+			context.put(Constants.VALIDATE_NAME, errors);
+		}
 
 		// 返回参数
 		return result;
 	}
 
-//	private BindErrors validateObject(Object result, RoutingContext context) {
-//		Set<ConstraintViolation<Object>> errors = validator.validate(result);
-//		if (errors != null && !errors.isEmpty()) {
-//			Map<String, String> errorMessages = Maps.newHashMap();
-//			for (ConstraintViolation<Object> violation : errors) {
-//				errorMessages.put(violation.getPropertyPath().toString(), violation.getMessage());
-//			}
-//			return BindErrors.of(errorMessages);
-//		}
-//		return null;
-//	}
+	/**
+	 * 执行校验
+	 * 
+	 * @param result
+	 * @param context
+	 * @return
+	 */
+	private BindErrors validateObject(Object result, RoutingContext context) {
+		return validator.validate(result);
+	}
 
 	/**
 	 * 直接解析对象参数 （只填充第一层）
@@ -236,7 +240,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 
 			// 设置值
 			try {
-				if (field != null && field.isJson()) {
+				if (field != null && field.hasAnnotation(Json.class)) {
 					field.getField().set(obj, this.doJsonMapper(value, field));
 				} else if (field != null) {
 					field.getField().set(obj, this.doConvert(value, field.getFieldClass()));

@@ -1,4 +1,4 @@
-package com.swak.vertx.handler.validate;
+package com.swak.validator.errors;
 
 import java.io.Serializable;
 import java.util.Map;

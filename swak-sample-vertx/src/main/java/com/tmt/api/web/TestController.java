@@ -2,10 +2,10 @@ package com.tmt.api.web;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.swak.validator.errors.BindErrors;
 import com.swak.vertx.annotation.GetMapping;
 import com.swak.vertx.annotation.PostMapping;
 import com.swak.vertx.annotation.RestController;
-import com.swak.vertx.handler.validate.BindErrors;
 import com.tmt.api.dto.GoodsDTO;
 
 import io.vertx.ext.web.RoutingContext;
