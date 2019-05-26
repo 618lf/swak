@@ -1,5 +1,6 @@
 package com.swak.vertx.handler;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -22,6 +23,7 @@ public class MethodParameter {
 	private volatile Type genericParameterType;
 	private volatile Class<?> nestedParameterType;
 	private volatile Type nestedGenericParameterType;
+	private volatile Annotation[] parameterAnnotations;
 
 	public MethodParameter(Class<?> clazz, Method method, int parameterIndex) {
 		this.clazz = clazz;
@@ -83,6 +85,30 @@ public class MethodParameter {
 			}
 		}
 		return parameterType;
+	}
+
+	public Annotation[] getParameterAnnotations() {
+		Annotation[] paramAnns = this.parameterAnnotations;
+		if (paramAnns == null) {
+			Annotation[][] annotationArray = this.method.getParameterAnnotations();
+			int index = this.parameterIndex;
+			paramAnns = (index >= 0 && index < annotationArray.length ? annotationArray[index] : null);
+			this.parameterAnnotations = paramAnns;
+		}
+		return paramAnns;
+	}
+
+	public <A extends Annotation> boolean hasParameterAnnotation(Class<A> annotationType) {
+		Annotation[] paramAnns = this.getParameterAnnotations();
+		if (paramAnns != null) {
+			for (Annotation ann : paramAnns) {
+				if (annotationType.isInstance(ann)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		return false;
 	}
 
 	public void setParameterType(Class<?> parameterType) {

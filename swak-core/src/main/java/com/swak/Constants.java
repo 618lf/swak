@@ -76,6 +76,7 @@ public interface Constants {
 	}
 	
 	String SUBJECT_NAME = "X-Subject";
+	String VALIDATE_NAME = "X-Validate";
 	String TOKEN_NAME = "X-Token";
 	String ASYNC_SUFFIX = "Asyncx";
 	String _ASYNC_SUFFIX = "Async";

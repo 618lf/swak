@@ -159,3 +159,5 @@ Http1xServerConnection -- 一次请求的处理
 问题1： 找遍了spring aop 中的 exposeProxy，之后测试是否使用另一种方式的aop。发现默认aop没有设置的地方。
 不知道以后会不会提供。也可以重新从spring中获取代理类
 
+问题2： http 的简单处理方式可以参考hutool的处理方式
+问题3： 验证框架，感觉使用简单点的方式就够了。

@@ -23,6 +23,7 @@ import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.annotation.VertxService;
+import com.swak.vertx.handler.validate.BindErrors;
 import com.swak.vertx.security.Subject;
 
 import io.vertx.core.MultiMap;
@@ -97,6 +98,13 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		}
 	}
 
+	/**
+	 * 解析参数
+	 * 
+	 * @param context
+	 * @param handler
+	 * @return
+	 */
 	private Object[] parseParameters(RoutingContext context, MethodHandler handler) {
 		MethodParameter[] parameters = handler.getParameters();
 		Object[] args = new Object[parameters.length];
@@ -107,6 +115,13 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		return args;
 	}
 
+	/**
+	 * 支持的参数解析
+	 * 
+	 * @param parameter
+	 * @param context
+	 * @return
+	 */
 	private Object parseParameter(MethodParameter parameter, RoutingContext context) {
 		Class<?> parameterType = parameter.getParameterType();
 		if (parameterType == HttpServerRequest.class) {
@@ -122,6 +137,9 @@ public class HandlerAdapter extends AbstractRouterHandler {
 				context.put(Constants.SUBJECT_NAME, subject);
 			}
 			return subject;
+		} else if (parameterType == BindErrors.class) {
+			BindErrors errors = context.get(Constants.VALIDATE_NAME);
+			return errors == null ? BindErrors.NONE : errors;
 		} else if (BeanUtils.isSimpleProperty(parameterType)) {
 			return this.doConvert(context.request().getParam(parameter.getParameterName()), parameterType);
 		} else if (parameterType.isAssignableFrom(List.class)) {
@@ -129,41 +147,42 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		} else if (parameterType.isAssignableFrom(Map.class)) {
 			return this.getArguments(context);
 		}
-		return this.resolveObject(parameter, context);
+		return this.resolveObjectAndValidate(parameter, context);
 	}
 
-	// /**
-	// * 解析集合 xxx[0] xxx[1] xxx[2] xxx[3]
-	// * 先写一部分，后面的再研究
-	// *
-	// * 这个还没有完成
-	// *
-	// * @param paramtype
-	// * @param context
-	// * @return
-	// */
-	// private Object resolveList(MethodParameter parameter, RoutingContext context)
-	// {
-	// Class<?> parameterType = parameter.getNestedParameterType();
-	// // xxx[0] xxx[1] xxx[2] xxx[3]
-	// if (BeanUtils.isSimpleProperty(parameterType)) {
-	// Pattern pattern = Pattern.compile(new
-	// StringBuilder(parameter.getParameterName()).append("\\[").append("\\d+").append("\\]").toString());
-	// Map<String, Object> arguments = this.getArguments(context);
-	// List<Object> oList = Lists.newArrayList();
-	// for (String key : arguments.keySet()) {
-	// if (pattern.matcher(key).find()) {
-	// oList.add(arguments.get(key));
-	// }
-	// }
-	// }
-	// // xxx[0][yyy] xxx[0][yyy] xxx[0][yyy] xxx[0][yyy]
-	// // 这部分比较复杂
-	// else if(FieldCache.get(parameterType) != null) {
-	//
-	// }
-	// return Lists.newArrayList();
-	// }
+	/**
+	 * 解析参数并验证
+	 * 
+	 * @param parameter
+	 * @param context
+	 * @return
+	 */
+	private Object resolveObjectAndValidate(MethodParameter parameter, RoutingContext context) {
+
+		// 解析参数
+		Object result = this.resolveObject(parameter, context);
+
+//		// 如果标示了需要验证参数
+//		if (parameter.hasParameterAnnotation(Valid.class) && validator != null) {
+//			BindErrors errors = this.validateObject(result, context);
+//			context.put(Constants.VALIDATE_NAME, errors);
+//		}
+
+		// 返回参数
+		return result;
+	}
+
+//	private BindErrors validateObject(Object result, RoutingContext context) {
+//		Set<ConstraintViolation<Object>> errors = validator.validate(result);
+//		if (errors != null && !errors.isEmpty()) {
+//			Map<String, String> errorMessages = Maps.newHashMap();
+//			for (ConstraintViolation<Object> violation : errors) {
+//				errorMessages.put(violation.getPropertyPath().toString(), violation.getMessage());
+//			}
+//			return BindErrors.of(errorMessages);
+//		}
+//		return null;
+//	}
 
 	/**
 	 * 直接解析对象参数 （只填充第一层）
