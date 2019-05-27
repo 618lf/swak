@@ -60,7 +60,7 @@ public class WechatOps {
 		CompletableFuture<TemplateMessageResult> future = RequestBuilder.post()
 				.setUrl("https://api.weixin.qq.com/cgi-bin/message/template/send")
 				.addFormParam("access_token", access_token).setBody(StringUtils.getBytesUtf8(messageJson))
-				.json(UserInfo.class).future();
+				.json(TemplateMessageResult.class).future();
 		return future.thenApply(res -> {
 			return res;
 		});
