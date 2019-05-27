@@ -383,7 +383,11 @@ public class RabbitMQTemplate
 	public void destroy() throws Exception {
 		synchronized (this.connectionMonitor) {
 			if (this.connection != null) {
-				this.connection.close();
+				try {
+					this.connection.close();
+				} catch (Exception e) {
+					logger.trace("Could not close Connection", e);
+				}
 			}
 			synchronized (channels) {
 				for (CacheChannelProxy channel : channels) {
