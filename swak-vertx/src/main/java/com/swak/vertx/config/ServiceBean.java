@@ -1,5 +1,7 @@
 package com.swak.vertx.config;
 
+import com.swak.vertx.annotation.VertxService;
+
 /**
  * 创建服务 bean
  * 
@@ -8,35 +10,40 @@ package com.swak.vertx.config;
 public class ServiceBean {
 
 	private final Object service;
-	private final boolean isHttpServer;
-	private final int instances;
-	private final String use_pool;
 	private final Class<?> type;
+	private final VertxService mapping;
 
-	public ServiceBean(Object service, boolean isHttpServer, int instances, String use_pool, Class<?> type) {
+	public ServiceBean(Class<?> type, Object service, VertxService mapping) {
 		this.service = service;
-		this.isHttpServer = isHttpServer;
-		this.instances = instances;
-		this.use_pool = use_pool;
+		this.mapping = mapping;
 		this.type = type;
 	}
 
-	public boolean isHttpServer() {
-		return isHttpServer;
-	}
-	public int getInstances() {
-		return instances;
-	}
 	public Class<?> getType() {
 		return type;
 	}
-	public String getUse_pool() {
-		return use_pool;
-	}
+
 	public Object getService() {
 		return service;
 	}
+
 	public Class<?> getServiceType() {
 		return type;
+	}
+
+	public boolean isHttpServer() {
+		return mapping.httpServer();
+	}
+
+	public int getInstances() {
+		return mapping.instances();
+	}
+
+	public String getUse_pool() {
+		return mapping.use_pool();
+	}
+
+	public boolean isAop() {
+		return mapping.isAop();
 	}
 }

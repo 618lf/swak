@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
@@ -33,7 +35,7 @@ import com.swak.vertx.utils.RouterUtils;
  * 
  * @author lifeng
  */
-public class AnnotationBean implements BeanPostProcessor, Ordered {
+public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Ordered {
 
 	private final Set<ServiceBean> services = Sets.newOrderSet();
 	private final Set<RouterBean> routers = Sets.newOrderSet();
@@ -41,6 +43,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 	private final Set<IRouterSupplier> routerSuppliers = Sets.newOrderSet();
 	private final Set<IRouterConfig> routerConfigs = Sets.newOrderSet();
 	private final VertxHandler vertx;
+	private BeanFactory beanFactory;
 
 	public AnnotationBean(VertxHandler vertx) {
 		this.vertx = vertx;
@@ -69,6 +72,27 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 	@Override
 	public int getOrder() {
 		return 0;
+	}
+	
+	/**
+	 * 设置工厂类
+	 */
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;
+	}
+	
+	/**
+	 * 获得代理类
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public Object getProxy(Object bean) {
+		if (AopUtils.isAopProxy(bean)) {
+			return bean;
+		}
+		return this.beanFactory.getBean(bean.getClass());
 	}
 
 	/**
@@ -196,10 +220,6 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		}
 		VertxService serviceMapping = clazz.getAnnotation(VertxService.class);
 		if (serviceMapping != null) {
-			if (serviceMapping.isAop() && !AopUtils.isAopProxy(bean)) {
-				throw new BeanInitializationException("Failed to init service " + beanName + " in class "
-						+ bean.getClass().getName() + ", that need use aop proxy");
-			}
 			Class<?>[] classes = ClassUtils.getAllInterfacesForClass(clazz);
 			if (classes == null || classes.length == 0) {
 				throw new BeanInitializationException("Failed to init service " + beanName + " in class "
@@ -209,8 +229,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 				if (inter.getName().startsWith("org.springframework.")) {
 					continue;
 				}
-				ServiceBean serviceBean = new ServiceBean(bean, serviceMapping.httpServer(), serviceMapping.instances(),
-						serviceMapping.use_pool(), inter);
+				ServiceBean serviceBean = new ServiceBean(inter, bean, serviceMapping);
 				services.add(serviceBean);
 			}
 		}
