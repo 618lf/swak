@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
@@ -33,30 +35,36 @@ import com.swak.vertx.utils.RouterUtils;
  * 
  * @author lifeng
  */
-public class AnnotationBean implements BeanPostProcessor, Ordered {
+public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Ordered {
 
 	private final Set<ServiceBean> services = Sets.newOrderSet();
 	private final Set<RouterBean> routers = Sets.newOrderSet();
 	private final Map<String, ReferenceBean> references = Maps.newOrderMap();
 	private final Set<IRouterSupplier> routerSuppliers = Sets.newOrderSet();
 	private final Set<IRouterConfig> routerConfigs = Sets.newOrderSet();
-    private final VertxHandler vertx;
-	
-    public AnnotationBean(VertxHandler vertx) {
-    	this.vertx = vertx;
-    }
+	private final VertxHandler vertx;
+	private BeanFactory beanFactory;
+
+	public AnnotationBean(VertxHandler vertx) {
+		this.vertx = vertx;
+	}
+
 	public VertxHandler getVertx() {
 		return vertx;
 	}
+
 	public Set<ServiceBean> getServices() {
 		return services;
 	}
+
 	public Set<RouterBean> getRouters() {
 		return routers;
 	}
+
 	public Set<IRouterSupplier> getRouterSuppliers() {
 		return routerSuppliers;
 	}
+
 	public Set<IRouterConfig> getRouterConfigs() {
 		return routerConfigs;
 	}
@@ -64,6 +72,27 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 	@Override
 	public int getOrder() {
 		return 0;
+	}
+	
+	/**
+	 * 设置工厂类
+	 */
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;
+	}
+	
+	/**
+	 * 获得代理类
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public Object getProxy(Object bean) {
+		if (AopUtils.isAopProxy(bean)) {
+			return bean;
+		}
+		return this.beanFactory.getBean(bean.getClass());
 	}
 
 	/**
@@ -84,12 +113,13 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		// registry router
 		RestController controller = clazz.getAnnotation(RestController.class);
 		if (controller != null) {
-			
+
 			// 定义错误
 			if (StringUtils.contains(beanName, "/")) {
-				throw new BaseRuntimeException("Use @RestController like this: @RestController(path='/api/goods', value='goodsApi') or @RestController(path='/api/goods')");
+				throw new BaseRuntimeException(
+						"Use @RestController like this: @RestController(path='/api/goods', value='goodsApi') or @RestController(path='/api/goods')");
 			}
-			
+
 			RequestMapping classMapping = AnnotatedElementUtils.findMergedAnnotation(clazz, RequestMapping.class);
 			Method[] methods = clazz.getDeclaredMethods();
 			for (Method method : methods) {
@@ -111,7 +141,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 			IRouterSupplier rs = (IRouterSupplier) bean;
 			routerSuppliers.add(rs);
 		}
-		
+
 		// registry config routers
 		if (bean instanceof IRouterConfig) {
 			IRouterConfig rs = (IRouterConfig) bean;
@@ -196,7 +226,10 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 						+ bean.getClass().getName() + ", that need realize one interface");
 			}
 			for (Class<?> inter : classes) {
-				ServiceBean serviceBean = new ServiceBean(bean, serviceMapping.httpServer(), serviceMapping.instances(), serviceMapping.use_pool(), inter);
+				if (inter.getName().startsWith("org.springframework.")) {
+					continue;
+				}
+				ServiceBean serviceBean = new ServiceBean(inter, bean, serviceMapping);
 				services.add(serviceBean);
 			}
 		}

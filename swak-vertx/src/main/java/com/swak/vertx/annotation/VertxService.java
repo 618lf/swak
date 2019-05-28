@@ -43,4 +43,11 @@ public @interface VertxService {
 	 * @return
 	 */
 	String use_pool() default "";
+	
+	/**
+	 * 是否是代理类
+	 * 
+	 * @return
+	 */
+	boolean isAop() default true;
 }

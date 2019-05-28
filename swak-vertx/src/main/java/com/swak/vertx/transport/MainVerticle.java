@@ -3,6 +3,9 @@ package com.swak.vertx.transport;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.BeanInitializationException;
+
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.config.AnnotationBean;
@@ -91,7 +94,7 @@ public class MainVerticle extends AbstractVerticle {
 	private List<Future<String>> startHttp(ServiceBean service) {
 
 		// Router 处理器
-		RouterHandler routerHandler = (RouterHandler) service.getService();
+		RouterHandler routerHandler = this.getProxyService(service);
 
 		// 初始化 router
 		routerHandler.initRouter(vertx, annotation);
@@ -134,7 +137,8 @@ public class MainVerticle extends AbstractVerticle {
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
 			futures.add(Future.<String>future(s -> {
-				vertx.deployVerticle(new ServiceVerticle(service.getService(), service.getServiceType()), options, s);
+				vertx.deployVerticle(new ServiceVerticle(this.getProxyService(service), service.getServiceType()),
+						options, s);
 			}));
 		}
 		return futures;
@@ -151,5 +155,23 @@ public class MainVerticle extends AbstractVerticle {
 			intstances = properties.getEventLoopPoolSize();
 		}
 		return intstances;
+	}
+
+	/**
+	 * 获得代理服务
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private <T> T getProxyService(ServiceBean service) {
+		if (service.isAop()) {
+			Object proxy = annotation.getProxy(service.getService());
+			if (!AopUtils.isAopProxy(proxy)) {
+				throw new BeanInitializationException("Failed to init service in class "
+						+ service.getService().getClass().getName() + ", that need use aop.");
+			}
+			return (T) proxy;
+		}
+		return (T) service.getService();
 	}
 }
