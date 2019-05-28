@@ -89,20 +89,16 @@ public class RabbitMqAutoConfiguration {
 	 * @param autoRecovery
 	 */
 	private void initTemplate(RabbitMQTemplate template, boolean autoRecovery) {
+		if (threadFactory == null) {
+			threadFactory = new EventLoopFactory(true, "RabbitMQ-Daemons-", new AtomicLong());
+		}
 		if (autoRecovery) {
 			if (executor == null) {
 				executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, threadFactory);
-				EventLoops.register("RabbitMQ-Daemons", executor, () -> {
-					if (!executor.isShutdown()) {
-						executor.shutdownNow();
-					}
-				});
+				EventLoops.register("RabbitMQ-Daemons", executor);
 			}
-			template.setConsumerWorkServiceExecutor(executor).setShutdownExecutor(executor)
+			template.setConsumerWorkServiceExecutor(executor).setShutdownExecutor(null)
 					.setTopologyRecoveryExecutor(executor);
-		}
-		if (threadFactory == null) {
-			threadFactory = new EventLoopFactory(true, "RabbitMQ-Daemons-", new AtomicLong());
 		}
 		template.setDaemonFactory(threadFactory);
 	}
