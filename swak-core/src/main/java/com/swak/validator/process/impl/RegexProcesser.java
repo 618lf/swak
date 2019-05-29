@@ -29,7 +29,10 @@ public class RegexProcesser extends AbstractProcesser {
 	@Override
 	protected boolean doProcess(Annotation check, Object value) {
 		Regex regex = (Regex) check;
-		return value != null && value instanceof String && RegexUtil.checkRegex(regex.value(), (String) value);
+		if (value != null && value instanceof String) {
+			return RegexUtil.checkRegex(regex.value(), (String) value);
+		}
+		return true;
 	}
 
 	/**

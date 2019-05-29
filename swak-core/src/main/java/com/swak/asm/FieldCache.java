@@ -144,6 +144,7 @@ public class FieldCache {
 			this.propertyName = propertyName;
 			this.method = method;
 			this.field = field;
+			this.annotations = this.getAnnotations();
 
 			// 只有一个参数
 			Type fieldType = method.getGenericParameterTypes()[0];
@@ -220,12 +221,12 @@ public class FieldCache {
 				Annotation[] methods = this.method.getAnnotations();
 				if (fields != null) {
 					for (Annotation ann : fields) {
-						maps.put(ann.getClass(), ann);
+						maps.put(ann.annotationType(), ann);
 					}
 				}
 				if (methods != null) {
 					for (Annotation ann : methods) {
-						maps.put(ann.getClass(), ann);
+						maps.put(ann.annotationType(), ann);
 					}
 				}
 				this.annotations = maps;
@@ -234,7 +235,7 @@ public class FieldCache {
 		}
 
 		public boolean hasAnnotation(Class<?> annotationType) {
-			Map<Class<?>, Annotation> anns = this.getAnnotations();
+			Map<Class<?>, Annotation> anns = this.annotations;
 			if (anns != null) {
 				return anns.containsKey(annotationType);
 			}

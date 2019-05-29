@@ -71,7 +71,8 @@
 		<controlsfx.version>8.40.14</controlsfx.version>
 		<freemarker.version>2.3.28</freemarker.version>
 		<rabbitmq.version>5.7.0</rabbitmq.version>
-
+        <lombok.version>1.18.8</lombok.version>
+        
 		<!-- test -->
 		<junit.version>4.12</junit.version>
 
