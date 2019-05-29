@@ -1,11 +1,10 @@
 package com.swak.validator.process.impl;
 
 import java.lang.annotation.Annotation;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.swak.Constants;
 import com.swak.annotation.Regex;
+import com.swak.utils.RegexUtil;
 import com.swak.utils.StringUtils;
 import com.swak.validator.process.AbstractProcesser;
 
@@ -30,7 +29,7 @@ public class RegexProcesser extends AbstractProcesser {
 	@Override
 	protected boolean doProcess(Annotation check, Object value) {
 		Regex regex = (Regex) check;
-		return value != null && value instanceof String && this.checkRegex(regex.value(), (String) value);
+		return value != null && value instanceof String && RegexUtil.checkRegex(regex.value(), (String) value);
 	}
 
 	/**
@@ -39,19 +38,6 @@ public class RegexProcesser extends AbstractProcesser {
 	@Override
 	protected String processMessage(Annotation ann) {
 		Regex regex = (Regex) ann;
-		return StringUtils.defaultIfEmpty(regex.msg(), Constants.EmailErrorMsg);
-	}
-
-	/**
-	 * 正则的校验
-	 * 
-	 * @param regex
-	 * @param value
-	 * @return
-	 */
-	protected boolean checkRegex(String regex, String value) {
-		Pattern p = Pattern.compile(regex);
-		Matcher m = p.matcher(value);
-		return m.matches();
+		return StringUtils.defaultIfEmpty(regex.msg(), Constants.RegexErrorMsg);
 	}
 }

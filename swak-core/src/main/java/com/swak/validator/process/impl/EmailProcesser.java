@@ -23,7 +23,7 @@ public class EmailProcesser extends AbstractProcesser {
 	 */
 	@Override
 	protected boolean doProcess(Annotation check, Object value) {
-		return value != null && value instanceof String && RegexUtil.isPhoneNum((String) value);
+		return value != null && value instanceof String && RegexUtil.isEmail((String) value);
 	}
 
 	/**
@@ -32,6 +32,6 @@ public class EmailProcesser extends AbstractProcesser {
 	@Override
 	protected String processMessage(Annotation ann) {
 		Phone phone = (Phone) ann;
-		return StringUtils.defaultIfEmpty(phone.msg(), Constants.PhoneNumErrorMsg);
+		return StringUtils.defaultIfEmpty(phone.msg(), Constants.EmailErrorMsg);
 	}
 }

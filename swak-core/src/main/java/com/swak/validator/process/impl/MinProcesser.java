@@ -34,19 +34,19 @@ public class MinProcesser extends AbstractProcesser {
 				return false;
 			}
 			return true;
-		} else if(value != null && value instanceof Long) {
+		} else if (value != null && value instanceof Long) {
 			Long _value = (Long) value;
 			if (_value < min.value()) {
 				return false;
 			}
 			return true;
-		} else if(value != null && value instanceof Double) {
+		} else if (value != null && value instanceof Double) {
 			Double _value = (Double) value;
 			if (_value < min.value()) {
 				return false;
 			}
 			return true;
-		} else if(value != null && value instanceof Float) {
+		} else if (value != null && value instanceof Float) {
 			Float _value = (Float) value;
 			if (_value < min.value()) {
 				return false;
