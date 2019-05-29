@@ -30,9 +30,9 @@ public class ValidatorTest {
 		classMeta.getFields().values().forEach(field -> {
 			try {
 				Object value = field.getField().get(order);
-				String result = validator.validate(field, value);
-				System.out.println("rule:" + field.getAnnotations());
-				System.out.println("result:" + result);
+				validator.validate(field, value);
+//				System.out.println("rule:" + field.getAnnotations());
+//				System.out.println("result:" + result);
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
