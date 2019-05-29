@@ -5,14 +5,14 @@ import java.lang.annotation.*;
 import com.swak.utils.StringUtils;
 
 /**
- * 手机号判断
+ * 邮箱判断
  * 
  * @author lifeng
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD })
 @Documented
-public @interface Phone {
+public @interface Email {
 	
 	/**
 	 * 错误描述

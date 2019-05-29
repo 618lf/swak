@@ -138,13 +138,12 @@ public class FieldCache {
 		private Class<?> fieldClass;
 		private Class<?> nestedFieldClass;
 		private Type fieldType;
-		private Annotation[] annotations;
+		private Map<Class<?>, Annotation> annotations;
 
 		public FieldMeta(Class<?> clazz, String propertyName, Method method, Field field) {
 			this.propertyName = propertyName;
 			this.method = method;
 			this.field = field;
-			this.annotations = field.getAnnotations();
 
 			// 只有一个参数
 			Type fieldType = method.getGenericParameterTypes()[0];
@@ -213,10 +212,10 @@ public class FieldCache {
 			this.nestedFieldClass = nestedFieldClass;
 		}
 
-		public Annotation[] getAnnotations() {
-			Annotation[] anns = this.annotations;
+		public Map<Class<?>, Annotation> getAnnotations() {
+			Map<Class<?>, Annotation> anns = this.annotations;
 			if (anns == null) {
-				Map<Class<?>, Annotation> maps = Maps.newHashMap();
+				Map<Class<?>, Annotation> maps = Maps.newHashMap(1);
 				Annotation[] fields = this.field.getAnnotations();
 				Annotation[] methods = this.method.getAnnotations();
 				if (fields != null) {
@@ -229,23 +228,28 @@ public class FieldCache {
 						maps.put(ann.getClass(), ann);
 					}
 				}
-				anns = new Annotation[maps.size()];
-				this.annotations = maps.values().toArray(anns);
+				this.annotations = maps;
 			}
 			return this.annotations;
 		}
 
-		public <A extends Annotation> boolean hasAnnotation(Class<A> annotationType) {
-			Annotation[] paramAnns = this.getAnnotations();
-			if (paramAnns != null) {
-				for (Annotation ann : paramAnns) {
-					if (annotationType.isInstance(ann)) {
-						return true;
-					}
-				}
-				return false;
+		public boolean hasAnnotation(Class<?> annotationType) {
+			Map<Class<?>, Annotation> anns = this.getAnnotations();
+			if (anns != null) {
+				return anns.containsKey(annotationType);
 			}
 			return false;
+		}
+
+		/**
+		 * 返回对应的实例
+		 * 
+		 * @param annotationType
+		 * @return
+		 */
+		@SuppressWarnings("unchecked")
+		public <T> T getAnnotation(Class<?> annotationType) {
+			return hasAnnotation(annotationType) ? (T) (this.annotations.get(annotationType)) : null;
 		}
 	}
 }

@@ -44,6 +44,15 @@ public class Maps {
 	public static <K, V> HashMap<K, V> newHashMap() {
 		return new HashMap<K, V>();
 	}
+	
+	/**
+	 * 创建一个Map
+	 * 
+	 * @return
+	 */
+	public static <K, V> HashMap<K, V> newHashMap(int size) {
+		return new HashMap<K, V>(size);
+	}
 
 	/**
 	 * 创建一个有序的Map

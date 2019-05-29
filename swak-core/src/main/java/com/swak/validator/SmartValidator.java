@@ -1,9 +1,14 @@
 package com.swak.validator;
 
-import com.swak.asm.FieldCache;
-import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
-import com.swak.validator.errors.BindErrors;
+import com.swak.validator.process.Processer;
+import com.swak.validator.process.impl.EmailProcesser;
+import com.swak.validator.process.impl.LengthProcesser;
+import com.swak.validator.process.impl.MaxProcesser;
+import com.swak.validator.process.impl.MinProcesser;
+import com.swak.validator.process.impl.NotNullProcesser;
+import com.swak.validator.process.impl.PhoneProcesser;
+import com.swak.validator.process.impl.RegexProcesser;
 
 /**
  * 简单的验证器
@@ -12,30 +17,28 @@ import com.swak.validator.errors.BindErrors;
  */
 public class SmartValidator implements Validator {
 
+	/**
+	 * 链式 - 处理器
+	 */
+	private Processer processer;
+
+	public SmartValidator() {
+		processer = new NotNullProcesser();
+		LengthProcesser lengthProcesser = new LengthProcesser();
+		MaxProcesser maxProcesser = new MaxProcesser();
+		MinProcesser minProcesser = new MinProcesser();
+		EmailProcesser emailProcesser = new EmailProcesser();
+		PhoneProcesser phoneProcesser = new PhoneProcesser();
+		RegexProcesser regexProcesser = new RegexProcesser();
+		processer.next(lengthProcesser).next(maxProcesser).next(minProcesser).next(emailProcesser).next(phoneProcesser)
+				.next(regexProcesser);
+	}
+
+	/**
+	 * 链式处理校验
+	 */
 	@Override
-	public BindErrors validate(Object object) {
-		ClassMeta classMeta = FieldCache.get(object.getClass());
-		if (classMeta == null) {
-			return null;
-		}
-		this.processClass(classMeta);
-		return null;
-	}
-
-	/**
-	 * 处理 类
-	 * 
-	 * @param classMeta
-	 */
-	private void processClass(ClassMeta classMeta) {
-		classMeta.getFields().values().forEach(this::processField);
-	}
-
-	/**
-	 * 处理 字段
-	 * 
-	 * @param fieldMeta
-	 */
-	private void processField(FieldMeta fieldMeta) {
+	public String validate(FieldMeta field, Object value) {
+		return processer.process(field, value);
 	}
 }

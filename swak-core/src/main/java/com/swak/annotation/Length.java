@@ -9,22 +9,29 @@ import java.lang.annotation.Target;
 import com.swak.utils.StringUtils;
 
 /**
- * 最大值校验
+ * 长度校验
  * 
  * @author lifeng
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD })
 @Documented
-public @interface Max {
-	
+public @interface Length {
+
+	/**
+	 * 最小值
+	 * 
+	 * @return
+	 */
+	int min() default 0;
+
 	/**
 	 * 最大值
 	 * 
 	 * @return
 	 */
-	int value();
-
+	int max() default Integer.MAX_VALUE;
+	
 	/**
 	 * 错误描述
 	 * 

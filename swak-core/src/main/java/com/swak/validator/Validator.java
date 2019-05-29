@@ -1,6 +1,6 @@
 package com.swak.validator;
 
-import com.swak.validator.errors.BindErrors;
+import com.swak.asm.FieldCache.FieldMeta;
 
 /**
  * 基础的验证服务
@@ -8,12 +8,12 @@ import com.swak.validator.errors.BindErrors;
  * @author lifeng
  */
 public interface Validator {
-	
+
 	/**
 	 * 简单的验证
 	 * 
 	 * @param object
 	 * @return
 	 */
-	BindErrors validate(Object object);
+	String validate(FieldMeta field, Object value);
 }

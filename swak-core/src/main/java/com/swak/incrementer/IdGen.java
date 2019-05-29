@@ -3,10 +3,11 @@ package com.swak.incrementer;
 import java.io.Serializable;
 
 import com.swak.Constants;
-import com.swak.utils.RegexpUtil;
+import com.swak.utils.RegexUtil;
 
 /**
  * 封装各种生成唯一性ID算法的工具类.
+ * 
  * @author root
  */
 public final class IdGen {
@@ -15,18 +16,19 @@ public final class IdGen {
 	 * id 生成器
 	 */
 	private static IdGenerator idGenerator;
-	
+
 	/**
 	 * 先设置机器号
+	 * 
 	 * @param strategy
 	 */
 	public static void setServerSn(String serverSn) {
-		String[] ls = RegexpUtil.newRegexpMatcher("([^-]+)-([\\d]+)-([\\d]+)").getArrayGroups(serverSn);
-		if(ls != null && ls.length == 4) {
-		   idGenerator = new Long64Generator(Integer.parseInt(ls[2]),Integer.parseInt(ls[3]));
+		String[] ls = RegexUtil.newRegexpMatcher("([^-]+)-([\\d]+)-([\\d]+)").getArrayGroups(serverSn);
+		if (ls != null && ls.length == 4) {
+			idGenerator = new Long64Generator(Integer.parseInt(ls[2]), Integer.parseInt(ls[3]));
 		}
 	}
-	
+
 	/**
 	 * 判断一个id是否有效 全局定义 id 为-1无效
 	 * 
@@ -51,9 +53,10 @@ public final class IdGen {
 		}
 		return Boolean.FALSE;
 	}
-	
+
 	/**
 	 * 生成主键
+	 * 
 	 * @return
 	 */
 	public static <T> T id() {

@@ -12,7 +12,7 @@ import com.swak.utils.Lists;
  * @author lifeng
  */
 public interface Constants {
-	
+
 	/** 启动的类 */
 	List<Class<?>> BOOT_CLASSES = Lists.newArrayList(1);
 
@@ -39,7 +39,7 @@ public interface Constants {
 	String MOTAN_PREFIX = "spring.motan";
 	String QUARTZ_PREFIX = "spring.quartz";
 	String RABBITMQ_PREFIX = "spring.rabbitmq";
-	
+
 	/** 保留ID **/
 	long ROOT = 0L;
 	long INVALID_ID = -1;
@@ -66,18 +66,30 @@ public interface Constants {
 
 	/** 服务地址 **/
 	String LOCALHOST = "127.0.0.1";
-	
+
 	/** 重定向 **/
-	String REDIRECT_URL_PREFIX = "redirect:"; 
+	String REDIRECT_URL_PREFIX = "redirect:";
 
 	/** 目录 **/
 	default String temp() {
 		return System.getProperty("java.io.tmpdir");
 	}
-	
+
+	/** request key **/
 	String SUBJECT_NAME = "X-Subject";
 	String VALIDATE_NAME = "X-Validate";
 	String TOKEN_NAME = "X-Token";
+
+	/** method key **/
 	String ASYNC_SUFFIX = "Asyncx";
 	String _ASYNC_SUFFIX = "Async";
+
+	/** validate msg **/
+	String NotNullErrorMsg = "非空校验失败";
+	String MaxErrorMsg = "最大值校验失败";
+	String MinErrorMsg = "最小值校验失败";
+	String LengthErrorMsg = "长度校验失败";
+	String EmailErrorMsg = "邮箱校验失败";
+	String PhoneNumErrorMsg = "手机号校验失败";
+	String RegexErrorMsg = "正则校验失败";
 }

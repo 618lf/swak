@@ -23,6 +23,7 @@ import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
+import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.validator.Validator;
 import com.swak.validator.errors.BindErrors;
@@ -143,8 +144,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			}
 			return subject;
 		} else if (parameterType == BindErrors.class) {
-			BindErrors errors = context.get(Constants.VALIDATE_NAME);
-			return errors == null ? BindErrors.NONE : errors;
+			return this.getBindErrors(context);
 		} else if (BeanUtils.isSimpleProperty(parameterType)) {
 			return this.doConvert(context.request().getParam(parameter.getParameterName()), parameterType);
 		} else if (parameterType.isAssignableFrom(List.class)) {
@@ -164,28 +164,28 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 */
 	private Object resolveObjectAndValidate(MethodParameter parameter, RoutingContext context) {
 
-		// 解析参数
-		Object result = this.resolveObject(parameter, context);
-
-		// 如果标示了需要验证参数
+		// 需要验证
 		if (parameter.hasParameterAnnotation(Valid.class) && validator != null) {
-			BindErrors errors = this.validateObject(result, context);
-			context.put(Constants.VALIDATE_NAME, errors);
+			return this.resolveObject(parameter, context, true);
 		}
 
-		// 返回参数
-		return result;
+		// 不需要验证
+		return this.resolveObject(parameter, context, false);
 	}
 
 	/**
-	 * 执行校验
+	 * 初始化绑定错误
 	 * 
-	 * @param result
 	 * @param context
 	 * @return
 	 */
-	private BindErrors validateObject(Object result, RoutingContext context) {
-		return validator.validate(result);
+	private BindErrors getBindErrors(RoutingContext context) {
+		BindErrors errors = context.get(Constants.VALIDATE_NAME);
+		if (errors == null) {
+			errors = BindErrors.of(Maps.newHashMap());
+			context.put(Constants.VALIDATE_NAME, errors);
+		}
+		return errors;
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * @param arguments
 	 * @return
 	 */
-	private Object resolveObject(MethodParameter parameter, RoutingContext context) {
+	private Object resolveObject(MethodParameter parameter, RoutingContext context, boolean check) {
 		ClassMeta classMeta = FieldCache.get(parameter.getParameterType());
 		if (classMeta == null) {
 			return null;
@@ -205,7 +205,8 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			Object obj = parameter.getParameterType().newInstance();
 			if (!arguments.isEmpty()) {
 				classMeta = FieldCache.get(parameter.getParameterType());
-				this.fillObjectValue(obj, classMeta.getFields(), parameter.getParameterName(), arguments);
+				this.fillObjectValue(obj, classMeta.getFields(), parameter.getParameterName(), arguments, context,
+						check);
 			}
 			return obj;
 		} catch (Exception e) {
@@ -216,7 +217,8 @@ public class HandlerAdapter extends AbstractRouterHandler {
 
 	// 循环 arguments 更好一点
 	private void fillObjectValue(Object obj, Map<String, FieldMeta> fields, String paramName,
-			Map<String, Object> arguments) throws IllegalArgumentException, IllegalAccessException {
+			Map<String, Object> arguments, RoutingContext context, boolean check)
+			throws IllegalArgumentException, IllegalAccessException {
 		Iterator<String> it = arguments.keySet().iterator();
 		while (it.hasNext()) {
 			String key = it.next();
@@ -238,12 +240,26 @@ public class HandlerAdapter extends AbstractRouterHandler {
 				field = fields.get(key);
 			}
 
+			// 不存在的字段，不需要处理
+			if (field == null) {
+				continue;
+			}
+
 			// 设置值
 			try {
-				if (field != null && field.hasAnnotation(Json.class)) {
-					field.getField().set(obj, this.doJsonMapper(value, field));
-				} else if (field != null) {
-					field.getField().set(obj, this.doConvert(value, field.getFieldClass()));
+
+				// 处理结果
+				Object result = field.hasAnnotation(Json.class) ? this.doJsonMapper(value, field)
+						: this.doConvert(value, field.getFieldClass());
+
+				// 设置值
+				field.getField().set(obj, result);
+
+				// 需要校验, 存储校验结构
+				String error = null;
+				if (check && (error = this.validator.validate(field, result)) != null) {
+					BindErrors errors = this.getBindErrors(context);
+					errors.addError(paramName, field.getPropertyName(), error);
 				}
 			} catch (Exception e) {
 				logger.error("Set obj field faile:field[{}]-value[{}]", field.getPropertyName(), value);

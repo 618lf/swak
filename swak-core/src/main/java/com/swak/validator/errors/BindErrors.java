@@ -10,8 +10,6 @@ import java.util.Map;
  */
 public class BindErrors implements Serializable {
 
-	public static final BindErrors NONE = BindErrors.of(null);
-	
 	private static final long serialVersionUID = 1L;
 
 	private Map<String, String> errors;
@@ -23,7 +21,12 @@ public class BindErrors implements Serializable {
 	public void setErrors(Map<String, String> errors) {
 		this.errors = errors;
 	}
-	
+
+	public BindErrors addError(String object, String field, String value) {
+		this.errors.put(new StringBuilder(object).append(".").append(field).toString(), value);
+		return this;
+	}
+
 	public boolean hasError() {
 		return errors != null && !errors.isEmpty();
 	}
