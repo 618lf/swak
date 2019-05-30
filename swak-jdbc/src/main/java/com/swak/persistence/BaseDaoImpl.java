@@ -158,7 +158,7 @@ public class BaseDaoImpl<T, PK> implements BaseDao<T, PK>{
      * 表锁
      */
     @Override
-    public void lock(T entity) {
+    public void lock(Object entity) {
     	this.getSqlRunner().selectOne(getStatementName(LOCK), entity);
     }
     

@@ -77,7 +77,7 @@ public interface BaseDao<T, PK> {
 	 * @param id
 	 * @return
 	 */
-	public void lock(T entity);
+	public void lock(Object entity);
 
 	/**
 	 * 是否存在

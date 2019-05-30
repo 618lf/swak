@@ -155,7 +155,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 * 
 	 * @param id
 	 */
-	protected void lock(T entity) {
+	protected void lock(Object entity) {
 		this.getBaseDao().lock(entity);
 	}
 
