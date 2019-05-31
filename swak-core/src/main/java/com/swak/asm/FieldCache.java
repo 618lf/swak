@@ -111,9 +111,11 @@ public class FieldCache {
 				}
 
 				// 设置可以访问
-				method.setAccessible(true);
-				field.setAccessible(true);
-				this.addField(new FieldMeta(type, propertyName, method, field));
+				if (field != null) {
+					method.setAccessible(true);
+					field.setAccessible(true);
+					this.addField(new FieldMeta(type, propertyName, method, field));
+				}
 			}
 		}
 

@@ -90,13 +90,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- 6.0.16.Final
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>${hibernate-validator.version}</version>
-		</dependency> 
-		-->
 		<dependency>
 			<groupId>com.squareup</groupId>
 			<artifactId>javapoet</artifactId>
