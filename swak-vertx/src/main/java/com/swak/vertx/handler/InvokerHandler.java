@@ -7,7 +7,6 @@ import java.util.concurrent.CompletableFuture;
 import com.swak.Constants;
 import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.MethodMeta;
-import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.annotation.InvokerAddress;
 import com.swak.vertx.transport.codec.Msg;
@@ -63,39 +62,39 @@ public class InvokerHandler implements InvocationHandler {
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		MethodMeta meta = MethodCache.get(method);
-		
+
 		// 异步future
 		CompletableFuture<Object> future = new CompletableFuture<Object>();
-		
+
 		// 构建请求消息
 		Msg request = new Msg(meta, args);
-		
+
 		// 发送消息，处理相应结果
 		vertx.sentMessage(this.address, request, meta.getTimeOut(), res -> {
-			
+
 			// 约定的通讯协议
 			Msg result = (Msg) res.result().body();
-			
+
 			// 错误处理 - 结果返回
-			String result_error = result.getError();
+			Throwable result_error = result.getError();
 			Object result_result = result.getResult();
-			
+
 			// 自动生成异步接口返回值
 			if (meta.getNestedReturnType() == Msg.class) {
 				result_result = result;
 			}
-			
+
 			// 优先错误处理
-			if (StringUtils.isNotBlank(result_error)) {
-				future.completeExceptionally(new BaseRuntimeException(result_error));
+			if (result_error != null) {
+				future.completeExceptionally(result_error);
 			}
-			
+
 			// 结果返回
 			else {
 				future.complete(result_result);
 			}
 		});
-		
+
 		// 返回异步future， futrue收到消息后会触发下一步的操作
 		return future;
 	}

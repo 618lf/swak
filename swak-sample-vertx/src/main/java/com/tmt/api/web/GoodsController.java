@@ -8,6 +8,7 @@ import com.swak.vertx.annotation.GetMapping;
 import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.annotation.VertxReferer;
 import com.tmt.api.entity.Goods;
+import com.tmt.api.exception.GoodsException;
 import com.tmt.api.facade.GoodsServiceFacadeAsync;
 import com.tmt.api.facade.GoodsServiceFacadeAsyncx;
 import com.weibo.api.motan.config.springsupport.annotation.MotanReferer;
@@ -48,7 +49,13 @@ public class GoodsController {
 	@GetMapping("/get")
 	public CompletableFuture<String> get(RoutingContext context) {
 		return goodsService.sayHello().thenApply(msg -> {
-			return msg.getResult();
+			return "1";
+		}).exceptionally(r -> {
+			Throwable e = r.getCause() != null ? r.getCause() : r;
+			if (e instanceof GoodsException) {
+				return "商品錯誤！";
+			}
+			return "错误处理！";
 		});
 	}
 

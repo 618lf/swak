@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.asm.Wrapper;
-import com.swak.utils.ExceptionUtils;
 import com.swak.utils.Maps;
 import com.swak.vertx.transport.codec.Msg;
 
@@ -74,19 +73,20 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 		Msg request = event.body();
 		MethodMeta method = this.lookupMethod(request.getMethodDesc());
 		Object result = null;
-		Exception error = null;
+		Throwable error = null;
 		try {
 			result = wrapper.invokeMethod(service, method.getMethodName(), method.getParameterTypes(),
 					request.getArguments());
-		} catch (Exception e) {
-			error = e;
-			logger.error("Invoke [Request: {} - Method: {}] Error.", request.getMethodDesc(), method, e);
+		} catch (Throwable e) {
+			error = e.getCause() != null ? e.getCause() : e;
+			logger.error("Invoke [Service:{} - Method: {}] Error.", request.getMethodDesc(),
+					service.getClass().getName(), method.getMethodDesc(), e);
 		}
 		Msg response = request.reset();
 
 		// 错误消息
 		if (error != null) {
-			response.setError(ExceptionUtils.causedMessage(error));
+			response.setError(error);
 			event.reply(response);
 		}
 
@@ -97,7 +97,7 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 				if (e == null) {
 					response.setResult(r);
 				} else {
-					response.setError(e.getMessage());
+					response.setError(e);
 				}
 				event.reply(response);
 			});

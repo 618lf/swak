@@ -17,7 +17,7 @@ public class Msg implements Serializable {
 	private String methodDesc;
 	private Object[] arguments;
 	private Object result;
-	private String error;
+	private Throwable error;
 
 	public Msg() {
 
@@ -29,17 +29,9 @@ public class Msg implements Serializable {
 		this.arguments = arguments;
 	}
 
-	public String getError() {
-		return error;
-	}
-
-	public void setError(String error) {
-		this.error = error;
-	}
-
 	@SuppressWarnings("unchecked")
 	public <T> T getResult() {
-		return (T)result;
+		return (T) result;
 	}
 
 	public void setResult(Object result) {
@@ -68,6 +60,14 @@ public class Msg implements Serializable {
 
 	public void setMethodName(String methodName) {
 		this.methodName = methodName;
+	}
+
+	public Throwable getError() {
+		return error;
+	}
+
+	public void setError(Throwable error) {
+		this.error = error;
 	}
 
 	public Msg reset() {

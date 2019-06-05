@@ -70,7 +70,7 @@ public class ResultHandler {
 			this.handlError(ex, context);
 			return;
 		}
-		
+
 		// 允许返回 void 但需自己实现输出
 		if (!context.response().ended()) {
 			context.response().putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
@@ -96,6 +96,6 @@ public class ResultHandler {
 		context.response().end(Result.error(ErrorCode.SERVER_ERROR).toJson());
 
 		// 打印错误信息
-		logger.error("{}", context.request().uri(), e);
+		logger.error("{}", context.request().uri(), e.getCause() != null ? e.getCause() : e);
 	}
 }
