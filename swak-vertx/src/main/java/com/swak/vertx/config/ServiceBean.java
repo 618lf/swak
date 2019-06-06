@@ -31,8 +31,8 @@ public class ServiceBean {
 		return type;
 	}
 
-	public boolean isHttpServer() {
-		return mapping.httpServer();
+	public boolean isHttp() {
+		return mapping.http();
 	}
 
 	public int getInstances() {

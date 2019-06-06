@@ -81,7 +81,7 @@ public class MainVerticle extends AbstractVerticle {
 		List<Future<String>> futures = Lists.newArrayList();
 		Set<ServiceBean> services = annotation.getServices();
 		for (ServiceBean service : services) {
-			if (service.isHttpServer()) {
+			if (service.isHttp()) {
 				this.startHttp(service);
 			} else {
 				this.startService(service);

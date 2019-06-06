@@ -2,6 +2,7 @@ package com.tmt.api.service;
 
 import com.swak.vertx.annotation.VertxService;
 import com.tmt.api.exception.GoodsException;
+import com.tmt.api.facade.GoodsNotServiceFacade;
 import com.tmt.api.facade.GoodsServiceFacade;
 import com.weibo.api.motan.config.springsupport.annotation.MotanService;
 
@@ -10,9 +11,9 @@ import com.weibo.api.motan.config.springsupport.annotation.MotanService;
  * 
  * @author lifeng
  */
-@VertxService(use_pool = "goods", isAop = false)
+@VertxService(use_pool = "goods", isAop = false, service = GoodsServiceFacade.class)
 @MotanService
-public class GoodsService implements GoodsServiceFacade {
+public class GoodsService implements GoodsServiceFacade , GoodsNotServiceFacade{
 
 	@Override
 	public String sayHello() {

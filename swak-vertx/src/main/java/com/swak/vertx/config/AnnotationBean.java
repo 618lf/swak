@@ -73,7 +73,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 	public int getOrder() {
 		return 0;
 	}
-	
+
 	/**
 	 * 设置工厂类
 	 */
@@ -81,7 +81,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
 	}
-	
+
 	/**
 	 * 获得代理类
 	 * 
@@ -226,7 +226,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 						+ bean.getClass().getName() + ", that need realize one interface");
 			}
 			for (Class<?> inter : classes) {
-				if (inter.getName().startsWith("org.springframework.")) {
+				if (inter.getName().startsWith("org.springframework.") || !fitWith(serviceMapping, inter)) {
 					continue;
 				}
 				ServiceBean serviceBean = new ServiceBean(inter, bean, serviceMapping);
@@ -234,5 +234,18 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 			}
 		}
 		return bean;
+	}
+
+	/**
+	 * 
+	 * @param mapping
+	 * @param inter
+	 * @return
+	 */
+	private boolean fitWith(VertxService mapping, Class<?> inter) {
+		if (mapping.service() == null || mapping.service() == void.class) {
+			return true;
+		}
+		return mapping.service() == inter;
 	}
 }

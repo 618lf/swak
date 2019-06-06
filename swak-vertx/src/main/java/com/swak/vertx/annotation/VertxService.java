@@ -9,11 +9,13 @@ import java.lang.annotation.Target;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Service;
 
+import com.swak.utils.StringUtils;
+
 /**
  * 用于配置服务
  * @author lifeng
  */
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Service
@@ -21,33 +23,44 @@ public @interface VertxService {
 
 	/**
 	 * 实例化的名称
+	 * 
 	 * @return
 	 */
 	@AliasFor(annotation = Service.class)
-	String value() default "";
-	
+	String value() default StringUtils.EMPTY;
+
 	/**
 	 * 是否是http
+	 * 
 	 * @return
 	 */
-	boolean httpServer() default false;
-	
+	boolean http() default false;
+
 	/**
 	 * 发布服务的个数
+	 * 
 	 * @return
 	 */
 	int instances() default 1;
-	
+
 	/**
 	 * 可以设置在哪个 pool 中运行
+	 * 
 	 * @return
 	 */
-	String use_pool() default "";
-	
+	String use_pool() default StringUtils.EMPTY;
+
 	/**
 	 * 是否是代理类
 	 * 
 	 * @return
 	 */
 	boolean isAop() default true;
+
+	/**
+	 * 指定服务类
+	 * 
+	 * @return
+	 */
+	Class<?> service() default void.class;
 }

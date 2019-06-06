@@ -41,7 +41,7 @@ import io.vertx.ext.web.RoutingContext;
  * 
  * @author lifeng
  */
-@VertxService(value = "handlerAdapter", httpServer = true, instances = -1, isAop = false)
+@VertxService(value = "handlerAdapter", http = true, instances = -1, isAop = false)
 public class HandlerAdapter extends AbstractRouterHandler {
 
 	@Autowired(required = false)
