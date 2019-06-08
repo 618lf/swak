@@ -9,6 +9,10 @@
 	<artifactId>swak-rocketmq</artifactId>
 	<dependencies>
 		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-core</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.rocketmq</groupId>
 			<artifactId>rocketmq-client</artifactId>
 			<version>${rocketmq.version}</version>
