@@ -181,6 +181,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.swak</groupId>
+				<artifactId>swak-rocketmq</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
 				<artifactId>swak-wechat</artifactId>
 				<version>${project.version}</version>
 			</dependency>

@@ -39,7 +39,8 @@ public interface Constants {
 	String MOTAN_PREFIX = "spring.motan";
 	String QUARTZ_PREFIX = "spring.quartz";
 	String RABBITMQ_PREFIX = "spring.rabbitmq";
-
+	String ROCKETMQ_PREFIX = "spring.rocketmq";
+	
 	/** 保留ID **/
 	long ROOT = 0L;
 	long INVALID_ID = -1;
