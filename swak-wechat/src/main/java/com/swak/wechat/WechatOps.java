@@ -41,7 +41,7 @@ public class WechatOps {
 	 */
 	public static CompletableFuture<UserInfo> userinfo(String access_token, String openId) {
 		CompletableFuture<UserInfo> future = RequestBuilder.post().setUrl("https://api.weixin.qq.com/cgi-bin/user/info")
-				.addQueryParam("access_token", access_token).addQueryParam("openid", openId).addFormParam("lang", "zh_CN")
+				.addFormParam("access_token", access_token).addFormParam("openid", openId).addFormParam("lang", "zh_CN")
 				.json(UserInfo.class).future();
 		return future.thenApply(res -> {
 			return res;
