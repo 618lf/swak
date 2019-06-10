@@ -16,6 +16,9 @@ import com.swak.rabbit.message.Message;
 /**
  * 具有自动连接功能
  * 
+ * @see 业务返回失败，进入消费重试
+ * @see 业务执行异常，进入死信队列， 最好为每个队列配置死信队列
+ * 
  * @author lifeng
  */
 class TemplateConsumer implements Consumer {
@@ -27,7 +30,12 @@ class TemplateConsumer implements Consumer {
 	private MessageHandler messageHandler;
 	private final int prefetch;
 
-	public TemplateConsumer(String queue, int prefetch, RabbitMQTemplate template, MessageHandler messageHandler)
+	public static TemplateConsumer of(String queue, int prefetch, RabbitMQTemplate template,
+			MessageHandler messageHandler) throws IOException {
+		return new TemplateConsumer(queue, prefetch, template, messageHandler);
+	}
+
+	private TemplateConsumer(String queue, int prefetch, RabbitMQTemplate template, MessageHandler messageHandler)
 			throws IOException {
 		this.prefetch = prefetch;
 		this.queue = queue;
@@ -39,19 +47,20 @@ class TemplateConsumer implements Consumer {
 	@Override
 	public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
 			throws IOException {
-		boolean success = true;
+		boolean success, requeue = true;
 		try {
 			Message message = Message.builder().setProperties(properties).setPayload(body);
 			success = this.messageHandler.handle(message);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			success = false;
+			requeue = false;
 		}
 		try {
 			if (this.channel.isOpen()) {
 				if (success) {
 					this.channel.basicAck(envelope.getDeliveryTag(), false);
 				} else {
-					this.channel.basicNack(envelope.getDeliveryTag(), false, true);
+					this.channel.basicNack(envelope.getDeliveryTag(), false, requeue);
 				}
 			}
 		} catch (Exception e) {

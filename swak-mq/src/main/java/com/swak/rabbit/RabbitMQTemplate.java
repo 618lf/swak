@@ -3,6 +3,7 @@ package com.swak.rabbit;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -277,29 +278,32 @@ public class RabbitMQTemplate
 
 	//////////// 三個簡單的通用的初始化方案，如果不满足可以使用 execute 自己调用channel 声明////////
 	// exchange 持久化，不自动删除，非内部使用
-	// queue 持久化，非排他，不自动删除
-	public void exchangeDirectBindQueue(String exchange, String routingKey, String queue) throws AmqpException {
+	// queue 持久化，非排他，不自动删除, 参数设置
+	public void exchangeDirectBindQueue(String exchange, String routingKey, String queue,
+			Map<String, Object> queueArguments) throws AmqpException {
 		execute(channel -> {
 			channel.exchangeDeclare(exchange, BuiltinExchangeType.DIRECT, true, false, false, null);
-			channel.queueDeclare(queue, true, false, false, null);
+			channel.queueDeclare(queue, true, false, false, queueArguments);
 			channel.queueBind(queue, exchange, routingKey);
 			return null;
 		});
 	}
 
-	public void exchangeTopicBindQueue(String exchange, String routingKey, String queue) throws AmqpException {
+	public void exchangeTopicBindQueue(String exchange, String routingKey, String queue,
+			Map<String, Object> queueArguments) throws AmqpException {
 		execute(channel -> {
 			channel.exchangeDeclare(exchange, BuiltinExchangeType.TOPIC, true, false, null);
-			channel.queueDeclare(queue, true, false, false, null);
+			channel.queueDeclare(queue, true, false, false, queueArguments);
 			channel.queueBind(queue, exchange, routingKey);
 			return null;
 		});
 	}
 
-	public void exchangeFanoutBindQueue(String exchange, String routingKey, String queue) throws AmqpException {
+	public void exchangeFanoutBindQueue(String exchange, String routingKey, String queue,
+			Map<String, Object> queueArguments) throws AmqpException {
 		execute(channel -> {
 			channel.exchangeDeclare(exchange, BuiltinExchangeType.FANOUT, true, false, null);
-			channel.queueDeclare(queue, true, false, false, null);
+			channel.queueDeclare(queue, true, false, false, queueArguments);
 			channel.queueBind(queue, exchange, routingKey);
 			return null;
 		});
@@ -326,7 +330,7 @@ public class RabbitMQTemplate
 	/////////////////// 簡單的消息消费/////////
 	public void basicConsume(String queue, int prefetch, MessageHandler messageHandler) throws AmqpException {
 		try {
-			new TemplateConsumer(queue, prefetch, this, messageHandler);
+			TemplateConsumer.of(queue, prefetch, this, messageHandler);
 		} catch (IOException e) {
 			throw new AmqpException(e);
 		}

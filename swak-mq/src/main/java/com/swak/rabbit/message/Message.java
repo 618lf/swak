@@ -21,7 +21,7 @@ public class Message {
 	private String id; // 设置到 messageId 中
 	private Integer deliveryMode = 2; // 发布模式1(不持久化)， 2(持久化) 默认是持久化的消息，可以更改
 	private Integer priority; // 消息的优先级 0 - 9
-	private String expiration; // 消息的 ttl
+	private String expiration; // 消息的 ttl (s)
 
 	public String getId() {
 		if (id != null && properties == null) {
