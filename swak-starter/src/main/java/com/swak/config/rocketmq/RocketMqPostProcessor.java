@@ -8,7 +8,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-import com.swak.rabbit.EventBus;
+import com.swak.rocketmq.EventBus;
 import com.swak.rocketmq.annotation.Listener;
 import com.swak.rocketmq.annotation.Subscribe;
 import com.swak.utils.ConcurrentHashSet;
@@ -67,6 +67,9 @@ public class RocketMqPostProcessor implements BeanPostProcessor, ApplicationList
 			eventBus.init(t -> {
 				subscribes.stream().forEach(bean -> {
 					eventBus.register(bean);
+				});
+				listeners.stream().forEach(bean -> {
+					eventBus.listener(bean);
 				});
 			});
 		}

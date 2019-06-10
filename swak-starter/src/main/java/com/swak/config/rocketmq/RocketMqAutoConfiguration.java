@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
 
+import com.swak.rocketmq.EventBus;
 import com.swak.rocketmq.RocketMQProperties;
 import com.swak.rocketmq.RocketMQTemplate;
 
@@ -21,6 +22,22 @@ import com.swak.rocketmq.RocketMQTemplate;
 @ConditionalOnClass({ MQAdmin.class })
 public class RocketMqAutoConfiguration {
 
+	/**
+	 * RocketMq 消费者，事务监听处理器
+	 * 
+	 * @return
+	 */
+	@Bean
+	public RocketMqPostProcessor rocketMqPostProcessor() {
+		return new RocketMqPostProcessor();
+	}
+
+	/**
+	 * 默认的生产者
+	 * 
+	 * @param rocketMQProperties
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnMissingBean(DefaultMQProducer.class)
 	public DefaultMQProducer defaultMQProducer(RocketMQProperties rocketMQProperties) {
@@ -55,5 +72,17 @@ public class RocketMqAutoConfiguration {
 		RocketMQTemplate rocketMQTemplate = new RocketMQTemplate();
 		rocketMQTemplate.setProducer(mqProducer);
 		return rocketMQTemplate;
+	}
+
+	/**
+	 * 消息发送模板
+	 * 
+	 * @param mqProducer
+	 * @return
+	 */
+	@Bean(destroyMethod = "destroy")
+	@ConditionalOnBean(RocketMQTemplate.class)
+	public EventBus eventBus(RocketMQTemplate template) {
+		return EventBus.builder().setTemplateForSender(template).setApply((t) -> true).build();
 	}
 }

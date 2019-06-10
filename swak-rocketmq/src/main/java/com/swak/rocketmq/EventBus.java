@@ -5,9 +5,13 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.MessageSelector;
@@ -18,10 +22,17 @@ import org.apache.rocketmq.client.consumer.listener.ConsumeOrderlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerOrderly;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.LocalTransactionState;
+import org.apache.rocketmq.client.producer.SendCallback;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.Assert;
 
 import com.swak.asm.MethodCache.MethodMeta;
@@ -32,16 +43,49 @@ import com.swak.rocketmq.annotation.MessageModel;
 import com.swak.rocketmq.annotation.SelectorType;
 import com.swak.rocketmq.annotation.Subscribe;
 import com.swak.rocketmq.message.Message;
-import com.swak.rocketmq.transaction.RocketMQLocalTransactionListener;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 
-public class EventBus {
+/**
+ * 
+ * 事件控制
+ * 
+ * @author lifeng
+ */
+public class EventBus implements BeanFactoryAware, DisposableBean {
 
 	private final static Logger log = LoggerFactory.getLogger(EventBus.class);
+	private static volatile EventBus me;
+	private volatile boolean inited = false;
 	private List<Subscriber> subscribers = Lists.newArrayList();
 	private List<TransactionHandler> handlers = Lists.newArrayList();
 	private RocketMQTemplate rocketMQTemplate;
+	private Function<RocketMQTemplate, Boolean> apply;
+	private BeanFactory beanFactory;
+
+	public EventBus(RocketMQTemplate rocketMQTemplate, Function<RocketMQTemplate, Boolean> apply) {
+		this.rocketMQTemplate = rocketMQTemplate;
+		this.apply = apply;
+	}
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;
+	}
+
+	// --------------------------------------------------
+	// 初始化
+	// --------------------------------------------------
+
+	/**
+	 * 初始化,返回当前是否已初始化
+	 */
+	public synchronized void init(Consumer<Boolean> register) {
+		if (!inited) {
+			Optional.of(rocketMQTemplate).map(apply).ifPresent(register);
+		}
+		inited = true;
+	}
 
 	/**
 	 * 注册成为事件消费者
@@ -58,11 +102,12 @@ public class EventBus {
 	}
 
 	private List<Subscriber> findAllSubscribers(Object listener) {
+		Object proxyLintener = beanFactory.getBean(listener.getClass());
 		Map<MethodMeta, Method> identifiers = listAnnotatedMethods(Maps.newHashMap(), listener.getClass(),
 				Subscribe.class);
 		for (Method method : identifiers.values()) {
 			Subscribe subscribe = method.getAnnotation(Subscribe.class);
-			subscribers.add(Subscriber.create(subscribe, listener, method));
+			subscribers.add(Subscriber.create(subscribe, proxyLintener, method));
 		}
 		return subscribers;
 	}
@@ -71,9 +116,9 @@ public class EventBus {
 	 * 生产者事务监听
 	 * 
 	 * @param object
-	 * @throws MQClientException 
+	 * @throws MQClientException
 	 */
-	public void listener(Object object) throws MQClientException {
+	public void listener(Object object) {
 		List<TransactionHandler> subscribers = findAllTransactionHandlers(object);
 		for (TransactionHandler subscriber : subscribers) {
 			rocketMQTemplate.registerTransactionHandler(subscriber);
@@ -81,11 +126,12 @@ public class EventBus {
 	}
 
 	private List<TransactionHandler> findAllTransactionHandlers(Object listener) {
+		Object proxyLintener = beanFactory.getBean(listener.getClass());
 		Map<MethodMeta, Method> identifiers = listAnnotatedMethods(Maps.newHashMap(), listener.getClass(),
 				Listener.class);
 		for (Method method : identifiers.values()) {
 			Listener subscribe = method.getAnnotation(Listener.class);
-			handlers.add(TransactionHandler.create(subscribe, listener, method));
+			handlers.add(TransactionHandler.create(subscribe, proxyLintener, method));
 		}
 		return handlers;
 	}
@@ -105,6 +151,108 @@ public class EventBus {
 			return listAnnotatedMethods(identifiers, supertypes, annotation);
 		}
 		return identifiers;
+	}
+
+	// --------------------------------------------------
+	// 通用的方法 -- 如果需要其他的参数在添加
+	// --------------------------------------------------
+
+	/**
+	 * 发送消息
+	 * 
+	 * @param destination
+	 * @param message
+	 * @return
+	 */
+	public SendResult post(String destination, Message message) {
+		return rocketMQTemplate.syncSend(destination, message);
+	}
+
+	/**
+	 * 异步发送
+	 * 
+	 * @param destination
+	 * @param message
+	 * @return
+	 */
+	public CompletableFuture<SendResult> asyncSend(String destination, Message message) {
+		CompletableFuture<SendResult> future = new CompletableFuture<>();
+		rocketMQTemplate.asyncSend(destination, message, new SendCallback() {
+			@Override
+			public void onSuccess(SendResult sendResult) {
+				future.complete(sendResult);
+			}
+			@Override
+			public void onException(Throwable e) {
+				future.completeExceptionally(e);
+			}
+		});
+		return future;
+	}
+
+	// --------------------------------------------------
+	// 生命周期
+	// --------------------------------------------------
+
+	/**
+	 * 消息转换
+	 * 
+	 * @param messageExt
+	 * @return
+	 */
+	private static Message doConvertMessage(org.apache.rocketmq.common.message.Message message) {
+		return null;
+	}
+
+	/**
+	 * 停止服务
+	 */
+	@Override
+	public void destroy() throws Exception {
+		subscribers.stream().forEach(subscriber -> {
+			try {
+				subscriber.stop();
+			} catch (Exception e) {
+				log.error("Consumer Shutdown Error.", e);
+			}
+		});
+		subscribers.clear();
+		handlers.clear();
+	}
+
+	public static EventBus me() {
+		return me;
+	}
+
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	/**
+	 * 
+	 * 构建工具
+	 * 
+	 * @author lifeng
+	 */
+	public static class Builder {
+		private RocketMQTemplate rocketMQTemplate;
+		private Function<RocketMQTemplate, Boolean> apply;
+
+		public Builder setTemplateForSender(RocketMQTemplate rocketMQTemplate) {
+			this.rocketMQTemplate = rocketMQTemplate;
+			return this;
+		}
+
+		public Builder setApply(Function<RocketMQTemplate, Boolean> apply) {
+			this.apply = apply;
+			return this;
+		}
+
+		public EventBus build() {
+			EventBus eventBus = new EventBus(rocketMQTemplate, apply);
+			me = eventBus;
+			return eventBus;
+		}
 	}
 
 	/**
@@ -244,7 +392,6 @@ public class EventBus {
 						return ConsumeConcurrentlyStatus.RECONSUME_LATER;
 					}
 				}
-
 				return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
 			}
 		}
@@ -266,7 +413,6 @@ public class EventBus {
 						return ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT;
 					}
 				}
-
 				return ConsumeOrderlyStatus.SUCCESS;
 			}
 		}
@@ -282,16 +428,6 @@ public class EventBus {
 			} catch (Exception e) {
 				log.error("handle message error: {}", e);
 			}
-		}
-
-		/**
-		 * 消息转换
-		 * 
-		 * @param messageExt
-		 * @return
-		 */
-		private Message doConvertMessage(MessageExt messageExt) {
-			return null;
 		}
 
 		/**
@@ -315,53 +451,66 @@ public class EventBus {
 	 * 
 	 * @author lifeng
 	 */
-	public static class TransactionHandler {
-
+	public static class TransactionHandler implements TransactionListener {
+		private static Class<?>[] types = new Class<?>[] { Message.class };
 		private String name;
-		private String beanName;
-		private RocketMQLocalTransactionListener bean;
-		private BeanFactory beanFactory;
 		private ThreadPoolExecutor checkExecutor;
 
-		public String getBeanName() {
-			return beanName;
+		// 具体的监听器
+		private Object listener;
+		private Method method;
+
+		public TransactionHandler(Listener subscribe) {
+			this.name = subscribe.txProducerGroup();
+			this.setCheckExecutor(subscribe.corePoolSize(), subscribe.maximumPoolSize(), subscribe.keepAliveTime(),
+					subscribe.blockingQueueSize());
 		}
 
-		public void setBeanName(String beanName) {
-			this.beanName = beanName;
+		private void setCheckExecutor(int corePoolSize, int maxPoolSize, long keepAliveTime, int blockingQueueSize) {
+			this.checkExecutor = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.MILLISECONDS,
+					new LinkedBlockingDeque<>(blockingQueueSize));
 		}
 
 		public String getName() {
 			return name;
 		}
 
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public BeanFactory getBeanFactory() {
-			return beanFactory;
-		}
-
-		public void setBeanFactory(BeanFactory beanFactory) {
-			this.beanFactory = beanFactory;
-		}
-
-		public void setListener(RocketMQLocalTransactionListener listener) {
-			this.bean = listener;
-		}
-
-		public RocketMQLocalTransactionListener getListener() {
-			return this.bean;
-		}
-
-		public void setCheckExecutor(int corePoolSize, int maxPoolSize, long keepAliveTime, int blockingQueueSize) {
-			this.checkExecutor = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.MILLISECONDS,
-					new LinkedBlockingDeque<>(blockingQueueSize));
-		}
-
 		public ThreadPoolExecutor getCheckExecutor() {
 			return checkExecutor;
+		}
+
+		@Override
+		public LocalTransactionState executeLocalTransaction(org.apache.rocketmq.common.message.Message message,
+				Object arg) {
+			try {
+				handleMessage(doConvertMessage(message));
+			} catch (Exception e) {
+				return LocalTransactionState.ROLLBACK_MESSAGE;
+			}
+			return LocalTransactionState.COMMIT_MESSAGE;
+		}
+
+		@Override
+		public LocalTransactionState checkLocalTransaction(MessageExt message) {
+			try {
+				handleMessage(doConvertMessage(message));
+			} catch (Exception e) {
+				return LocalTransactionState.ROLLBACK_MESSAGE;
+			}
+			return LocalTransactionState.COMMIT_MESSAGE;
+		}
+
+		/**
+		 * 消费消息
+		 */
+		private void handleMessage(Message message) {
+			Wrapper wrapper = Wrapper.getWrapper(listener.getClass());
+			Object[] args = new Object[] { message };
+			try {
+				wrapper.invokeMethod(listener, method.getName(), types, args);
+			} catch (Exception e) {
+				log.error("handle message error: {}", e);
+			}
 		}
 
 		/**
@@ -373,7 +522,9 @@ public class EventBus {
 		 * @return
 		 */
 		public static TransactionHandler create(Listener subscribe, Object listener, Method method) {
-			TransactionHandler subscriber = new TransactionHandler();
+			TransactionHandler subscriber = new TransactionHandler(subscribe);
+			subscriber.listener = listener;
+			subscriber.method = method;
 			return subscriber;
 		}
 	}
