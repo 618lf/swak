@@ -47,9 +47,18 @@ class TemplateConsumer implements Consumer {
 	@Override
 	public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
 			throws IOException {
+
+		// 处理消费事件
+		boolean success = true;
 		try {
 			Message message = Message.builder().setProperties(properties).setPayload(body);
-			boolean success = this.messageHandler.handle(message);
+			this.messageHandler.handle(message);
+		} catch (Exception e) {
+			success = false;
+		}
+
+		// 确认消费成功，失败放入死信队列
+		try {
 			if (this.channel.isOpen()) {
 				if (success) {
 					this.channel.basicAck(envelope.getDeliveryTag(), false);

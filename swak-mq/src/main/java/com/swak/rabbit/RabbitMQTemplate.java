@@ -359,7 +359,7 @@ public class RabbitMQTemplate
 	 */
 	@FunctionalInterface
 	public interface MessageHandler {
-		boolean handle(Message message) throws AmqpException;
+		void handle(Message message) throws AmqpException;
 	}
 
 	/**
