@@ -31,7 +31,6 @@ public class ConsumeTest extends RabbitTest {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 			}
-			return true;
 		});
 		countDownLatch.await();
 	}

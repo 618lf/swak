@@ -232,7 +232,9 @@ public class EventBus {
 		 * 消费消息
 		 */
 		@Override
-		public boolean handle(Message message) throws AmqpException {
+		public void handle(Message message) throws AmqpException {
+			
+			// 执行处理器
 			Wrapper wrapper = Wrapper.getWrapper(listener.getClass());
 			Object[] args = new Object[] { message };
 
@@ -244,11 +246,8 @@ public class EventBus {
 			// 捕获异常信息，记录并抛出异常，将消息转入死信队列
 			catch (Throwable e) {
 				LOGGER.error("handle message error: {}", e);
-				return false;
+				throw new AmqpException(e);
 			}
-
-			// 消费成功
-			return true;
 		}
 	}
 }
