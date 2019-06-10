@@ -235,12 +235,19 @@ public class EventBus {
 		public boolean handle(Message message) throws AmqpException {
 			Wrapper wrapper = Wrapper.getWrapper(listener.getClass());
 			Object[] args = new Object[] { message };
+
+			// 执行消费事件
 			try {
 				wrapper.invokeMethod(listener, method.getName(), types, args);
-			} catch (Exception e) {
+			}
+
+			// 捕获异常信息，记录并抛出异常，将消息转入死信队列
+			catch (Throwable e) {
 				LOGGER.error("handle message error: {}", e);
 				return false;
 			}
+
+			// 消费成功
 			return true;
 		}
 	}
