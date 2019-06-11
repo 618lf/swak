@@ -359,7 +359,15 @@ public class RabbitMQTemplate
 	 */
 	@FunctionalInterface
 	public interface MessageHandler {
-		void handle(Message message) throws AmqpException;
+
+		/**
+		 * 可以异步消费
+		 * 
+		 * @param message
+		 * @return
+		 * @throws AmqpException
+		 */
+		Object handle(Message message) throws AmqpException;
 	}
 
 	/**

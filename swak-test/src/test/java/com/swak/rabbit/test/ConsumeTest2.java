@@ -1,4 +1,4 @@
-package com.swak.rabbit.dead;
+package com.swak.rabbit.test;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -13,7 +13,7 @@ import com.swak.rabbit.RabbitTest;
  * 
  * @author lifeng
  */
-public class DeadConsumeTest extends RabbitTest {
+public class ConsumeTest2 extends RabbitTest {
 
 	/**
 	 * 单个消费
@@ -25,8 +25,8 @@ public class DeadConsumeTest extends RabbitTest {
 	@Test
 	public void oneConsumeer() throws IOException, TimeoutException, InterruptedException {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
-		rabbitTemplate.basicConsume(DEAD_QUEUE, 1, (message) -> {
-			System.out.println("收到消息");
+		rabbitTemplate.basicConsume(QUEUE, 1, (message) -> {
+			System.out.println("消费者2：收到消息:" + message.getId());
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {

@@ -232,21 +232,18 @@ public class EventBus {
 		 * 消费消息
 		 */
 		@Override
-		public void handle(Message message) throws AmqpException {
-			
-			// 执行处理器
-			Wrapper wrapper = Wrapper.getWrapper(listener.getClass());
-			Object[] args = new Object[] { message };
-
-			// 执行消费事件
+		public Object handle(Message message) throws AmqpException {
 			try {
-				wrapper.invokeMethod(listener, method.getName(), types, args);
-			}
+				
+				// 处理器
+				Wrapper wrapper = Wrapper.getWrapper(listener.getClass());
+				Object[] args = new Object[] { message };
 
-			// 捕获异常信息，记录并抛出异常，将消息转入死信队列
-			catch (Throwable e) {
-				LOGGER.error("handle message error: {}", e);
-				throw new AmqpException(e);
+				// 执行处理器
+				return wrapper.invokeMethod(listener, method.getName(), types, args);
+			} catch (Exception e) {
+				LOGGER.error("Handler{} - Method{} Invoke Error：", listener.getClass(), method.getName(), e);
+				throw new AmqpException("处理消费事件错误：", e);
 			}
 		}
 	}

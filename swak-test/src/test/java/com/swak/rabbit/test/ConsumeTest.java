@@ -26,12 +26,12 @@ public class ConsumeTest extends RabbitTest {
 	public void oneConsumeer() throws IOException, TimeoutException, InterruptedException {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		rabbitTemplate.basicConsume(QUEUE, 1, (message) -> {
-			System.out.println("收到消息");
+			System.out.println("消费者1：收到消息:" + message.getId());
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 			}
-			return true;
+			return null;
 		});
 		countDownLatch.await();
 	}

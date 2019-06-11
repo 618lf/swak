@@ -48,11 +48,11 @@ public class PublishTest extends RabbitTest {
 				} catch (Exception e) {
 				}
 				try {
-					Thread.sleep(100);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-		}, 10, "multi-publisher");
+		}, 1, "multi-publisher");
 	}
 }

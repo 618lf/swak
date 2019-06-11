@@ -1,6 +1,7 @@
 package com.swak.rabbit;
 
 import java.io.IOException;
+import java.util.concurrent.CompletionStage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,8 @@ import com.swak.rabbit.message.Message;
  * 
  * @see 业务返回失败，进入消费重试
  * @see 业务执行异常，进入死信队列， 最好为每个队列配置死信队列
+ * @see 消息只能按照顺序一个一个的处理，如果这个消费者在处理一个消息，没有应答，则不会处理下一个消息。
+ * @see 虽然支持异步消费，但是此消息每处理完之前不会处理下一个消息
  * 
  * @author lifeng
  */
@@ -45,25 +48,33 @@ class TemplateConsumer implements Consumer {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
 			throws IOException {
-
-		// 处理消费事件
-		boolean success = true;
 		try {
 			Message message = Message.builder().setProperties(properties).setPayload(body);
-			this.messageHandler.handle(message);
+			Object result = this.messageHandler.handle(message);
+			if (result != null && result instanceof CompletionStage) {
+				CompletionStage<Object> resultFuture = (CompletionStage<Object>) result;
+				resultFuture.whenComplete((v, e) -> {
+					this.handleResult(envelope, e);
+				});
+			} else {
+				this.handleResult(envelope, null);
+			}
 		} catch (Exception e) {
-			success = false;
+			this.handleResult(envelope, e);
 		}
+	}
 
-		// 确认消费成功，失败放入死信队列
+	// 处理消息回调
+	private void handleResult(Envelope envelope, Throwable ex) {
 		try {
 			if (this.channel.isOpen()) {
-				if (success) {
-					this.channel.basicAck(envelope.getDeliveryTag(), false);
-				} else {
+				if (ex != null) {
 					this.channel.basicNack(envelope.getDeliveryTag(), false, false);
+				} else {
+					this.channel.basicAck(envelope.getDeliveryTag(), false);
 				}
 			}
 		} catch (Exception e) {
