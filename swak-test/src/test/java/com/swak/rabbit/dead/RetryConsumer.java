@@ -6,14 +6,15 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
+import com.swak.rabbit.Constants;
 import com.swak.rabbit.RabbitTest;
 
 /**
- * 测试消费者
+ * 消费重试记录
  * 
  * @author lifeng
  */
-public class DeadConsumeTest extends RabbitTest {
+public class RetryConsumer extends RabbitTest {
 
 	/**
 	 * 单个消费
@@ -25,13 +26,13 @@ public class DeadConsumeTest extends RabbitTest {
 	@Test
 	public void oneConsumeer() throws IOException, TimeoutException, InterruptedException {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
-		rabbitTemplate.basicConsume(DEAD_QUEUE, 1, (message) -> {
+		rabbitTemplate.basicConsume(Constants.retry_channel, 1, (message) -> {
 			System.out.println("收到消息");
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 			}
-			return null;
+			throw new RuntimeException("处理失败，进入死信队列");
 		});
 		countDownLatch.await();
 	}

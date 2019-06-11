@@ -226,18 +226,24 @@ public class ChannelProxy implements Channel {
 	}
 
 	/**
-	 * @param queue 队列名
-	 * @param autoAck 是否自动确认消息,true自动确认,false 不自动要手动调用,建立设置为false
-	 * @param consumerTag 消费者标签，用来区分多个消费者
-	 * @param noLocal 设置为true，表示 不能将同一个Conenction中生产者发送的消息传递给这个Connection中 的消费者
-	 * @param exclusive 是否排他
-	 * @param arguments 消费者的参数
-	 * @param consumer  消费者 DefaultConsumer建立使用，重写其中的方法
-	 * handleShutdownSignal方法 当Channel与Conenction关闭的时候会调用，
-     * handleCancelOk方法会在其它方法之前调用，返回消费者标签
-     * handleCancelOk与handleCancel消费者可以显式或者隐式的取水订单的时候调用，也可以通过
-     * channel.basicCancel方法来显式的取消一个消费者订阅
-     * 会首先触发handleConsumeOk方法，之后触发handleDelivery方法，最后才触发handleCancelOk方法
+	 * @param queue
+	 *            队列名
+	 * @param autoAck
+	 *            是否自动确认消息,true自动确认,false 不自动要手动调用,建立设置为false
+	 * @param consumerTag
+	 *            消费者标签，用来区分多个消费者
+	 * @param noLocal
+	 *            设置为true，表示 不能将同一个Conenction中生产者发送的消息传递给这个Connection中 的消费者
+	 * @param exclusive
+	 *            是否排他
+	 * @param arguments
+	 *            消费者的参数
+	 * @param consumer
+	 *            消费者 DefaultConsumer建立使用，重写其中的方法 handleShutdownSignal方法
+	 *            当Channel与Conenction关闭的时候会调用， handleCancelOk方法会在其它方法之前调用，返回消费者标签
+	 *            handleCancelOk与handleCancel消费者可以显式或者隐式的取水订单的时候调用，也可以通过
+	 *            channel.basicCancel方法来显式的取消一个消费者订阅
+	 *            会首先触发handleConsumeOk方法，之后触发handleDelivery方法，最后才触发handleCancelOk方法
 	 */
 	@Override
 	public String basicConsume(String queue, boolean autoAck, String consumerTag, boolean noLocal, boolean exclusive,
@@ -285,10 +291,16 @@ public class ChannelProxy implements Channel {
 		delegate.basicPublish(arg0, arg1, arg2, arg3, arg4);
 	}
 
+	/**
+     * @param mandatory 当mandatory标志位设置为true时，如果exchange根据自身类型和消息routingKey无法找到一个合适的
+     *        queue存储消息，那么broker会调用basic.return方法将消息返还给生产者;当mandatory设置为false时，出现上述情况broker会直接将消息丢弃
+     * @param immediate 不在使用
+     * set. Note that the RabbitMQ server does not support this flag.
+     */
 	@Override
-	public void basicPublish(String arg0, String arg1, boolean arg2, boolean arg3, BasicProperties arg4, byte[] arg5)
-			throws IOException {
-		delegate.basicPublish(arg0, arg1, arg2, arg3, arg4, arg5);
+	public void basicPublish(String exchange, String routingKey, boolean mandatory, boolean immediate,
+			BasicProperties props, byte[] body) throws IOException {
+		delegate.basicPublish(exchange, routingKey, mandatory, immediate, props, body);
 	}
 
 	@Override
@@ -401,7 +413,8 @@ public class ChannelProxy implements Channel {
 	 *            DIRECT("direct"), FANOUT("fanout"), TOPIC("topic"),
 	 *            HEADERS("headers");
 	 * @param durable
-	 *            是否持久化,durable设置为true表示持久化,反之是非持久化，仅仅对队列持久化是没有意义的，需要对消息也进行持久化 BasicProperties(delivery_mode=2,)
+	 *            是否持久化,durable设置为true表示持久化,反之是非持久化，仅仅对队列持久化是没有意义的，需要对消息也进行持久化
+	 *            BasicProperties(delivery_mode=2,)
 	 * @param autoDelete
 	 *            是否自动删除,设置为TRUE则表是自动删除,自删除的前提是至少有一个队列或者交换器与这交换器绑定,之后所有与这个交换器绑定的队列或者交换器都与此解绑,一般都设置为fase
 	 * @param internal

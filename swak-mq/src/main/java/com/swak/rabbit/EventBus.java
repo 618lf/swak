@@ -56,9 +56,86 @@ public class EventBus {
 	 */
 	public synchronized void init(Consumer<Boolean> register) {
 		if (!inited) {
-			Optional.of(templateForConsumer).map(apply).ifPresent(register);
+			Optional.of(templateForConsumer).map(t -> this.appay(t)).map(apply).ifPresent(register);
 		}
 		inited = true;
+	}
+
+	/**
+	 * 默认的队列
+	 * 
+	 * @param template
+	 * @return
+	 */
+	private RabbitMQTemplate appay(RabbitMQTemplate sender) {
+		Map<String, Object> failAgruments = Maps.newHashMap();
+		failAgruments.put("x-dead-letter-exchange", Constants.fail_channel);
+		failAgruments.put("x-dead-letter-routing-key", Constants.fail_channel);
+		Map<String, Object> agruments = Maps.newHashMap();
+		agruments.put("x-dead-letter-exchange", Constants.retry_channel);
+		agruments.put("x-dead-letter-routing-key", Constants.retry_channel);
+		agruments.put("x-message-ttl", Constants.dead);
+		sender.exchangeDirectBindQueue(Constants.fail_channel, Constants.fail_channel, Constants.fail_channel, null);
+		sender.exchangeDirectBindQueue(Constants.retry_channel, Constants.retry_channel, Constants.retry_channel,
+				failAgruments);
+		sender.exchangeDirectBindQueue(Constants.dead_channel, Constants.dead_channel, Constants.dead_channel,
+				agruments);
+
+		agruments.put("x-message-ttl", Constants.retrys[0]);
+		sender.exchangeDirectBindQueue(Constants.retry1s_channel, Constants.retry1s_channel, Constants.retry1s_channel,
+				agruments);
+		agruments.put("x-message-ttl", Constants.retrys[1]);
+		sender.exchangeDirectBindQueue(Constants.retry5s_channel, Constants.retry5s_channel, Constants.retry5s_channel,
+				agruments);
+		agruments.put("x-message-ttl", Constants.retrys[2]);
+		sender.exchangeDirectBindQueue(Constants.retry10s_channel, Constants.retry10s_channel,
+				Constants.retry10s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[3]);
+		sender.exchangeDirectBindQueue(Constants.retry30s_channel, Constants.retry30s_channel,
+				Constants.retry30s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[4]);
+		sender.exchangeDirectBindQueue(Constants.retry60s_channel, Constants.retry60s_channel,
+				Constants.retry60s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[5]);
+		sender.exchangeDirectBindQueue(Constants.retry120s_channel, Constants.retry120s_channel,
+				Constants.retry120s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[6]);
+		sender.exchangeDirectBindQueue(Constants.retry180s_channel, Constants.retry180s_channel,
+				Constants.retry180s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[7]);
+		sender.exchangeDirectBindQueue(Constants.retry240s_channel, Constants.retry240s_channel,
+				Constants.retry240s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[8]);
+		sender.exchangeDirectBindQueue(Constants.retry300s_channel, Constants.retry300s_channel,
+				Constants.retry300s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[9]);
+		sender.exchangeDirectBindQueue(Constants.retry360s_channel, Constants.retry360s_channel,
+				Constants.retry360s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[10]);
+		sender.exchangeDirectBindQueue(Constants.retry420s_channel, Constants.retry420s_channel,
+				Constants.retry420s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[11]);
+		sender.exchangeDirectBindQueue(Constants.retry480s_channel, Constants.retry480s_channel,
+				Constants.retry480s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[12]);
+		sender.exchangeDirectBindQueue(Constants.retry540s_channel, Constants.retry540s_channel,
+				Constants.retry540s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[13]);
+		sender.exchangeDirectBindQueue(Constants.retry600s_channel, Constants.retry600s_channel,
+				Constants.retry600s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[14]);
+		sender.exchangeDirectBindQueue(Constants.retry1200s_channel, Constants.retry1200s_channel,
+				Constants.retry1200s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[15]);
+		sender.exchangeDirectBindQueue(Constants.retry1800s_channel, Constants.retry1800s_channel,
+				Constants.retry1800s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[16]);
+		sender.exchangeDirectBindQueue(Constants.retry3600s_channel, Constants.retry3600s_channel,
+				Constants.retry3600s_channel, agruments);
+		agruments.put("x-message-ttl", Constants.retrys[17]);
+		sender.exchangeDirectBindQueue(Constants.retry7200s_channel, Constants.retry7200s_channel,
+				Constants.retry7200s_channel, agruments);
+		return sender;
 	}
 
 	/**
@@ -234,7 +311,7 @@ public class EventBus {
 		@Override
 		public Object handle(Message message) throws AmqpException {
 			try {
-				
+
 				// 处理器
 				Wrapper wrapper = Wrapper.getWrapper(listener.getClass());
 				Object[] args = new Object[] { message };

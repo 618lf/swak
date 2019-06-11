@@ -24,11 +24,12 @@ public class RabbitTest {
 	protected String QUEUE = "test.update";
 	protected RabbitMQTemplate rabbitTemplate;
 	protected ExecutorService executor;
-	
+	protected EventBus eventbus;
+
 	// dead queue
-	protected String DEAD_EXCHANGE = "DEAD.update";
-	protected String DEAD_ROUTING = "#";
-	protected String DEAD_QUEUE = "DEAD.update";
+	// protected String DEAD_EXCHANGE = "DEAD.update";
+	// protected String DEAD_ROUTING = "#";
+	// protected String DEAD_QUEUE = "DEAD.update";
 
 	@Before
 	public void init() {
@@ -39,14 +40,27 @@ public class RabbitTest {
 		config.setUser("guest").setPassword("guest").setHost("127.0.0.1").setPort(5672);
 		rabbitTemplate = new RabbitMQTemplate(config).setConsumerWorkServiceExecutor(executor)
 				.setDaemonFactory(new EventLoopFactory(true, "RabbitMQ-Daemons-", new AtomicLong()));
-		
-		// 死信队列
-		rabbitTemplate.exchangeTopicBindQueue(DEAD_EXCHANGE, DEAD_ROUTING, DEAD_QUEUE, null);
-		
-		// 普通队列，消息处理失败进入死信队列
-		Map<String, Object> agruments = Maps.newHashMap();
-		agruments.put("x-dead-letter-exchange", DEAD_EXCHANGE);
-		rabbitTemplate.exchangeDirectBindQueue(EXCHANGE, ROUTING, QUEUE, agruments);
-		
+
+		// // 死信队列
+		// rabbitTemplate.exchangeTopicBindQueue(DEAD_EXCHANGE, DEAD_ROUTING,
+		// DEAD_QUEUE, null);
+		//
+		// // 普通队列，消息处理失败进入死信队列
+		// Map<String, Object> agruments = Maps.newHashMap();
+		// agruments.put("x-dead-letter-exchange", DEAD_EXCHANGE);
+		// rabbitTemplate.exchangeDirectBindQueue(EXCHANGE, ROUTING, QUEUE, agruments);
+
+		eventbus = EventBus.builder().setTemplateForConsumer(rabbitTemplate).setTemplateForSender(rabbitTemplate)
+				.setApply((t) -> {
+					// 普通队列，消息处理失败进入死信队列
+					Map<String, Object> agruments = Maps.newHashMap();
+					agruments.put("x-dead-letter-exchange", Constants.dead_channel);
+					agruments.put("x-dead-letter-routing-key", Constants.dead_channel);
+					t.exchangeDirectBindQueue(EXCHANGE, ROUTING, QUEUE, agruments);
+					return true;
+				}).setExecutor(executor).build();
+
+		eventbus.init((t) -> {
+		});
 	}
 }
