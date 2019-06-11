@@ -2,6 +2,7 @@ package com.swak.rabbit;
 
 import java.io.IOException;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutorService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +32,20 @@ class TemplateConsumer implements Consumer {
 	private final RabbitMQTemplate template;
 	private CacheChannelProxy channel;
 	private MessageHandler messageHandler;
+	private ExecutorService consumerExecutor;
 	private final int prefetch;
 
 	public static TemplateConsumer of(String queue, int prefetch, RabbitMQTemplate template,
-			MessageHandler messageHandler) throws IOException {
-		return new TemplateConsumer(queue, prefetch, template, messageHandler);
+			ExecutorService consumerExecutor, MessageHandler messageHandler) throws IOException {
+		return new TemplateConsumer(queue, prefetch, template, consumerExecutor, messageHandler);
 	}
 
-	private TemplateConsumer(String queue, int prefetch, RabbitMQTemplate template, MessageHandler messageHandler)
-			throws IOException {
+	private TemplateConsumer(String queue, int prefetch, RabbitMQTemplate template, ExecutorService consumerExecutor,
+			MessageHandler messageHandler) throws IOException {
 		this.prefetch = prefetch;
 		this.queue = queue;
 		this.template = template;
+		this.consumerExecutor = consumerExecutor;
 		this.messageHandler = messageHandler;
 		this.resetChannel();
 	}
@@ -55,15 +58,25 @@ class TemplateConsumer implements Consumer {
 			Message message = Message.builder().setProperties(properties).setPayload(body);
 			Object result = this.messageHandler.handle(message);
 			if (result != null && result instanceof CompletionStage) {
-				CompletionStage<Object> resultFuture = (CompletionStage<Object>) result;
-				resultFuture.whenComplete((v, e) -> {
-					this.handleResult(envelope, e);
-				});
+				this.asynHandleResult((CompletionStage<Object>) result, envelope);
 			} else {
 				this.handleResult(envelope, null);
 			}
 		} catch (Exception e) {
 			this.handleResult(envelope, e);
+		}
+	}
+
+	// 异步处理消息回调
+	private void asynHandleResult(CompletionStage<Object> resultFuture, Envelope envelope) {
+		if (this.consumerExecutor != null) {
+			resultFuture.whenCompleteAsync((v, e) -> {
+				this.handleResult(envelope, e);
+			}, this.consumerExecutor);
+		} else {
+			resultFuture.whenComplete((v, e) -> {
+				this.handleResult(envelope, e);
+			});
 		}
 	}
 

@@ -330,7 +330,7 @@ public class RabbitMQTemplate
 	/////////////////// 簡單的消息消费/////////
 	public void basicConsume(String queue, int prefetch, MessageHandler messageHandler) throws AmqpException {
 		try {
-			TemplateConsumer.of(queue, prefetch, this, messageHandler);
+			TemplateConsumer.of(queue, prefetch, this, this.consumerWorkServiceExecutor, messageHandler);
 		} catch (IOException e) {
 			throw new AmqpException(e);
 		}
