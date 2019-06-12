@@ -1,9 +1,13 @@
 package com.swak.rabbit.message;
 
+import java.util.Map;
+
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.swak.Constants;
 import com.swak.rabbit.AmqpException;
 import com.swak.serializer.SerializationUtils;
+import com.swak.utils.Maps;
+import com.swak.utils.StringUtils;
 
 import io.netty.util.internal.StringUtil;
 
@@ -14,6 +18,7 @@ import io.netty.util.internal.StringUtil;
  */
 public class Message {
 
+	// 基本参数
 	private BasicProperties properties;
 	private byte[] payload; // 消息的内容
 
@@ -22,6 +27,10 @@ public class Message {
 	private Integer deliveryMode = 2; // 发布模式1(不持久化)， 2(持久化) 默认是持久化的消息，可以更改
 	private Integer priority; // 消息的优先级 0 - 9
 	private String expiration; // 消息的 ttl (s)
+
+	// 重试
+	private String origin;
+	private Integer retrys;
 
 	public String getId() {
 		if (id != null && properties == null) {
@@ -70,7 +79,25 @@ public class Message {
 		this.payload = payload;
 		return this;
 	}
-	
+
+	public String getOrigin() {
+		return origin;
+	}
+
+	public Integer getRetrys() {
+		return retrys;
+	}
+
+	public Message setOrigin(String origin) {
+		this.origin = origin;
+		return this;
+	}
+
+	public Message setRetrys(Integer retrys) {
+		this.retrys = retrys;
+		return this;
+	}
+
 	/**
 	 * 将 object 序列化为 字节码，使用默認的序列化方式
 	 * 
@@ -81,7 +108,7 @@ public class Message {
 		this.payload = SerializationUtils.serialize(payload);
 		return this;
 	}
-	
+
 	/**
 	 * 将 object 序列化为 字节码，使用默認的序列化方式
 	 * 
@@ -91,6 +118,45 @@ public class Message {
 	@SuppressWarnings("unchecked")
 	public <T> T payload2Object() {
 		return (T) SerializationUtils.deserialize(payload);
+	}
+
+	/**
+	 * 重试的请求参数
+	 * 
+	 * @return
+	 */
+	public Message retryMessage() {
+		Object retryQueue = null, retryCount = null;
+		if (properties.getHeaders() != null) {
+			retryQueue = properties.getHeaders().containsKey(com.swak.rabbit.Constants.x_death_queue)
+					? properties.getHeaders().get(com.swak.rabbit.Constants.x_death_queue)
+					: properties.getHeaders().get("x-first-death-queue");
+			retryCount = properties.getHeaders().get(com.swak.rabbit.Constants.x_retry);
+		}
+		String $retryQueue = null;
+		if (retryQueue != null && StringUtils.isNotBlank($retryQueue = String.valueOf(retryQueue))
+				&& !StringUtils.startsWith($retryQueue, com.swak.rabbit.Constants.retry_channel)) {
+			return this.setOrigin($retryQueue).setRetrys(retryCount == null ? 0 : (Integer) retryCount);
+		}
+		return this;
+	}
+
+	/**
+	 * 重试的请求参数
+	 * 
+	 * @return
+	 */
+	public BasicProperties retryProperties() {
+		String retryQueue = this.getOrigin();
+		if (retryQueue != null) {
+			Map<String, Object> headers = Maps.newHashMap();
+			headers.put(com.swak.rabbit.Constants.x_death_queue, retryQueue);
+			headers.put(com.swak.rabbit.Constants.x_retry, this.retrys + 1);
+			return new BasicProperties(null, Constants.DEFAULT_ENCODING.name(), headers,
+					this.properties.getDeliveryMode(), this.properties.getPriority(), null, null, null,
+					this.properties.getMessageId(), null, null, null, null, null);
+		}
+		throw new AmqpException("不能直接将消息发送到重试队列中");
 	}
 
 	/**
