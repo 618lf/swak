@@ -17,6 +17,7 @@ import com.swak.rabbit.RabbitMQTemplate.MessageHandler;
 import com.swak.rabbit.connection.CacheChannelProxy;
 import com.swak.rabbit.message.Message;
 import com.swak.utils.Maps;
+import com.swak.utils.StringUtils;
 
 /**
  * 具有自动连接功能
@@ -130,22 +131,40 @@ class TemplateConsumer implements Consumer {
 
 	// 发送重试消息
 	private void handleRetry(Envelope envelope, BasicProperties properties, byte[] payload) throws IOException {
+
+		// 重试的请求头
+		Object retryQueue = null;
+		Map<String, Object> headers = Maps.newHashMap();
+		if (properties.getHeaders() != null && properties.getHeaders().containsKey(Constants.x_death_queue)) {
+			retryQueue = properties.getHeaders().get(Constants.x_death_queue);
+		} else if(properties.getHeaders() != null && properties.getHeaders().containsKey("x-first-death-queue")) {
+			retryQueue = properties.getHeaders().get("x-first-death-queue");
+		}
+		
+		// 重试校验，不能直接将消息发送到重试队列中
+		String $retryQueue = String.valueOf(retryQueue);
+		if (retryQueue == null || StringUtils.isBlank($retryQueue)
+				|| StringUtils.startsWith($retryQueue, Constants.retry_channel)) {
+			throw new AmqpException("不能直接将消息发送到重试队列中");
+		}
+		headers.put(Constants.x_death_queue, $retryQueue);
+		
+		// 重试的次数
 		int retryCount = 0;
-		Object count = properties.getHeaders() != null ? properties.getHeaders().get(Constants.retry_key) : null;
+		Object count = properties.getHeaders() != null ? properties.getHeaders().get(Constants.x_retry) : null;
 		if (count != null) {
 			retryCount = (Integer) count;
 		}
-		Map<String, Object> headers = Maps.newHashMap();
-		headers.put(Constants.retry_key, retryCount + 1);
+		headers.put(Constants.x_retry, retryCount + 1);
 		BasicProperties newProperties = new BasicProperties(null, StandardCharsets.UTF_8.name(), headers,
 				properties.getDeliveryMode(), properties.getPriority(), null, null, null, properties.getMessageId(),
 				null, null, null, null, null);
 		if (retryCount == 0) {
-			this.channel.basicPublish(Constants.retry1s_channel, Constants.retry1s_channel, true, false,
-					newProperties, payload);
+			this.channel.basicPublish(Constants.retry1s_channel, Constants.retry1s_channel, true, false, newProperties,
+					payload);
 		} else if (retryCount == 1) {
-			this.channel.basicPublish(Constants.retry5s_channel, Constants.retry5s_channel, true, false,
-					newProperties, payload);
+			this.channel.basicPublish(Constants.retry5s_channel, Constants.retry5s_channel, true, false, newProperties,
+					payload);
 		} else if (retryCount == 2) {
 			this.channel.basicPublish(Constants.retry10s_channel, Constants.retry10s_channel, true, false,
 					newProperties, payload);

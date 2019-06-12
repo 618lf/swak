@@ -319,8 +319,8 @@ public class EventBus {
 				// 执行处理器
 				return wrapper.invokeMethod(listener, method.getName(), types, args);
 			} catch (Exception e) {
-				LOGGER.error("Handler{} - Method{} Invoke Error：", listener.getClass(), method.getName(), e);
-				throw new AmqpException("处理消费事件错误：", e);
+				LOGGER.error("Handler{} - Method{} Invoke Error：", listener.getClass(), method.getName(), e.getCause());
+				throw new AmqpException("处理消费事件错误");
 			}
 		}
 	}

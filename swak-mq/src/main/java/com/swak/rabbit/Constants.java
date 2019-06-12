@@ -31,7 +31,8 @@ public interface Constants {
 	String fail_channel = "swak.fail";
 	
 	// retry count
-	String retry_key = "x-retry";
+	String x_retry = "x-retry";
+	String x_death_queue = "x-death-queue";
 	
 	// dead times
 	int dead = 10000;
