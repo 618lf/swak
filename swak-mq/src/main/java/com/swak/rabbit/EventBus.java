@@ -8,6 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,9 +146,11 @@ public class EventBus {
 	 */
 	public void register(Object object) {
 		List<Subscriber> subscribers = findAllSubscribers(object);
-		for (Subscriber subscriber : subscribers) {
+		subscribers.stream().flatMap(subscriber -> {
+			return Stream.iterate(0, t -> t + 1).limit(subscriber.parallel).map(t -> subscriber);
+		}).forEach(subscriber -> {
 			templateForConsumer.basicConsume(subscriber.queue, subscriber.prefetch, subscriber);
-		}
+		});
 	}
 
 	private List<Subscriber> findAllSubscribers(Object listener) {
@@ -293,6 +296,7 @@ public class EventBus {
 		private static Class<?>[] types = new Class<?>[] { Message.class };
 		private String queue;
 		private int prefetch;
+		private int parallel;
 		private Object listener;
 		private Method method;
 
@@ -300,6 +304,7 @@ public class EventBus {
 			Subscriber subscriber = new Subscriber();
 			subscriber.queue = subscribe.queue();
 			subscriber.prefetch = subscribe.prefetch();
+			subscriber.parallel = subscribe.parallel();
 			subscriber.listener = listener;
 			subscriber.method = method;
 			return subscriber;

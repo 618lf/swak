@@ -19,16 +19,23 @@ import io.netty.util.internal.StringUtil;
 public @interface Subscribe {
 
 	/**
-	 * 指定交换区
+	 * 监听的队列
 	 * 
 	 * @return
 	 */
 	String queue() default StringUtil.EMPTY_STRING;
 
 	/**
-	 * 指定路由
+	 * 每次消费的消息数
 	 * 
 	 * @return
 	 */
 	int prefetch() default 1;
+	
+	/**
+	 * 并行度，启动的消费者数量
+	 * 
+	 * @return
+	 */
+	int parallel() default 1;
 }
