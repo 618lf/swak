@@ -60,7 +60,7 @@ class TemplateConsumer implements Consumer {
 			if (result != null && result instanceof CompletionStage) {
 				this.asynHandleResult((CompletionStage<Object>) result, envelope, message);
 			} else {
-				this.handleResult(envelope, message, null);
+				this.handleResult(result, envelope, message, null);
 			}
 		} catch (Exception e) {
 			this.handleError(envelope, message);
@@ -80,19 +80,19 @@ class TemplateConsumer implements Consumer {
 	private void asynHandleResult(CompletionStage<Object> resultFuture, Envelope envelope, Message message) {
 		if (this.consumerExecutor != null) {
 			resultFuture.whenCompleteAsync((v, e) -> {
-				this.handleResult(envelope, message, e);
+				this.handleResult(v, envelope, message, e);
 			}, this.consumerExecutor);
 		} else {
 			resultFuture.whenComplete((v, e) -> {
-				this.handleResult(envelope, message, e);
+				this.handleResult(v, envelope, message, e);
 			});
 		}
 	}
 
 	// 处理消息回调
-	private void handleResult(Envelope envelope, Message message, Throwable ex) {
+	private void handleResult(Object result, Envelope envelope, Message message, Throwable ex) {
 		try {
-			if (ex != null) {
+			if (ex != null || (result != null && result instanceof Boolean && !(Boolean) result)) {
 				this.handleError(envelope, message);
 			} else {
 				this.handleSuccess(envelope);
