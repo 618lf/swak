@@ -95,7 +95,7 @@ class TemplateConsumer implements Consumer {
 			if (ex != null || (result != null && result instanceof Boolean && !(Boolean) result)) {
 				this.handleError(envelope, message);
 			} else {
-				this.handleSuccess(envelope);
+				this.handleSuccess(envelope, message);
 			}
 		} catch (Exception e) {
 			logger.error("Consumer Ack error:", e);
@@ -103,10 +103,14 @@ class TemplateConsumer implements Consumer {
 	}
 
 	// 消息成功
-	private void handleSuccess(Envelope envelope) throws IOException {
+	private void handleSuccess(Envelope envelope, Message message) throws IOException {
 		try {
 			if (this.channel.isOpen()) {
 				this.channel.basicAck(envelope.getDeliveryTag(), false);
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("consume {} - {} -{} - {} Success.", queue, message.getOrigin(), message.getRetry(),
+						message.getRetrys());
 			}
 		} catch (Exception e) {
 			logger.error("Consumer Ack error:", e);
@@ -127,6 +131,10 @@ class TemplateConsumer implements Consumer {
 				} catch (Exception e) {
 					this.channel.basicNack(envelope.getDeliveryTag(), false, false);
 				}
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("consume {} - {} -{} - {} Error.", queue, message.getOrigin(), message.getRetry(),
+						message.getRetrys());
 			}
 		} catch (Exception e) {
 			logger.error("Consumer Ack error:", e);

@@ -30,6 +30,7 @@ public class Message {
 
 	// 重试
 	private String origin;
+	private String retry;
 	private Integer retrys;
 
 	public String getId() {
@@ -88,6 +89,10 @@ public class Message {
 		return retrys;
 	}
 
+	public String getRetry() {
+		return retry;
+	}
+
 	public Message setOrigin(String origin) {
 		this.origin = origin;
 		return this;
@@ -95,6 +100,11 @@ public class Message {
 
 	public Message setRetrys(Integer retrys) {
 		this.retrys = retrys;
+		return this;
+	}
+
+	public Message setRetry(String retry) {
+		this.retry = retry;
 		return this;
 	}
 
@@ -126,17 +136,19 @@ public class Message {
 	 * @return
 	 */
 	public Message retryMessage() {
-		Object retryQueue = null, retryCount = null;
+		Object deadQueue = null, retryQueue = null, retryCount = null;
 		if (properties.getHeaders() != null) {
-			retryQueue = properties.getHeaders().containsKey(com.swak.rabbit.Constants.x_death_queue)
+			deadQueue = properties.getHeaders().containsKey(com.swak.rabbit.Constants.x_death_queue)
 					? properties.getHeaders().get(com.swak.rabbit.Constants.x_death_queue)
 					: properties.getHeaders().get("x-first-death-queue");
+			retryQueue = properties.getHeaders().get("x-first-death-queue");
 			retryCount = properties.getHeaders().get(com.swak.rabbit.Constants.x_retry);
 		}
-		String $retryQueue = null;
-		if (retryQueue != null && StringUtils.isNotBlank($retryQueue = String.valueOf(retryQueue))
-				&& !StringUtils.startsWith($retryQueue, com.swak.rabbit.Constants.retry_channel)) {
-			return this.setOrigin($retryQueue).setRetrys(retryCount == null ? 0 : (Integer) retryCount);
+		String $deadQueue = null;
+		if (deadQueue != null && StringUtils.isNotBlank($deadQueue = String.valueOf(deadQueue))
+				&& !StringUtils.startsWith($deadQueue, com.swak.rabbit.Constants.retry_channel)) {
+			return this.setOrigin($deadQueue).setRetry(String.valueOf(retryQueue))
+					.setRetrys(retryCount == null ? 0 : (Integer) retryCount);
 		}
 		return this;
 	}
