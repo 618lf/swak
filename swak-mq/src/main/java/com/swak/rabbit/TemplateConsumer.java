@@ -14,6 +14,7 @@ import com.rabbitmq.client.ShutdownSignalException;
 import com.swak.rabbit.RabbitMQTemplate.MessageHandler;
 import com.swak.rabbit.connection.CacheChannelProxy;
 import com.swak.rabbit.message.Message;
+import com.swak.utils.StringUtils;
 
 /**
  * 具有自动连接功能
@@ -109,8 +110,13 @@ class TemplateConsumer implements Consumer {
 				this.channel.basicAck(envelope.getDeliveryTag(), false);
 			}
 			if (logger.isDebugEnabled()) {
-				logger.debug("consume {} - {} -{} - {} Success.", queue, message.getOrigin(), message.getRetry(),
-						message.getRetrys());
+				if (StringUtils.isBlank(message.getOrigin())) {
+					logger.debug("Consume Queue[{}] Success.", queue, message.getOrigin(), message.getRetry(),
+							message.getRetrys());
+				} else {
+					logger.debug("Consume Queue[{}] - Origin[{}] - Retry[{}] - Times[{}] Success.", queue,
+							message.getOrigin(), message.getRetry(), message.getRetrys());
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Consumer Ack error:", e);
@@ -133,8 +139,13 @@ class TemplateConsumer implements Consumer {
 				}
 			}
 			if (logger.isDebugEnabled()) {
-				logger.debug("consume {} - {} -{} - {} Error.", queue, message.getOrigin(), message.getRetry(),
-						message.getRetrys());
+				if (StringUtils.isBlank(message.getOrigin())) {
+					logger.debug("Consume Queue[{}] Error.", queue, message.getOrigin(), message.getRetry(),
+							message.getRetrys());
+				} else {
+					logger.debug("Consume Queue[{}] - Origin[{}] - Retry[{}] - Times[{}] Error.", queue,
+							message.getOrigin(), message.getRetry(), message.getRetrys());
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Consumer Ack error:", e);
