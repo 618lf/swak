@@ -19,5 +19,7 @@ com.swak.config.motan.MotanCommandLineRunner,\
 com.swak.config.flux.FluxAutoConfiguration,\
 com.swak.config.flux.SecurityAutoConfiguration,\
 com.swak.config.flux.RouterAutoConfiguration,\
+com.swak.config.vertx.StandardOptionsAutoConfiguration,\
+com.swak.config.vertx.StandardVerxAutoConfiguration,\
 com.swak.config.vertx.VertxAutoConfiguration,\
 com.swak.config.vertx.RouterAutoConfiguration

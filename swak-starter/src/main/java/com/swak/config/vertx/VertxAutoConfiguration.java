@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.VertxProperties;
@@ -21,7 +20,6 @@ import com.swak.vertx.transport.server.ReactiveServer;
 @Configuration
 @ConditionalOnClass(ReactiveServer.class)
 @EnableConfigurationProperties(VertxProperties.class)
-@Import({ StandardOptionsAutoConfiguration.class, StandardVerxAutoConfiguration.class })
 public class VertxAutoConfiguration {
 
 	public VertxAutoConfiguration() {

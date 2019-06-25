@@ -19,9 +19,10 @@ import io.vertx.core.eventbus.DeliveryOptions;
 @ConditionalOnMissingBean(VertxBean.class)
 @EnableConfigurationProperties(VertxProperties.class)
 public class StandardVerxAutoConfiguration {
-	
+
 	/**
 	 * 配置标准的 vertx
+	 * 
 	 * @param properties
 	 * @return
 	 */

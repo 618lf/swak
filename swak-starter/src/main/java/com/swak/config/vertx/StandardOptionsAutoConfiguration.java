@@ -1,5 +1,6 @@
 package com.swak.config.vertx;
 
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import io.vertx.core.eventbus.DeliveryOptions;
  * 
  * @author lifeng
  */
+@AutoConfigureAfter(name = "com.swak.metrics.vertx.MetricsOptionsAutoConfiguration")
 @ConditionalOnMissingBean(VertxOptions.class)
 @EnableConfigurationProperties(VertxProperties.class)
 public class StandardOptionsAutoConfiguration {
