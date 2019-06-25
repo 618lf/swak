@@ -57,9 +57,27 @@ public class EventBus {
 	 */
 	public synchronized void init(Consumer<Boolean> register) {
 		if (!inited) {
-			Optional.of(templateForConsumer).map(t -> this.appay(t)).map(apply).ifPresent(register);
+			Optional.of(templateForConsumer).map(t -> this.appay(t)).map(apply).ifPresent(this.delayConsumer(register));
 		}
 		inited = true;
+	}
+
+	/**
+	 * 延迟10s 注册成为消费者
+	 * 
+	 * @param register
+	 * @return
+	 */
+	private Consumer<Boolean> delayConsumer(Consumer<Boolean> register) {
+		return (t) -> {
+			new Thread(() -> {
+				try {
+					Thread.sleep(10 * 1000);
+				} catch (Exception e) {
+				}
+				register.accept(t);
+			}).start();
+		};
 	}
 
 	/**
