@@ -13,7 +13,7 @@ import com.swak.utils.StringUtils;
 @ConfigurationProperties(prefix = Constants.DATASOURCE_PREFIX)
 public class DataSourceProperties {
 
-	private String name = "DB.";
+	private String name = "DB";
 	private Database db = Database.mysql;
 	private String url;
 	private String username;
