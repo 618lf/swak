@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.swak</groupId>
 		<artifactId>swak</artifactId>
-		<version>0.1.3.2_final</version>
+		<version>0.1.3.3_final</version>
 	</parent>
 	<artifactId>swak-sample</artifactId>
 	<dependencies>
