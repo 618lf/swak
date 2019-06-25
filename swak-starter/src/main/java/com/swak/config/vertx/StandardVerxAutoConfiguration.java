@@ -1,5 +1,6 @@
 package com.swak.config.vertx;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -7,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import com.swak.vertx.config.VertxBean;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.handler.VertxHandler;
+import com.swak.vertx.transport.server.ReactiveServer;
 
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.DeliveryOptions;
@@ -16,6 +18,7 @@ import io.vertx.core.eventbus.DeliveryOptions;
  * 
  * @author lifeng
  */
+@ConditionalOnClass(ReactiveServer.class)
 @ConditionalOnMissingBean(VertxBean.class)
 @EnableConfigurationProperties(VertxProperties.class)
 public class StandardVerxAutoConfiguration {

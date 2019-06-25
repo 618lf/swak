@@ -1,12 +1,14 @@
 package com.swak.config.vertx;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.vertx.config.VertxProperties;
+import com.swak.vertx.transport.server.ReactiveServer;
 
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.DeliveryOptions;
@@ -16,7 +18,8 @@ import io.vertx.core.eventbus.DeliveryOptions;
  * 
  * @author lifeng
  */
-@AutoConfigureAfter(name = "com.swak.metrics.vertx.MetricsOptionsAutoConfiguration")
+@ConditionalOnClass(ReactiveServer.class)
+@ConditionalOnMissingClass("com.swak.metrics.vertx.MetricsOptionsAutoConfiguration")
 @ConditionalOnMissingBean(VertxOptions.class)
 @EnableConfigurationProperties(VertxProperties.class)
 public class StandardOptionsAutoConfiguration {

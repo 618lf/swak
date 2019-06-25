@@ -32,15 +32,10 @@ public class MetricRegistryPostProcessor implements BeanPostProcessor, Applicati
 	 */
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String arg1) throws BeansException {
-		if (bean instanceof MetricRegistry) {
-			this.metricRegistry = (MetricRegistry) bean;
-		} else if (bean instanceof ScheduledReporter) {
+		if (bean instanceof ScheduledReporter) {
 			this.reporter = (ScheduledReporter) bean;
 		} else if (bean instanceof MetricBinder) {
 			binders.add((MetricBinder) bean);
-		}
-		if (arg1.equals("simpleMeterRegistry")) {
-			System.out.println("对象：");
 		}
 		return bean;
 	}

@@ -38,7 +38,7 @@ public class MetricsAutoConfiguration {
 	public MetricRegistry simpleMeterRegistry() {
 		return new MetricRegistry();
 	}
-	
+
 	/**
 	 * 将MetricBinder 注册到 MetricRegistry
 	 * 
@@ -57,7 +57,7 @@ public class MetricsAutoConfiguration {
 	 */
 	@Configuration
 	static class MetricsReporterConfiguration {
-		
+
 		/**
 		 * 默认使用 日志记录
 		 * 
