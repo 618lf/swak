@@ -1,6 +1,5 @@
 package com.swak.actuator.config.motan;
 
-import org.apache.zookeeper.ZooKeeper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -22,7 +21,7 @@ import com.swak.motan.properties.RegistryConfigProperties;
  * @author lifeng
  */
 @Configuration
-@ConditionalOnClass({RegistryService.class, CommandService.class, ZooKeeper.class})
+@ConditionalOnClass({RegistryService.class, CommandService.class})
 @EnableConfigurationProperties({ RegistryConfigProperties.class })
 @ConditionalOnProperty(prefix = "spring.motan.registry", name = "regProtocol", havingValue="zookeeper")
 public class MotanEndpointAutoConfiguration {

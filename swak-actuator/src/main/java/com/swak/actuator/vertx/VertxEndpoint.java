@@ -10,9 +10,9 @@ import com.swak.utils.Sets;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.dropwizard.MetricsService;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
-import io.vertx.micrometer.MetricsService;
 
 /**
  * 直接获取 vertx 的内容

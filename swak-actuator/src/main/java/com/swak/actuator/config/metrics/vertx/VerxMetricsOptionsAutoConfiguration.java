@@ -10,7 +10,7 @@ import com.swak.config.vertx.StandardOptionsAutoConfiguration;
 import com.swak.vertx.config.VertxProperties;
 
 import io.vertx.core.VertxOptions;
-import io.vertx.micrometer.MicrometerMetricsOptions;
+import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 
 /**
  * 代有监控 options
@@ -18,7 +18,7 @@ import io.vertx.micrometer.MicrometerMetricsOptions;
  * @author lifeng
  */
 @ConditionalOnMissingBean(VertxOptions.class)
-@ConditionalOnClass(MicrometerMetricsOptions.class)
+@ConditionalOnClass(DropwizardMetricsOptions.class)
 @AutoConfigureBefore(StandardOptionsAutoConfiguration.class)
 @EnableConfigurationProperties(VertxProperties.class)
 public class VerxMetricsOptionsAutoConfiguration extends StandardOptionsAutoConfiguration {
@@ -33,7 +33,7 @@ public class VerxMetricsOptionsAutoConfiguration extends StandardOptionsAutoConf
 	public VertxOptions vertxOptions(VertxProperties properties) {
 		VertxOptions vertxOptions = super.vertxOptions(properties);
 		if (properties.isMetricAble()) {
-			vertxOptions.setMetricsOptions(new MicrometerMetricsOptions().setEnabled(true));
+			vertxOptions.setMetricsOptions(new DropwizardMetricsOptions().setEnabled(true));
 		}
 		return vertxOptions;
 	}
