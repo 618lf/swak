@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>swak-gen</artifactId>
 	<dependencies>
-	    <dependency>
+		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-starter</artifactId>
 		</dependency>
@@ -31,9 +31,8 @@
 			<artifactId>swak-fx</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-			<version>${freemarker.version}</version>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-template</artifactId>
 		</dependency>
 	</dependencies>
 </project>

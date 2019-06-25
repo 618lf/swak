@@ -79,9 +79,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-			<version>${freemarker.version}</version>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-template</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
