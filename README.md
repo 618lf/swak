@@ -158,7 +158,20 @@ Http1xServerConnection -- 一次请求的处理
 
 问题1： 找遍了spring aop 中的 exposeProxy，之后测试是否使用另一种方式的aop。发现默认aop没有设置的地方。
 不知道以后会不会提供。也可以重新从spring中获取代理类
+-- 目前再baseService 中可以 getProxy 来获取当前的代理对象
 
 问题2： http 的简单处理方式可以参考hutool的处理方式
+
+-- 还没研究他的处理方式
+
 问题3： 验证框架，感觉使用简单点的方式就够了。
+
+-- 已经实现了一版简单的，适合当前系统的版本
 问题3： 发现循环依赖会导致aop失效，@lazy能避免这个问题。
+
+-- 并非循环依赖的问题，二是postBeanprocess 中获取的bean 不一定是spring加工完成的bean。
+所以vertx再发布服务时需要再次获取此bean。包括motan 的处理也一样需要再次获取，才能保证获取
+的bean时proxy的。
+
+# 版本0.1.3.3
+目的：简化，删除不需要的jar，添加监控。
