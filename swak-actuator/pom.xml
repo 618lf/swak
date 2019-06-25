@@ -38,11 +38,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>
-			<artifactId>swak-flux</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.swak</groupId>
 			<artifactId>swak-jdbc</artifactId>
 			<scope>provided</scope>
 		</dependency>

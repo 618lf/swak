@@ -65,7 +65,7 @@
 		<javapoet.version>1.11.1</javapoet.version>
 		<zookeeper.version>3.4.8</zookeeper.version>
 		<zkclient.version>0.11</zkclient.version>
-		<metrics.version>4.0.5</metrics.version>
+		<metrics.version>4.1.0</metrics.version>
 		<quartz.version>2.2.3</quartz.version>
 		<jcef.version>1.0</jcef.version>
 		<poi.version>4.0.1</poi.version>
