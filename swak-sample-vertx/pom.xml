@@ -8,6 +8,10 @@
 	</parent>
 	<artifactId>swak-sample-vertx</artifactId>
 	<dependencies>
+	    <dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-actuator</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-vertx</artifactId>
@@ -37,10 +41,6 @@
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-redis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.swak</groupId>
-			<artifactId>swak-actuator</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup</groupId>

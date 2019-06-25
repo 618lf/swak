@@ -17,6 +17,31 @@
 			<artifactId>swak-starter</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-core</artifactId>
+			<version>${micrometer.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hdrhistogram</groupId>
+					<artifactId>HdrHistogram</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.latencyutils</groupId>
+					<artifactId>LatencyUtils</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.hdrhistogram</groupId>
+			<artifactId>HdrHistogram</artifactId>
+			<version>${HdrHistogram.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-flux</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-jdbc</artifactId>
 			<scope>provided</scope>
@@ -38,11 +63,10 @@
 		</dependency>
 		<dependency>
 			<groupId>io.vertx</groupId>
-			<artifactId>vertx-dropwizard-metrics</artifactId>
+			<artifactId>vertx-micrometer-metrics</artifactId>
 			<version>${vertx.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		
 	</dependencies>
 	<build>
 		<plugins>

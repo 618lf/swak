@@ -22,7 +22,7 @@ import com.swak.actuator.endpoint.web.WebEndpointDiscoverer;
  */
 @Configuration
 @EnableConfigurationProperties(WebEndpointProperties.class)
-@Import({ VertxEndpointAutoConfiguration.class })
+@Import({ WebFluxEndpointAutoConfiguration.class, VertxEndpointAutoConfiguration.class })
 public class WebEndpointAutoConfiguration {
 
 	private final WebEndpointProperties properties;

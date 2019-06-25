@@ -1,5 +1,6 @@
 package com.swak.actuator.config.vertx;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,8 +9,10 @@ import com.swak.actuator.vertx.VertxEndpoint;
 
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;
+import io.vertx.micrometer.MetricsService;
 
 @Configuration
+@ConditionalOnClass(MetricsService.class)
 public class VertxMetricsEndpointAutoConfiguration {
 
 	/**
