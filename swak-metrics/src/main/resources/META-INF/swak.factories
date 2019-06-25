@@ -1,4 +1,5 @@
 com.swak.ApplicationBoot=\
 com.swak.metrics.MetricsAutoConfiguration,\
 com.swak.metrics.vertx.MetricsOptionsAutoConfiguration,\
+com.swak.metrics.mq.RabbitMqMetricsConfiguration,\
 com.swak.metrics.jdbc.HikariDataSourceMetricsConfiguration

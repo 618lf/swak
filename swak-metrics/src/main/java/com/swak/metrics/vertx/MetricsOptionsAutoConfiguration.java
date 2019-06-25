@@ -1,13 +1,14 @@
 package com.swak.metrics.vertx;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.codahale.metrics.MetricRegistry;
 import com.swak.config.vertx.StandardOptionsAutoConfiguration;
-import com.swak.vertx.config.VertxProperties;
+import com.swak.metrics.MetricsAutoConfiguration;
 
 import io.vertx.core.VertxOptions;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
@@ -17,23 +18,20 @@ import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
  * 
  * @author lifeng
  */
-@ConditionalOnMissingBean(VertxOptions.class)
+@Configuration
 @ConditionalOnClass(DropwizardMetricsOptions.class)
-@EnableConfigurationProperties(VertxProperties.class)
-public class MetricsOptionsAutoConfiguration extends StandardOptionsAutoConfiguration {
+@ConditionalOnBean({ VertxOptions.class, MetricRegistry.class })
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, StandardOptionsAutoConfiguration.class })
+public class MetricsOptionsAutoConfiguration {
 
-	/**
-	 * 添加指标的支持
-	 * 
-	 * @param properties
-	 * @return
-	 */
-	@Bean
-	public VertxOptions vertxOptions(MetricRegistry registry, VertxProperties properties) {
-		VertxOptions vertxOptions = super.vertxOptions(properties);
-		if (properties.isMetricAble()) {
-			vertxOptions.setMetricsOptions(new DropwizardMetricsOptions().setMetricRegistry(registry).setEnabled(true));
-		}
-		return vertxOptions;
+	private MetricRegistry registry;
+
+	public MetricsOptionsAutoConfiguration(MetricRegistry registry) {
+		this.registry = registry;
+	}
+
+	@Autowired
+	public void vertxOptionsMetricsPostProcessor(VertxOptions vertxOptions) {
+		vertxOptions.setMetricsOptions(new DropwizardMetricsOptions().setMetricRegistry(registry).setEnabled(true));
 	}
 }

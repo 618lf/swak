@@ -38,5 +38,10 @@
 			<artifactId>swak-jdbc</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-mq</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 </project>
