@@ -39,6 +39,10 @@
 			<artifactId>swak-redis</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-actuator</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.squareup</groupId>
 			<artifactId>javapoet</artifactId>
 			<version>${javapoet.version}</version>
