@@ -109,7 +109,7 @@ public class StandardVertx implements VertxProxy {
 	@SuppressWarnings("unchecked")
 	public <T> CompletableFuture<T> future(Supplier<T> supplier) {
 		CompletableFuture<T> future = new CompletableFuture<T>();
-		context.executeBlocking((f) -> {
+		this.currentContext().executeBlocking((f) -> {
 			T t = supplier.get();
 			f.complete(t);
 		}, false, (r) -> {
@@ -131,7 +131,7 @@ public class StandardVertx implements VertxProxy {
 	@SuppressWarnings("unchecked")
 	public <T> CompletableFuture<T> order(Supplier<T> supplier) {
 		CompletableFuture<T> future = new CompletableFuture<T>();
-		context.executeBlocking((f) -> {
+		this.currentContext().executeBlocking((f) -> {
 			T t = supplier.get();
 			f.complete(t);
 		}, (r) -> {
@@ -144,5 +144,15 @@ public class StandardVertx implements VertxProxy {
 			}
 		});
 		return future;
+	}
+
+	/**
+	 * 如果有则使用当前的 context
+	 * 
+	 * @return
+	 */
+	private ContextInternal currentContext() {
+		ContextInternal currentContext = vertx.getContext();
+		return currentContext == null ? this.context : currentContext;
 	}
 }
