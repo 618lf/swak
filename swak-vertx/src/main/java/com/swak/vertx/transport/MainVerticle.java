@@ -68,7 +68,9 @@ public class MainVerticle extends AbstractVerticle {
 	}
 
 	private void customConfig() {
-		vertx.eventBus().registerDefaultCodec(Msg.class, new MsgCodec());
+		MsgCodec msgCodec = new MsgCodec();
+		vertx.eventBus().registerCodec(msgCodec);
+		vertx.eventBus().registerDefaultCodec(Msg.class, msgCodec);
 	}
 
 	/**
