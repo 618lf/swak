@@ -12,6 +12,11 @@ import io.vertx.core.eventbus.MessageCodec;
  */
 public class MsgCodec implements MessageCodec<Msg, Msg> {
 
+	/**
+	 * 定义默认的名称
+	 */
+	public static final String CODEC_NAME = "msg-codec";
+
 	@Override
 	public void encodeToWire(Buffer buffer, Msg s) {
 		buffer.appendBytes(SerializationUtils.serialize(s));
@@ -32,7 +37,7 @@ public class MsgCodec implements MessageCodec<Msg, Msg> {
 
 	@Override
 	public String name() {
-		return "msg-codec";
+		return CODEC_NAME;
 	}
 
 	@Override

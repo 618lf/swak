@@ -66,19 +66,7 @@ public class VertxBean implements VertxHandler {
 	 */
 	@Override
 	public void sentMessage(String address, Msg request, int timeout) {
-		if (!this.inited) {
-			throw new BaseRuntimeException("vertx doesn't inited");
-		}
-
-		// 默认的配置
-		DeliveryOptions deliveryOptions = this.deliveryOptions;
-		if (timeout >= 1) {
-			deliveryOptions = new DeliveryOptions();
-			deliveryOptions.setSendTimeout(timeout);
-		}
-
-		// 发送消息
-		vertx.eventBus().send(address, request, deliveryOptions);
+		this.sentMessage(address, request, timeout, null);
 	}
 
 	/**
@@ -93,7 +81,7 @@ public class VertxBean implements VertxHandler {
 		// 默认的配置
 		DeliveryOptions deliveryOptions = this.deliveryOptions;
 		if (timeout >= 1) {
-			deliveryOptions = new DeliveryOptions();
+			deliveryOptions = new DeliveryOptions(this.deliveryOptions);
 			deliveryOptions.setSendTimeout(timeout);
 		}
 
@@ -127,7 +115,7 @@ public class VertxBean implements VertxHandler {
 			if (exception != null) {
 				future.completeExceptionally(exception);
 			} else {
-				T t = (T)r.result();
+				T t = (T) r.result();
 				future.complete(t);
 			}
 		});
