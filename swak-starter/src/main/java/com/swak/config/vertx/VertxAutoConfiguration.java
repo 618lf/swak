@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Import;
 
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.handler.VertxHandler;
+import com.swak.vertx.handler.VertxProxy;
 import com.swak.vertx.transport.server.ReactiveServer;
 
 /**
@@ -37,7 +37,7 @@ public class VertxAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public AnnotationBean annotationBean(VertxHandler vertx) {
+	public AnnotationBean annotationBean(VertxProxy vertx) {
 		AnnotationBean annotationBean = new AnnotationBean(vertx);
 		return annotationBean;
 	}

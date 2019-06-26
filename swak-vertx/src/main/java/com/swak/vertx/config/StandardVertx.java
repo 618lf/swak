@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.swak.exception.BaseRuntimeException;
-import com.swak.vertx.handler.VertxHandler;
+import com.swak.vertx.handler.VertxProxy;
 import com.swak.vertx.transport.codec.Msg;
 
 import io.vertx.core.AsyncResult;
@@ -14,21 +14,24 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
-import io.vertx.core.file.FileSystem;
+import io.vertx.core.impl.ContextInternal;
+import io.vertx.core.impl.VertxImpl;
+import io.vertx.core.json.JsonObject;
 
 /**
  * vertx 的配置 bean
  * 
  * @author lifeng
  */
-public class VertxBean implements VertxHandler {
+public class StandardVertx implements VertxProxy {
 
 	protected VertxOptions vertxOptions;
 	protected DeliveryOptions deliveryOptions;
 	protected boolean inited;
-	protected Vertx vertx;
+	protected VertxImpl vertx;
+	protected ContextInternal context;
 
-	public VertxBean(VertxOptions vertxOptions, DeliveryOptions deliveryOptions) {
+	public StandardVertx(VertxOptions vertxOptions, DeliveryOptions deliveryOptions) {
 		this.vertxOptions = vertxOptions;
 		this.deliveryOptions = deliveryOptions;
 	}
@@ -40,13 +43,12 @@ public class VertxBean implements VertxHandler {
 	 */
 	@Override
 	public void apply(Consumer<Vertx> apply) {
-		// build standard vertx
 		Vertx vertx = Vertx.vertx(vertxOptions);
 		apply.accept(vertx);
-
-		// 初始化完成标志
 		this.inited = true;
-		this.vertx = vertx;
+		this.vertx = (VertxImpl) vertx;
+		this.context = this.vertx.createEventLoopContext(null, null, new JsonObject(),
+				Thread.currentThread().getContextClassLoader());
 	}
 
 	/**
@@ -78,10 +80,9 @@ public class VertxBean implements VertxHandler {
 			throw new BaseRuntimeException("Vertx doesn't inited");
 		}
 		if (Vertx.currentContext() == null) {
-			vertx.executeBlocking((f) -> {
+			context.runOnContext((v) -> {
 				this.sentMessageInternal(address, request, timeout, replyHandler);
-				f.complete();
-			}, null);
+			});
 		} else {
 			this.sentMessageInternal(address, request, timeout, replyHandler);
 		}
@@ -99,15 +100,7 @@ public class VertxBean implements VertxHandler {
 	}
 
 	/**
-	 * 获取文件系统
-	 */
-	@Override
-	public FileSystem fileSystem() {
-		return vertx.fileSystem();
-	}
-
-	/**
-	 * 使用异步队列执行代码
+	 * 立即提交代码
 	 * 
 	 * @param supplier
 	 * @return
@@ -116,7 +109,29 @@ public class VertxBean implements VertxHandler {
 	@SuppressWarnings("unchecked")
 	public <T> CompletableFuture<T> future(Supplier<T> supplier) {
 		CompletableFuture<T> future = new CompletableFuture<T>();
-		vertx.executeBlocking((f) -> {
+		context.executeBlocking((f) -> {
+			T t = supplier.get();
+			f.complete(t);
+		}, false, (r) -> {
+			Throwable exception = r.cause();
+			if (exception != null) {
+				future.completeExceptionally(exception);
+			} else {
+				T t = (T) r.result();
+				future.complete(t);
+			}
+		});
+		return future;
+	}
+
+	/**
+	 * 有序的提交代码
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> CompletableFuture<T> order(Supplier<T> supplier) {
+		CompletableFuture<T> future = new CompletableFuture<T>();
+		context.executeBlocking((f) -> {
 			T t = supplier.get();
 			f.complete(t);
 		}, (r) -> {

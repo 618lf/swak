@@ -4,9 +4,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import com.swak.vertx.config.VertxBean;
+import com.swak.vertx.config.StandardVertx;
 import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.handler.VertxHandler;
+import com.swak.vertx.handler.VertxProxy;
 
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.DeliveryOptions;
@@ -16,7 +16,7 @@ import io.vertx.core.eventbus.DeliveryOptions;
  * 
  * @author lifeng
  */
-@ConditionalOnMissingBean(VertxBean.class)
+@ConditionalOnMissingBean(StandardVertx.class)
 @EnableConfigurationProperties(VertxProperties.class)
 public class StandardVerxAutoConfiguration {
 	
@@ -26,7 +26,7 @@ public class StandardVerxAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public VertxHandler vertxBean(VertxOptions vertxOptions, DeliveryOptions deliveryOptions) {
-		return new VertxBean(vertxOptions, deliveryOptions);
+	public VertxProxy vertxBean(VertxOptions vertxOptions, DeliveryOptions deliveryOptions) {
+		return new StandardVertx(vertxOptions, deliveryOptions);
 	}
 }

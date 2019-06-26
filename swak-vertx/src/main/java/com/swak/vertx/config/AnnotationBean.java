@@ -27,7 +27,7 @@ import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.annotation.RouterSupplier;
 import com.swak.vertx.annotation.VertxReferer;
 import com.swak.vertx.annotation.VertxService;
-import com.swak.vertx.handler.VertxHandler;
+import com.swak.vertx.handler.VertxProxy;
 import com.swak.vertx.utils.RouterUtils;
 
 /**
@@ -42,14 +42,14 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 	private final Map<String, ReferenceBean> references = Maps.newOrderMap();
 	private final Set<IRouterSupplier> routerSuppliers = Sets.newOrderSet();
 	private final Set<IRouterConfig> routerConfigs = Sets.newOrderSet();
-	private final VertxHandler vertx;
+	private final VertxProxy vertx;
 	private BeanFactory beanFactory;
 
-	public AnnotationBean(VertxHandler vertx) {
+	public AnnotationBean(VertxProxy vertx) {
 		this.vertx = vertx;
 	}
 
-	public VertxHandler getVertx() {
+	public VertxProxy getVertx() {
 		return vertx;
 	}
 
@@ -237,6 +237,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 	}
 
 	/**
+	 * 如果继承了多个接口，可以指定需要实现的服务
 	 * 
 	 * @param mapping
 	 * @param inter

@@ -9,7 +9,7 @@ import com.swak.security.JwtAuthProvider;
 import com.swak.utils.Sets;
 import com.swak.vertx.config.IRouterConfig;
 import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.handler.VertxHandler;
+import com.swak.vertx.handler.VertxProxy;
 import com.swak.vertx.security.JwtAuthHandler;
 import com.swak.vertx.security.SecurityFilter;
 import com.swak.vertx.security.filter.Filter;
@@ -67,7 +67,7 @@ public class AppConfiguration {
 	public IRouterConfig routerConfig(JwtAuthProvider jwtAuth, Filter securityFilter, VertxProperties properties) {
 		return new IRouterConfig() {
 			@Override
-			public void apply(VertxHandler vertx, Router router) {
+			public void apply(VertxProxy vertx, Router router) {
 				Set<String> headers = Sets.newHashSet();
 				headers.add("X-Requested-With");
 				headers.add(jwtAuth.getTokenName());
