@@ -14,6 +14,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.file.FileSystem;
 import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.json.JsonObject;
@@ -154,5 +155,13 @@ public class StandardVertx implements VertxProxy {
 	private ContextInternal currentContext() {
 		ContextInternal currentContext = vertx.getContext();
 		return currentContext == null ? this.context : currentContext;
+	}
+
+	/**
+	 * 返回文件系统
+	 */
+	@Override
+	public FileSystem fileSystem() {
+		return this.vertx.fileSystem();
 	}
 }

@@ -10,6 +10,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.file.FileSystem;
 
 /**
  * 代理处理 vertx 的 相关服务
@@ -55,4 +56,11 @@ public interface VertxProxy {
 	 * 无顺序的执行代码
 	 */
 	<T> CompletableFuture<T> future(Supplier<T> supplier);
+	
+	/**
+	 * 文件系统
+	 * 
+	 * @return
+	 */
+	FileSystem fileSystem();
 }
