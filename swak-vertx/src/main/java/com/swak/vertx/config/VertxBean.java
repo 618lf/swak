@@ -75,17 +75,26 @@ public class VertxBean implements VertxHandler {
 	@Override
 	public void sentMessage(String address, Msg request, int timeout, Handler<AsyncResult<Message<Msg>>> replyHandler) {
 		if (!this.inited) {
-			throw new BaseRuntimeException("vertx doesn't inited");
+			throw new BaseRuntimeException("Vertx doesn't inited");
 		}
+		if (Vertx.currentContext() == null) {
+			vertx.executeBlocking((f) -> {
+				this.sentMessageInternal(address, request, timeout, replyHandler);
+				f.complete();
+			}, null);
+		} else {
+			this.sentMessageInternal(address, request, timeout, replyHandler);
+		}
+	}
 
-		// 默认的配置
+	// 发送消息
+	private void sentMessageInternal(String address, Msg request, int timeout,
+			Handler<AsyncResult<Message<Msg>>> replyHandler) {
 		DeliveryOptions deliveryOptions = this.deliveryOptions;
 		if (timeout >= 1) {
 			deliveryOptions = new DeliveryOptions(this.deliveryOptions);
 			deliveryOptions.setSendTimeout(timeout);
 		}
-
-		// 发送消息
 		vertx.eventBus().send(address, request, deliveryOptions, replyHandler);
 	}
 
