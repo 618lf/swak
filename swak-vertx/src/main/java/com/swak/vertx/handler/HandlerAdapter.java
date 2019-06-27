@@ -31,8 +31,12 @@ import com.swak.vertx.annotation.VertxService;
 import com.swak.vertx.security.Subject;
 
 import io.vertx.core.MultiMap;
+import io.vertx.core.http.HttpConnection;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.impl.ContextInternal;
+import io.vertx.core.impl.VertxImpl;
+import io.vertx.core.net.impl.ConnectionBase;
 import io.vertx.ext.web.RoutingContext;
 
 /**
@@ -94,7 +98,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			if (result != null && result instanceof CompletionStage) {
 				CompletionStage<Object> resultFuture = (CompletionStage<Object>) result;
 				resultFuture.whenComplete((v, e) -> {
-					resultHandler.handlResult(v, e, context);
+					this.handlResultOnContext(v, e, context);
 				});
 			} else {
 				resultHandler.handlResult(result, null, context);
@@ -102,6 +106,36 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		} catch (Exception e) {
 			resultHandler.handlError(e, context);
 		}
+	}
+
+	/**
+	 * 在之前的 Context 中处理
+	 * 
+	 * @param result
+	 * @param e
+	 * @param context
+	 */
+	private void handlResultOnContext(Object result, Throwable e, RoutingContext context) {
+		ContextInternal $currContext = this.getContext(context);
+		if ($currContext != null) {
+			$currContext.runOnContext((vo) -> {
+				resultHandler.handlResult(result, e, context);
+			});
+		} else {
+			resultHandler.handlResult(result, e, context);
+		}
+	}
+
+	private ContextInternal getContext(RoutingContext context) {
+		HttpConnection conn = context.request().connection();
+		if (conn instanceof ConnectionBase) {
+			ContextInternal $connContext = ((ConnectionBase) conn).getContext();
+			ContextInternal $currContext = (ContextInternal) VertxImpl.context();
+			if ($connContext != null && ($currContext == null || $connContext != $currContext)) {
+				return $connContext;
+			}
+		}
+		return null;
 	}
 
 	/**
