@@ -225,6 +225,24 @@ public class EventBus {
 	public void log(String exchange, String routingKey, Message message) {
 		this.templateForSender.basicPublish(exchange, routingKey, message, false);
 	}
+	
+	/**
+	 * 发送消息 log 模式， 如果需要异步发布，则可以在外部包裹发布
+	 * 
+	 * @param exchange
+	 * @param routingKey
+	 * @param message
+	 */
+	public CompletableFuture<Void> logAsync(String exchange, String routingKey, Message message) {
+		if (executor == null) {
+			return CompletableFuture.runAsync(() -> {
+				this.templateForSender.basicPublish(exchange, routingKey, message, false);
+			});
+		}
+		return CompletableFuture.runAsync(() -> {
+			this.templateForSender.basicPublish(exchange, routingKey, message, false);
+		}, executor);
+	}
 
 	/**
 	 * 发送消息
