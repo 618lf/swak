@@ -1,13 +1,15 @@
 package com.swak.meters;
 
 /**
- * An SPI used internally by Vert.x to gather metrics on pools used by Vert.x  (execute blocking, worker verticle or data source).
+ * An SPI used internally by Vert.x to gather metrics on pools used by Vert.x
+ * (execute blocking, worker verticle or data source).
  * <p>
- * Usually these metrics measure the latency of a task queuing and the latency a task execution.
+ * Usually these metrics measure the latency of a task queuing and the latency a
+ * task execution.
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public interface PoolMetrics {
+public interface PoolMetrics<T> extends Metrics {
 
 	/**
 	 * A new task has been submitted to access the resource. This method is called
@@ -15,7 +17,7 @@ public interface PoolMetrics {
 	 *
 	 * @return the timer measuring the task queuing
 	 */
-	default Object submitted() {
+	default T submitted() {
 		return null;
 	}
 
@@ -27,7 +29,8 @@ public interface PoolMetrics {
 	 *            {@link #submitted()}
 	 * @return the timer measuring the task execution
 	 */
-	default void begin(Object t) {
+	default T begin(T t) {
+		return null;
 	}
 
 	/**
@@ -37,7 +40,7 @@ public interface PoolMetrics {
 	 *            the timer measuring the task queuing returned by
 	 *            {@link #submitted()}
 	 */
-	default void rejected(Object t) {
+	default void rejected(T t) {
 	}
 
 	/**
@@ -48,6 +51,6 @@ public interface PoolMetrics {
 	 * @param t
 	 *            the timer measuring the task execution returned by {@link #begin}
 	 */
-	default void end(Object t, boolean succeeded) {
+	default void end(T t, boolean succeeded) {
 	}
 }

@@ -11,6 +11,7 @@ import com.swak.meters.PoolMetrics;
  * 
  * @author lifeng
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public final class WorkerContext extends ThreadPoolExecutorDecorator implements Context {
 
 	private final PoolMetrics metrics;

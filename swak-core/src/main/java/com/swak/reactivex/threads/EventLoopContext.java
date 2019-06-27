@@ -9,6 +9,7 @@ import io.netty.channel.EventLoop;
  * 
  * @author lifeng
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class EventLoopContext extends EventLoopDecorator implements Context {
 
 	private PoolMetrics metrics;
