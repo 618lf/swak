@@ -20,9 +20,9 @@ public class InvokerHandler implements InvocationHandler {
 
 	private final Class<?> type;
 	private final String address;
-	private final VertxHandler vertx;
+	private final VertxProxy vertx;
 
-	public InvokerHandler(VertxHandler vertx, Class<?> type) {
+	public InvokerHandler(VertxProxy vertx, Class<?> type) {
 		this.vertx = vertx;
 		this.type = type;
 		this.address = this.initAddress();

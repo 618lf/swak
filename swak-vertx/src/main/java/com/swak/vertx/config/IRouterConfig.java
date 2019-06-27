@@ -1,6 +1,6 @@
 package com.swak.vertx.config;
 
-import com.swak.vertx.handler.VertxHandler;
+import com.swak.vertx.handler.VertxProxy;
 
 import io.vertx.ext.web.Router;
 
@@ -16,5 +16,5 @@ public interface IRouterConfig {
 	 * 对 router 进行配置
 	 * @param router
 	 */
-	void apply(VertxHandler vertx, Router router);
+	void apply(VertxProxy vertx, Router router);
 }

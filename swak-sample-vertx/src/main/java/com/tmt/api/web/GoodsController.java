@@ -36,7 +36,6 @@ public class GoodsController {
 	 */
 	@GetMapping("/rpc_get")
 	public CompletableFuture<Result> rpc_get(RoutingContext context) {
-		System.out.println("接口:" + Thread.currentThread());
 		return goodsServiceRpc.sayHelloAsync().toFuture().thenApply(o -> Result.success(o));
 	}
 
@@ -69,6 +68,7 @@ public class GoodsController {
 	public CompletableFuture<String> get(String id) {
 		System.out.println(id);
 		return goodsService.sayHello().thenApply(msg -> {
+			System.out.println("当前线程：" + Thread.currentThread().getName());
 			return msg.getResult();
 		});
 	}

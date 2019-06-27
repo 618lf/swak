@@ -2,7 +2,6 @@ package com.swak.config.mq;
 
 import static com.swak.Application.APP_LOGGER;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -118,11 +117,9 @@ public class RabbitMqAutoConfiguration {
 		RabbitMqConfigurationSupport configurationSupport = configurationProvider.getIfAvailable();
 		RetryStrategy retryStrategy = null;
 		Function<RabbitMQTemplate, Boolean> apply = null;
-		Executor executor = null;
 		if (configurationSupport != null) {
 			retryStrategy = configurationSupport.getRetryStrategy();
 			apply = configurationSupport.getApply();
-			executor = configurationSupport.getExecutor();
 		}
 		if (retryStrategy != null) {
 			retryStrategy.bindSender(templateForSender);

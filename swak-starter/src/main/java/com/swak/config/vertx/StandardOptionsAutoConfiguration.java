@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.vertx.config.VertxProperties;
+import com.swak.vertx.transport.codec.MsgCodec;
 import com.swak.vertx.transport.server.ReactiveServer;
 
 import io.vertx.core.VertxOptions;
@@ -51,6 +52,7 @@ public class StandardOptionsAutoConfiguration {
 	public DeliveryOptions deliveryOptions(VertxProperties properties) {
 		DeliveryOptions deliveryOptions = new DeliveryOptions();
 		deliveryOptions.setSendTimeout(properties.getSendTimeout());
+		deliveryOptions.setCodecName(MsgCodec.CODEC_NAME);
 		return deliveryOptions;
 	}
 }
