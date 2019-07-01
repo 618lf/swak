@@ -3,6 +3,7 @@ package com.swak.reactivex.threads;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.swak.meters.PoolMetrics;
 
@@ -14,13 +15,12 @@ import com.swak.meters.PoolMetrics;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public final class WorkerContext extends ThreadPoolExecutorDecorator implements Context {
 
-	private final PoolMetrics metrics;
+	private volatile PoolMetrics metrics;
 
-	public WorkerContext(String prefix, int nThreads, BlockedThreadChecker checker, long maxExecTime,
-			TimeUnit maxExecTimeUnit, PoolMetrics metrics) {
+	public WorkerContext(String prefix, int nThreads, boolean daemon, BlockedThreadChecker checker, long maxExecTime,
+			TimeUnit maxExecTimeUnit) {
 		super((ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads,
-				new SwakThreadFactory(prefix, checker, maxExecTime, maxExecTimeUnit)));
-		this.metrics = metrics;
+				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit)));
 	}
 
 	public WorkerContext(String prefix, int nThreads, SwakThreadFactory threadFactory, PoolMetrics metrics) {
@@ -43,5 +43,10 @@ public final class WorkerContext extends ThreadPoolExecutorDecorator implements 
 				metrics.end(metric, succeeded);
 			}
 		});
+	}
+
+	@Override
+	public void setPoolMetrics(PoolMetrics metrics) {
+		this.metrics = metrics;
 	}
 }

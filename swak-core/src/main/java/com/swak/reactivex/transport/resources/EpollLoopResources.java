@@ -1,5 +1,9 @@
 package com.swak.reactivex.transport.resources;
 
+import java.util.concurrent.TimeUnit;
+
+import com.swak.reactivex.threads.BlockedThreadChecker;
+
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;
@@ -9,21 +13,23 @@ import io.netty.channel.epoll.EpollSocketChannel;
 
 /**
  * EpollLoop
+ * 
  * @author lifeng
  */
-public class DefaultEpollLoopResources extends DefaultLoopResources {
+public class EpollLoopResources extends DefaultLoopResources {
 
 	private static final long serialVersionUID = 1L;
 
-	DefaultEpollLoopResources(String prefix, int selectCount, int workerCount, boolean daemon) {
-		super(prefix, selectCount, workerCount, daemon);
+	EpollLoopResources(String prefix, int selectCount, int workerCount, boolean daemon,
+			BlockedThreadChecker blockedThreadChecker, long maxExecTime, TimeUnit maxExecTimeUnit) {
+		super(prefix, selectCount, workerCount, daemon, blockedThreadChecker, maxExecTime, maxExecTimeUnit);
 	}
 
 	@Override
 	public Class<? extends ServerChannel> onServerChannel() {
 		return EpollServerSocketChannel.class;
 	}
-	
+
 	@Override
 	public Class<? extends Channel> onClientChannel() {
 		return EpollSocketChannel.class;
@@ -44,7 +50,7 @@ public class DefaultEpollLoopResources extends DefaultLoopResources {
 		}
 		return this.serverLoops;
 	}
-	
+
 	@Override
 	public EventLoopGroup onClient() {
 		if (this.serverLoops == null) {

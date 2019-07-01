@@ -13,9 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class SwakThreadFactory implements ThreadFactory {
 
-	// We store all threads in a weak map - we retain this so we can unset context
-	// from threads when
-	// context is undeployed
 	private static final Object FOO = new Object();
 	private static Map<SwakThread, Object> weakMap = new WeakHashMap<>();
 
@@ -24,31 +21,30 @@ public class SwakThreadFactory implements ThreadFactory {
 	}
 
 	private final String prefix;
-	private final AtomicInteger threadCount = new AtomicInteger(0);
+	private final boolean daemon;
+	private final AtomicInteger threadCount;
 	private final BlockedThreadChecker checker;
 	private final long maxExecTime;
 	private final TimeUnit maxExecTimeUnit;
 
-	SwakThreadFactory(String prefix, BlockedThreadChecker checker, long maxExecTime, TimeUnit maxExecTimeUnit) {
+	public SwakThreadFactory(String prefix, boolean daemon, AtomicInteger threadCount, BlockedThreadChecker checker,
+			long maxExecTime, TimeUnit maxExecTimeUnit) {
 		this.prefix = prefix;
+		this.daemon = daemon;
 		this.checker = checker;
+		this.threadCount = threadCount;
 		this.maxExecTime = maxExecTime;
 		this.maxExecTimeUnit = maxExecTimeUnit;
 	}
 
 	public Thread newThread(Runnable runnable) {
-		SwakThread t = new SwakThread(runnable, prefix + threadCount.getAndIncrement(), maxExecTime, maxExecTimeUnit);
-		// Vert.x threads are NOT daemons - we want them to prevent JVM exit so embededd
-		// user doesn't
-		// have to explicitly prevent JVM from exiting.
+		SwakThread t = new SwakThread(runnable, prefix + "thread-" + threadCount.getAndIncrement(), maxExecTime,
+				maxExecTimeUnit);
 		if (checker != null) {
 			checker.registerThread(t);
 		}
 		addToMap(t);
-		// I know the default is false anyway, but just to be explicit- Vert.x threads
-		// are NOT daemons
-		// we want to prevent the JVM from exiting until Vert.x instances are closed
-		t.setDaemon(false);
+		t.setDaemon(daemon);
 		return t;
 	}
 }

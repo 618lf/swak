@@ -1,5 +1,7 @@
 package com.swak.reactivex.threads;
 
+import com.swak.meters.PoolMetrics;
+
 /**
  * The execution context of a ThreadPool execution.
  * 
@@ -29,4 +31,12 @@ public interface Context {
 			current.executeEnd();
 		}
 	}
+
+	/**
+	 * 设置监控工具
+	 * 
+	 * @param metrics
+	 */
+	@SuppressWarnings("rawtypes")
+	void setPoolMetrics(PoolMetrics metrics);
 }

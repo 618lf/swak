@@ -1,5 +1,9 @@
 package com.swak.reactivex.transport.resources;
 
+import java.util.concurrent.TimeUnit;
+
+import com.swak.OS;
+import com.swak.reactivex.threads.BlockedThreadChecker;
 import com.swak.reactivex.transport.Disposable;
 import com.swak.reactivex.transport.TransportMode;
 
@@ -14,22 +18,9 @@ import reactor.core.publisher.Mono;
  * @author lifeng
  */
 public interface LoopResources extends Disposable {
-	
+
 	/**
-	 * Flux 中设置为了后台进行，因为单独有一个后台进行等待关闭
-	 * 
-	 * @param mode
-	 * @param select
-	 * @param worker
-	 * @param prefix
-	 * @return
-	 */
-	static LoopResources create(TransportMode mode, Integer select, Integer worker, String prefix) {
-		return LoopResources.create(mode, select, worker, prefix, true);
-	}
-	
-	/**
-	 * 其他模块不建议使用后台进行，同时需要提供关闭的入口
+	 * 创建
 	 * 
 	 * @param mode
 	 * @param select
@@ -38,22 +29,36 @@ public interface LoopResources extends Disposable {
 	 * @param daemon
 	 * @return
 	 */
-	static LoopResources create(TransportMode mode, Integer select, Integer worker, String prefix, boolean daemon) {
+	static LoopResources create(TransportMode mode, String prefix, int select, int worker, boolean daemon,
+			BlockedThreadChecker checker, long maxExecTime, TimeUnit maxExecTimeUnit) {
 		if (mode != null && TransportMode.EPOLL == mode) {
-			return new DefaultEpollLoopResources(prefix, select, worker, daemon);
+			return new EpollLoopResources(prefix, select, worker, daemon, checker, maxExecTime, maxExecTimeUnit);
 		}
-		return new DefaultLoopResources(prefix, select, worker, daemon);
+		return new DefaultLoopResources(prefix, select, worker, daemon, checker, maxExecTime, maxExecTimeUnit);
 	}
-	
+
 	Class<? extends ServerChannel> onServerChannel();
+
 	EventLoopGroup onServerSelect();
+
 	EventLoopGroup onServer();
+
 	Class<? extends Channel> onClientChannel();
+
 	EventLoopGroup onClient();
+
 	default void dispose() {
 		disposeLater().subscribe();
 	}
+
 	default Mono<Void> disposeLater() {
 		return Mono.empty();
+	}
+
+	default TransportMode transportModeFitOs() {
+		if (OS.me() == OS.linux) {
+			return TransportMode.EPOLL;
+		}
+		return TransportMode.NIO;
 	}
 }

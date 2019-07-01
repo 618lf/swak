@@ -14,9 +14,8 @@ public class EventLoopContext extends EventLoopDecorator implements Context {
 
 	private PoolMetrics metrics;
 
-	public EventLoopContext(EventLoop eventLoop, PoolMetrics metrics) {
+	public EventLoopContext(EventLoop eventLoop) {
 		super(eventLoop);
-		this.metrics = metrics;
 	}
 
 	/**
@@ -34,5 +33,10 @@ public class EventLoopContext extends EventLoopDecorator implements Context {
 				metrics.end(metric, succeeded);
 			}
 		});
+	}
+	
+	@Override
+	public void setPoolMetrics(PoolMetrics metrics) {
+		this.metrics = metrics;
 	}
 }

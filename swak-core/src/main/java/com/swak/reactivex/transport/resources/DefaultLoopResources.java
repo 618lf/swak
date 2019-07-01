@@ -1,8 +1,11 @@
 package com.swak.reactivex.transport.resources;
 
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.swak.reactivex.threads.BlockedThreadChecker;
+import com.swak.reactivex.threads.SwakThreadFactory;
 import com.swak.reactor.publisher.FutureMono;
 
 import io.netty.channel.Channel;
@@ -19,7 +22,7 @@ import reactor.core.publisher.Mono;
  * 
  * @author lifeng
  */
-public class DefaultLoopResources extends AtomicLong implements LoopResources {
+public class DefaultLoopResources extends AtomicInteger implements LoopResources {
 
 	private static final long serialVersionUID = 1L;
 
@@ -27,15 +30,22 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 	final boolean daemon;
 	final int selectCount;
 	final int workerCount;
+	final long maxExecTime;
+	final TimeUnit maxExecTimeUnit;
+	final BlockedThreadChecker blockedThreadChecker;
 	EventLoopGroup serverLoops;
 	EventLoopGroup serverSelectLoops;
 
-	DefaultLoopResources(String prefix, int selectCount, int workerCount, boolean daemon) {
+	DefaultLoopResources(String prefix, int selectCount, int workerCount, boolean daemon,
+			BlockedThreadChecker blockedThreadChecker, long maxExecTime, TimeUnit maxExecTimeUnit) {
 		this.daemon = daemon;
 		this.workerCount = workerCount == -1 ? Math.max(Runtime.getRuntime().availableProcessors() * 2, 4)
 				: workerCount;
 		this.selectCount = selectCount == -1 ? this.workerCount : selectCount;
 		this.prefix = prefix;
+		this.blockedThreadChecker = blockedThreadChecker;
+		this.maxExecTime = maxExecTime;
+		this.maxExecTimeUnit = maxExecTimeUnit;
 	}
 
 	@Override
@@ -98,6 +108,7 @@ public class DefaultLoopResources extends AtomicLong implements LoopResources {
 	 * @return
 	 */
 	ThreadFactory threadFactory(DefaultLoopResources parent, String prefix) {
-		return new EventLoopFactory(parent.daemon, parent.prefix + prefix, parent);
+		return new SwakThreadFactory(parent.prefix + prefix, parent.daemon, parent, parent.blockedThreadChecker,
+				parent.maxExecTime, parent.maxExecTimeUnit);
 	}
 }
