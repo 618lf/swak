@@ -43,6 +43,23 @@ public class Contexts {
 		contexts.put(context, O);
 		return context;
 	}
+	
+	/**
+	 * 创建定时执行需时任务的线程池
+	 * 
+	 * @param prefix
+	 * @param nThreads
+	 * @param maxExecTime
+	 * @param maxExecTimeUnit
+	 * @return
+	 */
+	public static ScheduledContext createScheduledContext(String prefix, int nThreads, boolean daemon, long maxExecTime,
+			TimeUnit maxExecTimeUnit) {
+		ScheduledContext context = new ScheduledContext(prefix, nThreads, daemon,
+				ContextsHolder.instance.blockedThreadChecker, maxExecTime, maxExecTimeUnit);
+		contexts.put(context, O);
+		return context;
+	}
 
 	/**
 	 * 创建执行io任务的线程池

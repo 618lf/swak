@@ -1,9 +1,9 @@
 package com.swak.test.utils;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import com.swak.reactivex.transport.resources.EventLoopFactory;
+import com.swak.reactivex.threads.SwakThreadFactory;
 
 /**
  * 开发时禁止使用，仅仅作为测试线程安全之用 多线程测试
@@ -19,7 +19,7 @@ public class MultiThreadTest {
 	 * @param times
 	 */
 	public static void run(Runnable run, int threads, String name) {
-		EventLoopFactory threadFactory = new EventLoopFactory(true, "Test.", new AtomicLong());
+		SwakThreadFactory threadFactory = new SwakThreadFactory("Test.", true, new AtomicInteger(0), null, 0, null);
 		final CountDownLatch countDownLatch = new CountDownLatch(threads);
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < threads; i++) {

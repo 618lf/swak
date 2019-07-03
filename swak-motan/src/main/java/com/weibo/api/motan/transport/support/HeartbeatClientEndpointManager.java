@@ -21,16 +21,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.swak.reactivex.transport.resources.EventLoops;
+import com.swak.reactivex.threads.Contexts;
 import com.weibo.api.motan.closable.Closable;
 import com.weibo.api.motan.closable.ShutDownHook;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.common.URLParamType;
-import com.weibo.api.motan.core.DefaultThreadFactory;
 import com.weibo.api.motan.core.extension.ExtensionLoader;
 import com.weibo.api.motan.exception.MotanFrameworkException;
 import com.weibo.api.motan.rpc.URL;
@@ -54,7 +52,7 @@ public class HeartbeatClientEndpointManager implements EndpointManager {
 
 	@Override
 	public void init() {
-		executorService = Executors.newScheduledThreadPool(1, new DefaultThreadFactory("Motan.Heartbeat", true));
+		executorService = Contexts.createScheduledContext("Motan.Heartbeat", 1, true, 2, TimeUnit.SECONDS);
 		executorService.scheduleWithFixedDelay(new Runnable() {
 			@Override
 			public void run() {
@@ -78,7 +76,6 @@ public class HeartbeatClientEndpointManager implements EndpointManager {
 
 			}
 		}, MotanConstants.HEARTBEAT_PERIOD, MotanConstants.HEARTBEAT_PERIOD, TimeUnit.MILLISECONDS);
-		EventLoops.register("Motan.Heartbeat", executorService);
 		ShutDownHook.registerShutdownHook(new Closable() {
 			@Override
 			public void close() {

@@ -3,8 +3,9 @@ package com.weibo.api.motan.transport.netty4;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import com.swak.reactivex.transport.resources.EventLoops;
+import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.resources.LoopResources;
 import com.weibo.api.motan.common.ChannelState;
 import com.weibo.api.motan.common.MotanConstants;
@@ -47,7 +48,8 @@ public class NettyServer extends AbstractServer implements StatisticCallback {
 	public NettyServer(URL url, MessageHandler messageHandler) {
 		super(url);
 		this.messageHandler = messageHandler;
-		this.loopResources = EventLoopResources.me();
+		this.loopResources = Contexts.createEventLoopResources(LoopResources.transportModeFitOs(), 1, -1, "Motan.",
+				false, 2, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -100,7 +102,6 @@ public class NettyServer extends AbstractServer implements StatisticCallback {
 				: new StandardThreadExecutor(minWorkerThread, maxWorkerThread, workerQueueSize,
 						new DefaultThreadFactory("Motan.NettyServer-" + url.getServerPortStr(), false));
 		standardThreadExecutor.prestartAllCoreThreads();
-		EventLoops.register("Motan.NettyServer", standardThreadExecutor);
 
 		channelManage = new NettyServerChannelManage(maxServerConnection);
 

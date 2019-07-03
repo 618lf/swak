@@ -1,28 +1,28 @@
 package com.swak.reactivex.threads;
 
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.swak.meters.PoolMetrics;
 
 /**
- * 普通的线程池
+ * 监控定时任务
  * 
  * @author lifeng
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public final class WorkerContext extends ThreadPoolExecutorDecorator implements Context {
-
+public class ScheduledContext extends ScheduledThreadPoolExecutorDecorator implements Context{
+	
 	private volatile PoolMetrics metrics;
-
-	public WorkerContext(String prefix, int nThreads, boolean daemon, BlockedThreadChecker checker, long maxExecTime,
+	
+	public ScheduledContext(String prefix, int nThreads, boolean daemon, BlockedThreadChecker checker, long maxExecTime,
 			TimeUnit maxExecTimeUnit) {
-		super((ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads,
+		super((ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(nThreads,
 				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit)));
 	}
-
+	
 	/**
 	 * 添加指标监控
 	 */

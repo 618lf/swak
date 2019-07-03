@@ -2,7 +2,7 @@ package com.swak.config.http;
 
 import static com.swak.Application.APP_LOGGER;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.TimeUnit;
 
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.AsyncHttpClientConfig;
@@ -13,11 +13,9 @@ import org.springframework.context.annotation.Bean;
 
 import com.swak.http.HttpClientProperties;
 import com.swak.http.HttpClients;
+import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.TransportMode;
-import com.swak.reactivex.transport.resources.EventLoopFactory;
-import com.swak.reactivex.transport.resources.EventLoops;
-
-import io.netty.channel.EventLoopGroup;
+import com.swak.reactivex.transport.resources.LoopResources;
 
 /**
  * 配置 http client
@@ -46,7 +44,9 @@ public class HttpClientConfigurationSupport {
 		builder.setRequestTimeout(httpClientProperties.getRequestTimeout());
 		builder.setHandshakeTimeout(httpClientProperties.getHandshakeTimeout());
 		builder.setUserAgent(httpClientProperties.getUserAgent());
-		builder.setThreadFactory(new EventLoopFactory(true, "AsyncHttp.", new AtomicLong()));
+		LoopResources loopResources = Contexts.createEventLoopResources(httpClientProperties.getMode(), 1, -1,
+				"AsyncHttp.", true, 2, TimeUnit.SECONDS);
+		builder.setEventLoopGroup(loopResources.onClient());
 		return builder.build();
 	}
 
@@ -59,8 +59,6 @@ public class HttpClientConfigurationSupport {
 	@Bean(destroyMethod = "close")
 	public AsyncHttpClient asyncHttpClient(AsyncHttpClientConfig config) {
 		DefaultAsyncHttpClient httpClient = new DefaultAsyncHttpClient(config);
-		EventLoopGroup eventLoopGroup = httpClient.getEventLoopGroup();
-		EventLoops.register("AsyncHttp", eventLoopGroup);
 		HttpClients.setAsyncHttpClient(httpClient);
 		return HttpClients.client();
 	}

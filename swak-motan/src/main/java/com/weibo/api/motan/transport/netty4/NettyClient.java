@@ -3,18 +3,16 @@ package com.weibo.api.motan.transport.netty4;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.swak.reactivex.transport.resources.EventLoops;
+import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.resources.LoopResources;
 import com.weibo.api.motan.common.ChannelState;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.common.URLParamType;
-import com.weibo.api.motan.core.DefaultThreadFactory;
 import com.weibo.api.motan.exception.MotanAbstractException;
 import com.weibo.api.motan.exception.MotanErrorMsgConstant;
 import com.weibo.api.motan.exception.MotanFrameworkException;
@@ -48,15 +46,14 @@ public class NettyClient extends AbstractSharedPoolClient implements StatisticCa
 	/**
 	 * 共享客户端
 	 */
-	private static final LoopResources loopResources = EventLoopResources.me();
+	private static final LoopResources loopResources = Contexts.createEventLoopResources(LoopResources.transportModeFitOs(), 1, -1, "Motan.",
+			false, 2, TimeUnit.SECONDS);
 	/**
 	 * 回收过期任务
 	 */
-	private static ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1,
-			new DefaultThreadFactory("Motan.ClientRecovery", true));
-	static {
-		EventLoops.register("Motan.ClientRecovery", scheduledExecutor);
-	}
+	private static ScheduledExecutorService scheduledExecutor = Contexts.createScheduledContext("Motan.ClientRecovery",
+			1, true, 2, TimeUnit.SECONDS);
+
 	/**
 	 * 异步的request，需要注册callback future 触发remove的操作有： 1) service的返回结果处理。 2) timeout
 	 * thread cancel

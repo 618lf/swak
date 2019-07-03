@@ -37,6 +37,18 @@ public interface LoopResources extends Disposable {
 		return new DefaultLoopResources(prefix, select, worker, daemon, checker, maxExecTime, maxExecTimeUnit);
 	}
 
+	/**
+	 * 类型
+	 * 
+	 * @return
+	 */
+	static TransportMode transportModeFitOs() {
+		if (OS.me() == OS.linux) {
+			return TransportMode.EPOLL;
+		}
+		return TransportMode.NIO;
+	}
+
 	Class<? extends ServerChannel> onServerChannel();
 
 	EventLoopGroup onServerSelect();
@@ -53,12 +65,5 @@ public interface LoopResources extends Disposable {
 
 	default Mono<Void> disposeLater() {
 		return Mono.empty();
-	}
-
-	default TransportMode transportModeFitOs() {
-		if (OS.me() == OS.linux) {
-			return TransportMode.EPOLL;
-		}
-		return TransportMode.NIO;
 	}
 }

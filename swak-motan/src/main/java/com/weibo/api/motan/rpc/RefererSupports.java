@@ -17,75 +17,72 @@
 package com.weibo.api.motan.rpc;
 
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.swak.reactivex.transport.resources.EventLoops;
+import com.swak.reactivex.threads.Contexts;
 import com.weibo.api.motan.closable.Closable;
 import com.weibo.api.motan.closable.ShutDownHook;
-import com.weibo.api.motan.core.DefaultThreadFactory;
 import com.weibo.api.motan.util.LoggerUtil;
 
 /**
  * @author maijunsheng
  * @version 创建时间：2013-6-19
- * 
  */
 public class RefererSupports {
 
-    private static ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(10, new DefaultThreadFactory("Motan.RefererDestroy", true));
-    static {
-    	EventLoops.register("Motan.RefererDestroy", scheduledExecutor);
-    }
-    // 正常情况下请求超过1s已经是能够忍耐的极限值了，delay 1s进行destroy
-    private static final int DELAY_TIME = 1000;
-    static{
-        ShutDownHook.registerShutdownHook(new Closable() {
-            @Override
-            public void close() {
-                if(!scheduledExecutor.isShutdown()){
-                    scheduledExecutor.shutdown();
-                }
-            }
-        });
-    }
-    public static <T> void delayDestroy(final List<Referer<T>> referers) {
-        if (referers == null || referers.isEmpty()) {
-            return;
-        }
+	private static ScheduledExecutorService scheduledExecutor = Contexts.createScheduledContext("Motan.RefererDestroy",
+			10, true, 2, TimeUnit.SECONDS);
 
-        scheduledExecutor.schedule(new Runnable() {
-            @Override
-            public void run() {
+	// 正常情况下请求超过1s已经是能够忍耐的极限值了，delay 1s进行destroy
+	private static final int DELAY_TIME = 1000;
+	static {
+		ShutDownHook.registerShutdownHook(new Closable() {
+			@Override
+			public void close() {
+				if (!scheduledExecutor.isShutdown()) {
+					scheduledExecutor.shutdown();
+				}
+			}
+		});
+	}
 
-                for (Referer<?> referer : referers) {
-                    try {
-                        referer.destroy();
-                    } catch (Exception e) {
-                        LoggerUtil.error("RefererSupports delayDestroy Error: url=" + referer.getUrl().getUri(), e);
-                    }
-                }
-            }
-        }, DELAY_TIME, TimeUnit.MILLISECONDS);
+	public static <T> void delayDestroy(final List<Referer<T>> referers) {
+		if (referers == null || referers.isEmpty()) {
+			return;
+		}
 
-        LoggerUtil.info("RefererSupports delayDestroy Success: size={} service={} urls={}", referers.size(), referers.get(0).getUrl()
-                .getIdentity(), getServerPorts(referers));
-    }
+		scheduledExecutor.schedule(new Runnable() {
+			@Override
+			public void run() {
 
-    private static <T> String getServerPorts(List<Referer<T>> referers) {
-        if (referers == null || referers.isEmpty()) {
-            return "[]";
-        }
+				for (Referer<?> referer : referers) {
+					try {
+						referer.destroy();
+					} catch (Exception e) {
+						LoggerUtil.error("RefererSupports delayDestroy Error: url=" + referer.getUrl().getUri(), e);
+					}
+				}
+			}
+		}, DELAY_TIME, TimeUnit.MILLISECONDS);
 
-        StringBuilder builder = new StringBuilder();
-        builder.append("[");
-        for (Referer<T> referer : referers) {
-            builder.append(referer.getUrl().getServerPortStr()).append(",");
-        }
-        builder.setLength(builder.length() - 1);
-        builder.append("]");
+		LoggerUtil.info("RefererSupports delayDestroy Success: size={} service={} urls={}", referers.size(),
+				referers.get(0).getUrl().getIdentity(), getServerPorts(referers));
+	}
 
-        return builder.toString();
-    }
+	private static <T> String getServerPorts(List<Referer<T>> referers) {
+		if (referers == null || referers.isEmpty()) {
+			return "[]";
+		}
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("[");
+		for (Referer<T> referer : referers) {
+			builder.append(referer.getUrl().getServerPortStr()).append(",");
+		}
+		builder.setLength(builder.length() - 1);
+		builder.append("]");
+
+		return builder.toString();
+	}
 }

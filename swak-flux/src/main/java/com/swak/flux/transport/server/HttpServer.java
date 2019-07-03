@@ -7,13 +7,13 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import com.swak.reactivex.context.ServerException;
+import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.NettyContext;
 import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.NettyOutbound;
 import com.swak.reactivex.transport.NettyPipeline;
 import com.swak.reactivex.transport.channel.ChannelOperations;
 import com.swak.reactivex.transport.channel.ContextHandler;
-import com.swak.reactivex.transport.resources.LoopResources;
 import com.swak.reactivex.transport.tcp.TcpServer;
 
 import io.netty.channel.Channel;
@@ -99,8 +99,9 @@ public class HttpServer extends TcpServer {
 				options.enableCors(properties.isEnableCors());
 				options.enableCompression(properties.isEnableGzip());
 				options.logLevel(properties.getServerLogLevel());
-				options.loopResources(LoopResources.create(properties.getMode(), properties.getServerSelect(),
-						properties.getServerWorker(), properties.getName()));
+				options.loopResources(
+						Contexts.createEventLoopResources(properties.getMode(), properties.getServerSelect(),
+								properties.getServerWorker(), properties.getName(), true, 2, TimeUnit.SECONDS));
 				options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, properties.getConnectTimeout());
 				options.option(ChannelOption.SO_REUSEADDR, true);
 				options.childOption(ChannelOption.SO_REUSEADDR, true);
@@ -209,6 +210,7 @@ public class HttpServer extends TcpServer {
 		this.shutdownHook = new Thread(this::shutdownFromJVM, "SWAK - ShutdownHook - jvm");
 		Runtime.getRuntime().addShutdownHook(this.shutdownHook);
 	}
+
 	@Deprecated
 	protected void shutdownFromJVM() {
 		if (context.isDisposed()) {
@@ -224,6 +226,7 @@ public class HttpServer extends TcpServer {
 						context.address(), hookDesc))
 				.block();
 	}
+
 	@Deprecated
 	protected boolean removeShutdownHook() {
 		if (this.shutdownHook != null && Thread.currentThread() != this.shutdownHook) {

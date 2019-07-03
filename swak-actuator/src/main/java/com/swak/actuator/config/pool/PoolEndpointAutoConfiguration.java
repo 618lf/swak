@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.actuator.pool.PoolAllocatorEndpoint;
-import com.swak.actuator.pool.ThreadPoolEndpoint;
 
 /**
  * 系统 Pool 相关
@@ -41,14 +40,14 @@ public class PoolEndpointAutoConfiguration {
 //		return mBeanExporter;
 //	}
 	
-	/**
-	 * 通过 endpoint 来展示指标
-	 * 
-	 * @return
-	 */
-	@Bean
-	@ConditionalOnMissingBean
-	public ThreadPoolEndpoint threadPoolEndpoint() {
-		return new ThreadPoolEndpoint();
-	}
+//	/**
+//	 * 通过 endpoint 来展示指标
+//	 * 
+//	 * @return
+//	 */
+//	@Bean
+//	@ConditionalOnMissingBean
+//	public ThreadPoolEndpoint threadPoolEndpoint() {
+//		return new ThreadPoolEndpoint();
+//	}
 }

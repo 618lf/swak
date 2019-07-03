@@ -27,6 +27,15 @@ public class SwakThreadFactory implements ThreadFactory {
 	private final long maxExecTime;
 	private final TimeUnit maxExecTimeUnit;
 
+	public SwakThreadFactory(String prefix, boolean daemon, AtomicInteger threadCount) {
+		this.prefix = prefix;
+		this.daemon = daemon;
+		this.checker = null;
+		this.threadCount = threadCount;
+		this.maxExecTime = 0;
+		this.maxExecTimeUnit = null;
+	}
+	
 	public SwakThreadFactory(String prefix, boolean daemon, AtomicInteger threadCount, BlockedThreadChecker checker,
 			long maxExecTime, TimeUnit maxExecTimeUnit) {
 		this.prefix = prefix;

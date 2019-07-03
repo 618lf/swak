@@ -5,18 +5,16 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.swak.closable.ShutDownHook;
 import com.swak.flux.transport.server.HttpServerProperties;
-import com.swak.reactivex.transport.resources.EventLoopFactory;
+import com.swak.reactivex.threads.Contexts;
 import com.swak.utils.ConcurrentHashSet;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
@@ -30,8 +28,8 @@ import com.swak.utils.StringUtils;
 public class FluxImpl implements Flux {
 	private Logger logger = LoggerFactory.getLogger(Flux.class);
 	private final ConcurrentHashSet<Msg> callbackMap = new ConcurrentHashSet<>();
-	private ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1,
-			new EventLoopFactory(false, "Flux.TimeOut", new AtomicLong()));
+	private ScheduledExecutorService scheduledExecutor = Contexts.createScheduledContext("Flux.TimeOut", 1, true, 2,
+			TimeUnit.SECONDS);
 	private final HttpServerProperties properties;
 	private ExecutorService workerPool;
 	private Map<String, ExecutorService> shardWorkPools;
@@ -42,8 +40,8 @@ public class FluxImpl implements Flux {
 		this.properties = properties;
 		shardWorkPools = Maps.newHashMap();
 		deployments = Maps.newHashMap();
-		workerPool = Executors.newFixedThreadPool(properties.getWorkerThreads(),
-				new EventLoopFactory(false, "Flux.worker-", new AtomicLong()));
+		workerPool = Contexts.createWorkerContext("Flux.worker-", properties.getWorkerThreads(), false, 60,
+				TimeUnit.SECONDS);
 		timeMonitorFuture = scheduledExecutor.scheduleWithFixedDelay(new TimeoutMonitor("timeout_monitor"), 100, 100,
 				TimeUnit.MILLISECONDS);
 		shutDownHook();
@@ -133,8 +131,8 @@ public class FluxImpl implements Flux {
 	 * @return
 	 */
 	private Executor createShardWorkPool(String workPoolName, int workPoolSize) {
-		ExecutorService workerExec = Executors.newFixedThreadPool(workPoolSize,
-				new EventLoopFactory(false, workPoolName, new AtomicLong()));
+		ExecutorService workerExec = Contexts.createWorkerContext(workPoolName, workPoolSize, false, 60,
+				TimeUnit.SECONDS);
 		shardWorkPools.put(workPoolName, workerExec);
 		return workerExec;
 	}

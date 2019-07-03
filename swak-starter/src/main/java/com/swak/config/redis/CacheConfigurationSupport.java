@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.ehcache.config.CacheConfiguration;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
@@ -30,8 +31,9 @@ import com.swak.cache.redis.RedisUtils;
 import com.swak.cache.redis.factory.RedisClientDecorator;
 import com.swak.cache.redis.factory.RedisConnectionPoolFactory;
 import com.swak.cache.redis.policy.ExpiryPolicys;
+import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.TransportMode;
-import com.swak.reactivex.transport.resources.EventLoops;
+import com.swak.reactivex.transport.resources.LoopResources;
 import com.swak.utils.Lists;
 
 import io.lettuce.core.RedisClient;
@@ -76,9 +78,10 @@ public class CacheConfigurationSupport {
 		if (commandLatencyCollector == null) {
 			commandLatencyCollector = CommandLatencyCollector.disabled();
 		}
+		LoopResources loopResources = Contexts.createEventLoopResources(cacheProperties.getMode(), 1, -1, "Lettuce.",
+				true, 2, TimeUnit.SECONDS);
 		ClientResources clientResources = DefaultClientResources.builder()
-				.commandLatencyCollector(commandLatencyCollector).build();
-		EventLoops.register("Lettuce", clientResources.eventExecutorGroup());
+				.commandLatencyCollector(commandLatencyCollector).eventExecutorGroup(loopResources.onClient()).build();
 		return clientResources;
 	}
 

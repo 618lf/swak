@@ -1,10 +1,7 @@
 package com.swak.rabbit.retry;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +10,7 @@ import org.springframework.beans.factory.DisposableBean;
 import com.swak.rabbit.RabbitMQTemplate;
 import com.swak.rabbit.message.Message;
 import com.swak.rabbit.message.PendingConfirm;
-import com.swak.reactivex.transport.resources.EventLoopFactory;
-import com.swak.reactivex.transport.resources.EventLoops;
+import com.swak.reactivex.threads.Contexts;
 import com.swak.utils.Ints;
 import com.swak.utils.JsonMapper;
 
@@ -55,10 +51,8 @@ public abstract class AbstractRetryStrategy implements RetryStrategy, Runnable, 
 	 * 启动服务
 	 */
 	protected void start() {
-		ThreadFactory threadFactory = new EventLoopFactory(false, "Retry.", new AtomicLong());
-		executor = Executors.newScheduledThreadPool(threadPool, threadFactory);
+		executor = Contexts.createScheduledContext("Retry.", threadPool, true, 1, TimeUnit.MINUTES);
 		executor.scheduleAtFixedRate(this, 3, minutes, TimeUnit.MINUTES);
-		EventLoops.register("Retry", executor);
 	}
 
 	/**

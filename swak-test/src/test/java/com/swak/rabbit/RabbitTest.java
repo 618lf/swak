@@ -2,12 +2,13 @@ package com.swak.rabbit;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 
-import com.swak.reactivex.transport.resources.EventLoopFactory;
+import com.swak.reactivex.threads.Contexts;
+import com.swak.reactivex.threads.SwakThreadFactory;
 import com.swak.utils.Maps;
 
 /**
@@ -33,13 +34,13 @@ public class RabbitTest {
 
 	@Before
 	public void init() {
-		executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2,
-				new EventLoopFactory(true, "RabbitMQ-Consumers-", new AtomicLong()));
+		executor = Contexts.createWorkerContext("RabbitMQ-Consumers-", Runtime.getRuntime().availableProcessors() * 2,
+				true, 2, TimeUnit.SECONDS);
 		RabbitMQProperties config = new RabbitMQProperties();
 		config.setAutomaticRecoveryEnabled(true);
 		config.setUser("guest").setPassword("guest").setHost("127.0.0.1").setPort(5672);
 		rabbitTemplate = new RabbitMQTemplate(config).setConsumerWorkServiceExecutor(executor)
-				.setDaemonFactory(new EventLoopFactory(true, "RabbitMQ-Daemons-", new AtomicLong()));
+				.setDaemonFactory(new SwakThreadFactory("RabbitMQ-Daemons-", true, new AtomicInteger()));
 
 		// // 死信队列
 		// rabbitTemplate.exchangeTopicBindQueue(DEAD_EXCHANGE, DEAD_ROUTING,

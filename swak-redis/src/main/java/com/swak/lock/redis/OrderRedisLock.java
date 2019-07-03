@@ -2,15 +2,12 @@ package com.swak.lock.redis;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.DisposableBean;
 
-import com.swak.reactivex.transport.resources.EventLoopFactory;
-import com.swak.reactivex.transport.resources.EventLoops;
+import com.swak.reactivex.threads.Contexts;
 
 /**
  * 基于 redis 的一把锁 可以用于分布式的环境 按顺序执行代码，每次執行都會獲取鎖，之後在釋放鎖
@@ -19,15 +16,12 @@ import com.swak.reactivex.transport.resources.EventLoops;
  */
 public class OrderRedisLock implements DisposableBean {
 
-	private static AtomicLong counter = new AtomicLong(0);
-
 	private int awaitTime = 30; // 30s
 	protected ExecutorService executor;
 	protected StrictRedisLock _lock;
 
 	public OrderRedisLock(String name) {
-		executor = Executors.newFixedThreadPool(1, new EventLoopFactory(true, "SWAK.lock-" + name + "-", counter));
-		EventLoops.register("lcok-" + name, executor);
+		executor = Contexts.createWorkerContext("SWAK.lock-" + name + "-", 1, true, 60, TimeUnit.SECONDS);
 		_lock = new StrictRedisLock(name);
 	}
 

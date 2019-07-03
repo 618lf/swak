@@ -10,7 +10,6 @@ import org.springframework.context.event.ContextClosedEvent;
 
 import com.swak.boot.Boot;
 import com.swak.closable.ShutDownHook;
-import com.swak.reactivex.transport.resources.EventLoops;
 
 /**
  * 系统关闭， 資源清理
@@ -32,9 +31,6 @@ public class AppShuter implements ApplicationListener<ContextClosedEvent> {
 			});
 			APP_LOGGER.debug("======== system startup Destoryed  ========");
 		}
-		
-		// 清理资源
-		EventLoops.clear();
 		
 		// 同步关闭资源
 		ShutDownHook.runHook(true);

@@ -3,8 +3,9 @@ package com.swak.config.mq;
 import static com.swak.Application.APP_LOGGER;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -21,8 +22,8 @@ import com.swak.rabbit.EventBus;
 import com.swak.rabbit.RabbitMQProperties;
 import com.swak.rabbit.RabbitMQTemplate;
 import com.swak.rabbit.retry.RetryStrategy;
-import com.swak.reactivex.transport.resources.EventLoopFactory;
-import com.swak.reactivex.transport.resources.EventLoops;
+import com.swak.reactivex.threads.Contexts;
+import com.swak.reactivex.threads.SwakThreadFactory;
 
 /**
  * 消息队列的自动化配置
@@ -38,7 +39,7 @@ public class RabbitMqAutoConfiguration {
 	@Autowired
 	private RabbitMQProperties properties;
 	private ExecutorService executor;
-	private EventLoopFactory threadFactory;
+	private ThreadFactory threadFactory;
 
 	public RabbitMqAutoConfiguration() {
 		APP_LOGGER.debug("Loading MQ");
@@ -89,12 +90,12 @@ public class RabbitMqAutoConfiguration {
 	 */
 	private void initTemplate(RabbitMQTemplate template, boolean autoRecovery) {
 		if (threadFactory == null) {
-			threadFactory = new EventLoopFactory(true, "RabbitMQ-Daemons-", new AtomicLong());
+			threadFactory = new SwakThreadFactory("RabbitMQ-Daemons-", true, new AtomicInteger());
 		}
 		if (autoRecovery) {
 			if (executor == null) {
-				executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, threadFactory);
-				EventLoops.register("RabbitMQ-Daemons", executor);
+				executor = Contexts.createWorkerContext("RabbitMQ-Daemons-",
+						Runtime.getRuntime().availableProcessors() * 2, true, 2, TimeUnit.SECONDS);
 			}
 			template.setConsumerWorkServiceExecutor(executor).setShutdownExecutor(null)
 					.setTopologyRecoveryExecutor(executor);
