@@ -26,7 +26,7 @@ public class BlockedThreadChecker {
 
 	BlockedThreadChecker(long interval, TimeUnit intervalUnit, long warningExceptionTime,
 			TimeUnit warningExceptionTimeUnit) {
-		timer = new Timer("vertx-blocked-thread-checker", true);
+		timer = new Timer("Swak-blocked-thread-checker", true);
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {

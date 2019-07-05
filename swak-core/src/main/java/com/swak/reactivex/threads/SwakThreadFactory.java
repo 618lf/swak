@@ -35,7 +35,7 @@ public class SwakThreadFactory implements ThreadFactory {
 		this.maxExecTime = 0;
 		this.maxExecTimeUnit = null;
 	}
-	
+
 	public SwakThreadFactory(String prefix, boolean daemon, AtomicInteger threadCount, BlockedThreadChecker checker,
 			long maxExecTime, TimeUnit maxExecTimeUnit) {
 		this.prefix = prefix;
@@ -49,7 +49,7 @@ public class SwakThreadFactory implements ThreadFactory {
 	public Thread newThread(Runnable runnable) {
 		SwakThread t = new SwakThread(runnable, prefix + "thread-" + threadCount.getAndIncrement(), maxExecTime,
 				maxExecTimeUnit);
-		if (checker != null) {
+		if (checker != null && maxExecTimeUnit != null && maxExecTime != 0) {
 			checker.registerThread(t);
 		}
 		addToMap(t);

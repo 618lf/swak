@@ -61,7 +61,7 @@
 		<HikariCP.version>3.3.1</HikariCP.version>
 		<async.httpclient.version>2.8.1</async.httpclient.version>
 		<motan.version>1.1.4</motan.version>
-		<vertx.version>3.7.0</vertx.version>
+		<vertx.version>3.7.1</vertx.version>
 		<qrcode.version>3.3.3</qrcode.version>
 		<javapoet.version>1.11.1</javapoet.version>
 		<zookeeper.version>3.4.8</zookeeper.version>
