@@ -19,7 +19,7 @@ import io.netty.util.concurrent.ProgressivePromise;
 import io.netty.util.concurrent.Promise;
 import io.netty.util.concurrent.ScheduledFuture;
 
-public class EventLoopDecorator implements EventLoop {
+public abstract class EventLoopDecorator implements EventLoop {
 
 	private final EventLoop eventLoop;
 

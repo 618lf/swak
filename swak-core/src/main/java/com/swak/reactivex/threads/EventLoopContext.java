@@ -5,7 +5,7 @@ import com.swak.meters.PoolMetrics;
 import io.netty.channel.EventLoop;
 
 /**
- * 对EventLoop 进行监控
+ * 对EventLoop 进行监控,只能做到对這一步
  * 
  * @author lifeng
  */
@@ -25,16 +25,17 @@ public class EventLoopContext extends EventLoopDecorator implements Context {
 	public void execute(Runnable command) {
 		Object metric = metrics != null ? metrics.submitted() : null;
 		super.execute(() -> {
+			Object usageMetric = null;
 			if (metrics != null) {
-				metrics.begin(metric);
+				usageMetric = metrics.begin(metric);
 			}
 			boolean succeeded = executeTask(command);
 			if (metrics != null) {
-				metrics.end(metric, succeeded);
+				metrics.end(usageMetric, succeeded);
 			}
 		});
 	}
-	
+
 	@Override
 	public void setPoolMetrics(PoolMetrics metrics) {
 		this.metrics = metrics;

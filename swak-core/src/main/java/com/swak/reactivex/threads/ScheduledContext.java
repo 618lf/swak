@@ -1,6 +1,5 @@
 package com.swak.reactivex.threads;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,16 +12,17 @@ import com.swak.meters.PoolMetrics;
  * @author lifeng
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class ScheduledContext extends ScheduledThreadPoolExecutorDecorator implements Context{
-	
+public class ScheduledContext extends ScheduledThreadPoolExecutor implements Context {
+
 	private volatile PoolMetrics metrics;
-	
+
 	public ScheduledContext(String prefix, int nThreads, boolean daemon, BlockedThreadChecker checker, long maxExecTime,
 			TimeUnit maxExecTimeUnit) {
-		super((ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(nThreads,
-				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit)));
+		super(nThreads,
+				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit));
+
 	}
-	
+
 	/**
 	 * 添加指标监控
 	 */
@@ -30,12 +30,13 @@ public class ScheduledContext extends ScheduledThreadPoolExecutorDecorator imple
 	public void execute(Runnable command) {
 		Object metric = metrics != null ? metrics.submitted() : null;
 		super.execute(() -> {
+			Object usageMetric = null;
 			if (metrics != null) {
-				metrics.begin(metric);
+				usageMetric = metrics.begin(metric);
 			}
 			boolean succeeded = executeTask(command);
 			if (metrics != null) {
-				metrics.end(metric, succeeded);
+				metrics.end(usageMetric, succeeded);
 			}
 		});
 	}
