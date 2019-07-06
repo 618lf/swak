@@ -8,7 +8,7 @@ import com.swak.meters.PoolMetrics;
  * @author lifeng
  */
 public interface Context {
-
+	
 	/**
 	 * 线程执行的包装
 	 * 
@@ -31,7 +31,7 @@ public interface Context {
 			current.executeEnd();
 		}
 	}
-	
+
 	/**
 	 * 设置监控工具
 	 * 

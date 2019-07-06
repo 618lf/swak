@@ -1,5 +1,6 @@
 package com.swak.reactivex.threads;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,7 +13,7 @@ import com.swak.meters.PoolMetrics;
  * @author lifeng
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class ScheduledContext extends ScheduledThreadPoolExecutor implements Context {
+public final class ScheduledContext extends ScheduledThreadPoolExecutor implements Context {
 
 	private volatile PoolMetrics metrics;
 
@@ -20,25 +21,49 @@ public class ScheduledContext extends ScheduledThreadPoolExecutor implements Con
 			TimeUnit maxExecTimeUnit) {
 		super(nThreads,
 				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit));
-
+	}
+	
+	/**
+	 * 只执行一次
+	 */
+	@Override
+	public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
+		return super.schedule(decorateTask(command), delay, unit);
+	}
+	
+	/**
+	 * 执行多次
+	 */
+	@Override
+	public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
+		return super.scheduleAtFixedRate(decorateTask(command), initialDelay, period, unit);
+	}
+	
+	/**
+	 * 执行多次
+	 */
+	@Override
+	public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
+		return super.scheduleWithFixedDelay(decorateTask(command), initialDelay, delay, unit);
 	}
 
 	/**
-	 * 添加指标监控
+	 * 装饰需要监控的代码
+	 * 
+	 * @param command
+	 * @return
 	 */
-	@Override
-	public void execute(Runnable command) {
-		Object metric = metrics != null ? metrics.submitted() : null;
-		super.execute(() -> {
+	private Runnable decorateTask(Runnable command) {
+		return () -> {
 			Object usageMetric = null;
 			if (metrics != null) {
-				usageMetric = metrics.begin(metric);
+				usageMetric = metrics.begin(null);
 			}
 			boolean succeeded = executeTask(command);
 			if (metrics != null) {
 				metrics.end(usageMetric, succeeded);
 			}
-		});
+		};
 	}
 
 	@Override
