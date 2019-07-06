@@ -160,7 +160,7 @@ Http1xServerConnection -- 一次请求的处理
 不知道以后会不会提供。也可以重新从spring中获取代理类
 -- 目前再baseService 中可以 getProxy 来获取当前的代理对象
 
-问题2： http 的简单处理方式可以参考hutool的处理方式
+问题2： http 的简单处理方式可以参考hutool的处理方式（太过于复杂，每必要）
 
 -- 还没研究他的处理方式
 
@@ -175,3 +175,11 @@ Http1xServerConnection -- 一次请求的处理
 
 # 版本0.1.3.3
 目的：简化，删除不需要的jar，添加监控。
+
+问题1： 对系统全局链路跟踪的想法，异步系统如果想做链路跟踪，在发起异步请求时获取或生成traceId，放入请求的参数中，
+服务执行时，需要将traceId 返回给调用方，所以redis，http异步客户端做不到这一点，因为无法决定服务端代码的参数。
+只能在服务端和客户端都是我们的系统中来做traceId。那么对于redis，http 的访问，要么移动到service中执行。
+不可能在 EventLoop 中使用同步的方式。可以考虑把redis，http放入service中执行，需要在服务端中支持异步处理。
+例如motan的服务端异步处理，或vertx服务端异步处理。
+
+dubbo 中的trace 客户端和服务器配合，将traceId存储在参数中。在客户端和服务器端都使用线程变量来保证业务无关。
