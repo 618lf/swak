@@ -8,7 +8,7 @@ import com.swak.meters.PoolMetrics;
  * @author lifeng
  */
 public interface Context {
-	
+
 	/**
 	 * 线程执行的包装
 	 * 
@@ -38,5 +38,6 @@ public interface Context {
 	 * @param metrics
 	 */
 	@SuppressWarnings("rawtypes")
-	void setPoolMetrics(PoolMetrics metrics);
+	default void setPoolMetrics(PoolMetrics metrics) {
+	}
 }
