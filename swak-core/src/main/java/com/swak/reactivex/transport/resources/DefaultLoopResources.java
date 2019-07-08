@@ -38,6 +38,7 @@ public class DefaultLoopResources extends AtomicInteger implements LoopResources
 
 	DefaultLoopResources(String prefix, int selectCount, int workerCount, boolean daemon,
 			BlockedThreadChecker blockedThreadChecker, long maxExecTime, TimeUnit maxExecTimeUnit) {
+		super(1);
 		this.daemon = daemon;
 		this.workerCount = workerCount == -1 ? Math.max(Runtime.getRuntime().availableProcessors() * 2, 4)
 				: workerCount;
@@ -80,6 +81,11 @@ public class DefaultLoopResources extends AtomicInteger implements LoopResources
 			this.serverLoops = new NioEventLoopGroup(workerCount, threadFactory(this, "Client-"));
 		}
 		return serverLoops;
+	}
+
+	@Override
+	public int workCount() {
+		return workerCount;
 	}
 
 	/**

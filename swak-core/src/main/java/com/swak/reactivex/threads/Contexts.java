@@ -62,7 +62,7 @@ public class Contexts {
 	}
 
 	/**
-	 * 创建执行io任务的线程池
+	 * 创建执行io任务的线程池 -- Eventloop 暂时无法做监控
 	 * 
 	 * @param mode
 	 * @param select
@@ -73,10 +73,7 @@ public class Contexts {
 	 */
 	public static LoopResources createEventLoopResources(TransportMode mode, Integer select, Integer worker,
 			String prefix, boolean daemon, long maxExecTime, TimeUnit maxExecTimeUnit) {
-		SwakLoopResources context = new SwakLoopResources(mode, prefix, select, worker, daemon,
-				ContextsHolder.instance.blockedThreadChecker, maxExecTime, maxExecTimeUnit, (eventloop) -> {
-					contexts.put(eventloop, O);
-				});
-		return context;
+		return LoopResources.create(mode, prefix, select, worker, daemon, ContextsHolder.instance.blockedThreadChecker, 0,
+				maxExecTimeUnit);
 	}
 }

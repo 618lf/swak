@@ -59,6 +59,8 @@ public interface LoopResources extends Disposable {
 
 	EventLoopGroup onClient();
 
+	int workCount();
+
 	default void dispose() {
 		disposeLater().subscribe();
 	}

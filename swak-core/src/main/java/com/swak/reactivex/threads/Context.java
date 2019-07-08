@@ -8,6 +8,13 @@ import com.swak.meters.PoolMetrics;
  * @author lifeng
  */
 public interface Context {
+	
+	/**
+	 * 执行任务
+	 * 
+	 * @param command
+	 */
+	void execute(Runnable command);
 
 	/**
 	 * 线程执行的包装

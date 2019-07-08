@@ -8,17 +8,16 @@ import io.netty.channel.EventLoop;
  * @see 没过细的监控，会有一定的性能影响。
  * @author lifeng
  */
-public class EventLoopContext extends EventLoopDecorator implements Context {
+public class EventLoopContext implements Context {
+
+	private final EventLoop eventLoop;
 
 	public EventLoopContext(EventLoop eventLoop) {
-		super(eventLoop);
+		this.eventLoop = eventLoop;
 	}
 
-	/**
-	 * 添加指标监控
-	 */
 	@Override
 	public void execute(Runnable command) {
-		super.execute(() -> executeTask(command));
+		eventLoop.execute(() -> executeTask(command));
 	}
 }
