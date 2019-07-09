@@ -31,6 +31,8 @@ import com.swak.cache.redis.RedisUtils;
 import com.swak.cache.redis.factory.RedisClientDecorator;
 import com.swak.cache.redis.factory.RedisConnectionPoolFactory;
 import com.swak.cache.redis.policy.ExpiryPolicys;
+import com.swak.lettuce.resource.SharedEventLoopGroupProvider;
+import com.swak.lettuce.resource.SharedNettyCustomizer;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.reactivex.transport.resources.LoopResources;
@@ -42,6 +44,8 @@ import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.metrics.CommandLatencyCollector;
 import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DefaultClientResources;
+import io.lettuce.core.resource.EventLoopGroupProvider;
+import io.netty.channel.EventLoopGroup;
 
 /**
  * 缓存配置
@@ -63,6 +67,7 @@ public class CacheConfigurationSupport {
 	/**
 	 * 可以配置 event loop 等相关
 	 * 
+	 * @see 自定义eventloop之后需要自己管理停止
 	 * @return
 	 */
 	@Bean(destroyMethod = "shutdown")
@@ -80,8 +85,12 @@ public class CacheConfigurationSupport {
 		}
 		LoopResources loopResources = Contexts.createEventLoopResources(cacheProperties.getMode(), 1, -1, "Lettuce.",
 				true, 2, TimeUnit.SECONDS);
+		EventLoopGroup eventLoopGroup = loopResources.onClient();
+		EventLoopGroupProvider eventLoopGroupProvider = new SharedEventLoopGroupProvider(eventLoopGroup,
+				loopResources.workCount());
 		ClientResources clientResources = DefaultClientResources.builder()
-				.commandLatencyCollector(commandLatencyCollector).eventExecutorGroup(loopResources.onClient()).build();
+				.commandLatencyCollector(commandLatencyCollector).eventLoopGroupProvider(eventLoopGroupProvider)
+				.eventExecutorGroup(eventLoopGroup).nettyCustomizer(new SharedNettyCustomizer()).build();
 		return clientResources;
 	}
 

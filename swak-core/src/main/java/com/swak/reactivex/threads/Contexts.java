@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit;
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.reactivex.transport.resources.LoopResources;
 
+import io.netty.channel.EventLoop;
+
 /**
  * 持有所有的线程池的地址
  * 
@@ -73,7 +75,18 @@ public class Contexts {
 	 */
 	public static LoopResources createEventLoopResources(TransportMode mode, Integer select, Integer worker,
 			String prefix, boolean daemon, long maxExecTime, TimeUnit maxExecTimeUnit) {
-		return LoopResources.create(mode, prefix, select, worker, daemon, ContextsHolder.instance.blockedThreadChecker, 0,
+		return LoopResources.create(mode, prefix, select, worker, daemon, ContextsHolder.instance.blockedThreadChecker, 2,
 				maxExecTimeUnit);
+	}
+	
+	/**
+	 * 返回 EventLoop
+	 * 
+	 * @param eventLoop
+	 * @return
+	 */
+	public static EventLoopContext createEventLoopContext(EventLoop eventLoop) {
+		EventLoopContext context = new EventLoopContext(eventLoop);
+		return context; 
 	}
 }

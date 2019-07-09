@@ -34,12 +34,15 @@ public class BlockedThreadChecker {
 					long now = System.nanoTime();
 					for (SwakThread thread : threads.keySet()) {
 						long execStart = thread.startTime();
+						if (execStart == 0) {
+							continue;
+						}
 						long dur = now - execStart;
 						final long timeLimit = thread.getMaxExecTime();
 						TimeUnit maxExecTimeUnit = thread.getMaxExecTimeUnit();
 						long val = maxExecTimeUnit.convert(dur, TimeUnit.NANOSECONDS);
 						if (execStart != 0 && val >= timeLimit) {
-							final String message = "Thread " + thread + " has been blocked for " + (dur / 1_000_000)
+							final String message = thread + " has been blocked for " + (dur / 1_000_000)
 									+ " ms, time limit is " + TimeUnit.MILLISECONDS.convert(timeLimit, maxExecTimeUnit)
 									+ " ms";
 							if (warningExceptionTimeUnit.convert(dur, TimeUnit.NANOSECONDS) <= warningExceptionTime) {

@@ -10,6 +10,7 @@ import com.swak.cache.redis.RedisUtils;
 import com.swak.cache.redis.factory.RedisClientDecorator;
 import com.swak.cache.redis.factory.RedisConnectionPoolFactory;
 import com.swak.lettuce.resource.SharedEventLoopGroupProvider;
+import com.swak.lettuce.resource.SharedNettyCustomizer;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.resources.LoopResources;
 
@@ -38,7 +39,7 @@ public class EventLoopMain {
 				loopResources.workCount());
 		ClientResources clientResources = DefaultClientResources.builder()
 				.commandLatencyCollector(commandLatencyCollector).eventLoopGroupProvider(eventLoopGroupProvider)
-				.eventExecutorGroup(eventLoopGroup).build();
+				.eventExecutorGroup(eventLoopGroup).nettyCustomizer(new SharedNettyCustomizer()).build();
 
 		RedisURI node = RedisURI.create("127.0.0.1", Integer.parseInt("6379"));
 		node.setPassword("12345678....");
@@ -50,7 +51,7 @@ public class EventLoopMain {
 		CacheManager cacheManager = new RedisCacheManager(null);
 		Cache<String> _qrcodeCache = cacheManager.getCache("test", 60 * 5, false);
 		AsyncCache<String> qrcodeCache = _qrcodeCache.async();
-		qrcodeCache.getStringAndDel("1").thenAccept(res -> {
+		qrcodeCache.getString("1").thenAccept(res -> {
 			try {
 				Thread.sleep(5002);
 			} catch (InterruptedException e) {
