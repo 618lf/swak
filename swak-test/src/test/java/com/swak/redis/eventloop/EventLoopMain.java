@@ -12,6 +12,7 @@ import com.swak.cache.redis.factory.RedisConnectionPoolFactory;
 import com.swak.lettuce.resource.SharedEventLoopGroupProvider;
 import com.swak.lettuce.resource.SharedNettyCustomizer;
 import com.swak.reactivex.threads.Contexts;
+import com.swak.reactivex.transport.TransportMode;
 import com.swak.reactivex.transport.resources.LoopResources;
 
 import io.lettuce.core.RedisClient;
@@ -22,6 +23,11 @@ import io.lettuce.core.resource.DefaultClientResources;
 import io.lettuce.core.resource.EventLoopGroupProvider;
 import io.netty.channel.EventLoopGroup;
 
+/**
+ * AbstractRedisClient
+ * 
+ * @author lifeng
+ */
 public class EventLoopMain {
 
 	/**
@@ -29,10 +35,13 @@ public class EventLoopMain {
 	 * @throws InterruptedException
 	 */
 	public static void main(String[] args) throws InterruptedException {
+		
+		System.setProperty("io.lettuce.core.epoll", "false");
+		System.setProperty("io.lettuce.core.kqueue", "false");
 
 		// 自定义了event loop 线程
 		CommandLatencyCollector commandLatencyCollector = CommandLatencyCollector.disabled();
-		LoopResources loopResources = Contexts.createEventLoopResources(LoopResources.transportModeFitOs(), 1, -1,
+		LoopResources loopResources = Contexts.createEventLoopResources(TransportMode.NIO, 1, -1,
 				"Lettuce.me.", false, 2, TimeUnit.SECONDS);
 		EventLoopGroup eventLoopGroup = loopResources.onClient();
 		EventLoopGroupProvider eventLoopGroupProvider = new SharedEventLoopGroupProvider(eventLoopGroup,
