@@ -24,7 +24,7 @@ public class DataSourceProperties {
 	private Integer maxActive = 20; // 连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
 	private Integer maxWait = 60000; // 获取连接时最大等待时间，单位毫秒。
 	private Integer timeBetweenEvictionRunsMillis = 60000; // 多久检查一次
-	private Integer minEvictableIdleTimeMillis = 300000; // 最小的生存时间
+	private Integer minEvictableIdleTimeMillis = 600000; // 最小的生存时间
 	private String validationQuery = "SELECT 1";
 	private Boolean testWhileIdle = true;
 	private Boolean testOnBorrow = false;
