@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 
 import com.swak.http.HttpClientProperties;
 import com.swak.http.HttpClients;
+import com.swak.http.resource.SharedNettyCustomizer;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.reactivex.transport.resources.LoopResources;
@@ -47,6 +48,8 @@ public class HttpClientConfigurationSupport {
 		LoopResources loopResources = Contexts.createEventLoopResources(httpClientProperties.getMode(), 1, -1,
 				"AsyncHttp.", true, 2, TimeUnit.SECONDS);
 		builder.setEventLoopGroup(loopResources.onClient());
+		builder.setThreadPoolName("AsyncHttp.timeout");
+		builder.setHttpAdditionalChannelInitializer(new SharedNettyCustomizer());
 		return builder.build();
 	}
 
