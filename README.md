@@ -162,3 +162,11 @@ Http1xServerConnection -- 一次请求的处理
 问题2： http 的简单处理方式可以参考hutool的处理方式
 问题3： 验证框架，感觉使用简单点的方式就够了。
 问题3： 发现循环依赖会导致aop失效，@lazy能避免这个问题。
+问题4： 数据库事务问题，又发现数据库事务问题，而且表现很奇怪，只回滚最后操作的一张表的数据，很奇葩的处理方式。
+       发现是在配置数据库链接池时设置了useLocalTransactionState = true。导致的。
+       在 druid 中不能配置此参数，使用数据库链接池默认的。
+       在 Hikari 中可以配置此参数，如果配置为true就会导致很奇葩的问题。配置成false即可。
+       结论： 数据库链接池的两个参数比较重要，AutoCommit 要和数据库保持一致。
+       useLocalTransactionState 要设置为false。
+       Hikari DriverDataSource 获取链接时，将所有的参数设置进去了。
+       
