@@ -3,7 +3,6 @@ package com.tmt.api.service;
 import com.swak.vertx.annotation.VertxService;
 import com.tmt.api.facade.GoodsNotServiceFacade;
 import com.tmt.api.facade.GoodsServiceFacade;
-import com.weibo.api.motan.config.springsupport.annotation.MotanService;
 
 /**
  * 商品服务, 只需要使用同步接口，代码写起来比较简单
@@ -11,7 +10,7 @@ import com.weibo.api.motan.config.springsupport.annotation.MotanService;
  * @author lifeng
  */
 @VertxService(use_pool = "goods", isAop = false, service = GoodsServiceFacade.class)
-@MotanService
+// @MotanService
 public class GoodsService implements GoodsServiceFacade , GoodsNotServiceFacade{
 
 	@Override
