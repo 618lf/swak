@@ -51,7 +51,7 @@ public class MetricRegistryPostProcessor implements BeanPostProcessor, Applicati
 			});
 		}
 		if (reporter != null) {
-			reporter.start(1, 1, TimeUnit.MINUTES);
+			reporter.start(1, 10, TimeUnit.SECONDS);
 		}
 	}
 }
