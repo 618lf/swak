@@ -3,8 +3,7 @@ package com.tmt.api.web;
 import java.util.concurrent.CompletableFuture;
 
 import com.swak.Constants;
-import com.swak.rabbit.EventBus;
-import com.swak.rabbit.message.Message;
+import com.swak.rabbit.annotation.Publisher;
 import com.swak.vertx.annotation.GetMapping;
 import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.annotation.VertxReferer;
@@ -12,6 +11,7 @@ import com.tmt.api.entity.Goods;
 import com.tmt.api.event.GoodsEvent;
 import com.tmt.api.exception.GoodsException;
 import com.tmt.api.facade.GoodsServiceFacadeAsyncx;
+import com.tmt.publisher.GoodsEventPublisher;
 
 import io.vertx.ext.web.RoutingContext;
 
@@ -23,6 +23,10 @@ import io.vertx.ext.web.RoutingContext;
 @RestController(path = "/api/goods")
 public class GoodsController {
 
+	@Publisher(queue = "swak.test.goods")
+	private GoodsEventPublisher publisher;
+	@Publisher(queue = "swak.test.goods")
+	private GoodsEventPublisher publisher2;
 	@VertxReferer
 	private GoodsServiceFacadeAsyncx goodsService;
 	// @MotanReferer
@@ -48,10 +52,8 @@ public class GoodsController {
 	 */
 	@GetMapping("/get")
 	public CompletableFuture<String> get(RoutingContext context) {
-		return goodsService.sayHello().thenApply(msg -> {
-			EventBus.me().post("swak.test.goods", "swak.test.goods",
-					Message.of().object2Payload(GoodsEvent.of()).build());
-			return "1";
+		return goodsService.sayHello().thenCompose(msg -> {
+			return publisher.post(GoodsEvent.of()).thenApply(res -> "1");
 		}).exceptionally(r -> {
 			Throwable e = r.getCause() != null ? r.getCause() : r;
 			if (e instanceof GoodsException) {

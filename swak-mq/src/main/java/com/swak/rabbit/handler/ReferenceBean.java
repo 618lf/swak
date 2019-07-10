@@ -31,10 +31,10 @@ public class ReferenceBean {
 
 	@Override
 	public int hashCode() {
-		StringBuilder identity = new StringBuilder();
-		identity.append(type.getSimpleName()).append(".").append(reference.queue()).append(".")
-				.append(reference.routing());
-		return identity.hashCode();
+		int result = type.hashCode();
+		result = 31 * result + reference.queue().hashCode();
+		result = 31 * result + reference.routing().hashCode();
+		return result;
 	}
 
 	@Override
