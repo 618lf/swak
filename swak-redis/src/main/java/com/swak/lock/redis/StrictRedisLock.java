@@ -6,14 +6,14 @@ import java.util.function.Supplier;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.RedisUtils;
 import com.swak.exception.LockTimeOutException;
+import com.swak.lock.Lock;
 
 /**
- * 严格的 redis 的锁 需要使用单独的线程池来执行，根据锁的个数来决定线程池的大小
- * 不建議單獨使用
+ * 严格的 redis 的锁 需要使用单独的线程池来执行，根据锁的个数来决定线程池的大小 不建議單獨使用
  * 
  * @author lifeng
  */
-public class StrictRedisLock {
+public class StrictRedisLock implements Lock {
 
 	/**
 	 * 锁等待时间，防止线程饥饿
@@ -55,6 +55,14 @@ public class StrictRedisLock {
 		this(name);
 		this.acquireTimeout = acquireTimeout;
 		this.lockTimeout = lockTimeout;
+	}
+	
+    /**
+     * 锁的名称
+     */
+	@Override
+	public String name() {
+		return name;
 	}
 
 	/**
