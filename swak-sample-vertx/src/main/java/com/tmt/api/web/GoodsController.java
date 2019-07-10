@@ -3,10 +3,13 @@ package com.tmt.api.web;
 import java.util.concurrent.CompletableFuture;
 
 import com.swak.Constants;
+import com.swak.rabbit.EventBus;
+import com.swak.rabbit.message.Message;
 import com.swak.vertx.annotation.GetMapping;
 import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.annotation.VertxReferer;
 import com.tmt.api.entity.Goods;
+import com.tmt.api.event.GoodsEvent;
 import com.tmt.api.exception.GoodsException;
 import com.tmt.api.facade.GoodsServiceFacadeAsyncx;
 
@@ -22,19 +25,20 @@ public class GoodsController {
 
 	@VertxReferer
 	private GoodsServiceFacadeAsyncx goodsService;
-//	@MotanReferer
-//	private GoodsServiceFacadeAsync goodsServiceRpc;
+	// @MotanReferer
+	// private GoodsServiceFacadeAsync goodsServiceRpc;
 
-//	/**
-//	 * 通过 rpc 获取数据
-//	 * 
-//	 * @param context
-//	 * @return
-//	 */
-//	@GetMapping("/rpc_get")
-//	public CompletableFuture<Result> rpc_get(RoutingContext context) {
-//		return goodsServiceRpc.sayHelloAsync().toFuture().thenApply(o -> Result.success(o));
-//	}
+	// /**
+	// * 通过 rpc 获取数据
+	// *
+	// * @param context
+	// * @return
+	// */
+	// @GetMapping("/rpc_get")
+	// public CompletableFuture<Result> rpc_get(RoutingContext context) {
+	// return goodsServiceRpc.sayHelloAsync().toFuture().thenApply(o ->
+	// Result.success(o));
+	// }
 
 	/**
 	 * get参数或 post 参数 get 参数： ?name=xxx post参数： xxx=yyy
@@ -45,6 +49,8 @@ public class GoodsController {
 	@GetMapping("/get")
 	public CompletableFuture<String> get(RoutingContext context) {
 		return goodsService.sayHello().thenApply(msg -> {
+			EventBus.me().post("swak.test.goods", "swak.test.goods",
+					Message.builder().object2Payload(GoodsEvent.of()).build());
 			return "1";
 		}).exceptionally(r -> {
 			Throwable e = r.getCause() != null ? r.getCause() : r;
