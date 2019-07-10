@@ -24,6 +24,6 @@ public class PublishTest extends RabbitTest {
 	@Test
 	public void onePublisher() throws IOException, TimeoutException {
 		rabbitTemplate.basicPublish(EXCHANGE, ROUTING,
-				Message.builder().setId("1").setPayload("123".getBytes()).build());
+				Message.of().setId("1").setPayload("123".getBytes()).build());
 	}
 }

@@ -271,7 +271,7 @@ public class RabbitMQTemplate
 	public void handleReturn(int replyCode, String replyText, String exchange, String routingKey,
 			BasicProperties properties, byte[] body) throws IOException {
 		if (returnCallback != null) {
-			returnCallback.returnedMessage(Message.builder().setPayload(body).setProperties(properties), replyCode,
+			returnCallback.returnedMessage(Message.of().setPayload(body).setProperties(properties), replyCode,
 					replyText, exchange, routingKey);
 		}
 	}

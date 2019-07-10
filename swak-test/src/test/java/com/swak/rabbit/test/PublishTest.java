@@ -26,7 +26,7 @@ public class PublishTest extends RabbitTest {
 	@Test
 	public void onePublisher() throws IOException, TimeoutException {
 		rabbitTemplate.basicPublish(EXCHANGE, ROUTING,
-				Message.builder().setId("1").setPayload("123".getBytes()).build());
+				Message.of().setId("1").setPayload("123".getBytes()).build());
 	}
 
 	/**
@@ -41,7 +41,7 @@ public class PublishTest extends RabbitTest {
 		MultiThreadTest.run(() -> {
 			while (true) {
 				try {
-					Message message = Message.builder().setId(String.valueOf(count.incrementAndGet()))
+					Message message = Message.of().setId(String.valueOf(count.incrementAndGet()))
 							.setPayload("123".getBytes()).build();
 					rabbitTemplate.basicPublish(EXCHANGE, ROUTING, message);
 					System.out.println("发送消息：" + message.getId());

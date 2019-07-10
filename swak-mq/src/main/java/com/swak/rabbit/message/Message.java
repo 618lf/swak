@@ -1,6 +1,7 @@
 package com.swak.rabbit.message;
 
 import java.util.Map;
+import java.util.UUID;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.swak.Constants;
@@ -173,19 +174,22 @@ public class Message {
 
 	/**
 	 * 使用 build 之后消息才是完整的消息
-	 * 
+	 * 如果没于设置id，则使用uuid来设置
 	 * @return
 	 */
 	public Message build() {
-		properties = new BasicProperties(null, Constants.DEFAULT_ENCODING.name(), null, deliveryMode, priority, null,
-				null, expiration, id, null, null, null, null, null);
+		if (properties == null) {
+			id = StringUtils.isBlank(id) ? UUID.randomUUID().toString() : id;
+			properties = new BasicProperties(null, Constants.DEFAULT_ENCODING.name(), null, deliveryMode, priority,
+					null, null, expiration, id, null, null, null, null, null);
+		}
 		return this;
 	}
 
 	/**
 	 * 创建一个空消息
 	 */
-	public static Message builder() {
+	public static Message of() {
 		return new Message();
 	}
 }

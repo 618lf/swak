@@ -70,7 +70,7 @@ class TemplateConsumer implements Consumer {
 
 	// 创建消息
 	private Message buildMessage(Envelope envelope, BasicProperties properties, byte[] body) {
-		Message message = Message.builder().setProperties(properties).setPayload(body);
+		Message message = Message.of().setProperties(properties).setPayload(body);
 		if (Constants.retry_channel.equals(envelope.getExchange())) {
 			return message.retryMessage();
 		}

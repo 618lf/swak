@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.asm.Wrapper;
@@ -22,6 +23,7 @@ import com.swak.rabbit.message.PendingConfirm;
 import com.swak.rabbit.retry.RetryStrategy;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
+import com.swak.utils.StringUtils;
 
 /**
  * 基于 Mq 的事件发布实现
@@ -198,6 +200,109 @@ public class EventBus {
 	}
 
 	/**
+	 * 发送消息 log 模式， 如果需要异步发布，则可以在外部包裹发布
+	 * 
+	 * @param exchange
+	 * @param routingKey
+	 * @param message
+	 */
+	public void log(String exchange, String routingKey, Message message) {
+		message = message.build();
+		this.templateForSender.basicPublish(exchange, routingKey, message, false);
+	}
+
+	/**
+	 * 发送消息 log 模式， 如果需要异步发布，则可以在外部包裹发布
+	 * 
+	 * @param exchange
+	 * @param routingKey
+	 * @param message
+	 */
+	public CompletableFuture<Void> logAsync(String exchange, String routingKey, Message message) {
+		if (executor == null) {
+			return CompletableFuture.runAsync(() -> {
+				this.log(exchange, routingKey, message);
+			});
+		}
+		return CompletableFuture.runAsync(() -> {
+			this.log(exchange, routingKey, message);
+		}, executor);
+	}
+
+	/**
+	 * 发送消息
+	 * 
+	 * @param exchange
+	 * @param routingKey
+	 * @param message
+	 */
+	public void post(String exchange, String routingKey, Object message) {
+		Assert.notNull(message, "Message can not null!");
+		Message _message = Message.of().object2Payload(message);
+		this.post(exchange, routingKey, _message);
+	}
+
+	/**
+	 * 发送消息 -- String, 获取消息时需要自己转换
+	 * 
+	 * @param exchange
+	 * @param routingKey
+	 * @param message
+	 */
+	public void post(String exchange, String routingKey, String message) {
+		Assert.notNull(message, "Message can not null!");
+		Message _message = Message.of().setPayload(StringUtils.getBytesUtf8(message));
+		this.post(exchange, routingKey, _message);
+	}
+
+	/**
+	 * 发送消息
+	 * 
+	 * @param exchange
+	 * @param routingKey
+	 * @param message
+	 */
+	public void post(String exchange, String routingKey, Message message) {
+		message = message.build();
+		PendingConfirm pendingConfirm = null;
+		try {
+			pendingConfirm = this.templateForSender.basicPublish(exchange, routingKey, message);
+		} catch (Exception e) {
+			pendingConfirm = new PendingConfirm(message.getId());
+		}
+		if (this.retryStrategy != null) {
+			this.bindPendingConfirm(exchange, routingKey, pendingConfirm, message);
+			this.retryStrategy.add(pendingConfirm);
+		}
+	}
+
+	/**
+	 * 发送消息
+	 * 
+	 * @param exchange
+	 * @param routingKey
+	 * @param message
+	 */
+	public CompletableFuture<Void> postAsync(String exchange, String routingKey, Object message) {
+		Assert.notNull(message, "Message can not null!");
+		Message _message = Message.of().object2Payload(message);
+		return this.postAsync(exchange, routingKey, _message);
+	}
+
+	/**
+	 * 发送消息 -- String, 获取消息时需要自己转换
+	 * 
+	 * @param exchange
+	 * @param routingKey
+	 * @param message
+	 */
+	public CompletableFuture<Void> postAsync(String exchange, String routingKey, String message) {
+		Assert.notNull(message, "Message can not null!");
+		Message _message = Message.of().setPayload(StringUtils.getBytesUtf8(message));
+		return this.postAsync(exchange, routingKey, _message);
+	}
+
+	/**
 	 * 异步 - 发送消息
 	 * 
 	 * @param exchange
@@ -215,55 +320,6 @@ public class EventBus {
 		}, executor);
 	}
 
-	/**
-	 * 发送消息 log 模式， 如果需要异步发布，则可以在外部包裹发布
-	 * 
-	 * @param exchange
-	 * @param routingKey
-	 * @param message
-	 */
-	public void log(String exchange, String routingKey, Message message) {
-		this.templateForSender.basicPublish(exchange, routingKey, message, false);
-	}
-	
-	/**
-	 * 发送消息 log 模式， 如果需要异步发布，则可以在外部包裹发布
-	 * 
-	 * @param exchange
-	 * @param routingKey
-	 * @param message
-	 */
-	public CompletableFuture<Void> logAsync(String exchange, String routingKey, Message message) {
-		if (executor == null) {
-			return CompletableFuture.runAsync(() -> {
-				this.templateForSender.basicPublish(exchange, routingKey, message, false);
-			});
-		}
-		return CompletableFuture.runAsync(() -> {
-			this.templateForSender.basicPublish(exchange, routingKey, message, false);
-		}, executor);
-	}
-
-	/**
-	 * 发送消息
-	 * 
-	 * @param exchange
-	 * @param routingKey
-	 * @param message
-	 */
-	public void post(String exchange, String routingKey, Message message) {
-		PendingConfirm pendingConfirm = null;
-		try {
-			pendingConfirm = this.templateForSender.basicPublish(exchange, routingKey, message);
-		} catch (Exception e) {
-			pendingConfirm = new PendingConfirm(message.getId());
-		}
-		if (this.retryStrategy != null) {
-			this.bindPendingConfirm(exchange, routingKey, pendingConfirm, message);
-			this.retryStrategy.add(pendingConfirm);
-		}
-	}
-
 	// 将 message 绑定到 pendingConfirm 中
 	private void bindPendingConfirm(String exchange, String routingKey, PendingConfirm pendingConfirm,
 			Message message) {
@@ -275,10 +331,20 @@ public class EventBus {
 		pendingConfirm.setPayload(message.getPayload());
 	}
 
+	/**
+	 * 当前对象
+	 * 
+	 * @return
+	 */
 	public static EventBus me() {
 		return me;
 	}
 
+	/**
+	 * 构造对象
+	 * 
+	 * @return
+	 */
 	public static Builder builder() {
 		return new Builder();
 	}

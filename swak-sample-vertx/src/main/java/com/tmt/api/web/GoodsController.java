@@ -50,7 +50,7 @@ public class GoodsController {
 	public CompletableFuture<String> get(RoutingContext context) {
 		return goodsService.sayHello().thenApply(msg -> {
 			EventBus.me().post("swak.test.goods", "swak.test.goods",
-					Message.builder().object2Payload(GoodsEvent.of()).build());
+					Message.of().object2Payload(GoodsEvent.of()).build());
 			return "1";
 		}).exceptionally(r -> {
 			Throwable e = r.getCause() != null ? r.getCause() : r;

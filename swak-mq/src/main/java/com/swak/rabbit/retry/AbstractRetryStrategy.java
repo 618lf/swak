@@ -105,7 +105,7 @@ public abstract class AbstractRetryStrategy implements RetryStrategy, Runnable, 
 	protected void retrySender(PendingConfirm pendingConfirm) {
 		try {
 			this.getSender().basicPublish(pendingConfirm.getExchange(), pendingConfirm.getRoutingKey(),
-					Message.builder().setId(pendingConfirm.getId()).setDeliveryMode(pendingConfirm.getDeliveryMode())
+					Message.of().setId(pendingConfirm.getId()).setDeliveryMode(pendingConfirm.getDeliveryMode())
 							.setExpiration(pendingConfirm.getExpiration()).setPriority(pendingConfirm.getPriority())
 							.setPayload(pendingConfirm.getPayload()).build());
 		} catch (Exception e) {
