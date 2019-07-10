@@ -25,7 +25,7 @@ public class OnceInvokeLock extends OrderInvokeLock {
 		super(lock, maxExecSeconds, 1, new DiscardPolicy());
 		queue = new LinkedTransferQueue<>();
 	}
-	
+
 	/**
 	 * 执行代码 后续代码必须切换线程执行
 	 * 
@@ -83,5 +83,16 @@ public class OnceInvokeLock extends OrderInvokeLock {
 				}
 			}
 		}
+	}
+
+	/**
+	 * 创建一个异步锁 -- 一个执行周期内，只需要执行一次
+	 * 
+	 * @param lock
+	 * @param maxExecSeconds
+	 * @return
+	 */
+	public static AsyncLock of(Lock lock, int maxExecSeconds) {
+		return new OnceInvokeLock(lock, maxExecSeconds);
 	}
 }

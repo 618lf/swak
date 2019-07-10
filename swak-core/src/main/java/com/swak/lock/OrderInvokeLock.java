@@ -105,4 +105,15 @@ public class OrderInvokeLock implements AsyncLock, DisposableBean {
 	public boolean unlock() {
 		return _lock.unlock();
 	}
+	
+	/**
+	 * 创建一个异步锁 -- 顺序执行代码
+	 * 
+	 * @param lock
+	 * @param maxExecSeconds
+	 * @return
+	 */
+	public static AsyncLock of(Lock lock, int maxExecSeconds) {
+		return new OrderInvokeLock(lock, maxExecSeconds);
+	}
 }

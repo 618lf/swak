@@ -5,8 +5,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import com.swak.lock.redis.ConditionRedisLock;
-import com.swak.lock.redis.OrderRedisLock;
+import com.swak.lock.AsyncLock;
+import com.swak.lock.NoLock;
+import com.swak.lock.OnceInvokeLock;
+import com.swak.lock.OrderInvokeLock;
+import com.swak.lock.redis.StrictRedisLock;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.threads.WorkerContext;
 import com.swak.redis.RedisTest;
@@ -38,9 +41,33 @@ public class LockTest extends RedisTest {
 		}, 10, "没有锁");
 		latch.await();
 		Long end_time = System.currentTimeMillis();
-		System.out.println("没有锁：" + count + "; time=" + (end_time - start_time));
+		System.out.println("无锁：" + count + "; time=" + (end_time - start_time));
 	}
 	
+	/**
+	 * 简单的锁
+	 * 
+	 * @throws InterruptedException
+	 */
+	@Test
+	public void noAyncLock() throws InterruptedException {
+		Long start_time = System.currentTimeMillis();
+		CountDownLatch latch = new CountDownLatch(10000);
+		AsyncLock lock = OrderInvokeLock.of(NoLock.of(), 60);
+		MultiThreadTest.run(() ->{
+			for (int i = 0; i < 1000; i++) {
+				lock.execute(() -> {
+					count++;
+					return 1;
+				}).thenAccept((v) -> {
+					latch.countDown();
+				});
+			}
+		}, 10, "单线程无锁");
+		latch.await();
+		Long end_time = System.currentTimeMillis();
+		System.out.println("单线程无锁：" + count + "; time=" + (end_time - start_time));
+	}
 
 	/**
 	 * 简单的锁
@@ -52,7 +79,7 @@ public class LockTest extends RedisTest {
 		WorkerContext context = Contexts.createWorkerContext("Test.", 10, true, 2, TimeUnit.SECONDS);
 		Long start_time = System.currentTimeMillis();
 		CountDownLatch latch = new CountDownLatch(10000);
-		OrderRedisLock lock = new OrderRedisLock("wx");
+		AsyncLock lock = OrderInvokeLock.of(StrictRedisLock.of("wx"), 60);
 		MultiThreadTest.run(() ->{
 			for (int i = 0; i < 1000; i++) {
 				lock.execute(() -> {
@@ -77,7 +104,7 @@ public class LockTest extends RedisTest {
 	public void simpleLock() throws InterruptedException {
 		Long start_time = System.currentTimeMillis();
 		CountDownLatch latch = new CountDownLatch(10000);
-		OrderRedisLock lock = new OrderRedisLock("wx");
+		AsyncLock lock = OrderInvokeLock.of(StrictRedisLock.of("wx"), 60);
 		MultiThreadTest.run(() ->{
 			for (int i = 0; i < 1000; i++) {
 				lock.execute(() -> {
@@ -103,7 +130,7 @@ public class LockTest extends RedisTest {
 		WorkerContext context = Contexts.createWorkerContext("Test.", 1, true, 2, TimeUnit.SECONDS);
 		Long start_time = System.currentTimeMillis();
 		CountDownLatch latch = new CountDownLatch(10000);
-		ConditionRedisLock lock = new ConditionRedisLock("cwx");
+		AsyncLock lock = OnceInvokeLock.of(StrictRedisLock.of("wx"), 60);
 		MultiThreadTest.run(() ->{
 			for (int i = 0; i < 1000; i++) {
 				lock.execute(() -> {

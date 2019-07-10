@@ -29,7 +29,7 @@ public class NoLock implements Lock {
 	 * 
 	 * @return
 	 */
-	public static NoLock me() {
+	public static NoLock of() {
 		return new NoLock();
 	}
 }

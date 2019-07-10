@@ -56,10 +56,10 @@ public class StrictRedisLock implements Lock {
 		this.acquireTimeout = acquireTimeout;
 		this.lockTimeout = lockTimeout;
 	}
-	
-    /**
-     * 锁的名称
-     */
+
+	/**
+	 * 锁的名称
+	 */
 	@Override
 	public String name() {
 		return name;
@@ -183,5 +183,25 @@ public class StrictRedisLock implements Lock {
 	 */
 	private long localTimeMillis() {
 		return System.currentTimeMillis();
+	}
+
+	/**
+	 * 线程等待10秒，最多执行60秒
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static Lock of(String name) {
+		return new StrictRedisLock(name);
+	}
+
+	/**
+	 * 线程等待10秒，最多执行60秒
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static Lock of(String name, long acquireTimeoutSesonds, long lockTimeoutSesonds) {
+		return new StrictRedisLock(name, acquireTimeoutSesonds, lockTimeoutSesonds);
 	}
 }
