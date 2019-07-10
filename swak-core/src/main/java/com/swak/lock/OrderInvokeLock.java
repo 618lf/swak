@@ -2,6 +2,7 @@ package com.swak.lock;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -17,12 +18,35 @@ import com.swak.reactivex.threads.Contexts;
 public class OrderInvokeLock implements AsyncLock, DisposableBean {
 
 	private int awaitTime = 30; // 30s
-	protected ExecutorService executor;
-	protected Lock _lock;
+	protected final ExecutorService executor;
+	protected final Lock _lock;
 
-	public OrderInvokeLock(Lock lock) {
-		executor = Contexts.createWorkerContext("SWAK.lock-" + lock.name() + "-", 1, true, 60, TimeUnit.SECONDS);
-		_lock = lock;
+	/**
+	 * @param lock
+	 *            -- 真实的锁，局部锁，全局锁
+	 * @param threads
+	 *            -- 线程数
+	 * @param maxExecSeconds
+	 *            -- 最大的执行时间
+	 */
+	public OrderInvokeLock(Lock lock, int maxExecSeconds) {
+		this.executor = Contexts.createWorkerContext("SWAK.lock-" + lock.name() + "-", 1, true, maxExecSeconds,
+				TimeUnit.SECONDS);
+		this._lock = lock;
+	}
+
+	/**
+	 * @param lock
+	 *            -- 真实的锁，局部锁，全局锁
+	 * @param threads
+	 *            -- 线程数
+	 * @param maxExecSeconds
+	 *            -- 最大的执行时间
+	 */
+	public OrderInvokeLock(Lock lock, int maxExecSeconds, int maxQueue, RejectedExecutionHandler handler) {
+		this.executor = Contexts.createWorkerContext("SWAK.lock-" + lock.name() + "-", 1, true, maxExecSeconds,
+				TimeUnit.SECONDS, maxQueue, handler);
+		this._lock = lock;
 	}
 
 	/**

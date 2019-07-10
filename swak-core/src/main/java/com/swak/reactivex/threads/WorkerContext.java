@@ -1,6 +1,7 @@
 package com.swak.reactivex.threads;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,10 +18,55 @@ public final class WorkerContext extends ThreadPoolExecutor implements Context {
 
 	private volatile PoolMetrics metrics;
 
+	/**
+	 * 默认的定义
+	 * 
+	 * @param prefix
+	 * @param nThreads
+	 * @param daemon
+	 * @param checker
+	 * @param maxExecTime
+	 * @param maxExecTimeUnit
+	 */
 	public WorkerContext(String prefix, int nThreads, boolean daemon, BlockedThreadChecker checker, long maxExecTime,
 			TimeUnit maxExecTimeUnit) {
 		super(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
 				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit));
+	}
+
+	/**
+	 * 可以定义最大的任务数
+	 * 
+	 * @param prefix
+	 * @param nThreads
+	 * @param daemon
+	 * @param checker
+	 * @param maxExecTime
+	 * @param maxExecTimeUnit
+	 * @param maxQueueSize
+	 */
+	public WorkerContext(String prefix, int nThreads, boolean daemon, BlockedThreadChecker checker, long maxExecTime,
+			TimeUnit maxExecTimeUnit, int maxQueueSize) {
+		super(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(maxQueueSize),
+				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit));
+	}
+
+	/**
+	 * 可以定义最大的任务数 -- 队列满了之后的处理方式
+	 * 
+	 * @param prefix
+	 * @param nThreads
+	 * @param daemon
+	 * @param checker
+	 * @param maxExecTime
+	 * @param maxExecTimeUnit
+	 * @param maxQueueSize
+	 */
+	public WorkerContext(String prefix, int nThreads, boolean daemon, BlockedThreadChecker checker, long maxExecTime,
+			TimeUnit maxExecTimeUnit, int maxQueueSize, RejectedExecutionHandler handler) {
+		super(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(maxQueueSize),
+				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit),
+				handler);
 	}
 
 	/**
@@ -40,8 +86,6 @@ public final class WorkerContext extends ThreadPoolExecutor implements Context {
 			}
 		});
 	}
-	
-	
 
 	@Override
 	public void setPoolMetrics(PoolMetrics metrics) {

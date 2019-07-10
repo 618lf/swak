@@ -2,6 +2,7 @@ package com.swak.lock;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedTransferQueue;
+import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
 import java.util.function.Supplier;
 
 /**
@@ -14,11 +15,17 @@ public class OnceInvokeLock extends OrderInvokeLock {
 
 	private LinkedTransferQueue<CompletableFuture> queue;
 
-	public OnceInvokeLock(Lock lock) {
-		super(lock);
+	/**
+	 * 线程池中只需有一个任务即可，其他的可以忽略
+	 * 
+	 * @param lock
+	 * @param maxExecSeconds
+	 */
+	public OnceInvokeLock(Lock lock, int maxExecSeconds) {
+		super(lock, maxExecSeconds, 1, new DiscardPolicy());
 		queue = new LinkedTransferQueue<>();
 	}
-
+	
 	/**
 	 * 执行代码 后续代码必须切换线程执行
 	 * 
@@ -42,7 +49,7 @@ public class OnceInvokeLock extends OrderInvokeLock {
 	 */
 	private <T> void queue(Supplier<T> handler) {
 		for (;;) {
-			
+
 			/**
 			 * 需要执行的任务
 			 */
@@ -61,9 +68,9 @@ public class OnceInvokeLock extends OrderInvokeLock {
 				oneFuture.completeExceptionally(e);
 				continue;
 			}
-			
+
 			final Object _value = value;
-			
+
 			/**
 			 * 完成这一刻的所有任务
 			 */

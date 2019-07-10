@@ -2,6 +2,7 @@ package com.swak.reactivex.threads;
 
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.TimeUnit;
 
 import com.swak.reactivex.transport.TransportMode;
@@ -45,7 +46,24 @@ public class Contexts {
 		contexts.put(context, O);
 		return context;
 	}
-	
+
+	/**
+	 * 创建执行需时任务的线程池: 可以定义最大队列数以及异常处理方式
+	 * 
+	 * @param prefix
+	 * @param nThreads
+	 * @param maxExecTime
+	 * @param maxExecTimeUnit
+	 * @return
+	 */
+	public static WorkerContext createWorkerContext(String prefix, int nThreads, boolean daemon, long maxExecTime,
+			TimeUnit maxExecTimeUnit, int maxQueue, RejectedExecutionHandler handler) {
+		WorkerContext context = new WorkerContext(prefix, nThreads, daemon,
+				ContextsHolder.instance.blockedThreadChecker, maxExecTime, maxExecTimeUnit, maxQueue, handler);
+		contexts.put(context, O);
+		return context;
+	}
+
 	/**
 	 * 创建定时执行需时任务的线程池
 	 * 
@@ -75,10 +93,10 @@ public class Contexts {
 	 */
 	public static LoopResources createEventLoopResources(TransportMode mode, Integer select, Integer worker,
 			String prefix, boolean daemon, long maxExecTime, TimeUnit maxExecTimeUnit) {
-		return LoopResources.create(mode, prefix, select, worker, daemon, ContextsHolder.instance.blockedThreadChecker, 2,
-				maxExecTimeUnit);
+		return LoopResources.create(mode, prefix, select, worker, daemon, ContextsHolder.instance.blockedThreadChecker,
+				2, maxExecTimeUnit);
 	}
-	
+
 	/**
 	 * 返回 EventLoop
 	 * 
@@ -87,6 +105,6 @@ public class Contexts {
 	 */
 	public static EventLoopContext createEventLoopContext(EventLoop eventLoop) {
 		EventLoopContext context = new EventLoopContext(eventLoop);
-		return context; 
+		return context;
 	}
 }
