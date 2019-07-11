@@ -53,7 +53,8 @@ public final class WorkerContext extends ThreadPoolExecutor implements Context {
 	public WorkerContext(String prefix, int nThreads, boolean daemon, BlockedThreadChecker checker, long maxExecTime,
 			TimeUnit maxExecTimeUnit, int maxQueueSize) {
 		super(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(maxQueueSize),
-				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit));
+				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit),
+				new MetricsRejectedExecutionHandler());
 	}
 
 	/**
@@ -71,7 +72,7 @@ public final class WorkerContext extends ThreadPoolExecutor implements Context {
 			TimeUnit maxExecTimeUnit, int maxQueueSize, RejectedExecutionHandler handler) {
 		super(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(maxQueueSize),
 				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit),
-				handler);
+				new MetricsRejectedExecutionHandler().setHandler(handler));
 	}
 
 	/**
@@ -80,7 +81,33 @@ public final class WorkerContext extends ThreadPoolExecutor implements Context {
 	@Override
 	public void execute(Runnable command) {
 		Object metric = metrics != null ? metrics.submitted() : null;
-		super.execute(() -> {
+		super.execute(new MetricsRunnable(metric, command));
+	}
+
+	@Override
+	public void applyMetrics(MetricsFactory metricsFactory) {
+		this.metrics = metricsFactory.cteatePoolMetrics(name, nThreads);
+	}
+
+	/**
+	 * 可监控的
+	 * 
+	 * @author lifeng
+	 */
+	class MetricsRunnable implements Runnable {
+		private final Runnable command;
+		private Object metric;
+
+		public MetricsRunnable(Object metric, Runnable command) {
+			this.command = command;
+			this.metric = metric;
+		}
+
+		/**
+		 * 正常执行代码
+		 */
+		@Override
+		public void run() {
 			Object usageMetric = null;
 			if (metrics != null) {
 				usageMetric = metrics.begin(metric);
@@ -89,11 +116,42 @@ public final class WorkerContext extends ThreadPoolExecutor implements Context {
 			if (metrics != null) {
 				metrics.end(usageMetric, succeeded);
 			}
-		});
+		}
+
+		/**
+		 * 异常处理
+		 */
+		void rejected() {
+			if (metrics != null) {
+				metrics.rejected(metric);
+			}
+		}
 	}
 
-	@Override
-	public void applyMetrics(MetricsFactory metricsFactory) {
-		this.metrics = metricsFactory.cteatePoolMetrics(name, nThreads);
+	/**
+	 * 异常处理器
+	 * 
+	 * @author lifeng
+	 */
+	static class MetricsRejectedExecutionHandler extends AbortPolicy {
+
+		private RejectedExecutionHandler handler;
+
+		public MetricsRejectedExecutionHandler setHandler(RejectedExecutionHandler handler) {
+			this.handler = handler;
+			return this;
+		}
+
+		@Override
+		public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+			if (r instanceof MetricsRunnable) {
+				((MetricsRunnable) r).rejected();
+			}
+			if (handler != null) {
+				handler.rejectedExecution(r, executor);
+			} else {
+				super.rejectedExecution(r, executor);
+			}
+		}
 	}
 }
