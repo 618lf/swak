@@ -39,12 +39,11 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-redis</artifactId>
 		</dependency>
-		<!-- 
+		<!-- -->
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-metrics</artifactId>
 		</dependency>
-		-->
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-mq</artifactId>

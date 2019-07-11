@@ -6,6 +6,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.swak.meters.MetricsFactory;
 import com.swak.meters.PoolMetrics;
 
 /**
@@ -17,6 +18,8 @@ import com.swak.meters.PoolMetrics;
 public final class WorkerContext extends ThreadPoolExecutor implements Context {
 
 	private volatile PoolMetrics metrics;
+	private String name;
+	private int nThreads;
 
 	/**
 	 * 默认的定义
@@ -32,6 +35,8 @@ public final class WorkerContext extends ThreadPoolExecutor implements Context {
 			TimeUnit maxExecTimeUnit) {
 		super(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
 				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit));
+		this.name = prefix;
+		this.nThreads = nThreads;
 	}
 
 	/**
@@ -88,7 +93,7 @@ public final class WorkerContext extends ThreadPoolExecutor implements Context {
 	}
 
 	@Override
-	public void setPoolMetrics(PoolMetrics metrics) {
-		this.metrics = metrics;
+	public void applyMetrics(MetricsFactory metricsFactory) {
+		this.metrics = metricsFactory.cteatePoolMetrics(name, nThreads);
 	}
 }

@@ -1,5 +1,7 @@
 package com.swak.metrics;
 
+import static com.swak.Application.APP_LOGGER;
+
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -17,7 +19,9 @@ import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
+import com.swak.meters.MetricsFactory;
 import com.swak.metrics.annotation.MetricBinder;
+import com.swak.metrics.impl.CodahaleMetricsFactory;
 
 /**
  * 这个配置想的作用是将
@@ -28,26 +32,30 @@ import com.swak.metrics.annotation.MetricBinder;
  */
 @Configuration
 public class MetricsAutoConfiguration {
+	
+	public MetricsAutoConfiguration() {
+		APP_LOGGER.debug("Metrics Monitor");
+	}
 
 	/**
-	 * MeterRegistry
+	 * MetricsFactory
 	 * 
 	 * @return
 	 */
 	@Bean
-	public MetricRegistry simpleMeterRegistry() {
-		return new MetricRegistry();
+	public CodahaleMetricsFactory metricsFactory() {
+		return new CodahaleMetricsFactory(new MetricRegistry());
 	}
 
 	/**
-	 * 将MetricBinder 注册到 MetricRegistry
+	 * 用于处理在启动过程中的指标注册
 	 * 
 	 * @param context
 	 * @return
 	 */
 	@Bean
-	public MetricRegistryPostProcessor meterRegistryPostProcessor(MetricRegistry metricRegistry) {
-		return new MetricRegistryPostProcessor(metricRegistry);
+	public MetricRegistryPostProcessor meterRegistryPostProcessor(MetricsFactory metricsFactory) {
+		return new MetricRegistryPostProcessor(metricsFactory);
 	}
 
 	/**
@@ -66,9 +74,10 @@ public class MetricsAutoConfiguration {
 		 */
 		@Bean
 		@ConditionalOnMissingBean(Reporter.class)
-		public Slf4jReporter slf4jReporter(MetricRegistry metricRegistry) {
-			return Slf4jReporter.forRegistry(metricRegistry).outputTo(LoggerFactory.getLogger("com.swak.metrics"))
-					.convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS).build();
+		public Slf4jReporter slf4jReporter(MetricsFactory metricsFactory) {
+			return Slf4jReporter.forRegistry(metricsFactory.metricRegistry())
+					.outputTo(LoggerFactory.getLogger("com.swak.metrics")).convertRatesTo(TimeUnit.SECONDS)
+					.convertDurationsTo(TimeUnit.MILLISECONDS).build();
 		}
 	}
 

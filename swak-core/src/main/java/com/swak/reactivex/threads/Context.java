@@ -1,6 +1,6 @@
 package com.swak.reactivex.threads;
 
-import com.swak.meters.PoolMetrics;
+import com.swak.meters.MetricsFactory;
 
 /**
  * The execution context of a ThreadPool execution.
@@ -8,7 +8,7 @@ import com.swak.meters.PoolMetrics;
  * @author lifeng
  */
 public interface Context {
-	
+
 	/**
 	 * 执行任务
 	 * 
@@ -45,7 +45,6 @@ public interface Context {
 	 * 
 	 * @param metrics
 	 */
-	@SuppressWarnings("rawtypes")
-	default void setPoolMetrics(PoolMetrics metrics) {
+	default void applyMetrics(MetricsFactory metricsFactory) {
 	}
 }

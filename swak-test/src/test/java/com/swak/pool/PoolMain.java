@@ -1,12 +1,14 @@
 package com.swak.pool;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
-import com.swak.metrics.impl.PoolMetricsImpl;
+import com.swak.meters.MetricsFactory;
+import com.swak.metrics.impl.CodahaleMetricsFactory;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.threads.WorkerContext;
 import com.swak.test.utils.MultiThreadTest;
@@ -27,9 +29,11 @@ public class PoolMain {
 				.start(10, TimeUnit.SECONDS);
 
 		// 指标监控
-		PoolMetricsImpl poolMetrics = new PoolMetricsImpl(registry, "Test", 1);
+		MetricsFactory metricsFactory = new CodahaleMetricsFactory(registry);
 		WorkerContext context = Contexts.createWorkerContext("Test.", 1, false, 2, TimeUnit.SECONDS);
-		context.setPoolMetrics(poolMetrics);
+		context.applyMetrics(metricsFactory);
+
+		AtomicInteger count = new AtomicInteger(0);
 
 		// 用多线程来提交任务
 		MultiThreadTest.run(() -> {
@@ -42,6 +46,10 @@ public class PoolMain {
 						}
 					});
 					Thread.sleep(1000);
+					int i = count.incrementAndGet();
+					if (i >= 5000) {
+						break;
+					}
 				} catch (Exception e) {
 				}
 			}

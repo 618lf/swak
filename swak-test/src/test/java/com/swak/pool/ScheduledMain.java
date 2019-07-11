@@ -6,7 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
-import com.swak.metrics.impl.ScheduleMetricsImpl;
+import com.swak.meters.MetricsFactory;
+import com.swak.metrics.impl.CodahaleMetricsFactory;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.threads.ScheduledContext;
 
@@ -21,9 +22,9 @@ public class ScheduledMain {
 				.start(10, TimeUnit.SECONDS);
 
 		// 指标监控
-		ScheduleMetricsImpl poolMetrics = new ScheduleMetricsImpl(registry, "Test", 1);
+		MetricsFactory metricsFactory = new CodahaleMetricsFactory(registry);
 		ScheduledContext context = Contexts.createScheduledContext("Test.", 1, false, 2, TimeUnit.SECONDS);
-		context.setPoolMetrics(poolMetrics);
+		context.applyMetrics(metricsFactory);
 		context.scheduleAtFixedRate(() -> {
 			try {
 				Thread.sleep(5000);

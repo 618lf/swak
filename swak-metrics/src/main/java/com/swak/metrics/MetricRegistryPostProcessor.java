@@ -7,8 +7,8 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
+import com.swak.meters.MetricsFactory;
 import com.swak.metrics.annotation.MetricBinder;
 import com.swak.utils.ConcurrentHashSet;
 
@@ -19,12 +19,12 @@ import com.swak.utils.ConcurrentHashSet;
  */
 public class MetricRegistryPostProcessor implements BeanPostProcessor, ApplicationListener<ContextRefreshedEvent> {
 
-	private MetricRegistry metricRegistry;
+	private MetricsFactory metricsFactory;
 	private ScheduledReporter reporter;
 	private final ConcurrentHashSet<MetricBinder> binders = new ConcurrentHashSet<>();
 
-	public MetricRegistryPostProcessor(MetricRegistry metricRegistry) {
-		this.metricRegistry = metricRegistry;
+	public MetricRegistryPostProcessor(MetricsFactory metricsFactory) {
+		this.metricsFactory = metricsFactory;
 	}
 
 	/**
@@ -45,9 +45,9 @@ public class MetricRegistryPostProcessor implements BeanPostProcessor, Applicati
 	 */
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		if (metricRegistry != null) {
+		if (metricsFactory != null) {
 			binders.stream().forEach(binder -> {
-				binder.bindTo(metricRegistry);
+				binder.bindTo(metricsFactory.metricRegistry());
 			});
 		}
 		if (reporter != null) {
