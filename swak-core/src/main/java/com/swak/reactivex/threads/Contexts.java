@@ -71,6 +71,23 @@ public class Contexts {
 		Holder.instance.holdContext(context);
 		return context;
 	}
+	
+	/**
+	 * 创建执行需时任务的线程池: 可以定义最大队列数以及异常处理方式
+	 * 
+	 * @param prefix
+	 * @param nThreads
+	 * @param maxExecTime
+	 * @param maxExecTimeUnit
+	 * @return
+	 */
+	public static WorkerContext createWorkerContext(String prefix, int nThreads, boolean daemon, long maxExecTime,
+			TimeUnit maxExecTimeUnit, int maxQueue) {
+		WorkerContext context = new WorkerContext(prefix, nThreads, daemon, Holder.instance.blockedThreadChecker,
+				maxExecTime, maxExecTimeUnit, maxQueue);
+		Holder.instance.holdContext(context);
+		return context;
+	}
 
 	/**
 	 * 创建执行需时任务的线程池: 可以定义最大队列数以及异常处理方式

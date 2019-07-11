@@ -18,7 +18,8 @@ public interface Context {
 
 	/**
 	 * 线程执行的包装
-	 * 
+	 * @see 刚开始以为command.run() 被try catch 之后如果抛出异常会导致无法继续运行下去。
+	 *      CompletableFuture 可以避免，因为有进一步的封装
 	 * @param command
 	 * @return
 	 */

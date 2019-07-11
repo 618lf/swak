@@ -9,6 +9,7 @@ import com.swak.meters.PoolMetrics;
 public class PoolMetricsImpl extends AbstractMetrics implements PoolMetrics<Timer.Context> {
 
 	private final Timer queueDelay;
+	private Counter queueRejecte;
 	private Counter queueSize;
 	private final Timer usage;
 	private Counter inUse;
@@ -17,6 +18,7 @@ public class PoolMetricsImpl extends AbstractMetrics implements PoolMetrics<Time
 		super(registry, baseName);
 		this.queueSize = counter("queue-size");
 		this.queueDelay = timer("queue-delay");
+		this.queueRejecte = counter("queue-rejecte");
 		this.usage = timer("usage");
 		this.inUse = counter("in-use");
 		if (maxSize > 0) {
@@ -40,6 +42,7 @@ public class PoolMetricsImpl extends AbstractMetrics implements PoolMetrics<Time
 	@Override
 	public void rejected(Timer.Context context) {
 		queueSize.dec();
+		queueRejecte.inc();
 		context.stop();
 	}
 

@@ -55,6 +55,8 @@ public final class WorkerContext extends ThreadPoolExecutor implements Context {
 		super(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(maxQueueSize),
 				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit),
 				new MetricsRejectedExecutionHandler());
+		this.name = prefix;
+		this.nThreads = nThreads;
 	}
 
 	/**
@@ -73,6 +75,8 @@ public final class WorkerContext extends ThreadPoolExecutor implements Context {
 		super(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(maxQueueSize),
 				new SwakThreadFactory(prefix, daemon, new AtomicInteger(0), checker, maxExecTime, maxExecTimeUnit),
 				new MetricsRejectedExecutionHandler().setHandler(handler));
+		this.name = prefix;
+		this.nThreads = nThreads;
 	}
 
 	/**
