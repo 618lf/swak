@@ -30,6 +30,7 @@ public interface Context {
 		SwakThread current = (SwakThread) th;
 		current.executeStart();
 		try {
+			current.setContext(this);
 			command.run();
 			return true;
 		} catch (Throwable t) {

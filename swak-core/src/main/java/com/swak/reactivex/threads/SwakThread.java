@@ -9,11 +9,12 @@ import io.netty.util.concurrent.FastThreadLocalThread;
  * 
  * @author lifeng
  */
-public class SwakThread extends FastThreadLocalThread {
+public final class SwakThread extends FastThreadLocalThread {
 
 	private final long maxExecTime;
 	private final TimeUnit maxExecTimeUnit;
 	private long execStart;
+	private Context context;
 
 	public SwakThread(Runnable target, String name, long maxExecTime, TimeUnit maxExecTimeUnit) {
 	    super(target, name);
@@ -39,5 +40,13 @@ public class SwakThread extends FastThreadLocalThread {
 
 	public TimeUnit getMaxExecTimeUnit() {
 		return maxExecTimeUnit;
+	}
+
+	public Context getContext() {
+		return context;
+	}
+
+	public void setContext(Context context) {
+		this.context = context;
 	}
 }
