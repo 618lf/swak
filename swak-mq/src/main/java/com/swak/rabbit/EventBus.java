@@ -206,9 +206,9 @@ public class EventBus {
 	 * @param routingKey
 	 * @param message
 	 */
-	public void log(String exchange, String routingKey, Message message) {
-		message = message.build();
-		this.templateForSender.basicPublish(exchange, routingKey, message, false);
+	public void log(String exchange, String routingKey, String message) {
+		Message _message = Message.of().setPayload(StringUtils.getBytesUtf8(message));
+		this.log(exchange, routingKey, _message);
 	}
 
 	/**
@@ -218,15 +218,23 @@ public class EventBus {
 	 * @param routingKey
 	 * @param message
 	 */
-	public CompletableFuture<Void> logAsync(String exchange, String routingKey, Message message) {
-		if (executor == null) {
-			return CompletableFuture.runAsync(() -> {
-				this.log(exchange, routingKey, message);
-			});
-		}
-		return CompletableFuture.runAsync(() -> {
-			this.log(exchange, routingKey, message);
-		}, executor);
+	public void log(String exchange, String routingKey, Object message) {
+		Assert.notNull(message, "Message can not null!");
+		Message _message = Message.of().object2Payload(message);
+		this.log(exchange, routingKey, _message);
+	}
+
+	/**
+	 * 发送消息 log 模式， 如果需要异步发布，则可以在外部包裹发布
+	 * 
+	 * @param exchange
+	 * @param routingKey
+	 * @param message
+	 */
+	public void log(String exchange, String routingKey, Message message) {
+		executor.execute(() -> {
+			this.blockSend(exchange, routingKey, message, false);
+		});
 	}
 
 	/**
@@ -256,25 +264,19 @@ public class EventBus {
 	}
 
 	/**
-	 * 发送消息
+	 * 异步的发送消息，将消息提交到任务隊列等待發送
 	 * 
 	 * @param exchange
 	 * @param routingKey
 	 * @param message
 	 */
 	public void post(String exchange, String routingKey, Message message) {
-		message = message.build();
-		PendingConfirm pendingConfirm = null;
-		try {
-			pendingConfirm = this.templateForSender.basicPublish(exchange, routingKey, message);
-		} catch (Exception e) {
-			pendingConfirm = new PendingConfirm(message.getId());
-		}
-		if (this.retryStrategy != null) {
-			this.bindPendingConfirm(exchange, routingKey, pendingConfirm, message);
-			this.retryStrategy.add(pendingConfirm);
-		}
+		executor.execute(() -> {
+			this.blockSend(exchange, routingKey, message, true);
+		});
 	}
+
+	// 将消息提交到队列，返回表示提交成功，需要等待消息队列的返回才能继续执行（一般情況下不建議使用）
 
 	/**
 	 * 发送消息
@@ -283,10 +285,10 @@ public class EventBus {
 	 * @param routingKey
 	 * @param message
 	 */
-	public CompletableFuture<Void> postAsync(String exchange, String routingKey, Object message) {
+	public CompletableFuture<Void> submit(String exchange, String routingKey, Object message) {
 		Assert.notNull(message, "Message can not null!");
 		Message _message = Message.of().object2Payload(message);
-		return this.postAsync(exchange, routingKey, _message);
+		return this.submit(exchange, routingKey, _message);
 	}
 
 	/**
@@ -296,10 +298,10 @@ public class EventBus {
 	 * @param routingKey
 	 * @param message
 	 */
-	public CompletableFuture<Void> postAsync(String exchange, String routingKey, String message) {
+	public CompletableFuture<Void> submit(String exchange, String routingKey, String message) {
 		Assert.notNull(message, "Message can not null!");
 		Message _message = Message.of().setPayload(StringUtils.getBytesUtf8(message));
-		return this.postAsync(exchange, routingKey, _message);
+		return this.submit(exchange, routingKey, _message);
 	}
 
 	/**
@@ -309,15 +311,25 @@ public class EventBus {
 	 * @param routingKey
 	 * @param message
 	 */
-	public CompletableFuture<Void> postAsync(String exchange, String routingKey, Message message) {
-		if (executor == null) {
-			return CompletableFuture.runAsync(() -> {
-				this.post(exchange, routingKey, message);
-			});
-		}
+	public CompletableFuture<Void> submit(String exchange, String routingKey, Message message) {
 		return CompletableFuture.runAsync(() -> {
-			this.post(exchange, routingKey, message);
+			this.blockSend(exchange, routingKey, message, true);
 		}, executor);
+	}
+
+	// 阻塞式的消息发送方式（会阻塞调用线程）
+	private void blockSend(String exchange, String routingKey, Message message, boolean retryable) {
+		message = message.build();
+		PendingConfirm pendingConfirm = null;
+		try {
+			pendingConfirm = this.templateForSender.basicPublish(exchange, routingKey, message);
+		} catch (Exception e) {
+			pendingConfirm = new PendingConfirm(message.getId());
+		}
+		if (this.retryStrategy != null && retryable) {
+			this.bindPendingConfirm(exchange, routingKey, pendingConfirm, message);
+			this.retryStrategy.add(pendingConfirm);
+		}
 	}
 
 	// 将 message 绑定到 pendingConfirm 中

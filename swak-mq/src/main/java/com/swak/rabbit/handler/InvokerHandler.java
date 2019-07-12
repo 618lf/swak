@@ -89,11 +89,11 @@ public class InvokerHandler implements InvocationHandler {
 
 	private Object postAsync(String queue, String routingKey, Object message) {
 		if (message instanceof String) {
-			return EventBus.me().postAsync(queue, queue, (String) message);
+			return EventBus.me().submit(queue, queue, (String) message);
 		} else if (message instanceof Message) {
-			return EventBus.me().postAsync(queue, queue, (Message) message);
+			return EventBus.me().submit(queue, queue, (Message) message);
 		} else {
-			return EventBus.me().postAsync(queue, queue, message);
+			return EventBus.me().submit(queue, queue, message);
 		}
 	}
 }

@@ -15,6 +15,7 @@ public class PendingConfirm implements Serializable {
 	private long timestamp;
 	private String cause;
 	private int retryTimes;
+	private int maxRetryTimes;
 
 	// 消息重试时需要设置的消息
 	private String exchange;
@@ -36,24 +37,27 @@ public class PendingConfirm implements Serializable {
 		return id;
 	}
 
-	public void setId(String id) {
+	public PendingConfirm setId(String id) {
 		this.id = id;
+		return this;
 	}
 
 	public String getCause() {
 		return cause;
 	}
 
-	public void setCause(String cause) {
+	public PendingConfirm setCause(String cause) {
 		this.cause = cause;
+		return this;
 	}
 
 	public long getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(long timestamp) {
+	public PendingConfirm setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
+		return this;
 	}
 
 	public String getExchange() {
@@ -80,35 +84,51 @@ public class PendingConfirm implements Serializable {
 		return payload;
 	}
 
-	public void setExchange(String exchange) {
+	public PendingConfirm setExchange(String exchange) {
 		this.exchange = exchange;
+		return this;
 	}
 
-	public void setRoutingKey(String routingKey) {
+	public PendingConfirm setRoutingKey(String routingKey) {
 		this.routingKey = routingKey;
+		return this;
 	}
 
-	public void setDeliveryMode(Integer deliveryMode) {
+	public PendingConfirm setDeliveryMode(Integer deliveryMode) {
 		this.deliveryMode = deliveryMode;
+		return this;
 	}
 
-	public void setPriority(Integer priority) {
+	public PendingConfirm setPriority(Integer priority) {
 		this.priority = priority;
+		return this;
 	}
 
-	public void setExpiration(String expiration) {
+	public PendingConfirm setExpiration(String expiration) {
 		this.expiration = expiration;
+		return this;
 	}
 
-	public void setPayload(byte[] payload) {
+	public PendingConfirm setPayload(byte[] payload) {
 		this.payload = payload;
+		return this;
 	}
 
 	public int getRetryTimes() {
 		return retryTimes;
 	}
 
-	public void setRetryTimes(int retryTimes) {
+	public PendingConfirm setRetryTimes(int retryTimes) {
 		this.retryTimes = retryTimes;
+		return this;
+	}
+
+	public int getMaxRetryTimes() {
+		return maxRetryTimes;
+	}
+
+	public PendingConfirm setMaxRetryTimes(int maxRetryTimes) {
+		this.maxRetryTimes = maxRetryTimes;
+		return this;
 	}
 }
