@@ -86,8 +86,13 @@ public class LogbackAppender extends AppenderBase<ILoggingEvent> {
 	protected void append(ILoggingEvent event) {
 		event.getThreadName();
 		this.events.add(new Event(event));
+		this.prepareTask();
+	}
 
-		// 如果为false 才开启任务
+	/**
+	 * 添加一次执行任务
+	 */
+	private void prepareTask() {
 		if (sending.compareAndSet(false, true)) {
 			this.senderPool.execute(new EventSender());
 		}
@@ -103,13 +108,13 @@ public class LogbackAppender extends AppenderBase<ILoggingEvent> {
 			try {
 				long now = System.currentTimeMillis();
 				while (true) {
-					
+
 					// 会去需要发送的数据
 					final Event event = events.poll();
 					if (event == null) {
 						break;
 					}
-					
+
 					// 发送
 					this.doSend(event);
 
@@ -120,21 +125,37 @@ public class LogbackAppender extends AppenderBase<ILoggingEvent> {
 					}
 				}
 			} finally {
-				sending.compareAndSet(true, false);
+				this.prepareNextTask();
 			}
 		}
 
 		/**
-		 * 这个延迟发送有问题
+		 * 特殊情况下使用阻塞式的发送
 		 * 
 		 * @param event
 		 */
+		@SuppressWarnings("deprecation")
 		private void doSend(final Event event) {
 			try {
 				String msgBody = layout.doLayout(event.event);
-				EventBus.me().log(queue, routingKey,
-						Message.of().setDeliveryMode(deliveryMode).setPayload(StringUtils.getBytesUtf8(msgBody)));
+				EventBus.me().blockSend(queue, routingKey,
+						Message.of().setDeliveryMode(deliveryMode).setPayload(StringUtils.getBytesUtf8(msgBody)),
+						false);
 			} catch (Exception e) {
+			}
+		}
+
+		/**
+		 * 准备下一次的执行
+		 */
+		private void prepareNextTask() {
+
+			// 可执行
+			sending.compareAndSet(true, false);
+
+			// 如果有数据
+			if (events.peek() != null) {
+				prepareTask();
 			}
 		}
 	}

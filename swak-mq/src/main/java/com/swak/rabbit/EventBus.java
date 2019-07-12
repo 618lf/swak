@@ -317,8 +317,16 @@ public class EventBus {
 		}, executor);
 	}
 
-	// 阻塞式的消息发送方式（会阻塞调用线程）
-	private void blockSend(String exchange, String routingKey, Message message, boolean retryable) {
+	/**
+	 * 阻塞式的消息发送方式（会阻塞调用线程）
+	 * 
+	 * @param exchange
+	 * @param routingKey
+	 * @param message
+	 * @param retryable
+	 */
+	@Deprecated
+	public void blockSend(String exchange, String routingKey, Message message, boolean retryable) {
 		message = message.build();
 		PendingConfirm pendingConfirm = null;
 		try {
