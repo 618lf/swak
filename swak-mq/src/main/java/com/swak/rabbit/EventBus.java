@@ -4,8 +4,11 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -35,17 +38,21 @@ public class EventBus {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventBus.class);
 	private static EventBus me = null;
 	private volatile boolean inited = false;
+	private volatile AtomicBoolean sending = new AtomicBoolean(false);
 	private RabbitMQTemplate templateForSender;
 	private RabbitMQTemplate templateForConsumer;
 	private RetryStrategy retryStrategy;
 	private Executor executor;
 	private Function<RabbitMQTemplate, Boolean> apply;
+	private BlockingQueue<Message> queue = null;
 
 	private EventBus(RabbitMQTemplate templateForSender, RabbitMQTemplate templateForConsumer, RetryStrategy strategy,
 			Executor executor, Function<RabbitMQTemplate, Boolean> apply) {
 		this.templateForSender = templateForSender;
 		this.templateForConsumer = templateForConsumer;
+		this.executor = executor;
 		this.retryStrategy = strategy;
+		this.queue = new LinkedBlockingDeque<>();
 		this.apply = apply;
 
 		if (this.retryStrategy != null) {
@@ -199,43 +206,30 @@ public class EventBus {
 		return identifiers;
 	}
 
+	// 异步发送，消息先提交到队列，通过线程池来小任务的提交到队列
 	/**
-	 * 发送消息 log 模式， 如果需要异步发布，则可以在外部包裹发布
+	 * 队列发送
 	 * 
 	 * @param exchange
 	 * @param routingKey
 	 * @param message
 	 */
-	public void log(String exchange, String routingKey, String message) {
-		Message _message = Message.of().setPayload(StringUtils.getBytesUtf8(message));
-		this.log(exchange, routingKey, _message);
-	}
-
-	/**
-	 * 发送消息 log 模式， 如果需要异步发布，则可以在外部包裹发布
-	 * 
-	 * @param exchange
-	 * @param routingKey
-	 * @param message
-	 */
-	public void log(String exchange, String routingKey, Object message) {
+	public void queue(String exchange, String routingKey, Message message) {
 		Assert.notNull(message, "Message can not null!");
-		Message _message = Message.of().object2Payload(message);
-		this.log(exchange, routingKey, _message);
+		this.queue.add(message.setExchange(exchange).setRoutingKey(routingKey));
+		this.prepareTask();
 	}
 
 	/**
-	 * 发送消息 log 模式， 如果需要异步发布，则可以在外部包裹发布
-	 * 
-	 * @param exchange
-	 * @param routingKey
-	 * @param message
+	 * 添加一次执行任务
 	 */
-	public void log(String exchange, String routingKey, Message message) {
-		executor.execute(() -> {
-			this.blockSend(exchange, routingKey, message, false);
-		});
+	private void prepareTask() {
+		if (sending.compareAndSet(false, true)) {
+			this.executor.execute(new QueueRunable());
+		}
 	}
+
+	// 同步发送消息，保证消息提交到队列
 
 	/**
 	 * 发送消息
@@ -271,12 +265,10 @@ public class EventBus {
 	 * @param message
 	 */
 	public void post(String exchange, String routingKey, Message message) {
-		executor.execute(() -> {
-			this.blockSend(exchange, routingKey, message, true);
-		});
+		this.blockSend(exchange, routingKey, message, true);
 	}
 
-	// 将消息提交到队列，返回表示提交成功，需要等待消息队列的返回才能继续执行（一般情況下不建議使用）
+	// 将消息提交到队列，需要等待消息队列的返回才能继续执行
 
 	/**
 	 * 发送消息
@@ -330,7 +322,7 @@ public class EventBus {
 		message = message.build();
 		PendingConfirm pendingConfirm = null;
 		try {
-			pendingConfirm = this.templateForSender.basicPublish(exchange, routingKey, message);
+			pendingConfirm = this.templateForSender.basicPublish(exchange, routingKey, message, retryable);
 		} catch (Exception e) {
 			pendingConfirm = new PendingConfirm(message.getId());
 		}
@@ -358,6 +350,55 @@ public class EventBus {
 	 */
 	public static EventBus me() {
 		return me;
+	}
+
+	/**
+	 * 队列发送
+	 * 
+	 * @author lifeng
+	 */
+	public class QueueRunable implements Runnable {
+
+		@Override
+		public void run() {
+			try {
+				long now = System.currentTimeMillis();
+				while (true) {
+					final Message event = queue.poll();
+					if (event == null) {
+						break;
+					}
+					this.doSend(event);
+					long dur = System.currentTimeMillis();
+					if (dur - now >= 1000) {
+						break;
+					}
+				}
+			} finally {
+				this.prepareNextTask();
+			}
+		}
+
+		/**
+		 * 特殊情况下使用阻塞式的发送
+		 * 
+		 * @param event
+		 */
+		private void doSend(final Message event) {
+			try {
+				EventBus.me().blockSend(event.getExchange(), event.getRoutingKey(), event, true);
+			} catch (Exception e) {
+			}
+		}
+
+		/**
+		 * 准备下一次的执行
+		 */
+		private void prepareNextTask() {
+			if (sending.compareAndSet(true, false) && queue.peek() != null) {
+				prepareTask();
+			}
+		}
 	}
 
 	/**

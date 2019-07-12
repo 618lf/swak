@@ -33,6 +33,10 @@ public class Message {
 	private String origin;
 	private String retry;
 	private Integer retrys;
+	
+	// 发送参数 queue 才有用
+	private String exchange; 
+	private String routingKey;
 
 	public String getId() {
 		if (id != null && properties == null) {
@@ -129,6 +133,24 @@ public class Message {
 	@SuppressWarnings("unchecked")
 	public <T> T payload2Object() {
 		return (T) SerializationUtils.deserialize(payload);
+	}
+	
+	public String getExchange() {
+		return exchange;
+	}
+
+	public String getRoutingKey() {
+		return routingKey;
+	}
+
+	public Message setExchange(String exchange) {
+		this.exchange = exchange;
+		return this;
+	}
+
+	public Message setRoutingKey(String routingKey) {
+		this.routingKey = routingKey;
+		return this;
 	}
 
 	/**

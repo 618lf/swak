@@ -149,12 +149,7 @@ public class LogbackAppender extends AppenderBase<ILoggingEvent> {
 		 * 准备下一次的执行
 		 */
 		private void prepareNextTask() {
-
-			// 可执行
-			sending.compareAndSet(true, false);
-
-			// 如果有数据
-			if (events.peek() != null) {
+			if (sending.compareAndSet(true, false) && events.peek() != null) {
 				prepareTask();
 			}
 		}

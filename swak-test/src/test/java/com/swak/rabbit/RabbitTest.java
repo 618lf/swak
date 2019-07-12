@@ -1,6 +1,5 @@
 package com.swak.rabbit;
 
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -9,7 +8,6 @@ import org.junit.Before;
 
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.threads.SwakThreadFactory;
-import com.swak.utils.Maps;
 
 /**
  * 测试 Rabbit
@@ -20,9 +18,9 @@ import com.swak.utils.Maps;
  */
 public class RabbitTest {
 
-	protected String EXCHANGE = "test.update";
-	protected String ROUTING = "test.update";
-	protected String QUEUE = "test.update";
+	protected String EXCHANGE = "test2.update";
+	protected String ROUTING = "test2.update";
+	protected String QUEUE = "test2.update";
 	protected RabbitMQTemplate rabbitTemplate;
 	protected ExecutorService executor;
 	protected EventBus eventbus;
@@ -35,7 +33,7 @@ public class RabbitTest {
 	@Before
 	public void init() {
 		executor = Contexts.createWorkerContext("RabbitMQ-Consumers-", Runtime.getRuntime().availableProcessors() * 2,
-				true, 2, TimeUnit.SECONDS);
+				false, 2, TimeUnit.SECONDS);
 		RabbitMQProperties config = new RabbitMQProperties();
 		config.setAutomaticRecoveryEnabled(true);
 		config.setUser("guest").setPassword("guest").setHost("127.0.0.1").setPort(5672);
@@ -51,15 +49,15 @@ public class RabbitTest {
 		// agruments.put("x-dead-letter-exchange", DEAD_EXCHANGE);
 		// rabbitTemplate.exchangeDirectBindQueue(EXCHANGE, ROUTING, QUEUE, agruments);
 
-		eventbus = EventBus.builder().setTemplateForConsumer(rabbitTemplate).setTemplateForSender(rabbitTemplate)
+		eventbus = EventBus.builder().setExecutor(executor).setTemplateForConsumer(rabbitTemplate).setTemplateForSender(rabbitTemplate)
 				.setApply((t) -> {
 					// 普通队列，消息处理失败进入死信队列
-					Map<String, Object> agruments = Maps.newHashMap();
-					agruments.put("x-dead-letter-exchange", Constants.dead_channel);
-					agruments.put("x-dead-letter-routing-key", Constants.dead_channel);
-					t.exchangeDirectBindQueue(EXCHANGE, ROUTING, QUEUE, agruments);
+//					Map<String, Object> agruments = Maps.newHashMap();
+//					agruments.put("x-dead-letter-exchange", Constants.dead_channel);
+//					agruments.put("x-dead-letter-routing-key", Constants.dead_channel);
+					t.exchangeDirectBindQueue(EXCHANGE, ROUTING, QUEUE, null);
 					return true;
-				}).setExecutor(executor).build();
+				}).build();
 
 		eventbus.init((t) -> {
 		});
