@@ -64,7 +64,7 @@ class TemplateConsumer implements Consumer {
 				this.handleResult(result, envelope, message, null);
 			}
 		} catch (Exception e) {
-			this.handleError(envelope, message);
+			this.handleError(envelope, message, e);
 		}
 	}
 
@@ -94,7 +94,7 @@ class TemplateConsumer implements Consumer {
 	private void handleResult(Object result, Envelope envelope, Message message, Throwable ex) {
 		try {
 			if (ex != null || (result != null && result instanceof Boolean && !(Boolean) result)) {
-				this.handleError(envelope, message);
+				this.handleError(envelope, message, ex);
 			} else {
 				this.handleSuccess(envelope, message);
 			}
@@ -111,8 +111,7 @@ class TemplateConsumer implements Consumer {
 			}
 			if (logger.isDebugEnabled()) {
 				if (StringUtils.isBlank(message.getOrigin())) {
-					logger.debug("Consume Queue[{}] Success.", queue, message.getOrigin(), message.getRetry(),
-							message.getRetrys());
+					logger.debug("Consume Queue[{}] Success.", queue);
 				} else {
 					logger.debug("Consume Queue[{}] - Origin[{}] - Retry[{}] - Times[{}] Success.", queue,
 							message.getOrigin(), message.getRetry(), message.getRetrys());
@@ -124,7 +123,7 @@ class TemplateConsumer implements Consumer {
 	}
 
 	// 消息失败
-	private void handleError(Envelope envelope, Message message) throws IOException {
+	private void handleError(Envelope envelope, Message message, Throwable ex) throws IOException {
 		try {
 			if (this.channel.isOpen()) {
 				try {
@@ -140,11 +139,10 @@ class TemplateConsumer implements Consumer {
 			}
 			if (logger.isDebugEnabled()) {
 				if (StringUtils.isBlank(message.getOrigin())) {
-					logger.debug("Consume Queue[{}] Error.", queue, message.getOrigin(), message.getRetry(),
-							message.getRetrys());
+					logger.debug("Consume Queue[{}] Error.", queue, ex);
 				} else {
 					logger.debug("Consume Queue[{}] - Origin[{}] - Retry[{}] - Times[{}] Error.", queue,
-							message.getOrigin(), message.getRetry(), message.getRetrys());
+							message.getOrigin(), message.getRetry(), message.getRetrys(), ex);
 				}
 			}
 		} catch (Exception e) {
