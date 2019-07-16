@@ -111,10 +111,10 @@ class TemplateConsumer implements Consumer {
 			}
 			if (logger.isDebugEnabled()) {
 				if (StringUtils.isBlank(message.getOrigin())) {
-					logger.debug("Consume Queue[{}] Success.", queue);
+					logger.debug("Consume Queue[{}] - Message[{}] Success.", queue, message.getId());
 				} else {
-					logger.debug("Consume Queue[{}] - Origin[{}] - Retry[{}] - Times[{}] Success.", queue,
-							message.getOrigin(), message.getRetry(), message.getRetrys());
+					logger.debug("Consume Queue[{}] - Message[{}] - Origin[{}] - Retry[{}] - Times[{}] Success.", queue,
+							message.getId(), message.getOrigin(), message.getRetry(), message.getRetrys());
 				}
 			}
 		} catch (Exception e) {
@@ -139,10 +139,10 @@ class TemplateConsumer implements Consumer {
 			}
 			if (logger.isDebugEnabled()) {
 				if (StringUtils.isBlank(message.getOrigin())) {
-					logger.debug("Consume Queue[{}] Error.", queue, ex);
+					logger.debug("Consume Queue[{}] - Message[{}] Error.", queue, message.getId(), ex);
 				} else {
-					logger.debug("Consume Queue[{}] - Origin[{}] - Retry[{}] - Times[{}] Error.", queue,
-							message.getOrigin(), message.getRetry(), message.getRetrys(), ex);
+					logger.debug("Consume Queue[{}] - Message[{}] - Origin[{}] - Retry[{}] - Times[{}] Error.", queue,
+							message.getId(), message.getOrigin(), message.getRetry(), message.getRetrys(), ex);
 				}
 			}
 		} catch (Exception e) {
