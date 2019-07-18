@@ -26,7 +26,7 @@ public class LogbackAppender extends AppenderBase<ILoggingEvent> {
 
 	private Layout<ILoggingEvent> layout;
 	private BlockingQueue<Event> events = null;
-	private String queue;
+	private String exchange;
 	private String routingKey;
 	private int deliveryMode = 1;
 	private int maxExecutoSeconds = 30; // 最大的执行时间
@@ -37,9 +37,9 @@ public class LogbackAppender extends AppenderBase<ILoggingEvent> {
 	public Layout<ILoggingEvent> getLayout() {
 		return layout;
 	}
-
-	public String getQueue() {
-		return queue;
+	
+	public String getExchange() {
+		return exchange;
 	}
 
 	public String getRoutingKey() {
@@ -58,8 +58,8 @@ public class LogbackAppender extends AppenderBase<ILoggingEvent> {
 		this.layout = layout;
 	}
 
-	public void setQueue(String queue) {
-		this.queue = queue;
+	public void setExchange(String exchange) {
+		this.exchange = exchange;
 	}
 
 	public void setRoutingKey(String routingKey) {
@@ -82,7 +82,7 @@ public class LogbackAppender extends AppenderBase<ILoggingEvent> {
 	public void start() {
 		events = new LinkedBlockingDeque<>();
 		if (useAloneExecutor) {
-			context = Contexts.createWorkerContext("Rabbit.logger-", 1, true, 60, TimeUnit.SECONDS);
+			context = Contexts.createWorkerContext("Rabbit.logger-", 1, true, maxExecutoSeconds * 2, TimeUnit.SECONDS);
 		}
 		super.start();
 	}
@@ -150,7 +150,7 @@ public class LogbackAppender extends AppenderBase<ILoggingEvent> {
 		private void doSend(final Event event) {
 			try {
 				String msgBody = layout.doLayout(event.event);
-				EventBus.me().blockSend(queue, routingKey,
+				EventBus.me().blockSend(exchange, routingKey,
 						Message.of().setDeliveryMode(deliveryMode).setPayload(StringUtils.getBytesUtf8(msgBody)),
 						false);
 			} catch (Exception e) {
