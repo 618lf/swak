@@ -102,7 +102,7 @@ public class RabbitMqAutoConfiguration {
 		}
 		template.setDaemonFactory(threadFactory);
 	}
-
+	
 	/**
 	 * 注册Event Bus
 	 * 

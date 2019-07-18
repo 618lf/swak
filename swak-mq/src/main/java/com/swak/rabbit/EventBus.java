@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -50,7 +51,7 @@ public class EventBus {
 			Executor executor, Function<RabbitMQTemplate, Boolean> apply) {
 		this.templateForSender = templateForSender;
 		this.templateForConsumer = templateForConsumer;
-		this.executor = executor;
+		this.executor = executor == null ? ForkJoinPool.commonPool() : executor;
 		this.retryStrategy = strategy;
 		this.queue = new LinkedBlockingDeque<>();
 		this.apply = apply;
@@ -204,6 +205,16 @@ public class EventBus {
 			return listAnnotatedMethods(identifiers, supertypes);
 		}
 		return identifiers;
+	}
+	
+	// 异步发送，提交到任务队列中
+	/**
+	 * 提交任务
+	 * 
+	 * @param runnable
+	 */
+	public void execute(Runnable runnable) {
+		this.executor.execute(runnable);
 	}
 
 	// 异步发送，消息先提交到队列，通过线程池来小任务的提交到队列

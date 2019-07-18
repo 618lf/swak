@@ -3,12 +3,13 @@ package com.swak.rabbit.logback;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.swak.rabbit.EventBus;
 import com.swak.rabbit.message.Message;
-import com.swak.rabbit.queue.QueueSenderContext;
-import com.swak.utils.SpringContextHolder;
+import com.swak.reactivex.threads.Contexts;
+import com.swak.reactivex.threads.WorkerContext;
 import com.swak.utils.StringUtils;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -25,11 +26,12 @@ public class LogbackAppender extends AppenderBase<ILoggingEvent> {
 
 	private Layout<ILoggingEvent> layout;
 	private BlockingQueue<Event> events = null;
-	private QueueSenderContext senderPool = null;
 	private String queue;
 	private String routingKey;
 	private int deliveryMode = 1;
 	private int maxExecutoSeconds = 30; // 最大的执行时间
+	private boolean useAloneExecutor = false;
+	private WorkerContext context;
 	private volatile AtomicBoolean sending = new AtomicBoolean(false);
 
 	public Layout<ILoggingEvent> getLayout() {
@@ -72,10 +74,16 @@ public class LogbackAppender extends AppenderBase<ILoggingEvent> {
 		this.maxExecutoSeconds = maxExecutoSeconds;
 	}
 
+	public void setUseAloneExecutor(boolean useAloneExecutor) {
+		this.useAloneExecutor = useAloneExecutor;
+	}
+
 	@Override
 	public void start() {
-		senderPool = SpringContextHolder.getBean(QueueSenderContext.class);
 		events = new LinkedBlockingDeque<>();
+		if (useAloneExecutor) {
+			context = Contexts.createWorkerContext("Rabbit.logger-", 1, true, 60, TimeUnit.SECONDS);
+		}
 		super.start();
 	}
 
@@ -94,7 +102,11 @@ public class LogbackAppender extends AppenderBase<ILoggingEvent> {
 	 */
 	private void prepareTask() {
 		if (sending.compareAndSet(false, true)) {
-			this.senderPool.execute(new EventSender());
+			if (context != null) {
+				context.execute(new EventSender());
+			} else {
+				EventBus.me().execute(new EventSender());
+			}
 		}
 	}
 
