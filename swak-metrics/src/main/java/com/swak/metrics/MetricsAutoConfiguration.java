@@ -19,6 +19,7 @@ import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
+import com.swak.meters.Metrics;
 import com.swak.meters.MetricsFactory;
 import com.swak.metrics.annotation.MetricBinder;
 import com.swak.metrics.impl.CodahaleMetricsFactory;
@@ -32,7 +33,7 @@ import com.swak.metrics.impl.CodahaleMetricsFactory;
  */
 @Configuration
 public class MetricsAutoConfiguration {
-	
+
 	public MetricsAutoConfiguration() {
 		APP_LOGGER.debug("Metrics Monitor");
 	}
@@ -76,7 +77,7 @@ public class MetricsAutoConfiguration {
 		@ConditionalOnMissingBean(Reporter.class)
 		public Slf4jReporter slf4jReporter(MetricsFactory metricsFactory) {
 			return Slf4jReporter.forRegistry(metricsFactory.metricRegistry())
-					.outputTo(LoggerFactory.getLogger("com.swak.metrics")).convertRatesTo(TimeUnit.SECONDS)
+					.outputTo(LoggerFactory.getLogger(Metrics.class)).convertRatesTo(TimeUnit.SECONDS)
 					.convertDurationsTo(TimeUnit.MILLISECONDS).build();
 		}
 	}
