@@ -23,14 +23,23 @@
 			<version>${metrics.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.swak</groupId>
-			<artifactId>swak-vertx</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>io.vertx</groupId>
 			<artifactId>vertx-dropwizard-metrics</artifactId>
 			<version>${vertx.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.vertx</groupId>
+					<artifactId>vertx-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.vertx</groupId>
+					<artifactId>vertx-shell</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-vertx</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
