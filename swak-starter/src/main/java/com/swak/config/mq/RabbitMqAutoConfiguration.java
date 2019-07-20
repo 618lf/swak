@@ -2,7 +2,6 @@ package com.swak.config.mq;
 
 import static com.swak.Application.APP_LOGGER;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,9 +23,12 @@ import com.swak.rabbit.RabbitMQTemplate;
 import com.swak.rabbit.retry.RetryStrategy;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.threads.SwakThreadFactory;
+import com.swak.reactivex.threads.WorkerContext;
 
 /**
  * 消息队列的自动化配置
+ * 
+ * @see 如果只有生产者 请将：notShareConnection 为 false
  * 
  * @author lifeng
  */
@@ -38,7 +40,6 @@ public class RabbitMqAutoConfiguration {
 
 	@Autowired
 	private RabbitMQProperties properties;
-	private ExecutorService executor;
 	private ThreadFactory threadFactory;
 
 	public RabbitMqAutoConfiguration() {
@@ -88,21 +89,19 @@ public class RabbitMqAutoConfiguration {
 	 * @param template
 	 * @param autoRecovery
 	 */
-	private void initTemplate(RabbitMQTemplate template, boolean autoRecovery) {
+	private void initTemplate(RabbitMQTemplate template, boolean isConsumer) {
 		if (threadFactory == null) {
 			threadFactory = new SwakThreadFactory("RabbitMQ-Daemons-", true, new AtomicInteger());
 		}
-		if (autoRecovery) {
-			if (executor == null) {
-				executor = Contexts.createWorkerContext("RabbitMQ-Daemons-",
-						Runtime.getRuntime().availableProcessors() * 2, true, 2, TimeUnit.SECONDS);
-			}
+		if (isConsumer) {
+			WorkerContext executor = Contexts.createWorkerContext("RabbitMQ-Consumers-",
+					Runtime.getRuntime().availableProcessors(), true, 2, TimeUnit.SECONDS);
 			template.setConsumerWorkServiceExecutor(executor).setShutdownExecutor(null)
 					.setTopologyRecoveryExecutor(executor);
 		}
 		template.setDaemonFactory(threadFactory);
 	}
-	
+
 	/**
 	 * 注册Event Bus
 	 * 
@@ -131,6 +130,8 @@ public class RabbitMqAutoConfiguration {
 		RabbitMQTemplate templateForConsumer = templateForConsumerProvider.getIfAvailable(() -> {
 			return templateForSender;
 		});
+		WorkerContext executor = Contexts.createWorkerContext("RabbitMQ-Publishers-",
+				Runtime.getRuntime().availableProcessors(), true, 60, TimeUnit.SECONDS);
 		return EventBus.builder().setStrategy(retryStrategy).setTemplateForConsumer(templateForConsumer)
 				.setTemplateForSender(templateForSender).setApply(apply).setExecutor(executor).build();
 	}
