@@ -2,17 +2,15 @@ package com.swak.actuator.config.trace;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.swak.Constants;
-
 /**
  * 配置 HttpTrace
  * @author lifeng
  */
-@ConfigurationProperties(prefix = Constants.ACTUATOR_TRACE)
+@ConfigurationProperties(prefix = "ACCESS_TRACE")
 public class HttpTraceProperties {
 	
 	private String storageMethod = "LOGGER";
-	private String storageChannel = Constants.ACCESS_TRACE;
+	private String storageChannel = "ACCESS_TRACE";
 	
 	public String getStorageMethod() {
 		return storageMethod;

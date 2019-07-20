@@ -16,7 +16,7 @@ public interface Constants {
 	/** 启动的类 */
 	List<Class<?>> BOOT_CLASSES = Lists.newArrayList(1);
 
-	/** url path separate */
+	/** Http Path 配置项目 */
 	String URL_PATH_SEPARATE = "/";
 	String URL_PATH_VARIABLE_PRE = "{";
 	String URL_PATH_VARIABLE_SUFFIX = "}";
@@ -48,18 +48,6 @@ public interface Constants {
 	/** 默认编码 **/
 	Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
 
-	/** 系统通道 **/
-	String LOCAL_CACHE_TOPIC = "LOCAL_CACHE_TOPIC";
-	String UPDATE_EVENT_TOPIC = "UPDATE_EVENT_TOPIC";
-	String SYSTEM_EVENT_TOPIC = "SYSTEM_EVENT_TOPIC";
-	String ACCESS_TRACE = "ACCESS_TRACE";
-	String LOCK_TOPIC = "LOCK_TOPIC";
-
-	/** 事件类型 **/
-	int SIGN_IN = 1; // 登录
-	int SIGN_UP = 2; // 注册
-	int LOGOUT = 3; // 退出
-
 	/** 缓存 **/
 	int cookie_cache_times = 60 * 60 * 24;
 	String token_cache_name = "TOKENS";
@@ -71,15 +59,11 @@ public interface Constants {
 	/** 重定向 **/
 	String REDIRECT_URL_PREFIX = "redirect:";
 
-	/** 目录 **/
-	default String temp() {
-		return System.getProperty("java.io.tmpdir");
-	}
-
-	/** request key **/
+	/** 请求Key **/
 	String SUBJECT_NAME = "X-Subject";
 	String VALIDATE_NAME = "X-Validate";
 	String TOKEN_NAME = "X-Token";
+	String EXCEPTION_NAME = "x-Exception";
 
 	/** method key **/
 	String ASYNC_SUFFIX = "Asyncx";
@@ -93,4 +77,9 @@ public interface Constants {
 	String EmailErrorMsg = "邮箱校验失败";
 	String PhoneNumErrorMsg = "手机号校验失败";
 	String RegexErrorMsg = "正则校验失败";
+	
+	/** 目录 **/
+	default String temp() {
+		return System.getProperty("java.io.tmpdir");
+	}
 }

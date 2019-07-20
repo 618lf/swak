@@ -5,7 +5,6 @@ import java.lang.reflect.Array;
 import org.ehcache.core.EhcacheBase;
 import org.springframework.beans.factory.DisposableBean;
 
-import com.swak.Constants;
 import com.swak.cache.Entity;
 import com.swak.cache.LocalCache;
 import com.swak.cache.SafeEncoder;
@@ -20,6 +19,7 @@ import com.swak.utils.Sets;
  */
 public class RedisLocalCache extends RedisPubSubHandler implements LocalCache<Object>, DisposableBean {
 
+	private final String LOCAL_CACHE_TOPIC = "LOCAL_CACHE_TOPIC";
 	private final EhcacheBase<String, byte[]> cache;
 	private final String name;
 
@@ -94,11 +94,12 @@ public class RedisLocalCache extends RedisPubSubHandler implements LocalCache<Ob
 	// ------------- 消息订阅 -------------
 	@Override
 	public String getChannel() {
-		return Constants.LOCAL_CACHE_TOPIC;
+		return LOCAL_CACHE_TOPIC;
 	}
+
 	@Override
 	public void onMessage(String channel, byte[] message) {
-		if (channel.equals(Constants.LOCAL_CACHE_TOPIC)) {
+		if (channel.equals(LOCAL_CACHE_TOPIC)) {
 			if (message != null && message.length <= 0) {
 				return;
 			}
@@ -145,7 +146,7 @@ public class RedisLocalCache extends RedisPubSubHandler implements LocalCache<Ob
 		if (key != null) {
 			// 发送广播
 			Command cmd = new Command(Command.OPT_DELETE_KEY, key);
-			this.publish(Constants.LOCAL_CACHE_TOPIC, cmd.toBuffers());
+			this.publish(LOCAL_CACHE_TOPIC, cmd.toBuffers());
 		}
 	}
 }

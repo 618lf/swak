@@ -46,10 +46,11 @@ import io.vertx.ext.web.impl.LRUCache;
 import io.vertx.ext.web.impl.Utils;
 
 /**
- * 静态资源处理
+ * 静态资源处理（过于耗时不建议使用）
  * 
  * @author lifeng
  */
+@Deprecated
 public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(StaticHandler.class);
