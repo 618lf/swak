@@ -1,6 +1,9 @@
 package com.swak.metrics.impl;
 
+import java.lang.reflect.Method;
+
 import com.codahale.metrics.MetricRegistry;
+import com.swak.meters.MethodMetrics;
 import com.swak.meters.MetricsFactory;
 import com.swak.meters.PoolMetrics;
 
@@ -31,5 +34,10 @@ public class CodahaleMetricsFactory implements MetricsFactory {
 	@Override
 	public PoolMetrics<?> createScheduleMetrics(String name, int maxSize) {
 		return new ScheduleMetricsImpl(registry, name+ "schedule", maxSize);
+	}
+
+	@Override
+	public MethodMetrics<?> createMethodMetrics(Method method, String name) {
+		return null;
 	}
 }

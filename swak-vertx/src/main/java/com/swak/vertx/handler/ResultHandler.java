@@ -44,11 +44,11 @@ public class ResultHandler {
 	 * @param result
 	 * @return
 	 */
-	public void handlResult(Object result, Throwable e, RoutingContext context) {
+	public void handleResult(Object result, Throwable e, RoutingContext context) {
 
 		// 如果有异常
 		if (e != null) {
-			this.handlError(e, context);
+			this.handleError(e, context);
 			return;
 		}
 
@@ -68,7 +68,7 @@ public class ResultHandler {
 				}
 			}
 		} catch (Exception ex) {
-			this.handlError(ex, context);
+			this.handleError(ex, context);
 			return;
 		}
 
@@ -85,7 +85,7 @@ public class ResultHandler {
 	 * @param result
 	 * @return
 	 */
-	public void handlError(Throwable e, RoutingContext context) {
+	public void handleError(Throwable e, RoutingContext context) {
 
 		// 已经输出数据
 		if (context.response().ended()) {

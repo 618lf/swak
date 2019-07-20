@@ -4,17 +4,24 @@ import java.lang.reflect.Method;
 
 import org.springframework.util.ClassUtils;
 
+import com.swak.meters.MethodMetrics;
+import com.swak.meters.MetricsFactory;
+import com.swak.utils.ReflectUtils;
+
 /**
  * 基于 method 的执行器
  * 
  * @author lifeng
  */
+@SuppressWarnings("rawtypes")
 public class MethodHandler {
 
 	private final Object bean;
 	private final Method method;
 	private final Class<?> beanType;
 	private final MethodParameter[] parameters;
+	private final String name;
+	protected MethodMetrics metrics;
 
 	/**
 	 * Create an instance from a bean instance and a method.
@@ -23,6 +30,8 @@ public class MethodHandler {
 		this.bean = bean;
 		this.beanType = ClassUtils.getUserClass(bean);
 		this.method = method;
+		this.name = new StringBuilder(this.beanType.getName()).append(".")
+				.append(ReflectUtils.getMethodDesc(this.method)).toString();
 		this.parameters = initMethodParameters();
 	}
 
@@ -52,16 +61,25 @@ public class MethodHandler {
 	}
 
 	/**
+	 * 设置监控
+	 * 
+	 * @param metricsFactory
+	 * @return
+	 */
+	public MethodHandler applyMetrics(MetricsFactory metricsFactory) {
+		if (metricsFactory != null) {
+			metrics = metricsFactory.createMethodMetrics(this.method, name);
+		}
+		return this;
+	}
+
+	/**
 	 * 如果出错了，则输出 Mono.error(e) 对象
 	 * 
 	 * @param args
 	 * @return
 	 */
-	public Object doInvoke(Object[] args) {
-		try {
-			return this.getMethod().invoke(this.getBean(), args);
-		} catch (Exception e) {
-			throw new RuntimeException("invoke method error:", e);
-		}
+	public Object doInvoke(Object[] args) throws Exception {
+		return this.getMethod().invoke(this.getBean(), args);
 	}
 }

@@ -21,6 +21,7 @@ import com.swak.annotation.Valid;
 import com.swak.asm.FieldCache;
 import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
+import com.swak.meters.MetricsFactory;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
@@ -50,6 +51,8 @@ public class HandlerAdapter extends AbstractRouterHandler {
 
 	@Autowired(required = false)
 	private Validator validator;
+	@Autowired(required = false)
+	private MetricsFactory metricsFactory;
 	@Autowired
 	private ConversionService conversionService;
 	@Autowired
@@ -71,6 +74,9 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			// 对于集合类型支持第一层
 			this.initField(parameterType);
 		}
+
+		// 应用监控
+		handler.applyMetrics(metricsFactory);
 	}
 
 	private void initField(Class<?> parameterType) {
@@ -84,6 +90,16 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	}
 
 	/**
+	 * handle 前置处理
+	 * 
+	 * @param handler
+	 * @return
+	 */
+	private Object preHandle(MethodHandler handler) {
+		return handler.metrics != null ? handler.metrics.begin() : null;
+	}
+
+	/**
 	 * 处理请求
 	 * 
 	 * @param context
@@ -92,19 +108,20 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void handle(RoutingContext context, MethodHandler handler) {
+		Object metrics = this.preHandle(handler);
 		try {
 			Object[] params = this.parseParameters(context, handler);
 			Object result = handler.doInvoke(params);
 			if (result != null && result instanceof CompletionStage) {
 				CompletionStage<Object> resultFuture = (CompletionStage<Object>) result;
 				resultFuture.whenComplete((v, e) -> {
-					this.handlResultOnContext(v, e, context);
+					this.handleResultOnContext(v, e, context, handler, metrics);
 				});
 			} else {
-				resultHandler.handlResult(result, null, context);
+				this.handleResult(result, null, context, handler, metrics);
 			}
 		} catch (Exception e) {
-			resultHandler.handlError(e, context);
+			this.handleResult(null, e, context, handler, metrics);
 		}
 	}
 
@@ -115,14 +132,15 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * @param e
 	 * @param context
 	 */
-	private void handlResultOnContext(Object result, Throwable e, RoutingContext context) {
+	private void handleResultOnContext(Object result, Throwable e, RoutingContext context, MethodHandler handler,
+			Object metrics) {
 		ContextInternal $currContext = this.getContext(context);
 		if ($currContext != null) {
 			$currContext.runOnContext((vo) -> {
-				resultHandler.handlResult(result, e, context);
+				this.handleResult(result, e, context, handler, metrics);
 			});
 		} else {
-			resultHandler.handlResult(result, e, context);
+			this.handleResult(result, e, context, handler, metrics);
 		}
 	}
 
@@ -136,6 +154,36 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * 处理结果
+	 * 
+	 * @param result
+	 * @param e
+	 * @param context
+	 */
+	private void handleResult(Object result, Throwable e, RoutingContext context, MethodHandler handler,
+			Object metrics) {
+		try {
+			resultHandler.handleResult(result, e, context);
+		} finally {
+			this.postHandle(handler, metrics, e);
+		}
+	}
+
+	/**
+	 * 后置处理
+	 * 
+	 * @param handler
+	 * @param metrics
+	 * @param e
+	 */
+	@SuppressWarnings("unchecked")
+	private void postHandle(MethodHandler handler, Object metrics, Throwable e) {
+		if (metrics != null && handler.metrics != null) {
+			handler.metrics.end(metrics, e == null);
+		}
 	}
 
 	/**

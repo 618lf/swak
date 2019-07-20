@@ -1,5 +1,7 @@
 package com.swak.meters;
 
+import java.lang.reflect.Method;
+
 /**
  * 
  * 创建系统指标库
@@ -33,4 +35,12 @@ public interface MetricsFactory {
 	 * @return
 	 */
 	PoolMetrics<?> createScheduleMetrics(String name, int maxSize);
+	
+	/**
+	 * 方法 MethodMetrics
+	 * 
+	 * @param name
+	 * @return
+	 */
+	MethodMetrics<?> createMethodMetrics(Method method, String name);
 }
