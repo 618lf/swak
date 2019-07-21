@@ -204,6 +204,17 @@ public class AsyncOperations {
 	public static CompletionStage<String> hMSet(String key, Map<byte[], byte[]> map) {
 		return RedisUtils.async(connect -> connect.hmset(SafeEncoder.encode(key), map));
 	}
+	
+	/**
+	 * hLen
+	 * 
+	 * @param key
+	 * @param map
+	 * @return
+	 */
+	public static CompletionStage<Long> hLen(String key) {
+		return RedisUtils.async(connect -> connect.hlen(SafeEncoder.encode(key)));
+	}
 
 	/**
 	 * sAdd
