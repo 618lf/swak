@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>swak-test</artifactId>
 	<dependencies>
-	    <dependency>
+		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-starter</artifactId>
 		</dependency>
@@ -54,4 +54,21 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Premain-class>com.swak.test.utils.SizeOfObject</Premain-class>
+							<Boot-Class-Path></Boot-Class-Path>
+							<Can-Redefine-Classes>false</Can-Redefine-Classes>
+						</manifestEntries>
+						<addMavenDescriptor>false</addMavenDescriptor>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
