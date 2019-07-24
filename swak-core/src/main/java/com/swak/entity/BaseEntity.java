@@ -7,7 +7,7 @@ import java.util.Date;
 import com.alibaba.fastjson.annotation.JSONField;
 
 /**
- * 基础实体类
+ * 基础实体类， 为了兼容之前的系统，作出让步，后面升级版本时删除
  * 
  * @author lifeng
  * @param <PK>
@@ -28,6 +28,8 @@ public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializabl
 	protected String name;// 名称
 	protected Long userId;// 创建人ID
 	protected String userName;// 创建人名称
+	protected Long createId;// 创建人ID
+	protected String createName;// 创建人名称
 	protected Date createDate;// 创建时间
 
 	public String getName() {
@@ -52,6 +54,22 @@ public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializabl
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+	
+	public Long getCreateId() {
+		return createId;
+	}
+
+	public String getCreateName() {
+		return createName;
+	}
+
+	public void setCreateId(Long createId) {
+		this.createId = createId;
+	}
+
+	public void setCreateName(String createName) {
+		this.createName = createName;
 	}
 
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
