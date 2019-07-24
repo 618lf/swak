@@ -43,6 +43,7 @@ public class EventBus {
 			Executor executor, Function<RabbitMQTemplate, Boolean> apply) {
 		this.templateForSender = templateForSender;
 		this.templateForConsumer = templateForConsumer;
+		this.executor = executor;
 		this.retryStrategy = strategy;
 		this.apply = apply;
 
