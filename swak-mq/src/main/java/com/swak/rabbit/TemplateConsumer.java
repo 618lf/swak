@@ -116,6 +116,11 @@ class TemplateConsumer implements Consumer {
 					logger.debug("Consume Queue[{}] - Message[{}] - Origin[{}] - Retry[{}] - Times[{}] Success.", queue,
 							message.getId(), message.getOrigin(), message.getRetry(), message.getRetrys());
 				}
+			} else if (logger.isInfoEnabled()) {
+				if (!StringUtils.isBlank(message.getOrigin())) {
+					logger.debug("Consume Queue[{}] - Message[{}] - Origin[{}] - Retry[{}] - Times[{}] Success.", queue,
+							message.getId(), message.getOrigin(), message.getRetry(), message.getRetrys());
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Consumer Ack error:", e);
@@ -141,6 +146,11 @@ class TemplateConsumer implements Consumer {
 				if (StringUtils.isBlank(message.getOrigin())) {
 					logger.debug("Consume Queue[{}] - Message[{}] Error.", queue, message.getId(), ex);
 				} else {
+					logger.debug("Consume Queue[{}] - Message[{}] - Origin[{}] - Retry[{}] - Times[{}] Error.", queue,
+							message.getId(), message.getOrigin(), message.getRetry(), message.getRetrys(), ex);
+				}
+			} else if (logger.isInfoEnabled()) {
+				if (!StringUtils.isBlank(message.getOrigin())) {
 					logger.debug("Consume Queue[{}] - Message[{}] - Origin[{}] - Retry[{}] - Times[{}] Error.", queue,
 							message.getId(), message.getOrigin(), message.getRetry(), message.getRetrys(), ex);
 				}
