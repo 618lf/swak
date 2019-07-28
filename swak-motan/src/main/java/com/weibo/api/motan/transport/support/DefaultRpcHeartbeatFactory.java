@@ -35,80 +35,74 @@ import com.weibo.api.motan.util.RequestIdGenerator;
 @SpiMeta(name = "motan")
 public class DefaultRpcHeartbeatFactory implements HeartbeatFactory {
 
-	@Override
-	public Request createRequest() {
-		return getDefaultHeartbeatRequest(RequestIdGenerator.getRequestId());
-	}
+    @Override
+    public Request createRequest() {
+        return getDefaultHeartbeatRequest(RequestIdGenerator.getRequestId());
+    }
 
-	@Override
-	public MessageHandler wrapMessageHandler(MessageHandler handler) {
-		return new HeartMessageHandleWrapper(handler);
-	}
+    @Override
+    public MessageHandler wrapMessageHandler(MessageHandler handler) {
+        return new HeartMessageHandleWrapper(handler);
+    }
 
-	public static Request getDefaultHeartbeatRequest(long requestId) {
-		HeartbeatRequest request = new HeartbeatRequest();
+    public static Request getDefaultHeartbeatRequest(long requestId){
+        HeartbeatRequest request = new HeartbeatRequest();
 
-		request.setRequestId(requestId);
-		request.setInterfaceName(MotanConstants.HEARTBEAT_INTERFACE_NAME);
-		request.setMethodName(MotanConstants.HEARTBEAT_METHOD_NAME);
-		request.setParamtersDesc(MotanConstants.HHEARTBEAT_PARAM);
+        request.setRequestId(requestId);
+        request.setInterfaceName(MotanConstants.HEARTBEAT_INTERFACE_NAME);
+        request.setMethodName(MotanConstants.HEARTBEAT_METHOD_NAME);
+        request.setParamtersDesc(MotanConstants.HHEARTBEAT_PARAM);
 
-		return request;
-	}
+        return request;
+    }
 
-	public static boolean isHeartbeatRequest(Object message) {
-		if (!(message instanceof Request)) {
-			return false;
-		}
-		if (message instanceof HeartbeatRequest) {
-			return true;
-		}
+    public static boolean isHeartbeatRequest(Object message) {
+        if (!(message instanceof Request)) {
+            return false;
+        }
+        if(message instanceof HeartbeatRequest){
+            return true;
+        }
 
-		Request request = (Request) message;
+        Request request = (Request) message;
 
-		return MotanConstants.HEARTBEAT_INTERFACE_NAME.equals(request.getInterfaceName())
-				&& MotanConstants.HEARTBEAT_METHOD_NAME.equals(request.getMethodName())
-				&& MotanConstants.HHEARTBEAT_PARAM.endsWith(request.getParamtersDesc());
-	}
+        return MotanConstants.HEARTBEAT_INTERFACE_NAME.equals(request.getInterfaceName())
+                && MotanConstants.HEARTBEAT_METHOD_NAME.equals(request.getMethodName())
+                && MotanConstants.HHEARTBEAT_PARAM.endsWith(request.getParamtersDesc());
+    }
 
-	public static Response getDefaultHeartbeatResponse(long requestId) {
-		HeartbeatResponse response = new HeartbeatResponse();
-		response.setRequestId(requestId);
-		response.setValue("heartbeat");
-		return response;
-	}
+    public static Response getDefaultHeartbeatResponse(long requestId){
+        HeartbeatResponse response = new HeartbeatResponse();
+        response.setRequestId(requestId);
+        response.setValue("heartbeat");
+        return response;
+    }
 
-	public static boolean isHeartbeatResponse(Object message) {
-		if (message instanceof HeartbeatResponse) {
-			return true;
-		}
-		return false;
-	}
+    public static boolean isHeartbeatResponse(Object message){
+        return message instanceof HeartbeatResponse;
+    }
 
-	private class HeartMessageHandleWrapper implements MessageHandler {
-		private MessageHandler messageHandler;
 
-		public HeartMessageHandleWrapper(MessageHandler messageHandler) {
-			this.messageHandler = messageHandler;
-		}
+    private class HeartMessageHandleWrapper implements MessageHandler {
+        private MessageHandler messageHandler;
 
-		@Override
-		public Object handle(Channel channel, Object message) {
-			if (isHeartbeatRequest(message)) {
-				return getDefaultHeartbeatResponse(((Request) message).getRequestId());
-			}
-			return messageHandler.handle(channel, message);
-		}
+        public HeartMessageHandleWrapper(MessageHandler messageHandler) {
+            this.messageHandler = messageHandler;
+        }
 
-	}
+        @Override
+        public Object handle(Channel channel, Object message) {
+            if (isHeartbeatRequest(message)) {
+                return getDefaultHeartbeatResponse(((Request)message).getRequestId());
+            }
+            return messageHandler.handle(channel, message);
+        }
 
-	static class HeartbeatResponse extends DefaultResponse {
 
-		private static final long serialVersionUID = 1L;
-	}
+    }
 
-	static class HeartbeatRequest extends DefaultRequest {
-
-		private static final long serialVersionUID = 1L;
-	}
+    @SuppressWarnings("serial")
+	static class HeartbeatResponse extends DefaultResponse{}
+    @SuppressWarnings("serial")
+	static class HeartbeatRequest extends DefaultRequest{}
 }

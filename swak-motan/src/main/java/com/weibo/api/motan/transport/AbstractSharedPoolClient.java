@@ -18,23 +18,28 @@ package com.weibo.api.motan.transport;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.swak.reactivex.threads.Contexts;
 import com.weibo.api.motan.common.URLParamType;
-import com.weibo.api.motan.core.DefaultThreadFactory;
-import com.weibo.api.motan.core.StandardThreadExecutor;
 import com.weibo.api.motan.exception.MotanServiceException;
 import com.weibo.api.motan.rpc.URL;
+import com.weibo.api.motan.util.CollectionUtil;
 import com.weibo.api.motan.util.LoggerUtil;
 import com.weibo.api.motan.util.MathUtil;
 
 /**
  * @author sunnights
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings("rawtypes")
 public abstract class AbstractSharedPoolClient extends AbstractClient {
-	private static final ThreadPoolExecutor executor = new StandardThreadExecutor(1, 300, 20000,
-			new DefaultThreadFactory("AbstractPoolClient-initPool-", true));
+	// private static final ThreadPoolExecutor EXECUTOR = new
+	// StandardThreadExecutor(1, 300, 20000,
+	// new DefaultThreadFactory("AbstractPoolClient-initPool-", true));
+	private static final ThreadPoolExecutor EXECUTOR = Contexts.createServerContext("Motan.Client-init", 1, 300, 20000,
+			2, TimeUnit.SECONDS, new AbortPolicy());
 	private final AtomicInteger idx = new AtomicInteger();
 	protected SharedObjectFactory factory;
 	protected ArrayList<Channel> channels;
@@ -65,7 +70,7 @@ public abstract class AbstractSharedPoolClient extends AbstractClient {
 
 	protected void initConnections(boolean async) {
 		if (async) {
-			executor.execute(new Runnable() {
+			EXECUTOR.execute(new Runnable() {
 				@Override
 				public void run() {
 					createConnections();
@@ -86,16 +91,18 @@ public abstract class AbstractSharedPoolClient extends AbstractClient {
 		}
 	}
 
-	protected Channel getChannel() throws MotanServiceException {
+	@SuppressWarnings("unchecked")
+	protected Channel getChannel() {
 		int index = MathUtil.getNonNegativeRange24bit(idx.getAndIncrement());
 		Channel channel;
 
-		for (int i = index; i < connections + index; i++) {
+		for (int i = index; i < connections + 1 + index; i++) {
 			channel = channels.get(i % connections);
+			if (!channel.isAvailable()) {
+				factory.rebuildObject(channel, i != connections + 1);
+			}
 			if (channel.isAvailable()) {
 				return channel;
-			} else {
-				factory.rebuildObject(channel);
 			}
 		}
 
@@ -105,8 +112,10 @@ public abstract class AbstractSharedPoolClient extends AbstractClient {
 	}
 
 	protected void closeAllChannels() {
-		for (Channel channel : channels) {
-			channel.close();
+		if (!CollectionUtil.isEmpty(channels)) {
+			for (Channel channel : channels) {
+				channel.close();
+			}
 		}
 	}
 }

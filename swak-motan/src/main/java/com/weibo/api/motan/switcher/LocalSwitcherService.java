@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author maijunsheng
- * @version 创建时间：2013-6-14	
+ * @version 创建时间：2013-6-14
  *
  */
 @SpiMeta(name = "localSwitcherService")
@@ -92,11 +92,11 @@ public class LocalSwitcherService implements SwitcherService {
         }
     }
 
-	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void registerListener(String switcherName, SwitcherListener listener) {
         List listeners = Collections.synchronizedList(new ArrayList());
-        List preListeners= listenerMap.putIfAbsent(switcherName, listeners);
+		List preListeners= listenerMap.putIfAbsent(switcherName, listeners);
         if (preListeners == null) {
             listeners.add(listener);
         } else {

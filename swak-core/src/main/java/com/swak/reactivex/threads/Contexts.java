@@ -56,6 +56,40 @@ public class Contexts {
 	}
 
 	/**
+	 * 适合服务器的线程池模型,优先使用 maxThreader
+	 * 
+	 * @param prefix
+	 * @param nThreads
+	 * @param maxExecTime
+	 * @param maxExecTimeUnit
+	 * @return
+	 */
+	public static ServerContext createServerContext(String prefix, int coreThreads, int maxThreads, int queueCapacity,
+			long maxExecTime, TimeUnit maxExecTimeUnit, RejectedExecutionHandler handler) {
+		ServerContext context = new ServerContext(prefix, coreThreads, maxThreads, queueCapacity,
+				Holder.instance.blockedThreadChecker, maxExecTime, maxExecTimeUnit, handler);
+		Holder.instance.holdContext(context);
+		return context;
+	}
+
+	/**
+	 * 适合服务器的线程池模型,优先使用 maxThreader
+	 * 
+	 * @param prefix
+	 * @param nThreads
+	 * @param maxExecTime
+	 * @param maxExecTimeUnit
+	 * @return
+	 */
+	public static ServerContext createServerContext(String prefix, int coreThreads, int maxThreads, long keepAliveTime,
+			TimeUnit unit, int queueCapacity, long maxExecTime, TimeUnit maxExecTimeUnit, RejectedExecutionHandler handler) {
+		ServerContext context = new ServerContext(prefix, coreThreads, maxThreads, keepAliveTime, unit, queueCapacity,
+				Holder.instance.blockedThreadChecker, maxExecTime, maxExecTimeUnit, handler);
+		Holder.instance.holdContext(context);
+		return context;
+	}
+
+	/**
 	 * 创建执行需时任务的线程池
 	 * 
 	 * @param prefix
@@ -71,7 +105,7 @@ public class Contexts {
 		Holder.instance.holdContext(context);
 		return context;
 	}
-	
+
 	/**
 	 * 创建执行需时任务的线程池: 可以定义最大队列数以及异常处理方式
 	 * 

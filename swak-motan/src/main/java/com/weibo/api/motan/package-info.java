@@ -1,19 +1,21 @@
 /**
  * 代码全部取至 motan 的源码
- * https://github.com/weibocom/motan 1.1.3
+ * https://github.com/weibocom/motan 1.1.6
  * 
  * 引入：
  * com.weibo.api.motan.core
  * com.weibo.api.motan.registry.zookeeper
  * com.weibo.api.motan.config.springsupport
+ * com.weibo.api.motan.transport.netty4
  * 
  * 引入：
  * motan-core/META-INF/src/main/resources/services
  * motan-registry-zookeeper/META-INF/src/main/resources/services
  * motan-transport-netty4/META-INF/src/main/resources/services
- * 
  * 修改：
- * com.weibo.api.motan.codec.Serialization
+ * MotanConstants  :改了下最小线程数
+ * 修改：
+ * URLParamType  : 修改了序列化的方式 serialize("serialization", "hessian2")
  * 修改：
  * MotanService @Service
  * 修改：
@@ -29,5 +31,7 @@
  * NettyClient.java
  * HeartbeatClientEndpointManager.java
  * StatsUtil.java
+ * 
+ * 特別改進: StandardThreadExecutor
  */
 package com.weibo.api.motan;

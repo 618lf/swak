@@ -271,7 +271,7 @@ public class FastDateParser implements DateParser, Serializable {
     // Accessors
     //-----------------------------------------------------------------------
     /* (non-Javadoc)
-     * @see org.apache.commons.lang3.time.DateParser#getPattern()
+     * @see com.swak.utils.time.DateParser#getPattern()
      */
     @Override
     public String getPattern() {
@@ -279,7 +279,7 @@ public class FastDateParser implements DateParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.apache.commons.lang3.time.DateParser#getTimeZone()
+     * @see com.swak.utils.time.DateParser#getTimeZone()
      */
     @Override
     public TimeZone getTimeZone() {
@@ -287,7 +287,7 @@ public class FastDateParser implements DateParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.apache.commons.lang3.time.DateParser#getLocale()
+     * @see com.swak.utils.time.DateParser#getLocale()
      */
     @Override
     public Locale getLocale() {
@@ -352,7 +352,7 @@ public class FastDateParser implements DateParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.apache.commons.lang3.time.DateParser#parseObject(java.lang.String)
+     * @see com.swak.utils.time.DateParser#parseObject(java.lang.String)
      */
     @Override
     public Object parseObject(final String source) throws ParseException {
@@ -360,7 +360,7 @@ public class FastDateParser implements DateParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.apache.commons.lang3.time.DateParser#parse(java.lang.String)
+     * @see com.swak.utils.time.DateParser#parse(java.lang.String)
      */
     @Override
     public Date parse(final String source) throws ParseException {
@@ -379,7 +379,7 @@ public class FastDateParser implements DateParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.apache.commons.lang3.time.DateParser#parseObject(java.lang.String, java.text.ParsePosition)
+     * @see com.swak.utils.time.DateParser#parseObject(java.lang.String, java.text.ParsePosition)
      */
     @Override
     public Object parseObject(final String source, final ParsePosition pos) {
@@ -396,7 +396,7 @@ public class FastDateParser implements DateParser, Serializable {
      * given by {@link ParsePosition#getIndex()} has been updated. If the input buffer has been fully
      * parsed, then the index will point to just after the end of the input buffer.
      *
-     * @see org.apache.commons.lang3.time.DateParser#parse(java.lang.String, java.text.ParsePosition)
+     * @see com.swak.utils.time.DateParser#parse(java.lang.String, java.text.ParsePosition)
      */
     @Override
     public Date parse(final String source, final ParsePosition pos) {

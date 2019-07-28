@@ -16,29 +16,26 @@
 
 package com.weibo.api.motan.config.springsupport;
 
-import java.util.List;
-
+import com.weibo.api.motan.config.BasicRefererInterfaceConfig;
+import com.weibo.api.motan.config.ProtocolConfig;
+import com.weibo.api.motan.config.RegistryConfig;
+import com.weibo.api.motan.config.springsupport.util.SpringBeanUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.weibo.api.motan.config.BasicRefererInterfaceConfig;
-import com.weibo.api.motan.config.ProtocolConfig;
-import com.weibo.api.motan.config.RegistryConfig;
-import com.weibo.api.motan.config.springsupport.util.SpringBeanUtil;
+import java.util.List;
 
 /**
  * @author fld
  *         <p>
  *         Created by fld on 16/5/13.
  */
+
 public class BasicRefererConfigBean extends BasicRefererInterfaceConfig implements BeanNameAware, InitializingBean, BeanFactoryAware {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private String protocolNames;
     private String registryNames;

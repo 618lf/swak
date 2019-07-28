@@ -38,9 +38,6 @@ import java.util.List;
 public class BasicServiceConfigBean extends BasicServiceInterfaceConfig implements BeanNameAware,
         InitializingBean, BeanFactoryAware {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 

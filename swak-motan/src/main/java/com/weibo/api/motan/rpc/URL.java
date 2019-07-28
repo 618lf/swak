@@ -16,16 +16,16 @@
 
 package com.weibo.api.motan.rpc;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.swak.utils.ObjectUtils;
-import com.swak.utils.StringUtils;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.common.URLParamType;
 import com.weibo.api.motan.exception.MotanServiceException;
 import com.weibo.api.motan.util.MotanFrameworkUtil;
+import com.swak.utils.ObjectUtils;
+import com.swak.utils.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <pre>

@@ -1,17 +1,16 @@
 package com.weibo.api.motan.transport.netty4;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.swak.reactivex.threads.Contexts;
+import com.swak.reactivex.threads.ServerContext;
 import com.swak.reactivex.transport.resources.LoopResources;
 import com.weibo.api.motan.common.ChannelState;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.common.URLParamType;
-import com.weibo.api.motan.core.DefaultThreadFactory;
-import com.weibo.api.motan.core.StandardThreadExecutor;
 import com.weibo.api.motan.exception.MotanFrameworkException;
 import com.weibo.api.motan.rpc.Request;
 import com.weibo.api.motan.rpc.Response;
@@ -41,9 +40,13 @@ public class NettyServer extends AbstractServer implements StatisticCallback {
 	private EventLoopGroup workerGroup;
 	private Channel serverChannel;
 	private MessageHandler messageHandler;
-	private StandardThreadExecutor standardThreadExecutor = null;
-	private List<StatisticCallback> statisticCallbackList = new ArrayList<>();
+	private ServerContext standardThreadExecutor = null;
 	private LoopResources loopResources;
+	private AtomicInteger rejectCounter = new AtomicInteger(0);
+
+	public AtomicInteger getRejectCounter() {
+		return rejectCounter;
+	}
 
 	public NettyServer(URL url, MessageHandler messageHandler) {
 		super(url);
@@ -99,8 +102,8 @@ public class NettyServer extends AbstractServer implements StatisticCallback {
 
 		standardThreadExecutor = (standardThreadExecutor != null && !standardThreadExecutor.isShutdown())
 				? standardThreadExecutor
-				: new StandardThreadExecutor(minWorkerThread, maxWorkerThread, workerQueueSize,
-						new DefaultThreadFactory("Motan.NettyServer-" + url.getServerPortStr(), false));
+				: Contexts.createServerContext("Motan.NettyServer-" + url.getServerPortStr(), minWorkerThread,
+						maxWorkerThread, workerQueueSize, 60, TimeUnit.SECONDS, new AbortPolicy());
 		standardThreadExecutor.prestartAllCoreThreads();
 
 		channelManage = new NettyServerChannelManage(maxServerConnection);
@@ -117,7 +120,6 @@ public class NettyServer extends AbstractServer implements StatisticCallback {
 						NettyChannelHandler handler = new NettyChannelHandler(NettyServer.this, messageHandler,
 								standardThreadExecutor);
 						pipeline.addLast("handler", handler);
-						addStatisticCallback(handler);
 					}
 				});
 		serverBootstrap.childOption(ChannelOption.TCP_NODELAY, true);
@@ -126,7 +128,7 @@ public class NettyServer extends AbstractServer implements StatisticCallback {
 		channelFuture.syncUninterruptibly();
 		serverChannel = channelFuture.channel();
 		state = ChannelState.ALIVE;
-		addStatisticCallback(this);
+		StatsUtil.registryStatisticCallback(this);
 		LoggerUtil.info("NettyServer ServerChannel finish Open: url=" + url);
 		return state.isAliveState();
 	}
@@ -139,41 +141,47 @@ public class NettyServer extends AbstractServer implements StatisticCallback {
 	@Override
 	public synchronized void close(int timeout) {
 		if (state.isCloseState()) {
-			LoggerUtil.info("NettyServer close fail: already close, url={}", url.getUri());
-			return;
-		}
-
-		if (state.isUnInitState()) {
-			LoggerUtil.info("NettyServer close Fail: don't need to close because node is unInit state: url={}",
-					url.getUri());
 			return;
 		}
 
 		try {
-			// close listen socket
-			if (serverChannel != null) {
-				serverChannel.close();
-				bossGroup.shutdownGracefully();
-				workerGroup.shutdownGracefully();
-				bossGroup = null;
-				workerGroup = null;
+			cleanup();
+			if (state.isUnInitState()) {
+				LoggerUtil.info("NettyServer close fail: state={}, url={}", state.value, url.getUri());
+				return;
 			}
-			// close all clients's channel
-			if (channelManage != null) {
-				channelManage.close();
-			}
-			// shutdown the threadPool
-			if (standardThreadExecutor != null) {
-				standardThreadExecutor.shutdownNow();
-			}
+
 			// 设置close状态
 			state = ChannelState.CLOSE;
-			// 取消统计回调的注册
-			clearStatisticCallback();
 			LoggerUtil.info("NettyServer close Success: url={}", url.getUri());
 		} catch (Exception e) {
 			LoggerUtil.error("NettyServer close Error: url=" + url.getUri(), e);
 		}
+	}
+
+	public void cleanup() {
+		// close listen socket
+		if (serverChannel != null) {
+			serverChannel.close();
+		}
+		if (bossGroup != null) {
+			bossGroup.shutdownGracefully();
+			bossGroup = null;
+		}
+		if (workerGroup != null) {
+			workerGroup.shutdownGracefully();
+			workerGroup = null;
+		}
+		// close all clients's channel
+		if (channelManage != null) {
+			channelManage.close();
+		}
+		// shutdown the threadPool
+		if (standardThreadExecutor != null) {
+			standardThreadExecutor.shutdownNow();
+		}
+		// 取消统计回调的注册
+		StatsUtil.unRegistryStatisticCallback(this);
 	}
 
 	@Override
@@ -194,18 +202,9 @@ public class NettyServer extends AbstractServer implements StatisticCallback {
 	@Override
 	public String statisticCallback() {
 		return String.format(
-				"identity: %s connectionCount: %s taskCount: %s queueCount: %s maxThreadCount: %s maxTaskCount: %s",
+				"identity: %s connectionCount: %s taskCount: %s queueCount: %s maxThreadCount: %s maxTaskCount: %s executorRejectCount: %s",
 				url.getIdentity(), channelManage.getChannels().size(), standardThreadExecutor.getSubmittedTasksCount(),
 				standardThreadExecutor.getQueue().size(), standardThreadExecutor.getMaximumPoolSize(),
-				standardThreadExecutor.getMaxSubmittedTaskCount());
-	}
-
-	private void addStatisticCallback(StatisticCallback callback) {
-		StatsUtil.registryStatisticCallback(callback);
-		statisticCallbackList.add(callback);
-	}
-
-	private void clearStatisticCallback() {
-		StatsUtil.unRegistryStatisticCallbacks(statisticCallbackList);
+				standardThreadExecutor.getMaxSubmittedTaskCount(), rejectCounter.getAndSet(0));
 	}
 }

@@ -27,9 +27,6 @@ import com.weibo.api.motan.config.ProtocolConfig;
  */
 public class ProtocolConfigBean extends ProtocolConfig implements BeanNameAware {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override

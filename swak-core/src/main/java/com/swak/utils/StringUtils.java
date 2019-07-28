@@ -6510,7 +6510,7 @@ public class StringUtils {
 	 *
 	 * <p>
 	 * For a word based algorithm, see
-	 * {@link org.apache.commons.lang3.text.WordUtils#capitalize(String)}. A
+	 * {@link com.swak.utils.text.WordUtils#capitalize(String)}. A
 	 * {@code null} input String returns {@code null}.
 	 * </p>
 	 *
@@ -6524,7 +6524,7 @@ public class StringUtils {
 	 * @param str
 	 *            the String to capitalize, may be null
 	 * @return the capitalized String, {@code null} if null String input
-	 * @see org.apache.commons.lang3.text.WordUtils#capitalize(String)
+	 * @see com.swak.utils.text.WordUtils#capitalize(String)
 	 * @see #uncapitalize(String)
 	 * @since 2.0
 	 */
@@ -6551,7 +6551,7 @@ public class StringUtils {
 	 *
 	 * <p>
 	 * For a word based algorithm, see
-	 * {@link org.apache.commons.lang3.text.WordUtils#uncapitalize(String)}. A
+	 * {@link com.swak.utils.text.WordUtils#uncapitalize(String)}. A
 	 * {@code null} input String returns {@code null}.
 	 * </p>
 	 *
@@ -6565,7 +6565,7 @@ public class StringUtils {
 	 * @param str
 	 *            the String to uncapitalize, may be null
 	 * @return the uncapitalized String, {@code null} if null String input
-	 * @see org.apache.commons.lang3.text.WordUtils#uncapitalize(String)
+	 * @see com.swak.utils.text.WordUtils#uncapitalize(String)
 	 * @see #capitalize(String)
 	 * @since 2.0
 	 */
@@ -6598,7 +6598,7 @@ public class StringUtils {
 	 *
 	 * <p>
 	 * For a word based algorithm, see
-	 * {@link org.apache.commons.lang3.text.WordUtils#swapCase(String)}. A
+	 * {@link com.swak.utils.text.WordUtils#swapCase(String)}. A
 	 * {@code null} input String returns {@code null}.
 	 * </p>
 	 *
@@ -6611,7 +6611,7 @@ public class StringUtils {
 	 * <p>
 	 * NOTE: This method changed in Lang version 2.0. It no longer performs a word
 	 * based algorithm. If you only use ASCII, you will notice no change. That
-	 * functionality is available in org.apache.commons.lang3.text.WordUtils.
+	 * functionality is available in com.swak.utils.text.WordUtils.
 	 * </p>
 	 *
 	 * @param str

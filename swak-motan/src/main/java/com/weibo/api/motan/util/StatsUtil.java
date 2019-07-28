@@ -19,7 +19,6 @@ package com.weibo.api.motan.util;
 import static com.weibo.api.motan.common.MotanConstants.APPLICATION_STATISTIC;
 
 import java.text.DecimalFormat;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,8 +50,8 @@ public class StatsUtil {
 	public static ScheduledExecutorService executorService = Contexts.createScheduledContext("Motan.Statistic", 1, true,
 			2, TimeUnit.SECONDS);
 	public static String SEPARATE = "\\|";
-	protected static ConcurrentMap<String, AccessStatisticItem> accessStatistics = new ConcurrentHashMap<String, AccessStatisticItem>();
-	protected static List<StatisticCallback> statisticCallbacks = new CopyOnWriteArrayList<StatisticCallback>();
+	protected static ConcurrentMap<String, AccessStatisticItem> accessStatistics = new ConcurrentHashMap<>();
+	protected static List<StatisticCallback> statisticCallbacks = new CopyOnWriteArrayList<>();
 	protected static ScheduledFuture<?> scheduledFuture;
 
 	static {
@@ -78,10 +77,6 @@ public class StatsUtil {
 		});
 	}
 
-	public static List<StatisticCallback> getStatisticCallbacks() {
-		return statisticCallbacks;
-	}
-
 	public static void registryStatisticCallback(StatisticCallback callback) {
 		if (callback == null) {
 			LoggerUtil.warn("StatsUtil registryStatisticCallback is null");
@@ -98,15 +93,6 @@ public class StatsUtil {
 		}
 
 		statisticCallbacks.remove(callback);
-	}
-
-	public static void unRegistryStatisticCallbacks(Collection<StatisticCallback> callbacks) {
-		if (CollectionUtil.isEmpty(callbacks)) {
-			LoggerUtil.warn("StatsUtil unRegistryStatisticCallbacks is empty");
-			return;
-		}
-
-		statisticCallbacks.removeAll(callbacks);
 	}
 
 	/**
@@ -127,6 +113,12 @@ public class StatsUtil {
 
 	public static void accessStatistic(String name, String application, String module, long currentTimeMillis,
 			long costTimeMillis, long bizProcessTime, AccessStatus accessStatus) {
+		accessStatistic(name, application, module, currentTimeMillis, costTimeMillis, bizProcessTime,
+				MotanConstants.SLOW_COST, accessStatus);
+	}
+
+	public static void accessStatistic(String name, String application, String module, long currentTimeMillis,
+			long costTimeMillis, long bizProcessTime, int slowCost, AccessStatus accessStatus) {
 		if (name == null || name.isEmpty()) {
 			return;
 		}
@@ -143,7 +135,7 @@ public class StatsUtil {
 		try {
 			AccessStatisticItem item = getStatisticItem(name, currentTimeMillis);
 
-			item.statistic(currentTimeMillis, costTimeMillis, bizProcessTime, accessStatus);
+			item.statistic(currentTimeMillis, costTimeMillis, bizProcessTime, slowCost, accessStatus);
 		} catch (Exception e) {
 		}
 	}
@@ -170,7 +162,7 @@ public class StatsUtil {
 
 		long currentTimeMillis = System.currentTimeMillis();
 
-		ConcurrentMap<String, AccessStatisticResult> totalResults = new ConcurrentHashMap<String, AccessStatisticResult>();
+		ConcurrentMap<String, AccessStatisticResult> totalResults = new ConcurrentHashMap<>();
 
 		for (Map.Entry<String, AccessStatisticItem> entry : accessStatistics.entrySet()) {
 			AccessStatisticItem item = entry.getValue();
@@ -208,7 +200,7 @@ public class StatsUtil {
 		DecimalFormat mbFormat = new DecimalFormat("#0.00");
 		long currentTimeMillis = System.currentTimeMillis();
 
-		ConcurrentMap<String, AccessStatisticResult> totalResults = new ConcurrentHashMap<String, AccessStatisticResult>();
+		ConcurrentMap<String, AccessStatisticResult> totalResults = new ConcurrentHashMap<>();
 
 		for (Map.Entry<String, AccessStatisticItem> entry : accessStatistics.entrySet()) {
 			AccessStatisticItem item = entry.getValue();
@@ -390,7 +382,8 @@ class AccessStatisticItem {
 	 * @param bizProcessTime
 	 * @param accessStatus
 	 */
-	void statistic(long currentTimeMillis, long costTimeMillis, long bizProcessTime, AccessStatus accessStatus) {
+	void statistic(long currentTimeMillis, long costTimeMillis, long bizProcessTime, int slowCost,
+			AccessStatus accessStatus) {
 		int tempIndex = getIndex(currentTimeMillis, length);
 
 		if (currentIndex != tempIndex) {
@@ -407,7 +400,7 @@ class AccessStatisticItem {
 		bizProcessTimes[currentIndex].addAndGet((int) bizProcessTime);
 		totalCounter[currentIndex].incrementAndGet();
 
-		if (costTimeMillis >= MotanConstants.SLOW_COST) {
+		if (costTimeMillis >= slowCost) {
 			slowCounter[currentIndex].incrementAndGet();
 		}
 

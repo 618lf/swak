@@ -30,7 +30,7 @@ public class RefererCommonHandler<T> extends AbstractRefererHandler<T> implement
         return invokeRequest(request, returnType, async);
     }
 
-    @Override
+	@Override
     public Object call(String methodName, Object[] arguments, Class returnType) throws Throwable {
         return call(methodName, arguments, returnType, null, false);
     }

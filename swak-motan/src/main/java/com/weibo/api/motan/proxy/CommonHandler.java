@@ -27,7 +27,7 @@ public interface CommonHandler {
      * @return
      * @throws Throwable
      */
-    Object asyncCall(String methodName, Object[] arguments, Class returnType) throws Throwable;
+	Object asyncCall(String methodName, Object[] arguments, Class returnType) throws Throwable;
 
     /**
      * call a service method with request

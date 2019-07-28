@@ -40,10 +40,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 						      	比较适合于业务处理需要远程资源的场景
  * 
  * </pre>
+ * @see Contexts.createServerContext
  * 
  * @author maijunsheng
  * @version 创建时间：2013-6-20
  */
+@Deprecated
 public class StandardThreadExecutor extends ThreadPoolExecutor {
 
 	public static final int DEFAULT_MIN_THREADS = 20;

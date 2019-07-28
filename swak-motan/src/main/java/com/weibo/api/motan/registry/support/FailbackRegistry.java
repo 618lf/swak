@@ -43,7 +43,6 @@ import com.weibo.api.motan.util.LoggerUtil;
  * @author fishermen
  * @version V1.0 created at: 2013-5-28
  */
-
 public abstract class FailbackRegistry extends AbstractRegistry {
 
 	private Set<URL> failedRegistered = new ConcurrentHashSet<URL>();

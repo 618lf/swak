@@ -26,9 +26,6 @@ import com.weibo.api.motan.config.RegistryConfig;
  */
 public class RegistryConfigBean extends RegistryConfig implements BeanNameAware {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override

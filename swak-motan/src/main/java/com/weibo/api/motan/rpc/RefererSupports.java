@@ -28,6 +28,7 @@ import com.weibo.api.motan.util.LoggerUtil;
 /**
  * @author maijunsheng
  * @version 创建时间：2013-6-19
+ * 
  */
 public class RefererSupports {
 

@@ -1,7 +1,7 @@
 package com.swak.utils;
 
 /**
- * see org.apache.commons.lang3.ObjectUtils
+ * see com.swak.utils.ObjectUtils
  * 
  * @author lifeng
  *

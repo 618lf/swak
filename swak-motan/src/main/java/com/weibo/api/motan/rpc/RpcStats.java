@@ -30,166 +30,165 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class RpcStats {
 
-    private static final String SEPERATOR_METHOD_AND_PARAM = "|";
+	private static final String SEPERATOR_METHOD_AND_PARAM = "|";
 
-    private static ConcurrentHashMap<String, StatInfo> serviceStat = new ConcurrentHashMap<String, RpcStats.StatInfo>();
-    private static ConcurrentHashMap<String, ConcurrentHashMap<String, StatInfo>> methodStat =
-            new ConcurrentHashMap<String, ConcurrentHashMap<String, StatInfo>>();
+	private static ConcurrentHashMap<String, StatInfo> serviceStat = new ConcurrentHashMap<String, RpcStats.StatInfo>();
+	private static ConcurrentHashMap<String, ConcurrentHashMap<String, StatInfo>> methodStat = new ConcurrentHashMap<String, ConcurrentHashMap<String, StatInfo>>();
 
-//    private static ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
-//    static{
-//        ShutDownHook.registerShutdownHook(new Closable() {
-//            @Override
-//            public void close() {
-//                if(!scheduledExecutor.isShutdown()){
-//                    scheduledExecutor.shutdown();
-//                }
-//            }
-//        });
-//    }
-    /**
-     * call before invoke the request
-     * 
-     * @param url
-     * @param request
-     */
-    public static void beforeCall(URL url, Request request) {
-        String uri = url.getUri();
-        onBeforeCall(getServiceStat(uri));
-        onBeforeCall(getMethodStat(uri, request.getMethodName(), request.getParamtersDesc()));
-    }
+//	private static ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
+//	static {
+//		ShutDownHook.registerShutdownHook(new Closable() {
+//			@Override
+//			public void close() {
+//				if (!scheduledExecutor.isShutdown()) {
+//					scheduledExecutor.shutdown();
+//				}
+//			}
+//		});
+//	}
 
-    /**
-     * call after invoke the request
-     * 
-     * @param url
-     * @param request
-     * @param success
-     * @param procTimeMills
-     */
-    public static void afterCall(URL url, Request request, boolean success, long procTimeMills) {
-        String uri = url.getUri();
-        onAfterCall(getServiceStat(uri), success, procTimeMills);
-        onAfterCall(getMethodStat(uri, request.getMethodName(), request.getParamtersDesc()), success, procTimeMills);
-    }
+	/**
+	 * call before invoke the request
+	 * 
+	 * @param url
+	 * @param request
+	 */
+	public static void beforeCall(URL url, Request request) {
+		String uri = url.getUri();
+		onBeforeCall(getServiceStat(uri));
+		onBeforeCall(getMethodStat(uri, request.getMethodName(), request.getParamtersDesc()));
+	}
 
-    public static StatInfo getServiceStat(URL url) {
-        return getServiceStat(url.getUri());
-    }
+	/**
+	 * call after invoke the request
+	 * 
+	 * @param url
+	 * @param request
+	 * @param success
+	 * @param procTimeMills
+	 */
+	public static void afterCall(URL url, Request request, boolean success, long procTimeMills) {
+		String uri = url.getUri();
+		onAfterCall(getServiceStat(uri), success, procTimeMills);
+		onAfterCall(getMethodStat(uri, request.getMethodName(), request.getParamtersDesc()), success, procTimeMills);
+	}
 
-    public static StatInfo getMethodStat(URL url, Request request) {
-        return getMethodStat(url.getUri(), request.getMethodName(), request.getParamtersDesc());
-    }
+	public static StatInfo getServiceStat(URL url) {
+		return getServiceStat(url.getUri());
+	}
 
-    private static StatInfo getServiceStat(String uri) {
-        StatInfo stat = serviceStat.get(uri);
-        if (stat == null) {
-            stat = new StatInfo();
-            serviceStat.putIfAbsent(uri, stat);
-            stat = serviceStat.get(uri);
-        }
-        return stat;
-    }
+	public static StatInfo getMethodStat(URL url, Request request) {
+		return getMethodStat(url.getUri(), request.getMethodName(), request.getParamtersDesc());
+	}
 
-    private static StatInfo getMethodStat(String uri, String methodName, String methodParaDesc) {
-        ConcurrentHashMap<String, StatInfo> sstats = methodStat.get(uri);
-        if (sstats == null) {
-            sstats = new ConcurrentHashMap<String, StatInfo>();
-            methodStat.putIfAbsent(uri, sstats);
-            sstats = methodStat.get(uri);
-        }
+	private static StatInfo getServiceStat(String uri) {
+		StatInfo stat = serviceStat.get(uri);
+		if (stat == null) {
+			stat = new StatInfo();
+			serviceStat.putIfAbsent(uri, stat);
+			stat = serviceStat.get(uri);
+		}
+		return stat;
+	}
 
-        String methodNameAndParams = methodName + SEPERATOR_METHOD_AND_PARAM + methodParaDesc;
-        StatInfo mstat = sstats.get(methodNameAndParams);
-        if (mstat == null) {
-            mstat = new StatInfo();
-            sstats.putIfAbsent(methodNameAndParams, mstat);
-            mstat = sstats.get(methodNameAndParams);
-        }
-        return mstat;
-    }
+	private static StatInfo getMethodStat(String uri, String methodName, String methodParaDesc) {
+		ConcurrentHashMap<String, StatInfo> sstats = methodStat.get(uri);
+		if (sstats == null) {
+			sstats = new ConcurrentHashMap<String, StatInfo>();
+			methodStat.putIfAbsent(uri, sstats);
+			sstats = methodStat.get(uri);
+		}
 
-    private static void onBeforeCall(StatInfo statInfo) {
-        statInfo.activeCount.incrementAndGet();
-    }
+		String methodNameAndParams = methodName + SEPERATOR_METHOD_AND_PARAM + methodParaDesc;
+		StatInfo mstat = sstats.get(methodNameAndParams);
+		if (mstat == null) {
+			mstat = new StatInfo();
+			sstats.putIfAbsent(methodNameAndParams, mstat);
+			mstat = sstats.get(methodNameAndParams);
+		}
+		return mstat;
+	}
 
-    private static void onAfterCall(StatInfo statInfo, boolean success, long procTimeMills) {
-        statInfo.activeCount.decrementAndGet();
-        if (!success) {
-            statInfo.failCount.incrementAndGet();
-        }
-        statInfo.totalCountTime.inc(1, procTimeMills);
-        statInfo.latestCountTime.inc(1, procTimeMills);
-    }
+	private static void onBeforeCall(StatInfo statInfo) {
+		statInfo.activeCount.incrementAndGet();
+	}
 
-    @SuppressWarnings("unused")
+	private static void onAfterCall(StatInfo statInfo, boolean success, long procTimeMills) {
+		statInfo.activeCount.decrementAndGet();
+		if (!success) {
+			statInfo.failCount.incrementAndGet();
+		}
+		statInfo.totalCountTime.inc(1, procTimeMills);
+		statInfo.latestCountTime.inc(1, procTimeMills);
+	}
+
+	@SuppressWarnings("unused")
 	private static void startCleaner() {
 
-    }
+	}
 
-    @SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	private static void cleanLatestStat() {
-        if (serviceStat.size() == 0) {
-            return;
-        }
-        for (StatInfo si : serviceStat.values()) {
-            si.resetLatestStat();
-        }
+		if (serviceStat.size() == 0) {
+			return;
+		}
+		for (StatInfo si : serviceStat.values()) {
+			si.resetLatestStat();
+		}
 
-    }
+	}
 
-    public static class StatInfo {
+	public static class StatInfo {
 
-        private AtomicInteger activeCount = new AtomicInteger();
-        private AtomicLong failCount = new AtomicLong();
-        private CountTime totalCountTime = new CountTime();
-        private CountTime latestCountTime = new CountTime();
+		private AtomicInteger activeCount = new AtomicInteger();
+		private AtomicLong failCount = new AtomicLong();
+		private CountTime totalCountTime = new CountTime();
+		private CountTime latestCountTime = new CountTime();
 
-        public int getActiveCount() {
-            return activeCount.get();
-        }
+		public int getActiveCount() {
+			return activeCount.get();
+		}
 
-        public long getFailCount() {
-            return failCount.get();
-        }
+		public long getFailCount() {
+			return failCount.get();
+		}
 
-        public CountTime getTotalCountTime() {
-            return totalCountTime;
-        }
+		public CountTime getTotalCountTime() {
+			return totalCountTime;
+		}
 
-        public CountTime getLatestCountTime() {
-            return latestCountTime;
-        }
+		public CountTime getLatestCountTime() {
+			return latestCountTime;
+		}
 
-        public void resetLatestStat() {
-            latestCountTime.reset();
-        }
-    }
+		public void resetLatestStat() {
+			latestCountTime.reset();
+		}
+	}
 
-    public static class CountTime {
-        private AtomicLong count;
-        private AtomicLong timeMills;
+	public static class CountTime {
+		private AtomicLong count;
+		private AtomicLong timeMills;
 
-        public CountTime() {
-            count = new AtomicLong();
-            timeMills = new AtomicLong();
-        }
+		public CountTime() {
+			count = new AtomicLong();
+			timeMills = new AtomicLong();
+		}
 
-        private void inc(int incCount, long incTimeMills) {
-            count.getAndAdd(incCount);
-            timeMills.getAndAdd(incTimeMills);
-        }
+		private void inc(int incCount, long incTimeMills) {
+			count.getAndAdd(incCount);
+			timeMills.getAndAdd(incTimeMills);
+		}
 
-        public long getCount() {
-            return count.get();
-        }
+		public long getCount() {
+			return count.get();
+		}
 
-        public void reset() {
-            count.set(0);
-            timeMills.set(0);
-        }
+		public void reset() {
+			count.set(0);
+			timeMills.set(0);
+		}
 
-    }
-
+	}
 
 }
