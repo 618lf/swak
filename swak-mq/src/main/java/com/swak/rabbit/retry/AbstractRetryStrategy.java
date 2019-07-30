@@ -51,7 +51,7 @@ public abstract class AbstractRetryStrategy implements RetryStrategy, Runnable, 
 	 * 启动服务
 	 */
 	protected void start() {
-		executor = Contexts.createScheduledContext("Retry.", threadPool, true, 1, TimeUnit.MINUTES);
+		executor = Contexts.createScheduledContext("Rabbit-Retry.", threadPool, true, 1, TimeUnit.MINUTES);
 		executor.scheduleAtFixedRate(this, 3, minutes, TimeUnit.MINUTES);
 	}
 
