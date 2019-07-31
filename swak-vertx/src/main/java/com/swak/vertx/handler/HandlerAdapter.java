@@ -16,6 +16,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
 import com.swak.Constants;
+import com.swak.annotation.Body;
+import com.swak.annotation.Header;
 import com.swak.annotation.Json;
 import com.swak.annotation.Valid;
 import com.swak.asm.FieldCache;
@@ -23,7 +25,6 @@ import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
 import com.swak.meters.MetricsFactory;
 import com.swak.utils.JsonMapper;
-import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.validator.Validator;
@@ -227,14 +228,55 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			return subject;
 		} else if (parameterType == BindErrors.class) {
 			return this.getBindErrors(context);
+		} else if (parameter.getParameterAnnotations() != null && parameter.getParameterAnnotations().length > 0
+				&& !Valid.class.isInstance(parameter.getParameterAnnotations()[0])) {
+			return this.resolveAnnotation(parameter, context);
 		} else if (BeanUtils.isSimpleProperty(parameterType)) {
 			return this.doConvert(context.request().getParam(parameter.getParameterName()), parameterType);
 		} else if (parameterType.isAssignableFrom(List.class)) {
-			return Lists.newArrayList();
+			String resolvedName = parameter.getParameterName();
+			return context.request().params().getAll(resolvedName);
 		} else if (parameterType.isAssignableFrom(Map.class)) {
 			return this.getArguments(context);
 		}
 		return this.resolveObjectAndValidate(parameter, context);
+	}
+
+	/**
+	 * 解析注解
+	 * 
+	 * @return
+	 */
+	private Object resolveAnnotation(MethodParameter parameter, RoutingContext context) {
+		Body body = (Body) parameter.getParameterAnnotation(Body.class);
+		if (body != null) {
+			if (BeanUtils.isSimpleProperty(parameter.getParameterType())) {
+				return this.doConvert(context.getBodyAsString(), parameter.getParameterType());
+			}
+			return context.getBody().getBytes();
+		}
+		Json json = (Json) parameter.getParameterAnnotation(Json.class);
+		if (json != null) {
+			Class<?> fieldClass = parameter.getParameterType();
+			if (fieldClass.isAssignableFrom(List.class)) {
+				return JsonMapper.fromJsonToList(context.request().getParam(parameter.getParameterName()),
+						parameter.getNestedParameterType());
+			} else if (fieldClass.isAssignableFrom(Map.class)) {
+				return JsonMapper.fromJson(context.request().getParam(parameter.getParameterName()), HashMap.class);
+			}
+			return JsonMapper.fromJson(context.request().getParam(parameter.getParameterName()), fieldClass);
+		}
+		Header header = (Header) parameter.getParameterAnnotation(Header.class);
+		if (header != null) {
+			Class<?> fieldClass = parameter.getParameterType();
+			if (fieldClass.isAssignableFrom(Map.class)) {
+				return this.getHeaders(context);
+			} else if (fieldClass.isAssignableFrom(List.class)) {
+				return context.request().headers().getAll(header.name());
+			}
+			return this.doConvert(context.request().getHeader(header.name()), parameter.getParameterType());
+		}
+		return null;
 	}
 
 	/**
@@ -347,6 +389,15 @@ public class HandlerAdapter extends AbstractRouterHandler {
 				logger.error("Set obj field faile:field[{}]-value[{}]", field.getPropertyName(), value);
 			}
 		}
+	}
+
+	private Map<String, Object> getHeaders(RoutingContext request) {
+		MultiMap maps = request.request().headers();
+		Map<String, Object> arguments = new LinkedHashMap<>();
+		maps.forEach(entry -> {
+			arguments.put(entry.getKey(), entry.getValue());
+		});
+		return arguments;
 	}
 
 	private Map<String, Object> getArguments(RoutingContext request) {

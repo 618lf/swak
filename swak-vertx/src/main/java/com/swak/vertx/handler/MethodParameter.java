@@ -98,6 +98,19 @@ public class MethodParameter {
 		return paramAnns;
 	}
 
+	public <A extends Annotation> Annotation getParameterAnnotation(Class<A> annotationType) {
+		Annotation[] paramAnns = this.getParameterAnnotations();
+		if (paramAnns != null) {
+			for (Annotation ann : paramAnns) {
+				if (annotationType.isInstance(ann)) {
+					return ann;
+				}
+			}
+			return null;
+		}
+		return null;
+	}
+
 	public <A extends Annotation> boolean hasParameterAnnotation(Class<A> annotationType) {
 		Annotation[] paramAnns = this.getParameterAnnotations();
 		if (paramAnns != null) {
