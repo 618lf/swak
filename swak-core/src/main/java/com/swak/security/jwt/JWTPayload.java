@@ -1,9 +1,7 @@
 package com.swak.security.jwt;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import com.swak.utils.JsonMapper;
 import com.swak.utils.Maps;
 
 /**
@@ -21,8 +19,7 @@ public class JWTPayload extends JWTObject {
 		this.map = data;
 	}
 
-	@SuppressWarnings("unchecked")
 	public JWTPayload(String json) {
-		this.map = JsonMapper.fromJson(json, HashMap.class);
+		this.map = JWTEncode.encode(json);
 	}
 }
