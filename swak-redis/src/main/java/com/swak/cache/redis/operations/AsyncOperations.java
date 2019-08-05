@@ -7,7 +7,10 @@ import com.swak.cache.Cons;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.RedisUtils;
 
+import io.lettuce.core.ScanArgs;
+import io.lettuce.core.ScanCursor;
 import io.lettuce.core.ScriptOutputType;
+import io.lettuce.core.ValueScanCursor;
 
 /**
  * 提供一组一步操作Api
@@ -97,7 +100,7 @@ public class AsyncOperations {
 	public static CompletionStage<Long> exists(String... key) {
 		return RedisUtils.async(connect -> connect.exists(SafeEncoder.encodeMany(key)));
 	}
-	
+
 	/**
 	 * incr
 	 * 
@@ -107,7 +110,7 @@ public class AsyncOperations {
 	public static CompletionStage<Long> incr(String key) {
 		return RedisUtils.async(connect -> connect.incr(SafeEncoder.encode(key)));
 	}
-	
+
 	/**
 	 * decr
 	 * 
@@ -248,6 +251,17 @@ public class AsyncOperations {
 	 */
 	public static CompletionStage<Long> sLen(String key) {
 		return RedisUtils.async(connect -> connect.scard(SafeEncoder.encode(key)));
+	}
+
+	/**
+	 * sMembers
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public static CompletionStage<ValueScanCursor<byte[]>> smembers(String key, ScanCursor cursor, ScanArgs scanArgs) {
+		return RedisUtils.async(connect -> connect.sscan(SafeEncoder.encode(key), cursor, scanArgs));
 	}
 
 	/**
