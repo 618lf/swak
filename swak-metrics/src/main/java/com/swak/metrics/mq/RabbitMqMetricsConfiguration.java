@@ -29,7 +29,7 @@ public class RabbitMqMetricsConfiguration {
 	public void rabbitMQTemplateMetricsPostProcessor(MetricsFactory metricsFactory,
 			Map<String, RabbitMQTemplate> templates) {
 		templates.forEach((name, template) -> {
-			template.setMetricsCollector(new StandardMetricsCollector(metricsFactory.metricRegistry(), "Rabbit."));
+			template.setMetricsCollector(new StandardMetricsCollector(metricsFactory.metricRegistry(), "RabbitMQ"));
 		});
 	}
 }
