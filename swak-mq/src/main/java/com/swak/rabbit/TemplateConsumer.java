@@ -118,7 +118,7 @@ class TemplateConsumer implements Consumer {
 				}
 			} else if (logger.isInfoEnabled()) {
 				if (!StringUtils.isBlank(message.getOrigin())) {
-					logger.debug("Consume Queue[{}] - Message[{}] - Origin[{}] - Retry[{}] - Times[{}] Success.", queue,
+					logger.info("Consume Queue[{}] - Message[{}] - Origin[{}] - Retry[{}] - Times[{}] Success.", queue,
 							message.getId(), message.getOrigin(), message.getRetry(), message.getRetrys());
 				}
 			}
@@ -151,7 +151,7 @@ class TemplateConsumer implements Consumer {
 				}
 			} else if (logger.isInfoEnabled()) {
 				if (!StringUtils.isBlank(message.getOrigin())) {
-					logger.debug("Consume Queue[{}] - Message[{}] - Origin[{}] - Retry[{}] - Times[{}] Error.", queue,
+					logger.info("Consume Queue[{}] - Message[{}] - Origin[{}] - Retry[{}] - Times[{}] Error.", queue,
 							message.getId(), message.getOrigin(), message.getRetry(), message.getRetrys(), ex);
 				}
 			}
