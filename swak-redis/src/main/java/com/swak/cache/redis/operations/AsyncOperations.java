@@ -7,7 +7,10 @@ import com.swak.cache.Cons;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.RedisUtils;
 
+import io.lettuce.core.ScanArgs;
+import io.lettuce.core.ScanCursor;
 import io.lettuce.core.ScriptOutputType;
+import io.lettuce.core.ValueScanCursor;
 
 /**
  * 提供一组一步操作Api
@@ -97,7 +100,7 @@ public class AsyncOperations {
 	public static CompletionStage<Long> exists(String... key) {
 		return RedisUtils.async(connect -> connect.exists(SafeEncoder.encodeMany(key)));
 	}
-	
+
 	/**
 	 * incr
 	 * 
@@ -107,7 +110,7 @@ public class AsyncOperations {
 	public static CompletionStage<Long> incr(String key) {
 		return RedisUtils.async(connect -> connect.incr(SafeEncoder.encode(key)));
 	}
-	
+
 	/**
 	 * decr
 	 * 
@@ -251,6 +254,27 @@ public class AsyncOperations {
 	}
 
 	/**
+	 * sMembers
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public static CompletionStage<ValueScanCursor<byte[]>> smembers(String key, ScanCursor cursor, ScanArgs scanArgs) {
+		return RedisUtils.async(connect -> connect.sscan(SafeEncoder.encode(key), cursor, scanArgs));
+	}
+	
+	/**
+	 * loadScript
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public static CompletionStage<String> loadScript(String script) {
+		return RedisUtils.async(connect -> connect.scriptLoad(SafeEncoder.encode(script)));
+	}
+
+	/**
 	 * runScript
 	 * 
 	 * @param key
@@ -258,5 +282,15 @@ public class AsyncOperations {
 	 */
 	public static <T> CompletionStage<T> runScript(String script, ScriptOutputType type, byte[][] values) {
 		return RedisUtils.async(connect -> connect.eval(script, type, values, values[0]));
+	}
+	
+	/**
+	 * runScript -- 脚本已经通过 loadScript 安装好
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public static <T> CompletionStage<T> runShaScript(String script, ScriptOutputType type, byte[][] values) {
+		return RedisUtils.async(connect -> connect.evalsha(script, type, values, values[0]));
 	}
 }
