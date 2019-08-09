@@ -263,6 +263,16 @@ public class AsyncOperations {
 	public static CompletionStage<ValueScanCursor<byte[]>> smembers(String key, ScanCursor cursor, ScanArgs scanArgs) {
 		return RedisUtils.async(connect -> connect.sscan(SafeEncoder.encode(key), cursor, scanArgs));
 	}
+	
+	/**
+	 * loadScript
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public static CompletionStage<String> loadScript(String script) {
+		return RedisUtils.async(connect -> connect.scriptLoad(SafeEncoder.encode(script)));
+	}
 
 	/**
 	 * runScript
@@ -272,5 +282,15 @@ public class AsyncOperations {
 	 */
 	public static <T> CompletionStage<T> runScript(String script, ScriptOutputType type, byte[][] values) {
 		return RedisUtils.async(connect -> connect.eval(script, type, values, values[0]));
+	}
+	
+	/**
+	 * runScript -- 脚本已经通过 loadScript 安装好
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public static <T> CompletionStage<T> runShaScript(String script, ScriptOutputType type, byte[][] values) {
+		return RedisUtils.async(connect -> connect.evalsha(script, type, values, values[0]));
 	}
 }
