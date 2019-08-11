@@ -7,6 +7,7 @@ import com.swak.cache.Cons;
 import com.swak.cache.SafeEncoder;
 import com.swak.cache.redis.RedisUtils;
 
+import io.lettuce.core.MapScanCursor;
 import io.lettuce.core.ScanArgs;
 import io.lettuce.core.ScanCursor;
 import io.lettuce.core.ScriptOutputType;
@@ -207,6 +208,17 @@ public class AsyncOperations {
 	public static CompletionStage<String> hMSet(String key, Map<byte[], byte[]> map) {
 		return RedisUtils.async(connect -> connect.hmset(SafeEncoder.encode(key), map));
 	}
+	
+	/**
+	 * hscan
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public static CompletionStage<MapScanCursor<byte[], byte[]>> hscan(String key, ScanCursor cursor, ScanArgs scanArgs) {
+		return RedisUtils.async(connect -> connect.hscan(SafeEncoder.encode(key), cursor, scanArgs));
+	}
 
 	/**
 	 * sAdd
@@ -254,13 +266,13 @@ public class AsyncOperations {
 	}
 
 	/**
-	 * sMembers
+	 * sscan
 	 * 
 	 * @param key
 	 * @param value
 	 * @return
 	 */
-	public static CompletionStage<ValueScanCursor<byte[]>> smembers(String key, ScanCursor cursor, ScanArgs scanArgs) {
+	public static CompletionStage<ValueScanCursor<byte[]>> sscan(String key, ScanCursor cursor, ScanArgs scanArgs) {
 		return RedisUtils.async(connect -> connect.sscan(SafeEncoder.encode(key), cursor, scanArgs));
 	}
 	

@@ -52,11 +52,11 @@ public class HikariDataSourceAutoConfiguration {
         config.addDataSourceProperty("cacheServerConfiguration", "true");
         config.addDataSourceProperty("elideSetAutoCommits", "true");
         config.addDataSourceProperty("maintainTimeStats", "false");
-        config.setMinimumIdle(properties.getMinIdle());
-        config.setMaximumPoolSize(properties.getMaxActive());
-        config.setConnectionTimeout(properties.getMaxWait());
-        config.setIdleTimeout(properties.getMinEvictableIdleTimeMillis());
-        config.setMaxLifetime(properties.getMaxLifetime());
+        config.setMinimumIdle(properties.getMinIdle()); // 最小空闲连接数量
+        config.setIdleTimeout(properties.getMinEvictableIdleTimeMillis()); // 空闲连接存活最大时间，默认600000（10分钟）
+        config.setMaximumPoolSize(properties.getMaxActive()); // 连接池最大连接数，默认是10
+        config.setConnectionTimeout(properties.getMaxWait()); // 数据库连接超时时间,默认30秒，即30000
+        config.setMaxLifetime(properties.getMaxLifetime()); //连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
         
         // 创建连接
         HikariDataSource dataSource = new HikariDataSource(config);
