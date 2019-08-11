@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.swak</groupId>
 		<artifactId>swak</artifactId>
-		<version>0.1.3.3_final</version>
+		<version>1.0.0_final</version>
 	</parent>
 	<artifactId>swak-wechat</artifactId>
 	<dependencies>

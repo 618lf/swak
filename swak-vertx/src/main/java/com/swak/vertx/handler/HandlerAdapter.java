@@ -37,7 +37,7 @@ import io.vertx.core.http.HttpConnection;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.impl.ContextInternal;
-import io.vertx.core.impl.VertxImpl;
+import io.vertx.core.impl.VertxThread;
 import io.vertx.core.net.impl.ConnectionBase;
 import io.vertx.ext.web.RoutingContext;
 
@@ -149,12 +149,25 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		HttpConnection conn = context.request().connection();
 		if (conn instanceof ConnectionBase) {
 			ContextInternal $connContext = ((ConnectionBase) conn).getContext();
-			ContextInternal $currContext = (ContextInternal) VertxImpl.context();
+			ContextInternal $currContext = (ContextInternal) this.getContext();
 			if ($connContext != null && ($currContext == null || $connContext != $currContext)) {
 				return $connContext;
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * 3.8.0 之后不能获取 Context
+	 * 
+	 * @return
+	 */
+	private ContextInternal getContext() {
+		Thread current = Thread.currentThread();
+	    if (current instanceof VertxThread) {
+	      return ((VertxThread) current).getContext();
+	    }
+	    return null;
 	}
 
 	/**

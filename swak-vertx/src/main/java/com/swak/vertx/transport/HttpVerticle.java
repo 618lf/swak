@@ -25,7 +25,11 @@ public class HttpVerticle extends AbstractVerticle {
 		this.port = port;
 	}
 
+	/**
+	 * startFuture.complete 底层也没有修改，暂时不知道修改方案
+	 */
 	@Override
+	@SuppressWarnings("deprecation")
 	public void start(Future<Void> startFuture) throws Exception {
 
 		// 获得路由

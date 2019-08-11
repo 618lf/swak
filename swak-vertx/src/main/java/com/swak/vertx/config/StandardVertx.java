@@ -97,7 +97,7 @@ public class StandardVertx implements VertxProxy {
 			deliveryOptions = new DeliveryOptions(this.deliveryOptions);
 			deliveryOptions.setSendTimeout(timeout);
 		}
-		vertx.eventBus().send(address, request, deliveryOptions, replyHandler);
+		vertx.eventBus().request(address, request, deliveryOptions, replyHandler);
 	}
 
 	/**

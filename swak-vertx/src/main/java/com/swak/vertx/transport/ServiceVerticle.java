@@ -56,9 +56,10 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 	}
 
 	/**
-	 * 注册为消费者
+	 * 启动服务, startFuture.complete 底层也没有修改，暂时不知道修改方案
 	 */
 	@Override
+	@SuppressWarnings({ "deprecation" })
 	public void start(Future<Void> startFuture) throws Exception {
 		this.getVertx().eventBus().<Msg>consumer(address).handler(this);
 		startFuture.complete();

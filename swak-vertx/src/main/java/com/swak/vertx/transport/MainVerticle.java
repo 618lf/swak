@@ -45,10 +45,10 @@ public class MainVerticle extends AbstractVerticle {
 	}
 
 	/**
-	 * 启动服务
+	 * 启动服务, startFuture.complete 底层也没有修改，暂时不知道修改方案
 	 */
 	@Override
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({"rawtypes","deprecation"})
 	public void start(Future<Void> startFuture) throws Exception {
 		List<Future> futures = Lists.newArrayList();
 
