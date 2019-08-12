@@ -15,18 +15,22 @@ public class MultipartFile {
 	private File file;
 	private Runnable accept;
 
+	public MultipartFile() {
+
+	}
+
 	public MultipartFile(String name, String fileName, File file) {
 		this.name = name;
 		this.fileName = fileName;
 		this.file = file;
 	}
-	
+
 	public MultipartFile(String name, String fileName, byte[] data) {
 		this.name = name;
 		this.fileName = fileName;
 		this.data = data;
 	}
-	
+
 	public Runnable accept() {
 		return accept;
 	}
@@ -70,5 +74,13 @@ public class MultipartFile {
 	public MultipartFile file(File file) {
 		this.file = file;
 		return this;
+	}
+
+	public static MultipartFile of(File file) {
+		return new MultipartFile().file(file);
+	}
+
+	public static MultipartFile of(byte[] data) {
+		return new MultipartFile().data(data);
 	}
 }
