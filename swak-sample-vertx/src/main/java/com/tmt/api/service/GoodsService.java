@@ -1,6 +1,10 @@
 package com.tmt.api.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.swak.vertx.annotation.VertxService;
+import com.tmt.api.dao.GoodsDao;
+import com.tmt.api.entity.Goods;
 import com.tmt.api.facade.GoodsNotServiceFacade;
 import com.tmt.api.facade.GoodsServiceFacade;
 
@@ -11,12 +15,15 @@ import com.tmt.api.facade.GoodsServiceFacade;
  */
 @VertxService(use_pool = "goods", isAop = false, service = GoodsServiceFacade.class)
 // @MotanService
-public class GoodsService implements GoodsServiceFacade , GoodsNotServiceFacade{
+public class GoodsService implements GoodsServiceFacade, GoodsNotServiceFacade {
+
+	@Autowired
+	private GoodsDao goodsDao;
 
 	@Override
 	public String sayHello() {
 		// System.out.println("service:" + Thread.currentThread());
-		//throw new GoodsException("商品错误！");
+		// throw new GoodsException("商品错误！");
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
@@ -24,5 +31,13 @@ public class GoodsService implements GoodsServiceFacade , GoodsNotServiceFacade{
 			e.printStackTrace();
 		}
 		return "111";
+	}
+
+	/**
+	 * 获取数据
+	 */
+	@Override
+	public Goods get() {
+		return goodsDao.get("1");
 	}
 }

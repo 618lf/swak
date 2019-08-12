@@ -14,6 +14,7 @@ import com.swak.vertx.handler.HandlerAdapter;
 import com.swak.vertx.handler.ResultHandler;
 import com.swak.vertx.handler.converter.Jaxb2RootElementHttpMessageConverter;
 import com.swak.vertx.handler.converter.JsonHttpMessageConverter;
+import com.swak.vertx.handler.converter.PlainStreamMessageConverter;
 import com.swak.vertx.handler.converter.StreamMessageConverter;
 import com.swak.vertx.handler.converter.StringHttpMessageConverter;
 import com.swak.vertx.handler.formatter.DateFormatter;
@@ -26,7 +27,7 @@ import com.swak.vertx.transport.server.ReactiveServer;
  * @author lifeng
  */
 @Configuration
-@ConditionalOnClass({ReactiveServer.class})
+@ConditionalOnClass({ ReactiveServer.class })
 @EnableConfigurationProperties(VertxProperties.class)
 public class RouterAutoConfiguration {
 
@@ -63,6 +64,7 @@ public class RouterAutoConfiguration {
 		registry.addConverter(new Jaxb2RootElementHttpMessageConverter());
 		registry.addConverter(new StringHttpMessageConverter());
 		registry.addConverter(new StreamMessageConverter());
+		registry.addConverter(new PlainStreamMessageConverter());
 		registry.addConverter(new JsonHttpMessageConverter());
 	}
 

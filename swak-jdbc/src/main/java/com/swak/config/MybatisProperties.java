@@ -176,7 +176,7 @@ public class MybatisProperties {
 		}
 
 		// 默认的配置
-		else {
+		if (Constants.BOOT_CLASSES.size() != 0) {
 			String mapperLocations = StringUtils.format("classpath*:%s/**/dao/*.Mapper.xml", StringUtils
 					.substringBeforeLast(Constants.BOOT_CLASSES.get(0).getName(), ".").replaceAll("\\.", "/"));
 			this.mapperLocations = new String[] { mapperLocations };

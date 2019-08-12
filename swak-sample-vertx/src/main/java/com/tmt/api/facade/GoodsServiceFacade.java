@@ -1,6 +1,7 @@
 package com.tmt.api.facade;
 
 import com.swak.vertx.transport.async.VertxAsync;
+import com.tmt.api.entity.Goods;
 
 /**
  * 商品服务
@@ -15,4 +16,6 @@ public interface GoodsServiceFacade {
 	 * 就这样执行
 	 */
 	String sayHello();
+	
+	Goods get();
 }
