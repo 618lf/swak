@@ -9,7 +9,7 @@ import io.netty.util.concurrent.FastThreadLocalThread;
  * 
  * @author lifeng
  */
-public final class SwakThread extends FastThreadLocalThread {
+public final class SwakThread extends FastThreadLocalThread implements BlockedThreadChecker.Task{
 
 	private final long maxExecTime;
 	private final TimeUnit maxExecTimeUnit;
@@ -34,11 +34,11 @@ public final class SwakThread extends FastThreadLocalThread {
 		return execStart;
 	}
 
-	public long getMaxExecTime() {
+	public long maxExecTime() {
 		return maxExecTime;
 	}
 
-	public TimeUnit getMaxExecTimeUnit() {
+	public TimeUnit maxExecTimeUnit() {
 		return maxExecTimeUnit;
 	}
 

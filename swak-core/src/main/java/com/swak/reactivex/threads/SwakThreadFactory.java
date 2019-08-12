@@ -50,7 +50,7 @@ public class SwakThreadFactory implements ThreadFactory {
 		SwakThread t = new SwakThread(runnable, prefix + "thread-" + threadCount.getAndIncrement(), maxExecTime,
 				maxExecTimeUnit);
 		if (checker != null && maxExecTimeUnit != null && maxExecTime != 0) {
-			checker.registerThread(t);
+			checker.registerThread(t, t);
 		}
 		addToMap(t);
 		t.setDaemon(daemon);
