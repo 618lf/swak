@@ -19,9 +19,9 @@ import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
+import com.swak.meters.MetricBinder;
 import com.swak.meters.Metrics;
 import com.swak.meters.MetricsFactory;
-import com.swak.metrics.annotation.MetricBinder;
 import com.swak.metrics.impl.CodahaleMetricsFactory;
 
 /**
@@ -92,42 +92,48 @@ public class MetricsAutoConfiguration {
 
 		@Bean
 		public MetricBinder jvmGcMetrics() {
-			return (registry) -> {
+			return (factory) -> {
+				MetricRegistry registry = factory.metricRegistry();
 				registry.registerAll("jvm.gc", new GarbageCollectorMetricSet());
 			};
 		}
 
 		@Bean
 		public MetricBinder jvmMemoryMetrics() {
-			return (registry) -> {
+			return (factory) -> {
+				MetricRegistry registry = factory.metricRegistry();
 				registry.registerAll("jvm.memory", new MemoryUsageGaugeSet());
 			};
 		}
 
 		@Bean
 		public MetricBinder jvmThreadMetrics() {
-			return (registry) -> {
+			return (factory) -> {
+				MetricRegistry registry = factory.metricRegistry();
 				registry.registerAll("jvm.thread", new ThreadStatesGaugeSet());
 			};
 		}
 
 		@Bean
 		public MetricBinder classLoaderMetrics() {
-			return (registry) -> {
+			return (factory) -> {
+				MetricRegistry registry = factory.metricRegistry();
 				registry.registerAll("jvm.classloader", new ClassLoadingGaugeSet());
 			};
 		}
 
 		@Bean
 		public MetricBinder fileDescriptorMetrics() {
-			return (registry) -> {
+			return (factory) -> {
+				MetricRegistry registry = factory.metricRegistry();
 				registry.register("jvm.fd", new FileDescriptorRatioGauge());
 			};
 		}
 
 		@Bean
 		public MetricBinder bufferPoolMetricSet() {
-			return (registry) -> {
+			return (factory) -> {
+				MetricRegistry registry = factory.metricRegistry();
 				registry.register("jvm.buffer", new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
 			};
 		}
