@@ -1,5 +1,6 @@
 package com.swak.vertx.handler;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -35,18 +36,18 @@ public abstract class AbstractRouterHandler implements RouterHandler {
 	@Override
 	public synchronized void initRouter(Vertx vertx, AnnotationBean annotation) {
 		if (!routerFuture.isDone()) {
-			
+
 			// 初始化
 			Router router = this.initRouter(vertx);
-			
+
 			// 应用路由
 			this.applyRouter(router, vertx, annotation);
-			
+
 			// 设置成功
 			routerFuture.complete(router);
 		}
 	}
-	
+
 	/**
 	 * 初始化 Router
 	 * 
@@ -59,7 +60,7 @@ public abstract class AbstractRouterHandler implements RouterHandler {
 		router.errorHandler(500, new ErrorHandler(500));
 		return router;
 	}
-	
+
 	/**
 	 * 设置路由
 	 *
@@ -69,7 +70,7 @@ public abstract class AbstractRouterHandler implements RouterHandler {
 	 * @return
 	 */
 	private Router applyRouter(Router router, Vertx vertx, AnnotationBean annotation) {
-		
+
 		// 路由基本配置
 		for (IRouterConfig config : annotation.getRouterConfigs()) {
 			config.apply(annotation.getVertx(), router);
@@ -87,7 +88,7 @@ public abstract class AbstractRouterHandler implements RouterHandler {
 				}
 				if (rb.getRequestMethod() == RequestMethod.POST) {
 					route.method(HttpMethod.POST);
-				} else if(rb.getRequestMethod() == RequestMethod.GET) {
+				} else if (rb.getRequestMethod() == RequestMethod.GET) {
 					route.method(HttpMethod.GET);
 				}
 
@@ -112,6 +113,13 @@ public abstract class AbstractRouterHandler implements RouterHandler {
 			}
 		}
 
+		// 打印路由信息
+		if (logger.isDebugEnabled()) {
+			List<Route> routes = router.getRoutes();
+			for (Route route : routes) {
+				logger.debug("{}\t{}", route.methods().toString(), route.getPath());
+			}
+		}
 		return router;
 	}
 
