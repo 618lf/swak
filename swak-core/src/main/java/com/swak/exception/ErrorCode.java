@@ -42,6 +42,8 @@ public class ErrorCode implements Serializable, Cloneable {
 	public static ErrorCode REDIRECT_LOGIN = new ErrorCode(40010,"重新发起登录操作");
 	//Token 错误
 	public static ErrorCode TOKEN_ERROR = new ErrorCode(40011,"token 错误");
+	//路由没有找到
+	public static ErrorCode PATH_NOT_FOUNT = new ErrorCode(40012,"路由没有找到");
 	//服务器错误
 	public static ErrorCode SERVER_ERROR = new ErrorCode(50000,"服务器错误");
 	

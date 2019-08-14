@@ -26,36 +26,50 @@ import io.vertx.ext.web.Router;
  */
 public abstract class AbstractRouterHandler implements RouterHandler {
 
-	// 系统唯一的 router
-	protected static volatile CompletableFuture<Router> routerFuture = new CompletableFuture<>();
-	protected static Logger logger = LoggerFactory.getLogger(RouterHandler.class);
+	protected CompletableFuture<Router> routerFuture = new CompletableFuture<>();
+	protected Logger logger = LoggerFactory.getLogger(RouterHandler.class);
 
 	/**
-	 * 
-	 * 根据配置信息初始化 router
-	 * 
+	 * 根据配置信息初始化 Router
 	 */
 	@Override
 	public synchronized void initRouter(Vertx vertx, AnnotationBean annotation) {
 		if (!routerFuture.isDone()) {
-			Router router = this.createRouter(vertx, annotation);
+			
+			// 初始化
+			Router router = this.initRouter(vertx);
+			
+			// 应用路由
+			this.applyRouter(router, vertx, annotation);
 			
 			// 设置成功
 			routerFuture.complete(router);
 		}
 	}
-
+	
 	/**
-	 * 创建 router
+	 * 初始化 Router
 	 * 
+	 * @param vertx
 	 * @return
 	 */
-	private Router createRouter(Vertx vertx, AnnotationBean annotation) {
-
-		// 这个时候还不能修改 唯一变量 router
-		// 需要创建完成之后才行
+	private Router initRouter(Vertx vertx) {
 		Router router = Router.router(vertx);
-
+		router.errorHandler(404, new ErrorHandler(404));
+		router.errorHandler(500, new ErrorHandler(500));
+		return router;
+	}
+	
+	/**
+	 * 设置路由
+	 *
+	 * @param router
+	 * @param vertx
+	 * @param annotation
+	 * @return
+	 */
+	private Router applyRouter(Router router, Vertx vertx, AnnotationBean annotation) {
+		
 		// 路由基本配置
 		for (IRouterConfig config : annotation.getRouterConfigs()) {
 			config.apply(annotation.getVertx(), router);
