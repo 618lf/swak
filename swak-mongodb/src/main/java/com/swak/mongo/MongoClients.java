@@ -3,6 +3,7 @@ package com.swak.mongo;
 import java.util.concurrent.CompletableFuture;
 
 import org.bson.Document;
+import org.springframework.util.Assert;
 
 import com.mongodb.async.client.MongoClient;
 import com.mongodb.async.client.MongoCollection;
@@ -31,6 +32,9 @@ public class MongoClients {
 	 * @return
 	 */
 	public static CompletableFuture<Void> insert(String table, Document... docs) {
+		Assert.notNull(table, "table can not null");
+		Assert.notNull(docs, "docs can not null");
+		Assert.notEmpty(docs, "docs can not empty");
 		CompletableFuture<Void> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table);
 		if (docs.length == 1) {
