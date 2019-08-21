@@ -16,11 +16,10 @@
 			<groupId>com.swak</groupId>
 			<artifactId>swak-starter</artifactId>
 		</dependency>
-		<!-- 
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-motan</artifactId>
-		</dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>
 			<artifactId>swak-jdbc</artifactId>
