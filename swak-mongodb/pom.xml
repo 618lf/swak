@@ -16,12 +16,6 @@
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver-async</artifactId>
 			<version>${mongodb.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.mongodb</groupId>
-					<artifactId>bson</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 	</dependencies>
 </project>
