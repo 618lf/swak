@@ -63,7 +63,7 @@ public class MongoProperties extends TransportProperties {
 	/**
 	 * Database name.
 	 */
-	private String database;
+	private String database = "test";
 
 	/**
 	 * Authentication database name.
