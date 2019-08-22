@@ -24,13 +24,14 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bson.types.ObjectId;
 
-import com.swak.mongo.json.JsonArray;
-import com.swak.mongo.json.JsonObject;
+import com.alibaba.fastjson.JSONObject;
+import com.swak.mongo.json.Document;
+import com.swak.mongo.json.Documents;
 
 /**
  * @author <a href="mailto:nscavell@redhat.com">Nick Scavelli</a>
  */
-public class JsonObjectCodec extends AbstractJsonCodec<JsonObject, JsonArray> implements CollectibleCodec<JsonObject> {
+public class DocumentCodec extends AbstractJsonCodec<Document, Documents> implements CollectibleCodec<Document> {
 	public static final String ID_FIELD = "_id";
 	public static final String DATE_FIELD = "$date";
 	public static final String BINARY_FIELD = "$binary";
@@ -44,17 +45,17 @@ public class JsonObjectCodec extends AbstractJsonCodec<JsonObject, JsonArray> im
 
 	private boolean useObjectId = false;
 
-	public JsonObjectCodec(boolean useObjectId) {
+	public DocumentCodec(boolean useObjectId) {
 		this.useObjectId = useObjectId;
 	}
 
 	@Override
-	public JsonObject generateIdIfAbsentFromDocument(JsonObject json) {
+	public Document generateIdIfAbsentFromDocument(Document json) {
 
 		if (!documentHasId(json)) {
 			String value = generateHexObjectId();
 			if (useObjectId)
-				json.put(ID_FIELD, new JsonObject().put(OID_FIELD, value));
+				json.put(ID_FIELD, new Document().put(OID_FIELD, value));
 			else
 				json.put(ID_FIELD, value);
 		}
@@ -67,17 +68,17 @@ public class JsonObjectCodec extends AbstractJsonCodec<JsonObject, JsonArray> im
 	}
 
 	@Override
-	public boolean documentHasId(JsonObject json) {
+	public boolean documentHasId(Document json) {
 		return json.containsKey(ID_FIELD);
 	}
 
 	@Override
-	public BsonValue getDocumentId(JsonObject json) {
+	public BsonValue getDocumentId(Document json) {
 		if (!documentHasId(json)) {
 			throw new IllegalStateException("The document does not contain an _id");
 		}
 
-		Object id = json.getValue(ID_FIELD);
+		Object id = json.get(ID_FIELD);
 		if (id instanceof String) {
 			return new BsonString((String) id);
 		}
@@ -92,68 +93,68 @@ public class JsonObjectCodec extends AbstractJsonCodec<JsonObject, JsonArray> im
 	}
 
 	@Override
-	public Class<JsonObject> getEncoderClass() {
-		return JsonObject.class;
+	public Class<Document> getEncoderClass() {
+		return Document.class;
 	}
 
 	@Override
 	protected boolean isObjectIdInstance(Object instance) {
-		if (instance instanceof JsonObject && ((JsonObject) instance).containsKey(OID_FIELD)) {
+		if (instance instanceof Document && ((Document) instance).containsKey(OID_FIELD)) {
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	protected void beforeFields(JsonObject object, BiConsumer<String, Object> objectConsumer) {
+	protected void beforeFields(Document object, BiConsumer<String, Object> objectConsumer) {
 		if (object.containsKey(ID_FIELD)) {
-			objectConsumer.accept(ID_FIELD, object.getValue(ID_FIELD));
+			objectConsumer.accept(ID_FIELD, object.get(ID_FIELD));
 		}
 	}
 
 	@Override
-	protected JsonObject newObject() {
-		return new JsonObject();
+	protected Document newObject() {
+		return new Document();
 	}
 
 	@Override
-	protected void add(JsonObject object, String name, Object value) {
+	protected void add(Document object, String name, Object value) {
 		object.put(name, value);
 	}
 
 	@Override
 	protected boolean isObjectInstance(Object instance) {
-		return instance instanceof JsonObject;
+		return instance instanceof Document;
 	}
 
 	@Override
-	protected void forEach(JsonObject object, BiConsumer<String, Object> objectConsumer) {
-		object.forEach(entry -> {
-			objectConsumer.accept(entry.getKey(), entry.getValue());
+	protected void forEach(Document object, BiConsumer<String, Object> objectConsumer) {
+		object.forEach((k, v) -> {
+			objectConsumer.accept(k, v);
 		});
 	}
 
 	@Override
-	protected JsonArray newArray() {
-		return new JsonArray();
+	protected Documents newArray() {
+		return new Documents();
 	}
 
 	@Override
-	protected void add(JsonArray array, Object value) {
+	protected void add(Documents array, Object value) {
 		if (value != null) {
 			array.add(value);
 		} else {
-			array.addNull();
+			array.add(null);
 		}
 	}
 
 	@Override
 	protected boolean isArrayInstance(Object instance) {
-		return instance instanceof JsonArray;
+		return instance instanceof Documents;
 	}
 
 	@Override
-	protected void forEach(JsonArray array, Consumer<Object> arrayConsumer) {
+	protected void forEach(Documents array, Consumer<Object> arrayConsumer) {
 		array.forEach(arrayConsumer);
 	}
 
@@ -161,7 +162,7 @@ public class JsonObjectCodec extends AbstractJsonCodec<JsonObject, JsonArray> im
 	protected BsonType getBsonType(Object value) {
 		BsonType type = super.getBsonType(value);
 		if (type == BsonType.DOCUMENT) {
-			JsonObject obj = (JsonObject) value;
+			Document obj = (Document) value;
 			if (obj.containsKey(DATE_FIELD)) {
 				return BsonType.DATE_TIME;
 			} else if (obj.containsKey(OID_FIELD)) {
@@ -179,19 +180,19 @@ public class JsonObjectCodec extends AbstractJsonCodec<JsonObject, JsonArray> im
 
 	@Override
 	protected Object readObjectId(BsonReader reader, DecoderContext ctx) {
-		return new JsonObject().put(OID_FIELD, reader.readObjectId().toHexString());
+		return new Document().put(OID_FIELD, reader.readObjectId().toHexString());
 	}
 
 	@Override
 	protected void writeObjectId(BsonWriter writer, String name, Object value, EncoderContext ctx) {
-		JsonObject json = (JsonObject) value;
+		Document json = (Document) value;
 		ObjectId objectId = new ObjectId(json.getString(OID_FIELD));
 		writer.writeObjectId(objectId);
 	}
 
 	@Override
 	protected Object readDateTime(BsonReader reader, DecoderContext ctx) {
-		final JsonObject result = new JsonObject();
+		final Document result = new Document();
 		result.put(DATE_FIELD, OffsetDateTime.ofInstant(Instant.ofEpochMilli(reader.readDateTime()), ZoneOffset.UTC)
 				.format(ISO_OFFSET_DATE_TIME));
 		return result;
@@ -199,31 +200,30 @@ public class JsonObjectCodec extends AbstractJsonCodec<JsonObject, JsonArray> im
 
 	@Override
 	protected void writeDateTime(BsonWriter writer, String name, Object value, EncoderContext ctx) {
-		writer.writeDateTime(
-				OffsetDateTime.parse(((JsonObject) value).getString(DATE_FIELD)).toInstant().toEpochMilli());
+		writer.writeDateTime(OffsetDateTime.parse(((Document) value).getString(DATE_FIELD)).toInstant().toEpochMilli());
 	}
 
 	@Override
 	protected Object readBinary(BsonReader reader, DecoderContext ctx) {
-		final JsonObject result = new JsonObject();
+		final Document result = new Document();
 		BsonBinary bsonBinary = reader.readBinaryData();
-		result.put(BINARY_FIELD, bsonBinary.getData()).put(TYPE_FIELD, bsonBinary.getType());
+		result.fluentPut(BINARY_FIELD, bsonBinary.getData()).fluentPut(TYPE_FIELD, bsonBinary.getType());
 		return result;
 	}
 
 	@Override
 	protected void writeBinary(BsonWriter writer, String name, Object value, EncoderContext ctx) {
-		JsonObject binaryJsonObject = (JsonObject) value;
-		byte type = Optional.ofNullable(binaryJsonObject.getInteger(TYPE_FIELD)).map(Integer::byteValue)
+		Document binaryDocument = (Document) value;
+		byte type = Optional.ofNullable(binaryDocument.getInteger(TYPE_FIELD)).map(Integer::byteValue)
 				.orElse(BsonBinarySubType.BINARY.getValue());
-		final BsonBinary bson = new BsonBinary(type, binaryJsonObject.getBinary(BINARY_FIELD));
+		final BsonBinary bson = new BsonBinary(type, binaryDocument.getBytes(BINARY_FIELD));
 		writer.writeBinaryData(bson);
 	}
 
 	@Override
 	protected Object readTimeStamp(BsonReader reader, DecoderContext ctx) {
-		final JsonObject result = new JsonObject();
-		final JsonObject timeStampComponent = new JsonObject();
+		final Document result = new Document();
+		final Document timeStampComponent = new Document();
 
 		final BsonTimestamp bson = reader.readTimestamp();
 
@@ -237,7 +237,7 @@ public class JsonObjectCodec extends AbstractJsonCodec<JsonObject, JsonArray> im
 
 	@Override
 	protected void writeTimeStamp(BsonWriter writer, String name, Object value, EncoderContext ctx) {
-		final JsonObject timeStamp = ((JsonObject) value).getJsonObject(TIMESTAMP_FIELD);
+		final JSONObject timeStamp = ((Document) value).getJSONObject(TIMESTAMP_FIELD);
 
 		final BsonTimestamp bson = new BsonTimestamp(timeStamp.getInteger(TIMESTAMP_TIME_FIELD),
 				timeStamp.getInteger(TIMESTAMP_INCREMENT_FIELD));

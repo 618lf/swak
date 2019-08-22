@@ -25,8 +25,9 @@ import com.mongodb.async.client.MongoClient;
 import com.mongodb.connection.netty.NettyStreamFactoryFactory;
 import com.swak.mongo.MongoClients;
 import com.swak.mongo.MongoClients.MongoHolder;
-import com.swak.mongo.codec.JsonObjectCodec;
+import com.swak.mongo.codec.DocumentCodec;
 import com.swak.reactivex.threads.Contexts;
+import com.swak.reactivex.transport.TransportMode;
 import com.swak.reactivex.transport.resources.LoopResources;
 
 import io.netty.channel.EventLoopGroup;
@@ -52,7 +53,7 @@ public class MongoAutoConfiguration {
 	}
 
 	/**
-	 * 配置项
+	 * 配置项 mongo 只能使用 NIO, 不支持EPOLL <br>
 	 * 
 	 * @return
 	 */
@@ -60,13 +61,13 @@ public class MongoAutoConfiguration {
 	public MongoClientSettings settings() {
 		CodecRegistry commonCodecRegistry = CodecRegistries.fromCodecs(new StringCodec(), new IntegerCodec(),
 				new BooleanCodec(), new DoubleCodec(), new LongCodec(), new BsonDocumentCodec());
-		LoopResources loopResources = Contexts.createEventLoopResources(properties.getMode(), 1, -1, "Mongodb.", true,
-				2, TimeUnit.SECONDS);
+		LoopResources loopResources = Contexts.createEventLoopResources(TransportMode.NIO, 1, -1, "Mongodb.", true, 2,
+				TimeUnit.SECONDS);
 		EventLoopGroup eventLoopGroup = loopResources.onClient();
 		return MongoClientSettings.builder()
 				.streamFactoryFactory(NettyStreamFactoryFactory.builder().eventLoopGroup(eventLoopGroup).build())
 				.codecRegistry(CodecRegistries.fromRegistries(commonCodecRegistry,
-						CodecRegistries.fromCodecs(new JsonObjectCodec(true))))
+						CodecRegistries.fromCodecs(new DocumentCodec(true))))
 				.build();
 	}
 

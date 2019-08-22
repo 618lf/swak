@@ -18,7 +18,6 @@ package com.swak.config.mongo;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.swak.Constants;
-import com.swak.reactivex.transport.TransportProperties;
 
 /**
  * Configuration properties for Mongo.
@@ -33,7 +32,7 @@ import com.swak.reactivex.transport.TransportProperties;
  * @author Mark Paluch
  */
 @ConfigurationProperties(prefix = Constants.MONGO_PREFIX)
-public class MongoProperties extends TransportProperties {
+public class MongoProperties {
 
 	/**
 	 * Default port used when the configured port is {@code null}.
