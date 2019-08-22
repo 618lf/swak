@@ -67,7 +67,7 @@ public class MongoAutoConfiguration {
 		return MongoClientSettings.builder()
 				.streamFactoryFactory(NettyStreamFactoryFactory.builder().eventLoopGroup(eventLoopGroup).build())
 				.codecRegistry(CodecRegistries.fromRegistries(commonCodecRegistry,
-						CodecRegistries.fromCodecs(new DocumentCodec(true))))
+						CodecRegistries.fromCodecs(new DocumentCodec(false))))
 				.build();
 	}
 
