@@ -23,8 +23,8 @@ public class TaskScheduler implements Runnable {
 	 * 
 	 * @param tasks
 	 */
-	public TaskScheduler(List<StandardExecutor> tasks) {
-		scheduler = Contexts.createScheduledContext("Task.", 1, true, 60, TimeUnit.SECONDS);
+	public TaskScheduler(Integer coreThreads, List<StandardExecutor> tasks) {
+		scheduler = Contexts.createScheduledContext("Task.", coreThreads, true, 60, TimeUnit.SECONDS);
 		scheduler.scheduleAtFixedRate(this, 60, 10, TimeUnit.SECONDS);
 		ShutDownHook.registerShutdownHook(() -> {
 			scheduler.shutdownNow();

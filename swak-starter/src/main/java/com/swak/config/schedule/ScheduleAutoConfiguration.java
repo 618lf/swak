@@ -3,6 +3,7 @@ package com.swak.config.schedule;
 import java.util.List;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,9 @@ import com.swak.schedule.TaskScheduler;
 @ConditionalOnClass(TaskScheduler.class)
 public class ScheduleAutoConfiguration {
 
+	@Autowired
+	private ScheduleProperties properties;
+	
 	/**
 	 * 统一的定时任务处理
 	 * 
@@ -26,6 +30,6 @@ public class ScheduleAutoConfiguration {
 	 */
 	@Bean
 	public TaskScheduler secondLevelScheduled(ObjectProvider<List<StandardExecutor>> tasks) {
-		return new TaskScheduler(tasks.getIfAvailable());
+		return new TaskScheduler(properties.getCoreThreads(), tasks.getIfAvailable());
 	}
 }
