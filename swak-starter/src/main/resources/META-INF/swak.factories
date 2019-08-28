@@ -9,12 +9,11 @@ com.swak.config.jdbc.DataSourceTransactionManagerConfiguration,\
 com.swak.config.jdbc.MybatisAutoConfiguration,\
 com.swak.config.http.HttpClientAutoConfiguration,\
 com.swak.config.redis.CacheAutoConfiguration,\
-com.swak.config.storage.StorageAutoConfiguration,\
-com.swak.config.quartz.ScheduleAutoConfiguration,\
+com.swak.config.schedule.ScheduleAutoConfiguration,\
 com.swak.config.ApplicationAutoConfiguration,\
 com.swak.config.freemarker.FreeMarkerAutoConfiguration,\
 com.swak.config.mq.RabbitMqAutoConfiguration,\
-com.swak.config.mongo.MongoAutoConfiguration,\
+com.swak.config.mongo.mongoautoconfiguration,\
 com.swak.config.motan.MotanAutoConfiguration,\
 com.swak.config.motan.MotanCommandLineRunner,\
 com.swak.config.flux.FluxAutoConfiguration,\

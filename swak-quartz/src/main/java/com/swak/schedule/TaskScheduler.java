@@ -1,13 +1,11 @@
 package com.swak.schedule;
 
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.swak.closable.ShutDownHook;
+import com.swak.reactivex.threads.Contexts;
 import com.swak.utils.Lists;
 
 /**
@@ -15,7 +13,7 @@ import com.swak.utils.Lists;
  * 
  * @author lifeng
  */
-public class TaskScheduled implements Runnable {
+public class TaskScheduler implements Runnable {
 
 	private ScheduledExecutorService scheduler;
 	private List<CronTrigger> triggers;
@@ -25,19 +23,9 @@ public class TaskScheduled implements Runnable {
 	 * 
 	 * @param tasks
 	 */
-	public TaskScheduled(List<TaskExecutor> tasks) {
-		scheduler = Executors.newScheduledThreadPool(2, new ThreadFactory() {
-			private AtomicInteger count = new AtomicInteger(1);
-
-			@Override
-			public Thread newThread(Runnable r) {
-				Thread t = new Thread(r);
-				t.setDaemon(true);
-				t.setName("Task-scheduler-" + count.getAndIncrement());
-				return t;
-			}
-		});
-		scheduler.scheduleAtFixedRate(this, 10, 10, TimeUnit.SECONDS);
+	public TaskScheduler(List<StandardExecutor> tasks) {
+		scheduler = Contexts.createScheduledContext("Task.", 1, true, 60, TimeUnit.SECONDS);
+		scheduler.scheduleAtFixedRate(this, 60, 10, TimeUnit.SECONDS);
 		ShutDownHook.registerShutdownHook(() -> {
 			scheduler.shutdownNow();
 		});
@@ -45,9 +33,9 @@ public class TaskScheduled implements Runnable {
 	}
 
 	// 初始化促发器
-	private void initTriggers(List<TaskExecutor> tasks) {
+	private void initTriggers(List<StandardExecutor> tasks) {
 		triggers = Lists.newArrayList();
-		for (TaskExecutor task : tasks) {
+		for (StandardExecutor task : tasks) {
 			CronTrigger trigger = new CronTrigger(scheduler, task);
 			triggers.add(trigger);
 		}

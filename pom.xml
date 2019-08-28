@@ -155,11 +155,6 @@
 			</dependency>
 			<dependency>
 				<groupId>com.swak</groupId>
-				<artifactId>swak-storage</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.swak</groupId>
 				<artifactId>swak-quartz</artifactId>
 				<version>${project.version}</version>
 			</dependency>

@@ -55,11 +55,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>
-			<artifactId>swak-storage</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.swak</groupId>
 			<artifactId>swak-motan</artifactId>
 			<scope>provided</scope>
 		</dependency>

@@ -11,11 +11,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class CronTrigger {
 
-	private final TaskExecutor task;
+	private final StandardExecutor task;
 	private final ScheduledExecutorService scheduler;
 	private volatile ScheduledFuture<?> future;
 
-	public CronTrigger(ScheduledExecutorService scheduler, TaskExecutor task) {
+	public CronTrigger(ScheduledExecutorService scheduler, StandardExecutor task) {
 		this.scheduler = scheduler;
 		this.task = task;
 	}
