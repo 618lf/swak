@@ -8,8 +8,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 import com.codahale.metrics.ScheduledReporter;
+import com.swak.meters.MetricBinder;
 import com.swak.meters.MetricsFactory;
-import com.swak.metrics.annotation.MetricBinder;
 import com.swak.utils.ConcurrentHashSet;
 
 /**
@@ -47,7 +47,7 @@ public class MetricRegistryPostProcessor implements BeanPostProcessor, Applicati
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		if (metricsFactory != null) {
 			binders.stream().forEach(binder -> {
-				binder.bindTo(metricsFactory.metricRegistry());
+				binder.bindTo(metricsFactory);
 			});
 		}
 		if (reporter != null) {

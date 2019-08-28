@@ -1,6 +1,6 @@
-package com.swak.metrics.annotation;
+package com.swak.meters;
 
-import com.codahale.metrics.MetricRegistry;
+import com.swak.meters.MetricsFactory;
 
 /**
  * 绑定到指标收集器
@@ -15,5 +15,5 @@ public interface MetricBinder {
 	 * 
 	 * @param registry
 	 */
-	void bindTo(MetricRegistry registry);
+	void bindTo(MetricsFactory metricsFactory);
 }

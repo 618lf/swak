@@ -83,5 +83,10 @@
 			<artifactId>swak-template</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-mongodb</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 </project>

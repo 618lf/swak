@@ -53,7 +53,7 @@ public class ResultHandler {
 		}
 
 		// 已经输出数据
-		if (context.response().ended()) {
+		if (!this.canWrite(context)) {
 			return;
 		}
 
@@ -73,7 +73,7 @@ public class ResultHandler {
 		}
 
 		// 允许返回 void 但需自己实现输出
-		if (!context.response().ended()) {
+		if (this.canWrite(context)) {
 			context.response().putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
 			context.response().end(Result.success(StringUtils.EMPTY).toJson());
 		}
@@ -88,7 +88,7 @@ public class ResultHandler {
 	public void handleError(Throwable e, RoutingContext context) {
 
 		// 已经输出数据
-		if (context.response().ended()) {
+		if (!this.canWrite(context)) {
 			return;
 		}
 
@@ -99,5 +99,15 @@ public class ResultHandler {
 
 		// 打印错误信息
 		logger.error("{}", context.request().uri(), e.getCause() != null ? e.getCause() : e);
+	}
+
+	/**
+	 * 是否可以输出数据
+	 * 
+	 * @param context
+	 * @return
+	 */
+	private boolean canWrite(RoutingContext context) {
+		return !context.response().closed() && !context.response().ended();
 	}
 }
