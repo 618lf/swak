@@ -16,7 +16,6 @@
 		<module>swak-sample</module>
 		<module>swak-sample-rpc</module>
 		<module>swak-groovy</module>
-		<module>swak-storage</module>
 		<module>swak-motan</module>
 		<module>swak-sample-api</module>
 		<module>swak-vertx</module>
