@@ -15,7 +15,7 @@ import org.bson.codecs.EncoderContext;
 /**
  * @author <a href="mailto:nscavell@redhat.com">Nick Scavelli</a>
  */
-public abstract class AbstractJsonCodec<O, A> implements Codec<O> {
+public abstract class AbstractDocumentCodec<O, A> implements Codec<O> {
 
 	@Override
 	public O decode(BsonReader reader, DecoderContext decoderContext) {

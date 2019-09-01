@@ -1,5 +1,13 @@
 package com.swak.mongo.codec;
 
+import static com.swak.mongo.json.Document.BINARY_FIELD;
+import static com.swak.mongo.json.Document.DATE_FIELD;
+import static com.swak.mongo.json.Document.ID_FIELD;
+import static com.swak.mongo.json.Document.OID_FIELD;
+import static com.swak.mongo.json.Document.TIMESTAMP_FIELD;
+import static com.swak.mongo.json.Document.TIMESTAMP_INCREMENT_FIELD;
+import static com.swak.mongo.json.Document.TIMESTAMP_TIME_FIELD;
+import static com.swak.mongo.json.Document.TYPE_FIELD;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 import java.time.Instant;
@@ -31,17 +39,7 @@ import com.swak.mongo.json.Documents;
 /**
  * @author <a href="mailto:nscavell@redhat.com">Nick Scavelli</a>
  */
-public class DocumentCodec extends AbstractJsonCodec<Document, Documents> implements CollectibleCodec<Document> {
-	public static final String ID_FIELD = "_id";
-	public static final String DATE_FIELD = "$date";
-	public static final String BINARY_FIELD = "$binary";
-	public static final String TYPE_FIELD = "$type";
-	public static final String OID_FIELD = "$oid";
-
-	// https://docs.mongodb.org/manual/reference/mongodb-extended-json/#timestamp
-	public static final String TIMESTAMP_FIELD = "$timestamp";
-	public static final String TIMESTAMP_TIME_FIELD = "t";
-	public static final String TIMESTAMP_INCREMENT_FIELD = "i";
+public class DocumentCodec extends AbstractDocumentCodec<Document, Documents> implements CollectibleCodec<Document> {
 
 	private boolean useObjectId = false;
 

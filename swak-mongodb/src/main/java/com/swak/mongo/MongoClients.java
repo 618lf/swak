@@ -1,13 +1,18 @@
 package com.swak.mongo;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.util.Assert;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.async.client.FindIterable;
 import com.mongodb.async.client.MongoClient;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.async.client.MongoDatabase;
+import com.mongodb.client.model.FindOptions;
 import com.swak.mongo.json.Document;
+import com.swak.mongo.json.DocumentBsonAdapter;
 import com.swak.utils.Lists;
 
 /**
@@ -22,6 +27,65 @@ public class MongoClients {
 
 	public static void setMongoDB(MongoHolder holder) {
 		MongoClients.holder = holder;
+	}
+
+	/**
+	 * 根据ID获取数据
+	 * 
+	 * @param table
+	 * @param id
+	 * @return
+	 */
+	public static CompletableFuture<Document> get(String table, Object id) {
+		Assert.notNull(table, "table can not null");
+		Assert.notNull(id, "id can not null");
+		CompletableFuture<Document> future = new CompletableFuture<>();
+		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
+		BasicDBObject query = new BasicDBObject(Document.ID_FIELD, id);
+		collection.find(query).first((v, r) -> {
+			if (r != null) {
+				future.completeExceptionally(r);
+			} else {
+				future.complete(v);
+			}
+		});
+		return future;
+	}
+
+	/**
+	 * 根据ID获取数据
+	 * 
+	 * @param table
+	 * @param id
+	 * @return
+	 */
+	public static CompletableFuture<List<Document>> query(String table, Document query, FindOptions options) {
+		Assert.notNull(table, "table can not null");
+		Assert.notNull(query, "query can not null");
+		CompletableFuture<List<Document>> future = new CompletableFuture<>();
+		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
+		FindIterable<Document> find = collection.find(DocumentBsonAdapter.wrap(query), Document.class);
+		if (options.getLimit() != -1) {
+			find.limit(options.getLimit());
+		}
+		if (options.getSkip() > 0) {
+			find.skip(options.getSkip());
+		}
+		if (options.getSort() != null) {
+			find.sort(options.getSort());
+		}
+		if (options.getProjection() != null) {
+			find.projection(options.getProjection());
+		}
+		List<Document> results = Lists.newArrayList();
+		find.into(results, (v, r) -> {
+			if (r != null) {
+				future.completeExceptionally(r);
+			} else {
+				future.complete(results);
+			}
+		});
+		return future;
 	}
 
 	/**
@@ -51,6 +115,74 @@ public class MongoClients {
 					future.completeExceptionally(r);
 				} else {
 					future.complete(v);
+				}
+			});
+		}
+		return future;
+	}
+
+	/**
+	 * 保存数据
+	 * 
+	 * @param table
+	 * @param doc
+	 * @return
+	 */
+	public static CompletableFuture<Void> save(String table, Document doc) {
+		Assert.notNull(table, "table can not null");
+		Assert.notNull(doc, "doc can not null");
+		CompletableFuture<Void> future = new CompletableFuture<>();
+		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
+		Object id = doc.get(Document.ID_FIELD);
+		if (id == null) {
+			collection.insertOne(doc, (v, r) -> {
+				if (r != null) {
+					future.completeExceptionally(r);
+				} else {
+					future.complete(v);
+				}
+			});
+		} else {
+			com.mongodb.client.model.UpdateOptions options = new com.mongodb.client.model.UpdateOptions().upsert(true);
+			Document filter = new Document();
+			collection.replaceOne(DocumentBsonAdapter.wrap(filter), doc, options, (v, r) -> {
+				if (r != null) {
+					future.completeExceptionally(r);
+				} else {
+					future.complete(null);
+				}
+			});
+		}
+		return future;
+	}
+
+	/**
+	 * 保存数据
+	 * 
+	 * @param table
+	 * @param doc
+	 * @return
+	 */
+	public static CompletableFuture<Void> delete(String table, Document doc) {
+		Assert.notNull(table, "table can not null");
+		Assert.notNull(doc, "doc can not null");
+		CompletableFuture<Void> future = new CompletableFuture<>();
+		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
+		Object id = doc.get(Document.ID_FIELD);
+		if (id == null) {
+			collection.deleteOne(DocumentBsonAdapter.wrap(doc), (v, r) -> {
+				if (r != null) {
+					future.completeExceptionally(r);
+				} else {
+					future.complete(null);
+				}
+			});
+		} else {
+			collection.deleteMany(DocumentBsonAdapter.wrap(doc), (v, r) -> {
+				if (r != null) {
+					future.completeExceptionally(r);
+				} else {
+					future.complete(null);
 				}
 			});
 		}
