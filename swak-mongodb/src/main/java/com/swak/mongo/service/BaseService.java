@@ -8,6 +8,8 @@ import com.swak.entity.Page;
 import com.swak.entity.Parameters;
 import com.swak.mongo.MongoClients;
 import com.swak.mongo.json.Document;
+import com.swak.utils.Lists;
+import com.swak.utils.Maps;
 
 /**
  * 基础的 DAO
@@ -20,7 +22,7 @@ public class BaseService<T> {
 	 * 目标类字节码
 	 */
 	private Class<T> clazz;
-	
+
 	/**
 	 * 获取数据
 	 * 
@@ -28,8 +30,12 @@ public class BaseService<T> {
 	 * @param id
 	 * @return
 	 */
-	public CompletableFuture<Document> get(String table, String id) {
-		return MongoClients.get(table, id);
+	public CompletableFuture<T> get(String table, String id) {
+		return MongoClients.get(table, id).thenApply(res -> {
+			T bean = this.newInstance();
+			Maps.toBean(res, bean);
+			return bean;
+		});
 	}
 
 	/**
@@ -93,9 +99,32 @@ public class BaseService<T> {
 	 */
 	public CompletableFuture<Page> query(String table, T entity, Parameters param) {
 		Document query = new Document(entity);
-		return MongoClients.query(table, query, param);
+		return MongoClients.query(table, query, param).thenApply(page -> {
+			List<Document> docs = page.getData();
+			List<T> ts = Lists.newArrayList(docs.size());
+			for (Document doc : docs) {
+				T bean = this.newInstance();
+				Maps.toBean(doc, bean);
+				ts.add(bean);
+			}
+			page.setData(ts);
+			return page;
+		});
 	}
-	
+
+	/**
+	 * 创建实例
+	 * 
+	 * @return
+	 */
+	protected T newInstance() {
+		try {
+			return this.getTargetClass().newInstance();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	/**
 	 * 目标对象 T 的实际类型
 	 * 
