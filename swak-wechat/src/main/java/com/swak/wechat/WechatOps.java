@@ -11,6 +11,7 @@ import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.wechat.codec.SignUtils;
 import com.swak.wechat.pay.MchOrderquery;
+import com.swak.wechat.pay.MchPayment;
 import com.swak.wechat.pay.Refundorder;
 import com.swak.wechat.pay.Refundquery;
 import com.swak.wechat.pay.SandboxSignKey;
@@ -343,6 +344,31 @@ public class WechatOps {
 		return app.request(url, reqBody, false).thenApply(res -> {
 			Map<String, Object> maps = Maps.fromXml(res);
 			return String.valueOf(maps.get("sandbox_signkey"));
+		});
+	}
+	
+	// ==========================================================
+	// 微信结算： 发红包 - 发现金
+	// ==========================================================
+	
+	/**
+	 * 发现金
+	 * 
+	 * @param app
+	 * @param refund
+	 * @return
+	 */
+	public static CompletableFuture<Map<String, Object>> sendamount(WechatConfig app, MchPayment mchPayment) {
+		CompletableFuture<String> future = null;
+		mchPayment.setSign_type(Constants.MD5);
+		future = CompletableFuture.completedFuture(Constants.MMPAYMKTTRANSFERS_URL_SUFFIX);
+		return future.thenCompose(res -> {
+			String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API).append(res).toString();
+			mchPayment.checkAndSign(app);
+			String reqBody = JaxbMapper.toXml(mchPayment);
+			return app.request(url, reqBody, true);
+		}).thenApply(res -> {
+			return app.process(res, mchPayment.getSign_type());
 		});
 	}
 }

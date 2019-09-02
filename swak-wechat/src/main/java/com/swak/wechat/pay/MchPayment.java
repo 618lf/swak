@@ -6,7 +6,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.swak.incrementer.UUIdGenerator;
 import com.swak.utils.CDataAdapter;
+import com.swak.utils.StringUtils;
+import com.swak.wechat.WechatConfig;
+import com.swak.wechat.WechatErrorException;
+import com.swak.wechat.codec.SignUtils;
 
 /**
  * 企业付款
@@ -43,6 +48,14 @@ public class MchPayment {
 	@XmlElement
 	private String spbill_create_ip;
 	
+	private String sign_type;
+	
+	public String getSign_type() {
+		return sign_type;
+	}
+	public void setSign_type(String sign_type) {
+		this.sign_type = sign_type;
+	}
 	public String getMch_appid() {
 		return mch_appid;
 	}
@@ -114,5 +127,27 @@ public class MchPayment {
 	}
 	public void setSpbill_create_ip(String spbill_create_ip) {
 		this.spbill_create_ip = spbill_create_ip;
+	}
+	
+	/**
+	 * 校验并设置签名
+	 * 
+	 * @param config
+	 * @throws Exception 
+	 */
+	public void checkAndSign(WechatConfig config) {
+		if (StringUtils.isBlank(getMch_appid())) {
+			this.setMch_appid(config.getMchApp());
+		}
+		if (StringUtils.isBlank(this.getMchid())) {
+			this.setMchid(config.getMchId());
+		}
+		if (StringUtils.isBlank(this.getNonce_str())) {
+			this.setNonce_str(UUIdGenerator.uuid());
+		}
+		if (StringUtils.isBlank(this.getPartner_trade_no())) {
+			throw new WechatErrorException("付款的必填参数未填写：商户订单号不能为空");
+		}
+		this.setSign(SignUtils.generateSign(this, this.getSign_type(), config.getMchKey()));
 	}
 }

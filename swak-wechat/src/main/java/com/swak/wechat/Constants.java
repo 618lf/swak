@@ -34,6 +34,7 @@ public interface Constants {
 	String REPORT_URL_SUFFIX = "/payitil/report";
 	String SHORTURL_URL_SUFFIX = "/tools/shorturl";
 	String AUTHCODETOOPENID_URL_SUFFIX = "/tools/authcodetoopenid";
+	String MMPAYMKTTRANSFERS_URL_SUFFIX = "/mmpaymkttransfers/promotion/transfers";
 
 	// sandbox
 	String SANDBOX_GET_SIGNKEY_SUFFIX = "/sandboxnew/pay/getsignkey";
