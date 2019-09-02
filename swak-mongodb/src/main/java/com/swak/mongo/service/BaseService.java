@@ -1,5 +1,6 @@
 package com.swak.mongo.service;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -14,6 +15,22 @@ import com.swak.mongo.json.Document;
  * @author lifeng
  */
 public class BaseService<T> {
+
+	/**
+	 * 目标类字节码
+	 */
+	private Class<T> clazz;
+	
+	/**
+	 * 获取数据
+	 * 
+	 * @param table
+	 * @param id
+	 * @return
+	 */
+	public CompletableFuture<Document> get(String table, String id) {
+		return MongoClients.get(table, id);
+	}
 
 	/**
 	 * 插入数据
@@ -77,5 +94,18 @@ public class BaseService<T> {
 	public CompletableFuture<Page> query(String table, T entity, Parameters param) {
 		Document query = new Document(entity);
 		return MongoClients.query(table, query, param);
+	}
+	
+	/**
+	 * 目标对象 T 的实际类型
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	protected Class<T> getTargetClass() {
+		if (clazz == null) {
+			clazz = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+		}
+		return clazz;
 	}
 }
