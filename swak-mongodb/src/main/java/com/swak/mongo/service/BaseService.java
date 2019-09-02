@@ -72,9 +72,13 @@ public class BaseService<T> {
 	 * @param entity
 	 * @return
 	 */
-	public CompletableFuture<Void> save(String table, T entity) {
+	public CompletableFuture<T> save(String table, T entity) {
 		Document doc = new Document(entity);
-		return MongoClients.save(table, doc);
+		return MongoClients.save(table, doc).thenApply(res -> {
+			T bean = this.newInstance();
+			Maps.toBean(doc, bean);
+			return bean;
+		});
 	}
 
 	/**
@@ -84,7 +88,7 @@ public class BaseService<T> {
 	 * @param entity
 	 * @return
 	 */
-	public CompletableFuture<Void> delete(String table, T entity) {
+	public CompletableFuture<Long> delete(String table, T entity) {
 		Document doc = new Document(entity);
 		return MongoClients.delete(table, doc);
 	}

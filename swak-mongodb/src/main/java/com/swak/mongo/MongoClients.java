@@ -153,10 +153,10 @@ public class MongoClients {
 	 * @param doc
 	 * @return
 	 */
-	public static CompletableFuture<Void> delete(String table, Document doc) {
+	public static CompletableFuture<Long> delete(String table, Document doc) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(doc, "doc can not null");
-		CompletableFuture<Void> future = new CompletableFuture<>();
+		CompletableFuture<Long> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
 		Object id = doc.get(Document.ID_FIELD);
 		if (id == null) {
@@ -164,7 +164,7 @@ public class MongoClients {
 				if (r != null) {
 					future.completeExceptionally(r);
 				} else {
-					future.complete(null);
+					future.complete(v.getDeletedCount());
 				}
 			});
 		} else {
@@ -172,7 +172,7 @@ public class MongoClients {
 				if (r != null) {
 					future.completeExceptionally(r);
 				} else {
-					future.complete(null);
+					future.complete(v.getDeletedCount());
 				}
 			});
 		}
