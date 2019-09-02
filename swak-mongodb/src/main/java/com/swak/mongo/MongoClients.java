@@ -10,7 +10,8 @@ import com.mongodb.async.client.FindIterable;
 import com.mongodb.async.client.MongoClient;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.async.client.MongoDatabase;
-import com.mongodb.client.model.FindOptions;
+import com.swak.entity.Page;
+import com.swak.entity.Parameters;
 import com.swak.mongo.json.Document;
 import com.swak.mongo.json.DocumentBsonAdapter;
 import com.swak.utils.Lists;
@@ -59,30 +60,19 @@ public class MongoClients {
 	 * @param id
 	 * @return
 	 */
-	public static CompletableFuture<List<Document>> query(String table, Document query, FindOptions options) {
+	public static CompletableFuture<Page> query(String table, Document query, Parameters param) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(query, "query can not null");
-		CompletableFuture<List<Document>> future = new CompletableFuture<>();
+		CompletableFuture<Page> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
 		FindIterable<Document> find = collection.find(DocumentBsonAdapter.wrap(query), Document.class);
-		if (options.getLimit() != -1) {
-			find.limit(options.getLimit());
-		}
-		if (options.getSkip() > 0) {
-			find.skip(options.getSkip());
-		}
-		if (options.getSort() != null) {
-			find.sort(options.getSort());
-		}
-		if (options.getProjection() != null) {
-			find.projection(options.getProjection());
-		}
+		find.limit(param.getPageSize()).skip(param.getPageIndex() * param.getPageSize());
 		List<Document> results = Lists.newArrayList();
 		find.into(results, (v, r) -> {
 			if (r != null) {
 				future.completeExceptionally(r);
 			} else {
-				future.complete(results);
+				future.complete(new Page(param, results));
 			}
 		});
 		return future;

@@ -1,6 +1,9 @@
 package com.swak.mongo.json;
 
+import java.util.Map;
+
 import com.alibaba.fastjson.JSONObject;
+import com.swak.utils.Maps;
 
 /**
  * 挂名
@@ -17,4 +20,16 @@ public class Document extends JSONObject {
 	public static final String TIMESTAMP_TIME_FIELD = "t";
 	public static final String TIMESTAMP_INCREMENT_FIELD = "i";
 	private static final long serialVersionUID = 1L;
+
+	public Document() {
+		super();
+	}
+
+	public Document(Map<String, Object> map) {
+		super(map);
+	}
+
+	public <T> Document(T bean) {
+		super(Maps.toMap(bean));
+	}
 }
