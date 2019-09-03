@@ -32,9 +32,12 @@ public class BaseService<T> {
 	 */
 	public CompletableFuture<T> get(String table, String id) {
 		return MongoClients.get(table, id).thenApply(res -> {
-			T bean = this.newInstance();
-			Maps.toBean(res, bean);
-			return bean;
+			if (res != null) {
+				T bean = this.newInstance();
+				Maps.toBean(res, bean);
+				return bean;
+			}
+			return null;
 		});
 	}
 
