@@ -44,7 +44,7 @@ public class ApplicationContextLoader extends AbstractContextLoader {
 				() -> "No configuration classes " + "or locations found in @SpringApplicationConfiguration. "
 						+ "For default configuration detection to work you need " + "Spring 4.0.3 or better (found "
 						+ SpringVersion.getVersion() + ").");
-		SpringApplication application = getSpringApplication();
+		Application application = getSpringApplication();
 		application.setMainApplicationClass(config.getTestClass());
 		application.addPrimarySources(Arrays.asList(configClasses));
 		application.getSources().addAll(Arrays.asList(configLocations));
@@ -67,9 +67,11 @@ public class ApplicationContextLoader extends AbstractContextLoader {
 		application.setInitializers(initializers);
 		return application.run();
 	}
+
 	protected Application getSpringApplication() {
 		return new Application();
 	}
+
 	protected ConfigurableEnvironment getEnvironment() {
 		return new StandardEnvironment();
 	}
@@ -103,6 +105,7 @@ public class ApplicationContextLoader extends AbstractContextLoader {
 		return new MapConfigurationPropertySource(
 				TestPropertySourceUtils.convertInlinedPropertiesToMap(StringUtils.toStringArray(properties)));
 	}
+
 	protected List<ApplicationContextInitializer<?>> getInitializers(MergedContextConfiguration config,
 			SpringApplication application) {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
@@ -132,6 +135,7 @@ public class ApplicationContextLoader extends AbstractContextLoader {
 			configAttributes.setClasses(defaultConfigClasses);
 		}
 	}
+
 	protected Class<?>[] detectDefaultConfigurationClasses(Class<?> declaringClass) {
 		return AnnotationConfigContextLoaderUtils.detectDefaultConfigurationClasses(declaringClass);
 	}
