@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -32,12 +34,31 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import com.swak.Application;
+import com.swak.reactivex.context.ReactiveServerApplicationContext;
 import com.swak.test.utils.TestPropertyValues;
 
 public class ApplicationContextLoader extends AbstractContextLoader {
 
+	/**
+	 * 系统启动的日志
+	 */
+	public final static Logger APP_LOGGER = LoggerFactory.getLogger(Application.class);
+
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration config) throws Exception {
+		long start = System.currentTimeMillis();
+		ApplicationContext context = this._loadContext(config);
+		long end = System.currentTimeMillis();
+		if (context instanceof ReactiveServerApplicationContext) {
+			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s" + ", listening on ["
+					+ ((ReactiveServerApplicationContext) context).getServer().getAddresses() + "]");
+		} else {
+			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s");
+		}
+		return context;
+	}
+
+	private ApplicationContext _loadContext(MergedContextConfiguration config) throws Exception {
 		Class<?>[] configClasses = config.getClasses();
 		String[] configLocations = config.getLocations();
 		Assert.state(!ObjectUtils.isEmpty(configClasses) || !ObjectUtils.isEmpty(configLocations),
