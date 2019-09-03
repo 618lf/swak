@@ -5,7 +5,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.springframework.util.Assert;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.async.client.FindIterable;
 import com.mongodb.async.client.MongoClient;
 import com.mongodb.async.client.MongoCollection;
@@ -42,8 +41,9 @@ public class MongoClients {
 		Assert.notNull(id, "id can not null");
 		CompletableFuture<Document> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
-		BasicDBObject query = new BasicDBObject(Document.ID_FIELD, id);
-		collection.find(query).first((v, r) -> {
+		Document query = new Document();
+		query.put(Document.ID_FIELD, id);
+		collection.find(DocumentBsonAdapter.wrap(query)).first((v, r) -> {
 			if (r != null) {
 				future.completeExceptionally(r);
 			} else {
