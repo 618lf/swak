@@ -360,7 +360,6 @@ public class WechatOps {
 	 */
 	public static CompletableFuture<Map<String, Object>> sendamount(WechatConfig app, MchPayment mchPayment) {
 		CompletableFuture<String> future = null;
-		mchPayment.setSign_type(Constants.MD5);
 		future = CompletableFuture.completedFuture(Constants.MMPAYMKTTRANSFERS_URL_SUFFIX);
 		return future.thenCompose(res -> {
 			String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API).append(res).toString();

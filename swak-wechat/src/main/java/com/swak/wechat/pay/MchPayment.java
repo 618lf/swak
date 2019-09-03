@@ -48,14 +48,6 @@ public class MchPayment {
 	@XmlElement
 	private String spbill_create_ip;
 	
-	private String sign_type;
-	
-	public String getSign_type() {
-		return sign_type;
-	}
-	public void setSign_type(String sign_type) {
-		this.sign_type = sign_type;
-	}
 	public String getMch_appid() {
 		return mch_appid;
 	}
@@ -148,6 +140,6 @@ public class MchPayment {
 		if (StringUtils.isBlank(this.getPartner_trade_no())) {
 			throw new WechatErrorException("付款的必填参数未填写：商户订单号不能为空");
 		}
-		this.setSign(SignUtils.generateSign(this, this.getSign_type(), config.getMchKey()));
+		this.setSign(SignUtils.generateSign(this, null, config.getMchKey()));
 	}
 }
