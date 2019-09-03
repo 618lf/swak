@@ -14,7 +14,6 @@ import org.bson.codecs.LongCodec;
 import org.bson.codecs.StringCodec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -44,9 +43,6 @@ import io.netty.channel.EventLoopGroup;
 public class MongoAutoConfiguration {
 
 	private MongoClient mongo;
-
-	@Autowired
-	private MongoProperties properties;
 
 	public MongoAutoConfiguration() {
 		APP_LOGGER.debug("Loading Mongo");
@@ -78,7 +74,7 @@ public class MongoAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public MongoClient mongoClient(MongoClientSettings settings) {
+	public MongoClient mongoClient(MongoClientSettings settings, MongoProperties properties) {
 		MongoClientFactory factory = new MongoClientFactory(properties);
 		this.mongo = factory.createMongoClient(settings);
 		MongoHolder holder = new MongoHolder(this.mongo, this.mongo.getDatabase(properties.getDatabase()));

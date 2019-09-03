@@ -16,12 +16,17 @@ import com.swak.utils.Maps;
  * 
  * @author lifeng
  */
-public class BaseService<T> {
+public abstract class BaseService<T> {
 
 	/**
 	 * 目标类字节码
 	 */
 	private Class<T> clazz;
+
+	/**
+	 * 数据库名称
+	 */
+	protected abstract String table();
 
 	/**
 	 * 获取数据
@@ -30,27 +35,16 @@ public class BaseService<T> {
 	 * @param id
 	 * @return
 	 */
-	public CompletableFuture<T> get(String table, String id) {
-		return MongoClients.get(table, id).thenApply(res -> {
+	public CompletableFuture<T> get(String id) {
+		return MongoClients.get(table(), id).thenApply(res -> {
 			if (res != null) {
 				T bean = this.newInstance();
+				res.put(Document._ID_FIELD, res.get(Document.ID_FIELD));
 				Maps.toBean(res, bean);
 				return bean;
 			}
 			return null;
 		});
-	}
-
-	/**
-	 * 插入数据
-	 * 
-	 * @param table
-	 * @param entity
-	 * @return
-	 */
-	public CompletableFuture<Void> insert(String table, T entity) {
-		Document doc = new Document(entity);
-		return MongoClients.insert(table, doc);
 	}
 
 	/**
@@ -65,7 +59,7 @@ public class BaseService<T> {
 		for (int i = 0; i < entitys.size(); i++) {
 			docs[i] = new Document(entitys.get(i));
 		}
-		return MongoClients.insert(table, docs);
+		return MongoClients.insert(table(), docs);
 	}
 
 	/**
@@ -75,10 +69,11 @@ public class BaseService<T> {
 	 * @param entity
 	 * @return
 	 */
-	public CompletableFuture<T> save(String table, T entity) {
+	public CompletableFuture<T> save(T entity) {
 		Document doc = new Document(entity);
-		return MongoClients.save(table, doc).thenApply(res -> {
+		return MongoClients.save(table(), doc).thenApply(res -> {
 			T bean = this.newInstance();
+			res.put(Document._ID_FIELD, res.get(Document.ID_FIELD));
 			Maps.toBean(doc, bean);
 			return bean;
 		});
@@ -91,9 +86,9 @@ public class BaseService<T> {
 	 * @param entity
 	 * @return
 	 */
-	public CompletableFuture<Long> delete(String table, T entity) {
+	public CompletableFuture<Long> delete(T entity) {
 		Document doc = new Document(entity);
-		return MongoClients.delete(table, doc);
+		return MongoClients.delete(table(), doc);
 	}
 
 	/**
@@ -104,18 +99,41 @@ public class BaseService<T> {
 	 * @param param
 	 * @return
 	 */
-	public CompletableFuture<Page> query(String table, T entity, Parameters param) {
+	public CompletableFuture<Page> page(T entity, Parameters param) {
 		Document query = new Document(entity);
-		return MongoClients.query(table, query, param).thenApply(page -> {
+		return MongoClients.page(table(), query, param).thenApply(page -> {
 			List<Document> docs = page.getData();
 			List<T> ts = Lists.newArrayList(docs.size());
 			for (Document doc : docs) {
 				T bean = this.newInstance();
+				doc.put(Document._ID_FIELD, doc.get(Document.ID_FIELD));
 				Maps.toBean(doc, bean);
 				ts.add(bean);
 			}
 			page.setData(ts);
 			return page;
+		});
+	}
+
+	/**
+	 * 查询
+	 * 
+	 * @param table
+	 * @param entity
+	 * @param param
+	 * @return
+	 */
+	public CompletableFuture<List<T>> query(T entity, int limit) {
+		Document query = new Document(entity);
+		return MongoClients.query(table(), query, limit).thenApply(docs -> {
+			List<T> ts = Lists.newArrayList(docs.size());
+			for (Document doc : docs) {
+				T bean = this.newInstance();
+				doc.put(Document._ID_FIELD, doc.get(Document.ID_FIELD));
+				Maps.toBean(doc, bean);
+				ts.add(bean);
+			}
+			return ts;
 		});
 	}
 

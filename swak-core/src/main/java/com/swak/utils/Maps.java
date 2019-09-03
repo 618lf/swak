@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -44,7 +45,7 @@ public class Maps {
 	public static <K, V> HashMap<K, V> newHashMap() {
 		return new HashMap<K, V>();
 	}
-	
+
 	/**
 	 * 创建一个Map
 	 * 
@@ -91,12 +92,16 @@ public class Maps {
 	 * @param bean
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static Map<String, Object> toMap(Object bean) {
 		Map<String, Object> map = Maps.newHashMap();
 		if (bean != null) {
 			BeanMap beanMap = BeanMap.create(bean);
-			for (Object key : beanMap.keySet()) {
-				map.put(String.valueOf(key), beanMap.get(key));
+			Set<String> keys = beanMap.keySet();
+			for (Object key : keys) {
+				if (beanMap.get(key) != null) {
+					map.put(String.valueOf(key), beanMap.get(key));
+				}
 			}
 		}
 		return map;

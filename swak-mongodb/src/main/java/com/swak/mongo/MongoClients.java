@@ -3,6 +3,7 @@ package com.swak.mongo;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.bson.conversions.Bson;
 import org.springframework.util.Assert;
 
 import com.mongodb.async.client.FindIterable;
@@ -60,12 +61,26 @@ public class MongoClients {
 	 * @param id
 	 * @return
 	 */
-	public static CompletableFuture<Page> query(String table, Document query, Parameters param) {
+	public static CompletableFuture<Page> page(String table, Document query, Parameters param) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(query, "query can not null");
 		CompletableFuture<Page> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
-		FindIterable<Document> find = collection.find(DocumentBsonAdapter.wrap(query), Document.class);
+		Bson $query = DocumentBsonAdapter.wrap(query);
+		collection.countDocuments($query, (v, r) -> {
+			if (r != null) {
+				future.completeExceptionally(r);
+			} else {
+				param.setRecordCount(v.intValue());
+				_query(collection, $query, param, future);
+			}
+		});
+		return future;
+	}
+
+	private static void _query(MongoCollection<Document> collection, Bson $query, Parameters param,
+			CompletableFuture<Page> future) {
+		FindIterable<Document> find = collection.find($query, Document.class);
 		find.limit(param.getPageSize()).skip((param.getPageIndex() - 1) * param.getPageSize());
 		List<Document> results = Lists.newArrayList();
 		find.into(results, (v, r) -> {
@@ -75,9 +90,33 @@ public class MongoClients {
 				future.complete(new Page(param, results));
 			}
 		});
-		return future;
 	}
 
+	/**
+	 * 根据ID获取数据
+	 * 
+	 * @param table
+	 * @param id
+	 * @return
+	 */
+	public static CompletableFuture<List<Document>> query(String table, Document query, int limit) {
+		Assert.notNull(table, "table can not null");
+		Assert.notNull(query, "query can not null");
+		CompletableFuture<List<Document>> future = new CompletableFuture<>();
+		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
+		FindIterable<Document> find = collection.find(DocumentBsonAdapter.wrap(query), Document.class);
+		find.limit(limit);
+		List<Document> results = Lists.newArrayList();
+		find.into(results, (v, r) -> {
+			if (r != null) {
+				future.completeExceptionally(r);
+			} else {
+				future.complete(results);
+			}
+		});
+		return future;
+	}
+	
 	/**
 	 * 插入数据
 	 * 
@@ -118,10 +157,10 @@ public class MongoClients {
 	 * @param doc
 	 * @return
 	 */
-	public static CompletableFuture<Void> save(String table, Document doc) {
+	public static CompletableFuture<Document> save(String table, Document doc) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(doc, "doc can not null");
-		CompletableFuture<Void> future = new CompletableFuture<>();
+		CompletableFuture<Document> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
 		Object id = doc.get(Document.ID_FIELD);
 		if (id == null) {
@@ -129,17 +168,18 @@ public class MongoClients {
 				if (r != null) {
 					future.completeExceptionally(r);
 				} else {
-					future.complete(v);
+					future.complete(doc);
 				}
 			});
 		} else {
 			com.mongodb.client.model.UpdateOptions options = new com.mongodb.client.model.UpdateOptions().upsert(true);
 			Document filter = new Document();
+			filter.put(Document.ID_FIELD, id);
 			collection.replaceOne(DocumentBsonAdapter.wrap(filter), doc, options, (v, r) -> {
 				if (r != null) {
 					future.completeExceptionally(r);
 				} else {
-					future.complete(null);
+					future.complete(doc);
 				}
 			});
 		}
