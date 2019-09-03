@@ -66,7 +66,7 @@ public class MongoClients {
 		CompletableFuture<Page> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
 		FindIterable<Document> find = collection.find(DocumentBsonAdapter.wrap(query), Document.class);
-		find.limit(param.getPageSize()).skip(param.getPageIndex() * param.getPageSize());
+		find.limit(param.getPageSize()).skip((param.getPageIndex() - 1) * param.getPageSize());
 		List<Document> results = Lists.newArrayList();
 		find.into(results, (v, r) -> {
 			if (r != null) {
