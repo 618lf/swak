@@ -15,6 +15,7 @@ import org.bson.codecs.EncoderContext;
 /**
  * @author <a href="mailto:nscavell@redhat.com">Nick Scavelli</a>
  */
+@Deprecated
 public abstract class AbstractDocumentCodec<O, A> implements Codec<O> {
 
 	@Override

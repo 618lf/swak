@@ -2,6 +2,7 @@ package com.swak.mongo;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 import com.swak.entity.IdEntity;
 
@@ -26,4 +27,5 @@ public class Goods extends IdEntity<String> implements Serializable {
 	private BigDecimal price;
 	private String image;
 	private String details;
+	private Date day;
 }

@@ -2,6 +2,7 @@ package com.swak.mongo;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 import org.bson.conversions.Bson;
 import org.springframework.util.Assert;
@@ -116,7 +117,7 @@ public class MongoClients {
 		});
 		return future;
 	}
-	
+
 	/**
 	 * 插入数据
 	 * 
@@ -220,13 +221,46 @@ public class MongoClients {
 	}
 
 	/**
+	 * Mongdb 事务（单机版本不支持事务）
+	 * 
+	 * @param future
+	 * @return
+	 */
+	public static <T> CompletableFuture<T> transaction(Supplier<CompletableFuture<T>> supplier) {
+		Assert.notNull(supplier, "table can not null");
+		CompletableFuture<T> future = new CompletableFuture<>();
+		holder.mongo.startSession((session, t) -> {
+			if (t != null) {
+				future.completeExceptionally(t);
+			} else {
+				try {
+					session.startTransaction();
+					supplier.get().whenComplete((r1, t1) -> {
+						if (t1 != null) {
+							session.abortTransaction((a1, a2) -> {
+								future.completeExceptionally(t1);
+							});
+						} else {
+							session.commitTransaction((c1, c2) -> {
+								future.complete(r1);
+							});
+						}
+					});
+				} catch (Exception e) {
+					future.completeExceptionally(e);
+				}
+			}
+		});
+		return future;
+	}
+
+	/**
 	 * Mongo Holder
 	 * 
 	 * @author lifeng
 	 */
 	public static class MongoHolder {
 
-		@SuppressWarnings("unused")
 		private MongoClient mongo;
 		private MongoDatabase db;
 

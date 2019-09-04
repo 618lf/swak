@@ -39,6 +39,7 @@ import com.swak.mongo.json.Documents;
 /**
  * @author <a href="mailto:nscavell@redhat.com">Nick Scavelli</a>
  */
+@Deprecated
 public class DocumentCodec extends AbstractDocumentCodec<Document, Documents> implements CollectibleCodec<Document> {
 
 	private boolean useObjectId = false;

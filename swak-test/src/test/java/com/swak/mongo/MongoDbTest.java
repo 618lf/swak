@@ -26,10 +26,22 @@ public class MongoDbTest {
 		properties.setDatabase("cloud");
 		properties.setAuthenticationDatabase("admin");
 		config.mongoClient(settings, properties);
-		Goods goods = new Goods();
-		Document query = new Document(goods);
+//		MongoClients.transaction(() -> {
+//			Goods goods = new Goods();
+//			goods.setName("李锋");
+//			goods.setDay(DateUtils.getTodayDate());
+//			Document saved = new Document(goods);
+//			return MongoClients.save("TEST_GOODS", saved);
+//		}).whenComplete((res, t) -> {
+//			if (t != null) {
+//				t.printStackTrace();
+//			}
+//			System.out.println(JsonMapper.toJson(res));
+//			countDownLatch.countDown();
+//		});
+		Document query = new Document();
 		Parameters param = new Parameters();
-		MongoClients.page("GOODS", query, param).whenComplete((res, t) -> {
+		MongoClients.page("TEST_GOODS", query, param).whenComplete((res, t) -> {
 			System.out.println(JsonMapper.toJson(res));
 			countDownLatch.countDown();
 		});
