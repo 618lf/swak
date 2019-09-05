@@ -1,5 +1,8 @@
 package com.swak.vertx.security;
 
+import java.io.Serializable;
+
+import com.alibaba.fastjson.util.TypeUtils;
 import com.swak.security.jwt.JWTObject;
 import com.swak.security.jwt.JWTPayload;
 import com.swak.utils.Maps;
@@ -44,7 +47,7 @@ public class Subject extends JWTObject {
 	 * @param id
 	 * @return
 	 */
-	public Subject setId(Long id) {
+	public Subject setId(Serializable id) {
 		return this.put(ID_ATTR, id);
 	}
 
@@ -84,10 +87,21 @@ public class Subject extends JWTObject {
 	 * @param id
 	 * @return
 	 */
-	public Long getId() {
+	public String getIdAsString() {
+		Object value = this.get(ID_ATTR);
+		return TypeUtils.castToString(value);
+	}
+	
+	/**
+	 * 设置主体的ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Long getIdAsLong() {
 		return this.getLong(ID_ATTR);
 	}
-
+	
 	/**
 	 * 设置主体的ID
 	 * 
