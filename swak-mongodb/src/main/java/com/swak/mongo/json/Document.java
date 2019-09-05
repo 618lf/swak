@@ -1,8 +1,12 @@
 package com.swak.mongo.json;
 
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.BeanUtils;
+
 import com.alibaba.fastjson.JSONObject;
+import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 
 /**
@@ -13,13 +17,6 @@ import com.swak.utils.Maps;
 public class Document extends JSONObject {
 	public static final String ID_FIELD = "_id";
 	public static final String _ID_FIELD = "id";
-	public static final String DATE_FIELD = "$date";
-	public static final String BINARY_FIELD = "$binary";
-	public static final String TYPE_FIELD = "$type";
-	public static final String OID_FIELD = "$oid";
-	public static final String TIMESTAMP_FIELD = "$timestamp";
-	public static final String TIMESTAMP_TIME_FIELD = "t";
-	public static final String TIMESTAMP_INCREMENT_FIELD = "i";
 	private static final long serialVersionUID = 1L;
 
 	public Document() {
@@ -37,10 +34,43 @@ public class Document extends JSONObject {
 	 * @return
 	 */
 	private static <T> Map<String, Object> parseBean(T bean) {
-		Map<String, Object> values = Maps.toMap(bean);
+		Map<String, Object> values = _parseBean(bean);
 		if (values.containsKey(_ID_FIELD)) {
 			values.put(ID_FIELD, values.remove(_ID_FIELD));
 		}
+		return values;
+	}
+
+	/**
+	 * id 的转换
+	 * 
+	 * @param bean
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private static <T> Map<String, Object> _parseBean(T bean) {
+		Map<String, Object> values = Maps.toMap(bean);
+		values.entrySet().forEach((e) -> {
+			Object value = e.getValue();
+			if (value != null && value instanceof List) {
+				List<Object> os = (List<Object>) value;
+				List<Object> _os = null;
+				if (os != null && os.size() != 0) {
+					Class<?> _type = os.get(0).getClass();
+					if (BeanUtils.isSimpleProperty(_type) || _type.isAssignableFrom(List.class)
+							|| _type.isAssignableFrom(Map.class)) {
+						_os = os;
+					} else {
+						_os = Lists.newArrayList();
+						for (Object o : os) {
+							Map<String, Object> _o = _parseBean(o);
+							_os.add(_o);
+						}
+					}
+				}
+				e.setValue(_os);
+			}
+		});
 		return values;
 	}
 }

@@ -99,6 +99,29 @@ public abstract class BaseService<T> {
 	 * @param param
 	 * @return
 	 */
+	public CompletableFuture<Page> page(Document query, Parameters param) {
+		return MongoClients.page(table(), query, param).thenApply(page -> {
+			List<Document> docs = page.getData();
+			List<T> ts = Lists.newArrayList(docs.size());
+			for (Document doc : docs) {
+				T bean = this.newInstance();
+				doc.put(Document._ID_FIELD, doc.get(Document.ID_FIELD));
+				Maps.toBean(doc, bean);
+				ts.add(bean);
+			}
+			page.setData(ts);
+			return page;
+		});
+	}
+
+	/**
+	 * 查询
+	 * 
+	 * @param table
+	 * @param entity
+	 * @param param
+	 * @return
+	 */
 	public CompletableFuture<Page> page(T entity, Parameters param) {
 		Document query = new Document(entity);
 		return MongoClients.page(table(), query, param).thenApply(page -> {
@@ -125,6 +148,27 @@ public abstract class BaseService<T> {
 	 */
 	public CompletableFuture<List<T>> query(T entity, int limit) {
 		Document query = new Document(entity);
+		return MongoClients.query(table(), query, limit).thenApply(docs -> {
+			List<T> ts = Lists.newArrayList(docs.size());
+			for (Document doc : docs) {
+				T bean = this.newInstance();
+				doc.put(Document._ID_FIELD, doc.get(Document.ID_FIELD));
+				Maps.toBean(doc, bean);
+				ts.add(bean);
+			}
+			return ts;
+		});
+	}
+
+	/**
+	 * 查询
+	 * 
+	 * @param table
+	 * @param entity
+	 * @param param
+	 * @return
+	 */
+	public CompletableFuture<List<T>> query(Document query, int limit) {
 		return MongoClients.query(table(), query, limit).thenApply(docs -> {
 			List<T> ts = Lists.newArrayList(docs.size());
 			for (Document doc : docs) {
