@@ -3,9 +3,11 @@ package com.swak.mongo.json;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.BsonDocument;
+import org.bson.BsonDocumentWrapper;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.springframework.beans.BeanUtils;
 
-import com.alibaba.fastjson.JSONObject;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 
@@ -14,13 +16,17 @@ import com.swak.utils.Maps;
  * 
  * @author lifeng
  */
-public class Document extends JSONObject {
+public class Document extends org.bson.Document {
 	public static final String ID_FIELD = "_id";
 	public static final String _ID_FIELD = "id";
 	private static final long serialVersionUID = 1L;
 
 	public Document() {
 		super();
+	}
+
+	public Document(final String key, final Object value) {
+		super(key, value);
 	}
 
 	public <T> Document(T bean) {
@@ -73,4 +79,9 @@ public class Document extends JSONObject {
 		});
 		return values;
 	}
+	
+    @Override
+    public <C> BsonDocument toBsonDocument(final Class<C> documentClass, final CodecRegistry codecRegistry) {
+        return new BsonDocumentWrapper<Document>(this, codecRegistry.get(Document.class));
+    }
 }

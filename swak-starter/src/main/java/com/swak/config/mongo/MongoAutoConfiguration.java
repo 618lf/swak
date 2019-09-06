@@ -1,23 +1,30 @@
 package com.swak.config.mongo;
 
 import static com.swak.Application.APP_LOGGER;
+import static java.util.Arrays.asList;
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PreDestroy;
 
-import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.BsonCodecProvider;
+import org.bson.codecs.BsonValueCodecProvider;
+import org.bson.codecs.IterableCodecProvider;
+import org.bson.codecs.MapCodecProvider;
+import org.bson.codecs.ValueCodecProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.mongodb.DocumentToDBRefTransformer;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.async.client.MongoClient;
 import com.mongodb.connection.netty.NettyStreamFactoryFactory;
 import com.swak.mongo.MongoClients;
 import com.swak.mongo.MongoClients.MongoHolder;
-import com.swak.mongo.codec.DocumentCodecx;
+import com.swak.mongo.codec.DocumentCodecxProvider;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.reactivex.transport.resources.LoopResources;
@@ -53,7 +60,9 @@ public class MongoAutoConfiguration {
 		EventLoopGroup eventLoopGroup = loopResources.onClient();
 		return MongoClientSettings.builder()
 				.streamFactoryFactory(NettyStreamFactoryFactory.builder().eventLoopGroup(eventLoopGroup).build())
-				.codecRegistry(CodecRegistries.fromRegistries(CodecRegistries.fromCodecs(new DocumentCodecx())))
+				.codecRegistry(fromProviders(asList(new ValueCodecProvider(), new BsonValueCodecProvider(),
+						new DocumentCodecxProvider(), new IterableCodecProvider(new DocumentToDBRefTransformer()),
+						new MapCodecProvider(new DocumentToDBRefTransformer()), new BsonCodecProvider())))
 				.build();
 	}
 

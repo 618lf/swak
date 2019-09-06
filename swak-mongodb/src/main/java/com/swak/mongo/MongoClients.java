@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-import org.bson.conversions.Bson;
 import org.springframework.util.Assert;
 
 import com.mongodb.async.client.FindIterable;
@@ -14,7 +13,8 @@ import com.mongodb.async.client.MongoDatabase;
 import com.swak.entity.Page;
 import com.swak.entity.Parameters;
 import com.swak.mongo.json.Document;
-import com.swak.mongo.json.DocumentBsonAdapter;
+import com.swak.mongo.json.Query;
+import com.swak.mongo.json.Update;
 import com.swak.utils.Lists;
 
 /**
@@ -25,7 +25,7 @@ import com.swak.utils.Lists;
 @SuppressWarnings("deprecation")
 public class MongoClients {
 
-	private static MongoHolder holder = null;
+	public static MongoHolder holder = null;
 
 	public static void setMongoDB(MongoHolder holder) {
 		MongoClients.holder = holder;
@@ -43,9 +43,9 @@ public class MongoClients {
 		Assert.notNull(id, "id can not null");
 		CompletableFuture<Document> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
-		Document query = new Document();
+		Query query = new Query();
 		query.put(Document.ID_FIELD, id);
-		collection.find(DocumentBsonAdapter.wrap(query)).first((v, r) -> {
+		collection.find(query).first((v, r) -> {
 			if (r != null) {
 				future.completeExceptionally(r);
 			} else {
@@ -62,27 +62,27 @@ public class MongoClients {
 	 * @param id
 	 * @return
 	 */
-	public static CompletableFuture<Page> page(String table, Document query, Parameters param) {
+	public static CompletableFuture<Page> page(String table, Query query, Parameters param) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(query, "query can not null");
 		CompletableFuture<Page> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
-		Bson $query = DocumentBsonAdapter.wrap(query);
-		collection.countDocuments($query, (v, r) -> {
+		collection.countDocuments(query, (v, r) -> {
 			if (r != null) {
 				future.completeExceptionally(r);
 			} else {
 				param.setRecordCount(v.intValue());
-				_query(collection, $query, param, future);
+				_query(collection, query, param, future);
 			}
 		});
 		return future;
 	}
 
-	private static void _query(MongoCollection<Document> collection, Bson $query, Parameters param,
+	private static void _query(MongoCollection<Document> collection, Query $query, Parameters param,
 			CompletableFuture<Page> future) {
 		FindIterable<Document> find = collection.find($query, Document.class);
-		find.limit(param.getPageSize()).skip((param.getPageIndex() - 1) * param.getPageSize());
+		find.filter($query.getFilter()).projection($query.getFields()).limit(param.getPageSize())
+				.skip((param.getPageIndex() - 1) * param.getPageSize()).sort($query.getOrder());
 		List<Document> results = Lists.newArrayList();
 		find.into(results, (v, r) -> {
 			if (r != null) {
@@ -100,13 +100,13 @@ public class MongoClients {
 	 * @param id
 	 * @return
 	 */
-	public static CompletableFuture<List<Document>> query(String table, Document query, int limit) {
+	public static CompletableFuture<List<Document>> query(String table, Query query, int limit) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(query, "query can not null");
 		CompletableFuture<List<Document>> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
-		FindIterable<Document> find = collection.find(DocumentBsonAdapter.wrap(query), Document.class);
-		find.limit(limit);
+		FindIterable<Document> find = collection.find(query, Document.class);
+		find.limit(limit).sort(query.getOrder()).filter(query.getFilter()).projection(query.getFields());
 		List<Document> results = Lists.newArrayList();
 		find.into(results, (v, r) -> {
 			if (r != null) {
@@ -174,9 +174,9 @@ public class MongoClients {
 			});
 		} else {
 			com.mongodb.client.model.UpdateOptions options = new com.mongodb.client.model.UpdateOptions().upsert(true);
-			Document filter = new Document();
+			Query filter = new Query();
 			filter.put(Document.ID_FIELD, id);
-			collection.replaceOne(DocumentBsonAdapter.wrap(filter), doc, options, (v, r) -> {
+			collection.updateOne(filter, new Update().set(doc), options, (v, r) -> {
 				if (r != null) {
 					future.completeExceptionally(r);
 				} else {
@@ -201,7 +201,7 @@ public class MongoClients {
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
 		Object id = doc.get(Document.ID_FIELD);
 		if (id == null) {
-			collection.deleteOne(DocumentBsonAdapter.wrap(doc), (v, r) -> {
+			collection.deleteOne(doc, (v, r) -> {
 				if (r != null) {
 					future.completeExceptionally(r);
 				} else {
@@ -209,7 +209,7 @@ public class MongoClients {
 				}
 			});
 		} else {
-			collection.deleteMany(DocumentBsonAdapter.wrap(doc), (v, r) -> {
+			collection.deleteMany(doc, (v, r) -> {
 				if (r != null) {
 					future.completeExceptionally(r);
 				} else {
@@ -261,8 +261,8 @@ public class MongoClients {
 	 */
 	public static class MongoHolder {
 
-		private MongoClient mongo;
-		private MongoDatabase db;
+		public MongoClient mongo;
+		public MongoDatabase db;
 
 		public MongoHolder(MongoClient mongo, MongoDatabase db) {
 			this.mongo = mongo;

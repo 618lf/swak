@@ -8,6 +8,7 @@ import com.swak.entity.Page;
 import com.swak.entity.Parameters;
 import com.swak.mongo.MongoClients;
 import com.swak.mongo.json.Document;
+import com.swak.mongo.json.Query;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 
@@ -99,7 +100,7 @@ public abstract class BaseService<T> {
 	 * @param param
 	 * @return
 	 */
-	public CompletableFuture<Page> page(Document query, Parameters param) {
+	public CompletableFuture<Page> page(Query query, Parameters param) {
 		return MongoClients.page(table(), query, param).thenApply(page -> {
 			List<Document> docs = page.getData();
 			List<T> ts = Lists.newArrayList(docs.size());
@@ -123,7 +124,7 @@ public abstract class BaseService<T> {
 	 * @return
 	 */
 	public CompletableFuture<Page> page(T entity, Parameters param) {
-		Document query = new Document(entity);
+		Query query = new Query(entity);
 		return MongoClients.page(table(), query, param).thenApply(page -> {
 			List<Document> docs = page.getData();
 			List<T> ts = Lists.newArrayList(docs.size());
@@ -147,7 +148,7 @@ public abstract class BaseService<T> {
 	 * @return
 	 */
 	public CompletableFuture<List<T>> query(T entity, int limit) {
-		Document query = new Document(entity);
+		Query query = new Query(entity);
 		return MongoClients.query(table(), query, limit).thenApply(docs -> {
 			List<T> ts = Lists.newArrayList(docs.size());
 			for (Document doc : docs) {
@@ -168,7 +169,7 @@ public abstract class BaseService<T> {
 	 * @param param
 	 * @return
 	 */
-	public CompletableFuture<List<T>> query(Document query, int limit) {
+	public CompletableFuture<List<T>> query(Query query, int limit) {
 		return MongoClients.query(table(), query, limit).thenApply(docs -> {
 			List<T> ts = Lists.newArrayList(docs.size());
 			for (Document doc : docs) {
