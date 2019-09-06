@@ -2,14 +2,11 @@ package com.swak.mongo.codec;
 
 import static org.bson.assertions.Assertions.notNull;
 
-import org.bson.Document;
 import org.bson.Transformer;
 import org.bson.codecs.BsonTypeClassMap;
-import org.bson.codecs.CodeWithScopeCodec;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.types.CodeWithScope;
 
 public class DocumentCodecxProvider implements CodecProvider {
 
@@ -67,15 +64,7 @@ public class DocumentCodecxProvider implements CodecProvider {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> Codec<T> get(final Class<T> clazz, final CodecRegistry registry) {
-		if (clazz == CodeWithScope.class) {
-			return (Codec<T>) new CodeWithScopeCodec(registry.get(Document.class));
-		}
-
-		if (clazz == Document.class) {
-			return (Codec<T>) new DocumentCodecx(registry, bsonTypeClassMap, valueTransformer);
-		}
-
-		return null;
+		return (Codec<T>) new DocumentCodecx(registry, bsonTypeClassMap, valueTransformer);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.model.Projections;
 import com.swak.config.mongo.MongoAutoConfiguration;
 import com.swak.config.mongo.MongoProperties;
+import com.swak.entity.Parameters;
 import com.swak.mongo.json.Query;
 import com.swak.utils.JsonMapper;
 
@@ -59,7 +60,8 @@ public class MongoDbTest {
 		resource.setState(1);
 		Query query = new Query(resource);
 		query.fields(Projections.include("name", "storeName"));
-		MongoClients.query("RESOURCE", query, 1).whenComplete((res, t) -> {
+		Parameters param = new Parameters();
+		MongoClients.page("RESOURCE", query, param).whenComplete((res, t) -> {
 			System.out.println(JsonMapper.toJson(res));
 			countDownLatch.countDown();
 		});
