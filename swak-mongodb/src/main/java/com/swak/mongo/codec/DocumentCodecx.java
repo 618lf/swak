@@ -28,6 +28,7 @@ import org.bson.codecs.IdGenerator;
 import org.bson.codecs.ObjectIdGenerator;
 import org.bson.codecs.ValueCodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.types.Decimal128;
 import org.bson.types.ObjectId;
 
 import com.swak.mongo.json.Document;
@@ -101,6 +102,9 @@ public class DocumentCodecx implements CollectibleCodec<Document> {
 		this.valueTransformer = valueTransformer != null ? valueTransformer : new Transformer() {
 			@Override
 			public Object transform(final Object value) {
+				if (value != null && value instanceof Decimal128) {
+					return  ((Decimal128)value).bigDecimalValue();
+				}
 				return value;
 			}
 		};

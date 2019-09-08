@@ -1,6 +1,7 @@
 package com.swak.mongo;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -27,6 +28,43 @@ public class Resource implements Serializable {
 	private String storeName; // 商户
 	private Date createDate;// 创建时间
 	
+	// 特殊的字段
+	private Boolean boo;
+	private Double dou;
+	private Long lon;
+	private BigDecimal bigd;
+	private Integer byt;
+	
+	public Integer getByt() {
+		return byt;
+	}
+	public void setByt(Integer byt) {
+		this.byt = byt;
+	}
+	public BigDecimal getBigd() {
+		return bigd;
+	}
+	public void setBigd(BigDecimal bigd) {
+		this.bigd = bigd;
+	}
+	public Long getLon() {
+		return lon;
+	}
+	public void setLon(Long lon) {
+		this.lon = lon;
+	}
+	public Double getDou() {
+		return dou;
+	}
+	public void setDou(Double dou) {
+		this.dou = dou;
+	}
+	public Boolean getBoo() {
+		return boo;
+	}
+	public void setBoo(Boolean boo) {
+		this.boo = boo;
+	}
 	public String getId() {
 		return id;
 	}
