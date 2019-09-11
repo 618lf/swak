@@ -1,5 +1,8 @@
 package com.swak.config.vertx;
 
+import java.util.List;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +15,7 @@ import org.springframework.format.support.FormattingConversionService;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.handler.HandlerAdapter;
 import com.swak.vertx.handler.ResultHandler;
+import com.swak.vertx.handler.converter.HttpMessageConverter;
 import com.swak.vertx.handler.converter.Jaxb2RootElementHttpMessageConverter;
 import com.swak.vertx.handler.converter.JsonHttpMessageConverter;
 import com.swak.vertx.handler.converter.PlainStreamMessageConverter;
@@ -54,9 +58,15 @@ public class RouterAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public ResultHandler resultHandler() {
+	public ResultHandler resultHandler(ObjectProvider<List<HttpMessageConverter>> converters) {
 		ResultHandler resultHandler = new ResultHandler();
 		addConverters(resultHandler);
+		List<HttpMessageConverter> $converters = converters.getIfAvailable();
+		if ($converters != null) {
+			$converters.forEach((converter) -> {
+				resultHandler.addConverter(converter);
+			});
+		}
 		return resultHandler;
 	}
 

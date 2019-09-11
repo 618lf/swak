@@ -29,7 +29,6 @@ public class FreeMarkerConfigurer extends FreeMarkerConfigurationFactory
 			this.configuration = createConfiguration();
 		}
 
-		// 设置标签
 		if (tags != null) {
 			Iterator<String> it = tags.keySet().iterator();
 			while (it.hasNext()) {
@@ -44,21 +43,12 @@ public class FreeMarkerConfigurer extends FreeMarkerConfigurationFactory
 		return this.configuration;
 	}
 
-	/**
-	 * This implementation registers an additional ClassTemplateLoader for the
-	 * Spring-provided macros, added to the end of the list.
-	 */
 	@Override
 	protected void postProcessTemplateLoaders(List<TemplateLoader> templateLoaders) {
 		templateLoaders.add(new ClassTemplateLoader(FreeMarkerConfigurer.class, ""));
 		logger.info("ClassTemplateLoader for Spring macros added to FreeMarker configuration");
 	}
 
-	/**
-	 * 设置标签
-	 * 
-	 * @param tags
-	 */
 	public void setTags(Map<String, TemplateModel> tags) {
 		this.tags = tags;
 	}
