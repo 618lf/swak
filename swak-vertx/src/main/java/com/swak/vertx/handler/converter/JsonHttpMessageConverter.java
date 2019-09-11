@@ -2,8 +2,11 @@ package com.swak.vertx.handler.converter;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.swak.entity.Model;
 import com.swak.utils.JsonMapper;
 import com.swak.vertx.transport.HttpConst;
+import com.swak.vertx.transport.multipart.MultipartFile;
+import com.swak.vertx.transport.multipart.PlainFile;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.vertx.core.http.HttpServerResponse;
@@ -15,11 +18,11 @@ import io.vertx.core.http.HttpServerResponse;
  */
 public class JsonHttpMessageConverter implements HttpMessageConverter {
 
-	private SerializerFeature[] features = new SerializerFeature[] {SerializerFeature.DisableCircularReferenceDetect};
+	private SerializerFeature[] features = new SerializerFeature[] { SerializerFeature.DisableCircularReferenceDetect };
 
 	@Override
 	public boolean canWrite(Class<?> clazz) {
-		return clazz != void.class;
+		return clazz != void.class && PlainFile.class != clazz && MultipartFile.class != clazz && Model.class != clazz;
 	}
 
 	@Override
