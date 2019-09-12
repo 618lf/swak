@@ -25,6 +25,7 @@ import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
 import com.swak.meters.MetricsFactory;
 import com.swak.utils.JsonMapper;
+import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.validator.Validator;
@@ -156,7 +157,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * 3.8.0 之后不能获取 Context
 	 * 
@@ -164,10 +165,10 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 */
 	private ContextInternal getContext() {
 		Thread current = Thread.currentThread();
-	    if (current instanceof VertxThread) {
-	      return ((VertxThread) current).getContext();
-	    }
-	    return null;
+		if (current instanceof VertxThread) {
+			return ((VertxThread) current).getContext();
+		}
+		return null;
 	}
 
 	/**
@@ -413,11 +414,24 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		return arguments;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Map<String, Object> getArguments(RoutingContext request) {
 		MultiMap maps = request.request().params();
 		Map<String, Object> arguments = new LinkedHashMap<>();
 		maps.forEach(entry -> {
-			arguments.put(entry.getKey(), entry.getValue());
+			String key = entry.getKey();
+			int index = StringUtils.indexOf(key, "][");
+			if (index > 0) {
+				key = StringUtils.substring(key, index + 1);
+				List<Object> values = (List<Object>) arguments.get(key);
+				if (values == null) {
+					values = Lists.newArrayList();
+					arguments.put(key, values);
+				}
+				values.add(entry.getValue());
+			} else {
+				arguments.put(entry.getKey(), entry.getValue());
+			}
 		});
 		return arguments;
 	}

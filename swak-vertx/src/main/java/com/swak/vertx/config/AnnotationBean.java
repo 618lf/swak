@@ -21,6 +21,7 @@ import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 import com.swak.utils.Sets;
 import com.swak.utils.StringUtils;
+import com.swak.vertx.annotation.PageController;
 import com.swak.vertx.annotation.RequestMapping;
 import com.swak.vertx.annotation.RequestMethod;
 import com.swak.vertx.annotation.RestController;
@@ -111,8 +112,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 		}
 
 		// registry router
-		RestController controller = clazz.getAnnotation(RestController.class);
-		if (controller != null) {
+		if (isController(clazz)) {
 
 			// 定义错误
 			if (StringUtils.contains(beanName, "/")) {
@@ -168,6 +168,16 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 			}
 		}
 		return bean;
+	}
+
+	/**
+	 * 是否是 Api 或 Page
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	protected boolean isController(Class<?> clazz) {
+		return clazz.isAnnotationPresent(RestController.class) || clazz.isAnnotationPresent(PageController.class);
 	}
 
 	protected RouterBean router(RequestMapping classMapping, RequestMapping methodMapping, Object bean, Method method) {

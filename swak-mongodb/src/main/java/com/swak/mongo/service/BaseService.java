@@ -49,6 +49,18 @@ public abstract class BaseService<T> {
 	}
 
 	/**
+	 * 插入数据
+	 * 
+	 * @param table
+	 * @param entitys
+	 * @return
+	 */
+	public CompletableFuture<T> insert(T entity) {
+		Document doc = new Document(entity);
+		return MongoClients.insert(table(), doc).thenApply(res -> entity);
+	}
+
+	/**
 	 * 批量插入数据
 	 * 
 	 * @param table
