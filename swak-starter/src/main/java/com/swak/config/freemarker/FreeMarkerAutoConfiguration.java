@@ -44,9 +44,27 @@ public class FreeMarkerAutoConfiguration {
 		factory.setTemplateLoaderPaths(this.properties.getTemplateLoaderPath());
 		factory.setPreferFileSystemAccess(this.properties.isPreferFileSystemAccess());
 		factory.setDefaultEncoding(Constants.DEFAULT_ENCODING.name());
-		Properties settings = new Properties();
+		Properties settings = this.getDefaultProperties();
 		settings.putAll(this.properties.getSettings());
 		factory.setFreemarkerSettings(settings);
 		factory.setFreemarkerVariables(this.properties.getVariables());
+	}
+
+	private Properties getDefaultProperties() {
+		Properties settings = new Properties();
+		settings.put("defaultEncoding", Constants.DEFAULT_ENCODING.name());
+		settings.put("url_escaping_charset", Constants.DEFAULT_ENCODING.name());
+		settings.put("locale", "zh_CN");
+		settings.put("template_update_delay", "0");
+		settings.put("tag_syntax", "auto_detect");
+		settings.put("whitespace_stripping", "true");
+		settings.put("classic_compatible", "true");
+		settings.put("number_format", "0.\\#\\#\\#\\#\\#\\#");
+		settings.put("boolean_format", "true,false");
+		settings.put("datetime_format", "true");
+		settings.put("date_format", "yyyy-MM-dd");
+		settings.put("time_format", "HH\\:mm\\:ss");
+		settings.put("object_wrapper", "freemarker.ext.beans.BeansWrapper");
+		return settings;
 	}
 }

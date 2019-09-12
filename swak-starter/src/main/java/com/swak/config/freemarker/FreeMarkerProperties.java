@@ -23,7 +23,7 @@ public class FreeMarkerProperties {
 	private boolean preferFileSystemAccess = true;
 	private String prefix = "";
 	private String suffix = ".html";
-
+	
 	public String getPrefix() {
 		return prefix;
 	}

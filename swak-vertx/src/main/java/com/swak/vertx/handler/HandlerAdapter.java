@@ -422,7 +422,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			String key = entry.getKey();
 			int index = StringUtils.indexOf(key, "][");
 			if (index > 0) {
-				key = StringUtils.substring(key, index + 1);
+				key = StringUtils.substring(key, 0, index + 1);
 				List<Object> values = (List<Object>) arguments.get(key);
 				if (values == null) {
 					values = Lists.newArrayList();
