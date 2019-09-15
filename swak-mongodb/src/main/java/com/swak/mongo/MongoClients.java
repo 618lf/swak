@@ -54,6 +54,28 @@ public class MongoClients {
 		});
 		return future;
 	}
+	
+	/**
+	 * 根据ID获取数据
+	 * 
+	 * @param table
+	 * @param id
+	 * @return
+	 */
+	public static CompletableFuture<Document> get(String table, Query query) {
+		Assert.notNull(table, "table can not null");
+		Assert.notNull(query, "id can not null");
+		CompletableFuture<Document> future = new CompletableFuture<>();
+		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
+		collection.find(query).first((v, r) -> {
+			if (r != null) {
+				future.completeExceptionally(r);
+			} else {
+				future.complete(v);
+			}
+		});
+		return future;
+	}
 
 	/**
 	 * 根据ID获取数据

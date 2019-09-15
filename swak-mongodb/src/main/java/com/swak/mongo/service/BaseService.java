@@ -47,6 +47,25 @@ public abstract class BaseService<T> {
 			return null;
 		});
 	}
+	
+	/**
+	 * 获取数据
+	 * 
+	 * @param table
+	 * @param id
+	 * @return
+	 */
+	public CompletableFuture<T> get(Query query) {
+		return MongoClients.get(table(), query).thenApply(res -> {
+			if (res != null) {
+				T bean = this.newInstance();
+				res.put(Document._ID_FIELD, res.get(Document.ID_FIELD));
+				Maps.toBean(res, bean);
+				return bean;
+			}
+			return null;
+		});
+	}
 
 	/**
 	 * 插入数据

@@ -59,11 +59,11 @@ public class FreeMarkerAutoConfiguration {
 		settings.put("tag_syntax", "auto_detect");
 		settings.put("whitespace_stripping", "true");
 		settings.put("classic_compatible", "true");
-		settings.put("number_format", "0.\\#\\#\\#\\#\\#\\#");
+		settings.put("number_format", "0");
 		settings.put("boolean_format", "true,false");
-		settings.put("datetime_format", "true");
+		settings.put("datetime_format", "yyyy-MM-dd HH:mm:ss");
 		settings.put("date_format", "yyyy-MM-dd");
-		settings.put("time_format", "HH\\:mm\\:ss");
+		settings.put("time_format", "HH:mm:ss");
 		settings.put("object_wrapper", "freemarker.ext.beans.BeansWrapper");
 		return settings;
 	}
