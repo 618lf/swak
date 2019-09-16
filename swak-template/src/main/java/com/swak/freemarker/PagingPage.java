@@ -26,6 +26,10 @@ public class PagingPage extends Page {
 	private int length = 8;// 显示页面长度
 	private int slider = 1;// 前后显示页面长度
 
+	public PagingPage(Page page) {
+		super(page.getParam(), page.getData());
+	}
+
 	/**
 	 * 可以设置分页的地址
 	 * 
@@ -76,7 +80,7 @@ public class PagingPage extends Page {
 		String _url = StringUtils.replace(this.url, "{pageIndex}", String.valueOf(pageIndex));
 		return StringUtils.replace(_url, "{pageSize}", String.valueOf(pageSize));
 	}
-	
+
 	/**
 	 * 获取数据
 	 */
@@ -90,7 +94,7 @@ public class PagingPage extends Page {
 	public Parameters getParam() {
 		return super.getParam();
 	}
-	
+
 	/**
 	 * 获取分页
 	 * 
@@ -100,10 +104,10 @@ public class PagingPage extends Page {
 		initialize();
 		StringBuilder sb = new StringBuilder();
 		if (pageIndex == first) {
-			sb.append("<li class=\"disabled\"><a href=\"javascript:\">&#171; 上一页</a></li>");
+			sb.append("<a class=\"disabled\" href=\"javascript:void(0)\">上一页</a>");
 		} else {
 			String _url = this.getPageUrl(prev, pageSize);
-			sb.append("<li><a href=\"").append(_url).append("\">&#171; 上一页</a></li>");
+			sb.append("<a href=\"").append(_url).append("\">上一页</a>");
 		}
 
 		int begin = pageIndex - (length / 2);
@@ -123,45 +127,43 @@ public class PagingPage extends Page {
 			int i = 0;
 			for (i = first; i < first + slider && i < begin; i++) {
 				String _url = this.getPageUrl(i, pageSize);
-				sb.append("<li><a href=\"").append(_url).append("\">").append((i + 1 - first)).append("</a></li>");
+				sb.append("<a href=\"").append(_url).append("\">").append((i + 1 - first)).append("</a>");
 			}
 			if (i < begin) {
-				sb.append("<li class=\"disabled\"><a href=\"javascript:void(0)\">...</a></li>");
+				sb.append("<a class=\"disabled\" href=\"javascript:void(0)\">...</a>");
 			}
 		}
 
 		for (int i = begin; i <= end; i++) {
 			if (i == pageIndex) {
-				sb.append("<li class=\"active\"><a href=\"javascript:void(0)\">").append((i + 1 - first))
-						.append("</a></li>");
+				sb.append("<a class=\"curPage\" href=\"javascript:void(0)\">").append((i + 1 - first)).append("</a>");
 			} else {
 				String _url = this.getPageUrl(i, pageSize);
-				sb.append("<li><a href=\"").append(_url).append("\">").append((i + 1 - first)).append("</a></li>");
+				sb.append("<a href=\"").append(_url).append("\">").append((i + 1 - first)).append("</a>");
 			}
 		}
 
 		if (last - end > slider) {
-			sb.append("<li class=\"disabled\"><a href=\"javascript:void(0)\">...</a></li>");
+			sb.append("<a class=\"disabled\" href=\"javascript:void(0)\">...</a>");
 			end = last - slider;
 		}
 
 		for (int i = end + 1; i <= last; i++) {
 			String _url = this.getPageUrl(i, pageSize);
-			sb.append("<li><a href=\"").append(_url).append("\">").append((i + 1 - first)).append("</a></li>");
+			sb.append("<a href=\"").append(_url).append("\">").append((i + 1 - first)).append("</a>");
 		}
 
 		if (pageIndex == last) {
-			sb.append("<li class=\"disabled\"><a href=\"javascript:void(0)\">下一页 &#187;</a></li>");
+			sb.append("<a class=\"disabled\" href=\"javascript:void(0)\">下一页</a>");
 		} else {
 			String _url = this.getPageUrl(next, pageSize);
-			sb.append("<li><a href=\"").append(_url).append("\">").append("下一页 &#187;").append("</a></li>");
+			sb.append("<a href=\"").append(_url).append("\">").append("下一页").append("</a>");
 		}
-		sb.insert(0, "<ul class=\"pagination\">").append("</ul>");
 		return sb.toString();
 	}
 
 	public static PagingPage page(Page page) {
-		PagingPage _page = new PagingPage();
+		PagingPage _page = new PagingPage(page);
 		_page.pageIndex = page.getParam().getPageIndex();
 		_page.pageSize = page.getParam().getPageSize();
 		_page.recordCount = page.getParam().getRecordCount();
