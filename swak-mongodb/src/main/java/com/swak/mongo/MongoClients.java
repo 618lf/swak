@@ -208,9 +208,34 @@ public class MongoClients {
 		}
 		return future;
 	}
+	
+	/**
+	 * 修改数据
+	 * 
+	 * @param table
+	 * @param doc
+	 * @return
+	 */
+	public static CompletableFuture<Document> update(String table, Document doc, Update update) {
+		Assert.notNull(table, "table can not null");
+		Assert.notNull(doc, "doc can not null");
+		CompletableFuture<Document> future = new CompletableFuture<>();
+		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
+		com.mongodb.client.model.UpdateOptions options = new com.mongodb.client.model.UpdateOptions().upsert(true);
+		Query filter = new Query();
+		filter.put(Document.ID_FIELD, doc.get(Document.ID_FIELD));
+		collection.updateOne(filter, update, options, (v, r) -> {
+			if (r != null) {
+				future.completeExceptionally(r);
+			} else {
+				future.complete(doc);
+			}
+		});
+		return future;
+	}
 
 	/**
-	 * 保存数据
+	 * 删除数据
 	 * 
 	 * @param table
 	 * @param doc

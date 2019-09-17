@@ -9,6 +9,7 @@ import com.swak.entity.Parameters;
 import com.swak.mongo.MongoClients;
 import com.swak.mongo.json.Document;
 import com.swak.mongo.json.Query;
+import com.swak.mongo.json.Update;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 
@@ -47,7 +48,7 @@ public abstract class BaseService<T> {
 			return null;
 		});
 	}
-	
+
 	/**
 	 * 获取数据
 	 * 
@@ -108,6 +109,20 @@ public abstract class BaseService<T> {
 			res.put(Document._ID_FIELD, res.get(Document.ID_FIELD));
 			Maps.toBean(doc, bean);
 			return bean;
+		});
+	}
+
+	/**
+	 * 保存数据
+	 * 
+	 * @param table
+	 * @param entity
+	 * @return
+	 */
+	public CompletableFuture<Void> update(T entity, Update update) {
+		Document doc = new Document(entity);
+		return MongoClients.update(table(), doc, update).thenApply(res -> {
+			return null;
 		});
 	}
 
