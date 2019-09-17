@@ -15,6 +15,11 @@ import com.swak.utils.IOUtils;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.wechat.codec.SignUtils;
+import com.swak.wechat.message.EventMsgUserAttention;
+import com.swak.wechat.message.MenuEventMsgClick;
+import com.swak.wechat.message.MsgHead;
+import com.swak.wechat.message.ReqMsgImage;
+import com.swak.wechat.message.ReqMsgText;
 
 /**
  * 微信的基本配置
@@ -290,5 +295,87 @@ public interface WechatConfig {
 			return respData;
 		}
 		throw new WechatErrorException(String.format("Invalid sign value in XML: %s", xml));
+	}
+	
+	/**
+	 * 处理消息 - 用户关注
+	 * 
+	 * @param request
+	 * @param type
+	 * @param config
+	 * @return
+	 */
+	default MsgHead handleUserAttention(EventMsgUserAttention request) {
+		return null;
+	}
+	
+	/**
+	 * 处理消息 - 用户扫码
+	 * 
+	 * @param request
+	 * @return
+	 */
+	default MsgHead handleUserScan(EventMsgUserAttention request, String qrscene) {
+		return null;
+	}
+	
+	/**
+	 * 处理消息 - 用户取消关注
+	 * 
+	 * @param request
+	 * @param type
+	 * @param config
+	 * @return
+	 */
+	default MsgHead handleUserUnsubscribe(EventMsgUserAttention request) {
+		return null;
+	}
+	
+	/**
+	 * 处理消息 - 用户点击菜单
+	 * 
+	 * @param request
+	 * @param type
+	 * @param config
+	 * @return
+	 */
+	default MsgHead handleClickMenu(MenuEventMsgClick msg) {
+		return null;
+	}
+	
+	/**
+	 * 处理消息 - 处理接收到的文本消息
+	 * 
+	 * @param request
+	 * @param type
+	 * @param config
+	 * @return
+	 */
+	default MsgHead handleTextMessage(ReqMsgText msg) {
+		return null;
+	}
+	
+	/**
+	 * 处理消息 - 处理接收到的图片消息
+	 * 
+	 * @param request
+	 * @param type
+	 * @param config
+	 * @return
+	 */
+	default MsgHead handleImageMessage(ReqMsgImage msg) {
+		return null;
+	}
+	
+	/**
+	 * 处理消息 - 处理接收到的其他消息
+	 * 
+	 * @param request
+	 * @param type
+	 * @param config
+	 * @return
+	 */
+	default MsgHead handleOtherMessage(MsgHead msg) {
+		return null;
 	}
 }
