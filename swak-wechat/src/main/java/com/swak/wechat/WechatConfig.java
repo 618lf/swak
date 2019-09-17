@@ -20,6 +20,7 @@ import com.swak.wechat.message.MenuEventMsgClick;
 import com.swak.wechat.message.MsgHead;
 import com.swak.wechat.message.ReqMsgImage;
 import com.swak.wechat.message.ReqMsgText;
+import com.swak.wechat.message.RespMsg;
 
 /**
  * 微信的基本配置
@@ -296,7 +297,7 @@ public interface WechatConfig {
 		}
 		throw new WechatErrorException(String.format("Invalid sign value in XML: %s", xml));
 	}
-	
+
 	/**
 	 * 处理消息 - 用户关注
 	 * 
@@ -305,20 +306,20 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default MsgHead handleUserAttention(EventMsgUserAttention request) {
-		return null;
+	default CompletableFuture<RespMsg> handleUserAttention(EventMsgUserAttention request) {
+		return CompletableFuture.completedFuture(null);
 	}
-	
+
 	/**
 	 * 处理消息 - 用户扫码
 	 * 
 	 * @param request
 	 * @return
 	 */
-	default MsgHead handleUserScan(EventMsgUserAttention request, String qrscene) {
-		return null;
+	default CompletableFuture<RespMsg> handleUserScan(EventMsgUserAttention request, String qrscene) {
+		return CompletableFuture.completedFuture(null);
 	}
-	
+
 	/**
 	 * 处理消息 - 用户取消关注
 	 * 
@@ -327,10 +328,10 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default MsgHead handleUserUnsubscribe(EventMsgUserAttention request) {
-		return null;
+	default CompletableFuture<RespMsg> handleUserUnsubscribe(EventMsgUserAttention request) {
+		return CompletableFuture.completedFuture(null);
 	}
-	
+
 	/**
 	 * 处理消息 - 用户点击菜单
 	 * 
@@ -339,10 +340,10 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default MsgHead handleClickMenu(MenuEventMsgClick msg) {
-		return null;
+	default CompletableFuture<RespMsg> handleClickMenu(MenuEventMsgClick msg) {
+		return CompletableFuture.completedFuture(null);
 	}
-	
+
 	/**
 	 * 处理消息 - 处理接收到的文本消息
 	 * 
@@ -351,10 +352,10 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default MsgHead handleTextMessage(ReqMsgText msg) {
-		return null;
+	default CompletableFuture<RespMsg> handleTextMessage(ReqMsgText msg) {
+		return CompletableFuture.completedFuture(null);
 	}
-	
+
 	/**
 	 * 处理消息 - 处理接收到的图片消息
 	 * 
@@ -363,10 +364,10 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default MsgHead handleImageMessage(ReqMsgImage msg) {
-		return null;
+	default CompletableFuture<RespMsg> handleImageMessage(ReqMsgImage msg) {
+		return CompletableFuture.completedFuture(null);
 	}
-	
+
 	/**
 	 * 处理消息 - 处理接收到的其他消息
 	 * 
@@ -375,7 +376,7 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default MsgHead handleOtherMessage(MsgHead msg) {
-		return null;
+	default CompletableFuture<RespMsg> handleOtherMessage(MsgHead msg) {
+		return CompletableFuture.completedFuture(null);
 	}
 }

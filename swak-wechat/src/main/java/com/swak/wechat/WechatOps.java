@@ -16,6 +16,7 @@ import com.swak.wechat.message.MenuEventMsgClick;
 import com.swak.wechat.message.MsgHead;
 import com.swak.wechat.message.ReqMsgImage;
 import com.swak.wechat.message.ReqMsgText;
+import com.swak.wechat.message.RespMsg;
 import com.swak.wechat.pay.MchOrderquery;
 import com.swak.wechat.pay.MchPayment;
 import com.swak.wechat.pay.Refundorder;
@@ -400,14 +401,14 @@ public class WechatOps {
 	 * @param req
 	 * @return
 	 */
-	public static MsgHead onMessage(WechatConfig app, String req) {
+	public static CompletableFuture<RespMsg> onMessage(WechatConfig app, String req) {
 
 		// 消息
 		MsgHead msg = MessageParse.parseXML(req);
 
 		// 暂时不支持的消息
 		if (msg == null) {
-			return null;
+			return CompletableFuture.completedFuture(null);
 		}
 
 		// 关注事件，取消关注事件
@@ -440,7 +441,7 @@ public class WechatOps {
 	 * @param msg
 	 * @return
 	 */
-	private static MsgHead onUserAttention(WechatConfig app, MsgHead msg) {
+	private static CompletableFuture<RespMsg> onUserAttention(WechatConfig app, MsgHead msg) {
 		final EventMsgUserAttention _msg = (EventMsgUserAttention) msg;
 
 		// 关注
