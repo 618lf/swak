@@ -28,6 +28,24 @@ public class Param {
 	private List<String> p3;
 	@Json
 	private Map<String, Object> p4;
+	private ParamItem oneItem;
+	private List<ParamItem> items;
+
+	public ParamItem getOneItem() {
+		return oneItem;
+	}
+
+	public void setOneItem(ParamItem oneItem) {
+		this.oneItem = oneItem;
+	}
+
+	public List<ParamItem> getItems() {
+		return items;
+	}
+
+	public void setItems(List<ParamItem> items) {
+		this.items = items;
+	}
 
 	public Integer getP1() {
 		return p1;

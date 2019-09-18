@@ -31,6 +31,16 @@ public class FieldCache {
 		CACHES.putIfAbsent(type, new ClassMeta(type));
 		return CACHES.get(type);
 	}
+	
+	/**
+	 * 获取
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean exists(Class<?> type) {
+		return CACHES.containsKey(type);
+	}
 
 	/**
 	 * 获取

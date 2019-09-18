@@ -54,7 +54,9 @@ public class ParamTest extends AppRunnerTest {
 		CountDownLatch latch = new CountDownLatch(1);
 		RequestBuilder.post().setUrl("http://127.0.0.1:8080/api/param/post_param_obj").text().addFormParam("p1", "123")
 				.addFormParam("p2", "1234").addFormParam("p3", "1").addFormParam("p3", "2").addFormParam("p3", "3")
-				.future().thenAccept(res -> {
+				.addFormParam("p4[a]", "a").addFormParam("p4[b]", "b").addFormParam("p4[c]", "c")
+				.addFormParam("oneItem[name]", "lifeng").addFormParam("items[0][name]", "lifeng")
+				.addFormParam("items[1][name]", "hanqian").future().thenAccept(res -> {
 					System.out.println(res);
 					latch.countDown();
 				});
@@ -89,6 +91,34 @@ public class ParamTest extends AppRunnerTest {
 				.addFormParam("param[p1]", "123").addFormParam("param[p2]", "1234").addFormParam("param[p3][0]", "1")
 				.addFormParam("param[p3][1]", "2").addFormParam("param[p3][2]", "3")
 				.addFormParam("param[p4]", JsonMapper.toJson(p4)).future().thenAccept(res -> {
+					System.out.println(res);
+					latch.countDown();
+				});
+		latch.await();
+	}
+
+	@Test
+	public void post_param_obj4() throws InterruptedException {
+		CountDownLatch latch = new CountDownLatch(1);
+		RequestBuilder.post().setUrl("http://127.0.0.1:8080/api/param/post_param_obj").text()
+				.addFormParam("param[p1]", "123").addFormParam("param[p2]", "1234").addFormParam("param[p3][0]", "1")
+				.addFormParam("param[p3][1]", "2").addFormParam("param[p3][2]", "3").addFormParam("param[p4][a]", "a")
+				.addFormParam("param[p4][c]", "c").addFormParam("param[p4][b]", "b").future().thenAccept(res -> {
+					System.out.println(res);
+					latch.countDown();
+				});
+		latch.await();
+	}
+
+	@Test
+	public void post_param_obj5() throws InterruptedException {
+		CountDownLatch latch = new CountDownLatch(1);
+		RequestBuilder.post().setUrl("http://127.0.0.1:8080/api/param/post_param_obj_mutil").text()
+				.addFormParam("param[p1]", "123").addFormParam("param[p2]", "1234").addFormParam("param[p3][0]", "1")
+				.addFormParam("param[p3][1]", "2").addFormParam("param[p3][2]", "3").addFormParam("param[p4][a]", "a")
+				.addFormParam("param[p4][c]", "c").addFormParam("param[p4][b]", "b")
+				.addFormParam("param[oneItem][name]", "lifeng").addFormParam("param[items][0][name]", "lifeng")
+				.addFormParam("param[items][1][name]", "hanqian").future().thenAccept(res -> {
 					System.out.println(res);
 					latch.countDown();
 				});
@@ -163,7 +193,7 @@ public class ParamTest extends AppRunnerTest {
 		CountDownLatch latch = new CountDownLatch(1);
 		RequestBuilder.post().setUrl("http://127.0.0.1:8080/api/param/valid").text()
 				.addFormParam("json", JsonMapper.toJson(p4)).addHeader("name", "lifeng").addFormParam("p1", "299")
-				.addFormParam("p2", "swakw-123").future().thenAccept(res -> {
+				.addFormParam("p2", "swak-123").future().thenAccept(res -> {
 					System.out.println("验证：" + res);
 					latch.countDown();
 				});

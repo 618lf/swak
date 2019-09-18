@@ -73,7 +73,18 @@ public class ParamApi {
 	@PostMapping("/post_param_obj")
 	public String string(Param param) {
 		return "Hello World! p1=" + param.getP1() + ":p2=" + param.getP2() + ":p3=" + param.getP3() + ":p4="
-				+ param.getP4();
+				+ param.getP4() + ":oneItem=" + param.getOneItem() + ":items" + param.getItems();
+	}
+
+	/**
+	 * 输出string 数据
+	 * 
+	 * @return
+	 */
+	@PostMapping("/post_param_obj_mutil")
+	public String post_param_obj_mutil(Param param) {
+		return "Hello World! p1=" + param.getP1() + ":p2=" + param.getP2() + ":p3=" + param.getP3() + ":p4="
+				+ param.getP4() + ":oneItem=" + param.getOneItem() + ":items" + param.getItems();
 	}
 
 	/**
