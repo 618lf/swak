@@ -53,6 +53,10 @@
 			<version>${vertx.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.swak</groupId>
+			<artifactId>swak-template</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.squareup</groupId>
 			<artifactId>javapoet</artifactId>
 			<version>${javapoet.version}</version>

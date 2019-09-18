@@ -264,7 +264,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	private Object resolveAnnotation(MethodParameter parameter, RoutingContext context) {
 		Body body = (Body) parameter.getParameterAnnotation(Body.class);
 		if (body != null) {
-			if (BeanUtils.isSimpleProperty(parameter.getParameterType())) {
+			if (!parameter.getParameterType().isArray() && BeanUtils.isSimpleProperty(parameter.getParameterType())) {
 				return this.doConvert(context.getBodyAsString(), parameter.getParameterType());
 			}
 			return context.getBody().getBytes();
@@ -286,9 +286,9 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			if (fieldClass.isAssignableFrom(Map.class)) {
 				return this.getHeaders(context);
 			} else if (fieldClass.isAssignableFrom(List.class)) {
-				return context.request().headers().getAll(header.name());
+				return context.request().headers().getAll(parameter.getParameterName());
 			}
-			return this.doConvert(context.request().getHeader(header.name()), parameter.getParameterType());
+			return this.doConvert(context.request().getHeader(parameter.getParameterName()), parameter.getParameterType());
 		}
 		return null;
 	}
@@ -423,14 +423,20 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			int index = StringUtils.indexOf(key, "][");
 			if (index > 0) {
 				key = StringUtils.substring(key, 0, index + 1);
-				List<Object> values = (List<Object>) arguments.get(key);
-				if (values == null) {
+			}
+			if (arguments.containsKey(key)) {
+				Object $value = arguments.get(key);
+				List<Object> values = null;
+				if ($value != null && $value instanceof List) {
+					values = (List<Object>) $value;
+				} else {
 					values = Lists.newArrayList();
+					values.add($value);
 					arguments.put(key, values);
 				}
 				values.add(entry.getValue());
 			} else {
-				arguments.put(entry.getKey(), entry.getValue());
+				arguments.put(key, entry.getValue());
 			}
 		});
 		return arguments;

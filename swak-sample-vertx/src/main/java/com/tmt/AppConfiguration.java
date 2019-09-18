@@ -39,7 +39,7 @@ public class AppConfiguration {
 	public MemoryRetryStrategy memoryRetryStrategy() {
 		return new MemoryRetryStrategy();
 	}
-	
+
 	/**
 	 * 定义消息队列的初始化, 以及初始化队列
 	 * 
@@ -82,8 +82,8 @@ public class AppConfiguration {
 		// 权限配置
 		SecurityFilter filter = new SecurityFilter();
 		filter.definition("/api/login=anno").definition("/api/logout=anno").definition("/api/reqister=anno")
-				.definition("/api/goods=anno").definition("/api/test=anno").definition("/api/user/=user")
-				.definition("/api/manage/=user, role[admin]").definition("/=user");
+				.definition("/api/goods=anno").definition("/api/param=anno").definition("/api/test=anno")
+				.definition("/api/user/=user").definition("/api/manage/=user, role[admin]").definition("/=user");
 		return filter;
 	}
 

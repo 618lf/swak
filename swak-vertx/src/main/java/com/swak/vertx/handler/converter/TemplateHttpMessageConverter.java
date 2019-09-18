@@ -37,6 +37,7 @@ public class TemplateHttpMessageConverter implements HttpMessageConverter {
 			response.putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_HTML);
 			response.end(Buffer.buffer(result.toByteArray()));
 		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

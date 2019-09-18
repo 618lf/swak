@@ -7,7 +7,7 @@ import com.swak.utils.StringUtils;
 import com.swak.vertx.security.filter.Filter;
 
 import io.vertx.core.Handler;
-import io.vertx.ext.web.Cookie;
+import io.vertx.core.http.Cookie;
 import io.vertx.ext.web.RoutingContext;
 
 /**
