@@ -2,6 +2,8 @@ package com.swak.incrementer;
 
 import java.util.UUID;
 
+import com.swak.utils.StringUtils;
+
 /**
  * UUID 
  * @author liFeng
@@ -16,6 +18,6 @@ public class UUIdGenerator implements IdGenerator{
 	}
 	
 	public static String uuid() {
-		return UUID.randomUUID().toString().replaceAll("-", "");
+		return UUID.randomUUID().toString().replaceAll("-", StringUtils.EMPTY);
 	}
 }

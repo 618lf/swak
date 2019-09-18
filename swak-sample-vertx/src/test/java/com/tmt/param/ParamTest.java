@@ -153,4 +153,20 @@ public class ParamTest extends AppRunnerTest {
 				});
 		latch.await();
 	}
+
+	@Test
+	public void post_param_valid() throws InterruptedException {
+		Map<String, Object> p4 = Maps.newHashMap();
+		p4.put("a", "a");
+		p4.put("b", "b");
+		p4.put("c", "c");
+		CountDownLatch latch = new CountDownLatch(1);
+		RequestBuilder.post().setUrl("http://127.0.0.1:8080/api/param/valid").text()
+				.addFormParam("json", JsonMapper.toJson(p4)).addHeader("name", "lifeng").addFormParam("p1", "299")
+				.addFormParam("p2", "swakw-123").future().thenAccept(res -> {
+					System.out.println("验证：" + res);
+					latch.countDown();
+				});
+		latch.await();
+	}
 }

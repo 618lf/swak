@@ -8,8 +8,10 @@ import java.util.concurrent.CompletableFuture;
 import com.swak.annotation.Body;
 import com.swak.annotation.Header;
 import com.swak.annotation.Json;
+import com.swak.annotation.Valid;
 import com.swak.entity.Model;
 import com.swak.entity.Result;
+import com.swak.validator.errors.BindErrors;
 import com.swak.vertx.annotation.GetMapping;
 import com.swak.vertx.annotation.PostMapping;
 import com.swak.vertx.annotation.RestController;
@@ -118,12 +120,23 @@ public class ParamApi {
 	}
 
 	/**
-	 * 通过 zero copy 的方式输出文本
+	 * 通过 模板输出数据
 	 * 
 	 * @return
 	 */
 	@GetMapping("/html")
 	public CompletableFuture<Model> html() {
 		return CompletableFuture.completedFuture(Model.use("index.html").addAttribute("name", "lifeng"));
+	}
+
+	/**
+	 * 输出string 数据
+	 * 
+	 * @return
+	 */
+	@PostMapping("/valid")
+	public String valid(@Valid Param param, BindErrors errors) {
+		return "Hello World! p1=" + param.getP1() + ":p2=" + param.getP2() + ":p3=" + param.getP3() + ":p4="
+				+ param.getP4() + ":Errors=" + errors.getErrors();
 	}
 }

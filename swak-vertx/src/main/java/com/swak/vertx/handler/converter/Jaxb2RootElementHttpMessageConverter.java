@@ -11,8 +11,8 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.vertx.core.http.HttpServerResponse;
 
 /**
- * 处理xml
- * 需要对象中包含 @XmlRootElement 或者 @XmlType
+ * 处理xml 需要对象中包含 @XmlRootElement
+ * 
  * @author lifeng
  */
 public class Jaxb2RootElementHttpMessageConverter implements HttpMessageConverter {
