@@ -43,7 +43,7 @@ public class MongoClients {
 		Assert.notNull(id, "id can not null");
 		CompletableFuture<Document> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
-		Query query = new Query();
+		Document query = new Document();
 		query.put(Document.ID_FIELD, id);
 		collection.find(query).first((v, r) -> {
 			if (r != null) {
@@ -67,7 +67,7 @@ public class MongoClients {
 		Assert.notNull(query, "id can not null");
 		CompletableFuture<Document> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
-		collection.find(query).first((v, r) -> {
+		collection.find(query.getFilter()).first((v, r) -> {
 			if (r != null) {
 				future.completeExceptionally(r);
 			} else {
@@ -89,7 +89,7 @@ public class MongoClients {
 		Assert.notNull(query, "query can not null");
 		CompletableFuture<Page> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
-		collection.countDocuments(query, (v, r) -> {
+		collection.countDocuments(query.getFilter(), (v, r) -> {
 			if (r != null) {
 				future.completeExceptionally(r);
 			} else {
@@ -102,7 +102,7 @@ public class MongoClients {
 
 	private static void _query(MongoCollection<Document> collection, Query $query, Parameters param,
 			CompletableFuture<Page> future) {
-		FindIterable<Document> find = collection.find($query, Document.class);
+		FindIterable<Document> find = collection.find(Document.class);
 		find.filter($query.getFilter()).projection($query.getFields()).limit(param.getPageSize())
 				.skip((param.getPageIndex() - 1) * param.getPageSize()).sort($query.getOrder());
 		List<Document> results = Lists.newArrayList();
@@ -127,7 +127,7 @@ public class MongoClients {
 		Assert.notNull(query, "query can not null");
 		CompletableFuture<List<Document>> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
-		FindIterable<Document> find = collection.find(query, Document.class);
+		FindIterable<Document> find = collection.find(Document.class);
 		find.limit(limit).sort(query.getOrder()).filter(query.getFilter()).projection(query.getFields());
 		List<Document> results = Lists.newArrayList();
 		find.into(results, (v, r) -> {
@@ -196,7 +196,7 @@ public class MongoClients {
 			});
 		} else {
 			com.mongodb.client.model.UpdateOptions options = new com.mongodb.client.model.UpdateOptions().upsert(true);
-			Query filter = new Query();
+			Document filter = new Document();
 			filter.put(Document.ID_FIELD, id);
 			collection.updateOne(filter, new Update().set(doc), options, (v, r) -> {
 				if (r != null) {
@@ -222,7 +222,7 @@ public class MongoClients {
 		CompletableFuture<Document> future = new CompletableFuture<>();
 		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
 		com.mongodb.client.model.UpdateOptions options = new com.mongodb.client.model.UpdateOptions().upsert(true);
-		Query filter = new Query();
+		Document filter = new Document();
 		filter.put(Document.ID_FIELD, doc.get(Document.ID_FIELD));
 		collection.updateOne(filter, update, options, (v, r) -> {
 			if (r != null) {

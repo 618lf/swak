@@ -1,34 +1,38 @@
 package com.swak.mongo.json;
 
+import java.util.List;
+
 import org.bson.conversions.Bson;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
+import com.swak.utils.Lists;
 
 /**
  * 查询
  * 
  * @author lifeng
  */
-public class Query extends Document {
+public class Query {
 
-	private static final long serialVersionUID = 1L;
-
-	private Order order;
-
+	/**
+	 * 无条件
+	 */
 	public Query() {
-		super();
 	}
 
-	public Query(final String key, final Object value) {
-		super(key, value);
-	}
-
+	/**
+	 * 写入条件
+	 * 
+	 * @param bean
+	 */
 	public <T> Query(T bean) {
-		super(bean);
+		Document filter = new Document(bean);
+		this.filter = Filters.and(filter);
 	}
 
 	// ------------- 排序 ----------------
+	private Order order;
 
 	/**
 	 * 排序
@@ -73,7 +77,13 @@ public class Query extends Document {
 	 * @return
 	 */
 	public Query and(Bson... bsons) {
-		this.filter = Filters.and(bsons);
+		if (this.filter == null) {
+			this.filter = Filters.and(bsons);
+		} else {
+			List<Bson> list = Lists.newArrayList(bsons);
+			list.add(this.filter);
+			this.filter = Filters.and(list.toArray(bsons));
+		}
 		return this;
 	}
 
