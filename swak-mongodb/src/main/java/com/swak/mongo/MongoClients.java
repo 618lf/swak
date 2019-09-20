@@ -54,7 +54,7 @@ public class MongoClients {
 		});
 		return future;
 	}
-	
+
 	/**
 	 * 根据ID获取数据
 	 * 
@@ -72,6 +72,28 @@ public class MongoClients {
 				future.completeExceptionally(r);
 			} else {
 				future.complete(v);
+			}
+		});
+		return future;
+	}
+
+	/**
+	 * 根据ID获取数据
+	 * 
+	 * @param table
+	 * @param id
+	 * @return
+	 */
+	public static CompletableFuture<Integer> count(String table, Query query) {
+		Assert.notNull(table, "table can not null");
+		Assert.notNull(query, "query can not null");
+		CompletableFuture<Integer> future = new CompletableFuture<>();
+		MongoCollection<Document> collection = holder.db.getCollection(table, Document.class);
+		collection.countDocuments(query.getFilter(), (v, r) -> {
+			if (r != null) {
+				future.completeExceptionally(r);
+			} else {
+				future.complete(v.intValue());
 			}
 		});
 		return future;
@@ -208,7 +230,7 @@ public class MongoClients {
 		}
 		return future;
 	}
-	
+
 	/**
 	 * 修改数据
 	 * 

@@ -4,15 +4,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-import com.swak.exception.BaseRuntimeException;
-import com.swak.freemarker.FreeMarkerConfigurer;
 import com.swak.utils.IOUtils;
-import com.swak.utils.SpringContextHolder;
 import com.swak.utils.StringUtils;
 
 /**
@@ -78,13 +74,13 @@ public class Kits {
 	 */
 	public static String processContent(String content, Map<String, Object> model) {
 		StringWriter out = new StringWriter();
-		try {
-			FreeMarkerConfigurer configurer = SpringContextHolder.getBean(FreeMarkerConfigurer.class);
-			new freemarker.template.Template("template", new StringReader(content), configurer.getConfiguration())
-					.process(model, out);
-		} catch (Exception localIOException) {
-			throw new BaseRuntimeException("生成数据错误", localIOException);
-		}
+//		try {
+//			FreeMarkerConfigurer configurer = SpringContextHolder.getBean(FreeMarkerConfigurer.class);
+//			new freemarker.template.Template("template", new StringReader(content), configurer.getConfiguration())
+//					.process(model, out);
+//		} catch (Exception localIOException) {
+//			throw new BaseRuntimeException("生成数据错误", localIOException);
+//		}
 		return out.toString();
 	}
 

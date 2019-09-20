@@ -15,7 +15,6 @@ import com.swak.utils.IOUtils;
 import com.swak.utils.JaxbMapper;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
-import com.swak.utils.SpringContextHolder;
 import com.swak.utils.StringUtils;
 import com.swak.utils.time.DateUtils;
 import com.tmt.gen.entity.Category;
@@ -30,7 +29,7 @@ public class GenUtils {
 
 	private static String REMOVE = "_RM_";
 	private static String srcFilePath = null;
-	private static TableService tableService = SpringContextHolder.getBean(TableService.class);
+	private static TableService tableService = null;
 	private static Logger logger = LoggerFactory.getLogger(GenUtils.class);
 
 	private static Config config = null;

@@ -14,6 +14,7 @@ import com.swak.Constants;
 import com.swak.config.freemarker.web.VertxTemplateConfiguration;
 import com.swak.freemarker.FreeMarkerConfigurationFactory;
 import com.swak.freemarker.FreeMarkerConfigurer;
+import com.swak.freemarker.TemplateMarker;
 
 import freemarker.template.Template;
 
@@ -38,6 +39,11 @@ public class FreeMarkerAutoConfiguration {
 		FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
 		applyProperties(configurer);
 		return configurer;
+	}
+	
+	@Bean
+	public TemplateMarker templateMarker(FreeMarkerConfigurer configurer) {
+		return new TemplateMarker(configurer.getConfiguration());
 	}
 
 	protected void applyProperties(FreeMarkerConfigurationFactory factory) {

@@ -139,6 +139,16 @@ public abstract class BaseService<T> {
 	}
 
 	/**
+	 * 查询个数
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public CompletableFuture<Integer> count(Query query) {
+		return MongoClients.count(table(), query);
+	}
+
+	/**
 	 * 查询
 	 * 
 	 * @param table

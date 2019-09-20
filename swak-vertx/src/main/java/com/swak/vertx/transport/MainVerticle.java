@@ -48,7 +48,7 @@ public class MainVerticle extends AbstractVerticle {
 	 * 启动服务, startFuture.complete 底层也没有修改，暂时不知道修改方案
 	 */
 	@Override
-	@SuppressWarnings({"rawtypes","deprecation"})
+	@SuppressWarnings({ "rawtypes", "deprecation" })
 	public void start(Future<Void> startFuture) throws Exception {
 		List<Future> futures = Lists.newArrayList();
 
@@ -82,9 +82,9 @@ public class MainVerticle extends AbstractVerticle {
 		Set<ServiceBean> services = annotation.getServices();
 		for (ServiceBean service : services) {
 			if (service.isHttp()) {
-				this.startHttp(service);
+				futures.addAll(this.startHttp(service));
 			} else {
-				this.startService(service);
+				futures.addAll(this.startService(service));
 			}
 		}
 		return futures;
