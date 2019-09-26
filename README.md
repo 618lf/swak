@@ -1,10 +1,10 @@
 # swak
-swak分为很多单独的模块，每个模块都是单独的功能，相互之间没有强依赖，可以单独使用。
+swak分为很多单独的模块，每个模块都是单独的功能，相互之间没有强依赖，可以单独使用。  
 
-swak 中所有io都是基于netty 的。
+swak 中所有io都是基于netty 的。  
 
-每个模块说明如下：
-swak  --- 父模块，定义基本的依赖，打包配置等，详见pom.xml
+每个模块说明如下：  
+swak  --- 父模块，定义基本的依赖，打包配置等，详见pom.xml  
 swak-actuator -- 仿springboot 的actuator 模块（线上没启用）  
 swak-app      -- 基础的 andriod、vue 框架（线上没启用）  
 swak-core     -- 基础模块，提供基础依赖（spring，cglib，fastjson，netty）等，提供一些工具类。  
@@ -39,11 +39,11 @@ swak-vertx    -- 封装vertx，可以像使用springmvc一样使用vertx,简单�
                  基于注解的api映射技术。（线上使用中，持续更新）  
 swak-wechat   -- 微信的基本操作：登录、发送消息，接收消息等。  
 
-#线上项目一：项目取餐项目
-【后台技术】vertx + redis + rabbit + mysql（java 部分基于swak中的相应模块）
-【前台技术】vue
-【界面预览】
-![Image text]()                 
+#线上项目一：项目取餐项目  
+【后台技术】vertx + redis + rabbit + mysql（java 部分基于swak中的相应模块）  
+【前台技术】vue  
+【界面预览】  
+![Image text]()                   
 
 # 启动线程
 系统启动之后，如果开启 redis 的pub/sub 的功能则开始5个线程，不知道干吗的. 其中有一个thread 
