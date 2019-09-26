@@ -39,7 +39,7 @@ swak-vertx    -- 封装vertx，可以像使用springmvc一样使用vertx,简单�
                  基于注解的api映射技术。（线上使用中，持续更新）  
 swak-wechat   -- 微信的基本操作：登录、发送消息，接收消息等。  
 
-#线上项目一：项目取餐项目  
+# 线上项目一：项目取餐项目  
 【后台技术】vertx + redis + rabbit + mysql（java 部分基于swak中的相应模块）  
 【前台技术】vue  
 【界面预览】  
