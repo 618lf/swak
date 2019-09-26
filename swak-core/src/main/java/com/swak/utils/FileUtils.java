@@ -144,19 +144,23 @@ public class FileUtils {
 	}
 
 	/**
-	 * 异步写文件, 执行成功之后会调用 completed
+	 * 异步写文件, 执行成功之后会调用 completed (有问题)
 	 * 
 	 * @param src
+	 *            -- Channels.newChannel(getInputStream());
 	 * @param dist
+	 *            -- AsynchronousFileChannel.open(out.toPath(),
+	 *            StandardOpenOption.WRITE);
 	 * @param bytebuf
+	 *            -- ByteBuffer.allocate(1024);
 	 * @param completed
 	 * @throws IOException
 	 */
 	public static void asyncWrite(ReadableByteChannel src, AsynchronousFileChannel dist, ByteBuffer bytebuf,
 			Runnable completed) throws IOException {
-		bytebuf.clear();
+		bytebuf.compact();
 		int read = src.read(bytebuf);
-		if (read >= 0) {
+		if (read >= 0 || bytebuf.hasRemaining()) {
 			bytebuf.flip();
 			dist.write(bytebuf, 0, null, new CompletionHandler<Integer, Void>() {
 				@Override
@@ -180,4 +184,5 @@ public class FileUtils {
 			completed.run();
 		}
 	}
+	
 }

@@ -348,11 +348,8 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 */
 	private Object resolveObject(MethodParameter parameter, RoutingContext context, boolean check) {
 		Map<String, Object> arguments = this.parseArguments(context.request().params().iterator());
-		if (!arguments.isEmpty()) {
-			return this.resolveObject(parameter.getParameterType(), parameter.getParameterName(), arguments, context,
-					check);
-		}
-		return null;
+		return this.resolveObject(parameter.getParameterType(), parameter.getParameterName(), arguments, context,
+				check);
 	}
 
 	/**
@@ -362,18 +359,17 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 */
 	public Object resolveObject(Class<?> clazz, String pname, Map<String, Object> arguments, RoutingContext context,
 			boolean check) {
-		ClassMeta classMeta = FieldCache.get(clazz);
-		if (classMeta == null) {
-			return null;
-		}
+		Object obj = null;
 		try {
-			Object obj = clazz.newInstance();
-			this.fillObjectValue(obj, classMeta.getFields(), pname, arguments, context, check);
-			return obj;
+			obj = clazz.newInstance();
+			ClassMeta classMeta = FieldCache.get(clazz);
+			if (classMeta != null && !arguments.isEmpty()) {
+				this.fillObjectValue(obj, classMeta.getFields(), pname, arguments, context, check);
+			}
 		} catch (Exception e) {
-			logger.error("Set obj field faile");
+			logger.error("Set field faile");
 		}
-		return null;
+		return obj;
 	}
 
 	// 循环 arguments 更好一点
