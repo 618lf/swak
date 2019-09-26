@@ -5,39 +5,39 @@ swak 中所有io都是基于netty 的。
 
 每个模块说明如下：
 swak  --- 父模块，定义基本的依赖，打包配置等，详见pom.xml
-swak-actuator -- 仿springboot 的actuator 模块（线上没启用）
-swak-app      -- 基础的 andriod、vue 框架（线上没启用）
-swak-core     -- 基础模块，提供基础依赖（spring，cglib，fastjson，netty）等，提供一些工具类。
-swak-excel    -- excel 的快捷导入和下载。
-swak-flux     -- 本人手写的响应式http服务器，响应式的权限验证框架（shiro的响应式版本），注意：代码
-                 没有在线上使用，可以一起交流学习。
-swak-fx       -- java桌面版，嵌入了webkit浏览器，可以和springboot web项目结合起来用
-swak-gen      -- 代码生成工具，未完成
-swak-groovy   -- 用来做表达式额解析执行。
-swak-http     -- 基于async-http-client（基于netty）的客户端，本模块只是做了一层封装简化json，xml等的解析。
-swak-jdbc     -- 数据库处理模块，基于spring，mybatis，HikariCP。
-swak-kotlin   -- 本来想研究协程的处理，一直没成功过，可以一起学习交流。
-swak-metrics  -- 监控，基于dropwizard metrics。除了基本的cpu，内存还有对线程池的监控方法执行的监控等，比较完整。
-swak-mongodb  -- mongodb的客户端，在自己的博客系统中使用mongodb实现。
-swak-motan    -- 所有代码来至motan。
-swak-mq       -- rabbitmq 的java客户端，通过研究spring data 中的代码，自己实现的rabbitmq客户端，有消费者重试，
-                 发送重试，重试队列等实现，又兴趣的可以一起交流
-swak-mqtt     -- 只是记录
-swak-package  -- maven打包的配置
-swak-qrcode   -- 二维码生成的工具包
-swak-quartz   -- 定时任务的实现
-swak-redis    -- 基于lettuce 的redis操作客户端，简单封装，更好使用。
-swak-rocketmq -- 只是记录
-swak-sample   -- 
-swak-sample-api -- 
-swak-sample-rpc -- 
-swak-sample-vertx -- 演示项目，可以参考
-swak-starter  -- 启动项目，基于并改造至springboot。提供最基本模板的启动依赖。
-swak-template -- 居于freemarker 的模板技术
-swak-test     -- 测试项目
-swak-vertx    -- 封装vertx，可以像使用springmvc一样使用vertx,简单高效。并提供jwt的token技术，类shiro 的权限校验技术。
-                 基于注解的api映射技术。（线上使用中，持续更新）
-swak-wechat   -- 微信的基本操作：登录、发送消息，接收消息等。
+swak-actuator -- 仿springboot 的actuator 模块（线上没启用）  
+swak-app      -- 基础的 andriod、vue 框架（线上没启用）  
+swak-core     -- 基础模块，提供基础依赖（spring，cglib，fastjson，netty）等，提供一些工具类。  
+swak-excel    -- excel 的快捷导入和下载。  
+swak-flux     -- 本人手写的响应式http服务器，响应式的权限验证框架（shiro的响应式版本），注意：代码  
+                 没有在线上使用，可以一起交流学习。  
+swak-fx       -- java桌面版，嵌入了webkit浏览器，可以和springboot web项目结合起来用  
+swak-gen      -- 代码生成工具，未完成  
+swak-groovy   -- 用来做表达式额解析执行。   
+swak-http     -- 基于async-http-client（基于netty）的客户端，本模块只是做了一层封装简化json，xml等的解析。  
+swak-jdbc     -- 数据库处理模块，基于spring，mybatis，HikariCP。  
+swak-kotlin   -- 本来想研究协程的处理，一直没成功过，可以一起学习交流。  
+swak-metrics  -- 监控，基于dropwizard metrics。除了基本的cpu，内存还有对线程池的监控方法执行的监控等，比较完整。  
+swak-mongodb  -- mongodb的客户端，在自己的博客系统中使用mongodb实现。  
+swak-motan    -- 所有代码来至motan。  
+swak-mq       -- rabbitmq 的java客户端，通过研究spring data 中的代码，自己实现的rabbitmq客户端，有消费者重试，  
+                 发送重试，重试队列等实现，又兴趣的可以一起交流  
+swak-mqtt     -- 只是记录  
+swak-package  -- maven打包的配置  
+swak-qrcode   -- 二维码生成的工具包  
+swak-quartz   -- 定时任务的实现  
+swak-redis    -- 基于lettuce 的redis操作客户端，简单封装，更好使用。  
+swak-rocketmq -- 只是记录  
+swak-sample   --   
+swak-sample-api --   
+swak-sample-rpc --   
+swak-sample-vertx -- 演示项目，可以参考  
+swak-starter  -- 启动项目，基于并改造至springboot。提供最基本模板的启动依赖。  
+swak-template -- 居于freemarker 的模板技术  
+swak-test     -- 测试项目  
+swak-vertx    -- 封装vertx，可以像使用springmvc一样使用vertx,简单高效。并提供jwt的token技术，类shiro 的权限校验技术。  
+                 基于注解的api映射技术。（线上使用中，持续更新）  
+swak-wechat   -- 微信的基本操作：登录、发送消息，接收消息等。  
 
 #线上项目一：项目取餐项目
 【后台技术】vertx + redis + rabbit + mysql（java 部分基于swak中的相应模块）
