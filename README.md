@@ -40,10 +40,17 @@ swak-vertx    -- 封装vertx，可以像使用springmvc一样使用vertx,简单�
 swak-wechat   -- 微信的基本操作：登录、发送消息，接收消息等。  
 
 # 线上项目一：校园自助取餐项目  
-【后台技术】vertx + redis + rabbit + mysql（java 部分基于swak中的相应模块）  
+【项目介绍】为学校建立无人食堂，家长在线点餐，学生通过取餐码取餐。
+【后台技术】vertx Java、Vue.js、Spring Boot、Netty、MySql、Redis、MQ、mqtt
 【前台技术】vue  
 【界面预览】  
-![Image text]()                   
+![Image text](https://wushiji.oss-cn-shenzhen.aliyuncs.com/introduce/-wKgBDV1txpmAaA-mAAh1wPUx16s926%20%281%29.PNG)  
+![Image text](https://wushiji.oss-cn-shenzhen.aliyuncs.com/introduce/-wKgBDV1txpmAaA-mAAh1wPUx16s926.PNG)    
+![Image text](https://wushiji.oss-cn-shenzhen.aliyuncs.com/introduce/-wKgBDV1txpyALR13AAO8emZq5oM202.PNG)           
+![Image text](https://wushiji.oss-cn-shenzhen.aliyuncs.com/introduce/-wKgBDV1txq-AWaQfAAEECixmopg907%20%281%29.PNG)          
+![Image text](https://wushiji.oss-cn-shenzhen.aliyuncs.com/introduce/-wKgBDV1txqCANccHAAa0RdxT2Gg844.PNG)                
+![Image text](https://wushiji.oss-cn-shenzhen.aliyuncs.com/introduce/-wKgBDV1txqeAc621AAXxA01myZ0728.PNG)        
+![Image text](https://wushiji.oss-cn-shenzhen.aliyuncs.com/introduce/-wKgBDV1txqqAKpqHAAk6aKkfZrA043.PNG)        
 
 # 启动线程
 系统启动之后，如果开启 redis 的pub/sub 的功能则开始5个线程，不知道干吗的. 其中有一个thread 
