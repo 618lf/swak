@@ -43,7 +43,7 @@ swak-wechat   -- 微信的基本操作：登录、发送消息，接收消息等
 【项目介绍】为学校建立无人食堂，家长在线点餐，学生通过取餐码取餐。  
 【后台技术】vertx Java、Vue.js、Spring Boot、Netty、MySql、Redis、MQ、mqtt  
 【前台技术】vue    
-【界面预览】    
+【界面预览】以下截图来至测试环境    
 ![Image text](https://wushiji.oss-cn-shenzhen.aliyuncs.com/introduce/-wKgBDV1txpmAaA-mAAh1wPUx16s926%20%281%29.PNG)  
 ![Image text](https://wushiji.oss-cn-shenzhen.aliyuncs.com/introduce/-wKgBDV1txpmAaA-mAAh1wPUx16s926.PNG)    
 ![Image text](https://wushiji.oss-cn-shenzhen.aliyuncs.com/introduce/-wKgBDV1txpyALR13AAO8emZq5oM202.PNG)           
