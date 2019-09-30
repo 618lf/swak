@@ -51,10 +51,11 @@ public @interface VertxService {
 	String use_pool() default StringUtils.EMPTY;
 
 	/**
-	 * 是否是代理类
+	 * 是否是代理类, 自动获取代理类，不需要标记，过渡方法
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	boolean isAop() default true;
 
 	/**

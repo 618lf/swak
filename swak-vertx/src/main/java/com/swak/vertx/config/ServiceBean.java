@@ -43,6 +43,7 @@ public class ServiceBean {
 		return mapping.use_pool();
 	}
 
+	@Deprecated
 	public boolean isAop() {
 		return mapping.isAop();
 	}

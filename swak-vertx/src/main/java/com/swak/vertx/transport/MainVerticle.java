@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.aop.support.AopUtils;
-import org.springframework.beans.factory.BeanInitializationException;
 
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
@@ -164,14 +163,10 @@ public class MainVerticle extends AbstractVerticle {
 	 */
 	@SuppressWarnings("unchecked")
 	private <T> T getProxyService(ServiceBean service) {
-		if (service.isAop()) {
-			Object proxy = annotation.getProxy(service.getService());
-			if (!AopUtils.isAopProxy(proxy)) {
-				throw new BeanInitializationException("Failed to init service in class "
-						+ service.getService().getClass().getName() + ", that need use aop.");
-			}
-			return (T) proxy;
+		Object proxy = service.getService();
+		if (!AopUtils.isAopProxy(proxy)) {
+			return (T) annotation.getProxy(service.getService());
 		}
-		return (T) service.getService();
+		return (T) proxy;
 	}
 }
