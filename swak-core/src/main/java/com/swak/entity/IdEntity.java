@@ -15,16 +15,20 @@ public abstract class IdEntity<PK> implements Serializable {
 		return id;
 	}
 
-	public void setId(PK id) {
+	@SuppressWarnings("unchecked")
+	public <T> T setId(PK id) {
 		this.id = id;
+		return (T) this;
 	}
 
 	public Integer getVersion() {
 		return version;
 	}
 
-	public void setVersion(Integer version) {
+	@SuppressWarnings("unchecked")
+	public <T> T setVersion(Integer version) {
 		this.version = version;
+		return (T) this;
 	}
 
 	/**

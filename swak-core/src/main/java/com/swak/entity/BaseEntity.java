@@ -12,18 +12,10 @@ import com.alibaba.fastjson.annotation.JSONField;
  * @author lifeng
  * @param <PK>
  */
+@SuppressWarnings("unchecked")
 public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-	// path 中的分隔
-	public static final String PATH_SEPARATE = "/";
-	// IDS 中的分隔
-	public static final String IDS_SEPARATE = ",";
-	// 是/否/删除 - TINYINT
-	public static final byte YES = 1;
-	public static final byte NO = 0;
-	public static final byte DEL = -1;
 
 	protected String name;// 名称
 	protected Long userId;// 创建人ID
@@ -34,24 +26,27 @@ public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializabl
 		return name;
 	}
 
-	public void setName(String name) {
+	public <T> T setName(String name) {
 		this.name = name;
+		return (T) this;
 	}
 
 	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public <T> T setUserId(Long userId) {
 		this.userId = userId;
+		return (T) this;
 	}
 
 	public String getUserName() {
 		return userName;
 	}
 
-	public void setUserName(String userName) {
+	public <T> T setUserName(String userName) {
 		this.userName = userName;
+		return (T) this;
 	}
 
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
@@ -59,8 +54,9 @@ public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializabl
 		return createDate;
 	}
 
-	public void setCreateDate(Date createDate) {
+	public <T> T setCreateDate(Date createDate) {
 		this.createDate = createDate;
+		return (T) this;
 	}
 
 	/**
@@ -85,8 +81,9 @@ public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializabl
 	 * 
 	 * @param user
 	 */
-	public void userOptions(BaseEntity<Long> user) {
+	public <T> T userOptions(BaseEntity<Long> user) {
 		this.userId = user.getId();
 		this.userName = user.getName();
+		return (T) this;
 	}
 }

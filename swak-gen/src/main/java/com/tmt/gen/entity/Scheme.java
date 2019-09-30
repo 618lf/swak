@@ -13,7 +13,6 @@ public class Scheme extends BaseEntity<Long> implements Serializable{
     
 	private static final long serialVersionUID = 974399490610094603L;
 	
-	private String name;
 	private String author;
     private String category;
     private String packageName;
@@ -41,10 +40,6 @@ public class Scheme extends BaseEntity<Long> implements Serializable{
 	public Long getId() {
 		return this.id;
 	}
-	@Override
-	public void setId(Long id) {
-		this.id = id;
-	}
 	public String getRightTable() {
 		return rightTable;
 	}
@@ -68,12 +63,6 @@ public class Scheme extends BaseEntity<Long> implements Serializable{
 	}
 	public void setFlag(Integer flag) {
 		this.flag = flag;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
 	}
 	public String getCategory() {
 		return category;

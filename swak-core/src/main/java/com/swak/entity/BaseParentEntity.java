@@ -13,6 +13,10 @@ import com.swak.utils.StringUtils;
 public abstract class BaseParentEntity<PK> extends BaseEntity<PK> implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	// path 中的分隔
+	public static final String PATH_SEPARATE = "/";
+	// IDS 中的分隔
+	public static final String IDS_SEPARATE = ",";
 	
 	//公有字段
 	protected String path;
@@ -22,12 +26,6 @@ public abstract class BaseParentEntity<PK> extends BaseEntity<PK> implements Ser
 	protected String parentIds;
 	protected String parentName;
 
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
 	public String getPath() {
 		return path == null?"":path;
 	}

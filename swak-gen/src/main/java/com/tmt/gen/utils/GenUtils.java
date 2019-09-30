@@ -286,7 +286,7 @@ public class GenUtils {
 		for (Template template : templates) {
 			if (!"viewTableSelect".equals(template.getName())) {
 				GenUtils.genToFile(template, model);
-			} else if (scheme.getTableSelect() != null && Scheme.YES == scheme.getTableSelect()) {
+			} else if (scheme.getTableSelect() != null && Constants.YES == scheme.getTableSelect()) {
 				GenUtils.genToFile(template, model);
 			}
 		}

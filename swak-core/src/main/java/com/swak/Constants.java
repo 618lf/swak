@@ -45,6 +45,11 @@ public interface Constants {
 	/** 保留ID **/
 	long ROOT = 0L;
 	long INVALID_ID = -1;
+	
+	/** 是/否/删除 - TINYINT **/
+	byte YES = 1;
+	byte NO = 0;
+	byte DEL = -1;
 
 	/** 默认编码 **/
 	Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
