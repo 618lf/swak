@@ -252,6 +252,98 @@ dubbo 中的trace 客户端和服务器配合，将traceId存储在参数中。�
 读写分离的方式： 单纯的读只读库，只要有写都需要走写库。不管是先发生读、还是先发生写。如果先写，后面再读，可以先走读库，后面的事务
 部分走写库。
 
+
+
 # 演示项目
 具体的演示项目参见：
 [地址](https://gitee.com/618lf/springboot-vertx)
+
+springboot-vertx 是基于swak 的一个演示项目，主要演示了如下部分：  
+1. 基本的启动框架  
+2. api的配置方式，例如AdminApi、AnnoApi、ParamApi、UserApi。  
+3. api权限的校验，简单的权限校验方式，配置方式AppConfiguration 第 48 行代码到第 54 行代码。  
+4. 参数的传递方式，详细见测试代码 ParamTest.java  
+5. 返回值的使用方式，详细见测试代码 ParamTest.java   
+6. 项目如何测试继承AppRunnerTest，详细见测试代码 ParamTest.java  
+7. service 的配置 UserServiceImpl  
+
+# 演示项目:自定义的项目启动  
+大家都很熟悉springboot的四大特性项目依赖，自动化配置。本人也非常喜欢，但不太喜欢引入过多的start.jar来引入组件。  
+所以本人对spring做了一些简单的定制。将他的启动属性文件spring.factories 改为 swak.factories.  
+改变的方法也很简单中有详细的源码：swak-starter。所有我们熟悉的组件都放在 com.swak.config 中来自启动。  
+AppConfiguration.java -- 项目级别的启动配置  
+AppRunner.java        -- 启动入口，执行main方法  
+执行注解com.swak.ApplicationBoot所引入的com.swak.selector.AutoConfigurationImportSelector，此类将会执行swak.factories中引入的启动配置。  
+
+如果是web环境（依赖的jar有vertx的相关类）则会实例化 ReactiveServerApplicationContext，否则会实例化     AnnotationConfigApplicationContext。  
+ReactiveServerApplicationContext 实例化之后会启动 ReactiveServer，vertx 开始初始化。    
+vertx 的启动依赖如下：（swak-vertx）  
+ReactiveServer -> MainVerticle -> ServiceVerticle(多个) -> HttpVerticle(一个多实例)  
+如上是简单的解释，后续在完善。  
+
+# 演示项目:API的配置方式、参数处理、权限校验、返回值处理
+通过注解的方式来配置，类似springmvc 的方式.注解只有：PageController、RestController、PostMapping、GetMapping简单明了。  
+PageController 和 RestController 没有过多的差别，只是说明此Controller是来做展示页面的。  
+API 中最重要的类是 HandlerAdapter, 将api的path绑定到vertx中的 Router，调用api的method，处理参数，处理返回值等。
+
+# 演示项目:响应式HTTP服务器的简单介绍
+何为响应式，说白了就是回调，IO处理好之后回调注册的方法。这样线程就不需要等待IO完成才继续执行后续代码.  
+vertx 被称为java中的node.js，多线程版node.js。    
+swak是基于vertx做了简单的封装，让我们能像使用springmvc一样使用vertx。  
+响应式开发并不难，难的是需要弄清楚回调之后的代码在哪个线程中执行。以前我们开发ssm项目时，一个请求对应一个线程，从头走到尾，我们基本上不用理会当前线程是谁，执行是否需要花费很长时间。  
+我觉得响应式最大的特点是在请求响应这条事务中可以任意（只是比如而已）的切换线程。  
+例如，本例子中，Controller的执行在netty的eventloop线程中，UserServiceImpl 的执行在 vertx的work线程中。 
+
+下面简单解释下这个执行过程。vertx 的关键点其内部的 Eventbus。可以简单的把他想象成为一个map。map 的key是接口类型，value是实现类对象的封装。  
+Controller 调用 service 时，实际上是发送一个消息到 Eventbus，消息中包含service的接口类型，Eventbus获取相应的实现类对象并在相应线程中执行，将返回值通过Eventbus通过消息的形式返回。
+
+具体参见 InvokerHandler 第 73 行 发送消息代码。
+
+service 对象执行 参见 ServiceVerticle handle 部分
+
+
+# 演示项目:项目中为啥会出现这两类接口
+UserService、UserServiceAsync     
+UserService -- 和我们做ssm时后的service接口一样，用于同步返回，一帮用于jdbc 的操作接口。  
+UserServiceAsync -- 异步返回版本，这个可以自动生成，但自动生成的代码返回值中的范型无法动态设置，所以现在都手动生成此异步接口。  
+
+
+# 演示项目:关于开发响应式系统的一些经验
+以前我们开发ssm时喜欢将系统分为三层的开发模式，Controller、service、dao。现在也一样也是三层。不同点在于Controller在eventloop线程中执行，service、dao和之前一样在work线程中执行,service、dao以前怎么开发现在也怎么开发，没变。  
+Controller 调用 service 通过异步发消息的方式来调用。
+
+Controller 的 代码  
+
+@RestController(path = "/api/user", value = "userApi")  
+public class UserApi {  
+  
+	@VertxReferer  
+	private UserServiceAsync userService;  
+  
+	/**  
+	 * 获取用户  
+	 *   
+	 * @param subject  
+	 * @return  
+	 */  
+	@GetMapping("/get")  
+	public CompletableFuture<Result> get(Subject subject) {  
+		return userService.get(subject.getIdAsLong()).thenApply(res -> Result.success(res));  
+	}  
+}  
+
+service 的代码，和之前一样使用spring声明式事务等。
+
+@VertxService  
+public class UserServiceImpl implements UserService {  
+  
+	@Override  
+	public User get(Long id) {  
+		return new User().setId(id);  
+	}  
+}  
+
+java的jdbc是同步执行的，spring的事务业务依赖当前线程的，所以不要在service中切换线程。  
+其他一些io，例如redis，http 客户端，我都是用的基于netty的异步客户端。  
+
+相关说明后续补充...
