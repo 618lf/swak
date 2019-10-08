@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import com.swak.Constants;
 import com.swak.exception.BaseRuntimeException;
 
 /**
@@ -14,18 +15,11 @@ import com.swak.exception.BaseRuntimeException;
  */
 public final class RegexUtil {
 
-	public static int REPLACE_FIRST = 0x00000001;
-	public static int REPLACE_ALL = 0x00000010;
-	public static int MATCH_DEFAULT = 0x00000000;
-	public static int MATCH_CASE_INSENSITIVE = 0x00000100;
-	public static int MATCH_MULTILINE = 0x00001000;
-	public static int MATCH_SINGLELINE = 0x00010000;
-
-	public static final String DATE_REGEX = "^[0-9]{4}\\-[0-9]{1,2}\\-[0-9]{1,2}$";
-	public static final String DIGIT_REGEX = "^\\d+(\\.\\d+)?$";
-	public static final String IP_REGEX = "\\b((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])\\.((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])\\.((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])\\.((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])\\b";
-	public static final String EMAIL_REGEX = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
-	public static final String PHONE_NUM_REGEX = "^((13[0-9])|(14[5,7,9])|(15([0-3]|[5-9]))|(166)|(17[0,1,3,5,6,7,8])|(18[0-9])|(19[8|9]))\\d{8}$";
+	private static int REPLACE_ALL = 0x00000010;
+	private static int MATCH_DEFAULT = 0x00000000;
+	private static int MATCH_CASE_INSENSITIVE = 0x00000100;
+	private static int MATCH_MULTILINE = 0x00001000;
+	private static int MATCH_SINGLELINE = 0x00010000;
 
 	/**
 	 * 校验日期
@@ -34,7 +28,7 @@ public final class RegexUtil {
 	 * @return
 	 */
 	public static boolean isDate(String date) {
-		Pattern p = Pattern.compile(DATE_REGEX);
+		Pattern p = Pattern.compile(Constants.DATE_REGEX);
 		Matcher m = p.matcher(date);
 		return m.matches();
 	}
@@ -46,7 +40,7 @@ public final class RegexUtil {
 	 * @return
 	 */
 	public static boolean isNumber(String num) {
-		Pattern p = Pattern.compile(DIGIT_REGEX);
+		Pattern p = Pattern.compile(Constants.DIGIT_REGEX);
 		Matcher m = p.matcher(num);
 		return m.matches();
 	}
@@ -58,7 +52,7 @@ public final class RegexUtil {
 	 * @return
 	 */
 	public static boolean isIp(String num) {
-		Pattern p = Pattern.compile(IP_REGEX);
+		Pattern p = Pattern.compile(Constants.IP_REGEX);
 		Matcher m = p.matcher(num);
 		return m.matches();
 	}
@@ -70,7 +64,7 @@ public final class RegexUtil {
 	 * @return
 	 */
 	public static boolean isEmail(String num) {
-		Pattern p = Pattern.compile(EMAIL_REGEX);
+		Pattern p = Pattern.compile(Constants.EMAIL_REGEX);
 		Matcher m = p.matcher(num);
 		return m.matches();
 	}
@@ -82,7 +76,7 @@ public final class RegexUtil {
 	 * @return
 	 */
 	public static boolean isPhoneNum(String num) {
-		Pattern p = Pattern.compile(PHONE_NUM_REGEX);
+		Pattern p = Pattern.compile(Constants.PHONE_NUM_REGEX);
 		Matcher m = p.matcher(num);
 		return m.matches();
 	}
