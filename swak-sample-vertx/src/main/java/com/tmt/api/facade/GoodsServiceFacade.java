@@ -17,5 +17,38 @@ public interface GoodsServiceFacade {
 	 */
 	String sayHello();
 	
+	/**
+	 * 读数据
+	 * 
+	 * @return
+	 */
 	Goods get();
+	
+	/**
+	 * 保存数据
+	 * 
+	 * @return
+	 */
+	Goods save();
+	
+	/**
+	 * 保存数据
+	 * 
+	 * @return
+	 */
+	Goods get_save();
+	
+	/**
+	 * 保存数据
+	 * 
+	 * @return
+	 */
+	Goods get_save_get();
+	
+	/**
+	 * 强制走主库
+	 * 
+	 * @return
+	 */
+	Goods hint_get_save_get();
 }

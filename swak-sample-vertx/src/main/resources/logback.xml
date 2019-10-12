@@ -50,4 +50,5 @@
 	<logger name="io.netty.util.internal.PlatformDependent" level="DEBUG"/>
 	<logger name="io.netty.buffer.PooledByteBufAllocator" level="DEBUG"/>
 	<logger name="io.netty.buffer.ByteBufUtil" level="DEBUG"/>
+	<logger name="Sharding-Sphere-SQL" level="DEBUG"/>
 </configuration>

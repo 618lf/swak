@@ -12,4 +12,20 @@
      FROM T_GOODS
     WHERE ID = #{id}
   </select>
+  
+  <select id="getOne" resultMap="BaseResult">
+   SELECT ID, NAME, REMARKS FROM T_GOODS LIMIT 1
+  </select>
+  
+  <insert id="insert" parameterType="com.tmt.api.entity.Goods">
+   INSERT INTO T_GOODS (ID, NAME, REMARKS)
+   VALUES (#{id}, #{name}, #{remarks})
+  </insert>
+  
+  <update id="update" parameterType="com.tmt.api.entity.Goods">
+   UPDATE T_GOODS
+      SET NAME = #{name},
+          REMARKS = #{remarks}
+    WHERE ID = #{id}
+  </update>
 </mapper>
