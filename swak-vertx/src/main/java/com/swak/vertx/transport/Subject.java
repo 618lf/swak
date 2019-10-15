@@ -5,6 +5,8 @@ import java.util.concurrent.CompletionStage;
 
 import com.swak.security.jwt.JWTPayload;
 
+import io.vertx.ext.web.RoutingContext;
+
 /**
  * 简单的主体
  * 
@@ -25,7 +27,13 @@ public interface Subject {
 	 * @param session
 	 */
 	Subject setPrincipal(Principal principal);
-
+	
+	/**
+	 * 登录
+	 * @param token
+	 */
+	CompletionStage<Token> login(RoutingContext context);
+	
 	/**
 	 * 是否有权限
 	 * 

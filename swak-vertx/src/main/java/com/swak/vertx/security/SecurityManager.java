@@ -9,6 +9,7 @@ import org.springframework.util.CollectionUtils;
 import com.swak.vertx.security.principal.PrincipalStrategy;
 import com.swak.vertx.security.realm.Realm;
 import com.swak.vertx.transport.Subject;
+import com.swak.vertx.transport.Token;
 
 import io.vertx.ext.web.RoutingContext;
 
@@ -34,9 +35,20 @@ public class SecurityManager {
 	}
 
 	// ------------ 主体部分 ---------------
-	
+
 	public CompletionStage<Subject> createSubject(RoutingContext context) {
-		return strategy.createPrincipal(context);
+		return strategy.createSubject(context);
+	}
+
+	/**
+	 * 登录
+	 * 
+	 * @param token
+	 */
+	public CompletionStage<Token> login(Subject subject, RoutingContext context) {
+		return this.realm.onLogin(subject).thenCompose(res -> {
+			return this.strategy.generateToken(subject);
+		});
 	}
 
 	// ---------- 权限校验部分 -------------
@@ -124,7 +136,7 @@ public class SecurityManager {
 	private CompletionStage<Set<String>> loadPermissions(Subject subject) {
 		Set<String> permissions = subject.getPermissions();
 		if (permissions == null) {
-			return realm.doGetAuthorizationInfo(subject.getPrincipal()).thenApply(authorization -> {
+			return realm.doGetAuthorizationInfo(subject).thenApply(authorization -> {
 				subject.setPermissions(authorization.getPermissions());
 				subject.setRoles(authorization.getRoles());
 				return subject.getPermissions();
@@ -142,7 +154,7 @@ public class SecurityManager {
 	private CompletionStage<Set<String>> loadRoles(Subject subject) {
 		Set<String> roles = subject.getRoles();
 		if (roles == null) {
-			return realm.doGetAuthorizationInfo(subject.getPrincipal()).thenApply(authorization -> {
+			return realm.doGetAuthorizationInfo(subject).thenApply(authorization -> {
 				subject.setPermissions(authorization.getPermissions());
 				subject.setRoles(authorization.getRoles());
 				return authorization.getRoles();

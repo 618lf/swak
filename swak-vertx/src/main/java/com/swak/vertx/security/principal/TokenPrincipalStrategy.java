@@ -9,6 +9,7 @@ import com.swak.security.jwt.JWTPayload;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.security.SecuritySubject;
 import com.swak.vertx.transport.Subject;
+import com.swak.vertx.transport.Token;
 
 import io.vertx.core.http.Cookie;
 import io.vertx.ext.web.RoutingContext;
@@ -30,7 +31,7 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	 * 创建身份信息
 	 */
 	@Override
-	public CompletionStage<Subject> createPrincipal(RoutingContext context) {
+	public CompletionStage<Subject> createSubject(RoutingContext context) {
 		Subject subject = null;
 
 		try {
@@ -62,5 +63,16 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 		context.put(Constants.SUBJECT_NAME, subject);
 
 		return CompletableFuture.completedFuture(subject);
+	}
+
+	/**
+	 * 创建 token
+	 */
+	@Override
+	public CompletionStage<Token> generateToken(Subject subject) {
+		Token token = new Token();
+		token.setName(jwtAuthProvider.getTokenName());
+		token.setToken(jwtAuthProvider.generateToken(subject.toPayload()));
+		return CompletableFuture.completedFuture(token);
 	}
 }

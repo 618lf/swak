@@ -11,6 +11,9 @@ import com.swak.utils.Sets;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.transport.Principal;
 import com.swak.vertx.transport.Subject;
+import com.swak.vertx.transport.Token;
+
+import io.vertx.ext.web.RoutingContext;
 
 /**
  * 安全的主体
@@ -66,6 +69,11 @@ public class SecuritySubject extends JWTObject implements Subject {
 		this.put(ID_ATTR, principal.getId());
 		this.put(NAME_ATTR, principal.getName());
 		return this;
+	}
+
+	@Override
+	public CompletionStage<Token> login(RoutingContext context) {
+		return SecurityUtils.getSecurityManager().login(this, context);
 	}
 
 	@Override

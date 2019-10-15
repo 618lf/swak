@@ -8,6 +8,7 @@ import com.swak.cache.Cache;
 import com.swak.cache.CacheManager;
 import com.swak.vertx.transport.AuthorizationInfo;
 import com.swak.vertx.transport.Principal;
+import com.swak.vertx.transport.Subject;
 
 /**
  * 提供缓存的支持
@@ -54,11 +55,11 @@ public abstract class CachedRealm implements Realm {
 	 * 优先获取缓存中的数据
 	 */
 	@Override
-	public CompletionStage<AuthorizationInfo> doGetAuthorizationInfo(Principal principal) {
-		String keyName = this.getCachedAuthorizationInfoName(principal);
+	public CompletionStage<AuthorizationInfo> doGetAuthorizationInfo(Subject subject) {
+		String keyName = this.getCachedAuthorizationInfoName(subject.getPrincipal());
 		return cache.getObject(keyName).thenCompose(value -> {
 			if (value == null) {
-				return this.getAuthorizationInfo(principal)
+				return this.getAuthorizationInfo(subject.getPrincipal())
 						.thenCompose(authorization -> cache.putObject(keyName, authorization))
 						.thenApply(entity -> entity.getValue());
 			}
