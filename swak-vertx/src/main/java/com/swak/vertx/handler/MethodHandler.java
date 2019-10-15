@@ -1,5 +1,6 @@
 package com.swak.vertx.handler;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import org.springframework.util.ClassUtils;
@@ -17,10 +18,11 @@ import com.swak.utils.ReflectUtils;
 public class MethodHandler {
 
 	private final Object bean;
-	private final Method method;
 	private final Class<?> beanType;
-	private final MethodParameter[] parameters;
 	private final String name;
+	private final Method method;
+	private final MethodParameter[] parameters;
+	private volatile Annotation[] annotations;
 	protected MethodMetrics metrics;
 
 	/**
@@ -60,6 +62,40 @@ public class MethodHandler {
 		return parameters;
 	}
 
+	public Annotation[] getAnnotations() {
+		Annotation[] paramAnns = this.annotations;
+		if (paramAnns == null) {
+			this.annotations = this.method.getAnnotations();
+		}
+		return paramAnns;
+	}
+
+	public <A extends Annotation> Annotation getAnnotation(Class<A> annotationType) {
+		Annotation[] paramAnns = this.getAnnotations();
+		if (paramAnns != null) {
+			for (Annotation ann : paramAnns) {
+				if (annotationType.isInstance(ann)) {
+					return ann;
+				}
+			}
+			return null;
+		}
+		return null;
+	}
+
+	public <A extends Annotation> boolean hasAnnotation(Class<A> annotationType) {
+		Annotation[] paramAnns = this.getAnnotations();
+		if (paramAnns != null) {
+			for (Annotation ann : paramAnns) {
+				if (annotationType.isInstance(ann)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		return false;
+	}
+
 	/**
 	 * 设置监控
 	 * 
@@ -74,7 +110,7 @@ public class MethodHandler {
 	}
 
 	/**
-	 * 如果出错了，则输出 Mono.error(e) 对象
+	 * 调用
 	 * 
 	 * @param args
 	 * @return

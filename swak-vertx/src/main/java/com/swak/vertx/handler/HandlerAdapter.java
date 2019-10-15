@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import org.springframework.beans.BeanUtils;
@@ -14,6 +15,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
 import com.swak.Constants;
+import com.swak.annotation.Auth;
 import com.swak.annotation.Body;
 import com.swak.annotation.Header;
 import com.swak.annotation.Json;
@@ -21,6 +23,7 @@ import com.swak.annotation.Valid;
 import com.swak.asm.FieldCache;
 import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
+import com.swak.exception.ErrorCode;
 import com.swak.meters.MetricsFactory;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
@@ -121,8 +124,40 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * @param handler
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void handle(RoutingContext context, MethodHandler handler) {
+		Auth auth = (Auth) handler.getAnnotation(Auth.class);
+		Subject subject = context.get(Constants.SUBJECT_NAME);
+		if (auth != null && subject != null) {
+			CompletionStage<Boolean> authFuture = null;
+			if (auth.roles().length > 0) {
+				authFuture = subject.hasAllRoles(auth.roles());
+			} else if (auth.permissions().length > 0) {
+				authFuture = subject.isPermittedAll(auth.permissions());
+			} else {
+				authFuture = CompletableFuture.completedFuture(true);
+			}
+			authFuture.whenComplete((allow, e) -> {
+				if (allow) {
+					this.dohandler(context, handler);
+				} else {
+					this.handleResult(ErrorCode.ACCESS_DENIED, e, context, handler, null);
+				}
+			});
+		} else if (auth != null) {
+			this.handleResult(ErrorCode.ACCESS_DENIED, null, context, handler, null);
+		} else {
+			this.dohandler(context, handler);
+		}
+	}
+
+	/**
+	 * 暂时这么处理
+	 * 
+	 * @param context
+	 * @param handler
+	 */
+	@SuppressWarnings("unchecked")
+	private void dohandler(RoutingContext context, MethodHandler handler) {
 		Object metrics = this.preHandle(handler);
 		try {
 			Object[] params = this.parseParameters(context, handler);
