@@ -22,8 +22,13 @@ public abstract class AdviceHandler implements Handler {
 	 */
 	public CompletionStage<Boolean> handle(RoutingContext context, Subject subject, HandlerChain chain) {
 		return this.isAccessDenied(context, subject).thenCompose(allowed -> {
-			if (allowed) {
+			if (!allowed) {
 				return this.onAccessDenied(context, subject);
+			}
+			return CompletableFuture.completedFuture(allowed);
+		}).thenCompose(allowed -> {
+			if (allowed) {
+				return chain.doHandler(context, subject);
 			}
 			return CompletableFuture.completedFuture(allowed);
 		});

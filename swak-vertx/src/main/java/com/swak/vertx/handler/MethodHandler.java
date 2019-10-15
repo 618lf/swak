@@ -63,11 +63,10 @@ public class MethodHandler {
 	}
 
 	public Annotation[] getAnnotations() {
-		Annotation[] paramAnns = this.annotations;
-		if (paramAnns == null) {
+		if (this.annotations == null) {
 			this.annotations = this.method.getAnnotations();
 		}
-		return paramAnns;
+		return this.annotations;
 	}
 
 	public <A extends Annotation> Annotation getAnnotation(Class<A> annotationType) {

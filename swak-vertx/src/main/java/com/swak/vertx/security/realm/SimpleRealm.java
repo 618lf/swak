@@ -15,7 +15,7 @@ public class SimpleRealm implements Realm {
 
 	@Override
 	public CompletionStage<AuthorizationInfo> doGetAuthorizationInfo(Subject subject) {
-		return CompletableFuture.completedFuture(null);
+		return CompletableFuture.completedFuture(new AuthorizationInfo());
 	}
 
 	@Override

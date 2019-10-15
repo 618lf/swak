@@ -39,16 +39,27 @@ public class SecurityAutoConfiguration {
 	}
 
 	/**
+	 * Auth 提供器
+	 * 
+	 * @param properties
+	 * @return
+	 */
+	@Bean
+	public JwtAuthProvider jwtAuth(VertxProperties properties) {
+		JwtAuthProvider jwtAuth = new JwtAuthProvider(properties.getKeyStorePath(), properties.getKeyStorePass(),
+				properties.getJwtTokenName());
+		return jwtAuth;
+	}
+
+	/**
 	 * 身份管理策略
 	 * 
 	 * @return
 	 */
 	@Bean
 	@ConditionalOnMissingBean(PrincipalStrategy.class)
-	public PrincipalStrategy principalStrategy(VertxProperties properties) {
-		JwtAuthProvider JwtAuth = new JwtAuthProvider(properties.getKeyStorePath(), properties.getKeyStorePass(),
-				properties.getJwtTokenName());
-		return new TokenPrincipalStrategy(JwtAuth);
+	public PrincipalStrategy principalStrategy(JwtAuthProvider jwtAuth) {
+		return new TokenPrincipalStrategy(jwtAuth);
 	}
 
 	/**

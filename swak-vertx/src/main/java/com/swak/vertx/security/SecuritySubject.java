@@ -66,8 +66,6 @@ public class SecuritySubject extends JWTObject implements Subject {
 	@Override
 	public SecuritySubject setPrincipal(Principal principal) {
 		this.principal = principal;
-		this.put(ID_ATTR, principal.getId());
-		this.put(NAME_ATTR, principal.getName());
 		return this;
 	}
 
@@ -120,24 +118,36 @@ public class SecuritySubject extends JWTObject implements Subject {
 
 	@Override
 	public Set<String> getRoles() {
-		String roles = this.get(ROLE_ATTR);
-		if (StringUtils.isNotBlank(roles)) {
-			this.roles = Sets.newHashSet(roles.split(","));
+		if (this.roles == null) {
+			String roles = this.get(ROLE_ATTR);
+			if (StringUtils.isNotBlank(roles)) {
+				this.roles = Sets.newHashSet(roles.split(","));
+			}
 		}
 		return this.roles;
 	}
 
 	@Override
 	public Set<String> getPermissions() {
-		String permissions = this.get(PERMISSION_ATTR);
-		if (StringUtils.isNotBlank(permissions)) {
-			this.permissions = Sets.newHashSet(permissions.split(","));
+		if (this.permissions == null) {
+			String permissions = this.get(PERMISSION_ATTR);
+			if (StringUtils.isNotBlank(permissions)) {
+				this.permissions = Sets.newHashSet(permissions.split(","));
+			}
 		}
 		return this.permissions;
 	}
 
 	@Override
 	public JWTPayload toPayload() {
+		this.put(ID_ATTR, principal.getId());
+		this.put(NAME_ATTR, principal.getName());
+		if (roles != null) {
+			this.put(ROLE_ATTR, StringUtils.join(roles, ","));
+		}
+		if (permissions != null) {
+			this.put(PERMISSION_ATTR, StringUtils.join(permissions, ","));
+		}
 		return new JWTPayload(this.map);
 	}
 

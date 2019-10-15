@@ -66,9 +66,15 @@ public class AppConfiguration {
 	public SecurityConfigurationSupport securitySupport() {
 		// 权限配置
 		SecurityConfigurationSupport support = new SecurityConfigurationSupport();
-		support.definition("/api/login=anno").definition("/api/logout=anno").definition("/api/reqister=anno")
-				.definition("/api/goods=anno").definition("/api/param=anno").definition("/api/test=anno")
-				.definition("/api/user/=user").definition("/api/manage/=user, role[admin]").definition("/=user");
+		support.definition("/api/login=anno")
+		       .definition("/api/logout=anno")
+		       .definition("/api/reqister=anno")
+			   .definition("/api/goods=anno")
+			   .definition("/api/param=anno")
+			   .definition("/api/test=anno")
+			   .definition("/api/user/=user")
+			   .definition("/api/manage/=user, role[admin]")
+			   .definition("/=user");
 		return support;
 	}
 
