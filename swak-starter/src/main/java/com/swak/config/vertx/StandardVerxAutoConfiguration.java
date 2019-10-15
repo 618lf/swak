@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 
 import com.swak.vertx.config.StandardVertx;
 import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.handler.VertxProxy;
+import com.swak.vertx.transport.VertxProxy;
 import com.swak.vertx.transport.server.ReactiveServer;
 
 import io.vertx.core.VertxOptions;

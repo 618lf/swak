@@ -3,7 +3,7 @@ package com.swak.vertx.config;
 import java.lang.reflect.Proxy;
 
 import com.swak.vertx.handler.InvokerHandler;
-import com.swak.vertx.handler.VertxProxy;
+import com.swak.vertx.transport.VertxProxy;
 
 /**
  * 依赖配置

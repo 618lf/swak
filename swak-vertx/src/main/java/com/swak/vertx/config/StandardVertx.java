@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.swak.exception.BaseRuntimeException;
-import com.swak.vertx.handler.VertxProxy;
+import com.swak.vertx.transport.VertxProxy;
 import com.swak.vertx.transport.codec.Msg;
 
 import io.vertx.core.AsyncResult;

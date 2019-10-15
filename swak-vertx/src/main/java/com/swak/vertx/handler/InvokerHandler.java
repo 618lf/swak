@@ -9,6 +9,7 @@ import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.annotation.InvokerAddress;
+import com.swak.vertx.transport.VertxProxy;
 import com.swak.vertx.transport.codec.Msg;
 
 /**

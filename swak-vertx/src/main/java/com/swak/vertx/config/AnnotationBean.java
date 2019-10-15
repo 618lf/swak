@@ -28,7 +28,7 @@ import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.annotation.RouterSupplier;
 import com.swak.vertx.annotation.VertxReferer;
 import com.swak.vertx.annotation.VertxService;
-import com.swak.vertx.handler.VertxProxy;
+import com.swak.vertx.transport.VertxProxy;
 import com.swak.vertx.utils.RouterUtils;
 
 /**

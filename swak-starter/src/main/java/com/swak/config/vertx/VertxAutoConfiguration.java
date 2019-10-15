@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.handler.VertxProxy;
+import com.swak.vertx.transport.VertxProxy;
 import com.swak.vertx.transport.server.ReactiveServer;
 
 /**

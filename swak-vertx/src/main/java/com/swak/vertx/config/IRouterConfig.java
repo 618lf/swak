@@ -1,6 +1,6 @@
 package com.swak.vertx.config;
 
-import com.swak.vertx.handler.VertxProxy;
+import com.swak.vertx.transport.VertxProxy;
 
 import io.vertx.ext.web.Router;
 

@@ -13,8 +13,8 @@ import com.swak.utils.Maps;
 import com.swak.utils.Sets;
 import com.swak.vertx.config.IRouterConfig;
 import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.handler.VertxProxy;
 import com.swak.vertx.security.SecurityHandler;
+import com.swak.vertx.transport.VertxProxy;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
