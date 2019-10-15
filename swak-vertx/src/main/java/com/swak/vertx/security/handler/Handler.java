@@ -1,6 +1,8 @@
 package com.swak.vertx.security.handler;
 
-import com.swak.vertx.security.Subject;
+import java.util.concurrent.CompletionStage;
+
+import com.swak.vertx.transport.Subject;
 
 import io.vertx.ext.web.RoutingContext;
 
@@ -22,5 +24,5 @@ public interface Handler {
 	 * @param subject
 	 * @return
 	 */
-	boolean handle(RoutingContext context, Subject subject, HandlerChain chain);
+	CompletionStage<Boolean> handle(RoutingContext context, Subject subject, HandlerChain chain);
 }

@@ -17,11 +17,11 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.vertx.ext.web.RoutingContext;
 
 /**
- * 需要判断用户拥有什么角色
+ * 权限校验
  * 
  * @author lifeng
  */
-public class RoleHandler extends AdviceHandler implements PathDefinition {
+public class PermissionHandler extends AdviceHandler implements PathDefinition {
 
 	private Map<String, String> params = Maps.newHashMap();
 
@@ -38,7 +38,7 @@ public class RoleHandler extends AdviceHandler implements PathDefinition {
 
 		// 配置了需要的权限
 		if (StringUtils.isNotBlank(param)) {
-			return subject.hasRole(param);
+			return subject.isPermitted(param);
 		}
 
 		// 无配置的权限则统一返回 false

@@ -1,6 +1,9 @@
 package com.swak.vertx.security.handler;
 
-import com.swak.vertx.security.Subject;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
+import com.swak.vertx.transport.Subject;
 
 import io.vertx.ext.web.RoutingContext;
 
@@ -17,13 +20,13 @@ public abstract class AdviceHandler implements Handler {
 	 * @param subject
 	 * @return
 	 */
-	public boolean handle(RoutingContext context, Subject subject, HandlerChain chain) {
-		// 执行判断处理
-		boolean continued = this.isAccessDenied(context, subject) || this.onAccessDenied(context, subject);
-		if (continued) {
-			return chain.doHandler(context, subject);
-		}
-		return false;
+	public CompletionStage<Boolean> handle(RoutingContext context, Subject subject, HandlerChain chain) {
+		return this.isAccessDenied(context, subject).thenCompose(allowed -> {
+			if (allowed) {
+				return this.onAccessDenied(context, subject);
+			}
+			return CompletableFuture.completedFuture(allowed);
+		});
 	}
 
 	/**
@@ -32,8 +35,8 @@ public abstract class AdviceHandler implements Handler {
 	 * @param subject
 	 * @return
 	 */
-	public boolean isAccessDenied(RoutingContext context, Subject subject) {
-		return true;
+	public CompletionStage<Boolean> isAccessDenied(RoutingContext context, Subject subject) {
+		return CompletableFuture.completedFuture(true);
 	}
 
 	/**
@@ -42,7 +45,7 @@ public abstract class AdviceHandler implements Handler {
 	 * @param subject
 	 * @return
 	 */
-	public boolean onAccessDenied(RoutingContext context, Subject subject) {
-		return true;
+	public CompletionStage<Boolean> onAccessDenied(RoutingContext context, Subject subject) {
+		return CompletableFuture.completedFuture(true);
 	}
 }

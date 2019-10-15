@@ -7,16 +7,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.config.mq.RabbitMqConfigurationSupport;
+import com.swak.config.vertx.SecurityConfigurationSupport;
 import com.swak.rabbit.retry.MemoryRetryStrategy;
-import com.swak.security.JwtAuthProvider;
 import com.swak.utils.Maps;
 import com.swak.utils.Sets;
 import com.swak.vertx.config.IRouterConfig;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.handler.VertxProxy;
-import com.swak.vertx.security.JwtAuthHandler;
-import com.swak.vertx.security.SecurityFilter;
-import com.swak.vertx.security.filter.Filter;
+import com.swak.vertx.security.SecurityHandler;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -60,31 +58,18 @@ public class AppConfiguration {
 	}
 
 	/**
-	 * 授权提供
-	 * 
-	 * @param properties
-	 * @return
-	 */
-	@Bean
-	public JwtAuthProvider jwtAuth(VertxProperties properties) {
-		JwtAuthProvider JwtAuth = new JwtAuthProvider(properties.getKeyStorePath(), properties.getKeyStorePass(),
-				properties.getJwtTokenName());
-		return JwtAuth;
-	}
-
-	/**
 	 * 安全过滤
 	 * 
 	 * @return
 	 */
 	@Bean
-	public Filter securityFilter() {
+	public SecurityConfigurationSupport securitySupport() {
 		// 权限配置
-		SecurityFilter filter = new SecurityFilter();
-		filter.definition("/api/login=anno").definition("/api/logout=anno").definition("/api/reqister=anno")
+		SecurityConfigurationSupport support = new SecurityConfigurationSupport();
+		support.definition("/api/login=anno").definition("/api/logout=anno").definition("/api/reqister=anno")
 				.definition("/api/goods=anno").definition("/api/param=anno").definition("/api/test=anno")
 				.definition("/api/user/=user").definition("/api/manage/=user, role[admin]").definition("/=user");
-		return filter;
+		return support;
 	}
 
 	/**
@@ -93,13 +78,13 @@ public class AppConfiguration {
 	 * @return
 	 */
 	@Bean
-	public IRouterConfig routerConfig(JwtAuthProvider jwtAuth, Filter securityFilter, VertxProperties properties) {
+	public IRouterConfig routerConfig(SecurityHandler securityHandler, VertxProperties properties) {
 		return new IRouterConfig() {
 			@Override
 			public void apply(VertxProxy vertx, Router router) {
 				Set<String> headers = Sets.newHashSet();
 				headers.add("X-Requested-With");
-				headers.add(jwtAuth.getTokenName());
+				headers.add(properties.getJwtTokenName());
 				router.route().handler(CorsHandler.create("*").allowedHeaders(headers));
 				router.route()
 						.handler(BodyHandler.create(properties.getUploadDirectory())
@@ -107,7 +92,7 @@ public class AppConfiguration {
 								.setDeleteUploadedFilesOnEnd(properties.isDeleteUploadedFilesOnEnd()));
 				// router.route().handler(StaticHandler.create("static")); //
 				// 使用内部阻塞线程处理和work线程不是同一种线程
-				router.route().handler(JwtAuthHandler.create(jwtAuth, securityFilter));
+				router.route().handler(securityHandler);
 			}
 		};
 	}

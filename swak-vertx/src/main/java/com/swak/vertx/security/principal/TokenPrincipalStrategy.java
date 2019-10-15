@@ -1,38 +1,36 @@
-package com.swak.vertx.security;
+package com.swak.vertx.security.principal;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import com.swak.Constants;
 import com.swak.security.JwtAuthProvider;
 import com.swak.security.jwt.JWTPayload;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.security.filter.Filter;
+import com.swak.vertx.security.SecuritySubject;
+import com.swak.vertx.transport.Subject;
 
-import io.vertx.core.Handler;
 import io.vertx.core.http.Cookie;
 import io.vertx.ext.web.RoutingContext;
 
 /**
- * 即与 Jwt 的 授权
+ * 基于 TOKEN 的身份管理方式, 可以在此做一个服务器端的管理方式，控制账户登录情况
  * 
  * @author lifeng
  */
-public class JwtAuthHandler implements Handler<RoutingContext> {
+public class TokenPrincipalStrategy implements PrincipalStrategy {
 
-	// 授权服务
 	private final JwtAuthProvider jwtAuthProvider;
-	private final Filter filter;
 
-	public JwtAuthHandler(JwtAuthProvider jwtAuthProvider, Filter filter) {
-		this.jwtAuthProvider = jwtAuthProvider;
-		this.filter = filter;
+	public TokenPrincipalStrategy(JwtAuthProvider jwt) {
+		this.jwtAuthProvider = jwt;
 	}
 
 	/**
-	 * 提交授权服务
+	 * 创建身份信息
 	 */
 	@Override
-	public void handle(RoutingContext context) {
-
-		// 主体信息
+	public CompletionStage<Subject> createPrincipal(RoutingContext context) {
 		Subject subject = null;
 
 		try {
@@ -50,34 +48,19 @@ public class JwtAuthHandler implements Handler<RoutingContext> {
 			JWTPayload payload = jwtAuthProvider.verifyToken(token);
 
 			// 创建主体
-			subject = new Subject(payload);
+			subject = new SecuritySubject(payload);
 
 		} catch (Exception e) {
 		}
 
 		// 空实现
 		if (subject == null) {
-			subject = new Subject();
+			subject = new SecuritySubject();
 		}
 
 		// 绑定当前请求
 		context.put(Constants.SUBJECT_NAME, subject);
 
-		// filter 中判断是否需要后续的处理
-		filter.doFilter(context, subject).whenComplete((v, e) -> {
-			if (v) {
-				context.next();
-			}
-		});
-	}
-
-	/**
-	 * 创建一个处理器
-	 * 
-	 * @param jwtAuth
-	 * @return
-	 */
-	public static JwtAuthHandler create(JwtAuthProvider jwtAuth, Filter filter) {
-		return new JwtAuthHandler(jwtAuth, filter);
+		return CompletableFuture.completedFuture(subject);
 	}
 }

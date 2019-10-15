@@ -4,21 +4,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.springframework.beans.factory.InitializingBean;
 
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.security.filter.Filter;
 import com.swak.vertx.security.handler.Handler;
 import com.swak.vertx.security.handler.HandlerChain;
 import com.swak.vertx.security.handler.PathDefinition;
 import com.swak.vertx.security.handler.SimpleHandlerChain;
 import com.swak.vertx.security.handler.impls.AnnoHandler;
+import com.swak.vertx.security.handler.impls.PermissionHandler;
 import com.swak.vertx.security.handler.impls.RoleHandler;
 import com.swak.vertx.security.handler.impls.UserHandler;
+import com.swak.vertx.transport.Subject;
 
 import io.vertx.ext.web.RoutingContext;
 
@@ -27,21 +28,64 @@ import io.vertx.ext.web.RoutingContext;
  * 
  * @author lifeng
  */
-public class SecurityFilter implements Filter, InitializingBean {
+public class SecurityHandler implements io.vertx.core.Handler<RoutingContext>, InitializingBean {
 
-	private Map<String, Handler> handlers = Maps.newOrderMap();
-	private Map<String, List<Handler>> chains = Maps.newOrderMap();
-	private Map<String, String> configs = Maps.newOrderMap();
+	private final SecurityManager securityManager;
+	private final Map<String, Handler> handlers = Maps.newOrderMap();
+	private final Map<String, List<Handler>> chains = Maps.newOrderMap();
+	private final Map<String, String> configs = Maps.newOrderMap();
 
-	public SecurityFilter() {
+	public SecurityHandler(SecurityManager securityManager) {
+		this.securityManager = securityManager;
 		// 权限验证器
 		handlers.put("anno", new AnnoHandler());
 		handlers.put("user", new UserHandler());
 		handlers.put("role", new RoleHandler());
+		handlers.put("permission", new PermissionHandler());
 	}
 
+	/**
+	 * 添加自定义 - 处理
+	 * 
+	 * @param name
+	 * @param handler
+	 * @return
+	 */
+	public SecurityHandler addHandler(String name, Handler handler) {
+		this.handlers.put(name, handler);
+		return this;
+	}
+
+	/**
+	 * 添加自定义 - 定义
+	 * 
+	 * @param name
+	 * @param definition
+	 * @return
+	 */
+	public SecurityHandler addDefinition(String name, String definition) {
+		this.configs.put(name, definition);
+		return this;
+	}
+
+	/**
+	 * 处理请求
+	 */
 	@Override
-	public CompletableFuture<Boolean> doFilter(RoutingContext context, Subject subject) {
+	public void handle(RoutingContext context) {
+		this.securityManager.createSubject(context).thenCompose(subject -> {
+			return this.doFilter(context, subject);
+		}).whenComplete((v, e) -> {
+			if (v) {
+				context.next();
+			}
+		});
+	}
+
+	/**
+	 * 执行
+	 */
+	private CompletionStage<Boolean> doFilter(RoutingContext context, Subject subject) {
 
 		// 请求的地址
 		String url = context.request().uri();
@@ -59,41 +103,7 @@ public class SecurityFilter implements Filter, InitializingBean {
 		HandlerChain executeChain = new SimpleHandlerChain(filters);
 
 		// 执行执行链
-		boolean continued = executeChain.doHandler(context, subject);
-
-		// 继续后续的执行
-		if (continued) {
-			return CompletableFuture.completedFuture(true);
-		}
-
-		// 不需要执行后续的代码
-		return CompletableFuture.completedFuture(false);
-	}
-
-	/**
-	 * 定义配置
-	 * 
-	 * @param line
-	 * @return
-	 */
-	public SecurityFilter definition(String line) {
-		if (!StringUtils.hasText(line)) {
-			return this;
-		}
-		String[] parts = StringUtils.split(line, '=');
-		if (!(parts != null && parts.length == 2)) {
-			return this;
-		}
-		String path = StringUtils.clean(parts[0]);
-		String filter = StringUtils.clean(parts[1]);
-		if (!(StringUtils.hasText(path) && StringUtils.hasText(filter))) {
-			return this;
-		}
-		if (configs == null) {
-			configs = Maps.newOrderMap();
-		}
-		configs.put(path, filter);
-		return this;
+		return executeChain.doHandler(context, subject);
 	}
 
 	/**

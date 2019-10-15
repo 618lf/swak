@@ -29,7 +29,8 @@ import com.swak.utils.StringUtils;
 import com.swak.validator.Validator;
 import com.swak.validator.errors.BindErrors;
 import com.swak.vertx.annotation.VertxService;
-import com.swak.vertx.security.Subject;
+import com.swak.vertx.security.SecuritySubject;
+import com.swak.vertx.transport.Subject;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpConnection;
@@ -248,7 +249,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		} else if (parameterType == Subject.class) {
 			Subject subject = context.get(Constants.SUBJECT_NAME);
 			if (subject == null) {
-				subject = new Subject();
+				subject = new SecuritySubject();
 				context.put(Constants.SUBJECT_NAME, subject);
 			}
 			return subject;
