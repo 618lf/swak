@@ -41,7 +41,8 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 
 			// 从cookie 中获取 token
 			Cookie cookie = null;
-			if (StringUtils.isBlank(token) && (cookie = context.getCookie(jwtAuthProvider.getTokenName())) != null) {
+			if (StringUtils.isBlank(token) && (cookie = context.getCookie(jwtAuthProvider.getTokenName())) != null
+					&& !Constants.DELETED_COOKIE_VALUE.equals(cookie.getValue())) {
 				token = cookie.getValue();
 			}
 
