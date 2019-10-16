@@ -62,7 +62,7 @@ public class MotanAsyncProcessor extends AbstractProcessor {
         if (path != null) {
             TARGET_DIR = path;
         } else { //use jvm option -DmotanGeneratePath=xxx
-            TARGET_DIR = System.getProperty(GENERATE_PATH_KEY, "target/generated-sources/annotations/");
+            TARGET_DIR = System.getProperty(GENERATE_PATH_KEY, "src/main/generated-sources/");
         }
 
     }

@@ -1,11 +1,18 @@
 package com.tmt.api.facade;
 
-import java.util.concurrent.CompletableFuture;
-
 import com.swak.vertx.transport.codec.Msg;
-import com.tmt.api.entity.Goods;
+import java.util.concurrent.CompletableFuture;
 
 public interface GoodsServiceFacadeAsyncx {
   CompletableFuture<Msg> sayHello();
-  CompletableFuture<Goods> get();
+
+  CompletableFuture<Msg> get();
+
+  CompletableFuture<Msg> save();
+
+  CompletableFuture<Msg> get_save();
+
+  CompletableFuture<Msg> get_save_get();
+
+  CompletableFuture<Msg> hint_get_save_get();
 }

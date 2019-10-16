@@ -10,6 +10,7 @@ import com.tmt.api.dao.GoodsDao;
 import com.tmt.api.entity.Goods;
 import com.tmt.api.facade.GoodsNotServiceFacade;
 import com.tmt.api.facade.GoodsServiceFacade;
+import com.weibo.api.motan.config.springsupport.annotation.MotanService;
 
 import io.shardingsphere.api.HintManager;
 
@@ -19,7 +20,7 @@ import io.shardingsphere.api.HintManager;
  * @author lifeng
  */
 @VertxService(use_pool = "goods", isAop = false, service = GoodsServiceFacade.class)
-// @MotanService
+@MotanService
 public class GoodsService extends BaseService<Goods, String> implements GoodsServiceFacade, GoodsNotServiceFacade {
 
 	@Autowired

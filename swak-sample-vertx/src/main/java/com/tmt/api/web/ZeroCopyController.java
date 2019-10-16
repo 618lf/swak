@@ -10,6 +10,7 @@ import com.swak.vertx.annotation.GetMapping;
 import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.annotation.VertxReferer;
 import com.swak.vertx.transport.multipart.PlainFile;
+import com.tmt.api.entity.Goods;
 import com.tmt.api.facade.GoodsServiceFacadeAsyncx;
 
 /**
@@ -53,7 +54,10 @@ public class ZeroCopyController {
 	 */
 	@GetMapping("/fromdb")
 	public CompletableFuture<String> fromdb() {
-		return goodsService.get().thenApply(res -> res.getRemarks());
+		return goodsService.get().thenApply(res -> {
+			Goods goods = res.getResult();
+			return goods.getRemarks();
+		});
 	}
 
 	private File file() {

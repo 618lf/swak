@@ -41,7 +41,7 @@
 		<spring-boot.version>2.1.8.RELEASE</spring-boot.version>
 		<spring.version>5.1.9.RELEASE</spring.version>
 		<cglib.version>3.3.0</cglib.version>
-		<javassist.version>3.25.0-GA</javassist.version>
+		<javassist.version>3.26.0-GA</javassist.version>
 		<fastjson.version>1.2.61</fastjson.version>
 		<logback.version>1.2.3</logback.version>
 		<slf4j.version>1.7.28</slf4j.version>

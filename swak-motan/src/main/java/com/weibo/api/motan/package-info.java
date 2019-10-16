@@ -32,6 +32,10 @@
  * HeartbeatClientEndpointManager.java
  * StatsUtil.java
  * 
+ * 改进： 改变生成的接口目录
+ * MotanAsyncProcessor
+ * "src/main/generated-sources/"
+ * 
  * 特別改進: StandardThreadExecutor
  */
 package com.weibo.api.motan;
