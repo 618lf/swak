@@ -36,6 +36,9 @@
  * MotanAsyncProcessor
  * "src/main/generated-sources/"
  * 
+ * java8 下的问题：
+ * AccessStatisticFilter 需要修改  long bizProcessTime; 的位置，移动第56行即可。
+ * 
  * 特別改進: StandardThreadExecutor
  */
 package com.weibo.api.motan;
