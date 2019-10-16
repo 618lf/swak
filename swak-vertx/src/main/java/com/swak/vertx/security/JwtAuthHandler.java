@@ -40,9 +40,10 @@ public class JwtAuthHandler implements Handler<RoutingContext> {
 			// 从header 中获取 token
 			String token = context.request().getHeader(jwtAuthProvider.getTokenName());
 
-			// 从cookie 中获取 token
+			// 从cookie 中获取 token, 不获取删除的 cookie
 			Cookie cookie = null;
-			if (StringUtils.isBlank(token) && (cookie = context.getCookie(jwtAuthProvider.getTokenName())) != null) {
+			if (StringUtils.isBlank(token) && (cookie = context.getCookie(jwtAuthProvider.getTokenName())) != null
+					&& !Constants.DELETED_COOKIE_VALUE.equals(cookie.getValue())) {
 				token = cookie.getValue();
 			}
 

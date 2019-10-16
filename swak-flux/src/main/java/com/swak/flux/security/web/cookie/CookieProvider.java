@@ -30,6 +30,7 @@ public class CookieProvider {
 	
 	// 异步操作
 	private static AsyncCache<Object> COOKIES_CACHE;
+	@SuppressWarnings("deprecation")
 	private static AsyncCache<Object> getCache() {
 	   if (COOKIES_CACHE == null) {
 		   COOKIES_CACHE = CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times).async();
@@ -166,7 +167,7 @@ public class CookieProvider {
 	 */
 	public static void remove(HttpServerRequest request, HttpServerResponse response, String name, String path,
 			String domain) {
-		SimpleCookie cookie = new SimpleCookie(name, Constants.deleted_cookie_value);
+		SimpleCookie cookie = new SimpleCookie(name, Constants.DELETED_COOKIE_VALUE);
 		if (StringUtils.isNotEmpty(path))
 			cookie.setPath(path);
 		if (StringUtils.isNotEmpty(domain))

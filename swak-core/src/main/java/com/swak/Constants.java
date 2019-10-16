@@ -49,10 +49,14 @@ public interface Constants {
 	/** 默认编码 **/
 	Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
 
-	/** 缓存 **/
+	/** 缓存 (不建议使用)**/
+	@Deprecated
 	int cookie_cache_times = 60 * 60 * 24;
+	@Deprecated
 	String token_cache_name = "TOKENS";
-	String deleted_cookie_value = "deleteMe";
+	
+	/** cookie **/
+	String DELETED_COOKIE_VALUE = "deleteMe";
 
 	/** 服务地址 **/
 	String LOCALHOST = "127.0.0.1";

@@ -14,6 +14,7 @@ import com.swak.utils.StringUtils;
  * 通过 header 和redis 来存储值
  * @author lifeng
  */
+@SuppressWarnings("deprecation")
 public class TokenProvider {
 
 	/**
