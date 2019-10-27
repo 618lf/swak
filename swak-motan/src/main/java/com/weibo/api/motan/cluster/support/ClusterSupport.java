@@ -297,6 +297,7 @@ public class ClusterSupport<T> implements NotifyListener {
         String haStrategyName = url.getParameter(URLParamType.haStrategy.getName(), URLParamType.haStrategy.getValue());
 
         cluster = ExtensionLoader.getExtensionLoader(Cluster.class).getExtension(clusterName);
+        System.out.println("Cluster :" + cluster.hashCode());
         LoadBalance<T> loadBalance = ExtensionLoader.getExtensionLoader(LoadBalance.class).getExtension(loadbalanceName);
         HaStrategy<T> ha = ExtensionLoader.getExtensionLoader(HaStrategy.class).getExtension(haStrategyName);
         ha.setUrl(url);
