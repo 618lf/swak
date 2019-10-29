@@ -86,7 +86,7 @@ public class RoleHandler extends AdviceHandler implements PathDefinition {
 	public void pathConfig(String path, String param) {
 		List<String> orRoles = Lists.newArrayList();
 		if (StringUtils.contains(param, "|")) {
-			String[] _params = StringUtils.split("|");
+			String[] _params = StringUtils.split(param, "|");
 			orRoles = Lists.newArrayList(_params);
 			params.put(path, orRoles);
 		} else {
