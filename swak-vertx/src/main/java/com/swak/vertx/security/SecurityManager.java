@@ -94,6 +94,7 @@ public class SecurityManager {
 		return this.loadRoles(subject).thenApply(rs -> rs.contains(role));
 	}
 
+	@Deprecated
 	public CompletionStage<boolean[]> hasRoles(Subject subject, String... roles) {
 		return this.loadRoles(subject).thenApply(rs -> {
 			boolean[] result;

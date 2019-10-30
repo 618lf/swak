@@ -27,4 +27,9 @@ public @interface Auth {
 	 * @return
 	 */
 	String[] permissions() default {};
+	
+    /**
+     * The logical operation for the permission check in case multiple roles are specified. AND is the default
+     */
+    Logical logical() default Logical.AND; 
 }
