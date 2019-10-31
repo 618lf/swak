@@ -255,7 +255,22 @@ dubbo 中的trace 客户端和服务器配合，将traceId存储在参数中。�
 问题1： 读写分离的测试使用的是sharding-jdbc 满足预期，后面添加分库分表的测试例子；  
 问题2： 分库分表之后最重要的是分布式事务，先使用最简单的分布式事务方式，基于消息队列的最终一致性。
 改进3： vertx 权限框架的改进：支持异步获取权限，支持方法级别的鉴权方式。
-问题4： java8下发布motan服务，时抛出 Inconsistent stackmap frames at branch target 这类错误。网上提示加上啥编译参数，很奇葩的操作方式（或者不是同一个问题）。解决方式是 AccessStatisticFilter 的问题。 把 bizProcessTime 的问题移动到56行即可。  
+问题4： java8下发布motan服务，时抛出 Inconsistent stackmap frames at branch target 这类错误。网上提示加上啥编译参数，很奇葩的修正方式（或者不是同一个问题）。解决方式是 AccessStatisticFilter 的问题。 把 bizProcessTime 的问题移动到56行即可。  
+
+优化权限的验证：  
+
+url 配置方式：  
+和权限验证：role[a,b]  
+或权限验证：role[a|b]  
+
+注解 配置方式：  
+RequiresPermissions(value={"a","b"}, logical = Logical.AND)  
+RequiresPermissions(value={"a","b"}, logical = Logical.OR)  
+RequiresRoles(value={"a","b"}, logical = Logical.AND)  
+RequiresRoles(value={"a","b"}, logical = Logical.OR)  
+
+后期如果有需要可以支持user:admin:* 这类权限的配置
+
 
 # 演示项目
 具体的演示项目参见：
