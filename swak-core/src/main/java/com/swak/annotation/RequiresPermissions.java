@@ -7,26 +7,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 权限
+ * 新版权限标示
  * 
  * @author lifeng
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Auth {
-   
-	/**
-	 * 需要的角色
-	 * @return
-	 */
-	String[] roles() default {};
+public @interface RequiresPermissions {
 	
 	/**
-	 * 需要的权限
+	 * 需要的角色
+	 * 
 	 * @return
 	 */
-	String[] permissions() default {};
+	String[] value() default {};
 	
     /**
      * The logical operation for the permission check in case multiple roles are specified. AND is the default

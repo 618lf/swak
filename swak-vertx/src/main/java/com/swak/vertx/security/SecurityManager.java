@@ -6,6 +6,7 @@ import java.util.concurrent.CompletionStage;
 
 import org.springframework.util.CollectionUtils;
 
+import com.swak.security.Permission;
 import com.swak.vertx.security.principal.PrincipalStrategy;
 import com.swak.vertx.security.realm.Realm;
 import com.swak.vertx.transport.Subject;
@@ -51,8 +52,15 @@ public class SecurityManager {
 		});
 	}
 
-	// ---------- 权限校验部分 -------------
-
+	// ---------- 权限校验部分（-）通过配置以及注解设置的权限验证方式会被封装为 Permission 对象 -------------
+	public CompletionStage<Boolean> isPermitted(Subject subject, Permission permission) {
+		return this.loadPermissions(subject).thenApply(ps -> permission.implies(ps));
+	}
+	public CompletionStage<Boolean> hasRole(Subject subject, Permission permission) {
+		return this.loadRoles(subject).thenApply(rs -> permission.implies(rs));
+	}
+	
+	// ---------- 权限校验部分（二）也可以在代码中手动调用如下验证方式 -------------
 	public CompletionStage<Boolean> isPermitted(Subject subject, String permission) {
 		return this.loadPermissions(subject).thenApply(ps -> ps.contains(permission));
 	}
@@ -94,7 +102,6 @@ public class SecurityManager {
 		return this.loadRoles(subject).thenApply(rs -> rs.contains(role));
 	}
 
-	@Deprecated
 	public CompletionStage<boolean[]> hasRoles(Subject subject, String... roles) {
 		return this.loadRoles(subject).thenApply(rs -> {
 			boolean[] result;

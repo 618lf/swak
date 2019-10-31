@@ -5,8 +5,15 @@ import java.lang.reflect.Method;
 
 import org.springframework.util.ClassUtils;
 
+import com.swak.annotation.Logical;
+import com.swak.annotation.RequiresPermissions;
+import com.swak.annotation.RequiresRoles;
 import com.swak.meters.MethodMetrics;
 import com.swak.meters.MetricsFactory;
+import com.swak.security.Permission;
+import com.swak.security.permission.AndPermission;
+import com.swak.security.permission.OrPermission;
+import com.swak.security.permission.SinglePermission;
 import com.swak.utils.ReflectUtils;
 
 /**
@@ -24,6 +31,8 @@ public class MethodHandler {
 	private final MethodParameter[] parameters;
 	private volatile Annotation[] annotations;
 	protected MethodMetrics metrics;
+	protected Permission requiresRoles;
+	protected Permission requiresPermissions;
 
 	/**
 	 * Create an instance from a bean instance and a method.
@@ -93,6 +102,46 @@ public class MethodHandler {
 			return false;
 		}
 		return false;
+	}
+
+	/**
+	 * 角色
+	 */
+	public Permission getRequiresRoles() {
+		if (this.requiresRoles == null) {
+			RequiresRoles roles = (RequiresRoles) this.getAnnotation(RequiresRoles.class);
+			if (roles == null || roles.value().length == 0) {
+				this.requiresRoles = Permission.NONE;
+			}
+			if (roles.value().length == 1) {
+				this.requiresRoles = new SinglePermission(roles.value()[0]);
+			} else if (roles.logical() == Logical.AND) {
+				this.requiresRoles = new AndPermission(roles.value());
+			} else if (roles.logical() == Logical.OR) {
+				this.requiresRoles = new OrPermission(roles.value());
+			}
+		}
+		return this.requiresRoles;
+	}
+	
+	/**
+	 * 权限
+	 */
+	public Permission getRequiresPermissions() {
+		if (this.requiresPermissions == null) {
+			RequiresPermissions roles = (RequiresPermissions) this.getAnnotation(RequiresPermissions.class);
+			if (roles == null || roles.value().length == 0) {
+				this.requiresPermissions = Permission.NONE;
+			}
+			if (roles.value().length == 1) {
+				this.requiresPermissions = new SinglePermission(roles.value()[0]);
+			} else if (roles.logical() == Logical.AND) {
+				this.requiresPermissions = new AndPermission(roles.value());
+			} else if (roles.logical() == Logical.OR) {
+				this.requiresPermissions = new OrPermission(roles.value());
+			}
+		}
+		return this.requiresPermissions;
 	}
 
 	/**

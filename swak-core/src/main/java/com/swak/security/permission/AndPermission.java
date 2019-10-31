@@ -15,7 +15,7 @@ public class AndPermission implements Permission {
 
 	private String[] permissions;
 
-	private AndPermission(String[] permissions) {
+	public AndPermission(String[] permissions) {
 		this.permissions = permissions;
 	}
 

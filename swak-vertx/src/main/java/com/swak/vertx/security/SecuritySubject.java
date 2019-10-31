@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
+import com.swak.security.Permission;
 import com.swak.security.jwt.JWTObject;
 import com.swak.security.jwt.JWTPayload;
 import com.swak.utils.Maps;
@@ -75,6 +76,16 @@ public class SecuritySubject extends JWTObject implements Subject {
 	}
 
 	@Override
+	public CompletionStage<Boolean> isPermitted(Permission permission) {
+		return SecurityUtils.getSecurityManager().isPermitted(this, permission);
+	}
+
+	@Override
+	public CompletionStage<Boolean> hasRole(Permission role) {
+		return SecurityUtils.getSecurityManager().hasRole(this, role);
+	}
+
+	@Override
 	public CompletionStage<Boolean> isPermitted(String permission) {
 		return SecurityUtils.getSecurityManager().isPermitted(this, permission);
 	}
@@ -95,6 +106,7 @@ public class SecuritySubject extends JWTObject implements Subject {
 	}
 
 	@Override
+	@Deprecated
 	public CompletionStage<boolean[]> hasRoles(String... permissions) {
 		return SecurityUtils.getSecurityManager().hasRoles(this, permissions);
 	}

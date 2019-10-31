@@ -3,6 +3,7 @@ package com.swak.vertx.transport;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
+import com.swak.security.Permission;
 import com.swak.security.jwt.JWTPayload;
 
 import io.vertx.ext.web.RoutingContext;
@@ -33,6 +34,22 @@ public interface Subject {
 	 * @param token
 	 */
 	CompletionStage<Token> login(RoutingContext context);
+	
+	/**
+	 * 是否有权限
+	 * 
+	 * @param permission
+	 * @return
+	 */
+	CompletionStage<Boolean> isPermitted(Permission permission);
+	
+	/**
+	 * 是否拥有这个角色
+	 * 
+	 * @param role
+	 * @return
+	 */
+	CompletionStage<Boolean> hasRole(Permission role);
 	
 	/**
 	 * 是否有权限

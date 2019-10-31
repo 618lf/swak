@@ -15,7 +15,7 @@ public class OrPermission implements Permission {
 
 	private String[] permissions;
 
-	private OrPermission(String[] permissions) {
+	public OrPermission(String[] permissions) {
 		this.permissions = permissions;
 	}
 

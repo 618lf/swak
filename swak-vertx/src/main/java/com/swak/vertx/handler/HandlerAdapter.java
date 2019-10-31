@@ -15,7 +15,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
 import com.swak.Constants;
-import com.swak.annotation.Auth;
 import com.swak.annotation.Body;
 import com.swak.annotation.Header;
 import com.swak.annotation.Json;
@@ -25,6 +24,7 @@ import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
 import com.swak.exception.ErrorCode;
 import com.swak.meters.MetricsFactory;
+import com.swak.security.Permission;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
@@ -125,17 +125,9 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 */
 	@Override
 	public void handle(RoutingContext context, MethodHandler handler) {
-		Auth auth = (Auth) handler.getAnnotation(Auth.class);
 		Subject subject = context.get(Constants.SUBJECT_NAME);
-		if (auth != null && subject != null) {
-			CompletionStage<Boolean> authFuture = null;
-			if (auth.roles().length > 0) {
-				authFuture = subject.hasAllRoles(auth.roles());
-			} else if (auth.permissions().length > 0) {
-				authFuture = subject.isPermittedAll(auth.permissions());
-			} else {
-				authFuture = CompletableFuture.completedFuture(true);
-			}
+		CompletionStage<Boolean> authFuture = this.checkPermissions(subject, handler);
+		if (authFuture != null) {
 			authFuture.whenComplete((allow, e) -> {
 				if (allow) {
 					this.dohandler(context, handler);
@@ -143,11 +135,52 @@ public class HandlerAdapter extends AbstractRouterHandler {
 					this.handleResult(ErrorCode.ACCESS_DENIED, e, context, handler, null);
 				}
 			});
-		} else if (auth != null) {
-			this.handleResult(ErrorCode.ACCESS_DENIED, null, context, handler, null);
 		} else {
 			this.dohandler(context, handler);
 		}
+	}
+
+	/**
+	 * 校验权限
+	 * 
+	 * @param subject
+	 * @param handler
+	 * @return
+	 */
+	private CompletionStage<Boolean> checkPermissions(Subject subject, MethodHandler handler) {
+
+		// must has subject
+		if (subject == null) {
+			return CompletableFuture.completedFuture(false);
+		}
+
+		// first
+		CompletionStage<Boolean> authFuture = null;
+
+		// 优先校验权限
+		Permission requiresRoles = handler.getRequiresRoles();
+		Permission requiresPermissions = handler.getRequiresPermissions();
+		if (requiresPermissions != null && requiresPermissions != Permission.NONE) {
+			authFuture = subject.isPermitted(requiresPermissions);
+		}
+
+		// return
+		if (authFuture != null && requiresRoles != null && requiresRoles != Permission.NONE) {
+			return authFuture.thenCompose(res -> {
+				if (res) {
+					return subject.hasRole(requiresRoles);
+				}
+				return CompletableFuture.completedFuture(res);
+			});
+		} else if (requiresRoles != null && requiresRoles != Permission.NONE) {
+			authFuture = subject.hasRole(requiresRoles);
+		}
+
+		// permissions -> roles
+		// permissions
+		// roles
+		// null
+		return authFuture;
 	}
 
 	/**
