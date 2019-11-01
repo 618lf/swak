@@ -1,0 +1,6 @@
+registry=org.apache.dubbo.registry.integration.RegistryProtocol
+filter=org.apache.dubbo.rpc.protocol.ProtocolFilterWrapper
+listener=org.apache.dubbo.rpc.protocol.ProtocolListenerWrapper
+mock=org.apache.dubbo.rpc.support.MockProtocol
+dubbo=org.apache.dubbo.rpc.protocol.dubbo.DubboProtocol
+injvm=org.apache.dubbo.rpc.protocol.injvm.InjvmProtocol

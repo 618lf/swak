@@ -36,6 +36,7 @@
 		<module>swak-template</module>
 		<module>swak-metrics</module>
 		<module>swak-mongodb</module>
+		<module>swak-dubbo</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.1.8.RELEASE</spring-boot.version>
