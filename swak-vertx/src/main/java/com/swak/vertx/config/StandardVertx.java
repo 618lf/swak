@@ -46,10 +46,10 @@ public class StandardVertx implements VertxProxy {
 	public void apply(Consumer<Vertx> apply) {
 		Vertx vertx = Vertx.vertx(vertxOptions);
 		apply.accept(vertx);
-		this.inited = true;
 		this.vertx = (VertxImpl) vertx;
 		this.context = this.vertx.createEventLoopContext(null, null, new JsonObject(),
 				Thread.currentThread().getContextClassLoader());
+		this.inited = true;
 	}
 
 	/**
