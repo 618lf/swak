@@ -1,19 +1,23 @@
 package com.swak.reactivex.context;
 
-public class ReactiveServerInitializedEvent extends ServerInitializedEvent {
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.ApplicationContextEvent;
 
+/**
+ * 重定义服务器启动事件
+ * 
+ * @author lifeng
+ */
+public class ReactiveServerInitializedEvent extends ApplicationContextEvent {
 	private static final long serialVersionUID = 1L;
-	
-	private final ReactiveServerApplicationContext applicationContext;
+	private Server server;
 
-	public ReactiveServerInitializedEvent(Server server,
-			ReactiveServerApplicationContext reactiveWebServerApplicationContext) {
-		super(server);
-		this.applicationContext = reactiveWebServerApplicationContext;
+	public ReactiveServerInitializedEvent(Server server, ApplicationContext source) {
+		super(source);
+		this.server = server;
 	}
 
-	@Override
-	public ReactiveServerApplicationContext getApplicationContext() {
-		return this.applicationContext;
+	public Server getServer() {
+		return server;
 	}
 }
