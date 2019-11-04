@@ -271,6 +271,10 @@ RequiresRoles(value={"a","b"}, logical = Logical.OR)
 
 后期如果有需要可以支持user:admin:* 这类权限的配置
 
+问题5： spting 和 vertx 的启动顺序
+ContextRefreshedEvent > startReactiveServer > ReactiveServerInitializedEvent
+如果需要使用 vertx 组件中的内容则需要监听 ReactiveServerInitializedEvent 事件
+
 
 # 演示项目
 具体的演示项目参见：
