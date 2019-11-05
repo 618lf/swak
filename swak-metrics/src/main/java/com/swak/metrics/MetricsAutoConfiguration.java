@@ -35,7 +35,7 @@ import com.swak.metrics.impl.CodahaleMetricsFactory;
 public class MetricsAutoConfiguration {
 
 	public MetricsAutoConfiguration() {
-		APP_LOGGER.debug("Metrics Monitor");
+		APP_LOGGER.debug("Loading Metrics Monitor");
 	}
 
 	/**
