@@ -163,4 +163,19 @@ public class SignUtils {
 		}
 		return Hex.encodeHexString(Digests.sha1(StringUtils.getBytesUtf8(sb.toString())));
 	}
+	
+	/**
+	 * 微信事件接入签名
+	 * 
+	 * @param arr
+	 * @return
+	 */
+	public static String accessSign(String... arr) {
+		Arrays.sort(arr);
+		StringBuilder sb = new StringBuilder();
+		for (String a : arr) {
+			sb.append(a);
+		}
+		return Hex.encodeHexString(Digests.sha1(StringUtils.getBytesUtf8(sb.toString())));
+	}
 }

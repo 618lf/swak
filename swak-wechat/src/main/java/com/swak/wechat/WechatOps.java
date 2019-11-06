@@ -9,7 +9,14 @@ import com.swak.incrementer.UUIdGenerator;
 import com.swak.utils.JaxbMapper;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
+import com.swak.wechat.codec.MessageParse;
 import com.swak.wechat.codec.SignUtils;
+import com.swak.wechat.message.EventMsgUserAttention;
+import com.swak.wechat.message.MenuEventMsgClick;
+import com.swak.wechat.message.MsgHead;
+import com.swak.wechat.message.ReqMsgImage;
+import com.swak.wechat.message.ReqMsgText;
+import com.swak.wechat.message.RespMsg;
 import com.swak.wechat.pay.MchOrderquery;
 import com.swak.wechat.pay.MchPayment;
 import com.swak.wechat.pay.Refundorder;
@@ -369,5 +376,92 @@ public class WechatOps {
 		}).thenApply(res -> {
 			return Maps.fromXml(res);
 		});
+	}
+
+	// ==========================================================
+	// 接入微信: 接入验证 -》 事件处理
+	// ==========================================================
+
+	/**
+	 * 校验签名
+	 * 
+	 * @param timestamp
+	 * @param nonce
+	 * @param signature
+	 * @return
+	 */
+	public static boolean accessSign(WechatConfig app, String timestamp, String nonce, String signature) {
+		return SignUtils.accessSign(app.getToken(), timestamp, nonce).equals(signature);
+	}
+
+	/**
+	 * 处理消息
+	 * 
+	 * @param app
+	 * @param req
+	 * @return
+	 */
+	public static CompletableFuture<RespMsg> onMessage(WechatConfig app, String req) {
+
+		// 消息
+		MsgHead msg = MessageParse.parseXML(req);
+
+		// 暂时不支持的消息
+		if (msg == null) {
+			return CompletableFuture.completedFuture(null);
+		}
+
+		// 关注事件，取消关注事件
+		if (msg instanceof EventMsgUserAttention) {
+			return onUserAttention(app, msg);
+		}
+
+		// 菜单点击事件
+		if (msg instanceof MenuEventMsgClick) {
+			return app.handleClickMenu((MenuEventMsgClick) msg);
+		}
+
+		// 发送关键字事件
+		if (msg instanceof ReqMsgText) {
+			return app.handleTextMessage((ReqMsgText) msg);
+		}
+
+		// 图片处理
+		if (msg instanceof ReqMsgImage) {
+			return app.handleImageMessage((ReqMsgImage) msg);
+		}
+
+		// 其他事件暂不处理
+		return app.handleOtherMessage(msg);
+	}
+
+	/**
+	 * 执行关注事件
+	 * 
+	 * @param msg
+	 * @return
+	 */
+	private static CompletableFuture<RespMsg> onUserAttention(WechatConfig app, MsgHead msg) {
+		final EventMsgUserAttention _msg = (EventMsgUserAttention) msg;
+
+		// 关注
+		if (Constants.EventType.SCAN.name().equals(msg.getEvent())
+				|| Constants.EventType.subscribe.name().equals(msg.getEvent())) {
+
+			// 二维码相关的事件(暂不处理) -- 找到二维码（和下面一样的处理方式）
+			String qrscene = _msg.getQrscene();
+			if (StringUtils.isNotBlank(qrscene)) {
+				return app.handleUserScan(_msg, qrscene);
+			}
+
+			// 公众号事件配置
+			return app.handleUserAttention(_msg);
+		}
+
+		// 取消关注(暂时不用做什么)
+		else if (Constants.EventType.unsubscribe.name().equals(msg.getEvent())) {
+			return app.handleUserUnsubscribe(_msg);
+		}
+		return null;
 	}
 }
