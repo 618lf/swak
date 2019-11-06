@@ -1,6 +1,7 @@
 package com.swak.cache.redis.operations;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
 import com.swak.cache.Cons;
@@ -263,6 +264,17 @@ public class AsyncOperations {
 	 */
 	public static CompletionStage<Long> sLen(String key) {
 		return RedisUtils.async(connect -> connect.scard(SafeEncoder.encode(key)));
+	}
+
+	/**
+	 * sMembers
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public static CompletionStage<Set<byte[]>> sMembers(String key) {
+		return RedisUtils.async(connect -> connect.smembers(SafeEncoder.encode(key)));
 	}
 
 	/**
