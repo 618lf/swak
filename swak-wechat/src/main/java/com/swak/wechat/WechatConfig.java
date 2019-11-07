@@ -17,7 +17,7 @@ import com.swak.utils.StringUtils;
 import com.swak.wechat.codec.SignUtils;
 import com.swak.wechat.message.EventMsgUserAttention;
 import com.swak.wechat.message.MenuEventMsgClick;
-import com.swak.wechat.message.MsgHead;
+import com.swak.wechat.message.ReqMsg;
 import com.swak.wechat.message.ReqMsgImage;
 import com.swak.wechat.message.ReqMsgText;
 import com.swak.wechat.message.RespMsg;
@@ -376,7 +376,7 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleOtherMessage(MsgHead msg) {
+	default CompletableFuture<RespMsg> handleOtherMessage(ReqMsg msg) {
 		return CompletableFuture.completedFuture(null);
 	}
 }

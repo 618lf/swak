@@ -16,6 +16,7 @@ import com.swak.wechat.message.MenuEventMsgScancodePush;
 import com.swak.wechat.message.MenuEventMsgView;
 import com.swak.wechat.message.MsgHead;
 import com.swak.wechat.message.MsgHeadImpl;
+import com.swak.wechat.message.ReqMsg;
 import com.swak.wechat.message.ReqMsgImage;
 import com.swak.wechat.message.ReqMsgLink;
 import com.swak.wechat.message.ReqMsgLocation;
@@ -27,52 +28,55 @@ import com.swak.wechat.message.ReqMsgVoice;
  * 消息解析
  * @author lifeng
  */
-public class MessageParse {
+public class MsgParse {
 
 	/**
 	 * 直接利用 java dom 解析
 	 * @param xml
 	 * @return
 	 */
-	public static MsgHead parseXML(String xml) {
+	public static ReqMsg parseXML(String xml) {
 		Document doc = XmlParse.parse(xml);
 		Element root = doc.getDocumentElement();
 		
-		// 基本信息
+		// 消息头
 		MsgHeadImpl msgHead = new MsgHeadImpl();
 		msgHead.read(root);
 		
-		// 返回的信息
-		MsgHeadImpl msg = null;
-		
-		// 具体的信息
-		if (Constants.ReqType.text.name().equals(msgHead.getMsgType())) {
-			msg = new ReqMsgText();
-		} else if (Constants.ReqType.image.name().equals(msgHead.getMsgType())) {
-			msg = new ReqMsgImage();
-		} else if (Constants.ReqType.link.name().equals(msgHead.getMsgType())) {
-			msg = new ReqMsgLink();
-		} else if (Constants.ReqType.location.name().equals(msgHead.getMsgType())) {
-			msg = new ReqMsgLocation();
-		} else if (Constants.ReqType.video.name().equals(msgHead.getMsgType())
-				|| Constants.ReqType.shortvideo.name().equals(msgHead.getMsgType())) {
-			msg = new ReqMsgVideo();
-		} else if (Constants.ReqType.voice.name().equals(msgHead.getMsgType())) {
-			msg = new ReqMsgVoice();
-		} else if (Constants.ReqType.event.name().equals(msgHead.getMsgType())) {
-			msg = eventMsg(msgHead);
-		}
+		// 请求消息
+		ReqMsg msg = reqMsg(msgHead);
 		
 		// 获取数据
-		if (msg != null) {
-			msg.setHead(msgHead);
-			msg.read(root);
+		if (msg != null && msg instanceof MsgHeadImpl) {
+			MsgHeadImpl _msg = (MsgHeadImpl)msg;
+			_msg.setHead(msgHead);
+			_msg.read(root);
 		}
 		return msg;
 	}
 	
+	private static ReqMsg reqMsg(MsgHead msgHead) {
+		if (Constants.ReqType.text.name().equals(msgHead.getMsgType())) {
+			return new ReqMsgText();
+		} else if (Constants.ReqType.image.name().equals(msgHead.getMsgType())) {
+			return new ReqMsgImage();
+		} else if (Constants.ReqType.link.name().equals(msgHead.getMsgType())) {
+			return new ReqMsgLink();
+		} else if (Constants.ReqType.location.name().equals(msgHead.getMsgType())) {
+			return new ReqMsgLocation();
+		} else if (Constants.ReqType.video.name().equals(msgHead.getMsgType())
+				|| Constants.ReqType.shortvideo.name().equals(msgHead.getMsgType())) {
+			return new ReqMsgVideo();
+		} else if (Constants.ReqType.voice.name().equals(msgHead.getMsgType())) {
+			return new ReqMsgVoice();
+		} else if (Constants.ReqType.event.name().equals(msgHead.getMsgType())) {
+			return eventMsg(msgHead);
+		}
+		return null;
+	}
+	
 	// 事件
-	private static MsgHeadImpl eventMsg(MsgHead msgHead) {
+	private static ReqMsg eventMsg(MsgHead msgHead) {
 		if (Constants.EventType.CLICK.name().equals(msgHead.getEvent())) {
 			return new MenuEventMsgClick();
 		} else if (Constants.EventType.VIEW.name().equals(msgHead.getEvent())) {

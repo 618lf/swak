@@ -7,7 +7,7 @@ import com.swak.utils.XmlParse;
 /**
  * 文本请求消息
  */
-public class ReqMsgText extends AbstractResMsg {
+public class ReqMsgText extends AbstractReqMsg {
 
 	private static final long serialVersionUID = 1L;
 	private String content;

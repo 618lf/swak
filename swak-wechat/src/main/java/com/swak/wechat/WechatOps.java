@@ -9,11 +9,12 @@ import com.swak.incrementer.UUIdGenerator;
 import com.swak.utils.JaxbMapper;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
-import com.swak.wechat.codec.MessageParse;
+import com.swak.wechat.codec.MsgParse;
 import com.swak.wechat.codec.SignUtils;
 import com.swak.wechat.message.EventMsgUserAttention;
 import com.swak.wechat.message.MenuEventMsgClick;
 import com.swak.wechat.message.MsgHead;
+import com.swak.wechat.message.ReqMsg;
 import com.swak.wechat.message.ReqMsgImage;
 import com.swak.wechat.message.ReqMsgText;
 import com.swak.wechat.message.RespMsg;
@@ -405,35 +406,35 @@ public class WechatOps {
 	public static CompletableFuture<RespMsg> onMessage(WechatConfig app, String req) {
 
 		// 消息
-		MsgHead msg = MessageParse.parseXML(req);
+		ReqMsg request = MsgParse.parseXML(req);
 
 		// 暂时不支持的消息
-		if (msg == null) {
+		if (request == null) {
 			return CompletableFuture.completedFuture(RespMsgNone.INSTANCE);
 		}
 
 		// 关注事件，取消关注事件
-		if (msg instanceof EventMsgUserAttention) {
-			return onUserAttention(app, msg);
+		if (request instanceof EventMsgUserAttention) {
+			return onUserAttention(app, request);
 		}
 
 		// 菜单点击事件
-		if (msg instanceof MenuEventMsgClick) {
-			return app.handleClickMenu((MenuEventMsgClick) msg);
+		if (request instanceof MenuEventMsgClick) {
+			return app.handleClickMenu((MenuEventMsgClick) request);
 		}
 
 		// 发送关键字事件
-		if (msg instanceof ReqMsgText) {
-			return app.handleTextMessage((ReqMsgText) msg);
+		if (request instanceof ReqMsgText) {
+			return app.handleTextMessage((ReqMsgText) request);
 		}
 
 		// 图片处理
-		if (msg instanceof ReqMsgImage) {
-			return app.handleImageMessage((ReqMsgImage) msg);
+		if (request instanceof ReqMsgImage) {
+			return app.handleImageMessage((ReqMsgImage) request);
 		}
 
 		// 其他事件暂不处理
-		return app.handleOtherMessage(msg);
+		return app.handleOtherMessage(request);
 	}
 
 	/**

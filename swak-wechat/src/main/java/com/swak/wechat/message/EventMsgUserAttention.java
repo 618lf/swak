@@ -28,7 +28,7 @@ import com.swak.utils.XmlParse;
  * @qq:6687523
  * @Email:6687523@qq.com
  */
-public class EventMsgUserAttention extends MsgHeadImpl {
+public class EventMsgUserAttention extends AbstractEventMsg {
 
 	private static final long serialVersionUID = 1L;
 

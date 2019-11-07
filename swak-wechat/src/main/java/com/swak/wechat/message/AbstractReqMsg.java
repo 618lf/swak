@@ -9,7 +9,7 @@ import com.swak.utils.XmlParse;
  * 
  * @author lifeng
  */
-public class AbstractResMsg extends MsgHeadImpl implements ReqMsg {
+public class AbstractReqMsg extends MsgHeadImpl implements ReqMsg {
 	
 	private static final long serialVersionUID = 1L;
 	

@@ -17,7 +17,7 @@ import com.swak.utils.XmlParse;
 	</xml>
  * @author lifeng
  */
-public class EventMsgTemplate extends MsgHeadImpl {
+public class EventMsgTemplate extends AbstractEventMsg {
 
 	private static final long serialVersionUID = 1L;
 	
