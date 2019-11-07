@@ -7,7 +7,7 @@ import com.swak.utils.StringUtils;
  * 
  * @author lifeng
  */
-public enum RespMsgNone implements ReqMsg {
+public enum RespMsgNone implements RespMsg {
 	INSTANCE;
 
 	@Override
@@ -32,11 +32,6 @@ public enum RespMsgNone implements ReqMsg {
 
 	@Override
 	public String getEvent() {
-		return StringUtils.EMPTY;
-	}
-
-	@Override
-	public String getMsgId() {
 		return StringUtils.EMPTY;
 	}
 }

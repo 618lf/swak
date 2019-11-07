@@ -17,6 +17,7 @@ import com.swak.wechat.message.MsgHead;
 import com.swak.wechat.message.ReqMsgImage;
 import com.swak.wechat.message.ReqMsgText;
 import com.swak.wechat.message.RespMsg;
+import com.swak.wechat.message.RespMsgNone;
 import com.swak.wechat.pay.MchOrderquery;
 import com.swak.wechat.pay.MchPayment;
 import com.swak.wechat.pay.Refundorder;
@@ -408,7 +409,7 @@ public class WechatOps {
 
 		// 暂时不支持的消息
 		if (msg == null) {
-			return CompletableFuture.completedFuture(null);
+			return CompletableFuture.completedFuture(RespMsgNone.INSTANCE);
 		}
 
 		// 关注事件，取消关注事件
