@@ -12,7 +12,7 @@ import com.swak.utils.XmlParse;
  * @Email:6687523@qq.com
  * 
  */
-public abstract class ReqMsgMedia extends ReqMsg {
+public abstract class ReqMsgMedia extends AbstractResMsg {
 
 	private static final long serialVersionUID = 1L;
 	protected String mediaId;

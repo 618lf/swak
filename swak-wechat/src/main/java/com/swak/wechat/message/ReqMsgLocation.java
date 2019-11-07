@@ -12,7 +12,7 @@ import com.swak.utils.XmlParse;
  * @Email:6687523@qq.com
  * 
  */
-public class ReqMsgLocation extends ReqMsg {
+public class ReqMsgLocation extends AbstractResMsg {
 
 	private static final long serialVersionUID = 1L;
 	

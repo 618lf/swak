@@ -15,6 +15,7 @@ import com.swak.wechat.message.MenuEventMsgPicWeuxin;
 import com.swak.wechat.message.MenuEventMsgScancodePush;
 import com.swak.wechat.message.MenuEventMsgView;
 import com.swak.wechat.message.MsgHead;
+import com.swak.wechat.message.MsgHeadImpl;
 import com.swak.wechat.message.ReqMsgImage;
 import com.swak.wechat.message.ReqMsgLink;
 import com.swak.wechat.message.ReqMsgLocation;
@@ -38,11 +39,11 @@ public class MessageParse {
 		Element root = doc.getDocumentElement();
 		
 		// 基本信息
-		MsgHead msgHead = new MsgHead();
+		MsgHeadImpl msgHead = new MsgHeadImpl();
 		msgHead.read(root);
 		
 		// 返回的信息
-		MsgHead msg = null;
+		MsgHeadImpl msg = null;
 		
 		// 具体的信息
 		if (Constants.ReqType.text.name().equals(msgHead.getMsgType())) {
@@ -71,7 +72,7 @@ public class MessageParse {
 	}
 	
 	// 事件
-	private static MsgHead eventMsg(MsgHead msgHead) {
+	private static MsgHeadImpl eventMsg(MsgHead msgHead) {
 		if (Constants.EventType.CLICK.name().equals(msgHead.getEvent())) {
 			return new MenuEventMsgClick();
 		} else if (Constants.EventType.VIEW.name().equals(msgHead.getEvent())) {

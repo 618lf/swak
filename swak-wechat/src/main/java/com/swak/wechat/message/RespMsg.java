@@ -11,30 +11,6 @@ package com.swak.wechat.message;
  * 注意：应答消息中，如不特殊说明，字段都是必填的。
  * @author lifeng
  */
-public abstract class RespMsg extends MsgHead {
+public interface RespMsg extends MsgHead {
 
-	private static final long serialVersionUID = 1L;
-
-	public RespMsg() {}
-
-	public RespMsg(String toUserName, String fromUserName, String msgType) {
-		this.toUserName = toUserName;
-		this.fromUserName = fromUserName;
-		this.msgType = msgType;
-	}
-
-	/**
-	 * 从请求消息中构建。应答消息的ToUserName与FromUserName与请求消息相反。
-	 * 
-	 * @param reqMsg
-	 * @param createTime
-	 * @param msgType
-	 */
-	public RespMsg(MsgHead reqMsg, String msgType) {
-		this(reqMsg.fromUserName, reqMsg.toUserName, msgType);
-	}
-
-	public void setMsgType(String msgType) {
-		this.msgType = msgType;
-	}
 }

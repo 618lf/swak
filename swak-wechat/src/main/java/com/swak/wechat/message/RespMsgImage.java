@@ -11,21 +11,26 @@ import com.swak.wechat.message.plain.Image;
  * 
  * @author lifeng
  */
-@XmlRootElement(name="xml")
-public class RespMsgImage extends RespMsg {
+@XmlRootElement(name = "xml")
+public class RespMsgImage extends AbstractRespMsg {
 
 	private static final long serialVersionUID = 1L;
 	private Image image;
-	public RespMsgImage() {}
+
+	public RespMsgImage() {
+	}
+
 	public RespMsgImage(MsgHead req, String mediaId) {
 		super(req, RespType.image.name());
 		this.image = new Image();
 		this.image.setMedia_id(mediaId);
 	}
-	@XmlElement(name="Image")
+
+	@XmlElement(name = "Image")
 	public Image getImage() {
 		return image;
 	}
+
 	public void setImage(Image image) {
 		this.image = image;
 	}

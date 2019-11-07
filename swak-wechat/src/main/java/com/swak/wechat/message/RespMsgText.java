@@ -13,20 +13,25 @@ import com.swak.wechat.Constants.RespType;
  * @author lifeng
  * 
  */
-@XmlRootElement(name="xml")
-public class RespMsgText extends RespMsg {
+@XmlRootElement(name = "xml")
+public class RespMsgText extends AbstractRespMsg {
 	private static final long serialVersionUID = 1L;
 	private String content;
-	public RespMsgText() {}
+
+	public RespMsgText() {
+	}
+
 	public RespMsgText(MsgHead req, String content) {
 		super(req, RespType.text.name());
 		this.content = content;
 	}
-	@XmlElement(name="Content")
+
+	@XmlElement(name = "Content")
 	@XmlJavaTypeAdapter(CDataAdapter.class)
 	public String getContent() {
 		return content;
 	}
+
 	public void setContent(String content) {
 		this.content = content;
 	}

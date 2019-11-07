@@ -12,16 +12,20 @@ import com.swak.wechat.message.plain.Music;
  * @author lifeng
  *
  */
-@XmlRootElement(name="xml")
-public class RespMsgMusic extends RespMsg {
+@XmlRootElement(name = "xml")
+public class RespMsgMusic extends AbstractRespMsg {
 	private static final long serialVersionUID = 1L;
 	private Music music;
-	public RespMsgMusic() {}
+
+	public RespMsgMusic() {
+	}
+
 	public RespMsgMusic(MsgHead req, Music music) {
 		super(req, RespType.music.name());
 		this.music = music;
 	}
-	@XmlElement(name="Music")
+
+	@XmlElement(name = "Music")
 	public Music getMusic() {
 		return music;
 	}
