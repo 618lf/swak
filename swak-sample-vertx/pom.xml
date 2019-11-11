@@ -87,6 +87,18 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-api</artifactId>
+				<version>${project.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>ApiGenerate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
