@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
-import com.swak.vertx.annotation.RequestMethod;
+import com.swak.annotation.RequestMethod;
 import com.swak.vertx.handler.MethodHandler;
 
 /**

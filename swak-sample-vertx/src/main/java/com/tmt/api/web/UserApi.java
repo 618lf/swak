@@ -2,10 +2,10 @@ package com.tmt.api.web;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.swak.annotation.GetMapping;
+import com.swak.annotation.RestController;
 import com.swak.entity.Result;
 import com.swak.utils.Functions;
-import com.swak.vertx.annotation.GetMapping;
-import com.swak.vertx.annotation.RestController;
 import com.tmt.api.facade.UserServiceFacadeAsync;
 import com.weibo.api.motan.config.springsupport.annotation.MotanReferer;
 

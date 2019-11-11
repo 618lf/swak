@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 
 import org.springframework.stereotype.Controller;
 
+import com.swak.annotation.RequestMapping;
+
 /**
  * 用于配置请求
  * @author lifeng

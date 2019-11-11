@@ -1,4 +1,4 @@
-package com.swak.vertx.annotation;
+package com.swak.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -11,8 +11,8 @@ import org.springframework.core.annotation.AliasFor;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@RequestMapping(method = RequestMethod.POST)
-public @interface PostMapping {
+@RequestMapping(method = RequestMethod.GET)
+public @interface GetMapping {
 
 	/**
 	 * 支持的 path

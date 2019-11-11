@@ -2,11 +2,11 @@ package com.tmt.api.web;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.swak.annotation.GetMapping;
 import com.swak.annotation.RequiresPermissions;
 import com.swak.annotation.RequiresRoles;
+import com.swak.annotation.RestController;
 import com.swak.entity.Result;
-import com.swak.vertx.annotation.GetMapping;
-import com.swak.vertx.annotation.RestController;
 import com.swak.vertx.transport.Subject;
 
 /**

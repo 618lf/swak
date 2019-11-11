@@ -1,4 +1,4 @@
-package com.swak.vertx.annotation;
+package com.swak.annotation;
 
 /**
  * 目前只支持get post

@@ -1,4 +1,4 @@
-package com.swak.vertx.annotation;
+package com.swak.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -10,16 +10,16 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Controller;
 
 /**
- * 和 @RestController 功能一致
- * 
+ * 用于配置请求
  * @author lifeng
  */
-@Target({ ElementType.TYPE })
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@RestController
-public @interface PageController {
-
+@Controller
+@RequestMapping
+public @interface RestController {
+	
 	/**
 	 * 设置 bean name， 不能用其他的替换，识别不到
 	 * @return

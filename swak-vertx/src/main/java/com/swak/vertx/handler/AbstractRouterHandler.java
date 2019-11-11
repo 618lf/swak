@@ -7,9 +7,9 @@ import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.annotation.RequestMethod;
 import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.annotation.RequestMethod;
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.IRouterConfig;
 import com.swak.vertx.config.IRouterSupplier;
