@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -306,7 +307,7 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleUserAttention(EventMsgUserAttention request) {
+	default CompletionStage<RespMsg> handleUserAttention(EventMsgUserAttention request) {
 		return CompletableFuture.completedFuture(null);
 	}
 
@@ -316,7 +317,7 @@ public interface WechatConfig {
 	 * @param request
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleUserScan(EventMsgUserAttention request, String qrscene) {
+	default CompletionStage<RespMsg> handleUserScan(EventMsgUserAttention request) {
 		return CompletableFuture.completedFuture(null);
 	}
 
@@ -328,7 +329,7 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleUserUnsubscribe(EventMsgUserAttention request) {
+	default CompletionStage<RespMsg> handleUserUnsubscribe(EventMsgUserAttention request) {
 		return CompletableFuture.completedFuture(null);
 	}
 
@@ -340,7 +341,7 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleClickMenu(MenuEventMsgClick msg) {
+	default CompletionStage<RespMsg> handleClickMenu(MenuEventMsgClick msg) {
 		return CompletableFuture.completedFuture(null);
 	}
 
@@ -352,7 +353,7 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleTextMessage(ReqMsgText msg) {
+	default CompletionStage<RespMsg> handleTextMessage(ReqMsgText msg) {
 		return CompletableFuture.completedFuture(null);
 	}
 
@@ -364,7 +365,7 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleImageMessage(ReqMsgImage msg) {
+	default CompletionStage<RespMsg> handleImageMessage(ReqMsgImage msg) {
 		return CompletableFuture.completedFuture(null);
 	}
 
@@ -376,7 +377,7 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleOtherMessage(ReqMsg msg) {
+	default CompletionStage<RespMsg> handleOtherMessage(ReqMsg msg) {
 		return CompletableFuture.completedFuture(null);
 	}
 }

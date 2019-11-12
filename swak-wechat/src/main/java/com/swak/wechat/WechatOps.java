@@ -2,6 +2,7 @@ package com.swak.wechat;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import com.swak.codec.Encodes;
 import com.swak.http.builder.RequestBuilder;
@@ -403,7 +404,7 @@ public class WechatOps {
 	 * @param req
 	 * @return
 	 */
-	public static CompletableFuture<RespMsg> onMessage(WechatConfig app, String req) {
+	public static CompletionStage<RespMsg> onMessage(WechatConfig app, String req) {
 
 		// 消息
 		ReqMsg request = MsgParse.parseXML(req);
@@ -443,7 +444,7 @@ public class WechatOps {
 	 * @param msg
 	 * @return
 	 */
-	private static CompletableFuture<RespMsg> onUserAttention(WechatConfig app, MsgHead msg) {
+	private static CompletionStage<RespMsg> onUserAttention(WechatConfig app, MsgHead msg) {
 		final EventMsgUserAttention _msg = (EventMsgUserAttention) msg;
 
 		// 关注
@@ -453,7 +454,7 @@ public class WechatOps {
 			// 二维码相关的事件(暂不处理) -- 找到二维码（和下面一样的处理方式）
 			String qrscene = _msg.getQrscene();
 			if (StringUtils.isNotBlank(qrscene)) {
-				return app.handleUserScan(_msg, qrscene);
+				return app.handleUserScan(_msg);
 			}
 
 			// 公众号事件配置
