@@ -39,14 +39,4 @@ public class ReqMsgVideo extends ReqMsgMedia {
 		msg.append("thumbMediaId:").append(this.getThumbMediaId()).append("\n");
 		return msg.toString();
 	}
-
-	@Override
-	public String getShowMessage() {
-		StringBuilder msg = new StringBuilder();
-		msg.append("<a data-type='media' data-id='").append(this.getMediaId())
-				.append("'>视频预览</a><br/>");
-		msg.append("<a data-type='thumb' data-id='")
-				.append(this.getThumbMediaId()).append("'>视频截图</a>");
-		return msg.toString();
-	}
 }

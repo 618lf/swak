@@ -49,11 +49,4 @@ public class ReqMsgVoice extends ReqMsgMedia {
 		msg.append("recognition:").append(this.getRecognition()).append("\n");
 		return msg.toString();
 	}
-
-	@Override
-	public String getShowMessage() {
-		StringBuilder msg = new StringBuilder();
-		msg.append("<a data-type='media' data-id='").append(this.getMediaId()).append("'>语音预览</a>");
-		return msg.toString();
-	}
 }

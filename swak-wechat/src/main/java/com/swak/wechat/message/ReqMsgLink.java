@@ -61,13 +61,4 @@ public class ReqMsgLink extends AbstractReqMsg {
 		msg.append("url:").append(this.getUrl()).append("\n");
 		return msg.toString();
 	}
-
-	@Override
-	public String getShowMessage() {
-		StringBuilder msg = new StringBuilder();
-		msg.append("<a title='").append(this.getDescription()).append("' ")
-				.append("href='").append(this.getUrl()).append("'>")
-				.append(this.getTitle()).append("</a>");
-		return msg.toString();
-	}
 }

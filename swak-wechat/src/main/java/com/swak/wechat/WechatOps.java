@@ -12,12 +12,12 @@ import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.wechat.codec.MsgParse;
 import com.swak.wechat.codec.SignUtils;
+import com.swak.wechat.message.AbstractEventMsg;
+import com.swak.wechat.message.AbstractReqMsg;
 import com.swak.wechat.message.EventMsgUserAttention;
 import com.swak.wechat.message.MenuEventMsgClick;
 import com.swak.wechat.message.MsgHead;
 import com.swak.wechat.message.ReqMsg;
-import com.swak.wechat.message.ReqMsgImage;
-import com.swak.wechat.message.ReqMsgText;
 import com.swak.wechat.message.RespMsg;
 import com.swak.wechat.message.RespMsgNone;
 import com.swak.wechat.pay.MchOrderquery;
@@ -424,18 +424,18 @@ public class WechatOps {
 			return app.handleClickMenu((MenuEventMsgClick) request);
 		}
 
-		// 发送关键字事件
-		if (request instanceof ReqMsgText) {
-			return app.handleTextMessage((ReqMsgText) request);
+		// 接收消息
+		if (request instanceof AbstractReqMsg) {
+			return app.handleMessage(request);
 		}
 
-		// 图片处理
-		if (request instanceof ReqMsgImage) {
-			return app.handleImageMessage((ReqMsgImage) request);
+		// 事件处理
+		if (request instanceof AbstractEventMsg) {
+			return app.handleEvent(request);
 		}
 
-		// 其他事件暂不处理
-		return app.handleOtherMessage(request);
+		// 默认处理
+		return app.handleDefault(request);
 	}
 
 	/**

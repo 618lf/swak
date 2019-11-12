@@ -33,9 +33,4 @@ public class ReqMsgText extends AbstractReqMsg {
 		msg.append("content:").append(this.getContent()).append("\n");
 		return msg.toString();
 	}
-
-	@Override
-	public String getShowMessage() {
-		return this.getContent();
-	}
 }

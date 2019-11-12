@@ -40,12 +40,4 @@ public class ReqMsgImage extends ReqMsgMedia {
 		msg.append("picUrl:").append(this.getPicUrl()).append("\n");
 		return msg.toString();
 	}
-
-	@Override
-	public String getShowMessage() {
-		StringBuilder msg = new StringBuilder();
-		msg.append("<a data-type='pic' data-id='").append(this.getMediaId())
-				.append("' data-href='" + this.getPicUrl() + "'>图片预览</a>");
-		return msg.toString();
-	}
 }

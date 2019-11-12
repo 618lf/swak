@@ -72,14 +72,4 @@ public class ReqMsgLocation extends AbstractReqMsg {
 		msg.append("label:").append(this.getLabel()).append("\n");
 		return msg.toString();
 	}
-
-	@Override
-	public String getShowMessage() {
-		StringBuilder msg = new StringBuilder();
-		msg.append("<a data-type='pic' data-x='")
-				.append(this.getLocation_X())
-				.append("' data-y='" + this.getLocation_Y() + "' data-s='"
-						+ this.getScale() + "' >" + this.getLabel() + "</a>");
-		return msg.toString();
-	}
 }

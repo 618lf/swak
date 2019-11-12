@@ -10,9 +10,9 @@ import com.swak.utils.XmlParse;
  * @author lifeng
  */
 public class AbstractReqMsg extends MsgHeadImpl implements ReqMsg {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	protected String msgId;
 
 	public String getMsgId() {
@@ -22,9 +22,7 @@ public class AbstractReqMsg extends MsgHeadImpl implements ReqMsg {
 	public void setMsgId(String msgId) {
 		this.msgId = msgId;
 	}
-	
-	public String getShowMessage() {return "";};
-	
+
 	@Override
 	public void read(Element element) {
 		this.msgId = XmlParse.elementText(element, "MsgId");
