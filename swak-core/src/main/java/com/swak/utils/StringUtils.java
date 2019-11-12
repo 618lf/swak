@@ -145,7 +145,7 @@ public class StringUtils {
 	 * @since 2.0
 	 */
 	public static final String EMPTY = "";
-	
+
 	/**
 	 * The null String {@code "null"}.
 	 * 
@@ -6510,8 +6510,8 @@ public class StringUtils {
 	 *
 	 * <p>
 	 * For a word based algorithm, see
-	 * {@link com.swak.utils.text.WordUtils#capitalize(String)}. A
-	 * {@code null} input String returns {@code null}.
+	 * {@link com.swak.utils.text.WordUtils#capitalize(String)}. A {@code null}
+	 * input String returns {@code null}.
 	 * </p>
 	 *
 	 * <pre>
@@ -6551,8 +6551,8 @@ public class StringUtils {
 	 *
 	 * <p>
 	 * For a word based algorithm, see
-	 * {@link com.swak.utils.text.WordUtils#uncapitalize(String)}. A
-	 * {@code null} input String returns {@code null}.
+	 * {@link com.swak.utils.text.WordUtils#uncapitalize(String)}. A {@code null}
+	 * input String returns {@code null}.
 	 * </p>
 	 *
 	 * <pre>
@@ -6598,8 +6598,8 @@ public class StringUtils {
 	 *
 	 * <p>
 	 * For a word based algorithm, see
-	 * {@link com.swak.utils.text.WordUtils#swapCase(String)}. A
-	 * {@code null} input String returns {@code null}.
+	 * {@link com.swak.utils.text.WordUtils#swapCase(String)}. A {@code null} input
+	 * String returns {@code null}.
 	 * </p>
 	 *
 	 * <pre>
@@ -8984,12 +8984,12 @@ public class StringUtils {
 		}
 		return text;
 	}
-	
+
 	/**
 	 * 替换掉HTML标签方法
 	 */
 	public static String removeHtml(String html) {
-		if (isBlank(html)){
+		if (isBlank(html)) {
 			return "";
 		}
 		String regEx = "<[^>]+>";
@@ -9013,5 +9013,20 @@ public class StringUtils {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Remove single or double quotes in query keywords to avoid sql errors
+	 *
+	 * @param str
+	 *            String
+	 * @return String
+	 */
+	public static String removeQuotes(String str) {
+		if (isNotEmpty(str)) {
+			return str.replaceAll("'", "").replaceAll("\"", "");
+		} else {
+			return "";
+		}
 	}
 }
