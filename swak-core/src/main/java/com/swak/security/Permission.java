@@ -10,11 +10,11 @@ import com.swak.security.permission.NonePermission;
  * @author lifeng
  */
 public interface Permission {
-	
+
 	/**
 	 * 无权限
 	 */
-	NonePermission NONE = new NonePermission();
+	Permission NONE = NonePermission.INSTANCE;
 
 	/**
 	 * 是否符合这些权限

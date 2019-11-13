@@ -4,8 +4,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.swak.api.DocAnnotationConstants;
-import com.swak.api.DocGlobalConstants;
+import com.swak.annotation.Body;
+import com.swak.annotation.Email;
+import com.swak.annotation.GetMapping;
+import com.swak.annotation.Header;
+import com.swak.annotation.Json;
+import com.swak.annotation.Length;
+import com.swak.annotation.Max;
+import com.swak.annotation.Min;
+import com.swak.annotation.NotNull;
+import com.swak.annotation.PageController;
+import com.swak.annotation.Phone;
+import com.swak.annotation.PostMapping;
+import com.swak.annotation.Regex;
+import com.swak.annotation.RequestMapping;
+import com.swak.annotation.RestController;
+import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaAnnotation;
@@ -20,46 +34,38 @@ import com.thoughtworks.qdox.model.JavaParameter;
  */
 public interface IBuilder {
 
-	String PRIVATE = "private";
-	String IGNORE_TAG = "ignore";
-	String GET_MAPPING = "GetMapping";
-	String POST_MAPPING = "PostMapping";
-	String PUT_MAPPING = "PutMapping";
-	String DELETE_MAPPING = "DeleteMapping";
-	String REQUEST_MAPPING = "RequestMapping";
-	String REQUEST_BODY = "RequestBody";
-	String REQUEST_HERDER = "RequestHeader";
-	String REQUEST_PARAM = "RequestParam";
-	String JSON_CONTENT_TYPE = "application/json; charset=utf-8";
-	String MULTIPART_TYPE = "multipart/form-data";
-	String MAP_CLASS = "java.util.Map";
-	String NO_COMMENTS_FOUND = "No comments found.";
-	String VALID = "Valid";
-	String PARAM = "param";
-	String REQUIRED_PROP = "required";
-	String SERIALIZE_PROP = "serialize";
+	List<String> CONTOLLERS = Lists.newArrayList(RestController.class.getName(), PageController.class.getName());
+	List<String> REQUEST_MAPPINGS = Lists.newArrayList(GetMapping.class.getName(), PostMapping.class.getName(),
+			RequestMapping.class.getName());
+	List<String> IGNORE_PARAMS = Lists.newArrayList("HttpServerRequest", "HttpServerResponse", "RoutingContext",
+			"Subject", "BindErrors");
+	List<String> ANNO_PARAMS = Lists.newArrayList(Body.class.getName(), Json.class.getName(), Header.class.getName());
+	List<String> VALID_PARAMS = Lists.newArrayList(Email.class.getName(), Length.class.getName(), Max.class.getName(),
+			Min.class.getName(), NotNull.class.getName(), Phone.class.getName(), Regex.class.getName());
 	String NAME_PROP = "name";
 	String VALUE_PROP = "value";
-	String DEFAULT_VALUE_PROP = "defaultValue";
+	String MSG_PROP = "msg";
+	String PATH_PROP = "path";
+	String METHOD_PROP = "method";
+	String PRIVATE = "private";
+	String NO_COMMENTS_FOUND = "No comments found.";
+	String PARAM = "param";
 
 	/**
-	 * 只处理 Controller
+	 * Controller
 	 *
 	 * @param cls
 	 * @return
 	 */
-	default boolean isController(JavaClass cls) {
+	default JavaAnnotation isController(JavaClass cls) {
 		List<JavaAnnotation> classAnnotations = cls.getAnnotations();
 		for (JavaAnnotation annotation : classAnnotations) {
-			String annotationName = annotation.getType().getName();
-			if (DocAnnotationConstants.SHORT_CONTROLLER.equals(annotationName)
-					|| DocAnnotationConstants.SHORT_REST_CONTROLLER.equals(annotationName)
-					|| DocGlobalConstants.REST_CONTROLLER_FULLY.equals(annotationName)
-					|| DocGlobalConstants.CONTROLLER_FULLY.equals(annotationName)) {
-				return true;
+			String annotationName = annotation.getType().getCanonicalName();
+			if (CONTOLLERS.contains(annotationName)) {
+				return annotation;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	/**
@@ -68,27 +74,24 @@ public interface IBuilder {
 	 * @param method
 	 * @return
 	 */
-	default boolean isRequestMethod(JavaMethod method) {
+	default JavaAnnotation isRequestMethod(JavaMethod method) {
 
 		// 不能是 private 方法
 		if (method.getModifiers().contains(PRIVATE)) {
-			return false;
+			return null;
 		}
 
 		// 需要配置成为 request mapping
 		List<JavaAnnotation> classAnnotations = method.getAnnotations();
 		for (JavaAnnotation annotation : classAnnotations) {
-			String annotationName = annotation.getType().getName();
-			if (DocAnnotationConstants.SHORT_CONTROLLER.equals(annotationName)
-					|| DocAnnotationConstants.SHORT_REST_CONTROLLER.equals(annotationName)
-					|| DocGlobalConstants.REST_CONTROLLER_FULLY.equals(annotationName)
-					|| DocGlobalConstants.CONTROLLER_FULLY.equals(annotationName)) {
-				return true;
+			String annotationName = annotation.getType().getCanonicalName();
+			if (REQUEST_MAPPINGS.contains(annotationName)) {
+				return annotation;
 			}
 		}
-		return false;
+		return null;
 	}
-	
+
 	/**
 	 * 是否是忽略的参数
 	 * 
@@ -96,7 +99,139 @@ public interface IBuilder {
 	 * @return
 	 */
 	default boolean isIgnoreParams(JavaParameter parameter) {
+		String parameterType = parameter.getName();
+		if (IGNORE_PARAMS.contains(parameterType)) {
+			return true;
+		}
 		return false;
+	}
+
+	/**
+	 * 是否基本类型
+	 * 
+	 * @param type0
+	 * @return
+	 */
+	default boolean isSimpleProperty(String type0) {
+		String type = type0.contains("java.lang") ? type0.substring(type0.lastIndexOf(".") + 1, type0.length()) : type0;
+		type = type.toLowerCase();
+		switch (type) {
+		case "integer":
+			return true;
+		case "int":
+			return true;
+		case "long":
+			return true;
+		case "double":
+			return true;
+		case "float":
+			return true;
+		case "short":
+			return true;
+		case "bigdecimal":
+			return true;
+		case "char":
+			return true;
+		case "string":
+			return true;
+		case "boolean":
+			return true;
+		case "byte":
+			return true;
+		case "java.sql.timestamp":
+			return true;
+		case "java.util.date":
+			return true;
+		case "java.time.localdatetime":
+			return true;
+		case "localdatetime":
+			return true;
+		case "localdate":
+			return true;
+		case "java.time.localdate":
+			return true;
+		case "java.math.bigdecimal":
+			return true;
+		case "java.math.biginteger":
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	/**
+	 * validate java collection
+	 *
+	 * @param type
+	 *            java typeName
+	 * @return boolean
+	 */
+	default boolean isCollection(String type) {
+		switch (type) {
+		case "java.util.List":
+			return true;
+		case "java.util.LinkedList":
+			return true;
+		case "java.util.ArrayList":
+			return true;
+		case "java.util.Set":
+			return true;
+		case "java.util.TreeSet":
+			return true;
+		case "java.util.HashSet":
+			return true;
+		case "java.util.SortedSet":
+			return true;
+		case "java.util.Collection":
+			return true;
+		case "java.util.ArrayDeque":
+			return true;
+		case "java.util.PriorityQueue":
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	/**
+	 * Check if it is an map
+	 *
+	 * @param type
+	 *            java type
+	 * @return boolean
+	 */
+	default boolean isMap(String type) {
+		switch (type) {
+		case "java.util.Map":
+			return true;
+		case "java.util.SortedMap":
+			return true;
+		case "java.util.TreeMap":
+			return true;
+		case "java.util.LinkedHashMap":
+			return true;
+		case "java.util.HashMap":
+			return true;
+		case "java.util.concurrent.ConcurrentHashMap":
+			return true;
+		case "java.util.Properties":
+			return true;
+		case "java.util.Hashtable":
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	/**
+	 * check array
+	 *
+	 * @param type
+	 *            type name
+	 * @return boolean
+	 */
+	default boolean isArray(String type) {
+		return type.contains("[]");
 	}
 
 	/**
@@ -128,30 +263,11 @@ public interface IBuilder {
 				pValue = value.substring(idx + 1);
 			} else {
 				pName = (value.indexOf(" ") > -1) ? value.substring(0, value.indexOf(" ")) : value;
-				pValue = value.indexOf(" ") > -1 ? value.substring(value.indexOf(' ') + 1)
-						: DocGlobalConstants.NO_COMMENTS_FOUND;
+				pValue = value.indexOf(" ") > -1 ? value.substring(value.indexOf(' ') + 1) : NO_COMMENTS_FOUND;
 			}
 			paramTagMap.put(pName, pValue);
 		}
 		return paramTagMap;
-	}
-
-	/**
-	 * 返回请求的地址
-	 * 
-	 * @return
-	 */
-	default String getUrl(final JavaMethod javaMethod) {
-		return "";
-	}
-
-	/**
-	 * 返回请求的地址
-	 * 
-	 * @return
-	 */
-	default String getMethod(final JavaMethod javaMethod) {
-		return "";
 	}
 
 	/**
@@ -222,6 +338,41 @@ public interface IBuilder {
 			return "file";
 		default:
 			return "object";
+		}
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param returnType
+	 * @return
+	 */
+	default String[] getSimpleGicName(String typeName) {
+		if (typeName.contains("<")) {
+			String pre = typeName.substring(0, typeName.indexOf("<"));
+			if (isMap(pre)) {
+				return getMapKeyValueType(typeName);
+			}
+			String type = typeName.substring(typeName.indexOf("<") + 1, typeName.lastIndexOf(">"));
+			if (isCollection(pre)) {
+				return type.split(" ");
+			}
+			return type.split(",");
+		} else {
+			return typeName.split(" ");
+		}
+	}
+
+	default String[] getMapKeyValueType(String gName) {
+		if (gName.contains("<")) {
+			String[] arr = new String[2];
+			String key = gName.substring(gName.indexOf("<") + 1, gName.indexOf(","));
+			String value = gName.substring(gName.indexOf(",") + 1, gName.lastIndexOf(">"));
+			arr[0] = key;
+			arr[1] = value;
+			return arr;
+		} else {
+			return new String[0];
 		}
 
 	}

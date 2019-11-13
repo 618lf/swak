@@ -15,6 +15,4 @@ public class ApiHeader {
 	private String name;
 	private String type;
 	private String desc;
-	private boolean required;
-	private String since = "-";
 }

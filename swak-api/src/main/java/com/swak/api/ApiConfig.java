@@ -1,6 +1,10 @@
-package com.swak.api.model;
+package com.swak.api;
 
 import java.util.List;
+
+import com.swak.api.builder.ApiBuilder;
+import com.swak.api.model.Api;
+import com.swak.utils.Lists;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +22,29 @@ public class ApiConfig {
 
 	private List<String> sourcePaths;
 	private List<String> packages;
+	
+	/**
+	 * 创建 Api Doc
+	 * 
+	 * @return
+	 */
+	public List<Api> build(){
+		return new ApiBuilder(this).build();
+	}
+	
+	/**
+	 * 添加源码路径
+	 * 
+	 * @param sourcePath
+	 * @return
+	 */
+	public ApiConfig addSourcePath(String sourcePath) {
+		if (sourcePaths == null) {
+			sourcePaths = Lists.newArrayList();
+		}
+		sourcePaths.add(sourcePath);
+		return this;
+	}
 
 	/**
 	 * 是否符合路径

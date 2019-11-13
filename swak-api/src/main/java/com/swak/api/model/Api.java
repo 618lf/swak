@@ -2,6 +2,8 @@ package com.swak.api.model;
 
 import java.util.List;
 
+import com.swak.utils.Lists;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -16,4 +18,12 @@ public class Api {
 	private String name;
 	private String desc;
 	private List<ApiMethod> methods;
+
+	public Api addApiMethod(ApiMethod method) {
+		if (methods == null) {
+			methods = Lists.newArrayList();
+		}
+		methods.add(method);
+		return this;
+	}
 }

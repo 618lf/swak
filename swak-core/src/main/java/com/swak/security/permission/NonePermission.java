@@ -9,7 +9,9 @@ import com.swak.security.Permission;
  * 
  * @author lifeng
  */
-public class NonePermission implements Permission {
+public enum NonePermission implements Permission {
+	INSTANCE;
+
 	@Override
 	public boolean implies(Set<String> permissions) {
 		return true;

@@ -14,11 +14,10 @@ public class ApiMethod {
 
 	private String name;
 	private String desc;
-	private String detail;
-	private String url;
+	private List<String> urls;
 	private String method;
 	private String headers;
-	private String contentType = "application/x-www-form-urlencoded;charset=utf-8";
+	private String contentType;
 	private List<ApiHeader> requestHeaders;
 	private List<ApiParam> requestParams;
 	private String requestUsage;
