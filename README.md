@@ -276,6 +276,13 @@ ContextRefreshedEvent > startReactiveServer > ReactiveServerInitializedEvent
 如果需要使用 vertx 组件中的内容则需要监听 ReactiveServerInitializedEvent 事件
 
 
+
+# 版本1.0.0 合并到 master 上
+以后在 master 版本上做新开发，具体的版本发布稳定版本
+
+新功能1： api doc 的自动生成 -- 开发中
+新功能2： 代码生成工具 -- 待开发
+
 # 演示项目
 具体的演示项目参见：
 [地址](https://gitee.com/618lf/springboot-vertx)
