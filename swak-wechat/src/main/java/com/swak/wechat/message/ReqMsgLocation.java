@@ -12,7 +12,7 @@ import com.swak.utils.XmlParse;
  * @Email:6687523@qq.com
  * 
  */
-public class ReqMsgLocation extends ReqMsg {
+public class ReqMsgLocation extends AbstractReqMsg {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -70,16 +70,6 @@ public class ReqMsgLocation extends ReqMsg {
 		msg.append("location_Y:").append(this.getLocation_Y()).append("\n");
 		msg.append("scale:").append(this.getScale()).append("\n");
 		msg.append("label:").append(this.getLabel()).append("\n");
-		return msg.toString();
-	}
-
-	@Override
-	public String getShowMessage() {
-		StringBuilder msg = new StringBuilder();
-		msg.append("<a data-type='pic' data-x='")
-				.append(this.getLocation_X())
-				.append("' data-y='" + this.getLocation_Y() + "' data-s='"
-						+ this.getScale() + "' >" + this.getLabel() + "</a>");
 		return msg.toString();
 	}
 }

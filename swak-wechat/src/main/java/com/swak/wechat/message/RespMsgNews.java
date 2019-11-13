@@ -16,31 +16,38 @@ import com.swak.wechat.message.plain.Article;
  * @author lifeng
  * 
  */
-@XmlRootElement(name="xml")
-public class RespMsgNews extends RespMsg {
+@XmlRootElement(name = "xml")
+public class RespMsgNews extends AbstractRespMsg {
 
 	private static final long serialVersionUID = 1L;
 	private int articleCount;
 	private List<Article> articles;
+
 	public RespMsgNews(MsgHead req, List<Article> articles) {
 		super(req, RespType.news.name());
 		setArticles(articles);
 		this.articleCount = articles.size();
 	}
+
 	public RespMsgNews(MsgHead req, Article... articles) {
 		this(req, Arrays.asList(articles));
 	}
-	public RespMsgNews() {}
-	@XmlElementWrapper(name="Articles")
+
+	public RespMsgNews() {
+	}
+
+	@XmlElementWrapper(name = "Articles")
 	@XmlElement(name = "item")
 	public List<Article> getArticles() {
 		return articles;
 	}
+
 	public void setArticles(List<Article> articles) {
 		this.articles = articles;
 		this.articleCount = articles.size();
 	}
-	@XmlElement(name="ArticleCount")
+
+	@XmlElement(name = "ArticleCount")
 	public int getArticleCount() {
 		return articleCount;
 	}

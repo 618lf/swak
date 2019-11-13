@@ -4,7 +4,7 @@ import org.w3c.dom.Element;
 
 import com.swak.utils.XmlParse;
 
-public class EventMsgMass extends MsgHead {
+public class EventMsgMass extends AbstractEventMsg {
 
 	private static final long serialVersionUID = 1L;
 

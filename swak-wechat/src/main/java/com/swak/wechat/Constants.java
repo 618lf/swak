@@ -17,6 +17,7 @@ public interface Constants {
 	String MCH_URI_DOMAIN_API2 = "api2.mch.weixin.qq.com";
 	String FAIL = "FAIL";
 	String SUCCESS = "SUCCESS";
+	String ERROR = "ERROR";
 	String HMACSHA256 = "HMAC-SHA256";
 	String MD5 = "MD5";
 

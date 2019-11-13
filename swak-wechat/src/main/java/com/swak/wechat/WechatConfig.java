@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -17,9 +18,7 @@ import com.swak.utils.StringUtils;
 import com.swak.wechat.codec.SignUtils;
 import com.swak.wechat.message.EventMsgUserAttention;
 import com.swak.wechat.message.MenuEventMsgClick;
-import com.swak.wechat.message.MsgHead;
-import com.swak.wechat.message.ReqMsgImage;
-import com.swak.wechat.message.ReqMsgText;
+import com.swak.wechat.message.ReqMsg;
 import com.swak.wechat.message.RespMsg;
 
 /**
@@ -306,7 +305,7 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleUserAttention(EventMsgUserAttention request) {
+	default CompletionStage<RespMsg> handleUserAttention(EventMsgUserAttention request) {
 		return CompletableFuture.completedFuture(null);
 	}
 
@@ -316,7 +315,7 @@ public interface WechatConfig {
 	 * @param request
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleUserScan(EventMsgUserAttention request, String qrscene) {
+	default CompletionStage<RespMsg> handleUserScan(EventMsgUserAttention request) {
 		return CompletableFuture.completedFuture(null);
 	}
 
@@ -328,7 +327,7 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleUserUnsubscribe(EventMsgUserAttention request) {
+	default CompletionStage<RespMsg> handleUserUnsubscribe(EventMsgUserAttention request) {
 		return CompletableFuture.completedFuture(null);
 	}
 
@@ -340,43 +339,37 @@ public interface WechatConfig {
 	 * @param config
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleClickMenu(MenuEventMsgClick msg) {
+	default CompletionStage<RespMsg> handleClickMenu(MenuEventMsgClick msg) {
 		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
-	 * 处理消息 - 处理接收到的文本消息
+	 * 处理消息
 	 * 
 	 * @param request
-	 * @param type
-	 * @param config
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleTextMessage(ReqMsgText msg) {
+	default CompletionStage<RespMsg> handleMessage(ReqMsg request) {
 		return CompletableFuture.completedFuture(null);
 	}
-
+	
 	/**
-	 * 处理消息 - 处理接收到的图片消息
+	 * 事件处理
 	 * 
 	 * @param request
-	 * @param type
-	 * @param config
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleImageMessage(ReqMsgImage msg) {
+	default CompletionStage<RespMsg> handleEvent(ReqMsg request) {
 		return CompletableFuture.completedFuture(null);
 	}
-
+	
 	/**
-	 * 处理消息 - 处理接收到的其他消息
+	 * 默认处理
 	 * 
 	 * @param request
-	 * @param type
-	 * @param config
 	 * @return
 	 */
-	default CompletableFuture<RespMsg> handleOtherMessage(MsgHead msg) {
+	default CompletionStage<RespMsg> handleDefault(ReqMsg request) {
 		return CompletableFuture.completedFuture(null);
 	}
 }

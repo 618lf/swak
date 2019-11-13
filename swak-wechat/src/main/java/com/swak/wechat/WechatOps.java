@@ -2,6 +2,7 @@ package com.swak.wechat;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import com.swak.codec.Encodes;
 import com.swak.http.builder.RequestBuilder;
@@ -9,14 +10,16 @@ import com.swak.incrementer.UUIdGenerator;
 import com.swak.utils.JaxbMapper;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
-import com.swak.wechat.codec.MessageParse;
+import com.swak.wechat.codec.MsgParse;
 import com.swak.wechat.codec.SignUtils;
+import com.swak.wechat.message.AbstractEventMsg;
+import com.swak.wechat.message.AbstractReqMsg;
 import com.swak.wechat.message.EventMsgUserAttention;
 import com.swak.wechat.message.MenuEventMsgClick;
 import com.swak.wechat.message.MsgHead;
-import com.swak.wechat.message.ReqMsgImage;
-import com.swak.wechat.message.ReqMsgText;
+import com.swak.wechat.message.ReqMsg;
 import com.swak.wechat.message.RespMsg;
+import com.swak.wechat.message.RespMsgNone;
 import com.swak.wechat.pay.MchOrderquery;
 import com.swak.wechat.pay.MchPayment;
 import com.swak.wechat.pay.Refundorder;
@@ -401,38 +404,38 @@ public class WechatOps {
 	 * @param req
 	 * @return
 	 */
-	public static CompletableFuture<RespMsg> onMessage(WechatConfig app, String req) {
+	public static CompletionStage<RespMsg> onMessage(WechatConfig app, String req) {
 
 		// 消息
-		MsgHead msg = MessageParse.parseXML(req);
+		ReqMsg request = MsgParse.parseXML(req);
 
 		// 暂时不支持的消息
-		if (msg == null) {
-			return CompletableFuture.completedFuture(null);
+		if (request == null) {
+			return CompletableFuture.completedFuture(RespMsgNone.INSTANCE);
 		}
 
 		// 关注事件，取消关注事件
-		if (msg instanceof EventMsgUserAttention) {
-			return onUserAttention(app, msg);
+		if (request instanceof EventMsgUserAttention) {
+			return onUserAttention(app, request);
 		}
 
 		// 菜单点击事件
-		if (msg instanceof MenuEventMsgClick) {
-			return app.handleClickMenu((MenuEventMsgClick) msg);
+		if (request instanceof MenuEventMsgClick) {
+			return app.handleClickMenu((MenuEventMsgClick) request);
 		}
 
-		// 发送关键字事件
-		if (msg instanceof ReqMsgText) {
-			return app.handleTextMessage((ReqMsgText) msg);
+		// 接收消息
+		if (request instanceof AbstractReqMsg) {
+			return app.handleMessage(request);
 		}
 
-		// 图片处理
-		if (msg instanceof ReqMsgImage) {
-			return app.handleImageMessage((ReqMsgImage) msg);
+		// 事件处理
+		if (request instanceof AbstractEventMsg) {
+			return app.handleEvent(request);
 		}
 
-		// 其他事件暂不处理
-		return app.handleOtherMessage(msg);
+		// 默认处理
+		return app.handleDefault(request);
 	}
 
 	/**
@@ -441,7 +444,7 @@ public class WechatOps {
 	 * @param msg
 	 * @return
 	 */
-	private static CompletableFuture<RespMsg> onUserAttention(WechatConfig app, MsgHead msg) {
+	private static CompletionStage<RespMsg> onUserAttention(WechatConfig app, MsgHead msg) {
 		final EventMsgUserAttention _msg = (EventMsgUserAttention) msg;
 
 		// 关注
@@ -451,7 +454,7 @@ public class WechatOps {
 			// 二维码相关的事件(暂不处理) -- 找到二维码（和下面一样的处理方式）
 			String qrscene = _msg.getQrscene();
 			if (StringUtils.isNotBlank(qrscene)) {
-				return app.handleUserScan(_msg, qrscene);
+				return app.handleUserScan(_msg);
 			}
 
 			// 公众号事件配置

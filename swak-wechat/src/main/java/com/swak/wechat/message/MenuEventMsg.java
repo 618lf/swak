@@ -13,7 +13,7 @@ import com.swak.utils.XmlParse;
  * 
  * @author lifeng
  */
-public class MenuEventMsg extends MsgHead {
+public class MenuEventMsg extends AbstractEventMsg {
 
 	private static final long serialVersionUID = 1L;
 	

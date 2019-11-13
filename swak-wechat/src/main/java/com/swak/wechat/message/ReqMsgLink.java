@@ -12,7 +12,7 @@ import com.swak.utils.XmlParse;
  * @Email:6687523@qq.com
  * 
  */
-public class ReqMsgLink extends ReqMsg {
+public class ReqMsgLink extends AbstractReqMsg {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -59,15 +59,6 @@ public class ReqMsgLink extends ReqMsg {
 		msg.append("title:").append(this.getTitle()).append("\n");
 		msg.append("description:").append(this.getDescription()).append("\n");
 		msg.append("url:").append(this.getUrl()).append("\n");
-		return msg.toString();
-	}
-
-	@Override
-	public String getShowMessage() {
-		StringBuilder msg = new StringBuilder();
-		msg.append("<a title='").append(this.getDescription()).append("' ")
-				.append("href='").append(this.getUrl()).append("'>")
-				.append(this.getTitle()).append("</a>");
 		return msg.toString();
 	}
 }
