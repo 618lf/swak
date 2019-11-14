@@ -6,7 +6,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import com.swak.utils.StringUtils;
-import com.swak.vertx.utils.RouterUtils;
+import com.swak.utils.router.RouterUtils;
 
 /**
  * 参考 org.springframework.core.MethodParameter 不需要所有的情况都支持
@@ -29,7 +29,7 @@ public class MethodParameter {
 		this.clazz = clazz;
 		this.method = method;
 		this.parameterIndex = parameterIndex;
-		String[] parameterNames = RouterUtils.getParameterNameDiscoverer().getParameterNames(method);
+		String[] parameterNames = RouterUtils.getParameterNames(method);
 		if (parameterNames != null) {
 			this.parameterName = parameterNames[parameterIndex];
 		}
@@ -61,7 +61,7 @@ public class MethodParameter {
 
 	public String getParameterName() {
 		if (parameterName == null) {
-			String[] parameterNames = RouterUtils.getParameterNameDiscoverer().getParameterNames(method);
+			String[] parameterNames = RouterUtils.getParameterNames(method);
 			if (parameterNames != null) {
 				this.parameterName = parameterNames[parameterIndex];
 			} else {

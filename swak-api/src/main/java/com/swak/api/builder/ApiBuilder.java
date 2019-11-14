@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import com.swak.annotation.Header;
 import com.swak.annotation.Json;
 import com.swak.annotation.RequestMethod;
@@ -17,9 +19,11 @@ import com.swak.api.model.Api;
 import com.swak.api.model.ApiHeader;
 import com.swak.api.model.ApiMethod;
 import com.swak.api.model.ApiParam;
-import com.swak.api.utils.RouterUtils;
+import com.swak.api.model.ApiReturn;
+import com.swak.entity.Result;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
+import com.swak.utils.router.RouterUtils;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -121,11 +125,10 @@ public class ApiBuilder implements IBuilder {
 			apiMethod = this.buildRequestHeaders(apiMethod, method);
 
 			// 请求参数
-			apiMethod = this.buildRequestParams(apiMethod, method, cls.getCanonicalName());
+			apiMethod = this.buildRequestParams(apiMethod, method);
 
 			// 响应参数
-			List<ApiParam> responseParams = buildReturnApiParams(method, cls.getGenericFullyQualifiedName());
-			apiMethod.setResponseParams(responseParams);
+			apiMethod = this.buildReturnParams(apiMethod, method);
 
 			// save api method
 			api.addApiMethod(apiMethod);
@@ -228,7 +231,7 @@ public class ApiBuilder implements IBuilder {
 	 * @param className
 	 * @return
 	 */
-	private ApiMethod buildRequestParams(ApiMethod apiMethod, final JavaMethod javaMethod, final String className) {
+	private ApiMethod buildRequestParams(ApiMethod apiMethod, final JavaMethod javaMethod) {
 		Map<String, String> paramTagMap = this.getParamsComments(javaMethod, PARAM);
 		List<JavaParameter> parameterList = javaMethod.getParameters();
 		if (parameterList.size() < 1) {
@@ -251,8 +254,9 @@ public class ApiBuilder implements IBuilder {
 			 * 必须有备注说明
 			 */
 			if (!paramTagMap.containsKey(paramName)) {
-				throw new RuntimeException("ERROR: Unable to find javadoc @param for actual param \"" + paramName
-						+ "\" in method " + javaMethod.getName() + " from " + className);
+				throw new RuntimeException(
+						"ERROR: Unable to find javadoc @param for actual param \"" + paramName + "\" in method "
+								+ javaMethod.getName() + " from " + javaMethod.getDeclaringClass().getCanonicalName());
 			}
 			String comment = paramTagMap.get(paramName);
 			if (StringUtils.isEmpty(comment)) {
@@ -297,17 +301,88 @@ public class ApiBuilder implements IBuilder {
 	}
 
 	/**
-	 * 响应参数
+	 * 响应参数, 现在返回值都是 Result， 获取不到真实的反回值， 需要在 @return 中标注返回值类型 返回值的约定： <br>
+	 * 1. String <br>
+	 * 2. Xml <br>
+	 * 3. Model <br>
+	 * 4. PlainFile、 MultipartFile： 流式输出 <br>
+	 * 5. Json : Result <br>
+	 * 
+	 * 等所有对象类型
 	 * 
 	 * @param method
-	 * @param controllerName
 	 * @return
 	 */
-	private List<ApiParam> buildReturnApiParams(JavaMethod method, String controllerName) {
-		if ("void".equals(method.getReturnType().getFullyQualifiedName())) {
-			return null;
+	private ApiMethod buildReturnParams(ApiMethod apiMethod, JavaMethod method) {
+
+		/**
+		 * void 返回值
+		 */
+		if (VOID.equals(method.getReturnType().getFullyQualifiedName())) {
+			return apiMethod;
 		}
-		return null;
+
+		/**
+		 * 返回值列表
+		 */
+		List<ApiParam> paramList = Lists.newArrayList();
+
+		/**
+		 * 返回值
+		 */
+		ApiReturn apiReturn = this.processReturnType(method.getReturnType().getGenericCanonicalName());
+		String typeName = apiReturn.getSimpleName();
+		JavaClass apiReturnCls = this.getJavaClass(typeName);
+		List<JavaAnnotation> annotations = apiReturnCls.getAnnotations();
+
+		/**
+		 * 基本类型
+		 */
+		if (this.isSimpleProperty(typeName)) {
+			ApiParam apiParam = ApiParam.of().setField("no param name").setType(typeName);
+			paramList.add(apiParam);
+		}
+
+		/**
+		 * xml 类型
+		 */
+		else if (annotations != null && annotations.size() == 1
+				&& XmlRootElement.class.getName().equals(annotations.get(0).getType().getName())) {
+			ApiParam apiParam = ApiParam.of().setField("no param name").setType(typeName);
+			paramList.add(apiParam);
+		}
+
+		/**
+		 * Model 数据输出
+		 */
+		else if (MODEL.equals(apiReturnCls.getSimpleName())) {
+			ApiParam apiParam = ApiParam.of().setField("no param name").setType(typeName);
+			paramList.add(apiParam);
+		}
+		
+		/**
+		 * 流 数据输出
+		 */
+		else if (FILES.contains(apiReturnCls.getSimpleName())) {
+			ApiParam apiParam = ApiParam.of().setField("no param name").setType(typeName);
+			paramList.add(apiParam);
+		}
+
+		/**
+		 * Json
+		 */
+		else if (Result.class.getName().equals(typeName)) {
+           
+		}
+
+		/**
+		 * Json 类型
+		 */
+		else {
+           
+		}
+
+		return apiMethod.setResponseParams(paramList);
 	}
 
 	/**
@@ -382,7 +457,7 @@ public class ApiBuilder implements IBuilder {
 			 * map 参数可以传递 ： p4[a]=11, p4[b]=12 <br>
 			 */
 			else if (this.isMap(subTypeName) || this.isArray(subTypeName)) {
-				
+
 				// map 不解析非简单模型
 				ApiParam param = ApiParam.of().setField(pre + "[" + fieldName + "]" + "[a]");
 				param.setType(this.processTypeNameForParam(typeSimpleName));
@@ -409,7 +484,7 @@ public class ApiBuilder implements IBuilder {
 	 */
 	private void buildVaildAndJson(ApiParam param, JavaField field) {
 		List<JavaAnnotation> annotations = field.getAnnotations();
-		
+
 		// Valid
 		if (annotations != null && annotations.size() > 0) {
 			for (JavaAnnotation annotation : annotations) {
@@ -424,7 +499,7 @@ public class ApiBuilder implements IBuilder {
 				}
 			}
 		}
-		
+
 		// Json
 		if (annotations != null && annotations.size() > 0) {
 			for (JavaAnnotation annotation : annotations) {

@@ -25,11 +25,11 @@ import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 import com.swak.utils.Sets;
 import com.swak.utils.StringUtils;
+import com.swak.utils.router.RouterUtils;
 import com.swak.vertx.annotation.RouterSupplier;
 import com.swak.vertx.annotation.VertxReferer;
 import com.swak.vertx.annotation.VertxService;
 import com.swak.vertx.transport.VertxProxy;
-import com.swak.vertx.utils.RouterUtils;
 
 /**
  * 自动化配置bean

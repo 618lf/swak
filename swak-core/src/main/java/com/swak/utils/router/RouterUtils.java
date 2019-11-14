@@ -1,4 +1,6 @@
-package com.swak.vertx.utils;
+package com.swak.utils.router;
+
+import java.lang.reflect.Method;
 
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -163,10 +165,11 @@ public class RouterUtils {
 	}
 
 	/**
-	 * 属性名称
+	 * 获取方法的属性名称
+	 * 
 	 * @return
 	 */
-	public static ParameterNameDiscoverer getParameterNameDiscoverer() {
-		return parameterNameDiscoverer;
+	public static String[] getParameterNames(Method method) {
+		return parameterNameDiscoverer.getParameterNames(method);
 	}
 }
