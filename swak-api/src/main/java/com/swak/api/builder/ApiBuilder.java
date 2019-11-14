@@ -118,11 +118,10 @@ public class ApiBuilder implements IBuilder {
 			apiMethod = this.buildRouter(apiMethod, classMapping, methodMapping);
 
 			// 请求头
-			apiMethod.setRequestHeaders(this.buildRequestHeaders(method));
+			apiMethod = this.buildRequestHeaders(apiMethod, method);
 
 			// 请求参数
-			List<ApiParam> requestParams = buildRequestParams(method, cls.getCanonicalName());
-			apiMethod.setRequestParams(requestParams);
+			apiMethod = this.buildRequestParams(apiMethod, method, cls.getCanonicalName());
 
 			// 响应参数
 			List<ApiParam> responseParams = buildReturnApiParams(method, cls.getGenericFullyQualifiedName());
@@ -202,7 +201,7 @@ public class ApiBuilder implements IBuilder {
 	 * @param cls
 	 * @return
 	 */
-	private List<ApiHeader> buildRequestHeaders(final JavaMethod method) {
+	private ApiMethod buildRequestHeaders(ApiMethod apiMethod, final JavaMethod method) {
 		Map<String, String> paramMap = this.getParamsComments(method, PARAM);
 		List<ApiHeader> apiReqHeaders = Lists.newArrayList();
 		for (JavaParameter javaParameter : method.getParameters()) {
@@ -219,7 +218,7 @@ public class ApiBuilder implements IBuilder {
 				}
 			}
 		}
-		return apiReqHeaders;
+		return apiMethod.setRequestHeaders(apiReqHeaders);
 	}
 
 	/**
@@ -229,15 +228,13 @@ public class ApiBuilder implements IBuilder {
 	 * @param className
 	 * @return
 	 */
-	private List<ApiParam> buildRequestParams(final JavaMethod javaMethod, final String className) {
+	private ApiMethod buildRequestParams(ApiMethod apiMethod, final JavaMethod javaMethod, final String className) {
 		Map<String, String> paramTagMap = this.getParamsComments(javaMethod, PARAM);
 		List<JavaParameter> parameterList = javaMethod.getParameters();
 		if (parameterList.size() < 1) {
-			return null;
+			return apiMethod;
 		}
 		List<ApiParam> paramList = new ArrayList<>();
-		int requestBodyCounter = 0;
-		List<ApiParam> reqBodyParamsList = new ArrayList<>();
 		for (JavaParameter parameter : parameterList) {
 			String paramName = parameter.getName();
 			String simpleName = parameter.getType().getValue().toLowerCase();
@@ -267,7 +264,7 @@ public class ApiBuilder implements IBuilder {
 			 */
 			List<JavaAnnotation> annotations = parameter.getAnnotations();
 			if (annotations != null && annotations.size() > 0
-					&& Valid.class.getName().equals(annotations.get(0).getType().getCanonicalName())) {
+					&& !Valid.class.getName().equals(annotations.get(0).getType().getCanonicalName())) {
 				for (JavaAnnotation annotation : annotations) {
 					String annotationName = annotation.getType().getCanonicalName();
 					if (ANNO_PARAMS.contains(annotationName)) {
@@ -296,11 +293,7 @@ public class ApiBuilder implements IBuilder {
 				paramList.addAll(buildParams(fullTypeName, paramName, 1));
 			}
 		}
-		if (requestBodyCounter > 0) {
-			paramList.addAll(reqBodyParamsList);
-			return paramList;
-		}
-		return paramList;
+		return apiMethod.setRequestParams(paramList);
 	}
 
 	/**
@@ -360,11 +353,12 @@ public class ApiBuilder implements IBuilder {
 				param.setType(this.processTypeNameForParam(typeSimpleName));
 				param.setDesc(comment);
 				paramList.add(param);
-				this.buildVaild(param, field);
+				this.buildVaildAndJson(param, field);
 			}
 
 			/**
-			 * 处理集合类型，且只处理第二层
+			 * 处理集合类型，且只处理第二层 <br>
+			 * list 参数可以传递： p3 = 1, p3 = 1
 			 */
 			else if (this.isCollection(subTypeName)) {
 				String gNameTemp = field.getType().getGenericCanonicalName();
@@ -374,7 +368,7 @@ public class ApiBuilder implements IBuilder {
 				 * 内部属性是基本类型
 				 */
 				if (this.isSimpleProperty(gName)) {
-					ApiParam param = ApiParam.of().setField(pre + "[0]");
+					ApiParam param = ApiParam.of().setField(pre + "[" + fieldName + "]");
 					param.setType(this.processTypeNameForParam(typeSimpleName));
 					param.setDesc(comment);
 					paramList.add(param);
@@ -384,23 +378,17 @@ public class ApiBuilder implements IBuilder {
 			}
 
 			/**
-			 * map、[] 类型需要配置 @json 才能做解析
+			 * map、[] 类型需要配置 @json 才能做解析 <br>
+			 * map 参数可以传递 ： p4[a]=11, p4[b]=12 <br>
 			 */
 			else if (this.isMap(subTypeName) || this.isArray(subTypeName)) {
-				List<JavaAnnotation> annotations = field.getAnnotations();
-				if (annotations != null && annotations.size() > 0
-						&& Valid.class.getName().equals(annotations.get(0).getType().getCanonicalName())) {
-					for (JavaAnnotation annotation : annotations) {
-						String annotationName = annotation.getType().getCanonicalName();
-						if (Json.class.getName().equals(annotationName)) {
-							ApiParam param = ApiParam.of().setField(pre + "[" + fieldName + "]")
-									.setType(this.processTypeNameForParam(typeSimpleName)).setDesc(comment)
-									.setJson(Json.class.getName().equals(annotationName));
-							this.buildVaild(param, field);
-							paramList.add(param);
-						}
-					}
-				}
+				
+				// map 不解析非简单模型
+				ApiParam param = ApiParam.of().setField(pre + "[" + fieldName + "]" + "[a]");
+				param.setType(this.processTypeNameForParam(typeSimpleName));
+				param.setDesc(comment);
+				this.buildVaildAndJson(param, field);
+				paramList.add(param);
 			}
 
 			/**
@@ -419,10 +407,11 @@ public class ApiBuilder implements IBuilder {
 	 * @param param
 	 * @param field
 	 */
-	private void buildVaild(ApiParam param, JavaField field) {
+	private void buildVaildAndJson(ApiParam param, JavaField field) {
 		List<JavaAnnotation> annotations = field.getAnnotations();
-		if (annotations != null && annotations.size() > 0
-				&& Valid.class.getName().equals(annotations.get(0).getType().getCanonicalName())) {
+		
+		// Valid
+		if (annotations != null && annotations.size() > 0) {
 			for (JavaAnnotation annotation : annotations) {
 				String annotationName = annotation.getType().getCanonicalName();
 				if (VALID_PARAMS.contains(annotationName)) {
@@ -432,6 +421,16 @@ public class ApiBuilder implements IBuilder {
 							.append("\t");
 					valid.append(StringUtils.removeQuotes(String.valueOf(annotation.getNamedParameter(MSG_PROP))));
 					param.addValid(valid.toString());
+				}
+			}
+		}
+		
+		// Json
+		if (annotations != null && annotations.size() > 0) {
+			for (JavaAnnotation annotation : annotations) {
+				String annotationName = annotation.getType().getCanonicalName();
+				if (Json.class.getName().equals(annotationName)) {
+					param.setJson(Json.class.getName().equals(annotationName));
 				}
 			}
 		}

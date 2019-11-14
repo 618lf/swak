@@ -523,7 +523,8 @@ public class HandlerAdapter extends AbstractRouterHandler {
 					errors.addError(paramName, field.getPropertyName(), error);
 				}
 			} catch (Exception e) {
-				logger.error("Set obj field faile:field[{}]-value[{}]", field.getPropertyName(), value);
+				logger.error("Request {}, Set Object[{}] field [{}] faile : value [{}] ", context.request().uri(),
+						obj.getClass().getName(), field.getPropertyName(), value);
 			}
 		}
 	}
