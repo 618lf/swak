@@ -1,6 +1,7 @@
 package com.swak.api.builder;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,13 +9,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
+import com.swak.annotation.ApiDoc;
 import com.swak.annotation.Header;
 import com.swak.annotation.Json;
 import com.swak.annotation.RequestMethod;
 import com.swak.annotation.Valid;
 import com.swak.api.ApiConfig;
+import com.swak.api.mock.MockUtils;
 import com.swak.api.model.Api;
 import com.swak.api.model.ApiHeader;
 import com.swak.api.model.ApiMethod;
@@ -25,6 +26,7 @@ import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.swak.utils.router.RouterUtils;
 import com.thoughtworks.qdox.JavaProjectBuilder;
+import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
@@ -275,6 +277,7 @@ public class ApiBuilder implements IBuilder {
 						ApiParam param = ApiParam.of().setField(paramName)
 								.setType(this.processTypeNameForParam(simpleName)).setDesc(comment)
 								.setJson(Json.class.getName().equals(annotationName));
+						param.setValue(MockUtils.getValueByTypeAndName(parameter.getType().getValue(), parameter.getName()));
 						paramList.add(param);
 					}
 				}
@@ -287,6 +290,7 @@ public class ApiBuilder implements IBuilder {
 					|| this.isArray(simpleName)) {
 				ApiParam param = ApiParam.of().setField(paramName).setType(this.processTypeNameForParam(simpleName))
 						.setDesc(comment);
+				param.setValue(MockUtils.getValueByTypeAndName(parameter.getType().getValue(), parameter.getName()));
 				paramList.add(param);
 			}
 
@@ -333,23 +337,21 @@ public class ApiBuilder implements IBuilder {
 		ApiReturn apiReturn = this.processReturnType(method.getReturnType().getGenericCanonicalName());
 		String typeName = apiReturn.getSimpleName();
 		JavaClass apiReturnCls = this.getJavaClass(typeName);
-		List<JavaAnnotation> annotations = apiReturnCls.getAnnotations();
 
 		/**
 		 * 基本类型
 		 */
 		if (this.isSimpleProperty(typeName)) {
 			ApiParam apiParam = ApiParam.of().setField("no param name").setType(typeName);
+			apiParam.setValue(MockUtils.getValueByTypeAndName(apiParam.getType(), apiParam.getField()));
 			paramList.add(apiParam);
 		}
 
 		/**
 		 * xml 类型
 		 */
-		else if (annotations != null && annotations.size() == 1
-				&& XmlRootElement.class.getName().equals(annotations.get(0).getType().getName())) {
-			ApiParam apiParam = ApiParam.of().setField("no param name").setType(typeName);
-			paramList.add(apiParam);
+		else if (this.isResponseXml(apiReturnCls) != null) {
+			paramList.addAll(this.buildReturns(typeName, StringUtils.EMPTY, 1));
 		}
 
 		/**
@@ -359,7 +361,7 @@ public class ApiBuilder implements IBuilder {
 			ApiParam apiParam = ApiParam.of().setField("no param name").setType(typeName);
 			paramList.add(apiParam);
 		}
-		
+
 		/**
 		 * 流 数据输出
 		 */
@@ -372,17 +374,167 @@ public class ApiBuilder implements IBuilder {
 		 * Json
 		 */
 		else if (Result.class.getName().equals(typeName)) {
-           
+			paramList.addAll(this.buildReturns(typeName, StringUtils.EMPTY, 1));
+
+			/**
+			 * 获取 return 类型的数据
+			 */
+			List<DocletTag> paramTags = method.getTagsByName(RETURN);
+			if (paramTags != null && paramTags.size() > 0 && StringUtils.isNotBlank(paramTags.get(0).getValue())) {
+				paramList.addAll(this.buildReturns(paramTags.get(0).getValue(), "obj", 1));
+			}
 		}
 
 		/**
 		 * Json 类型
 		 */
 		else {
-           
+			paramList.addAll(this.buildReturns(typeName, StringUtils.EMPTY, 1));
 		}
 
 		return apiMethod.setResponseParams(paramList);
+	}
+
+	/**
+	 * 递归创建参数
+	 * 
+	 * @param parameter
+	 * @return
+	 */
+	private List<ApiParam> buildReturns(String className, String pre, int deep) {
+
+		/**
+		 * 最多解析2层
+		 */
+		if (deep >= 3) {
+			return null;
+		}
+
+		/**
+		 * 解析字段
+		 */
+		List<ApiParam> paramList = new ArrayList<>();
+		JavaClass cls = getJavaClass(className);
+		List<JavaField> fields = getFields(cls, 0);
+		for (JavaField field : fields) {
+
+			/**
+			 * 排除一些方法
+			 */
+			String fieldName = field.getName();
+			if ("this$0".equals(fieldName) || "serialVersionUID".equals(fieldName)) {
+				continue;
+			}
+
+			String typeSimpleName = field.getType().getSimpleName().toLowerCase();
+			String subTypeName = field.getType().getFullyQualifiedName();
+			String comment = field.getComment();
+
+			/**
+			 * 支持自定义的备注 @ApiDoc --- 这种方式只能获取源码中的注释
+			 */
+			List<JavaAnnotation> annotations = field.getAnnotations();
+			if (annotations != null && annotations.size() > 0) {
+				for (JavaAnnotation annotation : annotations) {
+					if (ApiDoc.class.getName().equals(annotation.getType().getCanonicalName())) {
+						comment = StringUtils.removeQuotes(String.valueOf(annotation.getNamedParameter(VALUE_PROP)));
+					}
+				}
+			}
+
+			/**
+			 * 获取编译之后的注释
+			 */
+			if (StringUtils.isBlank(comment)) {
+				try {
+					Class<?> clzz = Class.forName(className);
+					Field filed = clzz.getDeclaredField(fieldName);
+					ApiDoc apiDoc = filed.getAnnotation(ApiDoc.class);
+					if (apiDoc != null) {
+						comment = apiDoc.value();
+					}
+				} catch (Exception e) {
+				}
+			}
+
+			/**
+			 * 简单类型 : 简单类型可以使用验证器
+			 */
+			if (this.isSimpleProperty(subTypeName)) {
+				ApiParam param = ApiParam.of().setField((!StringUtils.isBlank(pre) ? pre + "." : pre) + fieldName);
+				param.setType(this.processTypeNameForParam(typeSimpleName));
+				param.setDesc(comment);
+				param.setValue(MockUtils.getValueByTypeAndName(field.getType().getSimpleName(), field.getName()));
+				paramList.add(param);
+			}
+
+			/**
+			 * 处理集合类型，且只处理第二层 <br>
+			 * list 参数可以传递： p3 = 1, p3 = 1
+			 */
+			else if (this.isCollection(subTypeName)) {
+				String gNameTemp = field.getType().getGenericCanonicalName();
+				String gName = this.getSimpleGicName(gNameTemp)[0];
+
+				/**
+				 * 内部属性是基本类型
+				 */
+				if (this.isSimpleProperty(gName)) {
+					ApiParam param = ApiParam.of().setField((!StringUtils.isBlank(pre) ? pre + "." : pre) + fieldName);
+					param.setType(this.processTypeNameForParam(typeSimpleName));
+					param.setDesc(comment);
+					paramList.add(param);
+				} else {
+
+					/**
+					 * 添加一个父参数
+					 */
+					ApiParam param = ApiParam.of().setField((!StringUtils.isBlank(pre) ? pre + "." : pre) + fieldName);
+					param.setType(this.processTypeNameForParam(typeSimpleName));
+					param.setDesc(comment);
+					paramList.add(param);
+
+					/**
+					 * 解析子属性
+					 */
+					paramList.addAll(this.buildReturns(gName, (!StringUtils.isBlank(pre) ? pre + "." : pre) + fieldName,
+							deep + 1));
+				}
+			}
+
+			/**
+			 * map、[] 类型需要配置 @json 才能做解析 <br>
+			 * map 参数可以传递 ： p4[a]=11, p4[b]=12 <br>
+			 */
+			else if (this.isMap(subTypeName) || this.isArray(subTypeName)) {
+
+				// map 不解析非简单模型
+				ApiParam param = ApiParam.of().setField((!StringUtils.isBlank(pre) ? pre + "." : pre) + fieldName);
+				param.setType(this.processTypeNameForParam(typeSimpleName));
+				param.setDesc(comment);
+				paramList.add(param);
+			}
+
+			/**
+			 * 对象类型
+			 */
+			else {
+				/**
+				 * 添加一个父参数
+				 */
+				ApiParam param = ApiParam.of().setField((!StringUtils.isBlank(pre) ? pre + "." : pre) + fieldName);
+				param.setType(this.processTypeNameForParam(typeSimpleName));
+				param.setDesc(comment);
+				paramList.add(param);
+
+				/**
+				 * 解析子属性
+				 */
+				paramList.addAll(this.buildReturns(subTypeName,
+						(!StringUtils.isBlank(pre) ? pre + "." : pre) + fieldName, deep + 1));
+			}
+		}
+		return paramList;
 	}
 
 	/**
@@ -419,6 +571,33 @@ public class ApiBuilder implements IBuilder {
 			String typeSimpleName = field.getType().getSimpleName().toLowerCase();
 			String subTypeName = field.getType().getFullyQualifiedName();
 			String comment = field.getComment();
+
+			/**
+			 * 支持自定义的备注 @ApiDoc --- 这种方式只能获取源码中的注释
+			 */
+			List<JavaAnnotation> annotations = field.getAnnotations();
+			if (annotations != null && annotations.size() > 0) {
+				for (JavaAnnotation annotation : annotations) {
+					if (ApiDoc.class.getName().equals(annotation.getType().getCanonicalName())) {
+						comment = StringUtils.removeQuotes(String.valueOf(annotation.getNamedParameter(VALUE_PROP)));
+					}
+				}
+			}
+
+			/**
+			 * 获取编译之后的注释
+			 */
+			if (StringUtils.isBlank(comment)) {
+				try {
+					Class<?> clzz = Class.forName(className);
+					Field filed = clzz.getDeclaredField(fieldName);
+					ApiDoc apiDoc = filed.getAnnotation(ApiDoc.class);
+					if (apiDoc != null) {
+						comment = apiDoc.value();
+					}
+				} catch (Exception e) {
+				}
+			}
 
 			/**
 			 * 简单类型 : 简单类型可以使用验证器
@@ -509,6 +688,9 @@ public class ApiBuilder implements IBuilder {
 				}
 			}
 		}
+		
+		// 模拟参数值
+		param.setValue(MockUtils.getValueByTypeAndName(field.getType().getSimpleName(), field.getName()));
 	}
 
 	private JavaClass getJavaClass(String simpleName) {

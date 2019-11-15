@@ -21,6 +21,7 @@ public class ApiParam {
 	private String desc;
 	private boolean json;
 	private List<String> valids;
+	private String value;
 
 	public ApiParam addValid(String valid) {
 		if (valids == null) {

@@ -4,6 +4,7 @@ import com.swak.annotation.GetMapping;
 import com.swak.annotation.Header;
 import com.swak.annotation.Json;
 import com.swak.annotation.RestController;
+import com.swak.entity.Result;
 import com.swak.test.dto.UserDTO;
 
 /**
@@ -20,28 +21,16 @@ public class TestApi {
 	/**
 	 * 111
 	 * 
-	 * @Title: one
-	 * @Description: TODO(描述)
-	 * @param name
-	 * @param names
-	 * @param user
-	 * @return
 	 * @author lifeng
 	 * @date 2019-11-14 11:34:59
+	 * 
+	 * @param name 用户名称
+	 * @param names 用户名称
+	 * @param user 用户名称
+	 * @return com.swak.test.dto.UserDTO
 	 */
 	@GetMapping(value = "one")
-	public UserDTO one(@Header String name, @Json String names, UserDTO user) {
+	public Result one(@Header String name, @Json String names, UserDTO user) {
 		return null;
-	}
-
-	/**
-	 * 測試的參數传递形式
-	 * 
-	 * @param id
-	 *            主键
-	 */
-	@GetMapping(value = "two/:id")
-	public void two(String id) {
-
 	}
 }

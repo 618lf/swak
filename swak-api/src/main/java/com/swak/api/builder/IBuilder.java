@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import com.swak.annotation.Body;
 import com.swak.annotation.Email;
 import com.swak.annotation.GetMapping;
@@ -51,9 +53,27 @@ public interface IBuilder {
 	String PRIVATE = "private";
 	String NO_COMMENTS_FOUND = "No comments found.";
 	String PARAM = "param";
+	String RETURN = "return";
 	String VOID = "void";
 	String MODEL = "Model";
 	List<String> FILES = Lists.newArrayList("PlainFile", "MultipartFile");
+
+	/**
+	 * Controller
+	 *
+	 * @param cls
+	 * @return
+	 */
+	default JavaAnnotation isResponseXml(JavaClass cls) {
+		List<JavaAnnotation> classAnnotations = cls.getAnnotations();
+		for (JavaAnnotation annotation : classAnnotations) {
+			String annotationName = annotation.getType().getCanonicalName();
+			if (XmlRootElement.class.getName().equals(annotationName)) {
+				return annotation;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Controller

@@ -29,6 +29,11 @@ public class UserDTO {
 	/**
 	 * 账户信息
 	 */
+	private UserAccountDTO account;
+	
+	/**
+	 * 账户信息
+	 */
 	private List<UserAccountDTO> accounts;
 	
 	/**

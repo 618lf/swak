@@ -29,6 +29,7 @@ public class MockUtils {
 		fieldValue.put("uuid-string", UUID.randomUUID().toString());
 		fieldValue.put("uid", UUID.randomUUID().toString());
 		fieldValue.put("id-string", String.valueOf(RandomUtil.randomInt(1, 200)));
+		fieldValue.put("id-long", String.valueOf(RandomUtil.randomLong()));
 		fieldValue.put("nickname-string", faker.name().username());
 		fieldValue.put("hostname-string", faker.internet().ipV4Address());
 		fieldValue.put("name-string", faker.name().username());
@@ -90,7 +91,7 @@ public class MockUtils {
 	 *            field name
 	 * @return random value
 	 */
-	public static String getValByTypeAndFieldName(String typeName, String filedName) {
+	public static String getValueByTypeAndName(String typeName, String filedName) {
 		String type = typeName.contains("java.lang")
 				? typeName.substring(typeName.lastIndexOf(".") + 1, typeName.length())
 				: typeName;
@@ -102,17 +103,11 @@ public class MockUtils {
 				break;
 			}
 		}
+
 		if (null == value) {
-			return jsonValueByType(typeName);
-		} else {
-			if ("string".equals(type.toLowerCase())) {
-				StringBuilder builder = new StringBuilder();
-				builder.append("\"").append(value).append("\"");
-				return builder.toString();
-			} else {
-				return value;
-			}
+			return getValueByType(typeName);
 		}
+		return value;
 	}
 
 	/**
@@ -122,19 +117,9 @@ public class MockUtils {
 	 *            field type name
 	 * @return random value
 	 */
-	public static String jsonValueByType(String typeName) {
+	public static String getValueByType(String typeName) {
 		String type = typeName.contains(".") ? typeName.substring(typeName.lastIndexOf(".") + 1, typeName.length())
 				: typeName;
-		String value = RandomUtil.randomValueByType(type);
-		if ("Integer".equals(type) || "int".equals(type) || "Long".equals(type) || "long".equals(type)
-				|| "Double".equals(type) || "double".equals(type) || "Float".equals(type) || "float".equals(type)
-				|| "BigDecimal".equals(type) || "boolean".equals(type) || "Boolean".equals(type) || "Short".equals(type)
-				|| "BigInteger".equals(type)) {
-			return value;
-		} else {
-			StringBuilder builder = new StringBuilder();
-			builder.append("\"").append(value).append("\"");
-			return builder.toString();
-		}
+		return RandomUtil.randomValueByType(type);
 	}
 }
