@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -488,8 +487,18 @@ public class EventBus {
 		 * @author lifeng
 		 * @date 2019-11-22 10:45:36
 		 */
-		default <T> void post(T event) {
-		}
+		<T> void post(T event);
+
+		/**
+		 * 发送消息
+		 * 
+		 * @Title: post
+		 * @Description: TODO(描述)
+		 * @param event
+		 * @author lifeng
+		 * @date 2019-11-22 10:45:36
+		 */
+		<T> void post(String queue, T event);
 
 		/**
 		 * 发送消息
@@ -500,9 +509,18 @@ public class EventBus {
 		 * @author lifeng
 		 * @date 2019-11-22 10:45:36
 		 */
-		default <T> CompletionStage<Void> submit(T event) {
-			return null;
-		}
+		<T> CompletableFuture<Void> submit(T event);
+
+		/**
+		 * 发送消息
+		 * 
+		 * @Title: submit
+		 * @Description: TODO(描述)
+		 * @param event
+		 * @author lifeng
+		 * @date 2019-11-22 10:45:36
+		 */
+		<T> CompletableFuture<Void> submit(String queue, T event);
 	}
 
 	/**
