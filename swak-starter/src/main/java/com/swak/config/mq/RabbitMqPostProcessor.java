@@ -10,9 +10,9 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.ApplicationContext;
 
+import com.swak.booter.AppBooter;
 import com.swak.rabbit.EventBus;
 import com.swak.rabbit.annotation.Publisher;
 import com.swak.rabbit.annotation.Subscribe;
@@ -25,7 +25,7 @@ import com.swak.utils.Sets;
  * 
  * @author lifeng
  */
-public class RabbitMqPostProcessor implements BeanPostProcessor, ApplicationListener<ContextRefreshedEvent> {
+public class RabbitMqPostProcessor extends AppBooter implements BeanPostProcessor {
 
 	private final Set<Object> subscribeBeans = Sets.newHashSet();
 	private final Map<ReferenceBean, Object> publisherBeans = Maps.newHashMap();
@@ -95,10 +95,9 @@ public class RabbitMqPostProcessor implements BeanPostProcessor, ApplicationList
 	}
 
 	/**
-	 * 服务启动后设置引用
+	 * 系统启动之后再执行 EventBus
 	 */
-	@Override
-	public synchronized void onApplicationEvent(ContextRefreshedEvent arg0) {
+	protected synchronized void onApplicationEvent(ApplicationContext context) {
 		if (eventBus != null) {
 			eventBus.init(t -> {
 				subscribeBeans.stream().forEach(bean -> {

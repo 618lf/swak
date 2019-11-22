@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -73,20 +74,14 @@ public class EventBus {
 	}
 
 	/**
-	 * 延迟10s 注册成为消费者
+	 * 注册成为消费者
 	 * 
 	 * @param register
 	 * @return
 	 */
 	private Consumer<Boolean> delayConsumer(Consumer<Boolean> register) {
 		return (t) -> {
-			new Thread(() -> {
-				try {
-					Thread.sleep(10 * 1000);
-				} catch (Exception e) {
-				}
-				register.accept(t);
-			}).start();
+			register.accept(t);
 		};
 	}
 
@@ -206,7 +201,20 @@ public class EventBus {
 		}
 		return identifiers;
 	}
-	
+
+	/**
+	 * 注册成为消费者
+	 * 
+	 * @Title: register
+	 * @Description: TODO(描述)
+	 * @param handler
+	 * @author lifeng
+	 * @date 2019-11-22 10:29:47
+	 */
+	public void register(String queue, int prefetch, MessageHandler handler) {
+		templateForConsumer.basicConsume(queue, prefetch, handler);
+	}
+
 	// 异步发送，提交到任务队列中
 	/**
 	 * 提交任务
@@ -458,6 +466,42 @@ public class EventBus {
 					templateForConsumer == null ? templateForSender : templateForConsumer, strategy, executor, apply);
 			me = eventBus;
 			return eventBus;
+		}
+	}
+
+	/**
+	 * 定义通用的消息发送接口
+	 * 
+	 * @ClassName: MessagePublisher
+	 * @Description:TODO(描述这个类的作用)
+	 * @author: lifeng
+	 * @date: Nov 22, 2019 10:44:33 AM
+	 */
+	public static interface MessagePublisher {
+
+		/**
+		 * 发送消息
+		 * 
+		 * @Title: post
+		 * @Description: TODO(描述)
+		 * @param event
+		 * @author lifeng
+		 * @date 2019-11-22 10:45:36
+		 */
+		default <T> void post(T event) {
+		}
+
+		/**
+		 * 发送消息
+		 * 
+		 * @Title: submit
+		 * @Description: TODO(描述)
+		 * @param event
+		 * @author lifeng
+		 * @date 2019-11-22 10:45:36
+		 */
+		default <T> CompletionStage<Void> submit(T event) {
+			return null;
 		}
 	}
 

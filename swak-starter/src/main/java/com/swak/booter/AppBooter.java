@@ -37,7 +37,7 @@ public class AppBooter implements ApplicationListener<ApplicationContextEvent> {
 	 * 
 	 * @param context
 	 */
-	private void onApplicationEvent(ApplicationContext context) {
+	protected void onApplicationEvent(ApplicationContext context) {
 		String[] boots = context.getBeanNamesForType(Boot.class);
 		if (boots != null && boots.length > 0) {
 			APP_LOGGER.debug("======== system startup loading ========");
