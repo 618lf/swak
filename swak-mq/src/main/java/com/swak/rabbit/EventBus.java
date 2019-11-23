@@ -67,7 +67,7 @@ public class EventBus {
 	 */
 	public synchronized void init(Consumer<Boolean> register) {
 		if (!inited) {
-			Optional.of(templateForConsumer).map(t -> this.appay(t)).map(apply).ifPresent(this.delayConsumer(register));
+			Optional.of(templateForConsumer).map(t -> this.apply(t)).map(apply).ifPresent(this.delayConsumer(register));
 		}
 		inited = true;
 	}
@@ -90,7 +90,7 @@ public class EventBus {
 	 * @param template
 	 * @return
 	 */
-	private RabbitMQTemplate appay(RabbitMQTemplate sender) {
+	private RabbitMQTemplate apply(RabbitMQTemplate sender) {
 		Map<String, Object> failAgruments = Maps.newHashMap();
 		failAgruments.put("x-dead-letter-exchange", Constants.fail_channel);
 		failAgruments.put("x-dead-letter-routing-key", Constants.fail_channel);
@@ -202,16 +202,29 @@ public class EventBus {
 	}
 
 	/**
-	 * 注册成为消费者
+	 * 应用消费者
 	 * 
-	 * @Title: register
+	 * @Title: applyConsumer
 	 * @Description: TODO(描述)
-	 * @param handler
+	 * @param apply
 	 * @author lifeng
-	 * @date 2019-11-22 10:29:47
+	 * @date 2019-11-23 12:49:19
 	 */
-	public void register(String queue, int prefetch, MessageHandler handler) {
-		templateForConsumer.basicConsume(queue, prefetch, handler);
+	public void applyConsumer(Consumer<RabbitMQTemplate> apply) {
+		apply.accept(this.templateForConsumer);
+	}
+
+	/**
+	 * 应用发送者
+	 * 
+	 * @Title: applySender
+	 * @Description: TODO(描述)
+	 * @param apply
+	 * @author lifeng
+	 * @date 2019-11-23 12:49:29
+	 */
+	public void applySender(Consumer<RabbitMQTemplate> apply) {
+		apply.accept(this.templateForSender);
 	}
 
 	// 异步发送，提交到任务队列中
