@@ -112,8 +112,7 @@ public class MethodHandler {
 			RequiresRoles roles = (RequiresRoles) this.getAnnotation(RequiresRoles.class);
 			if (roles == null || roles.value().length == 0) {
 				this.requiresRoles = Permission.NONE;
-			}
-			if (roles.value().length == 1) {
+			} else if (roles.value().length == 1) {
 				this.requiresRoles = new SinglePermission(roles.value()[0]);
 			} else if (roles.logical() == Logical.AND) {
 				this.requiresRoles = new AndPermission(roles.value());
@@ -123,7 +122,7 @@ public class MethodHandler {
 		}
 		return this.requiresRoles;
 	}
-	
+
 	/**
 	 * 权限
 	 */
@@ -132,8 +131,7 @@ public class MethodHandler {
 			RequiresPermissions roles = (RequiresPermissions) this.getAnnotation(RequiresPermissions.class);
 			if (roles == null || roles.value().length == 0) {
 				this.requiresPermissions = Permission.NONE;
-			}
-			if (roles.value().length == 1) {
+			} else if (roles.value().length == 1) {
 				this.requiresPermissions = new SinglePermission(roles.value()[0]);
 			} else if (roles.logical() == Logical.AND) {
 				this.requiresPermissions = new AndPermission(roles.value());

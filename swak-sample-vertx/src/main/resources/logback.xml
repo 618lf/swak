@@ -43,6 +43,7 @@
 	<!-- 常用的应用程序的日志 -->
 	<logger name="com.swak.Application" level="DEBUG"/>
 	<logger name="com.swak.metrics" level="ERROR"/>
+	<logger name="com.swak.rabbit.TemplateConsumer" level="INFO"/>
 	<logger name="com.swak.vertx.handler.RouterHandler" level="ERROR"/>
 	<logger name="io.netty.util.ResourceLeakDetector" level="ERROR"/>
 	<logger name="io.netty.channel.MultithreadEventLoopGroup" level="ERROR"/>

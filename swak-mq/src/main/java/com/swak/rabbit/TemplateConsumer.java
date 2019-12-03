@@ -1,6 +1,8 @@
 package com.swak.rabbit;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 
@@ -71,8 +73,31 @@ class TemplateConsumer implements Consumer {
 	// 创建消息
 	private Message buildMessage(Envelope envelope, BasicProperties properties, byte[] body) {
 		Message message = Message.of().setProperties(properties).setPayload(body);
-		if (Constants.retry_channel.equals(envelope.getExchange())) {
-			return message.retryMessage();
+		if (envelope.getExchange().startsWith(Constants.retry_channel)) {
+			message.retryMessage();
+		}
+		return this.debugMessage(message);
+	}
+
+	// 调试信息
+	@SuppressWarnings("unchecked")
+	private Message debugMessage(Message message) {
+		if (logger.isDebugEnabled() || logger.isInfoEnabled()) {
+			Object retryQueue = null;
+			int retryCount = 0;
+			if (message.getProperties().getHeaders() != null) {
+				List<Map<String, Object>> deaths = (List<Map<String, Object>>) message.getProperties().getHeaders()
+						.get("x-death");
+				if (deaths != null && deaths.size() > 0) {
+					retryQueue = deaths.get(0).get("queue");
+					for (Map<String, Object> death : deaths) {
+						if (String.valueOf(death.get("reason")).equals("expired")) {
+							retryCount++;
+						}
+					}
+				}
+			}
+			message.setRetry(String.valueOf(retryQueue)).setRetrys(retryCount);
 		}
 		return message;
 	}
@@ -132,12 +157,7 @@ class TemplateConsumer implements Consumer {
 		try {
 			if (this.channel.isOpen()) {
 				try {
-					if (Constants.retry_channel.equals(envelope.getExchange())) {
-						this.handleRetry(envelope, message);
-						this.channel.basicAck(envelope.getDeliveryTag(), false);
-					} else {
-						this.channel.basicNack(envelope.getDeliveryTag(), false, false);
-					}
+					this.channel.basicNack(envelope.getDeliveryTag(), false, false);
 				} catch (Exception e) {
 					this.channel.basicNack(envelope.getDeliveryTag(), false, false);
 				}
@@ -157,66 +177,6 @@ class TemplateConsumer implements Consumer {
 			}
 		} catch (Exception e) {
 			logger.error("Consumer Ack error:", e);
-		}
-	}
-
-	// 发送重试消息
-	private void handleRetry(Envelope envelope, Message message) throws IOException {
-		int retryCount = message.getRetrys();
-		BasicProperties newProperties = message.retryProperties();
-		if (retryCount == 0) {
-			this.channel.basicPublish(Constants.retry1s_channel, Constants.retry1s_channel, true, false, newProperties,
-					message.getPayload());
-		} else if (retryCount == 1) {
-			this.channel.basicPublish(Constants.retry5s_channel, Constants.retry5s_channel, true, false, newProperties,
-					message.getPayload());
-		} else if (retryCount == 2) {
-			this.channel.basicPublish(Constants.retry10s_channel, Constants.retry10s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 3) {
-			this.channel.basicPublish(Constants.retry30s_channel, Constants.retry30s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 4) {
-			this.channel.basicPublish(Constants.retry60s_channel, Constants.retry60s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 5) {
-			this.channel.basicPublish(Constants.retry120s_channel, Constants.retry120s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 6) {
-			this.channel.basicPublish(Constants.retry180s_channel, Constants.retry180s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 7) {
-			this.channel.basicPublish(Constants.retry240s_channel, Constants.retry240s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 8) {
-			this.channel.basicPublish(Constants.retry300s_channel, Constants.retry300s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 9) {
-			this.channel.basicPublish(Constants.retry360s_channel, Constants.retry360s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 10) {
-			this.channel.basicPublish(Constants.retry420s_channel, Constants.retry420s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 11) {
-			this.channel.basicPublish(Constants.retry480s_channel, Constants.retry480s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 12) {
-			this.channel.basicPublish(Constants.retry600s_channel, Constants.retry600s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 13) {
-			this.channel.basicPublish(Constants.retry1200s_channel, Constants.retry1200s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 14) {
-			this.channel.basicPublish(Constants.retry1800s_channel, Constants.retry1800s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 15) {
-			this.channel.basicPublish(Constants.retry3600s_channel, Constants.retry3600s_channel, true, false,
-					newProperties, message.getPayload());
-		} else if (retryCount == 16) {
-			this.channel.basicPublish(Constants.retry7200s_channel, Constants.retry7200s_channel, true, false,
-					newProperties, message.getPayload());
-		} else {
-			throw new AmqpException("超过重试次数");
 		}
 	}
 

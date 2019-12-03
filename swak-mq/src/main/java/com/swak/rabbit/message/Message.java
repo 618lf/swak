@@ -1,13 +1,11 @@
 package com.swak.rabbit.message;
 
-import java.util.Map;
 import java.util.UUID;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.swak.Constants;
 import com.swak.rabbit.AmqpException;
 import com.swak.serializer.SerializationUtils;
-import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 
 import io.netty.util.internal.StringUtil;
@@ -33,9 +31,9 @@ public class Message {
 	private String origin;
 	private String retry;
 	private Integer retrys;
-	
+
 	// 发送参数 queue 才有用
-	private String exchange; 
+	private String exchange;
 	private String routingKey;
 
 	public String getId() {
@@ -134,7 +132,7 @@ public class Message {
 	public <T> T payload2Object() {
 		return (T) SerializationUtils.deserialize(payload);
 	}
-	
+
 	public String getExchange() {
 		return exchange;
 	}
@@ -159,44 +157,21 @@ public class Message {
 	 * @return
 	 */
 	public Message retryMessage() {
-		Object deadQueue = null, retryQueue = null, retryCount = null;
+		Object deadQueue = null;
 		if (properties.getHeaders() != null) {
-			deadQueue = properties.getHeaders().containsKey(com.swak.rabbit.Constants.x_death_queue)
-					? properties.getHeaders().get(com.swak.rabbit.Constants.x_death_queue)
-					: properties.getHeaders().get("x-first-death-queue");
-			retryQueue = properties.getHeaders().get("x-first-death-queue");
-			retryCount = properties.getHeaders().get(com.swak.rabbit.Constants.x_retry);
+			deadQueue = properties.getHeaders().get("x-first-death-queue");
 		}
 		String $deadQueue = null;
 		if (deadQueue != null && StringUtils.isNotBlank($deadQueue = String.valueOf(deadQueue))
 				&& !StringUtils.startsWith($deadQueue, com.swak.rabbit.Constants.retry_channel)) {
-			return this.setOrigin($deadQueue).setRetry(String.valueOf(retryQueue))
-					.setRetrys(retryCount == null ? 0 : (Integer) retryCount);
+			return this.setOrigin($deadQueue);
 		}
 		return this;
 	}
 
 	/**
-	 * 重试的请求参数
+	 * 使用 build 之后消息才是完整的消息 如果没于设置id，则使用uuid来设置
 	 * 
-	 * @return
-	 */
-	public BasicProperties retryProperties() {
-		String retryQueue = this.getOrigin();
-		if (retryQueue != null) {
-			Map<String, Object> headers = Maps.newHashMap();
-			headers.put(com.swak.rabbit.Constants.x_death_queue, retryQueue);
-			headers.put(com.swak.rabbit.Constants.x_retry, this.retrys + 1);
-			return new BasicProperties(null, Constants.DEFAULT_ENCODING.name(), headers,
-					this.properties.getDeliveryMode(), this.properties.getPriority(), null, null, null,
-					this.properties.getMessageId(), null, null, null, null, null);
-		}
-		throw new AmqpException("不能直接将消息发送到重试队列中");
-	}
-
-	/**
-	 * 使用 build 之后消息才是完整的消息
-	 * 如果没于设置id，则使用uuid来设置
 	 * @return
 	 */
 	public Message build() {
