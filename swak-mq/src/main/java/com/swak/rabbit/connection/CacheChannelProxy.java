@@ -102,10 +102,12 @@ public class CacheChannelProxy extends ChannelProxy implements ConfirmListener, 
 	// 处理连接断开
 	@Override
 	public void shutdownCompleted(ShutdownSignalException cause) {
-		logger.error("Channel shutdown", cause);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Channel shutdown", cause);
+		}
 		generateNacksForPendingAcks(cause.getMessage());
 	}
-	
+
 	// 主动关闭或者通道断开时处理未应答的消息
 	private synchronized void generateNacksForPendingAcks(String cause) {
 		for (Entry<Long, PendingConfirm> confirmEntry : confirms.entrySet()) {

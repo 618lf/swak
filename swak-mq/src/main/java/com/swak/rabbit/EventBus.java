@@ -67,26 +67,20 @@ public class EventBus {
 	 */
 	public synchronized void init(Consumer<Boolean> register) {
 		if (!inited) {
-			Optional.of(templateForConsumer).map(t -> this.appay(t)).map(apply).ifPresent(this.delayConsumer(register));
+			Optional.of(templateForConsumer).map(t -> this.apply(t)).map(apply).ifPresent(this.delayConsumer(register));
 		}
 		inited = true;
 	}
 
 	/**
-	 * 延迟10s 注册成为消费者
+	 * 注册成为消费者
 	 * 
 	 * @param register
 	 * @return
 	 */
 	private Consumer<Boolean> delayConsumer(Consumer<Boolean> register) {
 		return (t) -> {
-			new Thread(() -> {
-				try {
-					Thread.sleep(10 * 1000);
-				} catch (Exception e) {
-				}
-				register.accept(t);
-			}).start();
+			register.accept(t);
 		};
 	}
 
@@ -96,7 +90,7 @@ public class EventBus {
 	 * @param template
 	 * @return
 	 */
-	private RabbitMQTemplate appay(RabbitMQTemplate sender) {
+	private RabbitMQTemplate apply(RabbitMQTemplate sender) {
 		Map<String, Object> failAgruments = Maps.newHashMap();
 		failAgruments.put("x-dead-letter-exchange", Constants.fail_channel);
 		failAgruments.put("x-dead-letter-routing-key", Constants.fail_channel);
@@ -206,7 +200,33 @@ public class EventBus {
 		}
 		return identifiers;
 	}
-	
+
+	/**
+	 * 应用消费者
+	 * 
+	 * @Title: applyConsumer
+	 * @Description: TODO(描述)
+	 * @param apply
+	 * @author lifeng
+	 * @date 2019-11-23 12:49:19
+	 */
+	public void applyConsumer(Consumer<RabbitMQTemplate> apply) {
+		apply.accept(this.templateForConsumer);
+	}
+
+	/**
+	 * 应用发送者
+	 * 
+	 * @Title: applySender
+	 * @Description: TODO(描述)
+	 * @param apply
+	 * @author lifeng
+	 * @date 2019-11-23 12:49:29
+	 */
+	public void applySender(Consumer<RabbitMQTemplate> apply) {
+		apply.accept(this.templateForSender);
+	}
+
 	// 异步发送，提交到任务队列中
 	/**
 	 * 提交任务
@@ -462,6 +482,61 @@ public class EventBus {
 	}
 
 	/**
+	 * 定义通用的消息发送接口
+	 * 
+	 * @ClassName: MessagePublisher
+	 * @Description:TODO(描述这个类的作用)
+	 * @author: lifeng
+	 * @date: Nov 22, 2019 10:44:33 AM
+	 */
+	public static interface MessagePublisher {
+
+		/**
+		 * 发送消息
+		 * 
+		 * @Title: post
+		 * @Description: TODO(描述)
+		 * @param event
+		 * @author lifeng
+		 * @date 2019-11-22 10:45:36
+		 */
+		<T> void post(T event);
+
+		/**
+		 * 发送消息
+		 * 
+		 * @Title: post
+		 * @Description: TODO(描述)
+		 * @param event
+		 * @author lifeng
+		 * @date 2019-11-22 10:45:36
+		 */
+		<T> void post(String queue, T event);
+
+		/**
+		 * 发送消息
+		 * 
+		 * @Title: submit
+		 * @Description: TODO(描述)
+		 * @param event
+		 * @author lifeng
+		 * @date 2019-11-22 10:45:36
+		 */
+		<T> CompletableFuture<Void> submit(T event);
+
+		/**
+		 * 发送消息
+		 * 
+		 * @Title: submit
+		 * @Description: TODO(描述)
+		 * @param event
+		 * @author lifeng
+		 * @date 2019-11-22 10:45:36
+		 */
+		<T> CompletableFuture<Void> submit(String queue, T event);
+	}
+
+	/**
 	 * 订阅服务
 	 * 
 	 * @author lifeng
@@ -498,7 +573,7 @@ public class EventBus {
 				// 执行处理器
 				return wrapper.invokeMethod(listener, method.getName(), types, args);
 			} catch (Exception e) {
-				LOGGER.error("Handler{} - Method{} Invoke Error：", listener.getClass(), method.getName(), e.getCause());
+				LOGGER.error("Handler[{}] - Method [{}] Invoke Error：", listener.getClass().getName(), method.getName(), e.getCause());
 				throw new AmqpException("处理消费事件错误");
 			}
 		}

@@ -50,7 +50,7 @@ public class InvokerHandler implements InvocationHandler {
 		Object message = null;
 		if (args.length == 1) {
 			Assert.notNull(args[0], "args[0] can not null, args[0] is message[String, Object, Message].");
-			message = String.valueOf(args[0]);
+			message = args[0];
 		} else if (args.length == 2) {
 			Assert.notNull(args[0], "args[0] can not null, args[0] is queue[String].");
 			Assert.notNull(args[1], "args[1] can not null, args[1] is message[String, Object, Message].");
