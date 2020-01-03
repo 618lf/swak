@@ -41,11 +41,11 @@ public interface Constants {
 	String RABBITMQ_PREFIX = "spring.rabbitmq";
 	String ROCKETMQ_PREFIX = "spring.rocketmq";
 	String MONGO_PREFIX = "spring.mongo";
-	
+
 	/** 保留ID **/
 	long ROOT = 0L;
 	long INVALID_ID = -1;
-	
+
 	/** 是/否/删除 - TINYINT **/
 	byte YES = 1;
 	byte NO = 0;
@@ -54,12 +54,12 @@ public interface Constants {
 	/** 默认编码 **/
 	Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
 
-	/** 缓存 (不建议使用)**/
+	/** 缓存 (不建议使用) **/
 	@Deprecated
 	int cookie_cache_times = 60 * 60 * 24;
 	@Deprecated
 	String token_cache_name = "TOKENS";
-	
+
 	/** cookie **/
 	String DELETED_COOKIE_VALUE = "deleteMe";
 
@@ -87,7 +87,7 @@ public interface Constants {
 	String EmailErrorMsg = "邮箱校验失败";
 	String PhoneNumErrorMsg = "手机号校验失败";
 	String RegexErrorMsg = "正则校验失败";
-	
+
 	/** validate regex **/
 	String DATE_REGEX = "^[0-9]{4}\\-[0-9]{1,2}\\-[0-9]{1,2}$";
 	String DIGIT_REGEX = "^\\d+(\\.\\d+)?$";
@@ -99,10 +99,8 @@ public interface Constants {
 	String security_OR_DIVIDER_TOKEN = "|";
 	String security_AND_DIVIDER_TOKEN = ",";
 	String security_WILDCARD_TOKEN = "*";
-    String security_PART_DIVIDER_TOKEN = ":";
-    
+	String security_PART_DIVIDER_TOKEN = ":";
+
 	/** 目录 **/
-	default String temp() {
-		return System.getProperty("java.io.tmpdir");
-	}
+	String tempDir = System.getProperty("java.io.tmpdir");
 }

@@ -38,6 +38,7 @@
 		<module>swak-mongodb</module>
 		<module>swak-dubbo</module>
 		<module>swak-api</module>
+		<module>swak-rxtx</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.2.0.RELEASE</spring-boot.version>
