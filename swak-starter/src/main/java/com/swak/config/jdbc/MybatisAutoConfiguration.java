@@ -29,7 +29,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.swak.Constants;
-import com.swak.config.MybatisProperties;
 import com.swak.config.jdbc.database.ConfigurationCustomizer;
 import com.swak.config.jdbc.database.DataSourceProperties;
 import com.swak.config.jdbc.database.Database;

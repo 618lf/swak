@@ -1,10 +1,11 @@
-package com.swak.config;
+package com.swak.config.jdbc;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ExecutorType;
@@ -14,7 +15,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
+import com.swak.Application;
 import com.swak.Constants;
+import com.swak.utils.Sets;
 import com.swak.utils.StringUtils;
 
 /**
@@ -67,6 +70,11 @@ public class MybatisProperties {
 	 */
 	@NestedConfigurationProperty
 	private Configuration configuration;
+
+	/**
+	 * 解析之后的路徑
+	 */
+	private Set<String> _mapperLocations;
 
 	/**
 	 * @since 1.1.0
@@ -161,42 +169,58 @@ public class MybatisProperties {
 	 */
 	public Resource[] resolveMapperLocations() {
 		ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+
+		// 所有的资源目录
 		List<Resource> resources = new ArrayList<Resource>();
 
-		// 自定义的配置
-		if (this.mapperLocations != null) {
-			for (String mapperLocation : this.mapperLocations) {
-				try {
-					Resource[] mappers = resourceResolver.getResources(mapperLocation);
-					resources.addAll(Arrays.asList(mappers));
-				} catch (IOException e) {
-					// ignore
-				}
+		// 合并配置
+		Set<String> mapperLocations = this.mergeMapperLocations();
+		for (String mapperLocation : mapperLocations) {
+			try {
+				Resource[] mappers = resourceResolver.getResources(mapperLocation);
+				resources.addAll(Arrays.asList(mappers));
+			} catch (IOException e) {
+				// ignore
 			}
-		}
-
-		// 默认的配置
-		if (Constants.BOOT_CLASSES.size() != 0) {
-			String mapperLocations = StringUtils.format("classpath*:%s/**/dao/*.Mapper.xml", StringUtils
-					.substringBeforeLast(Constants.BOOT_CLASSES.get(0).getName(), ".").replaceAll("\\.", "/"));
-			this.mapperLocations = new String[] { mapperLocations };
-			for (String mapperLocation : this.mapperLocations) {
-				try {
-					Resource[] mappers = resourceResolver.getResources(mapperLocation);
-					resources.addAll(Arrays.asList(mappers));
-				} catch (IOException e) {
-					// ignore
-				}
-			}
-		}
-
-		// 默认添加一层配置
-		try {
-			resources.addAll(Arrays
-					.asList(resourceResolver.getResources("classpath*:com/swak/persistence/config/*.Mapper.xml")));
-		} catch (IOException e) {
-			// ignore
 		}
 		return resources.toArray(new Resource[resources.size()]);
+	}
+
+	// 合并默认配置和自定义配置
+	private Set<String> mergeMapperLocations() {
+		if (_mapperLocations == null) {
+			
+			// 解析自动扫描的类
+			Set<String> mapperLocations = this.parseAutoMapperLocations();
+
+			// 自定义的配置
+			if (this.mapperLocations != null) {
+				for (String mapperLocation : this.mapperLocations) {
+					mapperLocations.add(mapperLocation);
+				}
+			}
+
+			// 基础配置
+			mapperLocations.add("classpath*:com/swak/persistence/config/*.Mapper.xml");
+
+			// 返回需要扫描的地址
+			_mapperLocations = mapperLocations;
+		}
+		return _mapperLocations;
+	}
+
+	// 解析出需要扫码的目录
+	private Set<String> parseAutoMapperLocations() {
+		Set<String> mappings = Sets.newHashSet();
+		Set<String> sources = Application.getScanPackages();
+		if (sources != null && !sources.isEmpty()) {
+			for (String source : sources) {
+				if (StringUtils.isBlank(source)) {
+					continue;
+				}
+				mappings.add(StringUtils.format("classpath*:%s/**/dao/*.Mapper.xml", source.replaceAll("\\.", "/")));
+			}
+		}
+		return mappings;
 	}
 }

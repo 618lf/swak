@@ -1,6 +1,6 @@
 package com.swak;
 
-import java.util.Collection;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,10 +10,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ClassUtils;
 
 import com.swak.reactivex.context.ReactiveServerApplicationContext;
 import com.swak.reactivex.context.Server;
+import com.swak.utils.Sets;
 
 /**
  * @ComponentScan("com.swak")
@@ -37,7 +40,8 @@ public class Application extends SpringApplication {
 	/**
 	 * 全局的 context
 	 */
-	private static ConfigurableApplicationContext applicationContext;
+	private static Application ME;
+	private static ConfigurableApplicationContext _CONTEXT;
 
 	/**
 	 * 初始化
@@ -45,13 +49,11 @@ public class Application extends SpringApplication {
 	public Application(Class<?>... primarySources) {
 		super(primarySources);
 
-		// 设置启动的类
-		if (primarySources != null && primarySources.length >0) {
-			Constants.BOOT_CLASSES.add(primarySources[0]);
-		}
-
 		// 重新识别配置
 		this.setWebApplicationType(this.deduceWebApplicationType());
+
+		// 指向唯一
+		ME = this;
 	}
 
 	/**
@@ -80,17 +82,6 @@ public class Application extends SpringApplication {
 	}
 
 	/**
-	 * 设置启动的类
-	 */
-	@Override
-	public void addPrimarySources(Collection<Class<?>> additionalPrimarySources) {
-		super.addPrimarySources(additionalPrimarySources);
-		if (additionalPrimarySources != null && additionalPrimarySources.size() > 0) {
-			Constants.BOOT_CLASSES.add(additionalPrimarySources.iterator().next());
-		}
-	}
-
-	/**
 	 * 启动服务
 	 * 
 	 * @param primarySource
@@ -109,7 +100,7 @@ public class Application extends SpringApplication {
 			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s");
 		}
 		// 存储此context
-		applicationContext = context;
+		_CONTEXT = context;
 		return context;
 	}
 
@@ -119,10 +110,10 @@ public class Application extends SpringApplication {
 	 * @return
 	 */
 	public static String getAddresses() {
-		if (applicationContext != null && applicationContext instanceof ReactiveServerApplicationContext) {
+		if (_CONTEXT != null && _CONTEXT instanceof ReactiveServerApplicationContext) {
 
 			// 获取服务
-			Server server = ((ReactiveServerApplicationContext) applicationContext).getServer();
+			Server server = ((ReactiveServerApplicationContext) _CONTEXT).getServer();
 
 			// 服务地址
 			return server.getAddresses();
@@ -136,10 +127,63 @@ public class Application extends SpringApplication {
 	 * 停止服务
 	 */
 	public static void stop() {
-		if (applicationContext != null) {
-			exit(applicationContext, new ExitCodeGenerator[] {});
-			applicationContext = null;
-			Constants.BOOT_CLASSES.clear();
+		if (_CONTEXT != null) {
+			exit(_CONTEXT, new ExitCodeGenerator[] {});
+			_CONTEXT = null;
+			ME = null;
 		}
+	}
+
+	/**
+	 * 当前应用
+	 * 
+	 * @return
+	 */
+	public static Application me() {
+		return ME;
+	}
+
+	/**
+	 * 返回扫描的包
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
+	public static Set<String> getScanPackages() {
+		Set<String> packages = Sets.newHashSet();
+		Set<Object> sources = Application.me().getAllSources();
+		if (sources != null && !sources.isEmpty()) {
+			for (Object source : sources) {
+				if (source instanceof Class<?>) {
+
+					// 默认扫描的包
+					Class<?> sourceClass = ((Class<?>) source);
+					Set<ComponentScan> scans = AnnotationUtils.getRepeatableAnnotations(sourceClass,
+							ComponentScan.class);
+					for (ComponentScan scan : scans) {
+						packages.addAll(parseComponentScan(sourceClass, scan));
+					}
+
+					// 扫描系统包
+
+				}
+			}
+		}
+		return packages;
+	}
+
+	/**
+	 * 简单的处理扫描的包
+	 * 
+	 * @param sourceClass
+	 * @param scan
+	 * @return
+	 */
+	static Set<String> parseComponentScan(Class<?> sourceClass, ComponentScan scan) {
+		String[] packages = scan.basePackages();
+		if (packages == null || packages.length == 0) {
+			return Sets.newHashSet(sourceClass.getPackage().getName());
+		}
+		return Sets.newHashSet(packages);
 	}
 }
