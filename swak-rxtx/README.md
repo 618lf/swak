@@ -105,3 +105,8 @@ Also make sure jarvi and taj have read and write permissions on the port.
 
 很遗憾一直提示这个错误，后面换一个库试一下：（http://fizzed.com/oss/rxtx-for-java）
 please see: How can I use Lock Files with rxtx? in INSTALL
+
+# 直接将权限放开即可
+chmod 777 /var/lock
+
+# 需要先插入设备后才能调式

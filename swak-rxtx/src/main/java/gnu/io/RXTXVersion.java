@@ -74,11 +74,10 @@ public class RXTXVersion {
 			      See INSTALL for details.
 	------------------------------------------------------------------------------*/
 	private static String Version;
-	private static Boolean loaded = Boolean.FALSE;
 
 	static {
 		RXTXVersion.loadLibrary("rxtxSerial");
-		Version = "RXTX-2.2 (CVS snapshot 2011.02.03, modified by CMU CREATE Lab, http://code.google.com/p/create-lab-commons/)";
+		Version = "RXTX-2.2pre2";
 	}
 
 	/**
@@ -102,9 +101,6 @@ public class RXTXVersion {
 	 * @date 2020-01-03 11:23:45
 	 */
 	static synchronized void loadLibrary(String baseName) {
-		if (!loaded) {
-			loaded = Boolean.TRUE;
-			Native.loadLibrary(baseName);
-		}
+		Native.loadLibrary(baseName);
 	}
 }
