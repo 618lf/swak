@@ -3,6 +3,7 @@ package com.swak.config.jdbc.database;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.swak.Constants;
+import com.swak.persistence.Database;
 import com.swak.utils.StringUtils;
 
 /**

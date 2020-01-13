@@ -2,9 +2,6 @@ package com.swak;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-
-import com.swak.utils.Lists;
 
 /**
  * 系统常量
@@ -12,9 +9,6 @@ import com.swak.utils.Lists;
  * @author lifeng
  */
 public interface Constants {
-
-	/** 启动的类 */
-	List<Class<?>> BOOT_CLASSES = Lists.newArrayList(1);
 
 	/** Http Path 配置项目 */
 	String URL_PATH_SEPARATE = "/";
