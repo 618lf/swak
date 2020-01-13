@@ -39,6 +39,7 @@
 		<module>swak-mongodb</module>
 		<module>swak-dubbo</module>
 		<module>swak-api</module>
+		<module>swak-jdbc-async</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.2.2.RELEASE</spring-boot.version>
@@ -89,6 +90,7 @@
 		<h2-jdbc.version>1.4.197</h2-jdbc.version>
 		<sqlite-jdbc.version>3.25.2</sqlite-jdbc.version>
 		<mongodb.version>3.11.0</mongodb.version>
+		<jasync.version>1.0.13</jasync.version>
 
 		<!-- other setting -->
 		<jdk.version>1.8</jdk.version>
