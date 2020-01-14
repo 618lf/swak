@@ -25,7 +25,8 @@ import com.swak.Constants;
 @ConfigurationProperties(prefix = Constants.QUARTZ_PREFIX)
 public class ScheduleProperties {
 
-	private Integer coreThreads = 1;
+	private Integer coreThreads = 1; // 核心线程数
+	private Integer periodSeconds = 10; // 默认10s执行一次
 
 	public Integer getCoreThreads() {
 		return coreThreads;
@@ -33,5 +34,13 @@ public class ScheduleProperties {
 
 	public void setCoreThreads(Integer coreThreads) {
 		this.coreThreads = coreThreads;
+	}
+
+	public Integer getPeriodSeconds() {
+		return periodSeconds;
+	}
+
+	public void setPeriodSeconds(Integer periodSeconds) {
+		this.periodSeconds = periodSeconds;
 	}
 }
