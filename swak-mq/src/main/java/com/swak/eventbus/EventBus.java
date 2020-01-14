@@ -64,8 +64,8 @@ public class EventBus {
 	 * 
 	 * @param event
 	 */
-	public void post(Event event) {
-		eventBus.post(event.build());
+	public void post(Object event) {
+		eventBus.post(event);
 	}
 
 	/**

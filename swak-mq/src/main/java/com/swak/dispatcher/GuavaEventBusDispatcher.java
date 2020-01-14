@@ -3,7 +3,6 @@ package com.swak.dispatcher;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import com.swak.eventbus.Event;
 import com.swak.eventbus.EventBus;
 import com.swak.schedule.ClusterTaskDispatcher;
 import com.swak.schedule.Task;
@@ -22,7 +21,7 @@ public class GuavaEventBusDispatcher extends ClusterTaskDispatcher {
 
 	@Override
 	protected CompletionStage<Void> doDispatch(TaskEvent event) {
-		EventBus.me().post(new Event().setMessage(event));
+		EventBus.me().post(event);
 		return CompletableFuture.completedFuture(null);
 	}
 }
