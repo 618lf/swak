@@ -1,4 +1,4 @@
-package com.swak.config.jdbc.database;
+package com.swak.persistence;
 
 /**
  * 主持的 - 数据库类型

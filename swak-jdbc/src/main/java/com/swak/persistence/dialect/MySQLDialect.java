@@ -1,5 +1,9 @@
 package com.swak.persistence.dialect;
 
+import java.util.Map;
+
+import com.swak.utils.Maps;
+
 public class MySQLDialect implements Dialect {
 
 	protected static final String SQL_END_DELIMITER = ";";
@@ -31,5 +35,15 @@ public class MySQLDialect implements Dialect {
 			sql = sql.substring(0, sql.length() - 1 - SQL_END_DELIMITER.length());
 		}
 		return sql;
+	}
+	
+	/**
+	 * 变量
+	 */
+	@Override
+	public Map<String, String> variables() {
+		Map<String, String> variables = Maps.newHashMap();
+		variables.put("X_LEN", "LENGHT");
+		return variables;
 	}
 }

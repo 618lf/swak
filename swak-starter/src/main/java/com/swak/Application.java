@@ -48,6 +48,7 @@ public class Application extends SpringApplication {
 	 * 初始化
 	 */
 	public Application(Class<?>... primarySources) {
+		// 默认的扫描
 		super(primarySources);
 
 		// 重新识别配置
@@ -91,18 +92,15 @@ public class Application extends SpringApplication {
 	 */
 	public static ConfigurableApplicationContext run(Class<?> primarySource, String... args) {
 		long start = System.currentTimeMillis();
-		ConfigurableApplicationContext context = (ConfigurableApplicationContext) new Application(primarySource)
-				.run(args);
+		_CONTEXT = (ConfigurableApplicationContext) new Application(primarySource).run(args);
 		long end = System.currentTimeMillis();
-		if (context instanceof ReactiveServerApplicationContext) {
+		if (_CONTEXT instanceof ReactiveServerApplicationContext) {
 			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s" + ", listening on ["
-					+ ((ReactiveServerApplicationContext) context).getServer().getAddresses() + "]");
+					+ ((ReactiveServerApplicationContext) _CONTEXT).getServer().getAddresses() + "]");
 		} else {
 			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s");
 		}
-		// 存储此context
-		_CONTEXT = context;
-		return context;
+		return _CONTEXT;
 	}
 
 	/**
