@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class TaskEvent {
 
+	private String task; // 任务ID
 	private String dispatch; // 调度号
-	private String task; // 任务名称
 	private Long nextTime;// 下次执行时间
 }

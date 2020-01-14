@@ -1,42 +1,28 @@
 package com.swak.eventbus;
 
+import com.swak.incrementer.UUIdGenerator;
+import com.swak.utils.StringUtils;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
 /**
  * 系统定制的 event
  * 
  * @author lifeng
  */
+@Getter
+@Setter
+@Accessors(chain = true)
 public class Event {
 
 	private String key;
 	private Object message;
 
-	public Event() {
-	}
-
-	public Event(String key) {
-		this.key = key;
-	}
-
-	public Event(String key, Object message) {
-		this.key = key;
-		this.message = message;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
-
 	@SuppressWarnings("unchecked")
 	public <T> T getMessage() {
 		return (T) message;
-	}
-
-	public void setMessage(Object message) {
-		this.message = message;
 	}
 
 	/**
@@ -50,6 +36,18 @@ public class Event {
 		event.setKey(this.key);
 		event.setMessage(message);
 		return event;
+	}
+
+	/**
+	 * 构建消息
+	 * 
+	 * @return
+	 */
+	public Event build() {
+		if (StringUtils.isBlank(this.key)) {
+			this.key = UUIdGenerator.uuid();
+		}
+		return this;
 	}
 
 	/**

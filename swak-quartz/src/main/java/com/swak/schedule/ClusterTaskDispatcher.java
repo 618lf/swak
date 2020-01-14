@@ -1,43 +1,30 @@
 package com.swak.schedule;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-
 /**
- * 集群版本的处理器
+ * 基于 Task 的任务
  * 
  * @author lifeng
  */
-public abstract class ClusterTaskDispatcher extends StandardExecutor {
+public abstract class ClusterTaskDispatcher extends ClusterDispatcher {
 
-	/**
-	 * 调度执行任务
-	 * 
-	 */
+	private final Task task;
+
+	public ClusterTaskDispatcher(Task task) {
+		this.task = task;
+	}
+
 	@Override
-	protected Object doTask(TaskFrag frag) {
-		return this.tryDispatch().thenCompose(res -> {
-			if (res) {
-				return this.doDispatch(new TaskEvent().setTask(name())
-						.setNextTime(frag.getNextTime() != null ? frag.getNextTime().getTime() : null));
-			}
-			return CompletableFuture.completedFuture(null);
-		});
+	protected String cronExpression() {
+		return task.getCronExpression();
 	}
 
-	/**
-	 * 判断是否需要调度
-	 * 
-	 * @return
-	 */
-	protected CompletionStage<Boolean> tryDispatch() {
-		return CompletableFuture.completedFuture(Boolean.TRUE);
+	@Override
+	protected String name() {
+		return task.getTask();
 	}
 
-	/**
-	 * 执行调度
-	 * 
-	 * @return
-	 */
-	protected abstract CompletionStage<Void> doDispatch(TaskEvent event);
+	@Override
+	protected String describe() {
+		return task.getName();
+	}
 }
