@@ -18,7 +18,7 @@ public class Task implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String task; // 调度任务ID
+	private String id; // 调度任务ID
 	private String name; // 调度任务名称
 	private String cronExpression; // 调度时间
 	private Byte parallelAble; // 是否允许并行执行，不允许

@@ -19,7 +19,7 @@ public abstract class AbstractTaskConsumer {
 	 */
 	public CompletionStage<Boolean> tryConsume(TaskEvent event) {
 		Task task = new Task();
-		task.setTask(event.getTask());
+		task.setId(event.getTask());
 		task.setCurrDispatchNo(event.getDispatch());
 		task.setNextExecutionTime(event.getNextTime() != null ? new Date(event.getNextTime()) : null);
 		return getTaskService().prepareExecution(task).thenCompose(res -> {

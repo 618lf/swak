@@ -20,7 +20,7 @@ public abstract class ClusterTaskDispatcher extends ClusterDispatcher {
 
 	@Override
 	protected String name() {
-		return task.getTask();
+		return task.getId();
 	}
 
 	@Override
