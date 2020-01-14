@@ -15,6 +15,8 @@ import java.util.UUID;
 
 import org.springframework.core.io.Resource;
 
+import com.swak.App;
+
 /**
  * 基于 NIO 的 高性能文件操作
  * 
@@ -30,7 +32,7 @@ public class FileUtils {
 	 */
 	public static InputStream resource(String localtion) {
 		try {
-			Resource resource = SpringContextHolder.resource(localtion);
+			Resource resource = App.resource(localtion);
 			if (resource.isFile()) {
 				return new FileInputStream(resource.getFile());
 			}

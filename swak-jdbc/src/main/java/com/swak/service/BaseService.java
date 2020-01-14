@@ -13,12 +13,12 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import com.swak.App;
 import com.swak.entity.IdEntity;
 import com.swak.entity.Page;
 import com.swak.entity.Parameters;
 import com.swak.persistence.BaseDao;
 import com.swak.persistence.QueryCondition;
-import com.swak.utils.SpringContextHolder;
 
 /**
  * @author TMT 封装了公用操作数据的，但查询的只能在子类内部使用
@@ -72,7 +72,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 		if (this.proxy == null) {
 			Class<?>[] interfacess = this.getClass().getInterfaces();
 			if (interfacess != null && interfacess.length > 0) {
-				this.proxy = SpringContextHolder.getBean(interfacess[0]);
+				this.proxy = App.getBean(interfacess[0]);
 			}
 		}
 		return (U) this.proxy;
