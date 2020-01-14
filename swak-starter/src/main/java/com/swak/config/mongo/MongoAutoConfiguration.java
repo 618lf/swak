@@ -45,7 +45,7 @@ public class MongoAutoConfiguration {
 	private MongoClient mongo;
 
 	public MongoAutoConfiguration() {
-		APP_LOGGER.debug("Loading Mongo");
+		APP_LOGGER.debug("Loading Mongodb");
 	}
 
 	/**
