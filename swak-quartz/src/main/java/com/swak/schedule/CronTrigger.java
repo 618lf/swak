@@ -28,4 +28,12 @@ public class CronTrigger {
 			future = this.scheduler.schedule(task, 0, TimeUnit.SECONDS);
 		}
 	}
+	
+	/**
+	 * 输出任务名称
+	 */
+	@Override
+	public String toString() {
+		return task.describe();
+	}
 }

@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.swak.closable.ShutDownHook;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.utils.Lists;
@@ -13,8 +16,9 @@ import com.swak.utils.Lists;
  * 
  * @author lifeng
  */
-public class TaskScheduler implements Runnable {
+public class TaskScheduled implements Runnable {
 
+	protected Logger logger = LoggerFactory.getLogger(Task.class);
 	private ScheduledExecutorService scheduler;
 	private List<CronTrigger> triggers;
 
@@ -23,9 +27,9 @@ public class TaskScheduler implements Runnable {
 	 * 
 	 * @param tasks
 	 */
-	public TaskScheduler(Integer coreThreads, List<StandardExecutor> tasks) {
-		scheduler = Contexts.createScheduledContext("Task.", coreThreads, true, 60, TimeUnit.SECONDS);
-		scheduler.scheduleAtFixedRate(this, 60, 10, TimeUnit.SECONDS);
+	public void init(List<StandardExecutor> tasks) {
+		scheduler = Contexts.createScheduledContext("Task.", 1, true, 60, TimeUnit.SECONDS);
+		scheduler.scheduleAtFixedRate(this, 10, 10, TimeUnit.SECONDS);
 		ShutDownHook.registerShutdownHook(() -> {
 			scheduler.shutdownNow();
 		});
@@ -46,6 +50,9 @@ public class TaskScheduler implements Runnable {
 	 */
 	@Override
 	public void run() {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Schedule Tasks {}", triggers.toString());
+		}
 		triggers.stream().forEach((trigger) -> {
 			trigger.schedule();
 		});
