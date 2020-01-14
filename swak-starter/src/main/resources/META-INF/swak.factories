@@ -13,6 +13,7 @@ com.swak.config.http.HttpClientAutoConfiguration,\
 com.swak.config.redis.CacheAutoConfiguration,\
 com.swak.config.schedule.ScheduleAutoConfiguration,\
 com.swak.config.freemarker.FreeMarkerAutoConfiguration,\
+com.swak.config.eventbus.EventBusAutoConfiguration,\
 com.swak.config.mq.RabbitMqAutoConfiguration,\
 com.swak.config.mongo.MongoAutoConfiguration,\
 com.swak.config.motan.MotanAutoConfiguration,\

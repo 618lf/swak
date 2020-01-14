@@ -22,12 +22,10 @@
 			<artifactId>swak-redis</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<!-- 查看使用案例上，和原生的使用一致，只是提供了  
-		    factory.setCredentialsProvider(new AliyunCredentialsProvider(${AccessKey}, "${SecretKey}", "${UID}"));
 		<dependency>
-			<groupId>com.alibaba.mq-amqp</groupId>
-			<artifactId>mq-amqp-client</artifactId>
-			<version>1.0.3</version>
-		</dependency> -->
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
 	</dependencies>
 </project>

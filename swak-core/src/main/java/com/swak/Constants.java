@@ -35,6 +35,7 @@ public interface Constants {
 	String RABBITMQ_PREFIX = "spring.rabbitmq";
 	String ROCKETMQ_PREFIX = "spring.rocketmq";
 	String MONGO_PREFIX = "spring.mongo";
+	String EVENT_BUS_PREFIX = "spring.eventbus";
 
 	/** 保留ID **/
 	long ROOT = 0L;
