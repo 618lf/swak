@@ -1,5 +1,6 @@
 package com.swak.rabbit;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -8,6 +9,7 @@ import org.junit.Before;
 
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.threads.SwakThreadFactory;
+import com.swak.utils.Maps;
 
 /**
  * 测试 Rabbit
@@ -18,9 +20,9 @@ import com.swak.reactivex.threads.SwakThreadFactory;
  */
 public class RabbitTest {
 
-	protected String EXCHANGE = "test2.update";
-	protected String ROUTING = "test2.update";
-	protected String QUEUE = "test2.update";
+	protected String EXCHANGE = "test3.update";
+	protected String ROUTING = "test3.update";
+	protected String QUEUE = "test3.update";
 	protected RabbitMQTemplate rabbitTemplate;
 	protected ExecutorService executor;
 	protected EventBus eventbus;
@@ -52,10 +54,10 @@ public class RabbitTest {
 		eventbus = EventBus.builder().setExecutor(executor).setTemplateForConsumer(rabbitTemplate).setTemplateForSender(rabbitTemplate)
 				.setApply((t) -> {
 					// 普通队列，消息处理失败进入死信队列
-//					Map<String, Object> agruments = Maps.newHashMap();
-//					agruments.put("x-dead-letter-exchange", Constants.dead_channel);
-//					agruments.put("x-dead-letter-routing-key", Constants.dead_channel);
-					t.exchangeDirectBindQueue(EXCHANGE, ROUTING, QUEUE, null);
+					Map<String, Object> agruments = Maps.newHashMap();
+					agruments.put("x-dead-letter-exchange", Constants.dead_channel);
+					agruments.put("x-dead-letter-routing-key", Constants.dead_channel);
+					t.exchangeDirectBindQueue(EXCHANGE, ROUTING, QUEUE, agruments);
 					return true;
 				}).build();
 

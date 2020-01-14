@@ -77,7 +77,7 @@ public class RabbitMqPostProcessor implements BeanPostProcessor, ApplicationList
 	}
 
 	/**
-	 * 初始化结束之后注册
+	 * 初始化结束之后注册 -- 只需要找到一个即可
 	 */
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -88,6 +88,7 @@ public class RabbitMqPostProcessor implements BeanPostProcessor, ApplicationList
 				Subscribe reference = method.getAnnotation(Subscribe.class);
 				if (reference != null) {
 					subscribeBeans.add(bean);
+					break;
 				}
 			}
 		}
