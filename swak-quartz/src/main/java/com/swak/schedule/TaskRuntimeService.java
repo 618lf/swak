@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture;
  * 
  * @author lifeng
  */
-public interface TaskService {
+public interface TaskRuntimeService {
 
 	/**
 	 * 获得所有需要启动的定时任务

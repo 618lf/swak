@@ -57,5 +57,5 @@ public abstract class AbstractTaskConsumer {
 	 * 
 	 * @return
 	 */
-	public abstract TaskService getTaskService();
+	public abstract TaskRuntimeService getTaskService();
 }
