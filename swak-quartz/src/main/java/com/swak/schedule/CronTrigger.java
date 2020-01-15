@@ -25,10 +25,10 @@ public class CronTrigger {
 	 */
 	public synchronized void schedule() {
 		if (future == null || future.isDone()) {
-			future = this.scheduler.schedule(task, 0, TimeUnit.SECONDS);
+			future = this.scheduler.schedule(task.runnable(), 0, TimeUnit.SECONDS);
 		}
 	}
-	
+
 	/**
 	 * 输出任务名称
 	 */

@@ -108,7 +108,7 @@ public class Maps {
 	}
 
 	/**
-	 * 复制map 的属性到bean
+	 * 复制map 的属性到bean, 这种方式和lombok有冲突: @Accessors(chain = true)
 	 * 
 	 * @param map
 	 * @param bean

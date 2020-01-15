@@ -27,10 +27,6 @@ public abstract class StandardExecutor implements Runnable {
 	private CronSequenceGenerator cronSequenceGenerator;
 	private volatile Date nextDate;
 
-	public StandardExecutor() {
-		cronSequenceGenerator = new CronSequenceGenerator(this.cronExpression());
-	}
-
 	/**
 	 * Spring CronExpression
 	 * 
@@ -39,23 +35,31 @@ public abstract class StandardExecutor implements Runnable {
 	protected abstract String cronExpression();
 
 	/**
-	 * 执行任务
-	 */
-	protected abstract Object doTask(TaskFrag frag);
-
-	/**
 	 * 任务名称（唯一任务）
 	 * 
 	 * @return
 	 */
 	protected abstract String name();
-	
+
 	/**
 	 * 任务描述
 	 * 
 	 * @return
 	 */
 	protected abstract String describe();
+
+	/**
+	 * 执行任务
+	 */
+	protected abstract Object doTask(TaskFrag frag);
+
+	/**
+	 * 初始化
+	 */
+	Runnable runnable() {
+		cronSequenceGenerator = new CronSequenceGenerator(this.cronExpression());
+		return this;
+	}
 
 	/**
 	 * 执行任务
