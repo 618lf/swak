@@ -3,6 +3,8 @@ package com.swak.schedule;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import com.swak.incrementer.UUIdGenerator;
+
 /**
  * 集群版本的处理器
  * 
@@ -18,7 +20,7 @@ public abstract class ClusterDispatcher extends StandardExecutor {
 	protected Object doTask(TaskFrag frag) {
 		return this.tryDispatch().thenCompose(res -> {
 			if (res) {
-				return this.doDispatch(new TaskEvent().setTask(name())
+				return this.doDispatch(new TaskEvent().setTask(name()).setDispatch(UUIdGenerator.uuid())
 						.setNextTime(frag.getNextTime() != null ? frag.getNextTime().getTime() : null));
 			}
 			return CompletableFuture.completedFuture(null);

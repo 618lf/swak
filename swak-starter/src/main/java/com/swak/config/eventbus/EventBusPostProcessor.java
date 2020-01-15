@@ -48,6 +48,7 @@ public class EventBusPostProcessor implements BeanPostProcessor, ApplicationList
 				Subscribe reference = method.getAnnotation(Subscribe.class);
 				if (reference != null) {
 					subscribeBeans.add(bean);
+					break;
 				}
 			}
 		}

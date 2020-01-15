@@ -30,6 +30,16 @@ public class EventBusAutoConfiguration {
 	public EventBusAutoConfiguration() {
 		APP_LOGGER.debug("Loading EventBus");
 	}
+	
+	/**
+	 * 自动注册消费者
+	 * 
+	 * @return
+	 */
+	@Bean
+	public EventBusPostProcessor eventBusPostProcessor() {
+		return new EventBusPostProcessor();
+	}
 
 	/**
 	 * 注册Event Bus
