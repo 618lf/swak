@@ -159,7 +159,7 @@ public abstract class StandardExecutor implements Runnable {
 			 * 调试模式
 			 */
 			if (logger.isDebugEnabled() && frag.isSuccess()) {
-				logger.debug("Task {} Dispatch {}, Next Dispatch Time is {}", this.name(),
+				logger.debug("Task {} Dispatch {}, Next Dispatch Time is {}", this.describe(),
 						frag.isSuccess() ? "success" : "failure",
 						nextDate != null ? DateUtils.getFormatDate(nextDate, "yyyy-MM-dd HH:mm:ss") : "调度中...");
 			}
