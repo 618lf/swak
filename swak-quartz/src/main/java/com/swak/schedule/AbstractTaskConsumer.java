@@ -1,8 +1,9 @@
 package com.swak.schedule;
 
-import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+
+import com.swak.utils.time.DateTimes;
 
 /**
  * 默认实现
@@ -21,7 +22,8 @@ public abstract class AbstractTaskConsumer {
 		Task task = new Task();
 		task.setId(event.getTask());
 		task.setCurrDispatchNo(event.getDispatch());
-		task.setNextExecutionTime(event.getNextTime() != null ? new Date(event.getNextTime()) : null);
+		task.setNextExecutionTime(
+				event.getNextTime() != null ? DateTimes.getDateTimeOfTimestamp(event.getNextTime()) : null);
 		return getTaskService().prepareExecution(task).thenCompose(res -> {
 			if (res != null) {
 				return this.doTask(res);
