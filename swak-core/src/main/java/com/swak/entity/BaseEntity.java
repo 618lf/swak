@@ -1,8 +1,7 @@
 package com.swak.entity;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
@@ -20,7 +19,7 @@ public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializabl
 	protected String name;// 名称
 	protected Long userId;// 创建人ID
 	protected String userName;// 创建人名称
-	protected Date createDate;// 创建时间
+	protected LocalDateTime createDate;// 创建时间
 
 	public String getName() {
 		return name;
@@ -50,11 +49,11 @@ public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializabl
 	}
 
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
-	public Date getCreateDate() {
+	public LocalDateTime getCreateDate() {
 		return createDate;
 	}
 
-	public <T> T setCreateDate(Date createDate) {
+	public <T> T setCreateDate(LocalDateTime createDate) {
 		this.createDate = createDate;
 		return (T) this;
 	}
@@ -66,7 +65,7 @@ public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializabl
 	 */
 	@Override
 	public PK prePersist() {
-		this.createDate = new Timestamp(System.currentTimeMillis());
+		this.createDate = LocalDateTime.now();
 		return super.prePersist();
 	}
 

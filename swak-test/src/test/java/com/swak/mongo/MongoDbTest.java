@@ -1,6 +1,7 @@
 package com.swak.mongo;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -15,7 +16,6 @@ import com.swak.mongo.json.Query;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
-import com.swak.utils.time.DateUtils;
 
 /**
  * mongo 测试
@@ -66,7 +66,7 @@ public class MongoDbTest {
 		Resource insert = new Resource();
 		insert.setState(1);
 		insert.setStoreName("test");
-		insert.setCreateDate(DateUtils.getTodayTime());
+		insert.setCreateDate(LocalDateTime.now());
 		insert.setBoo(true);
 		insert.setDou(1.0);
 		insert.setLon(1L);

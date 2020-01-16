@@ -1,7 +1,6 @@
 package com.swak.excel.impl;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,7 +20,6 @@ import com.swak.excel.Multimap;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
-import com.swak.utils.time.DateUtils;
 
 /**
  * 默认的 Excel Mapping
@@ -138,20 +136,9 @@ public abstract class DefaultExcelMapper<T> implements ExcelMapper<T>, ExcelExec
 				} else {
 					cellvalue = String.valueOf(tempValue);
 				}
-				Boolean isDefaultFormat = Boolean.FALSE;
 				Iterator<ColumnMapper> it = columnMappers.iterator();
 				while (it.hasNext()) {
 					ColumnMapper columnMapper = it.next();
-					if (tempValue instanceof Date) {
-						String pattern = columnMapper.getDataFormat();
-						Date date = (Date) tempValue;
-						if (StringUtils.isNotBlank(pattern)) {
-							cellvalue = DateUtils.getFormatDate(date, pattern);
-						} else if (!isDefaultFormat) {
-							cellvalue = DateUtils.getFormatDate(date, "yyyy-MM-dd");
-							isDefaultFormat = Boolean.TRUE;
-						}
-					}
 					// 去空
 					cellvalue = StringUtils.trimToNull(cellvalue);
 					// 这列不为空

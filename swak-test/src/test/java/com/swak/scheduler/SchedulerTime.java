@@ -11,6 +11,7 @@ import com.swak.utils.time.DateUtils;
  * 
  * @author lifeng
  */
+@SuppressWarnings("deprecation")
 public class SchedulerTime {
 
 	public static void main(String[] args) throws InterruptedException {

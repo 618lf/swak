@@ -33,6 +33,7 @@ import java.util.TimeZone;
  *
  * @since 3.2
  */
+@Deprecated
 public interface DateParser {
 
     /**

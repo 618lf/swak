@@ -24,6 +24,7 @@ import java.util.TimeZone;
  *
  * @since 3.7
  */
+@Deprecated
 class GmtTimeZone extends TimeZone {
 
     private static final int MILLISECONDS_PER_MINUTE = 60 * 1000;

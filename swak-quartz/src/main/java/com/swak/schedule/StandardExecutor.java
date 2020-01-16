@@ -20,6 +20,7 @@ import lombok.experimental.Accessors;
  * 
  * @author lifeng
  */
+@SuppressWarnings("deprecation")
 public abstract class StandardExecutor implements Runnable {
 
 	protected Logger logger = LoggerFactory.getLogger(Task.class);

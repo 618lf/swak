@@ -70,6 +70,7 @@ import java.util.regex.Pattern;
  * @since 3.2
  * @see FastDatePrinter
  */
+@Deprecated
 public class FastDateParser implements DateParser, Serializable {
 
     /**

@@ -1,5 +1,7 @@
 package com.swak.wechat.message;
 
+import java.time.LocalDateTime;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -7,7 +9,7 @@ import org.w3c.dom.Element;
 
 import com.swak.utils.CDataAdapter;
 import com.swak.utils.XmlParse;
-import com.swak.utils.time.DateUtils;
+import com.swak.utils.time.DateTimes;
 
 public class MsgHeadImpl implements MsgHead {
 
@@ -20,7 +22,7 @@ public class MsgHeadImpl implements MsgHead {
 	protected String event;
 
 	public MsgHeadImpl() {
-		this.createTime = String.valueOf(DateUtils.getTimeStampNow().getTime());
+		this.createTime = DateTimes.getMilliByTime(LocalDateTime.now()).toString();
 	}
 
 	@XmlElement(name = "ToUserName")

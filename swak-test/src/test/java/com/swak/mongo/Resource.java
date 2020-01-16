@@ -2,7 +2,7 @@ package com.swak.mongo;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * 资源 管理
@@ -26,7 +26,7 @@ public class Resource implements Serializable {
 	private Integer state; // -1: 上传失败: 0 上传中：1 上传成功
 	private String storeId; // 商户
 	private String storeName; // 商户
-	private Date createDate;// 创建时间
+	private LocalDateTime createDate;// 创建时间
 	
 	// 特殊的字段
 	private Boolean boo;
@@ -137,10 +137,10 @@ public class Resource implements Serializable {
 	public void setStoreName(String storeName) {
 		this.storeName = storeName;
 	}
-	public Date getCreateDate() {
+	public LocalDateTime getCreateDate() {
 		return createDate;
 	}
-	public void setCreateDate(Date createDate) {
+	public void setCreateDate(LocalDateTime createDate) {
 		this.createDate = createDate;
 	}
 }
