@@ -33,7 +33,7 @@ public class EventBus {
 	 */
 	public synchronized void init(Consumer<Boolean> register) {
 		if (!inited) {
-			this.delayConsumer(register);
+			this.delayConsumer(register).accept(Boolean.TRUE);
 		}
 		inited = true;
 	}
