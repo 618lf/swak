@@ -3,6 +3,8 @@ package com.swak.schedule;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.swak.utils.StringUtils;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,4 +29,15 @@ public class Task implements Serializable {
 	private Integer dispatchs; // 调度次数
 	private Integer executions; // 执行次数
 	private Integer maxExecutionTime;// 最长执行时间
+
+	/**
+	 * 此调度号是否可以运行
+	 * 
+	 * @param currDispatchNo
+	 * @return
+	 */
+	public boolean isRunnable(String currDispatchNo) {
+		return StringUtils.isBlank(this.currDispatchNo) || (this.parallelAble != null && this.parallelAble == 1)
+				|| this.currDispatchNo.equals(currDispatchNo);
+	}
 }
