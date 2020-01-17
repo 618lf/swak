@@ -62,9 +62,9 @@ public class MongoAutoConfiguration {
 		return MongoClientSettings.builder()
 				.streamFactoryFactory(NettyStreamFactoryFactory.builder().eventLoopGroup(eventLoopGroup).build())
 				.codecRegistry(fromProviders(asList(new ValueCodecProvider(), new BsonValueCodecProvider(),
-						new DocumentCodecxProvider(), new IterableCodecProvider(new DocumentToDBRefTransformer()),
-						new MapCodecProvider(new DocumentToDBRefTransformer()), new Jsr310CodecProvider(),
-						new BsonCodecProvider())))
+						new Jsr310CodecProvider(), new DocumentCodecxProvider(),
+						new IterableCodecProvider(new DocumentToDBRefTransformer()),
+						new MapCodecProvider(new DocumentToDBRefTransformer()), new BsonCodecProvider())))
 				.build();
 	}
 

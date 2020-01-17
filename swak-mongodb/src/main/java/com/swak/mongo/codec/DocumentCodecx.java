@@ -28,6 +28,7 @@ import org.bson.codecs.IdGenerator;
 import org.bson.codecs.ObjectIdGenerator;
 import org.bson.codecs.ValueCodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.jsr310.Jsr310CodecProvider;
 import org.bson.types.Decimal128;
 import org.bson.types.ObjectId;
 
@@ -41,7 +42,7 @@ import com.swak.mongo.json.Document;
 public class DocumentCodecx implements CollectibleCodec<Document> {
 
 	private static final CodecRegistry DEFAULT_REGISTRY = fromProviders(
-			asList(new ValueCodecProvider(), new BsonValueCodecProvider(), new DocumentCodecxProvider()));
+			asList(new ValueCodecProvider(), new Jsr310CodecProvider(), new BsonValueCodecProvider(), new DocumentCodecxProvider()));
 	private static final BsonTypeClassMap DEFAULT_BSON_TYPE_CLASS_MAP = new BsonTypeClassMap();
 
 	private final BsonTypeCodecMap bsonTypeCodecMap;
