@@ -4,11 +4,15 @@ import static com.swak.Application.APP_LOGGER;
 import static java.util.Arrays.asList;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 
+import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PreDestroy;
 
+import org.bson.BsonType;
 import org.bson.codecs.BsonCodecProvider;
+import org.bson.codecs.BsonTypeClassMap;
 import org.bson.codecs.BsonValueCodecProvider;
 import org.bson.codecs.IterableCodecProvider;
 import org.bson.codecs.MapCodecProvider;
@@ -29,6 +33,7 @@ import com.swak.mongo.codec.DocumentCodecxProvider;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.reactivex.transport.resources.LoopResources;
+import com.swak.utils.Maps;
 
 import io.netty.channel.EventLoopGroup;
 
@@ -50,19 +55,31 @@ public class MongoAutoConfiguration {
 	}
 
 	/**
+	 * 对应的转换器
+	 * 
+	 * @return
+	 */
+	@Bean
+	public BsonTypeClassMap bsonTypeClassMap() {
+		Map<BsonType, Class<?>> replacementsForDefaults = Maps.newHashMap();
+		replacementsForDefaults.put(BsonType.DATE_TIME, LocalDateTime.class);
+		return new BsonTypeClassMap(replacementsForDefaults);
+	}
+
+	/**
 	 * 配置项 mongo 只能使用 NIO, 不支持EPOLL <br>
 	 * 
 	 * @return
 	 */
 	@Bean
-	public MongoClientSettings settings() {
+	public MongoClientSettings settings(BsonTypeClassMap bsonTypeClassMap) {
 		LoopResources loopResources = Contexts.createEventLoopResources(TransportMode.NIO, 1, -1, "Mongodb.", true, 2,
 				TimeUnit.SECONDS);
 		EventLoopGroup eventLoopGroup = loopResources.onClient();
 		return MongoClientSettings.builder()
 				.streamFactoryFactory(NettyStreamFactoryFactory.builder().eventLoopGroup(eventLoopGroup).build())
 				.codecRegistry(fromProviders(asList(new ValueCodecProvider(), new BsonValueCodecProvider(),
-						new Jsr310CodecProvider(), new DocumentCodecxProvider(),
+						new Jsr310CodecProvider(), new DocumentCodecxProvider(bsonTypeClassMap),
 						new IterableCodecProvider(new DocumentToDBRefTransformer()),
 						new MapCodecProvider(new DocumentToDBRefTransformer()), new BsonCodecProvider())))
 				.build();

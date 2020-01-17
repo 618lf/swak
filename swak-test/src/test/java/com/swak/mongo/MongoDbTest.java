@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import org.bson.codecs.BsonTypeClassMap;
+
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
@@ -27,7 +29,7 @@ public class MongoDbTest {
 	public static void main(String[] args) throws InterruptedException {
 		CountDownLatch countDownLatch = new CountDownLatch(2);
 		MongoAutoConfiguration config = new MongoAutoConfiguration();
-		MongoClientSettings settings = config.settings();
+		MongoClientSettings settings = config.settings(new BsonTypeClassMap());
 		MongoProperties properties = new MongoProperties();
 		properties.setUsername("admin");
 		properties.setPassword("123456".toCharArray());
