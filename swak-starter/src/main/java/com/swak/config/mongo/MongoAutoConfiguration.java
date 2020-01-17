@@ -13,6 +13,7 @@ import org.bson.codecs.BsonValueCodecProvider;
 import org.bson.codecs.IterableCodecProvider;
 import org.bson.codecs.MapCodecProvider;
 import org.bson.codecs.ValueCodecProvider;
+import org.bson.codecs.jsr310.Jsr310CodecProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -62,7 +63,8 @@ public class MongoAutoConfiguration {
 				.streamFactoryFactory(NettyStreamFactoryFactory.builder().eventLoopGroup(eventLoopGroup).build())
 				.codecRegistry(fromProviders(asList(new ValueCodecProvider(), new BsonValueCodecProvider(),
 						new DocumentCodecxProvider(), new IterableCodecProvider(new DocumentToDBRefTransformer()),
-						new MapCodecProvider(new DocumentToDBRefTransformer()), new BsonCodecProvider())))
+						new MapCodecProvider(new DocumentToDBRefTransformer()), new Jsr310CodecProvider(),
+						new BsonCodecProvider())))
 				.build();
 	}
 
