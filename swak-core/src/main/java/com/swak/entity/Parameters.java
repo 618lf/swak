@@ -4,6 +4,11 @@ import java.io.Serializable;
 
 import com.swak.utils.StringUtils;
 
+/**
+ * 分页参数
+ * 
+ * @author lifeng
+ */
 public class Parameters implements Serializable {
 
 	private static final long serialVersionUID = 1L;
