@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------------
 |   RXTX License v 2.1 - LGPL v 2.1 + Linking Over Controlled Interface.
 |   RXTX is a native interface to serial ports in java.
-|   Copyright 1997-2009 by Trent Jarvi tjarvi@qbang.org and others who
+|   Copyright 1997-2007 by Trent Jarvi tjarvi@qbang.org and others who
 |   actually wrote it.  See individual source files for more information.
 |
 |   A copy of the LGPL v 2.1 may be found at
@@ -58,36 +58,15 @@
 package gnu.io;
 
 /**
-A class to keep the current version in
+* @author Trent Jarvi
+* @version %I%, %G%
+* @since JDK1.0
 */
 
-public class RXTXVersion
-{
-/*------------------------------------------------------------------------------
-	RXTXVersion  
-	accept:       -
-	perform:      Set Version.
-	return:       -
-	exceptions:   Throwable
-	comments:     
-		      See INSTALL for details.
-------------------------------------------------------------------------------*/
-	private static String Version;
 
-	static {
-		//System.loadLibrary( "rxtxSerial" );
-		SerialManager.getInstance();
-	
-		Version = "RXTX-2.2pre2";
-	}
-	/**
-	*  static method to return the current version of RXTX
-	*  unique to RXTX.
-	*  @return a string representing the version  "RXTX-1.4-9"
-	*/
-	public static String getVersion()
-	{
-		return(Version);
-	}
-	public static native String nativeGetVersion();
+public interface CommDriver
+{
+	public abstract CommPort getCommPort(String portName,int portType);
+	public abstract void initialize();
 }
+

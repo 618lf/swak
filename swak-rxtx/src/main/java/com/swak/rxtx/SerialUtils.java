@@ -1,11 +1,12 @@
 package com.swak.rxtx;
 
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
 
 /**
  * @author han xinjian
@@ -18,7 +19,7 @@ public class SerialUtils {
 	 *
 	 * @return port list
 	 */
-	public static ArrayList<String> getCommNames() {
+	public static List<String> getCommNames() {
 		Enumeration<CommPortIdentifier> portIdentifiers = CommPortIdentifier.getPortIdentifiers();
 		ArrayList<String> list = new ArrayList<String>();
 		while (portIdentifiers.hasMoreElements()) {
@@ -30,19 +31,13 @@ public class SerialUtils {
 	/**
 	 * connect SerialPort
 	 *
-	 * @param portName
-	 *            portName
-	 * @param baudRate
-	 *            baudRate
-	 * @param dataBits
-	 *            dataBits
-	 * @param stopBits
-	 *            stopBits
-	 * @param parity
-	 *            parity
+	 * @param portName portName
+	 * @param baudRate baudRate
+	 * @param dataBits dataBits
+	 * @param stopBits stopBits
+	 * @param parity   parity
 	 * @return SerialPort
-	 * @throws Exception
-	 *             SerialPort connect err
+	 * @throws Exception SerialPort connect err
 	 */
 	public static SerialPort connect(String portName, int baudRate, int dataBits, int stopBits, int parity)
 			throws Exception {
@@ -69,13 +64,10 @@ public class SerialUtils {
 	/**
 	 * connect SerialPort
 	 *
-	 * @param portName
-	 *            port name
-	 * @param baudRate
-	 *            baudRate
+	 * @param portName port name
+	 * @param baudRate baudRate
 	 * @return SerialPort
-	 * @throws Exception
-	 *             SerialPort connect err
+	 * @throws Exception SerialPort connect err
 	 */
 	public static SerialPort connect(String portName, int baudRate) throws Exception {
 		CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);

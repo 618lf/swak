@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------------
 |   RXTX License v 2.1 - LGPL v 2.1 + Linking Over Controlled Interface.
 |   RXTX is a native interface to serial ports in java.
-|   Copyright 1997-2009 by Trent Jarvi tjarvi@qbang.org and others who
+|   Copyright 1997-2007 by Trent Jarvi tjarvi@qbang.org and others who
 |   actually wrote it.  See individual source files for more information.
 |
 |   A copy of the LGPL v 2.1 may be found at
@@ -57,37 +57,62 @@
 --------------------------------------------------------------------------*/
 package gnu.io;
 
+import java.util.Enumeration;
+
 /**
-A class to keep the current version in
-*/
-
-public class RXTXVersion
-{
-/*------------------------------------------------------------------------------
-	RXTXVersion  
-	accept:       -
-	perform:      Set Version.
-	return:       -
-	exceptions:   Throwable
-	comments:     
-		      See INSTALL for details.
-------------------------------------------------------------------------------*/
-	private static String Version;
-
+ * @author Trent Jarvi
+ * @version %I%, %G%
+ * @since JDK1.0
+ */
+@SuppressWarnings("rawtypes")
+class CommPortEnumerator implements Enumeration {
+	private CommPortIdentifier index;
+	private final static boolean debug = false;
 	static {
-		//System.loadLibrary( "rxtxSerial" );
-		SerialManager.getInstance();
-	
-		Version = "RXTX-2.2pre2";
+		if (debug)
+			System.out.println("CommPortEnumerator:{}");
 	}
-	/**
-	*  static method to return the current version of RXTX
-	*  unique to RXTX.
-	*  @return a string representing the version  "RXTX-1.4-9"
-	*/
-	public static String getVersion()
-	{
-		return(Version);
+
+	CommPortEnumerator() {
 	}
-	public static native String nativeGetVersion();
+
+	/*------------------------------------------------------------------------------
+	    nextElement()
+	    accept:
+	    perform:
+	    return:
+	    exceptions:
+	    comments:
+	------------------------------------------------------------------------------*/
+	public Object nextElement() {
+		if (debug)
+			System.out.println("CommPortEnumerator:nextElement()");
+		synchronized (CommPortIdentifier.Sync) {
+			if (index != null)
+				index = index.next;
+			else
+				index = CommPortIdentifier.CommPortIndex;
+			return (index);
+		}
+	}
+
+	/*------------------------------------------------------------------------------
+	    hasMoreElements()
+	    accept:
+	    perform:
+	    return:
+	    exceptions:
+	    comments:
+	------------------------------------------------------------------------------*/
+	public boolean hasMoreElements() {
+		if (debug)
+			System.out.println(
+					"CommPortEnumerator:hasMoreElements() " + CommPortIdentifier.CommPortIndex == null ? false : true);
+		synchronized (CommPortIdentifier.Sync) {
+			if (index != null)
+				return index.next == null ? false : true;
+			else
+				return CommPortIdentifier.CommPortIndex == null ? false : true;
+		}
+	}
 }

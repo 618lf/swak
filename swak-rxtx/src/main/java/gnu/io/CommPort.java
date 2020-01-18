@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------------
 |   RXTX License v 2.1 - LGPL v 2.1 + Linking Over Controlled Interface.
 |   RXTX is a native interface to serial ports in java.
-|   Copyright 1997-2009 by Trent Jarvi tjarvi@qbang.org and others who
+|   Copyright 1997-2007 by Trent Jarvi tjarvi@qbang.org and others who
 |   actually wrote it.  See individual source files for more information.
 |
 |   A copy of the LGPL v 2.1 may be found at
@@ -57,37 +57,81 @@
 --------------------------------------------------------------------------*/
 package gnu.io;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
+
 /**
-A class to keep the current version in
+* @author Trent Jarvi
+* @version %I%, %G%
+* @since JDK1.0
 */
 
-public class RXTXVersion
-{
-/*------------------------------------------------------------------------------
-	RXTXVersion  
-	accept:       -
-	perform:      Set Version.
-	return:       -
-	exceptions:   Throwable
-	comments:     
-		      See INSTALL for details.
-------------------------------------------------------------------------------*/
-	private static String Version;
+/**
+ * CommPort
+ */
+public abstract class CommPort extends Object {
+	protected String name;
+	private final static boolean debug = false;
 
-	static {
-		//System.loadLibrary( "rxtxSerial" );
-		SerialManager.getInstance();
-	
-		Version = "RXTX-2.2pre2";
+	public abstract void enableReceiveFraming(int f) throws UnsupportedCommOperationException;
+
+	public abstract void disableReceiveFraming();
+
+	public abstract boolean isReceiveFramingEnabled();
+
+	public abstract int getReceiveFramingByte();
+
+	public abstract void disableReceiveTimeout();
+
+	public abstract void enableReceiveTimeout(int time) throws UnsupportedCommOperationException;
+
+	public abstract boolean isReceiveTimeoutEnabled();
+
+	public abstract int getReceiveTimeout();
+
+	public abstract void enableReceiveThreshold(int thresh) throws UnsupportedCommOperationException;
+
+	public abstract void disableReceiveThreshold();
+
+	public abstract int getReceiveThreshold();
+
+	public abstract boolean isReceiveThresholdEnabled();
+
+	public abstract void setInputBufferSize(int size);
+
+	public abstract int getInputBufferSize();
+
+	public abstract void setOutputBufferSize(int size);
+
+	public abstract int getOutputBufferSize();
+
+	@SuppressWarnings("static-access")
+	public void close() {
+		if (debug)
+			System.out.println("CommPort:close()");
+
+		try {
+			CommPortIdentifier cp = CommPortIdentifier.getPortIdentifier(this);
+			if (cp != null)
+				cp.getPortIdentifier(this).internalClosePort();
+		} catch (NoSuchPortException e) {
+		}
+	};
+
+	public abstract InputStream getInputStream() throws IOException;
+
+	public abstract OutputStream getOutputStream() throws IOException;
+
+	public String getName() {
+		if (debug)
+			System.out.println("CommPort:getName()");
+		return (name);
 	}
-	/**
-	*  static method to return the current version of RXTX
-	*  unique to RXTX.
-	*  @return a string representing the version  "RXTX-1.4-9"
-	*/
-	public static String getVersion()
-	{
-		return(Version);
+
+	public String toString() {
+		if (debug)
+			System.out.println("CommPort:toString()");
+		return (name);
 	}
-	public static native String nativeGetVersion();
 }
