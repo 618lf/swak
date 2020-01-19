@@ -129,6 +129,7 @@ public class RXTXPort extends SerialPort {
 
 		MonitorThreadLock = true;
 		monThread = new MonitorThread();
+		monThread.setName("Rxtx.Monitor");
 		monThread.start();
 		waitForTheNativeCodeSilly();
 		MonitorThreadAlive = true;
@@ -782,6 +783,7 @@ public class RXTXPort extends SerialPort {
 		if (!MonitorThreadAlive) {
 			MonitorThreadLock = true;
 			monThread = new MonitorThread();
+			monThread.setName("Rxtx.Monitor");
 			monThread.start();
 			waitForTheNativeCodeSilly();
 			MonitorThreadAlive = true;
