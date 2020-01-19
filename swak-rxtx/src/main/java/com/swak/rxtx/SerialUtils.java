@@ -41,8 +41,6 @@ public class SerialUtils {
 	 */
 	public static SerialPort connect(String portName, int baudRate, int dataBits, int stopBits, int parity)
 			throws Exception {
-
-		System.out.println(portName + "  " + baudRate + " " + dataBits + " " + stopBits + " " + parity);
 		CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
 		if (portIdentifier.isCurrentlyOwned()) {
 			System.err.println("Error: Port is currently in use");
