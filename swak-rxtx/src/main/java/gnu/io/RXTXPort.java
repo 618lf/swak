@@ -57,12 +57,11 @@
 --------------------------------------------------------------------------*/
 package gnu.io;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
 import java.util.TooManyListenersException;
-import java.lang.Math;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * An extension of gnu.io.SerialPort
@@ -75,7 +74,6 @@ public class RXTXPort extends SerialPort {
 	 * I had a report that some JRE's complain when MonitorThread tries to access
 	 * private variables
 	 */
-
 	protected final static boolean debug = false;
 	protected final static boolean debug_read = false;
 	protected final static boolean debug_read_results = false;
@@ -129,7 +127,7 @@ public class RXTXPort extends SerialPort {
 
 		MonitorThreadLock = true;
 		monThread = new MonitorThread();
-		monThread.setName("Rxtx.Monitor");
+		monThread.setName("Rxtx.Monitor-" + this.name);
 		monThread.start();
 		waitForTheNativeCodeSilly();
 		MonitorThreadAlive = true;
@@ -783,7 +781,7 @@ public class RXTXPort extends SerialPort {
 		if (!MonitorThreadAlive) {
 			MonitorThreadLock = true;
 			monThread = new MonitorThread();
-			monThread.setName("Rxtx.Monitor");
+			monThread.setName("Rxtx.Monitor-" + this.name);
 			monThread.start();
 			waitForTheNativeCodeSilly();
 			MonitorThreadAlive = true;
