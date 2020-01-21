@@ -3,7 +3,6 @@ package com.swak.rxtx.channel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,9 @@ import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.PooledByteBufAllocator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -33,21 +35,29 @@ public class Channel {
 
 	private final String comm;
 	private Property property;
-	private byte[] readBuffer;
 	private EventLoop eventLoop;
 	private SerialPort sport;
 	private ChannelPipeline pipeline = new ChannelPipeline();
 	private volatile Status status = Status.断开;
 
+	// 优化的可复用的緩存區
+	private ByteBuf byteBuf;
+	private ByteBufAllocator alloc;
+
 	// ######### 外部可设置参数 ###################
 	public Channel property(Property property) {
 		this.property = property;
-		this.readBuffer = new byte[this.property.readSizeOnce];
+		this.alloc = this.property.alloc;
+		this.byteBuf = this.alloc.buffer(this.property.readSizeOnce);
 		return this;
 	}
 
 	public ChannelPipeline pipeline() {
 		return this.pipeline;
+	}
+
+	public ByteBufAllocator alloc() {
+		return this.alloc;
 	}
 	// ########################################
 
@@ -59,8 +69,7 @@ public class Channel {
 	 */
 	public Channel(String comm) {
 		this.comm = comm;
-		this.property = new Property();
-		this.readBuffer = new byte[this.property.readSizeOnce];
+		this.property(new Property());
 	}
 
 	/**
@@ -189,13 +198,10 @@ public class Channel {
 		try {
 			InputStream inputStream = sport.getInputStream();
 			int len = 0;
-			while ((len = inputStream.read(readBuffer)) > 0) {
-
-				// 获取读取到的数据
-				byte[] data = Arrays.copyOfRange(readBuffer, 0, len);
+			while ((len = this.byteBuf.writeBytes(inputStream, this.byteBuf.capacity())) > 0) {
 
 				// 触发读取操作
-				this.pipeline.fireReadEvent(this, data);
+				this.pipeline.fireReadEvent(this, this.byteBuf);
 
 				if (logger.isDebugEnabled()) {
 					logger.debug("收到设备反馈：[{}]，数据长度:[{}]", this.comm, len);
@@ -338,5 +344,6 @@ public class Channel {
 		private int readBufferSize = 8192; // 缓冲区大小
 		private int writeBufferSize = 1024; // 缓冲区大小
 		private int readSizeOnce = 10; // 每次读取的大小
+		private ByteBufAllocator alloc = PooledByteBufAllocator.DEFAULT; // 缓存分配策略
 	}
 }
