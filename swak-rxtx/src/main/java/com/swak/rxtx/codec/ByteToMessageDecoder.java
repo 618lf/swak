@@ -10,6 +10,7 @@ import com.swak.utils.Lists;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
 
 /**
@@ -37,14 +38,43 @@ public abstract class ByteToMessageDecoder extends ChannelHandler {
 				}
 				this.callDecode(channel, cumulation, out);
 			} catch (Exception e) {
+				throw e;
 			} finally {
 				if (cumulation != null && !cumulation.isReadable()) {
 					cumulation.release();
 					cumulation = null;
 				}
+				// 触发已有数据的处理
+				this.fireChannelRead(channel, out);
 			}
 		} else {
 			super.read(channel, data);
+		}
+	}
+
+	/**
+	 * 关闭通道时
+	 */
+	@Override
+	public void close(Channel channel) {
+		List<Object> out = Lists.newArrayList();
+		try {
+			this.callDecode(channel, cumulation != null ? cumulation : Unpooled.EMPTY_BUFFER, out);
+		} catch (DecoderException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new DecoderException(e);
+		} finally {
+			if (cumulation != null) {
+				cumulation.release();
+				cumulation = null;
+			}
+
+			// 剩余数据的处理
+			this.fireChannelRead(channel, out);
+
+			// 触发关闭事件的继续处理
+			super.close(channel);
 		}
 	}
 
@@ -59,17 +89,26 @@ public abstract class ByteToMessageDecoder extends ChannelHandler {
 		try {
 			while (in.isReadable()) {
 				int outSize = out.size();
-				
+
 				// 触发已有数据的处理
 				if (outSize > 0) {
 					this.fireChannelRead(channel, out);
 					out.clear();
 					outSize = 0;
 				}
-				
-				// 子类解码
+
+				// 一致解码直到没有需要解码的数据
+				int oldInputLength = in.readableBytes();
 				this.decode(channel, in, out);
-				break;
+
+				// 可能数据不够不需要解码
+				if (outSize == out.size()) {
+					if (oldInputLength == in.readableBytes()) {
+						break;
+					} else {
+						continue;
+					}
+				}
 			}
 		} catch (DecoderException e) {
 			throw e;
@@ -77,7 +116,7 @@ public abstract class ByteToMessageDecoder extends ChannelHandler {
 			throw new DecoderException(cause);
 		}
 	}
-	
+
 	/**
 	 * 子类实现解码
 	 * 
@@ -130,17 +169,33 @@ public abstract class ByteToMessageDecoder extends ChannelHandler {
 				if (required > cumulation.maxWritableBytes()
 						|| (required > cumulation.maxFastWritableBytes() && cumulation.refCnt() > 1)
 						|| cumulation.isReadOnly()) {
-
-					ByteBuf newCumulation = alloc.buffer(
-							alloc.calculateNewCapacity(cumulation.readableBytes() + in.readableBytes(), MAX_VALUE));
-					newCumulation.writeBytes(cumulation);
-					newCumulation.writeBytes(in);
-					return newCumulation;
+					return expandCumulation(alloc, cumulation, in);
 				}
 				return cumulation.writeBytes(in);
 			} finally {
 				in.release();
-				cumulation.release();
+			}
+		}
+
+		/**
+		 * 合并
+		 * 
+		 * @param alloc
+		 * @param oldCumulation
+		 * @param in
+		 * @return
+		 */
+		default ByteBuf expandCumulation(ByteBufAllocator alloc, ByteBuf oldCumulation, ByteBuf in) {
+			ByteBuf newCumulation = alloc
+					.buffer(alloc.calculateNewCapacity(oldCumulation.readableBytes() + in.readableBytes(), MAX_VALUE));
+			ByteBuf toRelease = newCumulation;
+			try {
+				newCumulation.writeBytes(oldCumulation);
+				newCumulation.writeBytes(in);
+				toRelease = oldCumulation;
+				return newCumulation;
+			} finally {
+				toRelease.release();
 			}
 		}
 	}

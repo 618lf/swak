@@ -1,7 +1,6 @@
 package com.swak.rxtx.channel;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.slf4j.Logger;
@@ -41,14 +40,12 @@ public class Channel {
 	private volatile Status status = Status.断开;
 
 	// 优化的可复用的緩存區
-	private ByteBuf byteBuf;
 	private ByteBufAllocator alloc;
 
 	// ######### 外部可设置参数 ###################
 	public Channel property(Property property) {
 		this.property = property;
 		this.alloc = this.property.alloc;
-		this.byteBuf = this.alloc.buffer(this.property.readSizeOnce);
 		return this;
 	}
 
@@ -196,15 +193,24 @@ public class Channel {
 	 */
 	private void doRead() {
 		try {
-			InputStream inputStream = sport.getInputStream();
-			int len = 0;
-			while ((len = this.byteBuf.writeBytes(inputStream, this.byteBuf.capacity())) > 0) {
+			while (true) {
+
+				// 分配一块空间
+				ByteBuf byteBuf = this.alloc.buffer(this.property.readSizeOnce);
+
+				// 读取数据
+				int len = byteBuf.writeBytes(sport.getInputStream(), byteBuf.capacity());
 
 				// 触发读取操作
-				this.pipeline.fireReadEvent(this, this.byteBuf);
+				this.pipeline.fireReadEvent(this, byteBuf);
 
 				if (logger.isDebugEnabled()) {
 					logger.debug("收到设备反馈：[{}]，数据长度:[{}]", this.comm, len);
+				}
+
+				// 如果没有数据则不需要处理
+				if (len <= 0) {
+					break;
 				}
 			}
 		} catch (IOException e) {
