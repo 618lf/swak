@@ -25,7 +25,7 @@ public class EventLoop extends ThreadPoolExecutor implements Context {
 	 */
 	public EventLoop() {
 		super(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
-				new SwakThreadFactory("Devices.EventLoop", true, new AtomicInteger(0)));
+				new SwakThreadFactory("Channels.EventLoop-", true, new AtomicInteger(0)));
 	}
 
 	/**

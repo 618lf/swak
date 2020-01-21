@@ -8,7 +8,7 @@ public class TestMain {
 	public static void main(String[] args) {
 
 		Channels.builder().setWorks(1).setHeartbeatSeconds(10).setChannelInit((channel) -> {
-			channel.pipeline().addLast(new ChannelHandler() {
+			channel.pipeline().add(new ChannelHandler() {
 
 				@Override
 				public void read(Channel channel, Object data) {

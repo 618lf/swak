@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.threads.ScheduledContext;
 import com.swak.rxtx.channel.Channel;
@@ -25,6 +28,11 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(chain = true)
 public class Channels {
+
+	/**
+	 * 用于消息调试
+	 */
+	private static Logger logger = LoggerFactory.getLogger(Channel.class);
 
 	/**
 	 * 所有设备
@@ -124,12 +132,17 @@ public class Channels {
 	 */
 	public void heartbeat() {
 
+		// 设备心跳
+		if (logger.isDebugEnabled()) {
+			logger.debug("设备心跳，设备数:[{}]", channels.size());
+		}
+
 		// 尝试发现新设备
 		this.scanChannels();
 
 		// 处理设备的心跳
-		channels.forEach((comm, device) -> {
-			device.heartbeat();
+		channels.forEach((comm, channel) -> {
+			channel.heartbeat();
 		});
 	}
 

@@ -36,7 +36,7 @@ public class Channel {
 	private Property property;
 	private EventLoop eventLoop;
 	private SerialPort sport;
-	private ChannelPipeline pipeline = new ChannelPipeline();
+	private ChannelPipeline pipeline;
 	private volatile Status status = Status.断开;
 
 	// 优化的可复用的緩存區
@@ -56,6 +56,10 @@ public class Channel {
 	public ByteBufAllocator alloc() {
 		return this.alloc;
 	}
+
+	public String comm() {
+		return comm;
+	}
 	// ########################################
 
 	/**
@@ -66,6 +70,7 @@ public class Channel {
 	 */
 	public Channel(String comm) {
 		this.comm = comm;
+		this.pipeline = new ChannelPipeline(this);
 		this.property(new Property());
 	}
 
