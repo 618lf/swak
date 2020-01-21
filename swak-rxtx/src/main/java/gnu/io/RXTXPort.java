@@ -63,6 +63,8 @@ import java.io.OutputStream;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
 
+import com.swak.utils.StringUtils;
+
 /**
  * An extension of gnu.io.SerialPort
  * 
@@ -127,7 +129,7 @@ public class RXTXPort extends SerialPort {
 
 		MonitorThreadLock = true;
 		monThread = new MonitorThread();
-		monThread.setName("Rxtx.Monitor-" + this.name);
+		monThread.setName("Rxtx.Monitor-" + StringUtils.substringAfterLast(name, "/"));
 		monThread.start();
 		waitForTheNativeCodeSilly();
 		MonitorThreadAlive = true;

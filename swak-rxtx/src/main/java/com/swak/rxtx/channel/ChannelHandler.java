@@ -13,7 +13,7 @@ public class ChannelHandler {
 	/**
 	 * 用于消息调试
 	 */
-	private static Logger logger = LoggerFactory.getLogger(Channel.class);
+	protected static Logger logger = LoggerFactory.getLogger(Channel.class);
 
 	// 写数据时使用
 	ChannelHandler prev;

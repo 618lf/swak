@@ -65,6 +65,7 @@ public class Channels {
 		this.channels = Maps.newHashMap(works * 2);
 		this.heartbeat = new Heartbeat(heartbeatSeconds);
 		this.eventLoops = new EventLoopGroup(works);
+		this.channelInit = channelInit;
 	}
 
 	/**

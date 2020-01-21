@@ -181,23 +181,21 @@ public class Channel {
 				this.read();
 			});
 		} else {
-
-			// 设置为不主动推动消息
-			this.sport.notifyOnDataAvailable(false);
-
-			// 读取数据并触发消息处理
 			this.doRead();
-
-			// 设置为不主动推动消息
-			this.sport.notifyOnDataAvailable(true);
 		}
 	}
 
 	/**
 	 * 读取串口返回信息
+	 * 
+	 * @throws IOException
 	 */
 	private void doRead() {
 		try {
+			// 设置为不主动推动消息
+			this.sport.notifyOnDataAvailable(false);
+
+			// 读取数据并触发消息处理
 			while (true) {
 
 				// 分配一块空间
@@ -206,21 +204,25 @@ public class Channel {
 				// 读取数据
 				int len = byteBuf.writeBytes(sport.getInputStream(), byteBuf.capacity());
 
+				// 打印提示
+				if (logger.isDebugEnabled()) {
+					logger.debug("收到设备反馈：[{}]，读取数据长度:[{}]", this.comm, len);
+				}
+
 				// 触发读取操作
 				this.pipeline.fireReadEvent(this, byteBuf);
-
-				if (logger.isDebugEnabled()) {
-					logger.debug("收到设备反馈：[{}]，数据长度:[{}]", this.comm, len);
-				}
 
 				// 如果没有数据则不需要处理
 				if (len <= 0) {
 					break;
 				}
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.error("读取串口信息时发生异常", e);
 			this.status = Status.异常;
+		} finally {
+			// 设置为主动推动消息
+			this.sport.notifyOnDataAvailable(true);
 		}
 	}
 
@@ -275,7 +277,7 @@ public class Channel {
 
 				// 只能写入字节数组
 				byte[] command = null;
-				if (command instanceof byte[]) {
+				if (data instanceof byte[]) {
 					command = (byte[]) data;
 				}
 
@@ -290,7 +292,7 @@ public class Channel {
 				outputStream.flush();
 
 				if (logger.isDebugEnabled()) {
-					logger.debug("发送命令给设备：[{}]", this.comm);
+					logger.debug("发送命令给设备：[{}], 命令长度:[{}]", this.comm, command.length);
 				}
 			} catch (IOException e) {
 				logger.error("发送信息到串口时发生异常", e);

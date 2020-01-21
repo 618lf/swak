@@ -74,7 +74,7 @@ public class ChannelPipeline extends ChannelHandler {
 	 * 触发写事件
 	 */
 	public void fireWriteEvent(Channel channel, Object data) {
-		this.head.write(channel, data);
+		this.tail.write(channel, data);
 	}
 
 	/**
@@ -96,8 +96,12 @@ public class ChannelPipeline extends ChannelHandler {
 	 */
 	@Override
 	public void write(Channel channel, Object data) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("处理设备：[{}]写数据事件, 处理器:[{}]", channel.comm(), this.getClass().getSimpleName());
+		}
 		if (data instanceof byte[]) {
-			channel.writeAndFlush((byte[]) data);
+			byte[] command = (byte[]) data;
+			channel.writeAndFlush(command);
 		}
 	}
 }

@@ -27,6 +27,9 @@ public abstract class ByteToMessageDecoder extends ChannelHandler {
 	@Override
 	public void read(Channel channel, Object data) {
 		if (data instanceof ByteBuf) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("处理设备：[{}]读取数据事件, 处理器:[{}]", channel.comm(), this.getClass().getSimpleName());
+			}
 			List<Object> out = Lists.newArrayList();
 			try {
 				ByteBuf buf = (ByteBuf) data;
