@@ -1,5 +1,7 @@
 package com.swak.config.rxtx;
 
+import static com.swak.Application.APP_LOGGER;
+
 import java.util.function.Consumer;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -23,6 +25,10 @@ import com.swak.rxtx.channel.Channel;
 @EnableConfigurationProperties(ApplicationProperties.class)
 public class RxtxAutoConfiguration implements ApplicationListener<ContextRefreshedEvent> {
 
+	public RxtxAutoConfiguration() {
+		APP_LOGGER.debug("Loading Rxtx");
+	}
+	
 	/**
 	 * 创建 Channels
 	 * 
