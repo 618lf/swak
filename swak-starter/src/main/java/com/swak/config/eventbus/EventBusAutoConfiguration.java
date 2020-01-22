@@ -19,7 +19,7 @@ import com.swak.eventbus.EventBus;
  * @author lifeng
  */
 @Configuration
-@ConditionalOnClass({ AsyncEventBus.class })
+@ConditionalOnClass({ AsyncEventBus.class, EventBus.class })
 @EnableConfigurationProperties(EventBusProperties.class)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableEventBus", matchIfMissing = true)
 public class EventBusAutoConfiguration {
