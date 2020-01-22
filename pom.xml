@@ -208,6 +208,11 @@
 				<artifactId>swak-mongodb</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.swak</groupId>
+				<artifactId>swak-rxtx</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
 			<!-- 测试 -->
 			<dependency>

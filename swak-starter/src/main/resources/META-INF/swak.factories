@@ -18,6 +18,7 @@ com.swak.config.mq.RabbitMqAutoConfiguration,\
 com.swak.config.mongo.MongoAutoConfiguration,\
 com.swak.config.motan.MotanAutoConfiguration,\
 com.swak.config.motan.MotanCommandLineRunner,\
+com.swak.config.rxtx.RxtxAutoConfiguration,\
 com.swak.config.flux.FluxAutoConfiguration,\
 com.swak.config.flux.SecurityAutoConfiguration,\
 com.swak.config.flux.RouterAutoConfiguration,\

@@ -76,6 +76,13 @@ public class Channels {
 	}
 
 	/**
+	 * 启动
+	 */
+	public void start() {
+		this.heartbeat.start();
+	}
+
+	/**
 	 * 尝试加载所有的设备
 	 */
 	private void scanChannels() {
@@ -156,17 +163,25 @@ public class Channels {
 		 * 数据处理线程
 		 */
 		private ScheduledContext heartbeat;
+		private int heartbeatSeconds;
 
 		public Heartbeat(int heartbeatSeconds) {
-			if (heartbeatSeconds > 0) {
-				heartbeat = Contexts.createScheduledContext("Channels.Heartbeat-", 1, true, 30 * 2, TimeUnit.SECONDS);
-				heartbeat.scheduleAtFixedRate(this, 0, heartbeatSeconds, TimeUnit.SECONDS);
-			}
+			this.heartbeatSeconds = heartbeatSeconds;
 		}
 
 		@Override
 		public void run() {
 			Channels.this.heartbeat();
+		}
+
+		/**
+		 * 启动
+		 */
+		private void start() {
+			if (heartbeatSeconds > 0) {
+				heartbeat = Contexts.createScheduledContext("Channels.Heartbeat-", 1, true, 30 * 2, TimeUnit.SECONDS);
+				heartbeat.scheduleAtFixedRate(this, 0, heartbeatSeconds, TimeUnit.SECONDS);
+			}
 		}
 	}
 
