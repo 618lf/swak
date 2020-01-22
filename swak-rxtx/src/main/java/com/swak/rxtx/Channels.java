@@ -2,6 +2,7 @@ package com.swak.rxtx;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -13,7 +14,6 @@ import com.swak.reactivex.threads.ScheduledContext;
 import com.swak.rxtx.channel.Channel;
 import com.swak.rxtx.channel.EventLoopGroup;
 import com.swak.rxtx.utils.SerialUtils;
-import com.swak.utils.Maps;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -62,7 +62,7 @@ public class Channels {
 	 * @param channelInit
 	 */
 	public Channels(int works, int heartbeatSeconds, Consumer<Channel> channelInit) {
-		this.channels = Maps.newHashMap(works * 2);
+		this.channels = new ConcurrentHashMap<>(works * 2);
 		this.heartbeat = new Heartbeat(heartbeatSeconds);
 		this.eventLoops = new EventLoopGroup(works);
 		this.channelInit = channelInit;
@@ -92,46 +92,9 @@ public class Channels {
 	}
 
 	/**
-	 * 刷新设备
+	 * 设备心跳, 发现新设备
 	 */
-	public void connect() {
-
-		/**
-		 * 查找所有设备
-		 */
-		this.scanChannels();
-
-		/**
-		 * 刷新所有设备
-		 */
-		channels.forEach((comm, device) -> {
-			device.connect();
-		});
-	}
-
-	/**
-	 * 主动读取数据 -- 通过channelHandler 来处理
-	 */
-	public void read() {
-		channels.forEach((comm, device) -> {
-			device.read();
-		});
-	}
-
-	/**
-	 * 发送命令
-	 */
-	public void write(Object data) {
-		channels.forEach((comm, device) -> {
-			device.write(data);
-		});
-	}
-
-	/**
-	 * 重写 heartbeat逻辑，让其具备发现新设备的能力
-	 * 
-	 */
-	public void heartbeat() {
+	private void heartbeat() {
 
 		// 设备心跳
 		if (logger.isDebugEnabled()) {
@@ -150,7 +113,7 @@ public class Channels {
 	/**
 	 * 心跳
 	 */
-	protected class Heartbeat implements Runnable {
+	class Heartbeat implements Runnable {
 
 		/**
 		 * 数据处理线程

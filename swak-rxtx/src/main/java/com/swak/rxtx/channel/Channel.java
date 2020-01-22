@@ -60,6 +60,10 @@ public class Channel {
 	public String comm() {
 		return comm;
 	}
+
+	public boolean isActive() {
+		return status == Status.连接;
+	}
 	// ########################################
 
 	/**
