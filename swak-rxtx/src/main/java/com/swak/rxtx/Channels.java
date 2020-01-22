@@ -24,35 +24,41 @@ import lombok.experimental.Accessors;
  * 
  * @author lifeng
  */
-@Getter
-@Setter
-@Accessors(chain = true)
 public class Channels {
+
+	/**
+	 * 全局唯一处理器
+	 */
+	private static Channels _ME = null;
+
+	public static Channels me() {
+		return _ME;
+	}
 
 	/**
 	 * 用于消息调试
 	 */
-	private static Logger logger = LoggerFactory.getLogger(Channel.class);
+	protected static Logger logger = LoggerFactory.getLogger(Channel.class);
 
 	/**
 	 * 所有设备
 	 */
-	private Map<String, Channel> channels;
+	protected Map<String, Channel> channels;
 
 	/**
 	 * 设备心跳
 	 */
-	private Heartbeat heartbeat;
+	protected Heartbeat heartbeat;
 
 	/**
 	 * 输入输出线程池组
 	 */
-	private EventLoopGroup eventLoops;
+	protected EventLoopGroup eventLoops;
 
 	/**
 	 * 初始化channel处理器
 	 */
-	private Consumer<Channel> channelInit;
+	protected Consumer<Channel> channelInit;
 
 	/**
 	 * 创建一个设备管理器
@@ -66,6 +72,7 @@ public class Channels {
 		this.heartbeat = new Heartbeat(heartbeatSeconds);
 		this.eventLoops = new EventLoopGroup(works);
 		this.channelInit = channelInit;
+		_ME = this;
 	}
 
 	/**
@@ -89,6 +96,36 @@ public class Channels {
 			this.channelInit.accept(channel);
 		}
 		return channel;
+	}
+
+	/**
+	 * 刷新设备
+	 */
+	public void connect() {
+
+		/**
+		 * 查找所有设备
+		 */
+		this.scanChannels();
+
+		/**
+		 * 刷新所有设备
+		 */
+		channels.forEach((comm, device) -> {
+			device.connect();
+		});
+	}
+
+	/**
+	 * 刷新设备
+	 */
+	public void close() {
+		/**
+		 * 刷新所有设备
+		 */
+		channels.forEach((comm, device) -> {
+			device.close();
+		});
 	}
 
 	/**
@@ -121,8 +158,10 @@ public class Channels {
 		private ScheduledContext heartbeat;
 
 		public Heartbeat(int heartbeatSeconds) {
-			heartbeat = Contexts.createScheduledContext("Channels.Heartbeat-", 1, true, 30 * 2, TimeUnit.SECONDS);
-			heartbeat.scheduleAtFixedRate(this, 0, heartbeatSeconds, TimeUnit.SECONDS);
+			if (heartbeatSeconds > 0) {
+				heartbeat = Contexts.createScheduledContext("Channels.Heartbeat-", 1, true, 30 * 2, TimeUnit.SECONDS);
+				heartbeat.scheduleAtFixedRate(this, 0, heartbeatSeconds, TimeUnit.SECONDS);
+			}
 		}
 
 		@Override
@@ -140,9 +179,14 @@ public class Channels {
 	@Setter
 	@Accessors(chain = true)
 	public static class Builder {
-		private int works;
-		private int heartbeatSeconds;
-		private Consumer<Channel> channelInit;
+		protected int works;
+		protected int heartbeatSeconds;
+		protected Consumer<Channel> channelInit;
+
+		@SuppressWarnings("unchecked")
+		public <T> T as() {
+			return (T) this;
+		}
 
 		public Channels build() {
 			return new Channels(works, heartbeatSeconds, channelInit);
