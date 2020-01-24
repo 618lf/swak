@@ -62,6 +62,17 @@ public class JdbcSqlExecutor {
 	}
 	
 	/**
+	 * 结果
+	 * @param sql
+	 * @param param
+	 * @param rowMapper
+	 * @return
+	 */
+	public static <T> T get(String sql, Map<String, ?> param, RowMapper<T> rowMapper) {
+		return jdbcTemplate.queryForObject(sql, param, rowMapper);
+	}
+	
+	/**
 	 * 数量
 	 * @param sql
 	 * @param param
