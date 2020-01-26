@@ -38,6 +38,10 @@ public class DataSourceProperties {
 	private Integer prepStmtCacheSqlLimit = 2048;
 	private Integer maxLifetime = 1800000; // 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒
 
+	// jdbc 模板配置
+	private int jdbcFetchSize = -1;
+	private int jdbcMaxRows = -1;
+
 	public DataSourceProperties() {
 	}
 
@@ -64,6 +68,24 @@ public class DataSourceProperties {
 		this.prepStmtCacheSize = copy.getPrepStmtCacheSize();
 		this.prepStmtCacheSqlLimit = copy.getPrepStmtCacheSqlLimit();
 		this.maxLifetime = copy.getMaxLifetime();
+		this.jdbcFetchSize = copy.getJdbcFetchSize();
+		this.jdbcMaxRows = copy.getJdbcMaxRows();
+	}
+
+	public int getJdbcFetchSize() {
+		return jdbcFetchSize;
+	}
+
+	public void setJdbcFetchSize(int jdbcFetchSize) {
+		this.jdbcFetchSize = jdbcFetchSize;
+	}
+
+	public int getJdbcMaxRows() {
+		return jdbcMaxRows;
+	}
+
+	public void setJdbcMaxRows(int jdbcMaxRows) {
+		this.jdbcMaxRows = jdbcMaxRows;
 	}
 
 	public Database getDb() {

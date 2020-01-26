@@ -10,88 +10,170 @@ import com.swak.utils.StringUtils;
 
 /**
  * 查询条件构造类
+ * 
  * @author root
  */
-public class QueryCondition implements Serializable{
+public class QueryCondition implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	protected String orderByClause;
 	protected Criteria criteria;
 
 	public QueryCondition() {
 		criteria = new Criteria();
 	}
+
 	public void setOrderByClause(String orderByClause) {
 		this.orderByClause = orderByClause;
 	}
+
 	public String getOrderByClause() {
 		return orderByClause;
 	}
+
 	public Criteria getCriteria() {
 		return criteria;
 	}
+
 	public void clear() {
 		criteria = new Criteria();
 	}
-	
-	//---------------条件-----------------------
+
+	@SuppressWarnings("unchecked")
+	public String toString() {
+		StringBuilder qcs = new StringBuilder();
+
+		// column between x and y
+		List<BetweenValue> bvalues = criteria.getCriteriaWithBetweenValue();
+		if (bvalues.size() > 0) {
+			for (BetweenValue value : bvalues) {
+				qcs.append(" AND ");
+				qcs.append(value.getCondition()).append(" ").append(this.wrapValue(value.getFirst())).append(" AND ")
+						.append(this.wrapValue(value.getSecond()));
+			}
+		}
+
+		// column = value eg.
+		List<SingleValue> svalues = criteria.getCriteriaWithSingleValue();
+		if (svalues.size() > 0) {
+			for (SingleValue value : svalues) {
+				qcs.append(" AND ");
+				qcs.append(value.getCondition()).append(" ").append(this.wrapValue(value.getValue()));
+			}
+		}
+
+		// column = value eg.
+		List<String> nvalues = criteria.getCriteriaWithoutValue();
+		if (nvalues.size() > 0) {
+			for (String value : nvalues) {
+				qcs.append(" AND ");
+				qcs.append(value);
+			}
+		}
+
+		// column in values
+		List<MultiValue> mvalues = criteria.getCriteriaWithListValue();
+		if (mvalues.size() > 0) {
+			for (MultiValue value : mvalues) {
+				qcs.append(" AND ");
+				List<Object> values = (List<Object>) value.getValues();
+				StringBuilder _values = new StringBuilder();
+				for (Object v : values) {
+					_values.append(this.wrapValue(v)).append(",");
+				}
+				if (_values.length() > 0) {
+					_values.deleteCharAt(_values.length() - 1);
+				}
+				qcs.append(value.getCondition()).append("(").append(_values.toString()).append(")");
+			}
+		}
+
+		// 动态的sql解析
+		return qcs.toString();
+	}
+
+	private Object wrapValue(Object value) {
+		if (value != null && value instanceof String) {
+			return StringUtils.format("'%s'", value == null ? StringUtils.EMPTY : value);
+		}
+		return value;
+	}
+
+	// ---------------条件-----------------------
 	public static class SingleValue {
 		private String condition;
 		private Object value;
+
 		public String getCondition() {
 			return condition;
 		}
+
 		public void setCondition(String condition) {
 			this.condition = condition;
 		}
+
 		public Object getValue() {
 			return value;
 		}
+
 		public void setValue(Object value) {
 			this.value = value;
 		}
 	}
+
 	public static class BetweenValue {
 		private String condition;
 		private Object first;
 		private Object second;
+
 		public String getCondition() {
 			return condition;
 		}
+
 		public void setCondition(String condition) {
 			this.condition = condition;
 		}
+
 		public Object getFirst() {
 			return first;
 		}
+
 		public void setFirst(Object first) {
 			this.first = first;
 		}
+
 		public Object getSecond() {
 			return second;
 		}
+
 		public void setSecond(Object second) {
 			this.second = second;
 		}
 	}
+
 	public static class MultiValue {
-	    private String condition;
-	    private List<?> values;
+		private String condition;
+		private List<?> values;
+
 		public String getCondition() {
 			return condition;
 		}
+
 		public void setCondition(String condition) {
 			this.condition = condition;
 		}
+
 		public List<?> getValues() {
 			return values;
 		}
+
 		public void setValues(List<?> values) {
 			this.values = values;
 		}
 	}
-	public static class Criteria implements Serializable{
+
+	public static class Criteria implements Serializable {
 		private static final long serialVersionUID = 1L;
 		protected List<String> criteriaWithoutValue;
 		protected List<SingleValue> criteriaWithSingleValue;
@@ -106,7 +188,8 @@ public class QueryCondition implements Serializable{
 		}
 
 		public boolean isValid() {
-			return criteriaWithoutValue.size() > 0 || criteriaWithSingleValue.size() > 0 || criteriaWithListValue.size() > 0|| criteriaWithBetweenValue.size() > 0;
+			return criteriaWithoutValue.size() > 0 || criteriaWithSingleValue.size() > 0
+					|| criteriaWithListValue.size() > 0 || criteriaWithBetweenValue.size() > 0;
 		}
 
 		public List<String> getCriteriaWithoutValue() {
@@ -195,7 +278,7 @@ public class QueryCondition implements Serializable{
 			addCriterion(new StringBuilder(column).append(" IS NOT NULL").toString());
 			return this;
 		}
-		
+
 		public Criteria andConditionSql(String conditionSql) {
 			addCriterion(conditionSql);
 			return this;
@@ -250,64 +333,70 @@ public class QueryCondition implements Serializable{
 			addCriterion(new StringBuilder(column).append(" NOT BETWEEN").toString(), value1, value2);
 			return this;
 		}
-		
-        /**
-         * 存储到 WithoutValue 中
-         * 默认是 ','分开
-         * @param column
-         * @param property
-         * @param value
-         * @return
-         */
+
+		/**
+		 * 存储到 WithoutValue 中 默认是 ','分开
+		 * 
+		 * @param column
+		 * @param property
+		 * @param value
+		 * @return
+		 */
 		public Criteria andLike(String column, Object value) {
-			addCriterion(new StringBuilder(column).append(" LIKE CONCAT(CONCAT('%','").append(escape(value)).append("'),'%')").toString());
+			addCriterion(new StringBuilder(column).append(" LIKE CONCAT(CONCAT('%','").append(escape(value))
+					.append("'),'%')").toString());
 			return this;
 		}
-		
+
 		/**
-         * 存储到 WithoutValue 中
-         * 默认是 ','分开
-         * @param column
-         * @param property
-         * @param value
-         * @return
-         */
+		 * 存储到 WithoutValue 中 默认是 ','分开
+		 * 
+		 * @param column
+		 * @param property
+		 * @param value
+		 * @return
+		 */
 		public Criteria andLeftLike(String column, Object value) {
-			addCriterion(new StringBuilder(column).append(" LIKE CONCAT('%','").append(escape(value)).append("')").toString());
+			addCriterion(new StringBuilder(column).append(" LIKE CONCAT('%','").append(escape(value)).append("')")
+					.toString());
 			return this;
 		}
-		
+
 		/**
-         * 存储到 WithoutValue 中
-         * 默认是 ','分开
-         * @param column
-         * @param property
-         * @param value
-         * @return
-         */
+		 * 存储到 WithoutValue 中 默认是 ','分开
+		 * 
+		 * @param column
+		 * @param property
+		 * @param value
+		 * @return
+		 */
 		public Criteria andRightLike(String column, Object value) {
-			addCriterion(new StringBuilder(column).append(" LIKE CONCAT('").append(escape(value)).append("', '%')").toString());
+			addCriterion(new StringBuilder(column).append(" LIKE CONCAT('").append(escape(value)).append("', '%')")
+					.toString());
 			return this;
 		}
-		
+
 		/**
 		 * values like column
+		 * 
 		 * @param value
 		 * @param property
 		 * @param column
 		 * @return
 		 */
 		public Criteria andLikeColumn(String value, Object column) {
-			addCriterion(new StringBuilder("'").append(escape(value)).append("' LIKE CONCAT(CONCAT('%,', ").append(column).append("),',%')").toString());
+			addCriterion(new StringBuilder("'").append(escape(value)).append("' LIKE CONCAT(CONCAT('%,', ")
+					.append(column).append("),',%')").toString());
 			return this;
 		}
 
 		public Criteria andNotLike(String column, Object value) {
-			addCriterion(new StringBuilder(column).append(" NOT LIKE CONCAT(CONCAT('%','").append(escape(value)).append("'),'%')").toString());
+			addCriterion(new StringBuilder(column).append(" NOT LIKE CONCAT(CONCAT('%','").append(escape(value))
+					.append("'),'%')").toString());
 			return this;
 		}
 
-		//-----------------日期--------------------------------------
+		// -----------------日期--------------------------------------
 		public Criteria andDateEqualTo(String column, Date value) {
 			addCriterionForJDBCDate(new StringBuilder(column).append(" =").toString(), value);
 			return this;
@@ -357,11 +446,11 @@ public class QueryCondition implements Serializable{
 			addCriterionForJDBCDate(new StringBuilder(column).append(" NOT BETWEEN").toString(), value1, value2);
 			return this;
 		}
-		
-		//转义数据库的特殊字符
+
+		// 转义数据库的特殊字符
 		private Object escape(Object value) {
-			if (value != null && value instanceof String ) {
-				return StringUtils.escapeDb((String)value);
+			if (value != null && value instanceof String) {
+				return StringUtils.escapeDb((String) value);
 			}
 			return value;
 		}

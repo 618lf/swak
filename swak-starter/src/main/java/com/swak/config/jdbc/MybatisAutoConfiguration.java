@@ -90,6 +90,7 @@ public class MybatisAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(Dialect.class)
 	private Dialect dbDialect() {
 		Database db = this.dbProperties.getDb();
 		if (db == Database.h2) {

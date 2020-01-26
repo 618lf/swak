@@ -2,6 +2,7 @@ package com.swak.config.jdbc;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -10,18 +11,23 @@ import org.springframework.boot.autoconfigure.jdbc.JdbcProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import com.swak.config.jdbc.database.DataSourceProperties;
 import com.swak.config.jdbc.database.DruidDataSourceAutoConfiguration;
 import com.swak.config.jdbc.database.HikariDataSourceAutoConfiguration;
 import com.swak.config.jdbc.database.SqlLiteDataSourceAutoConfiguration;
 import com.swak.config.jdbc.sharding.ShardingJdbcConfiguration;
-import com.swak.persistence.JdbcSqlExecutor;
+import com.swak.persistence.Database;
+import com.swak.persistence.dialect.Dialect;
+import com.swak.persistence.dialect.H2Dialect;
+import com.swak.persistence.dialect.MySQLDialect;
+import com.swak.persistence.dialect.OracleDialect;
+import com.swak.persistence.dialect.SqlLiteDialect;
 
 /**
  * JDBC 操作模板
@@ -36,45 +42,44 @@ import com.swak.persistence.JdbcSqlExecutor;
 		HikariDataSourceAutoConfiguration.class })
 @EnableConfigurationProperties(JdbcProperties.class)
 public class JdbcTemplateAutoConfiguration {
-	@org.springframework.context.annotation.Configuration
-	static class JdbcTemplateConfiguration {
 
-		private final DataSource dataSource;
+	@Autowired
+	private DataSource dataSource;
+	@Autowired
+	private DataSourceProperties dbProperties;
 
-		private final JdbcProperties properties;
-
-		JdbcTemplateConfiguration(DataSource dataSource, JdbcProperties properties) {
-			this.dataSource = dataSource;
-			this.properties = properties;
-		}
-
-		@Bean
-		@Primary
-		@ConditionalOnMissingBean(JdbcOperations.class)
-		public JdbcTemplate jdbcTemplate() {
-			JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSource);
-			JdbcProperties.Template template = this.properties.getTemplate();
-			jdbcTemplate.setFetchSize(template.getFetchSize());
-			jdbcTemplate.setMaxRows(template.getMaxRows());
-			if (template.getQueryTimeout() != null) {
-				jdbcTemplate.setQueryTimeout((int) template.getQueryTimeout().getSeconds());
-			}
-			return jdbcTemplate;
-		}
+	@Bean
+	@Primary
+	@ConditionalOnMissingBean(JdbcOperations.class)
+	public JdbcTemplate jdbcTemplate() {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSource);
+		jdbcTemplate.setFetchSize(dbProperties.getJdbcFetchSize());
+		jdbcTemplate.setMaxRows(dbProperties.getJdbcMaxRows());
+		return jdbcTemplate;
 	}
 
-	@org.springframework.context.annotation.Configuration
-	@Import(JdbcTemplateConfiguration.class)
-	static class NamedParameterJdbcTemplateConfiguration {
+	@Bean
+	@Primary
+	@ConditionalOnSingleCandidate(JdbcTemplate.class)
+	@ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
+	public NamedParameterJdbcTemplate namedParameterJdbcTemplate(JdbcTemplate jdbcTemplate) {
+		NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(jdbcTemplate);
+		return template;
+	}
 
-		@Bean
-		@Primary
-		@ConditionalOnSingleCandidate(JdbcTemplate.class)
-		@ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
-		public NamedParameterJdbcTemplate namedParameterJdbcTemplate(JdbcTemplate jdbcTemplate) {
-			NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(jdbcTemplate);
-			JdbcSqlExecutor.setJdbcTemplate(template);
-			return template;
+	@Bean
+	@ConditionalOnMissingBean(Dialect.class)
+	private Dialect dbDialect() {
+		Database db = this.dbProperties.getDb();
+		if (db == Database.h2) {
+			return new H2Dialect();
+		} else if (db == Database.mysql) {
+			return new MySQLDialect();
+		} else if (db == Database.oracle) {
+			return new OracleDialect();
+		} else if (db == Database.sqlite) {
+			return new SqlLiteDialect();
 		}
+		return new MySQLDialect();
 	}
 }
