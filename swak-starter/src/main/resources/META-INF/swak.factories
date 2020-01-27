@@ -6,8 +6,8 @@ com.swak.ApplicationBoot=\
 com.swak.config.ApplicationAutoConfiguration,\
 com.swak.config.validator.ValidatorAutoConfiguration,\
 com.swak.config.jdbc.DataSourceAutoConfiguration,\
-com.swak.config.jdbc.JdbcTemplateAutoConfiguration,\
 com.swak.config.jdbc.DataSourceTransactionManagerConfiguration,\
+com.swak.config.jdbc.JdbcTemplateAutoConfiguration,\
 com.swak.config.jdbc.MybatisAutoConfiguration,\
 com.swak.config.http.HttpClientAutoConfiguration,\
 com.swak.config.redis.CacheAutoConfiguration,\

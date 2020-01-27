@@ -1,14 +1,16 @@
 package com.swak.config.jdbc;
 
+import static com.swak.Application.APP_LOGGER;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.jdbc.JdbcProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -17,6 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import com.swak.Constants;
 import com.swak.config.jdbc.database.DataSourceProperties;
 import com.swak.config.jdbc.database.DruidDataSourceAutoConfiguration;
 import com.swak.config.jdbc.database.HikariDataSourceAutoConfiguration;
@@ -36,17 +39,21 @@ import com.swak.persistence.dialect.SqlLiteDialect;
  */
 @Configuration
 @ConditionalOnClass(JdbcTemplate.class)
-@ConditionalOnSingleCandidate(DataSource.class)
+@ConditionalOnBean(DataSource.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, ShardingJdbcConfiguration.class,
 		SqlLiteDataSourceAutoConfiguration.class, DruidDataSourceAutoConfiguration.class,
 		HikariDataSourceAutoConfiguration.class })
-@EnableConfigurationProperties(JdbcProperties.class)
+@ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableJdbc", matchIfMissing = true)
 public class JdbcTemplateAutoConfiguration {
 
 	@Autowired
 	private DataSource dataSource;
 	@Autowired
 	private DataSourceProperties dbProperties;
+	
+	public JdbcTemplateAutoConfiguration() {
+		APP_LOGGER.debug("Loading Jdbc");
+	}
 
 	@Bean
 	@Primary
@@ -69,7 +76,7 @@ public class JdbcTemplateAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(Dialect.class)
-	private Dialect dbDialect() {
+	public Dialect dbDialect() {
 		Database db = this.dbProperties.getDb();
 		if (db == Database.h2) {
 			return new H2Dialect();
