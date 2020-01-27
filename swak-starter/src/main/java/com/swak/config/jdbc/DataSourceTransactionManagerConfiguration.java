@@ -33,6 +33,6 @@ import com.swak.config.jdbc.transaction.TransactionAutoConfiguration;
 		HikariDataSourceAutoConfiguration.class })
 public class DataSourceTransactionManagerConfiguration {
 	public DataSourceTransactionManagerConfiguration() {
-		APP_LOGGER.debug("Loading Transaction Manager");
+		APP_LOGGER.debug("Loading Tx");
 	}
 }
