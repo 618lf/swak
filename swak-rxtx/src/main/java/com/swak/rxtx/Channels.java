@@ -87,8 +87,10 @@ public class Channels {
 	 */
 	private void scanChannels() {
 		List<String> comms = SerialUtils.getCommNames();
-		for (String comm : comms) {
-			channels.computeIfAbsent(comm, (v) -> this.scanChannel(comm));
+		if (comms != null && comms.size() > 0) {
+			for (String comm : comms) {
+				channels.computeIfAbsent(comm, (v) -> this.scanChannel(comm));
+			}
 		}
 	}
 
