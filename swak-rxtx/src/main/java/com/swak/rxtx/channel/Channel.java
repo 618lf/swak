@@ -21,7 +21,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * 数据通讯管道
+ * 数据通讯 管道 -- 只能单线程访问
  * 
  * @author lifeng
  */
@@ -179,7 +179,7 @@ public class Channel {
 	 * 
 	 * @param data
 	 */
-	public void read() {
+	private void read() {
 		if (!inEventLoop()) {
 			this.eventLoop.execute(() -> {
 				this.read();
@@ -278,6 +278,12 @@ public class Channel {
 			});
 		} else {
 			try {
+
+				// 断开状态不能写数据
+				if (this.status == Status.断开) {
+					logger.error("设备已经断开");
+					return;
+				}
 
 				// 只能写入字节数组
 				byte[] command = null;
