@@ -41,7 +41,7 @@ public class EventLoopGroup {
 	 */
 	public void shutdown() {
 		eventLoops.forEach(eventLoop -> {
-			eventLoop.shutdownNow();
+			eventLoop.shutdown();
 		});
 	}
 }

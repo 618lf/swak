@@ -324,7 +324,7 @@ public class Channel {
 			});
 		} else {
 			try {
-				if (sport != null) {
+				if (sport != null && this.status != Status.断开) {
 					sport.notifyOnDataAvailable(false);
 					sport.removeEventListener();
 					sport.close();

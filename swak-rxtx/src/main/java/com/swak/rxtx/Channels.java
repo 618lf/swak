@@ -218,7 +218,7 @@ public class Channels {
 		 */
 		private void shutdown() {
 			if (heartbeat != null) {
-				heartbeat.shutdownNow();
+				heartbeat.shutdown();
 			}
 		}
 
