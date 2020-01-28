@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.closable.ShutDownHook;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.threads.ScheduledContext;
 import com.swak.rxtx.channel.Channel;
@@ -61,6 +63,11 @@ public class Channels {
 	protected Consumer<Channel> channelInit;
 
 	/**
+	 * 是否已经关闭
+	 */
+	private AtomicBoolean closed = new AtomicBoolean(false);
+
+	/**
 	 * 创建一个设备管理器
 	 * 
 	 * @param works
@@ -73,6 +80,22 @@ public class Channels {
 		this.eventLoops = new EventLoopGroup(works);
 		this.channelInit = channelInit;
 		_ME = this;
+
+		// 关闭系统时，关闭设备来释放资源
+		ShutDownHook.registerShutdownHook(() -> {
+			this.close();
+			this.heartbeat.shutdown();
+			this.eventLoops.shutdown();
+		});
+	}
+
+	/**
+	 * 是否运行中
+	 * 
+	 * @return
+	 */
+	public boolean isRunning() {
+		return !this.closed.get();
 	}
 
 	/**
@@ -111,49 +134,53 @@ public class Channels {
 	 * 刷新设备
 	 */
 	public void connect() {
+		if (!closed.get()) {
+			/**
+			 * 查找所有设备
+			 */
+			this.scanChannels();
 
-		/**
-		 * 查找所有设备
-		 */
-		this.scanChannels();
-
-		/**
-		 * 刷新所有设备
-		 */
-		channels.forEach((comm, device) -> {
-			device.connect();
-		});
+			/**
+			 * 刷新所有设备
+			 */
+			channels.forEach((comm, device) -> {
+				device.connect();
+			});
+		}
 	}
 
 	/**
 	 * 刷新设备
 	 */
 	public void close() {
-		/**
-		 * 刷新所有设备
-		 */
-		channels.forEach((comm, device) -> {
-			device.close();
-		});
+		if (closed.compareAndSet(false, true)) {
+			/**
+			 * 刷新所有设备
+			 */
+			channels.forEach((comm, device) -> {
+				device.close();
+			});
+		}
 	}
 
 	/**
 	 * 设备心跳, 发现新设备
 	 */
 	private void heartbeat() {
+		if (!closed.get()) {
+			// 设备心跳
+			if (logger.isDebugEnabled()) {
+				logger.debug("设备心跳，设备数:[{}]", channels.size());
+			}
 
-		// 设备心跳
-		if (logger.isDebugEnabled()) {
-			logger.debug("设备心跳，设备数:[{}]", channels.size());
+			// 尝试发现新设备
+			this.scanChannels();
+
+			// 处理设备的心跳
+			channels.forEach((comm, channel) -> {
+				channel.heartbeat();
+			});
 		}
-
-		// 尝试发现新设备
-		this.scanChannels();
-
-		// 处理设备的心跳
-		channels.forEach((comm, channel) -> {
-			channel.heartbeat();
-		});
 	}
 
 	/**
@@ -185,6 +212,16 @@ public class Channels {
 				heartbeat.scheduleAtFixedRate(this, 0, heartbeatSeconds, TimeUnit.SECONDS);
 			}
 		}
+
+		/**
+		 * 关闭
+		 */
+		private void shutdown() {
+			if (heartbeat != null) {
+				heartbeat.shutdownNow();
+			}
+		}
+
 	}
 
 	/**

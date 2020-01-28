@@ -38,7 +38,7 @@ public class RxtxAutoConfiguration implements ApplicationListener<ContextRefresh
 	 * @param channelInit
 	 * @return
 	 */
-	@Bean
+	@Bean(destroyMethod = "")
 	public Channels channels(Consumer<Channel> channelInit) {
 		return Channels.builder().setWorks(properties.getWorks()).setHeartbeatSeconds(properties.getHeartbeatSeconds())
 				.setChannelInit(channelInit).build();

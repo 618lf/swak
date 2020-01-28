@@ -35,4 +35,13 @@ public class EventLoopGroup {
 	public EventLoop next() {
 		return eventLoops.get(idx.getAndIncrement() & eventLoops.size() - 1);
 	}
+
+	/**
+	 * 关闭
+	 */
+	public void shutdown() {
+		eventLoops.forEach(eventLoop -> {
+			eventLoop.shutdownNow();
+		});
+	}
 }
