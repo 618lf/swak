@@ -347,8 +347,17 @@ public class Channel {
 	 * 
 	 * @return
 	 */
-	private boolean inEventLoop() {
+	public boolean inEventLoop() {
 		return this.eventLoop.inEventLoop();
+	}
+
+	/**
+	 * 在EventLoop中运行
+	 * 
+	 * @param task
+	 */
+	public void execute(Runnable task) {
+		this.eventLoop.execute(task);
 	}
 
 	/**

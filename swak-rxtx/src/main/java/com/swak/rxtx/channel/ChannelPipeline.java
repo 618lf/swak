@@ -60,35 +60,78 @@ public class ChannelPipeline extends ChannelHandler {
 	 * 触发连接事件
 	 */
 	public void fireConnectEvent(Channel channel) {
-		this.head.connect(channel);
+		if (!channel.inEventLoop()) {
+			channel.execute(() -> {
+				this.head.connect(channel);
+			});
+		} else {
+			this.head.connect(channel);
+		}
 	}
 
 	/**
 	 * 触发读取事件
 	 */
 	public void fireReadEvent(Channel channel, Object data) {
-		this.head.read(channel, data);
+		if (!channel.inEventLoop()) {
+			channel.execute(() -> {
+				this.head.read(channel, data);
+			});
+		} else {
+			this.head.read(channel, data);
+		}
 	}
 
 	/**
 	 * 触发写事件
 	 */
 	public void fireWriteEvent(Channel channel, Object data) {
-		this.tail.write(channel, data);
+		if (!channel.inEventLoop()) {
+			channel.execute(() -> {
+				this.tail.write(channel, data);
+			});
+		} else {
+			this.tail.write(channel, data);
+		}
 	}
 
 	/**
 	 * 触发心跳事件
 	 */
 	public void fireHeartbeatEvent(Channel channel) {
-		this.head.heartbeat(channel);
+		if (!channel.inEventLoop()) {
+			channel.execute(() -> {
+				this.head.heartbeat(channel);
+			});
+		} else {
+			this.head.heartbeat(channel);
+		}
 	}
 
 	/**
 	 * 触发关闭事件
 	 */
 	public void fireCloseEvent(Channel channel) {
-		this.head.close(channel);
+		if (!channel.inEventLoop()) {
+			channel.execute(() -> {
+				this.head.close(channel);
+			});
+		} else {
+			this.head.close(channel);
+		}
+	}
+
+	/**
+	 * 触发自定义事件
+	 */
+	public void fireCustomEvent(Channel channel, Object event) {
+		if (!channel.inEventLoop()) {
+			channel.execute(() -> {
+				this.head.custom(channel, event);
+			});
+		} else {
+			this.head.custom(channel, event);
+		}
 	}
 
 	/**

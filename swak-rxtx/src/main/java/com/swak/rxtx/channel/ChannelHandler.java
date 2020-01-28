@@ -92,4 +92,18 @@ public class ChannelHandler {
 			next.close(channel);
 		}
 	}
+
+	/**
+	 * 自定义事件处理
+	 * 
+	 * @param channel
+	 */
+	public void custom(Channel channel, Object event) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("处理设备：[{}]自定义事件, 处理器:[{}]", channel.comm(), this.getClass().getSimpleName());
+		}
+		if (next != null) {
+			next.custom(channel, event);
+		}
+	}
 }
