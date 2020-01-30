@@ -86,11 +86,11 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * 组装类型，子类型也一并组装
 	 */
 	private void initField(Class<?> parameterType) {
-		if (parameterType == HttpServerRequest.class || parameterType == HttpServerResponse.class
-				|| parameterType == RoutingContext.class || parameterType == Subject.class
-				|| parameterType == BindErrors.class || BeanUtils.isSimpleProperty(parameterType)
-				|| parameterType.isAssignableFrom(Collection.class) || parameterType.isAssignableFrom(List.class)
-				|| parameterType.isAssignableFrom(Map.class)) {
+		if (parameterType == null || parameterType == HttpServerRequest.class
+				|| parameterType == HttpServerResponse.class || parameterType == RoutingContext.class
+				|| parameterType == Subject.class || parameterType == BindErrors.class
+				|| BeanUtils.isSimpleProperty(parameterType) || parameterType.isAssignableFrom(Collection.class)
+				|| parameterType.isAssignableFrom(List.class) || parameterType.isAssignableFrom(Map.class)) {
 			return;
 		}
 
