@@ -182,4 +182,15 @@ public final class DateTimes {
 		return time.withHour(23).withMinute(59).withSecond(59).withNano(999999999);
 	}
 
+	/**
+	 * 格式化
+	 * 
+	 * @param date
+	 * @param formate
+	 * @return
+	 */
+	public static LocalDateTime parseDate(String date, String formate) {
+		DateTimeFormatter pattern = DateTimeFormatter.ofPattern(formate);
+		return LocalDateTime.parse(date, pattern);
+	}
 }

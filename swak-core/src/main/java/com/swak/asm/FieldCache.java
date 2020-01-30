@@ -10,6 +10,8 @@ import java.lang.reflect.TypeVariable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.swak.entity.BaseEntity;
+import com.swak.entity.IdEntity;
 import com.swak.utils.Maps;
 import com.swak.utils.ReflectUtils;
 
@@ -31,7 +33,7 @@ public class FieldCache {
 		CACHES.putIfAbsent(type, new ClassMeta(type));
 		return CACHES.get(type);
 	}
-	
+
 	/**
 	 * 获取
 	 * 
@@ -79,14 +81,16 @@ public class FieldCache {
 					continue;
 				}
 
-				// support builder set
-				Class<?> returnType = method.getReturnType();
-				if (!(returnType.equals(Void.TYPE) || returnType.equals(method.getDeclaringClass()))) {
+				// exclude object method
+				if (method.getDeclaringClass() == Object.class) {
 					continue;
 				}
 
-				// exclude object method
-				if (method.getDeclaringClass() == Object.class) {
+				// support builder set
+				Class<?> returnType = method.getReturnType();
+				if (!(returnType.equals(Void.TYPE) || returnType.equals(method.getDeclaringClass())
+						|| method.getDeclaringClass() == IdEntity.class
+						|| method.getDeclaringClass() == BaseEntity.class)) {
 					continue;
 				}
 

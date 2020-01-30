@@ -87,6 +87,11 @@ public class BaseJdbcDao {
 		} else {
 			valueSql = new StringBuilder(valueSql).append(" ").append(qc.toString()).toString();
 		}
+		
+		// 排序条件
+		if (StringUtils.isNotBlank(qc.getOrderByClause())) {
+			valueSql = new StringBuilder(valueSql).append(" ORDER BY ").append(qc.getOrderByClause()).toString();
+		}
 
 		// 查询数量
 		String countSql = new StringBuilder("SELECT COUNT(1) C FROM (").append(valueSql).append(")").toString();

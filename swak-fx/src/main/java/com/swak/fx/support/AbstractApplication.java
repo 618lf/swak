@@ -37,8 +37,8 @@ public abstract class AbstractApplication extends Application implements EventLi
 
 	protected AbstractApplication() {
 		splashIsShowing = new CompletableFuture<>();
-		eventBus = new AsyncEventBus("app",
-				Executors.newFixedThreadPool(1, new EventLoopFactory(true, "app", new AtomicLong())));
+		eventBus = new AsyncEventBus("UI.app",
+				Executors.newFixedThreadPool(1, new EventLoopFactory(true, "UI.app", new AtomicLong())));
 		eventBus.register(this);
 		Display.setEventBus(eventBus);
 	}
