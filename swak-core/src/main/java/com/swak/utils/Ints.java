@@ -1,5 +1,7 @@
 package com.swak.utils;
 
+import java.math.BigInteger;
+
 /**
  * int 类型工具类
  * 
@@ -7,22 +9,24 @@ package com.swak.utils;
  * 
  */
 public final class Ints {
-	
+
 	public static final int MAX_POWER_OF_TWO = 1 << (Integer.SIZE - 2);
-	  
-	private Ints() {}
-	
+
+	private Ints() {
+	}
+
 	/**
 	 * 默认值
+	 * 
 	 * @param v1
 	 * @param v2
 	 * @return
 	 */
 	public static int defaultInteger(Integer v1, Integer v2) {
-		if(v1 != null) {
-		   return v1;
-		} else if(v2 == null) {
-		   return 0;
+		if (v1 != null) {
+			return v1;
+		} else if (v2 == null) {
+			return 0;
 		}
 		return v2;
 	}
@@ -30,11 +34,10 @@ public final class Ints {
 	/**
 	 * Returns the {@code int} nearest in value to {@code value}.
 	 * 
-	 * @param value
-	 *            any {@code long} value
+	 * @param value any {@code long} value
 	 * @return the same value cast to {@code int} if it is in the range of the
-	 *         {@code int} type, {@link Integer#MAX_VALUE} if it is too large,
-	 *         or {@link Integer#MIN_VALUE} if it is too small
+	 *         {@code int} type, {@link Integer#MAX_VALUE} if it is too large, or
+	 *         {@link Integer#MIN_VALUE} if it is too small
 	 */
 	public static int saturatedCast(long value) {
 		if (value > Integer.MAX_VALUE) {
@@ -45,62 +48,67 @@ public final class Ints {
 		}
 		return (int) value;
 	}
-	
+
 	/**
 	 * 整形的添加
+	 * 
 	 * @param values
 	 * @return
 	 */
-	public static int add(int ... values) {
+	public static int add(int... values) {
 		int num = 0;
-		if(values != null && values.length != 0) {
-			for(int value: values) {
+		if (values != null && values.length != 0) {
+			for (int value : values) {
 				num += value;
 			}
 		}
 		return num;
 	}
-	
+
 	/**
 	 * 先比较最小的，在随机取一个0~最小的之前的整数
+	 * 
 	 * @param one
 	 * @param two
 	 * @return
 	 */
-	public static int random(int num){
+	public static int random(int num) {
 		return (int) (Math.random() * num);
 	}
-	
+
 	/**
 	 * 先比较最小的，在随机取一个0~最小的之前的整数
+	 * 
 	 * @param one
 	 * @param two
 	 * @return
 	 */
-	public static int random(int max, int min){
+	public static int random(int max, int min) {
 		return (int) (Math.random() * (max - min + 1)) + min;
 	}
-	
+
 	/**
 	 * 最小值
+	 * 
 	 * @param one
 	 * @param two
 	 * @return
 	 */
-	public static int min(int one, int two){
-		return one >= two? two: one;
+	public static int min(int one, int two) {
+		return one >= two ? two : one;
 	}
-	
+
 	/**
 	 * 最大值
+	 * 
 	 * @param one
 	 * @param two
 	 * @return
 	 */
-	public static int max(int one, int two){
-		return one >= two? one: two;
+	public static int max(int one, int two) {
+		return one >= two ? one : two;
 	}
-	
+
 	/**
 	 * nullToZero
 	 * 
@@ -108,56 +116,83 @@ public final class Ints {
 	 * @return
 	 */
 	public static int nullToZero(Integer value) {
-		return value == null?0:value.intValue();
+		return value == null ? 0 : value.intValue();
 	}
-	
+
 	/**
 	 * 整形的添加
+	 * 
 	 * @param values
 	 * @return
 	 */
-	public static int addI(Integer ... values) {
+	public static int addI(Integer... values) {
 		int num = 0;
 		if (values != null && values.length != 0) {
-			for(Integer value: values) {
+			for (Integer value : values) {
 				num += nullToZero(value);
 			}
 		}
 		return num;
 	}
-	
+
 	/**
 	 * 整形的减法
+	 * 
 	 * @param values
 	 * @return
 	 */
-	public static int subI(Integer minuend, Integer ...subs) {
-		if( subs != null && subs.length != 0) {
-			for( Integer value: subs ) {
+	public static int subI(Integer minuend, Integer... subs) {
+		if (subs != null && subs.length != 0) {
+			for (Integer value : subs) {
 				minuend = nullToZero(minuend) - nullToZero(value);
 			}
 		}
 		return nullToZero(minuend);
 	}
-	
+
 	/**
 	 * 平均值
+	 * 
 	 * @param x
 	 * @param y
 	 * @return
 	 */
 	public static int average(int x, int y) {
-		return (x&y)+((x^y)>>1); 
+		return (x & y) + ((x ^ y) >> 1);
 	}
-	
+
 	/**
 	 * 计算绝对值
+	 * 
 	 * @param x
 	 * @return
 	 */
-	public static int abs(int x) { 
-		int y ; 
-		y = x >> 31 ; 
-		return (x^y)-y ; 
+	public static int abs(int x) {
+		int y;
+		y = x >> 31;
+		return (x ^ y) - y;
+	}
+
+	/**
+	 * 转换为16进制字符
+	 * 
+	 * @param numb
+	 * @return
+	 */
+	public static String encodeHEX(Integer numb) {
+		String hex = Integer.toHexString(numb);
+		return hex;
+	}
+
+	/**
+	 * 16进制字符 转为 数字
+	 * 
+	 * @param hexs
+	 * @return
+	 */
+	public static int decodeHEX(String hexs) {
+		BigInteger bigint = new BigInteger(hexs, 16);
+		int numb = bigint.intValue();
+		return numb;
 	}
 }
