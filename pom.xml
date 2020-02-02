@@ -77,7 +77,7 @@
 		<poi.version>4.0.1</poi.version>
 		<guava.version>21.0</guava.version>
 		<controlsfx.version>11.0.1</controlsfx.version>
-		<javafx.version>11.0.2</javafx.version>
+		<javafx.version>13.0.2</javafx.version>
 		<freemarker.version>2.3.29</freemarker.version>
 		<rabbitmq.version>5.7.3</rabbitmq.version>
 		<rocketmq.version>4.5.1</rocketmq.version>
