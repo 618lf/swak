@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.fxsample.model;
+package fxsampler.model;
 
 import javafx.scene.Node;
 

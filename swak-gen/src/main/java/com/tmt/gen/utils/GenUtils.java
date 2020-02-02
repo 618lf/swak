@@ -25,6 +25,7 @@ import com.tmt.gen.entity.TableColumn;
 import com.tmt.gen.entity.Template;
 import com.tmt.gen.service.TableService;
 
+@SuppressWarnings("deprecation")
 public class GenUtils {
 
 	private static String REMOVE = "_RM_";

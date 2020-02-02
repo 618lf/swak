@@ -11,7 +11,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -21,11 +20,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.collect.Sets;
-import com.sun.javafx.scene.control.behavior.BehaviorBase;
-import com.sun.javafx.scene.control.behavior.KeyBinding;
-import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
 import com.sun.javafx.scene.traversal.ParentTraversalEngine;
 
+import impl.org.controlsfx.ReflectionUtils;
 import javafx.animation.Animation.Status;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -54,6 +51,7 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Skin;
+import javafx.scene.control.SkinBase;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -66,11 +64,8 @@ import javafx.util.Duration;
 /**
  * 带有下载功能的组件
  * 
- * @see org.controlsfx.control.NotificationPane
- * 
  * @author lifeng
  */
-@SuppressWarnings("restriction")
 public class DownloadPane extends Control {
 
 	/***************************************************************************
@@ -187,18 +182,16 @@ public class DownloadPane extends Control {
 	}
 
 	/**
-	 * 
 	 * @author lifeng
 	 */
-	public static class DownloadPaneSkin extends BehaviorSkinBase<DownloadPane, BehaviorBase<DownloadPane>> {
+	public static class DownloadPaneSkin extends SkinBase<DownloadPane> {
 
 		private DownloadParts downloadParts;
 		private Node content;
 		private Rectangle clip = new Rectangle();
 
-		@SuppressWarnings("deprecation")
 		protected DownloadPaneSkin(DownloadPane control) {
-			super(control, new BehaviorBase<>(control, Collections.<KeyBinding>emptyList()));
+			super(control);
 			downloadParts = new DownloadParts() {
 				@Override
 				public void requestContainerLayout() {
@@ -227,14 +220,14 @@ public class DownloadPane extends Control {
 			};
 			control.setClip(clip);
 			updateContent();
-			registerChangeListener(control.heightProperty(), "HEIGHT"); //$NON-NLS-1$
-			registerChangeListener(control.contentProperty(), "CONTENT"); //$NON-NLS-1$
-			registerChangeListener(control.showingProperty(), "SHOWING"); //$NON-NLS-1$
-			registerChangeListener(control.downloadsProperty(), "DOWNLOADS"); //$NON-NLS-1$
+			registerChangeListener(control.heightProperty(), e -> this.handleControlPropertyChanged("HEIGHT")); // "HEIGHT"
+			registerChangeListener(control.contentProperty(), e -> this.handleControlPropertyChanged("CONTENT")); // "CONTENT"
+			registerChangeListener(control.showingProperty(), e -> this.handleControlPropertyChanged("SHOWING")); // "SHOWING"
+			registerChangeListener(control.downloadsProperty(), e -> this.handleControlPropertyChanged("DOWNLOADS")); // "DOWNLOADS"
 
-			// Fix for Issue #522: Prevent DownloadPane from receiving focus
+			// Fix for Issue #522: Prevent NotificationPane from receiving focus
 			ParentTraversalEngine engine = new ParentTraversalEngine(getSkinnable());
-			getSkinnable().setImpl_traversalEngine(engine);
+			ReflectionUtils.setTraversalEngine(control, engine);
 			engine.setOverriddenFocusTraversability(false);
 		}
 
@@ -253,9 +246,7 @@ public class DownloadPane extends Control {
 		/**
 		 * 事件更新的回调
 		 */
-		@Override
 		protected void handleControlPropertyChanged(String p) {
-			super.handleControlPropertyChanged(p);
 			if ("CONTENT".equals(p)) { //$NON-NLS-1$
 				updateContent();
 			} else if ("SHOWING".equals(p)) { //$NON-NLS-1$

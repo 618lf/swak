@@ -6,7 +6,7 @@ import java.util.jar.Manifest;
 
 import org.controlsfx.samples.Utils;
 
-import com.fxsample.SampleBase;
+import fxsampler.SampleBase;
 
 public abstract class ControlsFXSample extends SampleBase {
 
