@@ -1,6 +1,7 @@
 package com.swak.utils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class BigDecimalUtil {
 
@@ -14,10 +15,8 @@ public class BigDecimalUtil {
 	/**
 	 * 提供精确的加法运算。
 	 * 
-	 * @param v1
-	 *            被加数
-	 * @param v2
-	 *            加数
+	 * @param v1 被加数
+	 * @param v2 加数
 	 * @return 两个参数的和
 	 */
 	public static double add(double v1, double v2) {
@@ -43,10 +42,8 @@ public class BigDecimalUtil {
 	/**
 	 * 判断是否为空
 	 * 
-	 * @param v1
-	 *            被加数
-	 * @param v2
-	 *            加数
+	 * @param v1 被加数
+	 * @param v2 加数
 	 * @return 两个参数的和
 	 */
 	public static BigDecimal add(BigDecimal v1, BigDecimal v2) {
@@ -62,10 +59,8 @@ public class BigDecimalUtil {
 	/**
 	 * 判断是否为空
 	 * 
-	 * @param v1
-	 *            被加数
-	 * @param v2
-	 *            加数
+	 * @param v1 被加数
+	 * @param v2 加数
 	 * @return 两个参数的和
 	 */
 	public static BigDecimal add(BigDecimal... values) {
@@ -82,10 +77,8 @@ public class BigDecimalUtil {
 	/**
 	 * 判断是否为空
 	 * 
-	 * @param v1
-	 *            被加数
-	 * @param v2
-	 *            加数
+	 * @param v1 被加数
+	 * @param v2 加数
 	 * @return 两个参数的和
 	 */
 	public static BigDecimal sub(BigDecimal v1, BigDecimal v2) {
@@ -101,10 +94,8 @@ public class BigDecimalUtil {
 	/**
 	 * 判断是否为空
 	 * 
-	 * @param v1
-	 *            被加数
-	 * @param v2
-	 *            加数
+	 * @param v1 被加数
+	 * @param v2 加数
 	 * @return 两个参数的和
 	 */
 	public static BigDecimal sub(BigDecimal... values) {
@@ -125,10 +116,8 @@ public class BigDecimalUtil {
 	/**
 	 * 提供非负数的减法
 	 * 
-	 * @param v1
-	 *            被加数
-	 * @param v2
-	 *            加数
+	 * @param v1 被加数
+	 * @param v2 加数
 	 * @return 两个参数的和
 	 */
 	public static BigDecimal subNonnegative(BigDecimal v1, BigDecimal v2) {
@@ -144,10 +133,8 @@ public class BigDecimalUtil {
 
 	/**
 	 * @Title: 两数相除
-	 * @param v1:
-	 *            被除数
-	 * @param v2:
-	 *            除数
+	 * @param v1: 被除数
+	 * @param v2: 除数
 	 * @return BigDecimal 返回类型
 	 */
 	public static BigDecimal div(BigDecimal v1, BigDecimal v2) {
@@ -166,10 +153,8 @@ public class BigDecimalUtil {
 	/**
 	 * 提供精确的减法运算。
 	 * 
-	 * @param v1
-	 *            被减数
-	 * @param v2
-	 *            减数
+	 * @param v1 被减数
+	 * @param v2 减数
 	 * @return 两个参数的差
 	 */
 	public static double sub(double v1, double v2) {
@@ -181,10 +166,8 @@ public class BigDecimalUtil {
 	/**
 	 * 提供精确的乘法运算。
 	 * 
-	 * @param v1
-	 *            被乘数
-	 * @param v2
-	 *            乘数
+	 * @param v1 被乘数
+	 * @param v2 乘数
 	 * @return 两个参数的积
 	 */
 	public static BigDecimal mul(BigDecimal v1, BigDecimal v2) {
@@ -197,10 +180,8 @@ public class BigDecimalUtil {
 	/**
 	 * 提供精确的乘法运算。
 	 * 
-	 * @param v1
-	 *            被乘数
-	 * @param v2
-	 *            乘数
+	 * @param v1 被乘数
+	 * @param v2 乘数
 	 * @return 两个参数的积
 	 */
 	public static double mul(double v1, double v2) {
@@ -212,10 +193,8 @@ public class BigDecimalUtil {
 	/**
 	 * 提供（相对）精确的除法运算，当发生除不尽的情况时，精确到 小数点以后10位，以后的数字四舍五入。
 	 * 
-	 * @param v1
-	 *            被除数
-	 * @param v2
-	 *            除数
+	 * @param v1 被除数
+	 * @param v2 除数
 	 * @return 两个参数的商
 	 */
 	public static double div(double v1, double v2) {
@@ -225,12 +204,9 @@ public class BigDecimalUtil {
 	/**
 	 * 提供（相对）精确的除法运算。当发生除不尽的情况时，由scale参数指 定精度，以后的数字四舍五入。
 	 * 
-	 * @param v1
-	 *            被除数
-	 * @param v2
-	 *            除数
-	 * @param scale
-	 *            表示表示需要精确到小数点以后几位。
+	 * @param v1    被除数
+	 * @param v2    除数
+	 * @param scale 表示表示需要精确到小数点以后几位。
 	 * @return 两个参数的商
 	 */
 
@@ -240,18 +216,15 @@ public class BigDecimalUtil {
 		}
 		BigDecimal b1 = new BigDecimal(Double.toString(v1));
 		BigDecimal b2 = new BigDecimal(Double.toString(v2));
-		return b1.divide(b2, scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+		return b1.divide(b2, scale, RoundingMode.HALF_UP).doubleValue();
 	}
 
 	/**
 	 * 提供（相对）精确的除法运算。当发生除不尽的情况时，由scale参数指 定精度，以后的数字四舍五入。
 	 * 
-	 * @param v1
-	 *            被除数
-	 * @param v2
-	 *            除数
-	 * @param scale
-	 *            表示表示需要精确到小数点以后几位。
+	 * @param v1    被除数
+	 * @param v2    除数
+	 * @param scale 表示表示需要精确到小数点以后几位。
 	 * @return 两个参数的商
 	 */
 
@@ -259,16 +232,14 @@ public class BigDecimalUtil {
 		if (scale < 0) {
 			throw new IllegalArgumentException("The scale must be a positive integer or zero");
 		}
-		return v1.divide(v2, scale, BigDecimal.ROUND_HALF_UP);
+		return v1.divide(v2, scale, RoundingMode.HALF_UP);
 	}
 
 	/**
 	 * 提供精确的小数位四舍五入处理。
 	 * 
-	 * @param v
-	 *            需要四舍五入的数字
-	 * @param scale
-	 *            小数点后保留几位
+	 * @param v     需要四舍五入的数字
+	 * @param scale 小数点后保留几位
 	 * @return 四舍五入后的结果
 	 */
 	public static double round(double v, int scale) {
@@ -277,16 +248,14 @@ public class BigDecimalUtil {
 		}
 		BigDecimal b = new BigDecimal(Double.toString(v));
 		BigDecimal one = new BigDecimal("1");
-		return b.divide(one, scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+		return b.divide(one, scale, RoundingMode.HALF_UP).doubleValue();
 	}
 
 	/**
 	 * 提供精确的小数位四舍五入处理。
 	 * 
-	 * @param v
-	 *            需要四舍五入的数字
-	 * @param scale
-	 *            小数点后保留几位
+	 * @param v     需要四舍五入的数字
+	 * @param scale 小数点后保留几位
 	 * @return 四舍五入后的结果
 	 */
 	public static double floor(double v, int scale) {
@@ -295,7 +264,7 @@ public class BigDecimalUtil {
 		}
 		BigDecimal b = new BigDecimal(Double.toString(v));
 		BigDecimal one = new BigDecimal("1");
-		return b.divide(one, scale, BigDecimal.ROUND_HALF_DOWN).doubleValue();
+		return b.divide(one, scale, RoundingMode.HALF_DOWN).doubleValue();
 	}
 
 	/**
@@ -411,6 +380,6 @@ public class BigDecimalUtil {
 	public static String toString(BigDecimal d1, int scale) {
 		BigDecimal b = d1;
 		BigDecimal one = new BigDecimal("1");
-		return b.divide(one, scale, BigDecimal.ROUND_HALF_UP).toString();
+		return b.divide(one, scale, RoundingMode.HALF_UP).toString();
 	}
 }

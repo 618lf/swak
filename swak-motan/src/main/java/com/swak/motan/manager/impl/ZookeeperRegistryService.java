@@ -19,9 +19,8 @@ package com.swak.motan.manager.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.I0Itec.zkclient.ZkClient;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.fastjson.JSONObject;
@@ -29,7 +28,7 @@ import com.swak.motan.manager.RegistryService;
 import com.swak.motan.manager.ZkClientWrapper;
 import com.weibo.api.motan.common.MotanConstants;
 
-public class ZookeeperRegistryService implements RegistryService {
+public class ZookeeperRegistryService implements RegistryService, InitializingBean {
 
 	@Autowired
 	private ZkClientWrapper clientWrapper;
@@ -42,7 +41,6 @@ public class ZookeeperRegistryService implements RegistryService {
 		this.zkClient = zkClient;
 	}
 
-	@PostConstruct
 	void init() {
 		zkClient = clientWrapper.getZkClient();
 	}
@@ -113,5 +111,10 @@ public class ZookeeperRegistryService implements RegistryService {
 			children = zkClient.getChildren(path);
 		}
 		return children;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.init();
 	}
 }

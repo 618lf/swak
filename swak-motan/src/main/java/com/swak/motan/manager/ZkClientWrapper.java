@@ -1,8 +1,5 @@
 package com.swak.motan.manager;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import org.I0Itec.zkclient.ZkClient;
 
 import com.weibo.api.motan.exception.MotanFrameworkException;
@@ -16,7 +13,6 @@ public class ZkClientWrapper {
 		this.registryUrl = registryUrl;
 	}
 
-	@PostConstruct
 	void init() {
 		try {
 			zkClient = new ZkClient(registryUrl, 10000);
@@ -25,7 +21,6 @@ public class ZkClientWrapper {
 		}
 	}
 
-	@PreDestroy
 	void destory() {
 		zkClient = null;
 	}

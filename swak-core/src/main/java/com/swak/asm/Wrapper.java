@@ -387,7 +387,7 @@ public abstract class Wrapper {
 			int ix = 0;
 			for (Method m : ms.values())
 				wc.getField("mts" + ix++).set(null, m.getParameterTypes());
-			return (Wrapper) wc.newInstance();
+			return (Wrapper) wc.getDeclaredConstructor().newInstance();
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Throwable e) {

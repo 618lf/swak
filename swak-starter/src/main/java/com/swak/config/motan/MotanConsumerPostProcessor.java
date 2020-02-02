@@ -81,7 +81,7 @@ public class MotanConsumerPostProcessor implements ApplicationContextAware, Bean
 
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
-			if (!field.isAccessible()) {
+			if (!field.canAccess(bean)) {
 				field.setAccessible(true);
 			}
 			MotanReferer reference = field.getAnnotation(MotanReferer.class);
@@ -131,7 +131,7 @@ public class MotanConsumerPostProcessor implements ApplicationContextAware, Bean
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
 			try {
-				if (!field.isAccessible()) {
+				if (!field.canAccess(bean)) {
 					field.setAccessible(true);
 				}
 				MotanReferer reference = field.getAnnotation(MotanReferer.class);

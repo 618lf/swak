@@ -245,7 +245,7 @@ public abstract class BaseService<T> {
 	 */
 	protected T newInstance() {
 		try {
-			return this.getTargetClass().newInstance();
+			return this.getTargetClass().getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			return null;
 		}

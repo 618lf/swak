@@ -52,7 +52,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
 			try {
-				if (!field.isAccessible()) {
+				if (!field.canAccess(bean)) {
 					field.setAccessible(true);
 				}
 				FluxReferer reference = field.getAnnotation(FluxReferer.class);
@@ -76,7 +76,7 @@ public class AnnotationBean implements BeanPostProcessor, Ordered {
 			referenceBean = newRefer(interfaceType);
 			references.put(interfaceType.getName(), referenceBean);
 		}
-		return referenceBean; 
+		return referenceBean;
 	}
 
 	private Object newRefer(Class<?> interfaceType) {

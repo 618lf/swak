@@ -19,9 +19,8 @@ package com.swak.motan.manager.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.I0Itec.zkclient.ZkClient;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.fastjson.JSONObject;
@@ -30,13 +29,12 @@ import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.registry.support.command.RpcCommand;
 import com.weibo.api.motan.registry.support.command.RpcCommandUtil;
 
-public class ZookeeperCommandService extends AbstractCommandService {
+public class ZookeeperCommandService extends AbstractCommandService implements InitializingBean {
 
 	@Autowired
 	private ZkClientWrapper clientWrapper;
 	private ZkClient zkClient;
 
-	@PostConstruct
 	void init() {
 		zkClient = clientWrapper.getZkClient();
 	}
@@ -105,5 +103,10 @@ public class ZookeeperCommandService extends AbstractCommandService {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.init();
 	}
 }

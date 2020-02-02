@@ -430,7 +430,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			boolean check) {
 		Object obj = null;
 		try {
-			obj = clazz.newInstance();
+			obj = clazz.getDeclaredConstructor().newInstance();
 			ClassMeta classMeta = FieldCache.get(clazz);
 			if (classMeta != null && !arguments.isEmpty()) {
 				this.fillObjectValue(obj, classMeta.getFields(), pname, arguments, context, check);

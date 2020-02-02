@@ -152,7 +152,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
 			try {
-				if (!field.isAccessible()) {
+				if (!field.canAccess(bean)) {
 					field.setAccessible(true);
 				}
 				VertxReferer reference = field.getAnnotation(VertxReferer.class);

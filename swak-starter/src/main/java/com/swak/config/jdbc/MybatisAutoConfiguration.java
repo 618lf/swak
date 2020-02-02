@@ -4,7 +4,6 @@ import static com.swak.Application.APP_LOGGER;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.apache.ibatis.mapping.DatabaseIdProvider;
@@ -14,6 +13,7 @@ import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -59,7 +59,7 @@ import com.swak.utils.StringUtils;
 		SqlLiteDataSourceAutoConfiguration.class, DruidDataSourceAutoConfiguration.class,
 		HikariDataSourceAutoConfiguration.class })
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMybatis", matchIfMissing = true)
-public class MybatisAutoConfiguration {
+public class MybatisAutoConfiguration implements InitializingBean {
 	private final DataSourceProperties dbProperties;
 	private final MybatisProperties properties;
 	private final Interceptor[] interceptors;
@@ -80,7 +80,11 @@ public class MybatisAutoConfiguration {
 		this.configurationCustomizers = configurationCustomizersProvider.getIfAvailable();
 	}
 
-	@PostConstruct
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.checkConfigFileExists();
+	}
+
 	public void checkConfigFileExists() {
 		if (this.properties.isCheckConfigLocation() && StringUtils.hasText(this.properties.getConfigLocation())) {
 			Resource resource = this.resourceLoader.getResource(this.properties.getConfigLocation());

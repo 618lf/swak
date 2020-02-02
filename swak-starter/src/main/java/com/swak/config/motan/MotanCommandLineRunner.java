@@ -1,7 +1,6 @@
 package com.swak.config.motan;
 
-import javax.annotation.Resource;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +21,7 @@ import com.weibo.api.motan.util.MotanSwitcherUtil;
 public class MotanCommandLineRunner implements CommandLineRunner {
 
 	/** Registry Config */
-	@Resource
+	@Autowired
 	private RegistryConfigProperties registryConfig;
 
 	@Override

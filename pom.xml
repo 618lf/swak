@@ -82,6 +82,7 @@
 		<rabbitmq.version>5.7.3</rabbitmq.version>
 		<rocketmq.version>4.5.1</rocketmq.version>
 		<lombok.version>1.18.8</lombok.version>
+		<jaxb.version>2.4.0-b180830.0359</jaxb.version>
 
 		<!-- test -->
 		<junit.version>4.12</junit.version>
