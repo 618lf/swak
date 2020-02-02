@@ -66,6 +66,8 @@ import javafx.util.Duration;
 /**
  * 带有下载功能的组件
  * 
+ * @see org.controlsfx.control.NotificationPane
+ * 
  * @author lifeng
  */
 @SuppressWarnings("restriction")
