@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.swak</groupId>
     <artifactId>swak</artifactId>
-    <version>1.0.0_final</version>
+    <version>jre11-1.0.0_final</version>
   </parent>
   <artifactId>swak-app</artifactId>
   <packaging>pom</packaging>

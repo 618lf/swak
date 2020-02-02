@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.swak</groupId>
 	<artifactId>swak</artifactId>
-	<version>1.0.0_final</version>
+	<version>jre11-1.0.0_final</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>swak-core</module>
