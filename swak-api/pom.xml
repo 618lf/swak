@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -7,12 +8,12 @@
 		<version>jre11-1.0.0_final</version>
 	</parent>
 	<artifactId>swak-api</artifactId>
-	<packaging>maven-plugin</packaging>
+	<!-- <packaging>maven-plugin</packaging> -->
 	<name>swak-api</name>
 	<properties>
-	    <qdox.version>2.0-M10</qdox.version>
-	    <javafaker.version>1.0.1</javafaker.version>
-	    <lombok.version>1.18.10</lombok.version>
+		<qdox.version>2.0-M10</qdox.version>
+		<javafaker.version>1.0.1</javafaker.version>
+		<lombok.version>1.18.10</lombok.version>
 		<maven-plugin-api>3.6.2</maven-plugin-api>
 		<maven-plugin-annotations.version>3.6.0</maven-plugin-annotations.version>
 		<maven-plugin-plugin.version>3.6.0</maven-plugin-plugin.version>
@@ -23,26 +24,26 @@
 			<artifactId>swak-core</artifactId>
 		</dependency>
 		<dependency>
-            <groupId>com.thoughtworks.qdox</groupId>
-            <artifactId>qdox</artifactId>
-            <version>${qdox.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>${javafaker.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.shalousun</groupId>
-            <artifactId>common-util</artifactId>
-            <version>1.8.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
-        </dependency>
+			<groupId>com.thoughtworks.qdox</groupId>
+			<artifactId>qdox</artifactId>
+			<version>${qdox.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.javafaker</groupId>
+			<artifactId>javafaker</artifactId>
+			<version>${javafaker.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.shalousun</groupId>
+			<artifactId>common-util</artifactId>
+			<version>1.8.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
@@ -61,57 +62,16 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-plugin-plugin</artifactId>
-				<version>${maven-plugin-plugin.version}</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>descriptor</goal>
-						</goals>
-						<phase>generate-resources</phase>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-plugin-plugin
-										</artifactId>
-										<versionRange>
-											[3.6.0,)
-										</versionRange>
-										<goals>
-											<goal>descriptor</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+	<!-- <build> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
+		<artifactId>maven-plugin-plugin</artifactId> <version>${maven-plugin-plugin.version}</version> 
+		<executions> <execution> <goals> <goal>descriptor</goal> </goals> <phase>generate-resources</phase> 
+		</execution> </executions> </plugin> </plugins> <pluginManagement> <plugins> 
+		<plugin> <groupId>org.eclipse.m2e</groupId> <artifactId>lifecycle-mapping</artifactId> 
+		<version>1.0.0</version> <configuration> <lifecycleMappingMetadata> <pluginExecutions> 
+		<pluginExecution> <pluginExecutionFilter> <groupId> org.apache.maven.plugins 
+		</groupId> <artifactId> maven-plugin-plugin </artifactId> <versionRange> 
+		[3.6.0,) </versionRange> <goals> <goal>descriptor</goal> </goals> </pluginExecutionFilter> 
+		<action> <ignore></ignore> </action> </pluginExecution> </pluginExecutions> 
+		</lifecycleMappingMetadata> </configuration> </plugin> </plugins> </pluginManagement> 
+		</build> -->
 </project>

@@ -258,7 +258,6 @@
 				<configuration>
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
-					<release>${jdk.version}</release>
 					<encoding>${project.build.sourceEncoding}</encoding>
 					<compilerArgs>
 						<arg>-XDignore.symbol.file</arg>
