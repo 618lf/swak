@@ -325,13 +325,15 @@ public class Channel {
 			});
 		} else {
 			try {
-				if (sport != null && this.status != Status.断开) {
-					sport.notifyOnDataAvailable(false);
-					sport.removeEventListener();
-					sport.close();
+				if (this.sport != null && this.status != Status.断开) {
+					this.sport.notifyOnDataAvailable(false);
+					this.sport.removeEventListener();
+					this.sport.close();
+					this.sport = null;
+					this.status = Status.断开;
 					this.pipeline.fireCloseEvent(this);
 				}
-				sport = null;
+				this.sport = null;
 				this.status = Status.断开;
 
 				if (logger.isDebugEnabled()) {
