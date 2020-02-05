@@ -140,6 +140,7 @@ public class Channel {
 			this.sport.notifyOnFramingError(true);
 			this.sport.notifyOnBreakInterrupt(true);
 			this.status = Status.连接;
+			this.heartbeat();
 
 			if (logger.isDebugEnabled()) {
 				logger.debug("设备上线：[{}]", this.comm);
