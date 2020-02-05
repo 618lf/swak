@@ -36,9 +36,10 @@ public class BaseJdbcDao {
 	 * @return
 	 */
 	public <T> T get(String sql, Map<String, ?> param, RowMapper<T> rowMapper) {
-		return jdbcTemplate.queryForObject(sql, param, rowMapper);
+		List<T> datas = jdbcTemplate.query(sql, param, rowMapper);
+		return datas != null && datas.size() >= 1 ? datas.get(0) : null;
 	}
-	
+
 	/**
 	 * 插入数据
 	 * 
@@ -87,7 +88,7 @@ public class BaseJdbcDao {
 		} else {
 			valueSql = new StringBuilder(valueSql).append(" ").append(qc.toString()).toString();
 		}
-		
+
 		// 排序条件
 		if (StringUtils.isNotBlank(qc.getOrderByClause())) {
 			valueSql = new StringBuilder(valueSql).append(" ORDER BY ").append(qc.getOrderByClause()).toString();
