@@ -2,6 +2,7 @@ package com.swak.persistence;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,6 +14,8 @@ import com.swak.persistence.dialect.Dialect;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
+
+import net.sf.cglib.beans.BeanMap;
 
 /**
  * 简单的基于JDBC的dao实现
@@ -156,5 +159,24 @@ public class BaseJdbcDao {
 	 */
 	public Integer count(String sql, Map<String, ?> param) {
 		return jdbcTemplate.queryForObject(sql, param, Integer.class);
+	}
+
+	/**
+	 * 通过cglib 高效的转换
+	 * 
+	 * @param bean
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	protected Map<String, Object> BeantoMap(Object bean) {
+		Map<String, Object> map = Maps.newHashMap();
+		if (bean != null) {
+			BeanMap beanMap = BeanMap.create(bean);
+			Set<String> keys = beanMap.keySet();
+			for (Object key : keys) {
+				map.put(String.valueOf(key), beanMap.get(key));
+			}
+		}
+		return map;
 	}
 }
