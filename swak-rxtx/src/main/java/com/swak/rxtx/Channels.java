@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -63,11 +62,6 @@ public class Channels {
 	protected Consumer<Channel> channelInit;
 
 	/**
-	 * 是否已经关闭
-	 */
-	private AtomicBoolean closed = new AtomicBoolean(false);
-
-	/**
 	 * 创建一个设备管理器
 	 * 
 	 * @param works
@@ -87,15 +81,6 @@ public class Channels {
 			this.heartbeat.shutdown();
 			this.eventLoops.shutdown();
 		});
-	}
-
-	/**
-	 * 是否运行中
-	 * 
-	 * @return
-	 */
-	public boolean isRunning() {
-		return !this.closed.get();
 	}
 
 	/**
@@ -131,56 +116,52 @@ public class Channels {
 	}
 
 	/**
-	 * 刷新设备
+	 * 刷新设备 -- 关闭状态才能
 	 */
 	public void connect() {
-		if (!closed.get()) {
-			/**
-			 * 查找所有设备
-			 */
-			this.scanChannels();
 
-			/**
-			 * 刷新所有设备
-			 */
-			channels.forEach((comm, device) -> {
-				device.connect();
-			});
-		}
+		/**
+		 * 查找所有设备
+		 */
+		this.scanChannels();
+
+		/**
+		 * 刷新所有设备
+		 */
+		channels.forEach((comm, device) -> {
+			device.connect();
+		});
 	}
 
 	/**
 	 * 刷新设备
 	 */
 	public void close() {
-		if (closed.compareAndSet(false, true)) {
-			/**
-			 * 刷新所有设备
-			 */
-			channels.forEach((comm, device) -> {
-				device.close();
-			});
-		}
+
+		/**
+		 * 刷新所有设备
+		 */
+		channels.forEach((comm, device) -> {
+			device.close();
+		});
 	}
 
 	/**
-	 * 设备心跳, 发现新设备
+	 * 设备心跳, 发现新设备 -- 非关闭状态才发送心跳
 	 */
 	private void heartbeat() {
-		if (!closed.get()) {
-			// 设备心跳
-			if (logger.isDebugEnabled()) {
-				logger.debug("设备心跳，设备数:[{}]", channels.size());
-			}
-
-			// 尝试发现新设备
-			this.scanChannels();
-
-			// 处理设备的心跳
-			channels.forEach((comm, channel) -> {
-				channel.heartbeat();
-			});
+		// 设备心跳
+		if (logger.isDebugEnabled()) {
+			logger.debug("设备心跳，设备数:[{}]", channels.size());
 		}
+
+		// 尝试发现新设备
+		this.scanChannels();
+
+		// 处理设备的心跳
+		channels.forEach((comm, channel) -> {
+			channel.heartbeat();
+		});
 	}
 
 	/**

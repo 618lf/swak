@@ -256,6 +256,11 @@ public class Channel {
 			});
 		} else {
 
+			// 如果是主动关闭的则不处理
+			if (this.status == Status.关闭) {
+				return;
+			}
+
 			// 如果是断开的
 			if (this.status == Status.断开) {
 				this.connect();
@@ -279,6 +284,12 @@ public class Channel {
 			});
 		} else {
 			try {
+
+				// 关闭状态不能写数据
+				if (this.status == Status.关闭) {
+					logger.error("设备已经断开");
+					return;
+				}
 
 				// 断开状态不能写数据
 				if (this.status == Status.断开) {
@@ -325,22 +336,22 @@ public class Channel {
 			});
 		} else {
 			try {
-				if (this.sport != null && this.status != Status.断开) {
+				if (this.sport != null && this.status != Status.断开 && this.status != Status.关闭) {
 					this.sport.notifyOnDataAvailable(false);
 					this.sport.removeEventListener();
 					this.sport.close();
 					this.sport = null;
-					this.status = Status.断开;
+					this.status = Status.关闭;
 					this.pipeline.fireCloseEvent(this);
 				}
 				this.sport = null;
-				this.status = Status.断开;
+				this.status = Status.关闭;
 
 				if (logger.isDebugEnabled()) {
 					logger.debug("设备关闭：[{}]", this.comm);
 				}
 			} catch (Exception e) {
-				logger.error("发送信息到串口时发生异常", e);
+				logger.error("关闭串口时发生异常", e);
 			}
 		}
 	}

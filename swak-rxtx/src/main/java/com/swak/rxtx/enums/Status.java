@@ -7,5 +7,5 @@ package com.swak.rxtx.enums;
  */
 public enum Status {
 
-	断开, 异常, 连接
+	关闭, 断开, 异常, 连接
 }
