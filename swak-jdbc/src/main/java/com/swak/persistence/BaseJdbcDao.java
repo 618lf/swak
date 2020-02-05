@@ -89,7 +89,7 @@ public class BaseJdbcDao {
 		if (valueSql.endsWith("WHERE")) {
 			valueSql = new StringBuilder(valueSql).append(" 1=1 ").append(qc.toString()).toString();
 		} else {
-			valueSql = new StringBuilder(valueSql).append(" ").append(qc.toString()).toString();
+			valueSql = new StringBuilder(valueSql).append(" WHERE 1=1 ").append(qc.toString()).toString();
 		}
 
 		// 排序条件
@@ -136,6 +136,33 @@ public class BaseJdbcDao {
 		if (recordCount == 0)
 			return 0;
 		return recordCount % pageSize > 0 ? ((recordCount / pageSize) + 1) : (recordCount / pageSize);
+	}
+
+	/**
+	 * 结果
+	 * 
+	 * @param sql
+	 * @param param
+	 * @param rowMapper
+	 * @return
+	 */
+	public Integer count(String sql, QueryCondition qc) {
+
+		// 转大小
+		String valueSql = StringUtils.upperCase(sql);
+
+		// 如果已经设置了 WHERE
+		if (valueSql.endsWith("WHERE")) {
+			valueSql = new StringBuilder(valueSql).append(" 1=1 ").append(qc.toString()).toString();
+		} else {
+			valueSql = new StringBuilder(valueSql).append(" WHERE 1 = 1 ").append(qc.toString()).toString();
+		}
+
+		// 查询数量
+		String countSql = new StringBuilder("SELECT COUNT(1) C FROM (").append(valueSql).append(")").toString();
+
+		// 查询数量
+		return jdbcTemplate.queryForObject(countSql, Maps.newHashMap(), Integer.class);
 	}
 
 	/**
