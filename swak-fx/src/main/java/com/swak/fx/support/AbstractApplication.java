@@ -67,6 +67,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 		if (event == Event.EXIT) {
 			this.stop(Display.getStage()).whenComplete((v, t) -> {
 				Platform.exit();
+				System.exit(0);
 			});
 		}
 	}
