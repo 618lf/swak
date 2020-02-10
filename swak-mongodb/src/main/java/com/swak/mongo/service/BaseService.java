@@ -10,8 +10,8 @@ import com.swak.mongo.MongoClients;
 import com.swak.mongo.json.Document;
 import com.swak.mongo.json.Query;
 import com.swak.mongo.json.Update;
+import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
-import com.swak.utils.Maps;
 
 /**
  * 基础的 DAO
@@ -40,10 +40,8 @@ public abstract class BaseService<T> {
 	public CompletableFuture<T> get(String id) {
 		return MongoClients.get(table(), id).thenApply(res -> {
 			if (res != null) {
-				T bean = this.newInstance();
 				res.put(Document._ID_FIELD, res.get(Document.ID_FIELD));
-				Maps.toBean(res, bean);
-				return bean;
+				return this.toBean(res);
 			}
 			return null;
 		});
@@ -59,10 +57,8 @@ public abstract class BaseService<T> {
 	public CompletableFuture<T> get(Query query) {
 		return MongoClients.get(table(), query).thenApply(res -> {
 			if (res != null) {
-				T bean = this.newInstance();
 				res.put(Document._ID_FIELD, res.get(Document.ID_FIELD));
-				Maps.toBean(res, bean);
-				return bean;
+				return this.toBean(res);
 			}
 			return null;
 		});
@@ -105,10 +101,8 @@ public abstract class BaseService<T> {
 	public CompletableFuture<T> save(T entity) {
 		Document doc = new Document(entity);
 		return MongoClients.save(table(), doc).thenApply(res -> {
-			T bean = this.newInstance();
 			res.put(Document._ID_FIELD, res.get(Document.ID_FIELD));
-			Maps.toBean(doc, bean);
-			return bean;
+			return this.toBean(res);
 		});
 	}
 
@@ -161,10 +155,8 @@ public abstract class BaseService<T> {
 			List<Document> docs = page.getData();
 			List<T> ts = Lists.newArrayList(docs.size());
 			for (Document doc : docs) {
-				T bean = this.newInstance();
 				doc.put(Document._ID_FIELD, doc.get(Document.ID_FIELD));
-				Maps.toBean(doc, bean);
-				ts.add(bean);
+				ts.add(this.toBean(doc));
 			}
 			page.setData(ts);
 			return page;
@@ -185,10 +177,8 @@ public abstract class BaseService<T> {
 			List<Document> docs = page.getData();
 			List<T> ts = Lists.newArrayList(docs.size());
 			for (Document doc : docs) {
-				T bean = this.newInstance();
 				doc.put(Document._ID_FIELD, doc.get(Document.ID_FIELD));
-				Maps.toBean(doc, bean);
-				ts.add(bean);
+				ts.add(this.toBean(doc));
 			}
 			page.setData(ts);
 			return page;
@@ -208,10 +198,8 @@ public abstract class BaseService<T> {
 		return MongoClients.query(table(), query, limit).thenApply(docs -> {
 			List<T> ts = Lists.newArrayList(docs.size());
 			for (Document doc : docs) {
-				T bean = this.newInstance();
 				doc.put(Document._ID_FIELD, doc.get(Document.ID_FIELD));
-				Maps.toBean(doc, bean);
-				ts.add(bean);
+				ts.add(this.toBean(doc));
 			}
 			return ts;
 		});
@@ -229,26 +217,22 @@ public abstract class BaseService<T> {
 		return MongoClients.query(table(), query, limit).thenApply(docs -> {
 			List<T> ts = Lists.newArrayList(docs.size());
 			for (Document doc : docs) {
-				T bean = this.newInstance();
 				doc.put(Document._ID_FIELD, doc.get(Document.ID_FIELD));
-				Maps.toBean(doc, bean);
-				ts.add(bean);
+				ts.add(this.toBean(doc));
 			}
 			return ts;
 		});
 	}
 
 	/**
-	 * 创建实例
+	 * bean 的转换
 	 * 
+	 * @param doc
 	 * @return
 	 */
-	protected T newInstance() {
-		try {
-			return this.getTargetClass().newInstance();
-		} catch (Exception e) {
-			return null;
-		}
+	protected T toBean(Document doc) {
+		String json = JsonMapper.toJson(doc);
+		return JsonMapper.fromJson(json, getTargetClass());
 	}
 
 	/**

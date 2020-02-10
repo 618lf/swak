@@ -108,7 +108,9 @@ public class Maps {
 	}
 
 	/**
-	 * 复制map 的属性到bean, 这种方式和lombok有冲突: @Accessors(chain = true)
+	 * 复制map 的属性到bean, 有一些问题（不适合在应用中使用）：<br>
+	 * 1、这种方式和lombok有冲突: @Accessors(chain = true) <br>
+	 * 2、自定义的枚举不能识别<br>
 	 * 
 	 * @param map
 	 * @param bean
