@@ -92,7 +92,7 @@ public abstract class BaseService<T> {
 	}
 
 	/**
-	 * 保存数据
+	 * 保存数据 -- 如果存在ID则更新
 	 * 
 	 * @param table
 	 * @param entity
@@ -107,7 +107,7 @@ public abstract class BaseService<T> {
 	}
 
 	/**
-	 * 保存数据
+	 * 更新数据 -- 只会取ID作为更新的依据
 	 * 
 	 * @param table
 	 * @param entity
