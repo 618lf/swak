@@ -7,10 +7,10 @@ import java.util.concurrent.CompletableFuture;
 import com.swak.entity.Page;
 import com.swak.entity.Parameters;
 import com.swak.mongo.MongoClients;
+import com.swak.mongo.codec.BeanMaps;
 import com.swak.mongo.json.Document;
 import com.swak.mongo.json.Query;
 import com.swak.mongo.json.Update;
-import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
 
 /**
@@ -231,8 +231,7 @@ public abstract class BaseService<T> {
 	 * @return
 	 */
 	protected T toBean(Document doc) {
-		String json = JsonMapper.toJson(doc);
-		return JsonMapper.fromJson(json, getTargetClass());
+		return BeanMaps.toBean(doc, this.getTargetClass());
 	}
 
 	/**

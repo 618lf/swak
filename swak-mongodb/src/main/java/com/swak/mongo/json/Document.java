@@ -8,8 +8,8 @@ import org.bson.BsonDocumentWrapper;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.springframework.beans.BeanUtils;
 
+import com.swak.mongo.codec.BeanMaps;
 import com.swak.utils.Lists;
-import com.swak.utils.Maps;
 
 /**
  * 挂名
@@ -55,7 +55,7 @@ public class Document extends org.bson.Document {
 	 */
 	@SuppressWarnings("unchecked")
 	private static <T> Map<String, Object> _parseBean(T bean) {
-		Map<String, Object> values = Maps.toMap(bean);
+		Map<String, Object> values = BeanMaps.toMap(bean);
 		values.entrySet().forEach((e) -> {
 			Object value = e.getValue();
 			if (value != null && value instanceof List) {
