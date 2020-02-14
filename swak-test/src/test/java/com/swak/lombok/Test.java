@@ -21,6 +21,7 @@ public class Test {
 		Order2 data = new Order2();
 		data.setId("111");
 		data.setState(OrderState.开始);
+		data.setType((byte)1);
 		Order order = new Order();
 		BeanUtils.copyProperties(data, order);
 		System.out.println(JsonMapper.toJson(order));
@@ -35,6 +36,7 @@ public class Test {
 		Map<String, Object> data = Maps.newHashMap();
 		data.put("id", "111");
 		data.put("state", OrderState.开始);
+		data.put("type", 1);
 		Order order = new Order();
 		BeanUtils.copyProperties(data, order);
 		System.out.println(JsonMapper.toJson(order));
@@ -50,6 +52,7 @@ public class Test {
 		Map<String, Object> data = Maps.newHashMap();
 		data.put("id", "111");
 		data.put("state", OrderState.开始);
+		data.put("type", 1);
 		Order order = new Order();
 		BeanMap beanMap = BeanMap.create(order);
 		beanMap.putAll(data);
@@ -66,6 +69,7 @@ public class Test {
 		Map<String, Object> data = Maps.newHashMap();
 		data.put("id", "111");
 		data.put("state", "开始");
+		data.put("type", 1);
 		Order order = BeanMaps.toBean(data, Order.class);
 		System.out.println(JsonMapper.toJson(order));
 	}
