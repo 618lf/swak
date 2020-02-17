@@ -39,14 +39,19 @@ public class TestNettyClient {
 		builder.setHttpAdditionalChannelInitializer(new SharedNettyCustomizer());
 		AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient(builder.build());
 		HttpClients.setAsyncHttpClient(asyncHttpClient);
-		RequestBuilder.get().setUrl("https://www.baidu.com/").text().future()
-				.whenComplete((v, t) -> {
-					System.out.println(v);
-					try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				});
+		
+//		RequestBuilder.get().setUrl("https://www.baidu.com/").text().future()
+//				.whenComplete((v, t) -> {
+//					System.out.println(v);
+//					try {
+//						Thread.sleep(5000);
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//				});
+		String src = "https://img.yaoyaoliao.com/upload/files/23033/1279527/2020021715818860270.jpg";
+		RequestBuilder.get().plain().setUrl(src).future().whenComplete((v, e) -> {
+			System.out.println(v);
+		});
 	}
 }

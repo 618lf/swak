@@ -29,7 +29,7 @@ public class Query {
 	 * @param bean
 	 */
 	public <T> Query(T bean) {
-		Document filter = new Document(bean);
+		Document filter = new Document(bean, false);
 		if (!filter.isEmpty()) {
 			this.filter = Filters.and(filter);
 		}

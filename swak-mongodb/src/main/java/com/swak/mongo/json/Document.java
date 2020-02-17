@@ -1,15 +1,12 @@
 package com.swak.mongo.json;
 
-import java.util.List;
 import java.util.Map;
 
 import org.bson.BsonDocument;
 import org.bson.BsonDocumentWrapper;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.springframework.beans.BeanUtils;
 
 import com.swak.mongo.codec.BeanMaps;
-import com.swak.utils.Lists;
 
 /**
  * 挂名
@@ -30,7 +27,11 @@ public class Document extends org.bson.Document {
 	}
 
 	public <T> Document(T bean) {
-		super(parseBean(bean));
+		this(bean, true);
+	}
+
+	public <T> Document(T bean, boolean nullAble) {
+		super(parseBean(bean, nullAble));
 	}
 
 	/**
@@ -39,49 +40,16 @@ public class Document extends org.bson.Document {
 	 * @param bean
 	 * @return
 	 */
-	private static <T> Map<String, Object> parseBean(T bean) {
-		Map<String, Object> values = _parseBean(bean);
+	private static <T> Map<String, Object> parseBean(T bean, boolean nullAble) {
+		Map<String, Object> values = BeanMaps.toCascadeMap(bean, nullAble);
 		if (values.containsKey(_ID_FIELD)) {
 			values.put(ID_FIELD, values.remove(_ID_FIELD));
 		}
 		return values;
 	}
 
-	/**
-	 * id 的转换
-	 * 
-	 * @param bean
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	private static <T> Map<String, Object> _parseBean(T bean) {
-		Map<String, Object> values = BeanMaps.toMap(bean);
-		values.entrySet().forEach((e) -> {
-			Object value = e.getValue();
-			if (value != null && value instanceof List) {
-				List<Object> os = (List<Object>) value;
-				List<Object> _os = null;
-				if (os != null && os.size() != 0) {
-					Class<?> _type = os.get(0).getClass();
-					if (BeanUtils.isSimpleProperty(_type) || _type.isAssignableFrom(List.class)
-							|| _type.isAssignableFrom(Map.class)) {
-						_os = os;
-					} else {
-						_os = Lists.newArrayList();
-						for (Object o : os) {
-							Map<String, Object> _o = _parseBean(o);
-							_os.add(_o);
-						}
-					}
-				}
-				e.setValue(_os);
-			}
-		});
-		return values;
+	@Override
+	public <C> BsonDocument toBsonDocument(final Class<C> documentClass, final CodecRegistry codecRegistry) {
+		return new BsonDocumentWrapper<Document>(this, codecRegistry.get(Document.class));
 	}
-	
-    @Override
-    public <C> BsonDocument toBsonDocument(final Class<C> documentClass, final CodecRegistry codecRegistry) {
-        return new BsonDocumentWrapper<Document>(this, codecRegistry.get(Document.class));
-    }
 }
