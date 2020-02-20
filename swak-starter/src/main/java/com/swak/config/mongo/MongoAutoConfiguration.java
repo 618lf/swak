@@ -4,7 +4,6 @@ import static com.swak.Application.APP_LOGGER;
 import static java.util.Arrays.asList;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +71,6 @@ public class MongoAutoConfiguration {
 	@ConditionalOnMissingBean(BsonTypeClassMap.class)
 	public BsonTypeClassMap bsonTypeClassMap() {
 		Map<BsonType, Class<?>> replacementsForDefaults = Maps.newHashMap();
-		replacementsForDefaults.put(BsonType.DATE_TIME, LocalDateTime.class);
 		return new BsonTypeClassMap(replacementsForDefaults);
 	}
 
