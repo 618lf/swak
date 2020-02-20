@@ -38,6 +38,7 @@ import com.swak.mongo.codec.DocumentCodecxProvider;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.reactivex.transport.resources.LoopResources;
+import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 
 import io.netty.channel.EventLoopGroup;
@@ -89,7 +90,7 @@ public class MongoAutoConfiguration {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(container);
 
 		// 添加默认的提供器
-		List<CodecProvider> providers = container.getProviders();
+		List<CodecProvider> providers = Lists.newArrayList(container.getProviders());
 		providers.addAll(asList(new ValueCodecProvider(), new BsonValueCodecProvider(), new Jsr310CodecProvider(),
 				new DocumentCodecxProvider(bsonTypeClassMap),
 				new IterableCodecProvider(new DocumentToDBRefTransformer()),
