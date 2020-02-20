@@ -23,6 +23,7 @@ import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.jsr310.Jsr310CodecProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -68,6 +69,7 @@ public class MongoAutoConfiguration {
 	 * @return
 	 */
 	@Bean
+	@ConditionalOnMissingBean(BsonTypeClassMap.class)
 	public BsonTypeClassMap bsonTypeClassMap() {
 		Map<BsonType, Class<?>> replacementsForDefaults = Maps.newHashMap();
 		replacementsForDefaults.put(BsonType.DATE_TIME, LocalDateTime.class);
