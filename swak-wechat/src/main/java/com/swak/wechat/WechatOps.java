@@ -29,6 +29,7 @@ import com.swak.wechat.pay.Unifiedorder;
 import com.swak.wechat.tmpmsg.TemplateMessageResult;
 import com.swak.wechat.token.AccessToken;
 import com.swak.wechat.token.Ticket;
+import com.swak.wechat.user.SessionToken;
 import com.swak.wechat.user.SnsToken;
 import com.swak.wechat.user.UserInfo;
 
@@ -73,6 +74,34 @@ public class WechatOps {
 				.addQueryParam("access_token", access_token).setBody(StringUtils.getBytesUtf8(messageJson))
 				.json(TemplateMessageResult.class).future();
 		return future.thenApply(res -> {
+			return res;
+		});
+	}
+
+	// ==========================================================
+	// 小程序登陆
+	// ==========================================================
+
+	/**
+	 * 换取token
+	 * 
+	 * @param code
+	 * @param state
+	 * @return
+	 */
+	public static CompletableFuture<SessionToken> oauth2Session(WechatConfig app, String code, String state) {
+		if (!(StringUtils.isNotBlank(code) && StringUtils.isNotBlank(state))) {
+			return CompletableFuture.completedFuture(null);
+		}
+		CompletableFuture<SessionToken> future = RequestBuilder.get()
+				.setUrl("https://api.weixin.qq.com/sns/jscode2session").addQueryParam("appid", app.getAppId())
+				.addQueryParam("secret", app.getSecret()).addQueryParam("js_code", code)
+				.addQueryParam("grant_type", "authorization_code").json(SessionToken.class).future();
+		return future.thenApply(res -> {
+			if (res != null) {
+				res.setCode(code);
+				res.setState(state);
+			}
 			return res;
 		});
 	}
