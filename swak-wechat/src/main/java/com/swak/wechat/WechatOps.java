@@ -89,8 +89,8 @@ public class WechatOps {
 	 * @param state
 	 * @return
 	 */
-	public static CompletableFuture<SessionToken> oauth2Session(WechatConfig app, String code, String state) {
-		if (!(StringUtils.isNotBlank(code) && StringUtils.isNotBlank(state))) {
+	public static CompletableFuture<SessionToken> oauth2Session(WechatConfig app, String code) {
+		if (!(StringUtils.isNotBlank(code))) {
 			return CompletableFuture.completedFuture(null);
 		}
 		CompletableFuture<SessionToken> future = RequestBuilder.get()
@@ -100,7 +100,6 @@ public class WechatOps {
 		return future.thenApply(res -> {
 			if (res != null) {
 				res.setCode(code);
-				res.setState(state);
 			}
 			return res;
 		});
