@@ -26,7 +26,7 @@ import com.swak.reactivex.transport.resources.LoopResources;
 public class HttpClientConfigurationSupport {
 
 	public HttpClientConfigurationSupport() {
-		APP_LOGGER.debug("Loading Http client");
+		APP_LOGGER.debug("Loading Http Client");
 	}
 
 	/**
