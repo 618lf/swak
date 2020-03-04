@@ -7,6 +7,7 @@ import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import java.util.function.Supplier
 
 /**
  * @author <a href="http://www.streamis.me">Stream Liu</a>
@@ -14,6 +15,35 @@ import kotlin.coroutines.resumeWithException
  * @author [Julien Ponge](https://julien.ponge.org/)
  */
 
+/**
+ * launch(Supplier<Result>() {
+ *    Result.success("成功");
+ * });
+ *
+ * 在协程中执行代码
+ */
+fun <T> launch(vertx: Vertx, supplier: Supplier<T>): CompletableFuture<T> {
+
+    // 定义返回的异步结果
+    val future: CompletableFuture<T> = CompletableFuture<T>();
+
+    // 在协程中执行代码，里面可以使用扩展的同步方式获取同步结果
+    try {
+        GlobalScope.launch(vertx.dispatcher()) {
+            try {
+                var t = supplier.get();
+                future.complete(t);
+            } catch (ex: Throwable) {
+                future.completeExceptionally(ex);
+            }
+        }
+    } catch (e: Throwable) {
+        future.completeExceptionally(e);
+    }
+
+    // 返回异步结果，外部异步等待协程代码块的执行完毕
+    return future;
+}
 /**
  * Runs an asynchronous [block] and awaits its completion.
  *

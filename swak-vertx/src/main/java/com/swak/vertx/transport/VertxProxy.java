@@ -11,6 +11,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.file.FileSystem;
+import io.vertx.kotlin.coroutines.VertxCoroutineKt;
 
 /**
  * 代理处理 vertx 的 相关服务
@@ -70,4 +71,15 @@ public interface VertxProxy {
 	 * @return
 	 */
 	Vertx me();
+
+	/**
+	 * 同步执行代码 -- 实际上使用的是协程来执行代码只能在kotlin中执行
+	 * 
+	 * @param <T>
+	 * @param supplier
+	 * @return
+	 */
+	default <T> CompletableFuture<T> sync(Supplier<T> supplier) {
+		return VertxCoroutineKt.launch(me(), supplier);
+	}
 }
