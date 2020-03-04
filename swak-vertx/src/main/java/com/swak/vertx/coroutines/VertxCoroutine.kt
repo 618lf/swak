@@ -1,4 +1,4 @@
-package io.vertx.kotlin.coroutines
+package com.swak.vertx.coroutines
 
 import io.vertx.core.*
 import io.vertx.core.Future
