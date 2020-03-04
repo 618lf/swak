@@ -8,6 +8,7 @@ import org.springframework.util.ClassUtils;
 import com.swak.annotation.Logical;
 import com.swak.annotation.RequiresPermissions;
 import com.swak.annotation.RequiresRoles;
+import com.swak.annotation.Sync;
 import com.swak.meters.MethodMetrics;
 import com.swak.meters.MetricsFactory;
 import com.swak.security.Permission;
@@ -24,6 +25,9 @@ import com.swak.utils.ReflectUtils;
 @SuppressWarnings("rawtypes")
 public class MethodHandler {
 
+	// 操作符
+	final static byte operators_sync = 1 << 0; // 同步操作
+
 	private final Object bean;
 	private final Class<?> beanType;
 	private final String name;
@@ -33,6 +37,7 @@ public class MethodHandler {
 	protected MethodMetrics metrics;
 	protected Permission requiresRoles;
 	protected Permission requiresPermissions;
+	protected byte operators = 0;
 
 	/**
 	 * Create an instance from a bean instance and a method.
@@ -44,6 +49,7 @@ public class MethodHandler {
 		this.name = new StringBuilder(this.beanType.getName()).append(".")
 				.append(ReflectUtils.getMethodDesc(this.method)).toString();
 		this.parameters = initMethodParameters();
+		this.initOperators();
 	}
 
 	private MethodParameter[] initMethodParameters() {
@@ -53,6 +59,13 @@ public class MethodHandler {
 			result[i] = new MethodParameter(this.beanType, this.method, i);
 		}
 		return result;
+	}
+
+	private void initOperators() {
+		Sync sync = (Sync) this.getAnnotation(Sync.class);
+		if (sync != null) {
+			operators |= operators_sync;
+		}
 	}
 
 	public Object getBean() {
@@ -140,6 +153,13 @@ public class MethodHandler {
 			}
 		}
 		return this.requiresPermissions;
+	}
+
+	/**
+	 * 是否同步操作
+	 */
+	public boolean isSync() {
+		return (operators & operators_sync) > 0;
 	}
 
 	/**

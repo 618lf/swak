@@ -34,6 +34,7 @@ import com.swak.validator.errors.BindErrors;
 import com.swak.vertx.annotation.VertxService;
 import com.swak.vertx.security.SecuritySubject;
 import com.swak.vertx.transport.Subject;
+import com.swak.vertx.transport.VertxProxy;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpConnection;
@@ -61,6 +62,8 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	private ConversionService conversionService;
 	@Autowired
 	private ResultHandler resultHandler;
+	@Autowired
+	private VertxProxy vertxProxy;
 
 	/**
 	 * 初始化处理器
@@ -194,7 +197,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		Object metrics = this.preHandle(handler);
 		try {
 			Object[] params = this.parseParameters(context, handler);
-			Object result = handler.doInvoke(params);
+			Object result = this.dohandler(handler, params);
 			if (result != null && result instanceof CompletionStage) {
 				CompletionStage<Object> resultFuture = (CompletionStage<Object>) result;
 				resultFuture.whenComplete((v, e) -> {
@@ -206,6 +209,27 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		} catch (Exception e) {
 			this.handleResult(null, e, context, handler, metrics);
 		}
+	}
+
+	/**
+	 * 执行处理器
+	 * 
+	 * @param handler
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
+	private Object dohandler(MethodHandler handler, Object[] params) throws Exception {
+		if (handler.isSync()) {
+			return this.vertxProxy.sync(() -> {
+				try {
+					return handler.doInvoke(params);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			});
+		}
+		return handler.doInvoke(params);
 	}
 
 	/**
