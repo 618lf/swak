@@ -8,15 +8,12 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.imageio.ImageIO;
 
-import org.springframework.context.ConfigurableApplicationContext;
-
 import com.swak.fx.support.AbstractApplication;
 import com.swak.fx.support.Display;
 import com.swak.fx.support.Event;
 import com.swak.hello.ClosePage;
 import com.swak.hello.MainPage;
 import com.swak.hello.SplashPage;
-import com.tmt.AppRunner;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -30,7 +27,6 @@ import javafx.stage.Stage;
 public class MainApplication extends AbstractApplication {
 
 	TrayIcon trayIcon;
-	ConfigurableApplicationContext applicationContext;
 
 	/**
 	 * 启动服务
@@ -38,7 +34,6 @@ public class MainApplication extends AbstractApplication {
 	@Override
 	protected CompletableFuture<Void> start(String[] savedArgs) {
 		return CompletableFuture.runAsync(() -> {
-			this.applicationContext = Application.run(AppRunner.class, savedArgs);
 		});
 	}
 
@@ -50,7 +45,6 @@ public class MainApplication extends AbstractApplication {
 		CompletableFuture<Void> stopFuture = new CompletableFuture<>();
 		CompletableFuture<Void> backupFuture = this.backup();
 		CompletableFuture.runAsync(() -> {
-			Application.stop();
 		}).thenAcceptBothAsync(backupFuture, (v1, v2) -> {
 			stopFuture.complete(null);
 		});
