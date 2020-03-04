@@ -51,16 +51,23 @@ public interface VertxProxy {
 	 * 顺序的执行代码
 	 */
 	<T> CompletableFuture<T> order(Supplier<T> supplier);
-	
+
 	/**
 	 * 无顺序的执行代码
 	 */
 	<T> CompletableFuture<T> future(Supplier<T> supplier);
-	
+
 	/**
 	 * 文件系统
 	 * 
 	 * @return
 	 */
 	FileSystem fileSystem();
+
+	/**
+	 * 实际的Vertx 对象
+	 * 
+	 * @return
+	 */
+	Vertx me();
 }

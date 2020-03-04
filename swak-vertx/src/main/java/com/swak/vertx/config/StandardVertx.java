@@ -164,4 +164,12 @@ public class StandardVertx implements VertxProxy {
 	public FileSystem fileSystem() {
 		return this.vertx.fileSystem();
 	}
+
+	/**
+	 * 返回实际的Vertx对象
+	 */
+	@Override
+	public Vertx me() {
+		return this.vertx;
+	}
 }
