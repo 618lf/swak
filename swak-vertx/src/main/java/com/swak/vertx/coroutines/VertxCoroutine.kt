@@ -7,7 +7,7 @@ import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import java.util.function.Supplier
+import com.swak.vertx.transport.VertxProxy
 
 /**
  * @author <a href="http://www.streamis.me">Stream Liu</a>
@@ -16,13 +16,13 @@ import java.util.function.Supplier
  */
 
 /**
- * launch(Supplier<Result>() {
+ * launch(vertx){
  *    Result.success("成功");
- * });
+ * };
  *
  * 在协程中执行代码
  */
-fun <T> launch(vertx: Vertx, supplier: Supplier<T>): CompletableFuture<T> {
+fun <T> launch(vertx: Vertx, apply: suspend () -> T): CompletableFuture<T> {
 
     // 定义返回的异步结果
     val future: CompletableFuture<T> = CompletableFuture<T>();
@@ -31,7 +31,7 @@ fun <T> launch(vertx: Vertx, supplier: Supplier<T>): CompletableFuture<T> {
     try {
         GlobalScope.launch(vertx.dispatcher()) {
             try {
-                var t = supplier.get();
+                var t = apply();
                 future.complete(t);
             } catch (ex: Throwable) {
                 future.completeExceptionally(ex);
@@ -44,6 +44,7 @@ fun <T> launch(vertx: Vertx, supplier: Supplier<T>): CompletableFuture<T> {
     // 返回异步结果，外部异步等待协程代码块的执行完毕
     return future;
 }
+
 /**
  * Runs an asynchronous [block] and awaits its completion.
  *
@@ -158,6 +159,15 @@ suspend fun <T> CompletionStage<T>.toPromise(): Future<T> {
         }
     }
     return future.future();
+}
+
+/**
+ * Awaits the completion of a future without blocking the event loop.
+ */
+fun <T> VertxProxy.sync(apply: suspend () -> T): CompletableFuture<T> {
+    return launch(this.me()) {
+        apply()
+    };
 }
 
 /**

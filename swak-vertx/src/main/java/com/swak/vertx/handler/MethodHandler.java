@@ -8,7 +8,6 @@ import org.springframework.util.ClassUtils;
 import com.swak.annotation.Logical;
 import com.swak.annotation.RequiresPermissions;
 import com.swak.annotation.RequiresRoles;
-import com.swak.annotation.Sync;
 import com.swak.meters.MethodMetrics;
 import com.swak.meters.MetricsFactory;
 import com.swak.security.Permission;
@@ -62,10 +61,7 @@ public class MethodHandler {
 	}
 
 	private void initOperators() {
-		Sync sync = (Sync) this.getAnnotation(Sync.class);
-		if (sync != null) {
-			operators |= operators_sync;
-		}
+		
 	}
 
 	public Object getBean() {
@@ -153,13 +149,6 @@ public class MethodHandler {
 			}
 		}
 		return this.requiresPermissions;
-	}
-
-	/**
-	 * 是否同步操作
-	 */
-	public boolean isSync() {
-		return (operators & operators_sync) > 0;
 	}
 
 	/**
