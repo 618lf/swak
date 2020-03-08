@@ -24,7 +24,8 @@ public interface RouterHandler {
 	void initRouter(Vertx vertx, AnnotationBean annotation);
 	
 	/**
-	 * 返回初始化之后的 Router
+	 * 返回初始化之后的 Router -- Router 是线程安全的可以在
+	 * 
 	 * @return
 	 */
 	Router getRouter();

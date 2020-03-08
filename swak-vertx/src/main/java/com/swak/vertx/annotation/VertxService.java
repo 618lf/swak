@@ -57,6 +57,21 @@ public @interface VertxService {
 	 */
 	@Deprecated
 	boolean isAop() default true;
+	
+	/**
+	 * 定义是否顺序执行 handler，每个Verticle 都有一个 Context，通过这个Context来提交需要运行的 HandlerHodler <br>
+	 * 
+	 * WorkContext 中持有一个Queue，来保证运行这个Verticle的handler是顺序的。<br>
+	 * 
+	 * 也就是同一個Verticle 並不是并发执行的。<br>
+	 * 
+	 * 但是在JDBC阻塞时编程中，不需要此特性。默认情况下不使用此特性 <br>
+	 * 
+	 * 如果是非阻塞的Verticle 可以使用这个特性<br>
+	 * 
+	 * @return
+	 */
+	boolean ordered() default false;
 
 	/**
 	 * 指定服务类

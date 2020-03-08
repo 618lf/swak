@@ -47,4 +47,8 @@ public class ServiceBean {
 	public boolean isAop() {
 		return mapping.isAop();
 	}
+
+	public boolean isOrdered() {
+		return mapping.ordered();
+	}
 }

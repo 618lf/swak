@@ -32,7 +32,7 @@ public class HttpVerticle extends AbstractVerticle {
 	@SuppressWarnings("deprecation")
 	public void start(Future<Void> startFuture) throws Exception {
 
-		// 获得路由
+		// 获得路由 -- Router 是线程安全的所以多个Verticle实例可以公用
 		Router router = routerHandler.getRouter();
 
 		// 发布服务

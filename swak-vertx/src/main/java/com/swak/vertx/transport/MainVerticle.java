@@ -119,8 +119,9 @@ public class MainVerticle extends AbstractVerticle {
 		// 发布服务标示
 		List<Future<String>> futures = Lists.newArrayList();
 
-		// 以worker 的方式发布
-		DeploymentOptions options = new DeploymentOptions().setWorker(true);
+		// 以worker 的方式发布 默认是并发的执行代码。
+		@SuppressWarnings("deprecation")
+		DeploymentOptions options = new DeploymentOptions().setWorker(true).setMultiThreaded(!service.isOrdered());
 
 		// 设置了运行的线程池(如果没有配置则，默认只有一个)
 		String usePool = service.getUse_pool();
