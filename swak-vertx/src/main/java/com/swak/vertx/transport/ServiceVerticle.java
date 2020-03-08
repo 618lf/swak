@@ -66,6 +66,14 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 	}
 
 	/**
+	 * 定义停止
+	 */
+	@Override
+	public void stop() throws Exception {
+		this.getVertx().eventBus().consumer(address).unregister();
+	}
+
+	/**
 	 * 处理消息
 	 */
 	@Override
