@@ -96,11 +96,6 @@
 	</properties>
 	<repositories>
 		<repository>
-			<id>nexus-repos</id>
-			<name>Team Nexus Repository</name>
-			<url>http://192.168.0.222:7001/nexus/content/groups/public</url>
-		</repository>
-		<repository>
 			<id>oschina-repos</id>
 			<name>Oschina Releases</name>
 			<url>http://maven.oschina.net/content/groups/public</url>
