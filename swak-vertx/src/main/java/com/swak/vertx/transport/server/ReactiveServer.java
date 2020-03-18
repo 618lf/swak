@@ -38,10 +38,10 @@ public class ReactiveServer implements Server {
 	public void start() throws ServerException {
 		this.annotation.getVertx().apply(vertx -> {
 			CompletableFuture<Void> startFuture = new CompletableFuture<>();
-			
+
 			// 以worker 的方式发布
 			DeploymentOptions options = new DeploymentOptions().setWorker(true);
-			
+
 			// 发布启动 主服务
 			vertx.deployVerticle(mainVerticle, options, res -> {
 				if (res.succeeded()) {
@@ -72,23 +72,18 @@ public class ReactiveServer implements Server {
 	public void stop() throws ServerException {
 		this.annotation.getVertx().destroy(vertx -> {
 			CompletableFuture<Void> stopFuture = new CompletableFuture<>();
-			vertx.undeploy(mainVerticle.deploymentID(), res -> {
+			vertx.close(res -> {
 				if (res.succeeded()) {
 					stopFuture.complete(null);
 				} else {
 					stopFuture.completeExceptionally(res.cause());
 				}
 			});
-
-			// 应该会阻塞在这里
 			try {
 				stopFuture.get();
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-			
-			// 整个 vertx 关闭
-			vertx.close();
 		});
 	}
 
