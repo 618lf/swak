@@ -6,10 +6,10 @@ import java.util.Set;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.ApplicationContext;
 
 import com.google.common.eventbus.Subscribe;
+import com.swak.booter.ApplicationBooter;
 import com.swak.eventbus.EventBus;
 import com.swak.utils.Sets;
 
@@ -18,7 +18,7 @@ import com.swak.utils.Sets;
  * 
  * @author lifeng
  */
-public class EventBusPostProcessor implements BeanPostProcessor, ApplicationListener<ContextRefreshedEvent> {
+public class EventBusPostProcessor implements BeanPostProcessor, ApplicationBooter {
 
 	private final Set<Object> subscribeBeans = Sets.newHashSet();
 	private EventBus eventBus;
@@ -55,11 +55,8 @@ public class EventBusPostProcessor implements BeanPostProcessor, ApplicationList
 		return bean;
 	}
 
-	/**
-	 * 服务启动后设置引用
-	 */
 	@Override
-	public synchronized void onApplicationEvent(ContextRefreshedEvent arg0) {
+	public void onApplicationEvent(ApplicationContext context) {
 		if (eventBus != null) {
 			eventBus.init(t -> {
 				subscribeBeans.stream().forEach(bean -> {

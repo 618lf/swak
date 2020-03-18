@@ -5,30 +5,15 @@ import static com.swak.Application.APP_LOGGER;
 import java.util.Arrays;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ApplicationContextEvent;
-import org.springframework.context.event.ContextRefreshedEvent;
 
 import com.swak.boot.Boot;
-import com.swak.reactivex.context.ReactiveServerApplicationContext;
-import com.swak.reactivex.context.ReactiveServerInitializedEvent;
 
 /**
  * 系统启动后需要做的工作
  * 
  * @author lifeng
  */
-public class AppBooter implements ApplicationListener<ApplicationContextEvent> {
-
-	@Override
-	public void onApplicationEvent(ApplicationContextEvent event) {
-
-		// 服务器启动后发布的事件
-		if (event instanceof ReactiveServerInitializedEvent || (event instanceof ContextRefreshedEvent
-				&& !(event.getSource() instanceof ReactiveServerApplicationContext))) {
-			this.onApplicationEvent(event.getApplicationContext());
-		}
-	}
+public class AppBooter implements ApplicationBooter {
 
 	/**
 	 * 注意： <br>
@@ -37,7 +22,7 @@ public class AppBooter implements ApplicationListener<ApplicationContextEvent> {
 	 * 
 	 * @param context
 	 */
-	private void onApplicationEvent(ApplicationContext context) {
+	public void onApplicationEvent(ApplicationContext context) {
 		String[] boots = context.getBeanNamesForType(Boot.class);
 		if (boots != null && boots.length > 0) {
 			APP_LOGGER.debug("======== system startup loading ========");
