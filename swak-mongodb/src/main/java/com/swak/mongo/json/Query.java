@@ -86,6 +86,16 @@ public class Query {
 
 	// ------------- 条件 --------------------
 	private Bson filter;
+	
+	/**
+	 * 添加条件 like
+	 * 
+	 * @param bson
+	 * @return
+	 */
+	public Query like(String key, String value) {
+		return this.and(Filters.regex(key, value));
+	}
 
 	/**
 	 * 添加条件
