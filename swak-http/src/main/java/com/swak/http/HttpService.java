@@ -7,6 +7,7 @@ import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig.Builder;
 
+import com.swak.closable.ShutDownHook;
 import com.swak.http.builder.RequestBuilder;
 
 import io.netty.handler.codec.http.HttpMethod;
@@ -25,14 +26,14 @@ public class HttpService {
 	private DefaultAsyncHttpClient client;
 
 	/**
-	 * 通过配置创建 Http服务
-	 * 
-	 * @param config
-	 * @return
+	 * 注册关闭函数
 	 */
-	public HttpService copy() {
-		AsyncHttpClientConfig config = this.client.getConfig();
-		return new HttpService().setConfig(config);
+	public HttpService() {
+		ShutDownHook.registerShutdownHook(() -> {
+			if (this.client != null) {
+				this.client.close();
+			}
+		});
 	}
 
 	/**
@@ -42,12 +43,6 @@ public class HttpService {
 	 * @return
 	 */
 	public HttpService setConfig(AsyncHttpClientConfig config) {
-		/**
-		 * 不会关闭共享的连接池
-		 */
-		if (this.client != null) {
-			this.client.close();
-		}
 		Builder builder = new DefaultAsyncHttpClientConfig.Builder(config);
 		this.client = new DefaultAsyncHttpClient(builder.build());
 		return this;
