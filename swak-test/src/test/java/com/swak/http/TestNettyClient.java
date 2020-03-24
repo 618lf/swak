@@ -15,8 +15,7 @@ import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.resources.LoopResources;
 
 /**
- * 基于 Netty 的客户端
- * ChannelManager 启动 bootstrap
+ * 基于 Netty 的客户端 ChannelManager 启动 bootstrap
  * 
  * @author lifeng
  */
@@ -38,8 +37,7 @@ public class TestNettyClient {
 		builder.setThreadPoolName("AsyncHttp.timeout");
 		builder.setHttpAdditionalChannelInitializer(new SharedNettyCustomizer());
 		AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient(builder.build());
-		HttpClients.setAsyncHttpClient(asyncHttpClient);
-		
+
 //		RequestBuilder.get().setUrl("https://www.baidu.com/").text().future()
 //				.whenComplete((v, t) -> {
 //					System.out.println(v);
@@ -50,7 +48,7 @@ public class TestNettyClient {
 //					}
 //				});
 		String src = "https://img.yaoyaoliao.com/upload/files/23033/1279527/2020021715818860270.jpg";
-		RequestBuilder.get().plain().setUrl(src).future().whenComplete((v, e) -> {
+		RequestBuilder.client(asyncHttpClient).get().plain().setUrl(src).future().whenComplete((v, e) -> {
 			System.out.println(v);
 		});
 	}

@@ -31,6 +31,7 @@ import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.validator.Validator;
 import com.swak.validator.errors.BindErrors;
+import com.swak.vertx.annotation.Server;
 import com.swak.vertx.annotation.VertxService;
 import com.swak.vertx.security.SecuritySubject;
 import com.swak.vertx.transport.Subject;
@@ -50,7 +51,7 @@ import io.vertx.ext.web.RoutingContext;
  * 
  * @author lifeng
  */
-@VertxService(value = "handlerAdapter", http = true, instances = -1, isAop = false)
+@VertxService(value = "handlerAdapter", server = Server.Http, instances = -1)
 public class HandlerAdapter extends AbstractRouterHandler {
 
 	@Autowired(required = false)

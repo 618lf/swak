@@ -12,14 +12,14 @@ import io.vertx.ext.web.Router;
  * 
  * @author lifeng
  */
-public class HttpVerticle extends AbstractVerticle {
+public class HttpServerVerticle extends AbstractVerticle {
 
 	// 通用的配置
 	private String host;
 	private int port;
 	private final RouterHandler routerHandler;
 
-	public HttpVerticle(RouterHandler routerHandler, String host, int port) {
+	public HttpServerVerticle(RouterHandler routerHandler, String host, int port) {
 		this.routerHandler = routerHandler;
 		this.host = host;
 		this.port = port;

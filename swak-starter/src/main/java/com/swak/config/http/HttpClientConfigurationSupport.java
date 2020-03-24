@@ -4,15 +4,14 @@ import static com.swak.Application.APP_LOGGER;
 
 import java.util.concurrent.TimeUnit;
 
-import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.AsyncHttpClientConfig;
-import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig.Builder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 
 import com.swak.http.HttpClientProperties;
-import com.swak.http.HttpClients;
+import com.swak.http.HttpService;
 import com.swak.http.resource.SharedNettyCustomizer;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.TransportMode;
@@ -59,10 +58,9 @@ public class HttpClientConfigurationSupport {
 	 * @param config
 	 * @return
 	 */
-	@Bean(destroyMethod = "close")
-	public AsyncHttpClient asyncHttpClient(AsyncHttpClientConfig config) {
-		DefaultAsyncHttpClient httpClient = new DefaultAsyncHttpClient(config);
-		HttpClients.setAsyncHttpClient(httpClient);
-		return HttpClients.client();
+	@Bean()
+	@Scope("prototype")
+	public HttpService asyncHttpClient(AsyncHttpClientConfig config) {
+		return new HttpService().setConfig(config);
 	}
 }

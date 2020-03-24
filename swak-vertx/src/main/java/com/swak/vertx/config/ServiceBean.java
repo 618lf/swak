@@ -1,5 +1,7 @@
 package com.swak.vertx.config;
 
+import com.swak.vertx.annotation.Context;
+import com.swak.vertx.annotation.Server;
 import com.swak.vertx.annotation.VertxService;
 
 /**
@@ -31,8 +33,12 @@ public class ServiceBean {
 		return type;
 	}
 
-	public boolean isHttp() {
-		return mapping.http();
+	public Server getServer() {
+		return mapping.server();
+	}
+
+	public Context getContext() {
+		return mapping.context();
 	}
 
 	public int getInstances() {
@@ -41,14 +47,5 @@ public class ServiceBean {
 
 	public String getUse_pool() {
 		return mapping.use_pool();
-	}
-
-	@Deprecated
-	public boolean isAop() {
-		return mapping.isAop();
-	}
-
-	public boolean isOrdered() {
-		return mapping.ordered();
 	}
 }

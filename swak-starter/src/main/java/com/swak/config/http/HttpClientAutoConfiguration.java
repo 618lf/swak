@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.swak.Constants;
 import com.swak.http.HttpClientProperties;
-import com.swak.http.HttpClients;
+import com.swak.http.HttpService;
 
 /**
  * HttpClient 服务配置
@@ -17,7 +17,7 @@ import com.swak.http.HttpClients;
  * @author lifeng
  */
 @Configuration
-@ConditionalOnClass({ HttpClients.class, AsyncHttpClientConfig.class })
+@ConditionalOnClass({ HttpService.class, AsyncHttpClientConfig.class })
 @ConditionalOnMissingBean(HttpClientConfigurationSupport.class)
 @EnableConfigurationProperties(HttpClientProperties.class)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableHttpClient", matchIfMissing = true)

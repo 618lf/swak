@@ -13,7 +13,7 @@ import com.swak.cache.CacheManager;
 import com.swak.entity.Result;
 import com.swak.flux.web.annotation.GetMapping;
 import com.swak.flux.web.annotation.RestController;
-import com.swak.http.builder.RequestBuilder;
+import com.swak.http.HttpService;
 import com.swak.persistence.QueryCondition;
 import com.tmt.shop.entity.Shop;
 import com.tmt.shop.entity.ShopXml;
@@ -29,6 +29,8 @@ import reactor.core.publisher.Mono;
 @RestController(path = "/admin/hello")
 public class HelloController {
 
+	@Autowired
+	private HttpService httpService;
 	@Autowired
 	private ShopService shopService;
 
@@ -218,7 +220,7 @@ public class HelloController {
 	 */
 	@GetMapping("/say/http")
 	public Mono<Result> sayHttp(String name) {
-		return RequestBuilder.get().setUrl("https://www.2345.com/").text().reactive().map(s -> Result.success(s));
+		return httpService.get().setUrl("https://www.2345.com/").text().reactive().map(s -> Result.success(s));
 	}
 
 	/**

@@ -7,6 +7,8 @@ import org.springframework.aop.support.AopUtils;
 
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
+import com.swak.vertx.annotation.Context;
+import com.swak.vertx.annotation.Server;
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.ServiceBean;
 import com.swak.vertx.config.VertxProperties;
@@ -80,7 +82,7 @@ public class MainVerticle extends AbstractVerticle {
 		List<Future<String>> futures = Lists.newArrayList();
 		Set<ServiceBean> services = annotation.getServices();
 		for (ServiceBean service : services) {
-			if (service.isHttp()) {
+			if (service.getServer() == Server.Http) {
 				futures.addAll(this.startHttp(service));
 			} else {
 				futures.addAll(this.startService(service));
@@ -106,7 +108,7 @@ public class MainVerticle extends AbstractVerticle {
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
 			futures.add(Future.<String>future(s -> {
-				vertx.deployVerticle(new HttpVerticle(routerHandler, properties.getHost(), properties.getPort()),
+				vertx.deployVerticle(new HttpServerVerticle(routerHandler, properties.getHost(), properties.getPort()),
 						options, s);
 			}));
 		}
@@ -114,14 +116,24 @@ public class MainVerticle extends AbstractVerticle {
 	}
 
 	// 发布成Tcp 服务
+	@SuppressWarnings("deprecation")
 	private List<Future<String>> startService(ServiceBean service) {
 
 		// 发布服务标示
 		List<Future<String>> futures = Lists.newArrayList();
 
 		// 以worker 的方式发布 默认是并发的执行代码。
-		@SuppressWarnings("deprecation")
-		DeploymentOptions options = new DeploymentOptions().setWorker(true).setMultiThreaded(!service.isOrdered());
+		DeploymentOptions options = new DeploymentOptions().setWorker(true);
+
+		if (service.getContext() == Context.IO) {
+			options.setWorker(false);
+		} else if (service.getContext() == Context.Order) {
+			options.setWorker(true);
+			options.setMultiThreaded(false);
+		} else if (service.getContext() == Context.Concurrent) {
+			options.setWorker(true);
+			options.setMultiThreaded(true);
+		}
 
 		// 设置了运行的线程池(如果没有配置则，默认只有一个)
 		String usePool = service.getUse_pool();

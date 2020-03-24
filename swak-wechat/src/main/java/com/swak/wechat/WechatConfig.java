@@ -1,25 +1,18 @@
 package com.swak.wechat;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-
-import com.swak.http.builder.RequestBuilder;
-import com.swak.utils.IOUtils;
+import com.swak.http.HttpService;
 import com.swak.utils.Maps;
-import com.swak.utils.StringUtils;
 import com.swak.wechat.codec.SignUtils;
 import com.swak.wechat.message.EventMsgUserAttention;
 import com.swak.wechat.message.MenuEventMsgClick;
 import com.swak.wechat.message.ReqMsg;
 import com.swak.wechat.message.RespMsg;
+
+import io.netty.handler.ssl.SslContext;
 
 /**
  * 微信的基本配置
@@ -119,7 +112,7 @@ public interface WechatConfig {
 	 * 
 	 * @return
 	 */
-	SSLContext getSSLContext();
+	SslContext getSslContext();
 
 	/**
 	 * 是否使用沙箱测试
@@ -176,95 +169,11 @@ public interface WechatConfig {
 	 * @param data
 	 * @return
 	 */
-	default CompletableFuture<String> request(String url, String data, boolean useCert) {
-		SSLContext sslcontext = null;
-		if (useCert && (sslcontext = this.getSSLContext()) != null) {
-			return this.request(url, data, sslcontext);
-		}
-		return RequestBuilder.post().text().setUrl(url).setHeader("Content-Type", "text/xml")
+	default CompletableFuture<String> request(HttpService client, String url, String data) {
+		return client.post().text().setUrl(url).setHeader("Content-Type", "text/xml")
 				.setHeader("User-Agent", "wxpay sdk java v1.0 " + this.getMchId())
 				.setRequestTimeout(this.getHttpConnectTimeoutMs()).setReadTimeout(this.getHttpReadTimeoutMs())
 				.setBody(data).future();
-	}
-
-	/**
-	 * 用 SSL 请求，需要設置证书，不同于Https的请求。
-	 * 
-	 * @category 暂时这么做，如果有可能将Http请求模块全部改为： okHttp
-	 * @param url
-	 * @param data
-	 * @param sslcontext
-	 * @return
-	 */
-	default CompletableFuture<String> request(String url, String data, SSLContext sslContext) {
-		return CompletableFuture.supplyAsync(() -> {
-			// CloseableHttpClient httpClient = null;
-			// try {
-			// SSLConnectionSocketFactory sslConnectionSocketFactory = new
-			// SSLConnectionSocketFactory(sslContext,
-			// new String[] { "TLSv1" }, null, new DefaultHostnameVerifier());
-			//
-			// BasicHttpClientConnectionManager connManager = new
-			// BasicHttpClientConnectionManager(
-			// RegistryBuilder.<ConnectionSocketFactory>create()
-			// .register("http", PlainConnectionSocketFactory.getSocketFactory())
-			// .register("https", sslConnectionSocketFactory).build(),
-			// null, null, null);
-			// httpClient =
-			// HttpClientBuilder.create().setConnectionManager(connManager).build();
-			// HttpPost httpPost = new HttpPost(url);
-			// RequestConfig requestConfig =
-			// RequestConfig.custom().setSocketTimeout(this.getHttpReadTimeoutMs())
-			// .setConnectTimeout(this.getHttpConnectTimeoutMs()).build();
-			// httpPost.setConfig(requestConfig);
-			//
-			// StringEntity postEntity = new StringEntity(data, "UTF-8");
-			// httpPost.addHeader("Content-Type", "text/xml");
-			// httpPost.addHeader("User-Agent", "wxpay sdk java v1.0 " + this.getMchId());
-			// httpPost.setEntity(postEntity);
-			//
-			// HttpResponse httpResponse = httpClient.execute(httpPost);
-			// HttpEntity httpEntity = httpResponse.getEntity();
-			// return EntityUtils.toString(httpEntity, "UTF-8");
-			// } catch (Exception e) {
-			// return null;
-			// } finally {
-			// IOUtils.closeQuietly(httpClient);
-			// }
-
-			try {
-				URL URL = new URL(url);
-				HttpsURLConnection conn = (HttpsURLConnection) URL.openConnection();
-				conn.setSSLSocketFactory(sslContext.getSocketFactory());
-				conn.setConnectTimeout(this.getHttpConnectTimeoutMs());
-				conn.setReadTimeout(this.getHttpReadTimeoutMs());
-				conn.setDoOutput(true);
-				conn.setDoInput(true);
-				conn.setUseCaches(false);
-				conn.setRequestMethod("POST");
-				conn.setRequestProperty("Content-Type", "text/xml");
-				conn.setRequestProperty("User-Agent", "wxpay sdk java v1.0 " + this.getMchId());
-				OutputStream os = conn.getOutputStream();
-				os.write(StringUtils.getBytesUtf8(data));
-				os.flush();
-				IOUtils.closeQuietly(os);
-				int code = conn.getResponseCode();
-				if (code == 200) {
-					BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-					StringBuilder responseData = new StringBuilder();
-					String line = null;
-					while ((line = in.readLine()) != null) {
-						responseData.append(line);
-					}
-					IOUtils.closeQuietly(in);
-					return responseData.toString();
-				}
-				conn.disconnect();
-				return null;
-			} catch (Exception e) {
-				return null;
-			}
-		});
 	}
 
 	/**
@@ -352,7 +261,7 @@ public interface WechatConfig {
 	default CompletionStage<RespMsg> handleMessage(ReqMsg request) {
 		return CompletableFuture.completedFuture(null);
 	}
-	
+
 	/**
 	 * 事件处理
 	 * 
@@ -362,7 +271,7 @@ public interface WechatConfig {
 	default CompletionStage<RespMsg> handleEvent(ReqMsg request) {
 		return CompletableFuture.completedFuture(null);
 	}
-	
+
 	/**
 	 * 默认处理
 	 * 

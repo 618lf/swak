@@ -19,7 +19,7 @@ import io.shardingsphere.api.HintManager;
  * 
  * @author lifeng
  */
-@VertxService(use_pool = "goods", isAop = false, service = GoodsServiceFacade.class)
+@VertxService(use_pool = "goods", service = GoodsServiceFacade.class)
 @MotanService
 public class GoodsService extends BaseService<Goods, String> implements GoodsServiceFacade, GoodsNotServiceFacade {
 
@@ -90,7 +90,7 @@ public class GoodsService extends BaseService<Goods, String> implements GoodsSer
 		this.update(goods);
 		return this.queryForObject("getOne", "1");
 	}
-	
+
 	/**
 	 * 强制走主库
 	 */
