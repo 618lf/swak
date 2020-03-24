@@ -1,4 +1,4 @@
-package com.swak.api.model;
+package com.swak.doc;
 
 import java.util.List;
 

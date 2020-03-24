@@ -83,7 +83,7 @@ public class GoodsController {
 	/**
 	 * rest 参数: /get/123
 	 * 
-	 * @param id
+	 * @param goods 商品
 	 * @return
 	 */
 	@GetMapping("/get/:id/:name")

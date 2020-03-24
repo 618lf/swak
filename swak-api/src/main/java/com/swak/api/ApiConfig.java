@@ -3,7 +3,7 @@ package com.swak.api;
 import java.util.List;
 
 import com.swak.api.builder.ApiBuilder;
-import com.swak.api.model.Api;
+import com.swak.doc.Api;
 import com.swak.utils.Lists;
 
 import lombok.Data;

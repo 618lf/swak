@@ -16,11 +16,11 @@ import com.swak.annotation.RequestMethod;
 import com.swak.annotation.Valid;
 import com.swak.api.ApiConfig;
 import com.swak.api.mock.MockUtils;
-import com.swak.api.model.Api;
-import com.swak.api.model.ApiHeader;
-import com.swak.api.model.ApiMethod;
-import com.swak.api.model.ApiParam;
-import com.swak.api.model.ApiReturn;
+import com.swak.doc.Api;
+import com.swak.doc.ApiHeader;
+import com.swak.doc.ApiMethod;
+import com.swak.doc.ApiParam;
+import com.swak.doc.ApiReturn;
 import com.swak.entity.Result;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
@@ -61,6 +61,12 @@ public class ApiBuilder implements IBuilder {
 	private void loadJavaFiles() {
 		JavaProjectBuilder builder = new JavaProjectBuilder();
 		for (String path : this.config.getSourcePaths()) {
+			if (StringUtils.isBlank(path)) {
+				continue;
+			}
+			if (StringUtils.startsWith(path, "/")) {
+				path = StringUtils.removeStart(path, "/");
+			}
 			builder.addSourceTree(new File(path));
 		}
 		this.builder = builder;
@@ -121,19 +127,40 @@ public class ApiBuilder implements IBuilder {
 			ApiMethod apiMethod = new ApiMethod().setDesc(method.getComment()).setName(method.getName());
 
 			// url and method
-			apiMethod = this.buildRouter(apiMethod, classMapping, methodMapping);
+			try {
+				apiMethod = this.buildRouter(apiMethod, classMapping, methodMapping);
+			} catch (Exception e) {
+				throw new RuntimeException(
+						"Unable to build Router for method " + method.getName() + " in " + cls.getCanonicalName(), e);
+			}
 
 			// 请求头
-			apiMethod = this.buildRequestHeaders(apiMethod, method);
+			try {
+				apiMethod = this.buildRequestHeaders(apiMethod, method);
+			} catch (Exception e) {
+				throw new RuntimeException(
+						"Unable to build Headers for method " + method.getName() + " in " + cls.getCanonicalName(), e);
+			}
 
 			// 请求参数
-			apiMethod = this.buildRequestParams(apiMethod, method);
+			try {
+				apiMethod = this.buildRequestParams(apiMethod, method);
+			} catch (Exception e) {
+				throw new RuntimeException("Unable to build Request Params for method " + method.getName() + " in "
+						+ cls.getCanonicalName(), e);
+			}
 
 			// 响应参数
-			apiMethod = this.buildReturnParams(apiMethod, method);
+			try {
+				apiMethod = this.buildReturnParams(apiMethod, method);
+			} catch (Exception e) {
+				throw new RuntimeException(
+						"Unable to build Return for method " + method.getName() + " in " + cls.getCanonicalName(), e);
+			}
 
 			// save api method
 			api.addApiMethod(apiMethod);
+
 		}
 
 		return api;
@@ -277,7 +304,8 @@ public class ApiBuilder implements IBuilder {
 						ApiParam param = ApiParam.of().setField(paramName)
 								.setType(this.processTypeNameForParam(simpleName)).setDesc(comment)
 								.setJson(Json.class.getName().equals(annotationName));
-						param.setValue(MockUtils.getValueByTypeAndName(parameter.getType().getValue(), parameter.getName()));
+						param.setValue(
+								MockUtils.getValueByTypeAndName(parameter.getType().getValue(), parameter.getName()));
 						paramList.add(param);
 					}
 				}
@@ -688,11 +716,17 @@ public class ApiBuilder implements IBuilder {
 				}
 			}
 		}
-		
+
 		// 模拟参数值
 		param.setValue(MockUtils.getValueByTypeAndName(field.getType().getSimpleName(), field.getName()));
 	}
 
+	/**
+	 * 获得java 类
+	 * 
+	 * @param simpleName
+	 * @return
+	 */
 	private JavaClass getJavaClass(String simpleName) {
 		JavaClass cls = builder.getClassByName(simpleName);
 		List<JavaField> fieldList = this.getFields(cls, 0);
@@ -705,16 +739,20 @@ public class ApiBuilder implements IBuilder {
 				javaFilesMap.put(javaClass.getFullyQualifiedName(), javaClass);
 			}
 		}
+
+		// 不能返回空类ixng
+		if (cls == null) {
+			throw new RuntimeException(
+					"ERROR: Unable to find java class \"" + simpleName + "\"");
+		}
 		return cls;
 	}
 
 	/**
 	 * Get fields
 	 *
-	 * @param cls1
-	 *            The JavaClass object
-	 * @param i
-	 *            Recursive counter
+	 * @param cls1 The JavaClass object
+	 * @param i    Recursive counter
 	 * @return list of JavaField
 	 */
 	private List<JavaField> getFields(JavaClass cls1, int i) {

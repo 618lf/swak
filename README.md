@@ -281,8 +281,8 @@ ContextRefreshedEvent > startReactiveServer > ReactiveServerInitializedEvent
 # 版本1.0.0 合并到 master 上
 以后在 master 版本上做新开发，具体的版本发布稳定版本
 
-新功能1： api doc 的自动生成 -- 开发中
-新功能2： 代码生成工具 -- 待开发
+新功能1： api doc 的自动生成 -- 开发中(目前遇到的问题是，使用的jar无法获取 classes 的类)  
+新功能2： 代码生成工具 -- 待开发   
 
 # 演示项目
 具体的演示项目参见：

@@ -21,7 +21,7 @@ import com.swak.annotation.PostMapping;
 import com.swak.annotation.Regex;
 import com.swak.annotation.RequestMapping;
 import com.swak.annotation.RestController;
-import com.swak.api.model.ApiReturn;
+import com.swak.doc.ApiReturn;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.thoughtworks.qdox.model.DocletTag;

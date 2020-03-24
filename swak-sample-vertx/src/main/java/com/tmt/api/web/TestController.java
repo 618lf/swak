@@ -27,7 +27,8 @@ public class TestController {
 	/**
 	 * 验证参数
 	 * 
-	 * @param context
+	 * @param goods
+	 * @param errors
 	 * @return
 	 */
 	@PostMapping("/validate")

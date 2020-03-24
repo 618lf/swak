@@ -1,4 +1,4 @@
-package com.swak.api.model;
+package com.swak.doc;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
