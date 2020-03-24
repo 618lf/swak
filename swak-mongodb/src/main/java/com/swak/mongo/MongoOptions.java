@@ -23,12 +23,12 @@ import com.swak.utils.Lists;
  * @author lifeng
  */
 @SuppressWarnings("deprecation")
-public class MongoClients {
+public class MongoOptions {
 
-	public static MongoHolder holder = null;
+	private MongoDataSource holder = null;
 
-	public static void setMongoDB(MongoHolder holder) {
-		MongoClients.holder = holder;
+	public MongoOptions(MongoDataSource dataSource) {
+		this.holder = dataSource;
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class MongoClients {
 	 * @param id
 	 * @return
 	 */
-	public static CompletableFuture<Document> get(String table, Object id) {
+	public CompletableFuture<Document> get(String table, Object id) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(id, "id can not null");
 		CompletableFuture<Document> future = new CompletableFuture<>();
@@ -62,7 +62,7 @@ public class MongoClients {
 	 * @param id
 	 * @return
 	 */
-	public static CompletableFuture<Document> get(String table, Query query) {
+	public CompletableFuture<Document> get(String table, Query query) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(query, "id can not null");
 		CompletableFuture<Document> future = new CompletableFuture<>();
@@ -84,7 +84,7 @@ public class MongoClients {
 	 * @param id
 	 * @return
 	 */
-	public static CompletableFuture<Integer> count(String table, Query query) {
+	public CompletableFuture<Integer> count(String table, Query query) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(query, "query can not null");
 		CompletableFuture<Integer> future = new CompletableFuture<>();
@@ -106,7 +106,7 @@ public class MongoClients {
 	 * @param id
 	 * @return
 	 */
-	public static CompletableFuture<Page> page(String table, Query query, Parameters param) {
+	public CompletableFuture<Page> page(String table, Query query, Parameters param) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(query, "query can not null");
 		CompletableFuture<Page> future = new CompletableFuture<>();
@@ -122,7 +122,7 @@ public class MongoClients {
 		return future;
 	}
 
-	private static void _query(MongoCollection<Document> collection, Query $query, Parameters param,
+	private void _query(MongoCollection<Document> collection, Query $query, Parameters param,
 			CompletableFuture<Page> future) {
 		FindIterable<Document> find = collection.find(Document.class);
 		find.filter($query.getFilter()).projection($query.getFields()).limit(param.getPageSize())
@@ -144,7 +144,7 @@ public class MongoClients {
 	 * @param id
 	 * @return
 	 */
-	public static CompletableFuture<List<Document>> query(String table, Query query, int limit) {
+	public CompletableFuture<List<Document>> query(String table, Query query, int limit) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(query, "query can not null");
 		CompletableFuture<List<Document>> future = new CompletableFuture<>();
@@ -169,7 +169,7 @@ public class MongoClients {
 	 * @param docs
 	 * @return
 	 */
-	public static CompletableFuture<Void> insert(String table, Document... docs) {
+	public CompletableFuture<Void> insert(String table, Document... docs) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(docs, "docs can not null");
 		Assert.notEmpty(docs, "docs can not empty");
@@ -202,7 +202,7 @@ public class MongoClients {
 	 * @param doc
 	 * @return
 	 */
-	public static CompletableFuture<Document> save(String table, Document doc) {
+	public CompletableFuture<Document> save(String table, Document doc) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(doc, "doc can not null");
 		CompletableFuture<Document> future = new CompletableFuture<>();
@@ -238,7 +238,7 @@ public class MongoClients {
 	 * @param doc
 	 * @return
 	 */
-	public static CompletableFuture<Document> update(String table, Document doc, Update update) {
+	public CompletableFuture<Document> update(String table, Document doc, Update update) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(doc, "doc can not null");
 		CompletableFuture<Document> future = new CompletableFuture<>();
@@ -263,7 +263,7 @@ public class MongoClients {
 	 * @param doc
 	 * @return
 	 */
-	public static CompletableFuture<Long> delete(String table, Document doc) {
+	public CompletableFuture<Long> delete(String table, Document doc) {
 		Assert.notNull(table, "table can not null");
 		Assert.notNull(doc, "doc can not null");
 		CompletableFuture<Long> future = new CompletableFuture<>();
@@ -295,7 +295,7 @@ public class MongoClients {
 	 * @param future
 	 * @return
 	 */
-	public static <T> CompletableFuture<T> transaction(Supplier<CompletableFuture<T>> supplier) {
+	public <T> CompletableFuture<T> transaction(Supplier<CompletableFuture<T>> supplier) {
 		Assert.notNull(supplier, "table can not null");
 		CompletableFuture<T> future = new CompletableFuture<>();
 		holder.mongo.startSession((session, t) -> {
@@ -328,12 +328,12 @@ public class MongoClients {
 	 * 
 	 * @author lifeng
 	 */
-	public static class MongoHolder {
+	public static class MongoDataSource {
 
 		public MongoClient mongo;
 		public MongoDatabase db;
 
-		public MongoHolder(MongoClient mongo, MongoDatabase db) {
+		public MongoDataSource(MongoClient mongo, MongoDatabase db) {
 			this.mongo = mongo;
 			this.db = db;
 		}

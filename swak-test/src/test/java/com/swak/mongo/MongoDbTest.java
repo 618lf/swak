@@ -35,7 +35,7 @@ public class MongoDbTest {
 		properties.setPassword("123456".toCharArray());
 		properties.setDatabase("cloud");
 		properties.setAuthenticationDatabase("admin");
-		config.mongoClient(settings, properties);
+		MongoOptions mongoOptions = config.mongoOptions(settings, properties);
 		// MongoClients.transaction(() -> {
 		// Goods goods = new Goods();
 		// goods.setName("李锋");
@@ -74,7 +74,7 @@ public class MongoDbTest {
 		insert.setLon(1L);
 		insert.setBigd(BigDecimal.valueOf(1.0));
 		insert.setByt(1);
-		MongoClients.save("RESOURCE", new Document(insert)).whenComplete((res, t) -> {
+		mongoOptions.save("RESOURCE", new Document(insert)).whenComplete((res, t) -> {
 			System.out.println(JsonMapper.toJson(res));
 			countDownLatch.countDown();
 		});
@@ -85,7 +85,7 @@ public class MongoDbTest {
 		query.and(Filters.eq("storeName", "test"));
 		query.fields(Projections.include("boo", "dou", "lon", "bigd", "byt"));
 		Parameters param = new Parameters();
-		MongoClients.page("RESOURCE", query, param).whenComplete((page, t) -> {
+		mongoOptions.page("RESOURCE", query, param).whenComplete((page, t) -> {
 			List<Document> docs = page.getData();
 			List<Resource> ts = Lists.newArrayList(docs.size());
 			try {

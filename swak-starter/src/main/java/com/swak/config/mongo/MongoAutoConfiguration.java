@@ -32,8 +32,8 @@ import com.mongodb.DocumentToDBRefTransformer;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.async.client.MongoClient;
 import com.mongodb.connection.netty.NettyStreamFactoryFactory;
-import com.swak.mongo.MongoClients;
-import com.swak.mongo.MongoClients.MongoHolder;
+import com.swak.mongo.MongoOptions;
+import com.swak.mongo.MongoOptions.MongoDataSource;
 import com.swak.mongo.codec.DocumentCodecxProvider;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.TransportMode;
@@ -109,12 +109,11 @@ public class MongoAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public MongoClient mongoClient(MongoClientSettings settings, MongoProperties properties) {
+	public MongoOptions mongoOptions(MongoClientSettings settings, MongoProperties properties) {
 		MongoClientFactory factory = new MongoClientFactory(properties);
 		this.mongo = factory.createMongoClient(settings);
-		MongoHolder holder = new MongoHolder(this.mongo, this.mongo.getDatabase(properties.getDatabase()));
-		MongoClients.setMongoDB(holder);
-		return this.mongo;
+		MongoDataSource holder = new MongoDataSource(this.mongo, this.mongo.getDatabase(properties.getDatabase()));
+		return new MongoOptions(holder);
 	}
 
 	/**
