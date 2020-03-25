@@ -88,7 +88,8 @@ public abstract class AbstractRouterHandler implements RouterHandler {
 		if (logger.isDebugEnabled()) {
 			List<Route> routes = router.getRoutes();
 			for (Route route : routes) {
-				logger.debug("{}\t{}", route.methods().toString(), route.getPath());
+				logger.debug("{}\t{}", route.methods() != null ? route.methods().toString() : "All",
+						route.getPath() != null ? route.getPath() : "All");
 			}
 		}
 		return router;
