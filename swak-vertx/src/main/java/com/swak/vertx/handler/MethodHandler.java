@@ -170,7 +170,7 @@ public class MethodHandler {
 	 * @param args
 	 * @return
 	 */
-	public Object doInvoke(Object[] args) throws Exception {
+	public Object doInvoke(Object[] args) throws Throwable {
 		return this.getMethod().invoke(this.getBean(), args);
 	}
 }

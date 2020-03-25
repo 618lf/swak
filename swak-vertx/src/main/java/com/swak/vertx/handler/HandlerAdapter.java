@@ -204,7 +204,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			} else {
 				this.handleResult(result, null, context, handler, metrics);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			this.handleResult(null, e, context, handler, metrics);
 		}
 	}
@@ -217,7 +217,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * @return
 	 * @throws Exception
 	 */
-	private Object dohandler(MethodHandler handler, Object[] params) throws Exception {
+	private Object dohandler(MethodHandler handler, Object[] params) throws Throwable {
 		return handler.doInvoke(params);
 	}
 

@@ -120,6 +120,8 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 						"Use @RestController like this: @RestController(path='/api/goods', value='goodsApi') or @RestController(path='/api/goods')");
 			}
 
+			// 直接可以将请求映射到service上
+			VertxService vertxService = AnnotatedElementUtils.findMergedAnnotation(clazz, VertxService.class);
 			RequestMapping classMapping = AnnotatedElementUtils.findMergedAnnotation(clazz, RequestMapping.class);
 			Method[] methods = clazz.getDeclaredMethods();
 			for (Method method : methods) {
@@ -128,7 +130,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 					continue;
 				}
 
-				RouterBean routerBean = this.router(classMapping, methodMapping, bean, method);
+				RouterBean routerBean = this.router(classMapping, methodMapping, bean, method, vertxService != null);
 				if (routerBean != null) {
 					routers.add(routerBean);
 				}
@@ -194,10 +196,21 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 	 * @return
 	 */
 	protected boolean isController(Class<?> clazz) {
-		return clazz.isAnnotationPresent(RestController.class) || clazz.isAnnotationPresent(PageController.class);
+		return (clazz.isAnnotationPresent(RestController.class) || clazz.isAnnotationPresent(PageController.class));
 	}
 
-	protected RouterBean router(RequestMapping classMapping, RequestMapping methodMapping, Object bean, Method method) {
+	/**
+	 * 创建路由
+	 * 
+	 * @param classMapping
+	 * @param methodMapping
+	 * @param bean
+	 * @param method
+	 * @param mergeService
+	 * @return
+	 */
+	protected RouterBean router(RequestMapping classMapping, RequestMapping methodMapping, Object bean, Method method,
+			boolean mergeService) {
 		String[] patterns1 = classMapping.value();
 		String[] patterns2 = methodMapping.value();
 		List<String> result = Lists.newArrayList();
@@ -212,14 +225,14 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 		} else if (patterns2.length != 0) {
 			result = Lists.newArrayList(patterns2);
 		} else {
-			result.add("");
+			result.add(StringUtils.EMPTY);
 		}
 
 		// method
 		RequestMethod requestMethod = classMapping.method() == RequestMethod.ALL ? methodMapping.method()
 				: classMapping.method();
 		requestMethod = requestMethod == RequestMethod.ALL ? null : requestMethod;
-		return new RouterBean(bean, method, result, requestMethod);
+		return new RouterBean(vertx, bean, method, result, requestMethod, mergeService);
 	}
 
 	protected Object refer(VertxReferer reference, Class<?> interfaceType) {
@@ -228,7 +241,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 			referenceBean = new ReferenceBean(interfaceType);
 			references.put(interfaceType.getName(), referenceBean);
 		}
-		return referenceBean.getRefer(this.getVertx());
+		return referenceBean.getRefer(vertx);
 	}
 
 	/**
@@ -249,8 +262,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 		if (serviceMapping != null) {
 			Class<?>[] classes = ClassUtils.getAllInterfacesForClass(clazz);
 			if (classes == null || classes.length == 0) {
-				throw new BeanInitializationException("Failed to init service " + beanName + " in class "
-						+ bean.getClass().getName() + ", that need realize one interface");
+				classes = new Class<?>[] { clazz };
 			}
 			for (Class<?> inter : classes) {
 				if (inter.getName().startsWith("org.springframework.") || !fitWith(serviceMapping, inter)) {
