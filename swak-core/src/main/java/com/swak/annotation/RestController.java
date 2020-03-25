@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Controller;
 
+import com.swak.utils.StringUtils;
+
 /**
  * 用于配置请求
  * @author lifeng
@@ -25,7 +27,7 @@ public @interface RestController {
 	 * @return
 	 */
 	@AliasFor(annotation = Controller.class, attribute="value")
-	String value() default "";
+	String value() default StringUtils.EMPTY;
 	
 	/**
 	 * 支持的 path

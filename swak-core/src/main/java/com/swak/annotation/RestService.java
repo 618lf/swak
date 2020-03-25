@@ -18,7 +18,7 @@ import com.swak.utils.StringUtils;
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@RestController
+@RequestMapping
 @FluxService
 public @interface RestService {
 
@@ -35,7 +35,7 @@ public @interface RestService {
 	 * 
 	 * @return
 	 */
-	@AliasFor(annotation = RestController.class, value = "value")
+	@AliasFor(annotation = RequestMapping.class, value = "value")
 	String[] path() default {};
 
 	/**
@@ -43,7 +43,7 @@ public @interface RestService {
 	 * 
 	 * @return
 	 */
-	@AliasFor(annotation = RestController.class)
+	@AliasFor(annotation = RequestMapping.class)
 	RequestMethod method() default RequestMethod.ALL;
 
 	/**

@@ -22,6 +22,7 @@ import com.swak.annotation.PageController;
 import com.swak.annotation.RequestMapping;
 import com.swak.annotation.RequestMethod;
 import com.swak.annotation.RestController;
+import com.swak.annotation.RestService;
 import com.swak.annotation.RouterSupplier;
 import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.Lists;
@@ -190,16 +191,6 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 	}
 
 	/**
-	 * 是否是 Api 或 Page
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	protected boolean isController(Class<?> clazz) {
-		return (clazz.isAnnotationPresent(RestController.class) || clazz.isAnnotationPresent(PageController.class));
-	}
-
-	/**
 	 * 创建路由
 	 * 
 	 * @param classMapping
@@ -258,18 +249,25 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 		if (AopUtils.isAopProxy(bean)) {
 			clazz = AopUtils.getTargetClass(bean);
 		}
-		FluxService serviceMapping = clazz.getAnnotation(FluxService.class);
-		if (serviceMapping != null) {
-			Class<?>[] classes = ClassUtils.getAllInterfacesForClass(clazz);
-			if (classes == null || classes.length == 0) {
-				classes = new Class<?>[] { clazz };
-			}
-			for (Class<?> inter : classes) {
-				if (inter.getName().startsWith("org.springframework.") || !fitWith(serviceMapping, inter)) {
-					continue;
+
+		// 判断是否服务
+		if (this.isServie(clazz)) {
+
+			// 获取服务配置
+			FluxService fluxService = AnnotatedElementUtils.findMergedAnnotation(clazz, FluxService.class);
+
+			if (fluxService != null) {
+				Class<?>[] classes = ClassUtils.getAllInterfacesForClass(clazz);
+				if (classes == null || classes.length == 0) {
+					classes = new Class<?>[] { clazz };
 				}
-				ServiceBean serviceBean = new ServiceBean(inter, bean, serviceMapping);
-				services.add(serviceBean);
+				for (Class<?> inter : classes) {
+					if (inter.getName().startsWith("org.springframework.") || !fitWith(fluxService, inter)) {
+						continue;
+					}
+					ServiceBean serviceBean = new ServiceBean(inter, bean, fluxService);
+					services.add(serviceBean);
+				}
 			}
 		}
 		return bean;
@@ -287,5 +285,26 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 			return true;
 		}
 		return mapping.service() == inter;
+	}
+
+	/**
+	 * 是否是 Api
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	protected boolean isController(Class<?> clazz) {
+		return (clazz.isAnnotationPresent(RestController.class) || clazz.isAnnotationPresent(PageController.class)
+				|| clazz.isAnnotationPresent(RestService.class));
+	}
+
+	/**
+	 * 是否是 Service
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	protected boolean isServie(Class<?> clazz) {
+		return (clazz.isAnnotationPresent(FluxService.class) || clazz.isAnnotationPresent(RestService.class));
 	}
 }
