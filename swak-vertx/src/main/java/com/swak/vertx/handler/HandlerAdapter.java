@@ -90,8 +90,8 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		if (parameterType == null || parameterType == HttpServerRequest.class
 				|| parameterType == HttpServerResponse.class || parameterType == RoutingContext.class
 				|| parameterType == Subject.class || parameterType == BindErrors.class
-				|| BeanUtils.isSimpleProperty(parameterType) || parameterType.isAssignableFrom(Collection.class)
-				|| parameterType.isAssignableFrom(List.class) || parameterType.isAssignableFrom(Map.class)) {
+				|| BeanUtils.isSimpleProperty(parameterType) || Collection.class.isAssignableFrom(parameterType)
+				|| List.class.isAssignableFrom(parameterType) || Map.class.isAssignableFrom(parameterType)) {
 			return;
 		}
 
@@ -341,10 +341,10 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			return this.resolveAnnotation(parameter, context);
 		} else if (BeanUtils.isSimpleProperty(parameterType)) {
 			return this.doConvert(context.request().getParam(parameter.getParameterName()), parameterType);
-		} else if (parameterType.isAssignableFrom(List.class)) {
+		} else if (List.class.isAssignableFrom(parameterType)) {
 			String resolvedName = parameter.getParameterName();
 			return context.request().params().getAll(resolvedName);
-		} else if (parameterType.isAssignableFrom(Map.class)) {
+		} else if (Map.class.isAssignableFrom(parameterType)) {
 			return this.parseArguments(context.request().params().iterator());
 		}
 		return this.resolveObjectAndValidate(parameter, context);
@@ -366,10 +366,10 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		Json json = (Json) parameter.getParameterAnnotation(Json.class);
 		if (json != null) {
 			Class<?> fieldClass = parameter.getParameterType();
-			if (fieldClass.isAssignableFrom(List.class)) {
+			if (List.class.isAssignableFrom(fieldClass)) {
 				return JsonMapper.fromJsonToList(context.request().getParam(parameter.getParameterName()),
 						parameter.getNestedParameterType());
-			} else if (fieldClass.isAssignableFrom(Map.class)) {
+			} else if (Map.class.isAssignableFrom(fieldClass)) {
 				return JsonMapper.fromJson(context.request().getParam(parameter.getParameterName()), HashMap.class);
 			}
 			return JsonMapper.fromJson(context.request().getParam(parameter.getParameterName()), fieldClass);
@@ -377,9 +377,9 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		Header header = (Header) parameter.getParameterAnnotation(Header.class);
 		if (header != null) {
 			Class<?> fieldClass = parameter.getParameterType();
-			if (fieldClass.isAssignableFrom(Map.class)) {
+			if (Map.class.isAssignableFrom(fieldClass)) {
 				return this.parseHeaders(context);
-			} else if (fieldClass.isAssignableFrom(List.class)) {
+			} else if (List.class.isAssignableFrom(fieldClass)) {
 				return context.request().headers().getAll(parameter.getParameterName());
 			}
 			return this.doConvert(context.request().getHeader(parameter.getParameterName()),
@@ -500,20 +500,20 @@ public class HandlerAdapter extends AbstractRouterHandler {
 					} else {
 						result = this.doConvert(value, field.getFieldClass());
 					}
-				} else if (field.getFieldClass().isAssignableFrom(List.class)) {
+				} else if (List.class.isAssignableFrom(field.getFieldClass())) {
 					if (value instanceof List) {
 						result = this.doConvert(value, field.getFieldClass());
 					} else if (value instanceof String) {
 						result = this.doConvert(Lists.newArrayList(value), field.getFieldClass());
 					} else if (value instanceof Map && BeanUtils.isSimpleProperty(field.getNestedFieldClass())) {
 						result = this.doConvert(((Map<String, Object>) value).values(), field.getFieldClass());
-					} else if (value instanceof Map && field.getNestedFieldClass().isAssignableFrom(Map.class)) {
+					} else if (value instanceof Map && Map.class.isAssignableFrom(field.getNestedFieldClass())) {
 						result = this.doConvert(((Map<String, Object>) value).values(), field.getFieldClass());
 					} else if (value instanceof Map) {
 						result = this.resolveChildObject(field.getNestedFieldClass(), StringUtils.EMPTY,
 								(Map<String, Object>) value, context, check);
 					}
-				} else if (field.getFieldClass().isAssignableFrom(Map.class)) {
+				} else if (Map.class.isAssignableFrom(field.getFieldClass())) {
 					if (value instanceof Map) {
 						result = this.doConvert(((Map<String, Object>) value), field.getFieldClass());
 					} else {
@@ -672,9 +672,9 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 */
 	protected Object doJsonMapper(Object json, FieldMeta field) {
 		Class<?> fieldClass = field.getFieldClass();
-		if (fieldClass.isAssignableFrom(List.class)) {
+		if (List.class.isAssignableFrom(fieldClass)) {
 			return JsonMapper.fromJsonToList(json.toString(), field.getNestedFieldClass());
-		} else if (fieldClass.isAssignableFrom(Map.class)) {
+		} else if (Map.class.isAssignableFrom(fieldClass)) {
 			return JsonMapper.fromJson(json.toString(), HashMap.class);
 		}
 		return JsonMapper.fromJson(json.toString(), field.getFieldClass());
