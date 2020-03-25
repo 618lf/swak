@@ -3,11 +3,11 @@ package com.tmt.api.web;
 import java.util.concurrent.CompletableFuture;
 
 import com.swak.Constants;
+import com.swak.annotation.FluxReferer;
 import com.swak.annotation.GetMapping;
 import com.swak.annotation.RestController;
 import com.swak.entity.Result;
 import com.swak.rabbit.annotation.Publisher;
-import com.swak.vertx.annotation.VertxReferer;
 import com.tmt.api.entity.Goods;
 import com.tmt.api.event.GoodsEvent;
 import com.tmt.api.exception.GoodsException;
@@ -30,7 +30,7 @@ public class GoodsController {
 	private GoodsEventPublisher publisher;
 	@Publisher(queue = "swak.test.goods")
 	private GoodsEventPublisher publisher2;
-	@VertxReferer
+	@FluxReferer
 	private GoodsServiceFacadeAsyncx goodsService;
 	@MotanReferer
 	private GoodsServiceFacadeAsync goodsServiceRpc;

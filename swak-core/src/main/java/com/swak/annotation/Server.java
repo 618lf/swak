@@ -1,4 +1,4 @@
-package com.swak.vertx.annotation;
+package com.swak.annotation;
 
 /**
  * 提供两种服务器模式

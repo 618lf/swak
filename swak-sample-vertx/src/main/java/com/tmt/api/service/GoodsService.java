@@ -3,9 +3,9 @@ package com.tmt.api.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.swak.annotation.FluxService;
 import com.swak.persistence.BaseDao;
 import com.swak.service.BaseService;
-import com.swak.vertx.annotation.VertxService;
 import com.tmt.api.dao.GoodsDao;
 import com.tmt.api.entity.Goods;
 import com.tmt.api.facade.GoodsNotServiceFacade;
@@ -19,7 +19,7 @@ import io.shardingsphere.api.HintManager;
  * 
  * @author lifeng
  */
-@VertxService(use_pool = "goods", service = GoodsServiceFacade.class)
+@FluxService(use_pool = "goods", service = GoodsServiceFacade.class)
 @MotanService
 public class GoodsService extends BaseService<Goods, String> implements GoodsServiceFacade, GoodsNotServiceFacade {
 

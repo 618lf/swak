@@ -7,7 +7,6 @@ import com.swak.Constants;
 import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.annotation.InvokerAddress;
 import com.swak.vertx.transport.VertxProxy;
 import com.swak.vertx.transport.codec.Msg;
 
@@ -27,12 +26,6 @@ public interface Invocation {
 	default String getAddress(Class<?> type) {
 		// 访问的地址
 		String address = StringUtils.EMPTY;
-
-		// 定义的访问的地址
-		InvokerAddress invokerAddress = type.getAnnotation(InvokerAddress.class);
-		if (invokerAddress != null) {
-			address = invokerAddress.value();
-		}
 
 		// 默认使用接口的全额限定名称
 		if (StringUtils.isBlank(address)) {

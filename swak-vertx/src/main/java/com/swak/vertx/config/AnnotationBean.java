@@ -16,19 +16,19 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.ClassUtils;
 
+import com.swak.annotation.FluxReferer;
+import com.swak.annotation.FluxService;
 import com.swak.annotation.PageController;
 import com.swak.annotation.RequestMapping;
 import com.swak.annotation.RequestMethod;
 import com.swak.annotation.RestController;
+import com.swak.annotation.RouterSupplier;
 import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 import com.swak.utils.Sets;
 import com.swak.utils.StringUtils;
 import com.swak.utils.router.RouterUtils;
-import com.swak.vertx.annotation.RouterSupplier;
-import com.swak.vertx.annotation.VertxReferer;
-import com.swak.vertx.annotation.VertxService;
 import com.swak.vertx.transport.VertxProxy;
 
 /**
@@ -121,7 +121,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 			}
 
 			// 直接可以将请求映射到service上
-			VertxService vertxService = AnnotatedElementUtils.findMergedAnnotation(clazz, VertxService.class);
+			FluxService fluxService = AnnotatedElementUtils.findMergedAnnotation(clazz, FluxService.class);
 			RequestMapping classMapping = AnnotatedElementUtils.findMergedAnnotation(clazz, RequestMapping.class);
 			Method[] methods = clazz.getDeclaredMethods();
 			for (Method method : methods) {
@@ -130,7 +130,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 					continue;
 				}
 
-				RouterBean routerBean = this.router(classMapping, methodMapping, bean, method, vertxService != null);
+				RouterBean routerBean = this.router(classMapping, methodMapping, bean, method, fluxService != null);
 				if (routerBean != null) {
 					routers.add(routerBean);
 				}
@@ -170,7 +170,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 				if (!field.isAccessible()) {
 					field.setAccessible(true);
 				}
-				VertxReferer reference = field.getAnnotation(VertxReferer.class);
+				FluxReferer reference = field.getAnnotation(FluxReferer.class);
 				if (reference != null) {
 					Object value = refer(reference, field.getType());
 					if (value != null) {
@@ -235,7 +235,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 		return new RouterBean(vertx, bean, method, result, requestMethod, mergeService);
 	}
 
-	protected Object refer(VertxReferer reference, Class<?> interfaceType) {
+	protected Object refer(FluxReferer reference, Class<?> interfaceType) {
 		ReferenceBean referenceBean = references.get(interfaceType.getName());
 		if (referenceBean == null) {
 			referenceBean = new ReferenceBean(interfaceType);
@@ -258,7 +258,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 		if (AopUtils.isAopProxy(bean)) {
 			clazz = AopUtils.getTargetClass(bean);
 		}
-		VertxService serviceMapping = clazz.getAnnotation(VertxService.class);
+		FluxService serviceMapping = clazz.getAnnotation(FluxService.class);
 		if (serviceMapping != null) {
 			Class<?>[] classes = ClassUtils.getAllInterfacesForClass(clazz);
 			if (classes == null || classes.length == 0) {
@@ -282,7 +282,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 	 * @param inter
 	 * @return
 	 */
-	private boolean fitWith(VertxService mapping, Class<?> inter) {
+	private boolean fitWith(FluxService mapping, Class<?> inter) {
 		if (mapping.service() == null || mapping.service() == void.class) {
 			return true;
 		}

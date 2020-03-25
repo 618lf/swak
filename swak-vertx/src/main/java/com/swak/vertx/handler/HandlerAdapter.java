@@ -16,8 +16,10 @@ import org.springframework.core.convert.TypeDescriptor;
 
 import com.swak.Constants;
 import com.swak.annotation.Body;
+import com.swak.annotation.FluxService;
 import com.swak.annotation.Header;
 import com.swak.annotation.Json;
+import com.swak.annotation.Server;
 import com.swak.annotation.Valid;
 import com.swak.asm.FieldCache;
 import com.swak.asm.FieldCache.ClassMeta;
@@ -31,8 +33,6 @@ import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.validator.Validator;
 import com.swak.validator.errors.BindErrors;
-import com.swak.vertx.annotation.Server;
-import com.swak.vertx.annotation.VertxService;
 import com.swak.vertx.security.SecuritySubject;
 import com.swak.vertx.transport.Subject;
 
@@ -51,7 +51,7 @@ import io.vertx.ext.web.RoutingContext;
  * 
  * @author lifeng
  */
-@VertxService(value = "handlerAdapter", server = Server.Http, instances = -1)
+@FluxService(value = "handlerAdapter", server = Server.Http, instances = -1)
 public class HandlerAdapter extends AbstractRouterHandler {
 
 	@Autowired(required = false)

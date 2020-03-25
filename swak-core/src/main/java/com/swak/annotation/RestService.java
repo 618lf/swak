@@ -1,4 +1,4 @@
-package com.swak.vertx.annotation;
+package com.swak.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,34 +7,51 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.stereotype.Service;
 
 import com.swak.utils.StringUtils;
 
 /**
- * 用于配置服务
+ * 直接将路由映射到服务上
  * 
  * @author lifeng
  */
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Service
-public @interface VertxService {
+@RestController
+@FluxService
+public @interface RestService {
 
 	/**
 	 * 实例化的名称
 	 * 
 	 * @return
 	 */
-	@AliasFor(annotation = Service.class)
+	@AliasFor(annotation = FluxService.class)
 	String value() default StringUtils.EMPTY;
+
+	/**
+	 * 支持的 path
+	 * 
+	 * @return
+	 */
+	@AliasFor(annotation = RestController.class, value = "value")
+	String[] path() default {};
+
+	/**
+	 * 支持的 method
+	 * 
+	 * @return
+	 */
+	@AliasFor(annotation = RestController.class)
+	RequestMethod method() default RequestMethod.ALL;
 
 	/**
 	 * 运行的模式
 	 * 
 	 * @return
 	 */
+	@AliasFor(annotation = FluxService.class)
 	Server server() default Server.EventBus;
 
 	/**
@@ -51,6 +68,7 @@ public @interface VertxService {
 	 * 
 	 * @return
 	 */
+	@AliasFor(annotation = FluxService.class)
 	Context context() default Context.Concurrent;
 
 	/**
@@ -58,6 +76,7 @@ public @interface VertxService {
 	 * 
 	 * @return
 	 */
+	@AliasFor(annotation = FluxService.class)
 	int instances() default 1;
 
 	/**
@@ -65,6 +84,7 @@ public @interface VertxService {
 	 * 
 	 * @return
 	 */
+	@AliasFor(annotation = FluxService.class)
 	String use_pool() default StringUtils.EMPTY;
 
 	/**
@@ -72,5 +92,6 @@ public @interface VertxService {
 	 * 
 	 * @return
 	 */
+	@AliasFor(annotation = FluxService.class)
 	Class<?> service() default void.class;
 }

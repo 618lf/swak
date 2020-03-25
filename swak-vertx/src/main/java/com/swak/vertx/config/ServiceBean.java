@@ -1,8 +1,8 @@
 package com.swak.vertx.config;
 
-import com.swak.vertx.annotation.Context;
-import com.swak.vertx.annotation.Server;
-import com.swak.vertx.annotation.VertxService;
+import com.swak.annotation.Context;
+import com.swak.annotation.FluxService;
+import com.swak.annotation.Server;
 
 /**
  * 创建服务 bean
@@ -13,9 +13,9 @@ public class ServiceBean {
 
 	private final Object service;
 	private final Class<?> type;
-	private final VertxService mapping;
+	private final FluxService mapping;
 
-	public ServiceBean(Class<?> type, Object service, VertxService mapping) {
+	public ServiceBean(Class<?> type, Object service, FluxService mapping) {
 		this.service = service;
 		this.mapping = mapping;
 		this.type = type;

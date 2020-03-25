@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.swak.Constants;
 import com.swak.actuator.endpoint.InvocationContext;
-import com.swak.vertx.annotation.RouterSupplier;
+import com.swak.annotation.RouterSupplier;
 import com.swak.vertx.config.IRouterSupplier;
 import com.swak.vertx.handler.HandlerAdapter;
 import com.swak.vertx.handler.MethodHandler;

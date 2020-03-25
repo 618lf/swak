@@ -5,10 +5,10 @@ import java.util.Set;
 
 import org.springframework.aop.support.AopUtils;
 
+import com.swak.annotation.Context;
+import com.swak.annotation.Server;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.annotation.Context;
-import com.swak.vertx.annotation.Server;
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.ServiceBean;
 import com.swak.vertx.config.VertxProperties;

@@ -4,11 +4,11 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.CompletableFuture;
 
+import com.swak.annotation.FluxReferer;
 import com.swak.annotation.GetMapping;
 import com.swak.annotation.RestController;
 import com.swak.utils.FileUtils;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.annotation.VertxReferer;
 import com.swak.vertx.transport.multipart.PlainFile;
 import com.tmt.api.entity.Goods;
 import com.tmt.api.facade.GoodsServiceFacadeAsyncx;
@@ -21,7 +21,7 @@ import com.tmt.api.facade.GoodsServiceFacadeAsyncx;
 @RestController(path = "/api/test/bigtext")
 public class ZeroCopyController {
 
-	@VertxReferer
+	@FluxReferer
 	private GoodsServiceFacadeAsyncx goodsService;
 
 	/**
