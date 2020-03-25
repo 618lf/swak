@@ -125,6 +125,7 @@ public class MainVerticle extends AbstractVerticle {
 		// 以worker 的方式发布 默认是并发的执行代码。
 		DeploymentOptions options = new DeploymentOptions().setWorker(true);
 
+		// 运行的线程模型
 		if (service.getContext() == Context.IO) {
 			options.setWorker(false);
 		} else if (service.getContext() == Context.Order) {
@@ -135,7 +136,7 @@ public class MainVerticle extends AbstractVerticle {
 			options.setMultiThreaded(true);
 		}
 
-		// 设置了运行的线程池(如果没有配置则，默认只有一个)
+		// 自定义的线程池
 		String usePool = service.getUse_pool();
 		Integer poolSize = properties.getWorkers().get(usePool);
 		if (StringUtils.isNotBlank(usePool)) {
