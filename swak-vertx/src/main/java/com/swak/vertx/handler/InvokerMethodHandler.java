@@ -3,7 +3,11 @@ package com.swak.vertx.handler;
 import java.lang.reflect.Method;
 
 import com.swak.asm.MethodCache;
+import com.swak.entity.Model;
+import com.swak.entity.Result;
 import com.swak.vertx.transport.VertxProxy;
+import com.swak.vertx.transport.multipart.MultipartFile;
+import com.swak.vertx.transport.multipart.PlainFile;
 
 /**
  * InvokerHandler 和 MethodHandler 的结合
@@ -59,6 +63,30 @@ public class InvokerMethodHandler extends MethodHandler implements Invocation {
 	 */
 	@Override
 	public Object doInvoke(Object[] args) throws Throwable {
-		return this.invoke(vertx, address, method, args);
+		return this.invoke(vertx, address, method, args).thenApply(result -> this.wrapResult(result));
+	}
+
+	/**
+	 * 包括固定的结构
+	 * 
+	 * @param result
+	 * @return
+	 */
+	private Object wrapResult(Object result) {
+		if (result == null || isJson(result.getClass())) {
+			return Result.success(result);
+		}
+		return result;
+	}
+
+	/**
+	 * 是否是Json 输出
+	 * 
+	 * @param type
+	 * @return
+	 */
+	private boolean isJson(Class<?> type) {
+		return !(type == Result.class || type == Model.class || type == PlainFile.class || type == MultipartFile.class
+				|| type == String.class);
 	}
 }
