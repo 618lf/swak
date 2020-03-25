@@ -11,7 +11,16 @@ import com.swak.utils.JsonMapper;
  */
 public class Order {
 
+	private Long id;
 	private List<OrderItem> item;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public List<OrderItem> getItem() {
 		return item;

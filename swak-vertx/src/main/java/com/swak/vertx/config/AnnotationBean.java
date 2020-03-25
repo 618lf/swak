@@ -149,6 +149,19 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 		}
 
 		// fill the reference
+		this.cascadeFillReference(clazz, bean);
+
+		// return
+		return bean;
+	}
+
+	/**
+	 * 级联处理自动依赖
+	 * 
+	 * @param clazz
+	 */
+	private void cascadeFillReference(Class<?> clazz, Object bean) {
+		// fill reference
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
 			try {
@@ -167,7 +180,11 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 						+ " in class " + bean.getClass().getName(), e);
 			}
 		}
-		return bean;
+
+		// super class
+		if (clazz.getSuperclass() != null) {
+			this.cascadeFillReference(clazz.getSuperclass(), bean);
+		}
 	}
 
 	/**

@@ -1,14 +1,8 @@
 package com.swak.fields;
 
-public class OrderItem {
+import com.swak.entity.BaseEntity;
 
-	private Long id;
+public class OrderItem extends BaseEntity<Long> {
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
+	private static final long serialVersionUID = 1L;
 }
