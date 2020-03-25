@@ -18,10 +18,10 @@ import org.springframework.util.ClassUtils;
 
 import com.swak.annotation.FluxReferer;
 import com.swak.annotation.FluxService;
-import com.swak.annotation.PageController;
+import com.swak.annotation.RestPage;
 import com.swak.annotation.RequestMapping;
 import com.swak.annotation.RequestMethod;
-import com.swak.annotation.RestController;
+import com.swak.annotation.RestApi;
 import com.swak.annotation.RestService;
 import com.swak.annotation.RouterSupplier;
 import com.swak.exception.BaseRuntimeException;
@@ -294,7 +294,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 	 * @return
 	 */
 	protected boolean isController(Class<?> clazz) {
-		return (clazz.isAnnotationPresent(RestController.class) || clazz.isAnnotationPresent(PageController.class)
+		return (clazz.isAnnotationPresent(RestApi.class) || clazz.isAnnotationPresent(RestPage.class)
 				|| clazz.isAnnotationPresent(RestService.class));
 	}
 

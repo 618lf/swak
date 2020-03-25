@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import com.swak.Constants;
 import com.swak.annotation.FluxReferer;
 import com.swak.annotation.GetMapping;
-import com.swak.annotation.RestController;
+import com.swak.annotation.RestApi;
 import com.swak.entity.Result;
 import com.swak.rabbit.annotation.Publisher;
 import com.tmt.api.entity.Goods;
@@ -23,7 +23,7 @@ import io.vertx.ext.web.RoutingContext;
  * 
  * @author lifeng
  */
-@RestController(path = "/api/goods")
+@RestApi(path = "/api/goods")
 public class GoodsController {
 
 	@Publisher(queue = "swak.test.goods")

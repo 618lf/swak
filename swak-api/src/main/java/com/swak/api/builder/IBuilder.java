@@ -15,12 +15,12 @@ import com.swak.annotation.Length;
 import com.swak.annotation.Max;
 import com.swak.annotation.Min;
 import com.swak.annotation.NotNull;
-import com.swak.annotation.PageController;
+import com.swak.annotation.RestPage;
 import com.swak.annotation.Phone;
 import com.swak.annotation.PostMapping;
 import com.swak.annotation.Regex;
 import com.swak.annotation.RequestMapping;
-import com.swak.annotation.RestController;
+import com.swak.annotation.RestApi;
 import com.swak.doc.ApiReturn;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
@@ -37,7 +37,7 @@ import com.thoughtworks.qdox.model.JavaParameter;
  */
 public interface IBuilder {
 
-	List<String> CONTOLLERS = Lists.newArrayList(RestController.class.getName(), PageController.class.getName());
+	List<String> CONTOLLERS = Lists.newArrayList(RestApi.class.getName(), RestPage.class.getName());
 	List<String> REQUEST_MAPPINGS = Lists.newArrayList(GetMapping.class.getName(), PostMapping.class.getName(),
 			RequestMapping.class.getName());
 	List<String> IGNORE_PARAMS = Lists.newArrayList("HttpServerRequest", "HttpServerResponse", "RoutingContext",

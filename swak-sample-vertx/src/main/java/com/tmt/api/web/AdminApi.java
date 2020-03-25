@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import com.swak.annotation.GetMapping;
 import com.swak.annotation.RequiresPermissions;
 import com.swak.annotation.RequiresRoles;
-import com.swak.annotation.RestController;
+import com.swak.annotation.RestApi;
 import com.swak.entity.Result;
 import com.swak.vertx.transport.Subject;
 
@@ -14,7 +14,7 @@ import com.swak.vertx.transport.Subject;
  * 
  * @author lifeng
  */
-@RestController(path = "/api/admin", value = "adminApi")
+@RestApi(path = "/api/admin", value = "adminApi")
 public class AdminApi {
 
 	/**

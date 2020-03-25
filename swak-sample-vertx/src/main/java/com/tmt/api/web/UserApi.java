@@ -3,7 +3,7 @@ package com.tmt.api.web;
 import java.util.concurrent.CompletableFuture;
 
 import com.swak.annotation.GetMapping;
-import com.swak.annotation.RestController;
+import com.swak.annotation.RestApi;
 import com.swak.entity.Result;
 import com.swak.utils.Functions;
 import com.tmt.api.facade.UserServiceFacadeAsync;
@@ -16,7 +16,7 @@ import io.vertx.ext.web.RoutingContext;
  * 
  * @author lifeng
  */
-@RestController(path = "/api/user")
+@RestApi(path = "/api/user")
 public class UserApi {
 
 	@MotanReferer

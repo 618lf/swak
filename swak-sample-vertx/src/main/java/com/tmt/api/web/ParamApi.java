@@ -10,7 +10,7 @@ import com.swak.annotation.GetMapping;
 import com.swak.annotation.Header;
 import com.swak.annotation.Json;
 import com.swak.annotation.PostMapping;
-import com.swak.annotation.RestController;
+import com.swak.annotation.RestApi;
 import com.swak.annotation.Valid;
 import com.swak.entity.Model;
 import com.swak.entity.Result;
@@ -22,7 +22,7 @@ import com.swak.vertx.transport.multipart.PlainFile;
  * 
  * @author lifeng
  */
-@RestController(path = "/api/param")
+@RestApi(path = "/api/param")
 public class ParamApi {
 
 	/**

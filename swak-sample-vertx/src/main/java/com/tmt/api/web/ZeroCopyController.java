@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.swak.annotation.FluxReferer;
 import com.swak.annotation.GetMapping;
-import com.swak.annotation.RestController;
+import com.swak.annotation.RestApi;
 import com.swak.utils.FileUtils;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.transport.multipart.PlainFile;
@@ -18,7 +18,7 @@ import com.tmt.api.facade.GoodsServiceFacadeAsyncx;
  * 
  * @author lifeng
  */
-@RestController(path = "/api/test/bigtext")
+@RestApi(path = "/api/test/bigtext")
 public class ZeroCopyController {
 
 	@FluxReferer

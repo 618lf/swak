@@ -20,7 +20,7 @@ import com.swak.utils.StringUtils;
 @Documented
 @Controller
 @RequestMapping
-public @interface RestController {
+public @interface RestApi {
 	
 	/**
 	 * 设置 bean name， 不能用其他的替换，识别不到

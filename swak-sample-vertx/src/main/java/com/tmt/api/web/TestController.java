@@ -4,13 +4,13 @@ import java.util.concurrent.CompletableFuture;
 
 import com.swak.annotation.GetMapping;
 import com.swak.annotation.PostMapping;
-import com.swak.annotation.RestController;
+import com.swak.annotation.RestApi;
 import com.swak.validator.errors.BindErrors;
 import com.tmt.api.dto.GoodsDTO;
 
 import io.vertx.ext.web.RoutingContext;
 
-@RestController(path = "/api/test")
+@RestApi(path = "/api/test")
 public class TestController {
 
 	/**

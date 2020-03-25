@@ -17,8 +17,8 @@ import org.springframework.stereotype.Controller;
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@RestController
-public @interface PageController {
+@RestApi
+public @interface RestPage {
 
 	/**
 	 * 设置 bean name， 不能用其他的替换，识别不到

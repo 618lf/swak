@@ -3,7 +3,7 @@ package com.tmt.api.web;
 import java.util.concurrent.CompletableFuture;
 
 import com.swak.annotation.GetMapping;
-import com.swak.annotation.RestController;
+import com.swak.annotation.RestApi;
 import com.swak.entity.Result;
 
 /**
@@ -11,7 +11,7 @@ import com.swak.entity.Result;
  * 
  * @author lifeng
  */
-@RestController(path = "/api/anno", value = "annoApi")
+@RestApi(path = "/api/anno", value = "annoApi")
 public class AnnoApi {
 
 	/**
