@@ -80,7 +80,7 @@ public class FluxInvokerProxy implements InvocationHandler, MethodInterceptor, F
 	}
 
 	/**
-	 * tostring,equals,hashCode,finalize
+	 * tostring, equals, hashCode, finalize
 	 *
 	 * @param method
 	 * @return
