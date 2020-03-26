@@ -88,8 +88,8 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 					request.getArguments());
 		} catch (Throwable e) {
 			error = e.getCause() != null ? e.getCause() : e;
-			logger.error("Invoke [Service:{} - Method: {}] Error.", request.getMethodDesc(),
-					service.getClass().getName(), method.getMethodDesc(), e);
+			logger.error("Invoke [Service:{} - Method: {}] Error.", service.getClass().getName(),
+					method.getMethodDesc(), e);
 		}
 		Msg response = request.reset();
 
