@@ -38,19 +38,19 @@ import com.swak.wechat.user.UserInfo;
  * 
  * @author lifeng
  */
-public class WechatService {
+public abstract class AbstractWechatService {
 
-	private final HttpService httpService;
+	/**
+	 * Ssl Http 服务
+	 */
 	private HttpService ssl_HttpService;
 
 	/**
-	 * 创建 Wechat 服务
+	 * Http 服务
 	 * 
-	 * @param httpService
+	 * @return
 	 */
-	public WechatService(HttpService httpService) {
-		this.httpService = httpService;
-	}
+	public abstract HttpService getHttpService();
 
 	/**
 	 * 获取 SSl 服务， 如果有多个wechat 的ssl 需要处理可以根据 WechatConfig 管理多个
@@ -60,7 +60,7 @@ public class WechatService {
 	 */
 	public HttpService getSslHttpService(WechatConfig app) {
 		if (ssl_HttpService == null) {
-			ssl_HttpService = this.httpService.sslConfig(app.getSslContext());
+			ssl_HttpService = this.getHttpService().sslConfig(app.getSslContext());
 		}
 		return ssl_HttpService;
 	}
@@ -77,9 +77,9 @@ public class WechatService {
 	 * @return
 	 */
 	public CompletableFuture<UserInfo> userinfo(String access_token, String openId) {
-		CompletableFuture<UserInfo> future = httpService.post().setUrl("https://api.weixin.qq.com/cgi-bin/user/info")
-				.addFormParam("access_token", access_token).addFormParam("openid", openId).addFormParam("lang", "zh_CN")
-				.json(UserInfo.class).future();
+		CompletableFuture<UserInfo> future = this.getHttpService().post()
+				.setUrl("https://api.weixin.qq.com/cgi-bin/user/info").addFormParam("access_token", access_token)
+				.addFormParam("openid", openId).addFormParam("lang", "zh_CN").json(UserInfo.class).future();
 		return future.thenApply(res -> {
 			return res;
 		});
@@ -93,7 +93,7 @@ public class WechatService {
 	 * @return
 	 */
 	public CompletableFuture<TemplateMessageResult> sendTemplateMessage(String access_token, String messageJson) {
-		CompletableFuture<TemplateMessageResult> future = httpService.post()
+		CompletableFuture<TemplateMessageResult> future = this.getHttpService().post()
 				.setUrl("https://api.weixin.qq.com/cgi-bin/message/template/send")
 				.addQueryParam("access_token", access_token).setBody(StringUtils.getBytesUtf8(messageJson))
 				.json(TemplateMessageResult.class).future();
@@ -117,7 +117,7 @@ public class WechatService {
 		if (!(StringUtils.isNotBlank(code))) {
 			return CompletableFuture.completedFuture(null);
 		}
-		CompletableFuture<SessionToken> future = httpService.get()
+		CompletableFuture<SessionToken> future = this.getHttpService().get()
 				.setUrl("https://api.weixin.qq.com/sns/jscode2session").addQueryParam("appid", app.getAppId())
 				.addQueryParam("secret", app.getSecret()).addQueryParam("js_code", code)
 				.addQueryParam("grant_type", "authorization_code").json(SessionToken.class).future();
@@ -158,7 +158,7 @@ public class WechatService {
 		if (!(StringUtils.isNotBlank(code) && StringUtils.isNotBlank(state))) {
 			return CompletableFuture.completedFuture(null);
 		}
-		CompletableFuture<SnsToken> future = httpService.get()
+		CompletableFuture<SnsToken> future = this.getHttpService().get()
 				.setUrl("https://api.weixin.qq.com/sns/oauth2/access_token").addQueryParam("appid", app.getAppId())
 				.addQueryParam("secret", app.getSecret()).addQueryParam("code", code)
 				.addQueryParam("grant_type", "authorization_code").json(SnsToken.class).future();
@@ -179,9 +179,10 @@ public class WechatService {
 	 * @return
 	 */
 	public CompletableFuture<UserInfo> accessToken2Userinfo(SnsToken token) {
-		CompletableFuture<UserInfo> future = httpService.get().setUrl("https://api.weixin.qq.com/sns/userinfo")
-				.addQueryParam("access_token", token.getAccess_token()).addQueryParam("openid", token.getOpenid())
-				.addQueryParam("lang", "zh_CN").json(UserInfo.class).future();
+		CompletableFuture<UserInfo> future = this.getHttpService().get()
+				.setUrl("https://api.weixin.qq.com/sns/userinfo").addQueryParam("access_token", token.getAccess_token())
+				.addQueryParam("openid", token.getOpenid()).addQueryParam("lang", "zh_CN").json(UserInfo.class)
+				.future();
 		return future.thenApply(res -> {
 			if (res != null) {
 				res.setToken(token);
@@ -200,9 +201,10 @@ public class WechatService {
 	 * @return
 	 */
 	public CompletableFuture<AccessToken> accessToken(WechatConfig app) {
-		CompletableFuture<AccessToken> future = httpService.get().setUrl("https://api.weixin.qq.com/cgi-bin/token")
-				.addQueryParam("grant_type", "client_credential").addQueryParam("appid", app.getAppId())
-				.addQueryParam("secret", app.getSecret()).json(AccessToken.class).future();
+		CompletableFuture<AccessToken> future = this.getHttpService().get()
+				.setUrl("https://api.weixin.qq.com/cgi-bin/token").addQueryParam("grant_type", "client_credential")
+				.addQueryParam("appid", app.getAppId()).addQueryParam("secret", app.getSecret()).json(AccessToken.class)
+				.future();
 		return future.thenApply(token -> {
 			if (token != null) {
 				token.setAddTime(System.currentTimeMillis());
@@ -222,7 +224,7 @@ public class WechatService {
 	 * @return
 	 */
 	public CompletableFuture<Ticket> jsSdkTicket(AccessToken token) {
-		CompletableFuture<Ticket> future = httpService.get()
+		CompletableFuture<Ticket> future = this.getHttpService().get()
 				.setUrl("https://api.weixin.qq.com/cgi-bin/ticket/getticket")
 				.addQueryParam("access_token", token.getAccess_token()).addQueryParam("type", "jsapi")
 				.json(Ticket.class).future();
@@ -287,7 +289,7 @@ public class WechatService {
 			String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API).append(res).toString();
 			unifiedorder.checkAndSign(app);
 			String reqBody = JaxbMapper.toXml(unifiedorder);
-			return app.request(httpService, url, reqBody);
+			return app.request(this.getHttpService(), url, reqBody);
 		}).thenApply(res -> {
 			return app.process(res, unifiedorder.getSign_type());
 		}).thenApply(res -> {
@@ -324,7 +326,7 @@ public class WechatService {
 			String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API).append(res).toString();
 			mchOrderquery.checkAndSign(app);
 			String reqBody = JaxbMapper.toXml(mchOrderquery);
-			return app.request(httpService, url, reqBody);
+			return app.request(this.getHttpService(), url, reqBody);
 		}).thenApply(res -> {
 			return app.process(res, mchOrderquery.getSign_type());
 		});
@@ -353,7 +355,7 @@ public class WechatService {
 			String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API).append(res).toString();
 			refund.checkAndSign(app);
 			String reqBody = JaxbMapper.toXml(refund);
-			return app.request(httpService, url, reqBody);
+			return app.request(this.getHttpService(), url, reqBody);
 		}).thenApply(res -> {
 			return app.process(res, refund.getSign_type());
 		});
@@ -403,7 +405,7 @@ public class WechatService {
 		String reqBody = JaxbMapper.toXml(data);
 		String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API)
 				.append(Constants.SANDBOX_GET_SIGNKEY_SUFFIX).toString();
-		return app.request(httpService, url, reqBody).thenApply(res -> {
+		return app.request(this.getHttpService(), url, reqBody).thenApply(res -> {
 			Map<String, Object> maps = Maps.fromXml(res);
 			return String.valueOf(maps.get("sandbox_signkey"));
 		});
@@ -427,7 +429,7 @@ public class WechatService {
 			String url = new StringBuilder("https://").append(Constants.MCH_URI_DOMAIN_API).append(res).toString();
 			mchPayment.checkAndSign(app);
 			String reqBody = JaxbMapper.toXml(mchPayment);
-			return app.request(httpService, url, reqBody);
+			return app.request(this.getHttpService(), url, reqBody);
 		}).thenApply(res -> {
 			return Maps.fromXml(res);
 		});
