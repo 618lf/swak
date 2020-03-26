@@ -1,8 +1,6 @@
 package com.swak.vertx.config;
 
-import java.lang.reflect.Proxy;
-
-import com.swak.vertx.handler.FluxInvokerProxy;
+import com.swak.vertx.proxy.ProxyFactory;
 import com.swak.vertx.transport.VertxProxy;
 
 /**
@@ -26,8 +24,7 @@ public class ReferenceBean {
 	 */
 	public Object getRefer(VertxProxy vertx) {
 		if (refer == null) {
-			refer = Proxy.newProxyInstance(this.type.getClassLoader(), new Class[] { this.type },
-					new FluxInvokerProxy(vertx, type));
+			refer = ProxyFactory.newProxy(vertx, type);
 		}
 		return refer;
 	}
