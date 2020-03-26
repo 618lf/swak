@@ -18,10 +18,10 @@ import org.springframework.util.ClassUtils;
 
 import com.swak.annotation.FluxReferer;
 import com.swak.annotation.FluxService;
-import com.swak.annotation.RestPage;
 import com.swak.annotation.RequestMapping;
 import com.swak.annotation.RequestMethod;
 import com.swak.annotation.RestApi;
+import com.swak.annotation.RestPage;
 import com.swak.annotation.RestService;
 import com.swak.annotation.RouterSupplier;
 import com.swak.exception.BaseRuntimeException;
@@ -226,6 +226,13 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 		return new RouterBean(vertx, bean, method, result, requestMethod, mergeService);
 	}
 
+	/**
+	 * 创建并缓存依赖
+	 * 
+	 * @param reference
+	 * @param interfaceType
+	 * @return
+	 */
 	protected Object refer(FluxReferer reference, Class<?> interfaceType) {
 		ReferenceBean referenceBean = references.get(interfaceType.getName());
 		if (referenceBean == null) {
