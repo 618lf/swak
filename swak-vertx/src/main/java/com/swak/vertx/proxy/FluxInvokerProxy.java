@@ -50,11 +50,11 @@ public class FluxInvokerProxy implements InvocationHandler, MethodInterceptor, F
 	}
 
 	/**
-	 * JDK 动态代理走此分支
+	 * JDK 动态代理走此分支 -- 直接发起异步调用
 	 */
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		return this.filter(method, args);
+		return this.invoke(vertx, address, method, args);
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class FluxInvokerProxy implements InvocationHandler, MethodInterceptor, F
 	 */
 	@Override
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-		return this.filter(method, args);
+		return this.filter(method, args, proxy);
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class FluxInvokerProxy implements InvocationHandler, MethodInterceptor, F
 	 * @return
 	 * @throws Throwable
 	 */
-	private Object filter(Method method, Object[] args) throws Throwable {
+	private Object filter(Method method, Object[] args, MethodProxy proxy) throws Throwable {
 
 		/**
 		 * 是否本地方法
@@ -86,10 +86,10 @@ public class FluxInvokerProxy implements InvocationHandler, MethodInterceptor, F
 		}
 
 		/**
-		 * 非异步方法
+		 * 非异步方法， 获取实现类来执行
 		 */
 		if (!isAsyncMethod(method)) {
-			return method.invoke($realService, args);
+			return proxy.invoke($realService, args);
 		}
 
 		/**
