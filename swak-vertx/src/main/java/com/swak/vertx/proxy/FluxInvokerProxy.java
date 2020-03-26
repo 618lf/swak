@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 import com.swak.asm.MethodCache;
+import com.swak.exception.InvokeException;
 import com.swak.vertx.handler.FluxInvoker;
 import com.swak.vertx.transport.VertxProxy;
 
@@ -49,7 +50,7 @@ public class FluxInvokerProxy implements InvocationHandler, MethodInterceptor, F
 	 */
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		return this.invoke(vertx, address, method, args);
+		return this.filter(method, args);
 	}
 
 	/**
@@ -57,6 +58,37 @@ public class FluxInvokerProxy implements InvocationHandler, MethodInterceptor, F
 	 */
 	@Override
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+		return this.filter(method, args);
+	}
+
+	/**
+	 * 本地的方法不进行远程调用
+	 * 
+	 * @param method
+	 * @param args
+	 * @return
+	 * @throws Throwable
+	 */
+	private Object filter(Method method, Object[] args) throws Throwable {
+		if (this.isLocalMethod(method)) {
+			if ("toString".equals(method.getName())) {
+				return type.toString();
+			}
+			throw new InvokeException("can not invoke local method:" + method.getName());
+		}
 		return this.invoke(vertx, address, method, args);
+	}
+
+	/**
+	 * tostring,equals,hashCode,finalize
+	 *
+	 * @param method
+	 * @return
+	 */
+	private boolean isLocalMethod(Method method) {
+		if (method.getDeclaringClass().equals(Object.class)) {
+			return true;
+		}
+		return false;
 	}
 }
