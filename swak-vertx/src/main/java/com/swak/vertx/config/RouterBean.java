@@ -9,8 +9,8 @@ import java.util.Set;
 
 import com.swak.annotation.RequestMethod;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.handler.InvokerMethodHandler;
-import com.swak.vertx.handler.MethodHandler;
+import com.swak.vertx.handler.FluxMethodInvoker;
+import com.swak.vertx.handler.MethodInvoker;
 import com.swak.vertx.handler.RouterHandler;
 import com.swak.vertx.transport.VertxProxy;
 
@@ -29,14 +29,14 @@ public class RouterBean implements Handler<RoutingContext> {
 
 	private final Set<String> patterns;
 	private final RequestMethod requestMethod;
-	private final MethodHandler methodHandler;
+	private final MethodInvoker methodInvoker;
 	private RouterHandler handlerAdapter;
 
 	public RouterBean(VertxProxy vertx, Object bean, Method method, List<String> patterns, RequestMethod requestMethod,
 			boolean mergeService) {
 		this.patterns = this.prependLeadingSlash(patterns);
 		this.requestMethod = requestMethod;
-		this.methodHandler = this.prependMethodHandler(vertx, bean, method, mergeService);
+		this.methodInvoker = this.prependMethodHandler(vertx, bean, method, mergeService);
 	}
 
 	/**
@@ -65,8 +65,8 @@ public class RouterBean implements Handler<RoutingContext> {
 	 * @param mergeService
 	 * @return
 	 */
-	private MethodHandler prependMethodHandler(VertxProxy vertx, Object bean, Method method, boolean mergeService) {
-		return mergeService ? new InvokerMethodHandler(vertx, bean, method) : new MethodHandler(bean, method);
+	private MethodInvoker prependMethodHandler(VertxProxy vertx, Object bean, Method method, boolean mergeService) {
+		return mergeService ? new FluxMethodInvoker(vertx, bean, method) : new MethodInvoker(bean, method);
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class RouterBean implements Handler<RoutingContext> {
 	 */
 	public RouterBean adapter(RouterHandler handlerAdapter) {
 		this.handlerAdapter = handlerAdapter;
-		this.handlerAdapter.initHandler(methodHandler);
+		this.handlerAdapter.initHandler(methodInvoker);
 		return this;
 	}
 
@@ -111,6 +111,6 @@ public class RouterBean implements Handler<RoutingContext> {
 	 */
 	@Override
 	public void handle(RoutingContext context) {
-		this.handlerAdapter.handle(context, methodHandler);
+		this.handlerAdapter.handle(context, methodInvoker);
 	}
 }

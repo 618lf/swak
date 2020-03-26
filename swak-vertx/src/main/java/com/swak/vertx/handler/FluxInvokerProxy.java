@@ -11,13 +11,13 @@ import com.swak.vertx.transport.VertxProxy;
  * 
  * @author lifeng
  */
-public class InvokerHandler implements InvocationHandler, Invocation {
+public class FluxInvokerProxy implements InvocationHandler, FluxInvoker {
 
 	private final Class<?> type;
 	private final String address;
 	private final VertxProxy vertx;
 
-	public InvokerHandler(VertxProxy vertx, Class<?> type) {
+	public FluxInvokerProxy(VertxProxy vertx, Class<?> type) {
 		this.vertx = vertx;
 		this.type = type;
 		this.address = this.getAddress(type);

@@ -15,7 +15,7 @@ import com.swak.vertx.transport.codec.Msg;
  * 
  * @author lifeng
  */
-public interface Invocation {
+public interface FluxInvoker {
 
 	/**
 	 * 通过类型解析出服务地址

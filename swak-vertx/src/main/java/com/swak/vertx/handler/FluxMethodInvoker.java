@@ -14,13 +14,13 @@ import com.swak.vertx.transport.multipart.PlainFile;
  * 
  * @author lifeng
  */
-public class InvokerMethodHandler extends MethodHandler implements Invocation {
+public class FluxMethodInvoker extends MethodInvoker implements FluxInvoker {
 
 	private final VertxProxy vertx;
 	private final String address;
 	private final Method method;
 
-	public InvokerMethodHandler(VertxProxy vertx, Object bean, Method method) {
+	public FluxMethodInvoker(VertxProxy vertx, Object bean, Method method) {
 		super(bean, method);
 		this.method = method;
 		this.vertx = vertx;

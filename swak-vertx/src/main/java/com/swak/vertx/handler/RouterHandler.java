@@ -35,7 +35,7 @@ public interface RouterHandler {
 	 * 
 	 * @param handler
 	 */
-	default void initHandler(MethodHandler handler) {}
+	default void initHandler(MethodInvoker handler) {}
 
 	/**
 	 * 路由处理器
@@ -43,5 +43,5 @@ public interface RouterHandler {
 	 * @param context
 	 * @param handler
 	 */
-	void handle(RoutingContext context, MethodHandler handler);
+	void handle(RoutingContext context, MethodInvoker handler);
 }

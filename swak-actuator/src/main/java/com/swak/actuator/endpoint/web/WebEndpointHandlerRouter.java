@@ -9,7 +9,7 @@ import com.swak.actuator.endpoint.InvocationContext;
 import com.swak.annotation.RouterSupplier;
 import com.swak.vertx.config.IRouterSupplier;
 import com.swak.vertx.handler.HandlerAdapter;
-import com.swak.vertx.handler.MethodHandler;
+import com.swak.vertx.handler.MethodInvoker;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
@@ -52,9 +52,9 @@ public class WebEndpointHandlerRouter implements IRouterSupplier {
 		for (ExposableWebEndpoint endpoint : this.webEndpointsSupplier.getEndpoints()) {
 			for (WebOperation operation : endpoint.getOperations()) {
 				WebMvcOperationAdapter adapter = new WebMvcOperationAdapter(operation);
-				MethodHandler methodHandler = new MethodHandler(adapter, method);
+				MethodInvoker methodInvoker = new MethodInvoker(adapter, method);
 				router.get(adapter.getPath()).handler(context -> {
-					handlerAdapter.handle(context, methodHandler);
+					handlerAdapter.handle(context, methodInvoker);
 				});
 			}
 		}

@@ -33,6 +33,7 @@ import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.validator.Validator;
 import com.swak.validator.errors.BindErrors;
+import com.swak.vertx.handler.MethodInvoker.MethodParameter;
 import com.swak.vertx.security.SecuritySubject;
 import com.swak.vertx.transport.Subject;
 
@@ -67,7 +68,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * 初始化处理器
 	 */
 	@Override
-	public void initHandler(MethodHandler handler) {
+	public void initHandler(MethodInvoker handler) {
 		MethodParameter[] parameters = handler.getParameters();
 		for (int i = 0; i < parameters.length; i++) {
 			MethodParameter parameter = parameters[i];
@@ -114,7 +115,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * @param handler
 	 * @return
 	 */
-	private Object preHandle(MethodHandler handler) {
+	private Object preHandle(MethodInvoker handler) {
 		return handler.metrics != null ? handler.metrics.begin() : null;
 	}
 
@@ -125,7 +126,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * @param handler
 	 */
 	@Override
-	public void handle(RoutingContext context, MethodHandler handler) {
+	public void handle(RoutingContext context, MethodInvoker handler) {
 		Subject subject = context.get(Constants.SUBJECT_NAME);
 		CompletionStage<Boolean> authFuture = this.checkPermissions(subject, handler);
 		if (authFuture != null) {
@@ -148,7 +149,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * @param handler
 	 * @return
 	 */
-	private CompletionStage<Boolean> checkPermissions(Subject subject, MethodHandler handler) {
+	private CompletionStage<Boolean> checkPermissions(Subject subject, MethodInvoker handler) {
 
 		// must has subject
 		if (subject == null) {
@@ -191,7 +192,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * @param handler
 	 */
 	@SuppressWarnings("unchecked")
-	private void dohandler(RoutingContext context, MethodHandler handler) {
+	private void dohandler(RoutingContext context, MethodInvoker handler) {
 		Object metrics = this.preHandle(handler);
 		try {
 			Object[] params = this.parseParameters(context, handler);
@@ -217,7 +218,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * @return
 	 * @throws Exception
 	 */
-	private Object dohandler(MethodHandler handler, Object[] params) throws Throwable {
+	private Object dohandler(MethodInvoker handler, Object[] params) throws Throwable {
 		return handler.doInvoke(params);
 	}
 
@@ -228,7 +229,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * @param e
 	 * @param context
 	 */
-	private void handleResultOnContext(Object result, Throwable e, RoutingContext context, MethodHandler handler,
+	private void handleResultOnContext(Object result, Throwable e, RoutingContext context, MethodInvoker handler,
 			Object metrics) {
 		ContextInternal $currContext = this.getContext(context);
 		if ($currContext != null) {
@@ -272,7 +273,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * @param e
 	 * @param context
 	 */
-	private void handleResult(Object result, Throwable e, RoutingContext context, MethodHandler handler,
+	private void handleResult(Object result, Throwable e, RoutingContext context, MethodInvoker handler,
 			Object metrics) {
 		try {
 			resultHandler.handleResult(result, e, context);
@@ -289,7 +290,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * @param e
 	 */
 	@SuppressWarnings("unchecked")
-	private void postHandle(MethodHandler handler, Object metrics, Throwable e) {
+	private void postHandle(MethodInvoker handler, Object metrics, Throwable e) {
 		if (metrics != null && handler.metrics != null) {
 			handler.metrics.end(metrics, e == null);
 		}
@@ -302,7 +303,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * @param handler
 	 * @return
 	 */
-	private Object[] parseParameters(RoutingContext context, MethodHandler handler) {
+	private Object[] parseParameters(RoutingContext context, MethodInvoker handler) {
 		MethodParameter[] parameters = handler.getParameters();
 		Object[] args = new Object[parameters.length];
 		for (int i = 0; i < parameters.length; i++) {
