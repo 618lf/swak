@@ -312,10 +312,6 @@
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
 					<encoding>${project.build.sourceEncoding}</encoding>
-					<compilerArgs>
-						<arg>-XDignore.symbol.file</arg>
-					</compilerArgs>
-					<compilerArgument>-proc:none</compilerArgument>
 				</configuration>
 			</plugin>
 			<plugin>
