@@ -235,9 +235,23 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 			try {
 				if (superClass.getKind().equals(TypeKind.DECLARED)) {
 					TypeElement de = (TypeElement) ((DeclaredType) superClass).asElement();
-					addMethods(de, classBuilder);
-					addSuperInterfaceMethods(de.getInterfaces(), classBuilder);
-					addSuperClassMethods(de.getSuperclass(), classBuilder);
+
+					// is class and not interfaces
+					if (de.getKind().isClass() && de.getInterfaces() == null) {
+
+						// add direct method
+						addMethods(de, classBuilder);
+
+						// add superClass methods
+						addSuperClassMethods(de.getSuperclass(), classBuilder);
+					}
+
+					// is Interface or is class and has interfaces
+					else {
+						// add method form super interfaces
+						addSuperInterfaceMethods(de.getInterfaces(), classBuilder);
+					}
+
 				}
 			} catch (Exception e) {
 				processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
