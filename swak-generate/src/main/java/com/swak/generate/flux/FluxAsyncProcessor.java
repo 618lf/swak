@@ -12,6 +12,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -24,6 +25,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -38,7 +40,7 @@ import com.swak.annotation.FluxAsync;
 /**
  * @FluxAsync
  * 
- *            自动身成异步处理的接口类
+ *            自动身成异步处理的接口类 --- 目前不支持注解
  * 
  * @author lifeng
  */
@@ -132,8 +134,10 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 					MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getSimpleName().toString())
 							.addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
 							.returns(ParameterizedTypeName.get(ClassName.get(CompletableFuture.class),
-									ClassName.get(Void.class)))
-							.addTypeVariables(getTypeNames(method.getTypeParameters()));
+									ClassName.get(method.getReturnType())))
+							.addTypeVariables(getTypeNames(method.getTypeParameters()))
+							.addAnnotations(getAnnotationSpec(method.getAnnotationMirrors()));
+
 					// add method params
 					List<? extends VariableElement> vars = method.getParameters();
 					for (VariableElement var : vars) {
@@ -153,6 +157,30 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 				result.add(TypeVariableName.get(type));
 			}
 		}
+		return result;
+	}
+
+	/**
+	 * 不支持注解的复制
+	 * 
+	 * @param types
+	 * @return
+	 */
+	private List<AnnotationSpec> getAnnotationSpec(List<? extends AnnotationMirror> types) {
+		List<AnnotationSpec> result = new ArrayList<AnnotationSpec>();
+//		if (types != null && !types.isEmpty()) {
+//			for (AnnotationMirror type : types) {
+//				AnnotationSpec.Builder builder = AnnotationSpec
+//						.builder((ClassName) ClassName.get(type.getAnnotationType()));
+//				Map<? extends ExecutableElement, ? extends AnnotationValue> values = type.getElementValues();
+//				if (values != null && !values.isEmpty()) {
+//					values.forEach((key, value) -> {
+//
+//					});
+//				}
+//				result.add(builder.build());
+//			}
+//		}
 		return result;
 	}
 

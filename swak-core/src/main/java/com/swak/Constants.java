@@ -37,7 +37,7 @@ public interface Constants {
 	String MONGO_PREFIX = "spring.mongo";
 	String EVENT_BUS_PREFIX = "spring.eventbus";
 	String RXTX_PREFIX = "spring.rxtx";
-	
+
 	/** 保留ID **/
 	long ROOT = 0L;
 	long INVALID_ID = -1;
@@ -72,8 +72,7 @@ public interface Constants {
 	String EXCEPTION_NAME = "x-Exception";
 
 	/** method key **/
-	String ASYNC_SUFFIX = "Asyncx";
-	String _ASYNC_SUFFIX = "Async";
+	String ASYNC_SUFFIX = "Async";
 
 	/** validate msg **/
 	String NotNullErrorMsg = "非空校验失败";
