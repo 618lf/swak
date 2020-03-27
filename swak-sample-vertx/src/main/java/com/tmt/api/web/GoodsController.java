@@ -1,7 +1,5 @@
 package com.tmt.api.web;
 
-import java.util.concurrent.CompletableFuture;
-
 import com.swak.Constants;
 import com.swak.annotation.FluxReferer;
 import com.swak.annotation.GetMapping;
@@ -15,8 +13,9 @@ import com.tmt.api.facade.GoodsServiceFacadeAsync;
 import com.tmt.api.facade.GoodsServiceFacadeAsyncx;
 import com.tmt.publisher.GoodsEventPublisher;
 import com.weibo.api.motan.config.springsupport.annotation.MotanReferer;
-
 import io.vertx.ext.web.RoutingContext;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 商品 api

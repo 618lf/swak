@@ -23,7 +23,7 @@ public class MotanController {
 	@MotanReferer
 	private FooServiceAsync fooServiceAsync;
 	@FluxReferer
-	private FooServiceAsyncx fooServiceAsyncx;
+	private FooServiceAsyncx fooServiceAsyncx; 
 
 	/**
 	 * 同步执行代码
