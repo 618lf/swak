@@ -1,4 +1,4 @@
-package com.swak.vertx.generate;
+package com.swak.generate.flux;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,15 +33,16 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import com.swak.Constants;
+import com.swak.annotation.FluxAsync;
 
 /**
- * @VertxAsync
+ * @FluxAsync
  * 
- *             自动身成异步处理的接口类
+ *            自动身成异步处理的接口类
  * 
  * @author lifeng
  */
-public class VertxAsyncProcessor extends AbstractProcessor {
+public class FluxAsyncProcessor extends AbstractProcessor {
 
 	protected static String ASYNC = Constants.ASYNC_SUFFIX;
 	protected static String GENERATE_PATH_KEY = "fluxGeneratePath";
@@ -67,7 +68,7 @@ public class VertxAsyncProcessor extends AbstractProcessor {
 	@Override
 	public Set<String> getSupportedAnnotationTypes() {
 		HashSet<String> types = new HashSet<>();
-		types.add(VertxAsync.class.getName());
+		types.add(FluxAsync.class.getName());
 		return types;
 	}
 
@@ -76,7 +77,7 @@ public class VertxAsyncProcessor extends AbstractProcessor {
 		if (roundEnv.processingOver()) {
 			return true;
 		}
-		for (Element elem : roundEnv.getElementsAnnotatedWith(VertxAsync.class)) {
+		for (Element elem : roundEnv.getElementsAnnotatedWith(FluxAsync.class)) {
 			processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
 					"VertxAsyncProcessor will process " + elem.toString() + ", generate class path:" + TARGET_DIR);
 			try {

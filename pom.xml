@@ -42,6 +42,7 @@
 		<module>swak-rxtx</module>
 		<module>swak-jdbc-async</module>
 		<module>swak-lib</module>
+		<module>swak-generate</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.2.2.RELEASE</spring-boot.version>
