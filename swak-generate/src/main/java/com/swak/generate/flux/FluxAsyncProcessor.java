@@ -81,14 +81,14 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 		}
 		for (Element elem : roundEnv.getElementsAnnotatedWith(FluxAsync.class)) {
 			processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
-					"VertxAsyncProcessor will process " + elem.toString() + ", generate class path:" + TARGET_DIR);
+					"FluxAsyncProcessor will process " + elem.toString() + ", generate class path:" + TARGET_DIR);
 			try {
 				writeAsyncClass(elem);
 				processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
-						"VertxAsyncProcessor done for " + elem.toString());
+						"FluxAsyncProcessor done for " + elem.toString());
 			} catch (Exception e) {
 				processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
-						"VertxAsyncProcessor process " + elem.toString() + " fail. exception:" + e.getMessage());
+						"FluxAsyncProcessor process " + elem.toString() + " fail. exception:" + e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -97,32 +97,36 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 
 	private void writeAsyncClass(Element elem) throws ClassNotFoundException, IOException, Exception {
 
-		if (elem.getKind().isInterface()) {
-			TypeElement interfaceClazz = (TypeElement) elem;
-			String className = interfaceClazz.getSimpleName().toString();
-			TypeSpec.Builder classBuilder = TypeSpec.interfaceBuilder(className + ASYNC).addModifiers(Modifier.PUBLIC);
+		TypeElement interfaceClazz = (TypeElement) elem;
+		String className = interfaceClazz.getSimpleName().toString();
+		TypeSpec.Builder classBuilder = TypeSpec.interfaceBuilder(className + ASYNC).addModifiers(Modifier.PUBLIC);
 
-			// add class generic type
-			classBuilder.addTypeVariables(getTypeNames(interfaceClazz.getTypeParameters()));
+		// add class generic type
+		classBuilder.addTypeVariables(getTypeNames(interfaceClazz.getTypeParameters()));
+
+		// is class and not interfaces
+		if (elem.getKind().isClass() && interfaceClazz.getInterfaces() == null) {
 
 			// add direct method
 			addMethods(interfaceClazz, classBuilder);
 
-			// add method form superinterface
-			addSuperInterfaceMethods(interfaceClazz.getInterfaces(), classBuilder);
-
-			// write class
-			JavaFile javaFile = JavaFile
-					.builder(processingEnv.getElementUtils().getPackageOf(interfaceClazz).getQualifiedName().toString(),
-							classBuilder.build())
-					.build();
-
-			javaFile.writeTo(new File(System.getProperty("basedir"), TARGET_DIR));
-
-		} else {
-			processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
-					"VertxAsyncProcessor not process, because " + elem.toString() + " not a interface.");
+			// add superClass methods
+			addSuperClassMethods(interfaceClazz.getSuperclass(), classBuilder);
 		}
+
+		// is Interface or is class and has interfaces
+		else {
+			// add method form super interfaces
+			addSuperInterfaceMethods(interfaceClazz.getInterfaces(), classBuilder);
+		}
+
+		// write class
+		JavaFile javaFile = JavaFile
+				.builder(processingEnv.getElementUtils().getPackageOf(interfaceClazz).getQualifiedName().toString(),
+						classBuilder.build())
+				.build();
+
+		javaFile.writeTo(new File(System.getProperty("basedir"), TARGET_DIR));
 	}
 
 	private void addMethods(TypeElement interfaceClazz, TypeSpec.Builder classBuilder) {
@@ -131,10 +135,15 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 			for (Element e : elements) {
 				if (ElementKind.METHOD.equals(e.getKind())) {
 					ExecutableElement method = (ExecutableElement) e;
+
+					// must public
+					if (!method.getModifiers().contains(Modifier.PUBLIC)) {
+						continue;
+					}
+
 					MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getSimpleName().toString())
 							.addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-							.returns(ParameterizedTypeName.get(ClassName.get(CompletableFuture.class),
-									ClassName.get(method.getReturnType())))
+							.returns(getReturnType(method.getReturnType()))
 							.addTypeVariables(getTypeNames(method.getTypeParameters()))
 							.addAnnotations(getAnnotationSpec(method.getAnnotationMirrors()));
 
@@ -148,6 +157,24 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 				}
 			}
 		}
+	}
+
+	/**
+	 * 返回类型
+	 * 
+	 * @param type
+	 * @return
+	 */
+	private TypeName getReturnType(TypeMirror type) {
+		TypeName realType = null;
+		if (type == null || type.getKind().equals(TypeKind.VOID)) {
+			realType = ClassName.get(Void.class);
+		} else if (type.getKind().isPrimitive()) {
+			realType = ClassName.get(type).box();
+		} else {
+			realType = ClassName.get(type);
+		}
+		return ParameterizedTypeName.get(ClassName.get(CompletableFuture.class), realType);
 	}
 
 	private List<TypeVariableName> getTypeNames(List<? extends TypeParameterElement> types) {
@@ -195,10 +222,28 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 					}
 				} catch (Exception e) {
 					processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
-							"VertxAsyncProcessor process superinterface " + tm.toString() + " fail. exception:"
+							"FluxAsyncProcessor process superinterface " + tm.toString() + " fail. exception:"
 									+ e.getMessage());
 					e.printStackTrace();
 				}
+			}
+		}
+	}
+
+	private void addSuperClassMethods(TypeMirror superClass, TypeSpec.Builder classBuilder) {
+		if (superClass != null && !ClassName.get(superClass).equals(ClassName.OBJECT)) {
+			try {
+				if (superClass.getKind().equals(TypeKind.DECLARED)) {
+					TypeElement de = (TypeElement) ((DeclaredType) superClass).asElement();
+					addMethods(de, classBuilder);
+					addSuperInterfaceMethods(de.getInterfaces(), classBuilder);
+					addSuperClassMethods(de.getSuperclass(), classBuilder);
+				}
+			} catch (Exception e) {
+				processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
+						"FluxAsyncProcessor process superClass " + superClass.toString() + " fail. exception:"
+								+ e.getMessage());
+				e.printStackTrace();
 			}
 		}
 	}
