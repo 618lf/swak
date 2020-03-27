@@ -1,6 +1,6 @@
 package com.tmt.api.facade;
 
-import com.swak.vertx.transport.async.VertxAsync;
+import com.swak.vertx.generate.VertxAsync;
 import com.tmt.api.entity.Goods;
 import com.weibo.api.motan.transport.async.MotanAsync;
 

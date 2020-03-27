@@ -1,4 +1,4 @@
-package com.swak.vertx.transport.async;
+package com.swak.vertx.generate;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
