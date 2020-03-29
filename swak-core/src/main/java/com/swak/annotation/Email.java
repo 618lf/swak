@@ -5,19 +5,18 @@ import java.lang.annotation.*;
 import com.swak.utils.StringUtils;
 
 /**
- * 邮箱判断
- * 
- * @author lifeng
+ * 邮箱
+ *
+ * @author: lifeng
+ * @date: 2020/3/28 17:13
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD })
+@Target({ElementType.FIELD})
 @Documented
 public @interface Email {
-	
-	/**
-	 * 错误描述
-	 * 
-	 * @return
-	 */
-	String msg() default StringUtils.EMPTY;
+
+    /**
+     * 错误描述
+     */
+    String msg() default StringUtils.EMPTY;
 }

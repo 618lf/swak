@@ -32,48 +32,48 @@ import reactor.util.annotation.Nullable;
  * the {@link #instance()} method to obtain a properly type-parametrized view of
  * it.
  *
+ * @author lifeng
  * @see <a href=
- *      "https://github.com/reactor/reactive-streams-commons">Reactive-Streams-Commons</a>
+ * "https://github.com/reactor/reactive-streams-commons">Reactive-Streams-Commons</a>
  */
 public final class MonoFalse extends Mono<Boolean> implements Fuseable.ScalarCallable<Boolean> {
 
-	static final Publisher<Boolean> INSTANCE = new MonoFalse();
+    static final Publisher<Boolean> INSTANCE = new MonoFalse();
 
-	MonoFalse() {
-		// deliberately no op
-	}
+    MonoFalse() {
+        // deliberately no op
+    }
 
-	@Override
-	public void subscribe(CoreSubscriber<? super Boolean> actual) {
-		Operators.complete(actual);
-	}
+    @Override
+    public void subscribe(CoreSubscriber<? super Boolean> actual) {
+        Operators.complete(actual);
+    }
 
-	/**
-	 * Returns a properly parametrized instance of this empty Publisher.
-	 *
-	 * @param <T>
-	 *            the output type
-	 * @return a properly parametrized instance of this empty Publisher
-	 */
-	public static Mono<Boolean> instance() {
-		return (Mono<Boolean>) INSTANCE;
-	}
+    /**
+     * Returns a properly parametrized instance of this empty Publisher.
+     *
+     * @param <T> the output type
+     * @return a properly parametrized instance of this empty Publisher
+     */
+    public static Mono<Boolean> instance() {
+        return (Mono<Boolean>) INSTANCE;
+    }
 
-	@Override
-	@Nullable
-	public Boolean call() throws Exception {
-		return Boolean.FALSE;
-	}
+    @Override
+    @Nullable
+    public Boolean call() throws Exception {
+        return Boolean.FALSE;
+    }
 
-	@Override
-	@Nullable
-	public Boolean block(Duration m) {
-		return Boolean.FALSE;
-	}
+    @Override
+    @Nullable
+    public Boolean block(Duration m) {
+        return Boolean.FALSE;
+    }
 
-	@Override
-	@Nullable
-	public Boolean block() {
-		return Boolean.FALSE;
-	}
+    @Override
+    @Nullable
+    public Boolean block() {
+        return Boolean.FALSE;
+    }
 }

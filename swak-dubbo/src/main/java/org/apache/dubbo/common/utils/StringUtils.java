@@ -829,7 +829,7 @@ public final class StringUtils {
         if (str != null && !isEmpty(str)) {
             int sz = str.length();
 
-            for(int i = 0; i < sz; ++i) {
+            for (int i = 0; i < sz; ++i) {
                 if (!Character.isUpperCase(str.charAt(i))) {
                     return false;
                 }
@@ -841,14 +841,14 @@ public final class StringUtils {
         }
     }
 
+    private static Pattern pattern = Pattern.compile("^\\[((\\s*\\{\\s*[\\w_\\-\\.]+\\s*:\\s*.+?\\s*\\}\\s*,?\\s*)+)\\s*\\]$");
+    private static Pattern pairPattern = Pattern.compile("^\\{\\s*([\\w-_\\.]+)\\s*:\\s*(.+)\\s*\\}$");
+
     /**
      * @param rawParameters format like '[{a:b},{c:d}]'
      * @return
      */
     public static Map<String, String> parseParameters(String rawParameters) {
-        Pattern pattern = Pattern.compile("^\\[((\\s*\\{\\s*[\\w_\\-\\.]+\\s*:\\s*.+?\\s*\\}\\s*,?\\s*)+)\\s*\\]$");
-        Pattern pairPattern = Pattern.compile("^\\{\\s*([\\w-_\\.]+)\\s*:\\s*(.+)\\s*\\}$");
-
         Matcher matcher = pattern.matcher(rawParameters);
         if (!matcher.matches()) {
             return Collections.emptyMap();

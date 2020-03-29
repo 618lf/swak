@@ -187,19 +187,39 @@ public class MotanV2Header {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         MotanV2Header that = (MotanV2Header) o;
 
-        if (version != that.version) return false;
-        if (heartbeat != that.heartbeat) return false;
-        if (gzip != that.gzip) return false;
-        if (oneway != that.oneway) return false;
-        if (proxy != that.proxy) return false;
-        if (request != that.request) return false;
-        if (status != that.status) return false;
-        if (serialize != that.serialize) return false;
+        if (version != that.version) {
+            return false;
+        }
+        if (heartbeat != that.heartbeat) {
+            return false;
+        }
+        if (gzip != that.gzip) {
+            return false;
+        }
+        if (oneway != that.oneway) {
+            return false;
+        }
+        if (proxy != that.proxy) {
+            return false;
+        }
+        if (request != that.request) {
+            return false;
+        }
+        if (status != that.status) {
+            return false;
+        }
+        if (serialize != that.serialize) {
+            return false;
+        }
         return requestId == that.requestId;
     }
 

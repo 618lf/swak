@@ -52,10 +52,11 @@ public class HttpServer extends TcpServer {
 	/**
 	 * 启动服务器， 获取重要的 NettyContext
 	 */
-	public void start(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler) {
+	@Override
+    public void start(BiFunction<? extends NettyInbound, ? extends NettyOutbound, Mono<Void>> handler) {
 		try {
 			this.context = this.connector(handler).subscribeOn(Schedulers.immediate())
-					.doOnNext(ctx -> LOG.debug("Started {} on {}", "Flux", ctx.address())).block();
+					.doOnNext(ctx -> logger.debug("Started {} on {}", "Flux", ctx.address())).block();
 			this.startDaemonAwaitThread();
 		} catch (Exception ex) {
 			this.stop();
@@ -181,6 +182,7 @@ public class HttpServer extends TcpServer {
 	/**
 	 * 停止服务器
 	 */
+	@Override
 	public void stop() {
 
 		// 关闭必要的资源
@@ -191,8 +193,8 @@ public class HttpServer extends TcpServer {
 			removeShutdownHook();
 			context.dispose();
 			context.onClose().doOnError(
-					e -> LOG.error("Stopped {} on {} with an error {}", properties.getName(), context.address(), e))
-					.doOnTerminate(() -> LOG.info("Stopped {} on {}", properties.getName(), context.address())).block();
+					e -> logger.error("Stopped {} on {} with an error {}", properties.getName(), context.address(), e))
+					.doOnTerminate(() -> logger.info("Stopped {} on {}", properties.getName(), context.address())).block();
 			context = null;
 		}
 	}
@@ -220,9 +222,9 @@ public class HttpServer extends TcpServer {
 
 		context.dispose();
 		context.onClose()
-				.doOnError(e -> LOG.error("Stopped {} on {} with an error {} from JVM hook {}", properties.getName(),
+				.doOnError(e -> logger.error("Stopped {} on {} with an error {} from JVM hook {}", properties.getName(),
 						context.address(), e, hookDesc))
-				.doOnTerminate(() -> LOG.info("Stopped {} on {} from JVM hook {}", properties.getName(),
+				.doOnTerminate(() -> logger.info("Stopped {} on {} from JVM hook {}", properties.getName(),
 						context.address(), hookDesc))
 				.block();
 	}

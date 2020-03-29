@@ -8,8 +8,9 @@ import java.lang.annotation.Target;
 
 /**
  * auto build async request annotation
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/28 17:14
  */
 @Documented
 @Target({ElementType.TYPE})

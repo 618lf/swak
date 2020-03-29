@@ -33,7 +33,7 @@ public class CookieProvider {
 	@SuppressWarnings("deprecation")
 	private static AsyncCache<Object> getCache() {
 	   if (COOKIES_CACHE == null) {
-		   COOKIES_CACHE = CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times).async();
+		   COOKIES_CACHE = CacheManagers.getCache(Constants.TOKEN_CACHE_NAME, Constants.COOKIE_CACHE_TIMES).async();
 	   }
 	   return COOKIES_CACHE;
 	}
@@ -124,14 +124,18 @@ public class CookieProvider {
 	public static void setCookie(HttpServerRequest request, HttpServerResponse response, String name, String value,
 			Long maxAge, String path, String domain, Boolean secure) {
 		SimpleCookie cookie = new SimpleCookie(name, Encodes.urlEncode(value));
-		if (maxAge != null)
-			cookie.setMaxAge(maxAge);
-		if (StringUtils.isNotEmpty(path))
-			cookie.setPath(path);
-		if (StringUtils.isNotEmpty(domain))
-			cookie.setDomain(domain);
-		if (secure != null)
-			cookie.setSecure(secure);
+		if (maxAge != null) {
+            cookie.setMaxAge(maxAge);
+        }
+		if (StringUtils.isNotEmpty(path)) {
+            cookie.setPath(path);
+        }
+		if (StringUtils.isNotEmpty(domain)) {
+            cookie.setDomain(domain);
+        }
+		if (secure != null) {
+            cookie.setSecure(secure);
+        }
 		cookie.saveTo(request, response);
 	}
 
@@ -168,10 +172,12 @@ public class CookieProvider {
 	public static void remove(HttpServerRequest request, HttpServerResponse response, String name, String path,
 			String domain) {
 		SimpleCookie cookie = new SimpleCookie(name, Constants.DELETED_COOKIE_VALUE);
-		if (StringUtils.isNotEmpty(path))
-			cookie.setPath(path);
-		if (StringUtils.isNotEmpty(domain))
-			cookie.setDomain(domain);
+		if (StringUtils.isNotEmpty(path)) {
+            cookie.setPath(path);
+        }
+		if (StringUtils.isNotEmpty(domain)) {
+            cookie.setDomain(domain);
+        }
 		cookie.removeFrom(request, response);
 	}
 }

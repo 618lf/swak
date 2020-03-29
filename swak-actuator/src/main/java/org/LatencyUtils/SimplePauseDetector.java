@@ -128,8 +128,9 @@ public class SimplePauseDetector extends PauseDetector {
 
 				// This is ***TEST FUNCTIONALITY***: Spin as long as we are externally asked to
 				// stall:
-				while ((stallThreadMask & threadMask) != 0)
-					;
+				while ((stallThreadMask & threadMask) != 0) {
+                    ;
+                }
 
 				observedLasUpdateTime = consensusLatestTime.get();
 				// Volatile store above makes sure new "now" is measured after

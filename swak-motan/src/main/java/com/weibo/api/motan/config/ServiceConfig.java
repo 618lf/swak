@@ -16,6 +16,7 @@
 
 package com.weibo.api.motan.config;
 
+import com.swak.utils.StringUtils;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.common.URLParamType;
 import com.weibo.api.motan.config.annotation.ConfigDesc;
@@ -31,7 +32,6 @@ import com.weibo.api.motan.util.ConcurrentHashSet;
 import com.weibo.api.motan.util.LoggerUtil;
 import com.weibo.api.motan.util.NetUtils;
 import com.weibo.api.motan.util.StringTools;
-import com.swak.utils.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -219,7 +219,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     private void afterUnexport() {
         exported.set(false);
-        for (Exporter<T> ep : exporters) {
+        Iterator<Exporter<T>> it = exporters.iterator();
+        while (it.hasNext()) {
+            Exporter<T> ep = it.next();
             existingServices.remove(ep.getProvider().getUrl().getIdentity());
             exporters.remove(ep);
         }

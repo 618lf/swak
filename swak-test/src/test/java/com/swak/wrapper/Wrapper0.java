@@ -12,7 +12,7 @@ import java.util.Map;
  * @author lifeng
  */
 @SuppressWarnings({ "rawtypes", "unchecked", "unused" })
-public class Wrapper0 extends Wrapper implements ClassGenerator.DC {
+public class Wrapper0 extends Wrapper implements ClassGenerator.Dc {
 	public static String[] pns;
 
 	public static Map pts;
@@ -25,26 +25,32 @@ public class Wrapper0 extends Wrapper implements ClassGenerator.DC {
 
 	public static Class[] mts1;
 
-	public String[] getPropertyNames() {
+	@Override
+    public String[] getPropertyNames() {
 		return pns;
 	}
 
+	@Override
 	public boolean hasProperty(String paramString) {
 		return pts.containsKey(paramString);
 	}
 
+	@Override
 	public Class getPropertyType(String paramString) {
 		return (Class) pts.get(paramString);
 	}
 
+	@Override
 	public String[] getMethodNames() {
 		return mns;
 	}
 
+	@Override
 	public String[] getDeclaredMethodNames() {
 		return dmns;
 	}
 
+	@Override
 	public void setPropertyValue(Object paramObject1, String paramString, Object paramObject2) {
 		try {
 			OrderService orderService = (OrderService) paramObject1;
@@ -55,6 +61,7 @@ public class Wrapper0 extends Wrapper implements ClassGenerator.DC {
 				+ "\" filed or setter method in class com.swak.wrapper.OrderService.");
 	}
 
+	@Override
 	public Object getPropertyValue(Object paramObject, String paramString) {
 		try {
 			OrderService orderService = (OrderService) paramObject;
@@ -65,8 +72,9 @@ public class Wrapper0 extends Wrapper implements ClassGenerator.DC {
 				+ "\" filed or setter method in class com.swak.wrapper.OrderService.");
 	}
 
+	@Override
 	public Object invokeMethod(Object paramObject, String paramString, Class[] paramArrayOfClass,
-			Object[] paramArrayOfObject) throws InvocationTargetException {
+							   Object[] paramArrayOfObject) throws InvocationTargetException {
 		OrderService orderService;
 		try {
 			orderService = (OrderService) paramObject;

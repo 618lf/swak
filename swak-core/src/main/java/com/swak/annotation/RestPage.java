@@ -10,34 +10,32 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Controller;
 
 /**
- * 和 @RestController 功能一致
- * 
- * @author lifeng
+ * 和 @RestApi 功能一致
+ *
+ * @author: lifeng
+ * @date: 2020/3/28 17:23
  */
-@Target({ ElementType.TYPE })
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @RestApi
 public @interface RestPage {
 
-	/**
-	 * 设置 bean name， 不能用其他的替换，识别不到
-	 * @return
-	 */
-	@AliasFor(annotation = Controller.class, attribute="value")
-	String value() default "";
-	
-	/**
-	 * 支持的 path
-	 * @return
-	 */
-	@AliasFor(annotation = RequestMapping.class, value="value")
-	String[] path() default {};
-	
-	/**
-	 * 支持的 method
-	 * @return
-	 */
-	@AliasFor(annotation = RequestMapping.class)
-	RequestMethod method() default RequestMethod.ALL;
+    /**
+     * 设置 bean name， 不能用其他的替换，识别不到
+     */
+    @AliasFor(annotation = Controller.class, attribute = "value")
+    String value() default "";
+
+    /**
+     * 支持的 path
+     */
+    @AliasFor(annotation = RequestMapping.class, value = "value")
+    String[] path() default {};
+
+    /**
+     * 支持的 method
+     */
+    @AliasFor(annotation = RequestMapping.class)
+    RequestMethod method() default RequestMethod.ALL;
 }

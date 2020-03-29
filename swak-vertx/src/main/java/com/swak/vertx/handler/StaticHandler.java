@@ -137,8 +137,9 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 	public void handle(RoutingContext context) {
 		HttpServerRequest request = context.request();
 		if (request.method() != HttpMethod.GET && request.method() != HttpMethod.HEAD) {
-			if (log.isTraceEnabled())
-				log.trace("Not GET or HEAD so ignoring request");
+			if (log.isTraceEnabled()) {
+                log.trace("Not GET or HEAD so ignoring request");
+            }
 			context.next();
 		} else {
 			String path = HttpUtils.removeDots(URIDecoder.decodeURIComponent(context.normalisedPath(), false));
@@ -656,8 +657,9 @@ public class StaticHandler implements io.vertx.ext.web.handler.StaticHandler {
 
 	private String getFile(String path, RoutingContext context) {
 		String file = webRoot + Utils.pathOffset(path, context);
-		if (log.isTraceEnabled())
-			log.trace("File to serve is " + file);
+		if (log.isTraceEnabled()) {
+            log.trace("File to serve is " + file);
+        }
 		return file;
 	}
 

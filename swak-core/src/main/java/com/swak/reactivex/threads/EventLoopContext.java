@@ -4,20 +4,22 @@ import io.netty.channel.EventLoop;
 
 /**
  * 对EventLoop 进行监控,只能做到对這一步
- * 
- * @see 没过细的监控，会有一定的性能影响。
- * @author lifeng
+ * <p>
+ * 没过细的监控，会有一定的性能影响。
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 12:29
  */
 public class EventLoopContext implements Context {
 
-	private final EventLoop eventLoop;
+    private final EventLoop eventLoop;
 
-	public EventLoopContext(EventLoop eventLoop) {
-		this.eventLoop = eventLoop;
-	}
+    public EventLoopContext(EventLoop eventLoop) {
+        this.eventLoop = eventLoop;
+    }
 
-	@Override
-	public void execute(Runnable command) {
-		eventLoop.execute(() -> executeTask(command));
-	}
+    @Override
+    public void execute(Runnable command) {
+        eventLoop.execute(() -> executeTask(command));
+    }
 }

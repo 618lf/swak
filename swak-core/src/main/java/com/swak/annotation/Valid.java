@@ -8,8 +8,9 @@ import java.lang.annotation.Target;
 
 /**
  * 参数是否需要校验
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/28 17:25
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})

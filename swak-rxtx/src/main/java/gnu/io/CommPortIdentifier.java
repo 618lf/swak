@@ -97,8 +97,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 	------------------------------------------------------------------------------*/
 	// initialization only done once....
 	static {
-		if (debug)
-			System.out.println("CommPortIdentifier:static initialization()");
+		if (debug) {
+            System.out.println("CommPortIdentifier:static initialization()");
+        }
 		Sync = new Object();
 		try {
 			CommDriver RXTXDriver = (CommDriver) Class.forName("gnu.io.RXTXCommDriver").newInstance();
@@ -111,8 +112,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 
 		OS = System.getProperty("os.name");
 		if (OS.toLowerCase().indexOf("linux") == -1) {
-			if (debug)
-				System.out.println("Have not implemented native_psmisc_report_owner(PortName)); in CommPortIdentifier");
+			if (debug) {
+                System.out.println("Have not implemented native_psmisc_report_owner(PortName)); in CommPortIdentifier");
+            }
 		}
 		// System.loadLibrary( "rxtxSerial" );
 		SerialManager.getInstance();
@@ -138,8 +140,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 	------------------------------------------------------------------------------*/
 	public static void addPortName(String s, int type, CommDriver c) {
 
-		if (debug)
-			System.out.println("CommPortIdentifier:addPortName(" + s + ")");
+		if (debug) {
+            System.out.println("CommPortIdentifier:addPortName(" + s + ")");
+        }
 		AddIdentifierToList(new CommPortIdentifier(s, null, type, c));
 	}
 
@@ -152,19 +155,22 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		comments:
 	------------------------------------------------------------------------------*/
 	private static void AddIdentifierToList(CommPortIdentifier cpi) {
-		if (debug)
-			System.out.println("CommPortIdentifier:AddIdentifierToList()");
+		if (debug) {
+            System.out.println("CommPortIdentifier:AddIdentifierToList()");
+        }
 		synchronized (Sync) {
 			if (CommPortIndex == null) {
 				CommPortIndex = cpi;
-				if (debug)
-					System.out.println("CommPortIdentifier:AddIdentifierToList() null");
+				if (debug) {
+                    System.out.println("CommPortIdentifier:AddIdentifierToList() null");
+                }
 			} else {
 				CommPortIdentifier index = CommPortIndex;
 				while (index.next != null) {
 					index = index.next;
-					if (debug)
-						System.out.println("CommPortIdentifier:AddIdentifierToList() index.next");
+					if (debug) {
+                        System.out.println("CommPortIdentifier:AddIdentifierToList() index.next");
+                    }
 				}
 				index.next = cpi;
 			}
@@ -180,8 +186,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		comments:   
 	------------------------------------------------------------------------------*/
 	public void addPortOwnershipListener(CommPortOwnershipListener c) {
-		if (debug)
-			System.out.println("CommPortIdentifier:addPortOwnershipListener()");
+		if (debug) {
+            System.out.println("CommPortIdentifier:addPortOwnershipListener()");
+        }
 
 		/* is the Vector instantiated? */
 
@@ -205,8 +212,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		comments:    
 	------------------------------------------------------------------------------*/
 	public String getCurrentOwner() {
-		if (debug)
-			System.out.println("CommPortIdentifier:getCurrentOwner()");
+		if (debug) {
+            System.out.println("CommPortIdentifier:getCurrentOwner()");
+        }
 		return (Owner);
 	}
 
@@ -219,8 +227,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		comments:
 	------------------------------------------------------------------------------*/
 	public String getName() {
-		if (debug)
-			System.out.println("CommPortIdentifier:getName()");
+		if (debug) {
+            System.out.println("CommPortIdentifier:getName()");
+        }
 		return (PortName);
 	}
 
@@ -233,8 +242,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		comments:   
 	------------------------------------------------------------------------------*/
 	static public CommPortIdentifier getPortIdentifier(String s) throws NoSuchPortException {
-		if (debug)
-			System.out.println("CommPortIdentifier:getPortIdentifier(" + s + ")");
+		if (debug) {
+            System.out.println("CommPortIdentifier:getPortIdentifier(" + s + ")");
+        }
 		CommPortIdentifier index;
 
 		synchronized (Sync) {
@@ -256,11 +266,12 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 				}
 			}
 		}
-		if (index != null)
-			return index;
-		else {
-			if (debug)
-				System.out.println("not found!" + s);
+		if (index != null) {
+            return index;
+        } else {
+			if (debug) {
+                System.out.println("not found!" + s);
+            }
 			throw new NoSuchPortException();
 		}
 	}
@@ -274,19 +285,23 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		comments:    
 	------------------------------------------------------------------------------*/
 	static public CommPortIdentifier getPortIdentifier(CommPort p) throws NoSuchPortException {
-		if (debug)
-			System.out.println("CommPortIdentifier:getPortIdentifier(CommPort)");
+		if (debug) {
+            System.out.println("CommPortIdentifier:getPortIdentifier(CommPort)");
+        }
 		CommPortIdentifier c;
 		synchronized (Sync) {
 			c = CommPortIndex;
-			while (c != null && c.commport != p)
-				c = c.next;
+			while (c != null && c.commport != p) {
+                c = c.next;
+            }
 		}
-		if (c != null)
-			return (c);
+		if (c != null) {
+            return (c);
+        }
 
-		if (debug)
-			System.out.println("not found!" + p.getName());
+		if (debug) {
+            System.out.println("not found!" + p.getName());
+        }
 		throw new NoSuchPortException();
 	}
 
@@ -299,8 +314,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		comments:
 	------------------------------------------------------------------------------*/
 	static public Enumeration getPortIdentifiers() {
-		if (debug)
-			System.out.println("static CommPortIdentifier:getPortIdentifiers()");
+		if (debug) {
+            System.out.println("static CommPortIdentifier:getPortIdentifiers()");
+        }
 		// Do not allow anybody get any ports while we are re-initializing
 		// because the CommPortIndex points to invalid instances during that time
 		synchronized (Sync) {
@@ -358,8 +374,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		comments:
 	------------------------------------------------------------------------------*/
 	public int getPortType() {
-		if (debug)
-			System.out.println("CommPortIdentifier:getPortType()");
+		if (debug) {
+            System.out.println("CommPortIdentifier:getPortType()");
+        }
 		return (PortType);
 	}
 
@@ -372,8 +389,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		comments:    
 	------------------------------------------------------------------------------*/
 	public synchronized boolean isCurrentlyOwned() {
-		if (debug)
-			System.out.println("CommPortIdentifier:isCurrentlyOwned()");
+		if (debug) {
+            System.out.println("CommPortIdentifier:isCurrentlyOwned()");
+        }
 		return (!Available);
 	}
 
@@ -386,8 +404,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		comments:
 	------------------------------------------------------------------------------*/
 	public synchronized CommPort open(FileDescriptor f) throws UnsupportedCommOperationException {
-		if (debug)
-			System.out.println("CommPortIdentifier:open(FileDescriptor)");
+		if (debug) {
+            System.out.println("CommPortIdentifier:open(FileDescriptor)");
+        }
 		throw new UnsupportedCommOperationException();
 	}
 
@@ -406,8 +425,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 	private boolean HideOwnerEvents;
 
 	public RXTXPort open(String TheOwner, int i) throws gnu.io.PortInUseException {
-		if (debug)
-			System.out.println("CommPortIdentifier:open(" + TheOwner + ", " + i + ")");
+		if (debug) {
+            System.out.println("CommPortIdentifier:open(" + TheOwner + ", " + i + ")");
+        }
 		boolean isAvailable;
 		synchronized (this) {
 			isAvailable = this.Available;
@@ -473,11 +493,13 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		comments:
 	------------------------------------------------------------------------------*/
 	public void removePortOwnershipListener(CommPortOwnershipListener c) {
-		if (debug)
-			System.out.println("CommPortIdentifier:removePortOwnershipListener()");
+		if (debug) {
+            System.out.println("CommPortIdentifier:removePortOwnershipListener()");
+        }
 		/* why is this called twice? */
-		if (ownershipListener != null)
-			ownershipListener.removeElement(c);
+		if (ownershipListener != null) {
+            ownershipListener.removeElement(c);
+        }
 	}
 
 	/*------------------------------------------------------------------------------
@@ -490,8 +512,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 	------------------------------------------------------------------------------*/
 	void internalClosePort() {
 		synchronized (this) {
-			if (debug)
-				System.out.println("CommPortIdentifier:internalClosePort()");
+			if (debug) {
+                System.out.println("CommPortIdentifier:internalClosePort()");
+            }
 			Owner = null;
 			Available = true;
 			commport = null;
@@ -510,12 +533,14 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		comments:
 	------------------------------------------------------------------------------*/
 	void fireOwnershipEvent(int eventType) {
-		if (debug)
-			System.out.println("CommPortIdentifier:fireOwnershipEvent( " + eventType + " )");
+		if (debug) {
+            System.out.println("CommPortIdentifier:fireOwnershipEvent( " + eventType + " )");
+        }
 		if (ownershipListener != null) {
 			CommPortOwnershipListener c;
-			for (Enumeration e = ownershipListener.elements(); e.hasMoreElements(); c.ownershipChange(eventType))
-				c = (CommPortOwnershipListener) e.nextElement();
+			for (Enumeration e = ownershipListener.elements(); e.hasMoreElements(); c.ownershipChange(eventType)) {
+                c = (CommPortOwnershipListener) e.nextElement();
+            }
 		}
 	}
 }

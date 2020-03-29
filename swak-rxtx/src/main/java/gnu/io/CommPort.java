@@ -108,13 +108,15 @@ public abstract class CommPort extends Object {
 
 	@SuppressWarnings("static-access")
 	public void close() {
-		if (debug)
-			System.out.println("CommPort:close()");
+		if (debug) {
+            System.out.println("CommPort:close()");
+        }
 
 		try {
 			CommPortIdentifier cp = CommPortIdentifier.getPortIdentifier(this);
-			if (cp != null)
-				cp.getPortIdentifier(this).internalClosePort();
+			if (cp != null) {
+                cp.getPortIdentifier(this).internalClosePort();
+            }
 		} catch (NoSuchPortException e) {
 		}
 	};
@@ -124,14 +126,16 @@ public abstract class CommPort extends Object {
 	public abstract OutputStream getOutputStream() throws IOException;
 
 	public String getName() {
-		if (debug)
-			System.out.println("CommPort:getName()");
+		if (debug) {
+            System.out.println("CommPort:getName()");
+        }
 		return (name);
 	}
 
 	public String toString() {
-		if (debug)
-			System.out.println("CommPort:toString()");
+		if (debug) {
+            System.out.println("CommPort:toString()");
+        }
 		return (name);
 	}
 }

@@ -22,10 +22,12 @@ public class Area extends BaseParentEntity<Long> implements Serializable {
 	private Integer sort = 0;
 	private List<Area> children;
 
-	public Integer getSort() {
+	@Override
+    public Integer getSort() {
 		return sort;
 	}
 
+	@Override
 	public void setSort(Integer sort) {
 		this.sort = sort;
 	}

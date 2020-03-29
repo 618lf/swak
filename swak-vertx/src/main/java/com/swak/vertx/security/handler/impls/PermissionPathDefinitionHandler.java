@@ -42,13 +42,13 @@ public abstract class PermissionPathDefinitionHandler extends AdviceHandler impl
 		Permission permission = null;
 
 		// and 权限集合的处理方式
-		if (StringUtils.contains(param, Constants.security_AND_DIVIDER_TOKEN)) {
-			String[] permissions = param.split(Constants.security_AND_DIVIDER_TOKEN);
+		if (StringUtils.contains(param, Constants.SECURITY_AND_DIVIDER_TOKEN)) {
+			String[] permissions = param.split(Constants.SECURITY_AND_DIVIDER_TOKEN);
 			permission = new AndPermission(permissions);
 		}
 		// or 权限集合的处理方式
-		else if (StringUtils.contains(param, Constants.security_OR_DIVIDER_TOKEN)) {
-			String[] permissions = param.split(Constants.security_AND_DIVIDER_TOKEN);
+		else if (StringUtils.contains(param, Constants.SECURITY_OR_DIVIDER_TOKEN)) {
+			String[] permissions = param.split(Constants.SECURITY_AND_DIVIDER_TOKEN);
 			permission = new OrPermission(permissions);
 		} else {
 			permission = new SinglePermission(param);

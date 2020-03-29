@@ -28,7 +28,7 @@ public class JsonHttpMessageConverter implements HttpMessageConverter {
 	@Override
 	public void write(Object obj, HttpServerResponse response) {
 		response.putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
-		String content = JsonMapper.toJSONString(obj, JSON.DEFAULT_GENERATE_FEATURE, features);
+		String content = JsonMapper.toJsonString(obj, JSON.DEFAULT_GENERATE_FEATURE, features);
 		response.end(content);
 	}
 }

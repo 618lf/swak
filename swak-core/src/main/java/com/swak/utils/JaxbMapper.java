@@ -29,13 +29,10 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class JaxbMapper {
 
-	private static ConcurrentMap<Class<?>, JAXBContext> CONTEXT = null;
+	private static ConcurrentMap<Class<?>, JAXBContext> CONTEXT;
 
-	/**
-	 * 池化
-	 */
 	static {
-		CONTEXT = new ConcurrentHashMap<Class<?>, JAXBContext>();
+		CONTEXT = new ConcurrentHashMap<>();
 	}
 
 	/**
@@ -97,8 +94,8 @@ public class JaxbMapper {
 		try {
 			Unmarshaller unmarshaller = createUnmarshaller(clazz);
 			XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-			Source Source = new SAXSource(xmlReader, new InputSource(xml));
-			return (T) unmarshaller.unmarshal(Source);
+			Source source = new SAXSource(xmlReader, new InputSource(xml));
+			return (T) unmarshaller.unmarshal(source);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -126,8 +123,7 @@ public class JaxbMapper {
 	public static Unmarshaller createUnmarshaller(Class<?> clazz) {
 		try {
 			JAXBContext jaxbContext = getJaxbContext(clazz);
-			Unmarshaller marshaller = jaxbContext.createUnmarshaller();
-			return marshaller;
+			return jaxbContext.createUnmarshaller();
 		} catch (Exception e) {
 			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz + "]: " + e.getMessage(),
 					e);

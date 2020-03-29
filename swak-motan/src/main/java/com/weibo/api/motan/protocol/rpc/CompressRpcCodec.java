@@ -869,25 +869,51 @@ public class CompressRpcCodec extends AbstractCodec {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
             MethodInfo other = (MethodInfo) obj;
             if (group == null) {
-                if (other.group != null) return false;
-            } else if (!group.equals(other.group)) return false;
+                if (other.group != null) {
+                    return false;
+                }
+            } else if (!group.equals(other.group)) {
+                return false;
+            }
             if (interfaceName == null) {
-                if (other.interfaceName != null) return false;
-            } else if (!interfaceName.equals(other.interfaceName)) return false;
+                if (other.interfaceName != null) {
+                    return false;
+                }
+            } else if (!interfaceName.equals(other.interfaceName)) {
+                return false;
+            }
             if (methodName == null) {
-                if (other.methodName != null) return false;
-            } else if (!methodName.equals(other.methodName)) return false;
+                if (other.methodName != null) {
+                    return false;
+                }
+            } else if (!methodName.equals(other.methodName)) {
+                return false;
+            }
             if (paramtersDesc == null) {
-                if (other.paramtersDesc != null) return false;
-            } else if (!paramtersDesc.equals(other.paramtersDesc)) return false;
+                if (other.paramtersDesc != null) {
+                    return false;
+                }
+            } else if (!paramtersDesc.equals(other.paramtersDesc)) {
+                return false;
+            }
             if (version == null) {
-                if (other.version != null) return false;
-            } else if (!version.equals(other.version)) return false;
+                if (other.version != null) {
+                    return false;
+                }
+            } else if (!version.equals(other.version)) {
+                return false;
+            }
             return true;
         }
 

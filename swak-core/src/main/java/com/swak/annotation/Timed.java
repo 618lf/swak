@@ -14,19 +14,22 @@ import com.swak.utils.StringUtils;
  * <p/>
  * Given a method like this:
  * <pre><code>
- *     {@literal @}Timed(name = "fancyName")
- *     public String fancyName(String name) {
- *         return "Sir Captain " + name;
- *     }
- * </code></pre>
+ *       {@literal @}Timed(name = "fancyName")
+ *       public String fancyName(String name) {
+ *          return "Sir Captain " + name;
+ *      }
+ *   </code></pre>
  * <p/>
  * A timer for the defining class with the name {@code fancyName} will be created and each time the
  * {@code #fancyName(String)} method is invoked, the method's execution will be timed.
+ *
+ * @author: lifeng
+ * @date: 2020/3/28 17:24
  */
 @Inherited
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Target({ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 public @interface Timed {
     /**
      * @return The name of the timer.

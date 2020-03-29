@@ -10,48 +10,42 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.swak.Constants;
 import com.swak.OS;
+import com.swak.utils.Lists;
 
 /**
  * 本地工具类
- * 
- * @ClassName: Native
- * @Description:TODO(描述这个类的作用)
+ *
  * @author: lifeng
- * @date: Jan 3, 2020 10:56:18 AM
+ * @date: 2020/3/29 12:08
  */
 public class Native {
 
 	private static final Logger logger = LoggerFactory.getLogger(Native.class);
 	private static final String NATIVE_RESOURCE_HOME = "META-INF/native/";
-	private static final File WORKDIR = new File(Constants.tempDir);
+	private static final File WORKDIR = new File(OS.temp());
 
 	/**
 	 * 加载本地库文件
-	 * 
-	 * @Title: loadLibrary
-	 * @Description: TODO(描述)
-	 * @param name
+	 *
+	 * @param name lib 名称
 	 * @author lifeng
 	 * @date 2020-01-03 10:57:07
 	 */
 	public static void loadLibrary(String name) {
-		String staticLibName = name;
 		String sharedLibName = name + '_' + normalizeArch();
-		ClassLoader cl = getClassLoader(Native.class);
+		ClassLoader cl = getClassLoader();
 		try {
 			load(sharedLibName, cl);
 		} catch (UnsatisfiedLinkError e1) {
 			try {
-				load(staticLibName, cl);
+				load(name, cl);
 			} catch (UnsatisfiedLinkError e2) {
 				throw e1;
 			}
@@ -62,21 +56,18 @@ public class Native {
 	 * Load the given library with the specified {@link ClassLoader}
 	 */
 	private static void load(String originalName, ClassLoader loader) {
-		String name = originalName;
-		List<Throwable> suppressed = new ArrayList<Throwable>();
+		List<Throwable> suppressed = Lists.newArrayList();
 		try {
 			// first try to load from java.library.path
-			loadLibrary(name, false);
+			loadLibrary(originalName, false);
 			return;
 		} catch (Throwable ex) {
 			suppressed.add(ex);
-			logger.debug("{} cannot be loaded from java.library.path, "
-					+ "now trying export to -Djava.io.tmpdir: {}", name, WORKDIR, ex);
+			logger.debug("{} cannot be loaded from java.library.path, " + "now trying export to -Djava.io.tmpdir: {}",
+					originalName, WORKDIR, ex);
 		}
-
-		String libname = System.mapLibraryName(name);
+		String libname = System.mapLibraryName(originalName);
 		String path = NATIVE_RESOURCE_HOME + libname;
-
 		InputStream in = null;
 		OutputStream out = null;
 		File tmpFile = null;
@@ -89,39 +80,32 @@ public class Native {
 		try {
 			if (url == null) {
 				if (OS.me() == OS.mac) {
-					String fileName = path.endsWith(".jnilib") ? NATIVE_RESOURCE_HOME + "lib" + name + ".dynlib"
-							: NATIVE_RESOURCE_HOME + "lib" + name + ".jnilib";
+					String fileName = path.endsWith(".jnilib") ? NATIVE_RESOURCE_HOME + "lib" + originalName + ".dynlib"
+							: NATIVE_RESOURCE_HOME + "lib" + originalName + ".jnilib";
 					if (loader == null) {
 						url = ClassLoader.getSystemResource(fileName);
 					} else {
 						url = loader.getResource(fileName);
 					}
 					if (url == null) {
-						FileNotFoundException fnf = new FileNotFoundException(fileName);
-						throw fnf;
+						throw new FileNotFoundException(fileName);
 					}
 				} else {
-					FileNotFoundException fnf = new FileNotFoundException(path);
-					throw fnf;
+					throw new FileNotFoundException(path);
 				}
 			}
-
 			int index = libname.lastIndexOf('.');
 			String prefix = libname.substring(0, index);
 			String suffix = libname.substring(index);
-
 			tmpFile = File.createTempFile(prefix, suffix, WORKDIR);
 			in = url.openStream();
 			out = new FileOutputStream(tmpFile);
-
 			byte[] buffer = new byte[8192];
 			int length;
 			while ((length = in.read(buffer)) > 0) {
 				out.write(buffer, 0, length);
 			}
-
 			out.flush();
-
 			// Close the output stream before loading the unpacked library,
 			// because otherwise Windows will refuse to load it when it's in use by other
 			// process.
@@ -147,7 +131,7 @@ public class Native {
 			// Re-throw to fail the load
 			throw e;
 		} catch (Exception e) {
-			UnsatisfiedLinkError ule = new UnsatisfiedLinkError("could not load a native library: " + name);
+			UnsatisfiedLinkError ule = new UnsatisfiedLinkError("could not load a native library: " + originalName);
 			ule.initCause(e);
 			throw ule;
 		} finally {
@@ -164,11 +148,9 @@ public class Native {
 
 	/**
 	 * 系统默认的加载方式
-	 * 
-	 * @Title: loadLibrary
-	 * @Description: TODO(描述)
-	 * @param libName
-	 * @param absolute
+	 *
+	 * @param libName  libName
+	 * @param absolute 默认加载
 	 * @author lifeng
 	 * @date 2020-01-03 11:09:55
 	 */
@@ -182,10 +164,8 @@ public class Native {
 
 	/**
 	 * 系统架构
-	 * 
-	 * @Title: normalizeArch
-	 * @Description: TODO(描述)
-	 * @return
+	 *
+	 * @return 系统架构
 	 * @author lifeng
 	 * @date 2020-01-03 11:00:15
 	 */
@@ -234,33 +214,23 @@ public class Native {
 
 	/**
 	 * 类加载器
-	 * 
-	 * @Title: getClassLoader
-	 * @Description: TODO(描述)
-	 * @param clazz
-	 * @return
+	 *
+	 * @return 类加载器
 	 * @author lifeng
 	 * @date 2020-01-03 11:01:17
 	 */
-	static ClassLoader getClassLoader(final Class<?> clazz) {
+	static ClassLoader getClassLoader() {
 		if (System.getSecurityManager() == null) {
-			return clazz.getClassLoader();
+			return Native.class.getClassLoader();
 		} else {
-			return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-				@Override
-				public ClassLoader run() {
-					return clazz.getClassLoader();
-				}
-			});
+			return AccessController.doPrivileged((PrivilegedAction<ClassLoader>) Native.class::getClassLoader);
 		}
 	}
 
 	/**
 	 * 静默关闭
-	 * 
-	 * @Title: closeQuietly
-	 * @Description: TODO(描述)
-	 * @param c
+	 *
+	 * @param c 关闭方法
 	 * @author lifeng
 	 * @date 2020-01-03 11:12:06
 	 */

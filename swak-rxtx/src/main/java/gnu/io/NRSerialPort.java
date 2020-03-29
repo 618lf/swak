@@ -237,8 +237,9 @@ public class NRSerialPort
 
     public void setConnected(boolean connected)
     {
-        if (this.connected == connected)
+        if (this.connected == connected) {
             return;
+        }
         this.connected = connected;
     }
 

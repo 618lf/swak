@@ -67,8 +67,9 @@ public class NativeResource {
 	private boolean loaded = false;
 
 	public synchronized void load(String libraryName) throws NativeResourceException {
-		if (loaded)
-			return;
+		if (loaded) {
+            return;
+        }
 		loaded = true;
 		if (System.getProperty(libraryName + ".userlib") != null) {
 			try {
@@ -200,8 +201,9 @@ public class NativeResource {
 	}
 
 	private void loadResource(File resource) {
-		if (!resource.canRead())
-			throw new RuntimeException("Cant open JNI file: " + resource.getAbsolutePath());
+		if (!resource.canRead()) {
+            throw new RuntimeException("Cant open JNI file: " + resource.getAbsolutePath());
+        }
 		// System.out.println("Loading: "+resource.getAbsolutePath());
 		try {
 			System.load(resource.getAbsolutePath());

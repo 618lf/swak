@@ -1,13 +1,12 @@
 package com.swak.security.jwt;
 
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.SerializeWriter;
 import com.swak.utils.JsonMapper;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 用于Json 的转换
@@ -22,13 +21,10 @@ public class JWTEncode {
 	 * @return the string encoding.
 	 */
 	public static String encode(Map<String, Object> map) {
-		SerializeWriter out = new SerializeWriter((Writer) null, JSON.DEFAULT_GENERATE_FEATURE, JsonMapper.FEATURES);
-		try {
+		try (SerializeWriter out = new SerializeWriter(null, JSON.DEFAULT_GENERATE_FEATURE, JsonMapper.FEATURES)) {
 			JSONSerializer serializer = new JSONSerializer(out);
 			serializer.write(map);
 			return out.toString();
-		} finally {
-			out.close();
 		}
 	}
 

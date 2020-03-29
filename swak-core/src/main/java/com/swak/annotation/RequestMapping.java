@@ -8,22 +8,22 @@ import java.lang.annotation.Target;
 
 /**
  * 支持path 和 method 的 requestMapping 的配置
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/28 17:20
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RequestMapping {
 
-	/**
-	 * 支持的 path
-	 * @return
-	 */
-	String[] value() default {};
-	
-	/**
-	 * 支持的 method
-	 * @return
-	 */
-	RequestMethod method() default RequestMethod.ALL;
+    /**
+     * 支持的 path
+     */
+    String[] value() default {};
+
+    /**
+     * 支持的 method
+     */
+    RequestMethod method() default RequestMethod.ALL;
 }

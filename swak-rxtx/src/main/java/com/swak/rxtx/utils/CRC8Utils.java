@@ -84,8 +84,9 @@ public class CRC8Utils {
 				boolean bit = ((source[i] >> (7 - j) & 1) == 1);
 				boolean c07 = ((wCRCin >> 7 & 1) == 1);
 				wCRCin <<= 1;
-				if (c07 ^ bit)
-					wCRCin ^= wCPoly;
+				if (c07 ^ bit) {
+                    wCRCin ^= wCPoly;
+                }
 			}
 		}
 		wCRCin &= 0xFF;
@@ -164,8 +165,9 @@ public class CRC8Utils {
 				boolean bit = ((source[i] >> (7 - j) & 1) == 1);
 				boolean c07 = ((wCRCin >> 7 & 1) == 1);
 				wCRCin <<= 1;
-				if (c07 ^ bit)
-					wCRCin ^= wCPoly;
+				if (c07 ^ bit) {
+                    wCRCin ^= wCPoly;
+                }
 			}
 		}
 		wCRCin &= 0xFF;

@@ -206,7 +206,9 @@ public class RpcCommandUtil {
 
             // 处理|
             operand = '0';
-            while (!list.isEmpty() && (operand = list.pop()) != '1');
+            while (!list.isEmpty() && (operand = list.pop()) != '1') {
+                ;
+            }
             return operand;
         }
 

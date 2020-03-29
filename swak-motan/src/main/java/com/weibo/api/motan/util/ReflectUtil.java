@@ -241,7 +241,9 @@ public class ReflectUtil {
     }
 
     private static Object getEmptyObject(Class<?> returnType, Map<Class<?>, Object> emptyInstances, int level) {
-        if (level > 2) return null;
+        if (level > 2) {
+            return null;
+        }
         if (returnType == null) {
             return null;
         } else if (returnType == boolean.class || returnType == Boolean.class) {

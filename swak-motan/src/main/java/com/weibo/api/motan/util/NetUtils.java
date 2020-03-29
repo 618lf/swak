@@ -171,7 +171,9 @@ public class NetUtils {
     }
 
     public static boolean isValidAddress(InetAddress address) {
-        if (address == null || address.isLoopbackAddress()) return false;
+        if (address == null || address.isLoopbackAddress()) {
+            return false;
+        }
         String name = address.getHostAddress();
         return (name != null && !ANYHOST.equals(name) && !LOCALHOST.equals(name) && IP_PATTERN.matcher(name).matches());
     }
