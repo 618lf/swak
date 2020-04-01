@@ -11,9 +11,9 @@
 
 package io.vertx.core.impl;
 
-import io.netty.util.concurrent.FastThreadLocalThread;
-
 import java.util.concurrent.TimeUnit;
+
+import io.netty.util.concurrent.FastThreadLocalThread;
 
 /**
  * @author <a href="mailto:nmaurer@redhat.com">Norman Maurer</a>
