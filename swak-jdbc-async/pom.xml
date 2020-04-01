@@ -87,30 +87,12 @@
 			</exclusions>
 		</dependency>
 
-		<!-- 使用jasync 客户端 -->
-		<dependency>
-			<groupId>io.vertx</groupId>
-			<artifactId>vertx-mysql-postgresql-client-jasync</artifactId>
-			<version>${vertx.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>io.vertx</groupId>
-					<artifactId>vertx-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.vertx</groupId>
-					<artifactId>vertx-shell</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.github.jasync-sql</groupId>
-					<artifactId>jasync-postgresql</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.github.jasync-sql</groupId>
-					<artifactId>jasync-mysql</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+		<!-- 使用jasync 客户端 <dependency> <groupId>io.vertx</groupId> <artifactId>vertx-mysql-postgresql-client-jasync</artifactId> 
+			<version>${vertx.version}</version> <exclusions> <exclusion> <groupId>io.vertx</groupId> 
+			<artifactId>vertx-core</artifactId> </exclusion> <exclusion> <groupId>io.vertx</groupId> 
+			<artifactId>vertx-shell</artifactId> </exclusion> <exclusion> <groupId>com.github.jasync-sql</groupId> 
+			<artifactId>jasync-postgresql</artifactId> </exclusion> <exclusion> <groupId>com.github.jasync-sql</groupId> 
+			<artifactId>jasync-mysql</artifactId> </exclusion> </exclusions> </dependency> -->
 		<!-- <dependency> <groupId>com.github.jasync-sql</groupId> <artifactId>jasync-postgresql</artifactId> 
 			<version>${jasync.version}</version> <exclusions> <exclusion> <groupId>io.netty</groupId> 
 			<artifactId>netty-common</artifactId> </exclusion> <exclusion> <groupId>io.netty</groupId> 
