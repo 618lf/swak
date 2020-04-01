@@ -9,30 +9,29 @@ import com.swak.wechat.Constants.RespType;
 
 /**
  * 文本应答消息
- * 
+ *
  * @author lifeng
- * 
  */
 @XmlRootElement(name = "xml")
 public class RespMsgText extends AbstractRespMsg {
-	private static final long serialVersionUID = 1L;
-	private String content;
+    private static final long serialVersionUID = 1L;
+    private String content;
 
-	public RespMsgText() {
-	}
+    public RespMsgText() {
+    }
 
-	public RespMsgText(MsgHead req, String content) {
-		super(req, RespType.text.name());
-		this.content = content;
-	}
+    public RespMsgText(MsgHead req, String content) {
+        super(req, RespType.text.name());
+        this.content = content;
+    }
 
-	@XmlElement(name = "Content")
-	@XmlJavaTypeAdapter(CDataAdapter.class)
-	public String getContent() {
-		return content;
-	}
+    @XmlElement(name = "Content")
+    @XmlJavaTypeAdapter(CDataAdapter.class)
+    public String getContent() {
+        return content;
+    }
 
-	public void setContent(String content) {
-		this.content = content;
-	}
+    public void setContent(String content) {
+        this.content = content;
+    }
 }

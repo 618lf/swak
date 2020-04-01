@@ -8,29 +8,28 @@ import com.swak.wechat.message.plain.Music;
 
 /**
  * 回复音乐消息
- * 
- * @author lifeng
  *
+ * @author lifeng
  */
 @XmlRootElement(name = "xml")
 public class RespMsgMusic extends AbstractRespMsg {
-	private static final long serialVersionUID = 1L;
-	private Music music;
+    private static final long serialVersionUID = 1L;
+    private Music music;
 
-	public RespMsgMusic() {
-	}
+    public RespMsgMusic() {
+    }
 
-	public RespMsgMusic(MsgHead req, Music music) {
-		super(req, RespType.music.name());
-		this.music = music;
-	}
+    public RespMsgMusic(MsgHead req, Music music) {
+        super(req, RespType.music.name());
+        this.music = music;
+    }
 
-	@XmlElement(name = "Music")
-	public Music getMusic() {
-		return music;
-	}
+    @XmlElement(name = "Music")
+    public Music getMusic() {
+        return music;
+    }
 
-	public void setMusic(Music music) {
-		this.music = music;
-	}
+    public void setMusic(Music music) {
+        this.music = music;
+    }
 }

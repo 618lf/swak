@@ -15,7 +15,8 @@ public class AbstractReqMsg extends MsgHeadImpl implements ReqMsg {
 
 	protected String msgId;
 
-	public String getMsgId() {
+	@Override
+    public String getMsgId() {
 		return msgId;
 	}
 

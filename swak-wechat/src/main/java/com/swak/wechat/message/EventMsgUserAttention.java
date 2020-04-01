@@ -24,9 +24,7 @@ import com.swak.utils.XmlParse;
  * 
  * 如果未关注，则EVENT 为 subscribe 如果已关注，则EVENT 为 scan
  *
- * @author rikky.cai
- * @qq:6687523
- * @Email:6687523@qq.com
+ * @author lifeng
  */
 public class EventMsgUserAttention extends AbstractEventMsg {
 
@@ -64,7 +62,7 @@ public class EventMsgUserAttention extends AbstractEventMsg {
 	/**
 	 * 得到场景二维码 weixin bug 关注时居然推送 last_trade_no_XXX 这样额eventkey
 	 * 
-	 * @return
+	 * @return 二维码
 	 */
 	public String getQrscene() {
 
@@ -80,10 +78,9 @@ public class EventMsgUserAttention extends AbstractEventMsg {
 		return null;
 	}
 
+	@Override
 	public String toString() {
-		StringBuilder msg = new StringBuilder();
-		msg.append("eventKey:").append(this.getEventKey()).append("\n");
-		msg.append("ticket:").append(this.getTicket());
-		return msg.toString();
+		return "eventKey:" + this.getEventKey() + "\n" +
+				"ticket:" + this.getTicket();
 	}
 }

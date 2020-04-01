@@ -12,6 +12,12 @@ import org.springframework.context.annotation.Import;
 
 import com.swak.selector.AutoConfigurationImportSelector;
 
+/**
+ * 开启配置
+ *
+ * @author: lifeng
+ * @date: 2020/4/1 12:35
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -20,19 +26,21 @@ import com.swak.selector.AutoConfigurationImportSelector;
 @Import({AutoConfigurationImportSelector.class})
 public @interface EnableAutoConfiguration {
 
-	String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";
+    String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";
 
-	/**
-	 * Exclude specific auto-configuration classes such that they will never be applied.
-	 * @return the classes to exclude
-	 */
-	Class<?>[] exclude() default {};
+    /**
+     * Exclude specific auto-configuration classes such that they will never be applied.
+     *
+     * @return the classes to exclude
+     */
+    Class<?>[] exclude() default {};
 
-	/**
-	 * Exclude specific auto-configuration class names such that they will never be
-	 * applied.
-	 * @return the class names to exclude
-	 * @since 1.3.0
-	 */
-	String[] excludeName() default {};
+    /**
+     * Exclude specific auto-configuration class names such that they will never be
+     * applied.
+     *
+     * @return the class names to exclude
+     * @since 1.3.0
+     */
+    String[] excludeName() default {};
 }

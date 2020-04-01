@@ -6,37 +6,33 @@ import com.swak.utils.XmlParse;
 
 /**
  * 视频请求消息
- * 
- * @author rikky.cai
- * @qq:6687523
- * @Email:6687523@qq.com
- * 
+ *
+ * @author: lifeng
+ * @date: 2020/4/1 11:26
  */
 public class ReqMsgVideo extends ReqMsgMedia {
 
-	private static final long serialVersionUID = 1L;
-	
-	private String thumbMediaId;
+    private static final long serialVersionUID = 1L;
 
-	public String getThumbMediaId() {
-		return thumbMediaId;
-	}
+    private String thumbMediaId;
 
-	public void setThumbMediaId(String thumbMediaId) {
-		this.thumbMediaId = thumbMediaId;
-	}
-	
-	@Override
-	public void read(Element element) {
-		super.read(element);
-		this.thumbMediaId = XmlParse.elementText(element, "thumbMediaId");
-	}
+    public String getThumbMediaId() {
+        return thumbMediaId;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder msg = new StringBuilder();
-		msg.append("msgId:").append(this.getMsgId()).append("\n");
-		msg.append("thumbMediaId:").append(this.getThumbMediaId()).append("\n");
-		return msg.toString();
-	}
+    public void setThumbMediaId(String thumbMediaId) {
+        this.thumbMediaId = thumbMediaId;
+    }
+
+    @Override
+    public void read(Element element) {
+        super.read(element);
+        this.thumbMediaId = XmlParse.elementText(element, "thumbMediaId");
+    }
+
+    @Override
+    public String toString() {
+		return "msgId:" + this.getMsgId() + "\n" +
+				"thumbMediaId:" + this.getThumbMediaId() + "\n";
+    }
 }

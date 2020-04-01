@@ -34,8 +34,6 @@ public class MenuEventMsg extends AbstractEventMsg {
 
 	@Override
 	public String toString() {
-		StringBuilder msg = new StringBuilder();
-		msg.append("eventKey:").append(this.getEventKey());
-		return msg.toString();
+		return "eventKey:" + this.getEventKey();
 	}
 }
