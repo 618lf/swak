@@ -361,9 +361,16 @@ public class HandlerAdapter extends AbstractRouterHandler {
     }
 
     /**
-     * 初始化 数据
+     * 解析参数
+     * 
+     * @param clazz 需转换的类型
+     * @param pname 参数名称
+     * @param arguments 具体的参数
+     * @param context 上下文
+     * @param check 是否校验
+     * @return 解析后的参数
      */
-    private Object resolveObject(Class<?> clazz, String pname, Map<String, Object> arguments, RoutingContext context,
+    public Object resolveObject(Class<?> clazz, String pname, Map<String, Object> arguments, RoutingContext context,
                                  boolean check) {
         Object obj = null;
         try {
