@@ -8,18 +8,19 @@ import com.swak.vertx.transport.Subject;
 
 /**
  * 空 权限校验
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 20:46
  */
 public class SimpleRealm implements Realm {
 
-	@Override
-	public CompletionStage<AuthorizationInfo> doGetAuthorizationInfo(Subject subject) {
-		return CompletableFuture.completedFuture(new AuthorizationInfo());
-	}
+    @Override
+    public CompletionStage<AuthorizationInfo> doGetAuthorizationInfo(Subject subject) {
+        return CompletableFuture.completedFuture(new AuthorizationInfo());
+    }
 
-	@Override
-	public CompletionStage<Void> onLogin(Subject subject) {
-		return CompletableFuture.completedFuture(null);
-	}
+    @Override
+    public CompletionStage<Void> onLogin(Subject subject) {
+        return CompletableFuture.completedFuture(null);
+    }
 }

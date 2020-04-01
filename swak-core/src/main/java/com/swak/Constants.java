@@ -1,5 +1,7 @@
 package com.swak;
 
+import io.netty.handler.codec.http.HttpResponseStatus;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -139,4 +141,12 @@ public interface Constants {
      * Sql 语句
      **/
     String WHERE = "WHERE";
+
+    /**
+     * Http Status
+     **/
+    HttpResponseStatus FOUND = HttpResponseStatus.FOUND;
+    HttpResponseStatus UNAUTHORIZED = HttpResponseStatus.UNAUTHORIZED;
+    HttpResponseStatus NOT_FOUND = HttpResponseStatus.NOT_FOUND;
+    HttpResponseStatus INTERNAL_SERVER_ERROR = HttpResponseStatus.INTERNAL_SERVER_ERROR;
 }

@@ -1,9 +1,10 @@
 package com.swak.vertx.transport;
 
 /**
- * 最简单的 Token
- * 
- * @author lifeng
+ * Token
+ *
+ *  @author: lifeng
+ *  @date: 2020/3/29 21:26
  */
 public class Token {
 
