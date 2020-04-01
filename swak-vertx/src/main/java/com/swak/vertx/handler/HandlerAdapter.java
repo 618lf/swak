@@ -215,7 +215,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
     private ContextInternal getContext() {
         Thread current = Thread.currentThread();
         if (current instanceof VertxThread) {
-            return ((VertxThread) current).context();
+            return ((VertxThread) current).getContext();
         }
         return null;
     }

@@ -284,6 +284,11 @@ ContextRefreshedEvent > startReactiveServer > ReactiveServerInitializedEvent
 新功能1： api doc 的自动生成 -- 开发中(目前遇到的问题是，使用的jar无法获取 classes 的类)  
 新功能2： 代码生成工具 -- 待开发   
 
+
+# 版本1.0.2  （预留的版本）
+此版本是未来的版本，对标vertx 的 4.0 系列，等vertx的4.0出可用版本之后启用此版本
+
+
 # 演示项目
 具体的演示项目参见：
 [地址](https://gitee.com/618lf/springboot-vertx)

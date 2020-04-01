@@ -60,7 +60,7 @@ public class MainVerticle extends AbstractVerticle {
         // 启动服务组件
         futures.addAll(this.startServices());
 
-        CompositeFuture.all(futures).setHandler(res -> {
+        CompositeFuture.all(futures).onComplete(res -> {
             if (res.succeeded()) {
             	startPromise.complete();
             } else {
@@ -117,7 +117,8 @@ public class MainVerticle extends AbstractVerticle {
     /**
      * 发布成Tcp 服务
      */
-    private List<Future<String>> startService(ServiceBean service) {
+    @SuppressWarnings("deprecation")
+	private List<Future<String>> startService(ServiceBean service) {
 
         // 发布服务标示
         List<Future<String>> futures = Lists.newArrayList();
