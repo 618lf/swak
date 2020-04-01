@@ -1,20 +1,22 @@
 package com.swak.vertx.transport;
 
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.CompletionStage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.asm.Wrapper;
 import com.swak.utils.Maps;
 import com.swak.vertx.transport.codec.Msg;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.eventbus.Message;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.CompletionStage;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Handler;
+import io.vertx.core.Promise;
+import io.vertx.core.eventbus.Message;
 
 /**
  * 服务 Verticle
@@ -58,10 +60,9 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
      * 启动服务, startFuture.complete 底层也没有修改，暂时不知道修改方案
      */
     @Override
-    @SuppressWarnings({"deprecation"})
-    public void start(Future<Void> startFuture) {
+    public void start(Promise<Void> startPromise) {
         this.getVertx().eventBus().<Msg>consumer(address).handler(this);
-        startFuture.complete();
+        startPromise.complete();
     }
 
     /**

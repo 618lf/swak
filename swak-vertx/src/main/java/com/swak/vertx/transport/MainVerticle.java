@@ -14,6 +14,8 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
+
 import org.springframework.aop.support.AopUtils;
 
 import java.util.List;
@@ -48,8 +50,8 @@ public class MainVerticle extends AbstractVerticle {
      * 启动服务, startFuture.complete 底层也没有修改，暂时不知道修改方案
      */
     @Override
-    @SuppressWarnings({"rawtypes", "deprecation"})
-    public void start(Future<Void> startFuture) {
+    @SuppressWarnings({"rawtypes"})
+    public void start(Promise<Void> startPromise) {
         List<Future> futures = Lists.newArrayList();
 
         // 自定义一些配置
@@ -60,9 +62,9 @@ public class MainVerticle extends AbstractVerticle {
 
         CompositeFuture.all(futures).setHandler(res -> {
             if (res.succeeded()) {
-                startFuture.complete();
+            	startPromise.complete();
             } else {
-                startFuture.fail(res.cause());
+            	startPromise.fail(res.cause());
             }
         });
     }
@@ -115,7 +117,6 @@ public class MainVerticle extends AbstractVerticle {
     /**
      * 发布成Tcp 服务
      */
-    @SuppressWarnings("deprecation")
     private List<Future<String>> startService(ServiceBean service) {
 
         // 发布服务标示

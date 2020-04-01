@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2011-2019 Contributors to the Eclipse Foundation
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -20,48 +20,91 @@ import java.util.concurrent.TimeUnit;
  */
 public final class VertxThread extends FastThreadLocalThread implements BlockedThreadChecker.Task {
 
-	private final boolean worker;
-	private final long maxExecTime;
-	private final TimeUnit maxExecTimeUnit;
-	private long execStart;
-	private ContextImpl context;
+  static final String DISABLE_TCCL_PROP_NAME = "vertx.disableTCCL";
+  static final boolean DISABLE_TCCL = Boolean.getBoolean(DISABLE_TCCL_PROP_NAME);
 
-	public VertxThread(Runnable target, String name, boolean worker, long maxExecTime, TimeUnit maxExecTimeUnit) {
-		super(target, name);
-		this.worker = worker;
-		this.maxExecTime = maxExecTime;
-		this.maxExecTimeUnit = maxExecTimeUnit;
-	}
+  private final boolean worker;
+  private final long maxExecTime;
+  private final TimeUnit maxExecTimeUnit;
+  private long execStart;
+  private ContextInternal context;
 
-	public ContextImpl getContext() {
-		return context;
-	}
+  public VertxThread(Runnable target, String name, boolean worker, long maxExecTime, TimeUnit maxExecTimeUnit) {
+    super(target, name);
+    this.worker = worker;
+    this.maxExecTime = maxExecTime;
+    this.maxExecTimeUnit = maxExecTimeUnit;
+  }
 
-	void setContext(ContextImpl context) {
-		this.context = context;
-	}
+  /**
+   * @return the current context of this thread, this method must be called from the current thread
+   */
+  public ContextInternal context() {
+    return context;
+  }
 
-	public final void executeStart() {
-		execStart = System.nanoTime();
-	}
+  private void executeStart() {
+    if (context == null) {
+      execStart = System.nanoTime();
+    }
+  }
 
-	public final void executeEnd() {
-		execStart = 0;
-	}
+  private void executeEnd() {
+    if (context == null) {
+      execStart = 0;
+    }
+  }
 
-	public long startTime() {
-		return execStart;
-	}
+  public long startTime() {
+    return execStart;
+  }
 
-	public boolean isWorker() {
-		return worker;
-	}
+  public boolean isWorker() {
+    return worker;
+  }
 
-	public long maxExecTime() {
-		return maxExecTime;
-	}
+  @Override
+  public long maxExecTime() {
+    return maxExecTime;
+  }
 
-	public TimeUnit maxExecTimeUnit() {
-		return maxExecTimeUnit;
-	}
+  @Override
+  public TimeUnit maxExecTimeUnit() {
+    return maxExecTimeUnit;
+  }
+
+  /**
+   * Begin the emission of a context event.
+   * <p>
+   * This is a low level interface that should not be used, instead {@link ContextInternal#emit(Object, io.vertx.core.Handler)}
+   * shall be used.
+   *
+   * @param context the context on which the event is emitted on
+   * @return the current context that shall be restored
+   */
+  ContextInternal beginEmission(ContextInternal context) {
+    if (!ContextImpl.DISABLE_TIMINGS) {
+      executeStart();
+    }
+    ContextInternal prev = this.context;
+    this.context = context;
+    return prev;
+  }
+
+  /**
+   * End the emission of a context task.
+   * <p>
+   * This is a low level interface that should not be used, instead {@link ContextInternal#emit(Object, io.vertx.core.Handler)}
+   * shall be used.
+   *
+   * @param prev the previous context thread to restore, might be {@code null}
+   */
+  void endEmission(ContextInternal prev) {
+    // We don't unset the context after execution - this is done later when the context is closed via
+    // VertxThreadFactory
+    context = prev;
+    if (!ContextImpl.DISABLE_TIMINGS) {
+      executeEnd();
+    }
+  }
 }
