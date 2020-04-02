@@ -250,6 +250,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
             // 获取服务配置
             FluxService fluxService = AnnotatedElementUtils.findMergedAnnotation(clazz, FluxService.class);
 
+            // 如果没有接口则使用当前类发布服务
             if (fluxService != null) {
                 Class<?>[] classes = ClassUtils.getAllInterfacesForClass(clazz);
                 if (classes.length == 0) {

@@ -99,6 +99,12 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 
 		TypeElement interfaceClazz = (TypeElement) elem;
 		String className = interfaceClazz.getSimpleName().toString();
+		if (elem.getKind().isClass() && interfaceClazz.getInterfaces() != null) {
+			// Definition className with one interface
+			TypeElement de = (TypeElement) ((DeclaredType) interfaceClazz.getInterfaces().get(0)).asElement();
+			className = de.getSimpleName().toString();
+		}
+
 		TypeSpec.Builder classBuilder = TypeSpec.interfaceBuilder(className + ASYNC).addModifiers(Modifier.PUBLIC);
 
 		// add class generic type
@@ -114,8 +120,9 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 			addSuperClassMethods(interfaceClazz.getSuperclass(), classBuilder);
 		}
 
-		// is Interface or is class and has interfaces
+		// is class or Interface and has interfaces
 		else {
+
 			// add method form super interfaces
 			addSuperInterfaceMethods(interfaceClazz.getInterfaces(), classBuilder);
 		}
