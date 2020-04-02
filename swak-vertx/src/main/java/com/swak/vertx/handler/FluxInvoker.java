@@ -48,7 +48,7 @@ public interface FluxInvoker {
      */
     default CompletableFuture<Object> invoke(VertxProxy vertx, String address, Method method, Object[] args) {
 
-        // 获取方法缓存
+        // 获取方法缓存： bug 自动生成的异步接口会丢失接口注解
         MethodMeta meta = MethodCache.get(method);
 
         // 异步future

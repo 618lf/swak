@@ -1,17 +1,17 @@
 package com.swak.vertx.proxy;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+
 import com.swak.App;
 import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.exception.InvokeException;
 import com.swak.vertx.handler.FluxInvoker;
 import com.swak.vertx.transport.VertxProxy;
-import io.vertx.core.Future;
+
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 
 /**
  * 调用执行器 -- 适用JDK 的动态代理，也适用CGlib 的子类代理
@@ -21,101 +21,80 @@ import java.lang.reflect.Method;
  */
 public class FluxInvokerProxy implements InvocationHandler, MethodInterceptor, FluxInvoker {
 
-    private final VertxProxy vertx;
-    private final Class<?> type;
-    private final String address;
+	private final VertxProxy vertx;
+	private final Class<?> type;
+	private final String address;
 
-    /**
-     * 如果使用的非异步接口，则直接使用本地调用，会导致当前方法阻塞
-     */
-    private Object realService;
+	/**
+	 * 如果使用的非异步接口，则直接使用本地调用，会导致当前方法阻塞
+	 */
+	private Object realService;
 
-    /**
-     * 创建反应式执行的代理
-     *
-     * @param vertx vertx代理
-     * @param type  类型
-     */
-    public FluxInvokerProxy(VertxProxy vertx, Class<?> type) {
-        this.vertx = vertx;
-        this.type = type;
-        this.address = this.getAddress(type);
-        this.initMethods();
-    }
+	/**
+	 * 创建反应式执行的代理
+	 *
+	 * @param vertx vertx代理
+	 * @param type  类型
+	 */
+	public FluxInvokerProxy(VertxProxy vertx, Class<?> type) {
+		this.vertx = vertx;
+		this.type = type;
+		this.address = this.getAddress(type);
+		this.initMethods();
+	}
 
-    /**
-     * 缓存方法
-     */
-    private void initMethods() {
-        Method[] methods = type.getMethods();
-        for (Method method : methods) {
-            MethodCache.set(method);
-        }
-    }
+	/**
+	 * 缓存方法
+	 */
+	private void initMethods() {
+		Method[] methods = type.getMethods();
+		for (Method method : methods) {
+			MethodCache.set(method);
+		}
+	}
 
-    /**
-     * JDK 动态代理走此分支 -- 直接发起异步调用
-     */
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) {
-        return this.invoke(vertx, address, method, args);
-    }
+	/**
+	 * JDK 动态代理走此分支 -- 直接发起异步调用
+	 */
+	@Override
+	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		return this.filter(method, args, null);
+	}
 
-    /**
-     * CGLIB 代理走此分支
-     */
-    @Override
-    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        return this.filter(method, args, proxy);
-    }
+	/**
+	 * CGLIB 代理走此分支
+	 */
+	@Override
+	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+		return this.filter(method, args, proxy);
+	}
 
-    /**
-     * 本地的方法不进行远程调用
-     */
-    private Object filter(Method method, Object[] args, MethodProxy proxy) throws Throwable {
+	/**
+	 * 本地的方法不进行远程调用
+	 */
+	private Object filter(Method method, Object[] args, MethodProxy proxy) throws Throwable {
 
-        // 是否本地方法
-        if (this.isLocalMethod(method)) {
-            String toString = "toString";
-            if (toString.equals(method.getName())) {
-                return type.toString();
-            }
-            throw new InvokeException("can not invoke local method:" + method.getName());
-        }
+		// 方法元
+		MethodMeta meta = MethodCache.get(method);
 
-        // 非异步方法， 获取实现类来执行
-        if (!isAsyncMethod(method)) {
-            return proxy.invoke(realService, args);
-        }
+		// 是否本地方法
+		if (meta == null || meta.isLocal()) {
+			String toString = "toString";
+			if (toString.equals(method.getName())) {
+				return type.toString();
+			}
+			throw new InvokeException("can not invoke local method:" + method.getName());
+		}
 
-        // 发起异步调用
-        return this.invoke(vertx, address, method, args);
-    }
+		// 非异步方法， 获取实现类来执行
+		if (!meta.isAsync()) {
+			if (realService == null) {
+				realService = App.getBean(type);
+			}
+			return proxy == null ? method.invoke(realService, args) : proxy.invoke(realService, args);
+		}
 
-    /**
-     * 是否返回异步接口，只有异步接口的才能远程调用
-     */
-    private boolean isAsyncMethod(Method method) {
-
-        // 方法元
-        MethodMeta meta = MethodCache.get(method);
-
-        // 是否是异步接口
-        if (Future.class.isAssignableFrom(meta.getReturnType())) {
-            return true;
-        }
-
-        // 使用本地调用
-        if (realService == null) {
-            realService = App.getBean(type);
-        }
-        return false;
-    }
-
-    /**
-     * tostring, equals, hashCode, finalize
-     */
-    private boolean isLocalMethod(Method method) {
-        return method.getDeclaringClass().equals(Object.class);
-    }
+		// 发起异步调用
+		return this.invoke(vertx, address, method, args);
+	}
 }
