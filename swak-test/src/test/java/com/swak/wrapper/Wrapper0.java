@@ -1,97 +1,116 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
 package com.swak.wrapper;
 
-import com.swak.asm.ClassGenerator;
-import com.swak.asm.Wrapper;
-import com.swak.exception.NoSuchPropertyException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import com.swak.asm.ClassGenerator.Dc;
+import com.swak.asm.Wrapper;
+import com.swak.exception.NoSuchPropertyException;
+
 /**
- * 通过javasist 动态生成的类的实现；
+ * 通过 Wrapper 自动生成的代码： 需要注意的点： get，set，is，can，has开头的方式默认认为是属性的获取和填充。
+ * 不能使用get，is，can，has开头的方法但返回值是void的方法！
  * 
  * @author lifeng
+ * @date 2020年4月2日 上午11:24:58
  */
-@SuppressWarnings({ "rawtypes", "unchecked", "unused" })
-public class Wrapper0 extends Wrapper implements ClassGenerator.Dc {
+@SuppressWarnings({ "unused", "rawtypes", "unchecked" })
+public class Wrapper0 extends Wrapper implements Dc {
 	public static String[] pns;
-
 	public static Map pts;
-
 	public static String[] mns;
-
 	public static String[] dmns;
-
 	public static Class[] mts0;
-
 	public static Class[] mts1;
+	public static Class[] mts2;
+	public static Class[] mts3;
 
-	@Override
-    public String[] getPropertyNames() {
+	public String[] getPropertyNames() {
 		return pns;
 	}
 
-	@Override
-	public boolean hasProperty(String paramString) {
-		return pts.containsKey(paramString);
+	public boolean hasProperty(String var1) {
+		return pts.containsKey(var1);
 	}
 
-	@Override
-	public Class getPropertyType(String paramString) {
-		return (Class) pts.get(paramString);
+	public Class getPropertyType(String var1) {
+		return (Class) pts.get(var1);
 	}
 
-	@Override
 	public String[] getMethodNames() {
 		return mns;
 	}
 
-	@Override
 	public String[] getDeclaredMethodNames() {
 		return dmns;
 	}
 
-	@Override
-	public void setPropertyValue(Object paramObject1, String paramString, Object paramObject2) {
+	public void setPropertyValue(Object var1, String var2, Object var3) {
 		try {
-			OrderService orderService = (OrderService) paramObject1;
-		} catch (Throwable throwable) {
-			throw new IllegalArgumentException(throwable);
+			OrderService var4 = (OrderService) var1;
+		} catch (Throwable var6) {
+			throw new IllegalArgumentException(var6);
 		}
-		throw new NoSuchPropertyException("Not found property \"" + paramString
-				+ "\" filed or setter method in class com.swak.wrapper.OrderService.");
+
+		throw new NoSuchPropertyException(
+				"Not found property \"" + var2 + "\" filed or setter method in class com.swak.wrapper.OrderService.");
 	}
 
-	@Override
-	public Object getPropertyValue(Object paramObject, String paramString) {
+	public Object getPropertyValue(Object var1, String var2) {
+		OrderService var3;
 		try {
-			OrderService orderService = (OrderService) paramObject;
-		} catch (Throwable throwable) {
-			throw new IllegalArgumentException(throwable);
+			var3 = (OrderService) var1;
+		} catch (Throwable var5) {
+			throw new IllegalArgumentException(var5);
 		}
-		throw new NoSuchPropertyException("Not found property \"" + paramString
-				+ "\" filed or setter method in class com.swak.wrapper.OrderService.");
+
+		if (var2.equals("string")) {
+			return var3.getString();
+		} else if (var2.equals("void")) {
+			return var3.getVoid();
+		} else {
+			throw new NoSuchPropertyException("Not found property \"" + var2
+					+ "\" filed or setter method in class com.swak.wrapper.OrderService.");
+		}
 	}
 
-	@Override
-	public Object invokeMethod(Object paramObject, String paramString, Class[] paramArrayOfClass,
-							   Object[] paramArrayOfObject) throws InvocationTargetException {
-		OrderService orderService;
+	public Object invokeMethod(Object var1, String var2, Class[] var3, Object[] var4)
+			throws InvocationTargetException, NoSuchMethodException {
+		OrderService var5;
 		try {
-			orderService = (OrderService) paramObject;
-		} catch (Throwable throwable) {
-			throw new IllegalArgumentException(throwable);
+			var5 = (OrderService) var1;
+		} catch (Throwable var8) {
+			throw new IllegalArgumentException(var8);
 		}
+
 		try {
-			if (!"doSomething".equals(paramString) || paramArrayOfClass.length != 0) {
-				if (!"doSomething".equals(paramString) || paramArrayOfClass.length != 1
-						|| !paramArrayOfClass[0].getName().equals("java.lang.String"))
-					throw new NoSuchMethodException(
-							"Not found method \"" + paramString + "\" in class com.swak.wrapper.OrderService.");
-				return orderService.doSomething((String) paramArrayOfObject[0]);
+			if ("getString".equals(var2) && var3.length == 0) {
+				return var5.getString();
 			}
-			return orderService.doSomething();
-		} catch (Throwable throwable) {
-			throw new InvocationTargetException(throwable);
+
+			if ("getVoid".equals(var2) && var3.length == 0) {
+				return var5.getVoid();
+			}
+
+			if ("doSomething".equals(var2) && var3.length == 0) {
+				return var5.doSomething();
+			}
+
+			if ("doSomething".equals(var2) && var3.length == 1 && var3[0].getName().equals("java.lang.String")) {
+				return var5.doSomething((String) var4[0]);
+			}
+		} catch (Throwable var9) {
+			throw new InvocationTargetException(var9);
 		}
+
+		throw new NoSuchMethodException("Not found method \"" + var2 + "\" in class com.swak.wrapper.OrderService.");
+	}
+
+	public Wrapper0() {
 	}
 }
