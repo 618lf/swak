@@ -96,7 +96,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.sample.AppRunner</mainClass>
+                            <mainClass>com.tmt.AppRunner</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib</classpathPrefix>
                         </manifest>
