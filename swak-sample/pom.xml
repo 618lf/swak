@@ -7,7 +7,7 @@
         <artifactId>swak</artifactId>
         <version>1.0.0_final</version>
     </parent>
-    <artifactId>swak-sample-vertx</artifactId>
+    <artifactId>swak-sample</artifactId>
     <dependencies>
         <dependency>
             <groupId>com.swak</groupId>
