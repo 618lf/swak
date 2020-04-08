@@ -86,6 +86,9 @@
 							<goal>descriptor</goal>
 						</goals>
 						<phase>generate-resources</phase>
+						<configuration>
+							<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
