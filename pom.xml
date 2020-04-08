@@ -14,17 +14,13 @@
 		<module>swak-redis</module>
 		<module>swak-http</module>
 		<module>swak-actuator</module>
-		<module>swak-sample</module>
-		<module>swak-sample-rpc</module>
 		<module>swak-groovy</module>
 		<module>swak-motan</module>
-		<module>swak-sample-api</module>
 		<module>swak-vertx</module>
 		<module>swak-starter</module>
 		<module>swak-sample-vertx</module>
 		<module>swak-qrcode</module>
 		<module>swak-quartz</module>
-		<module>swak-package</module>
 		<module>swak-excel</module>
 		<module>swak-wechat</module>
 		<module>swak-fx</module>
@@ -106,6 +102,8 @@
         <maven-compiler-plugin>3.8.1</maven-compiler-plugin>
 		<maven-surefire-plugin>3.0.0-M4</maven-surefire-plugin>
 		<maven-source-plugin>3.2.0</maven-source-plugin>
+		<maven-assembly-plugin>3.2.0</maven-assembly-plugin>
+		<maven-jar-plugin>3.2.0</maven-jar-plugin>
 		<build-helper-maven-plugin>3.1.0</build-helper-maven-plugin>
 	</properties>
 	<repositories>
