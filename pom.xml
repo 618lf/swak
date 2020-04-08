@@ -18,7 +18,7 @@
 		<module>swak-motan</module>
 		<module>swak-vertx</module>
 		<module>swak-starter</module>
-		<module>swak-sample-vertx</module>
+		<module>swak-sample</module>
 		<module>swak-qrcode</module>
 		<module>swak-quartz</module>
 		<module>swak-excel</module>
