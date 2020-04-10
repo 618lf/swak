@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE xml>
-<template>
-	<name>dao</name>
-	<filePath>/${packageName}/${moduleName}/${subModuleName}/dao/</filePath>
-	<fileName>${tableName?lower_case}.Mapper.xml</fileName>
-	<templatePath>template/mapper.ftl</templatePath>
-</template>

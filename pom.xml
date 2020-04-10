@@ -25,7 +25,6 @@
 		<module>swak-wechat</module>
 		<module>swak-fx</module>
 		<module>swak-test</module>
-		<module>swak-gen</module>
 		<module>swak-app</module>
 		<module>swak-mq</module>
 		<module>swak-mqtt</module>
