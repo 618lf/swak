@@ -32,8 +32,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -54,6 +56,13 @@ public class TransactionAutoConfiguration {
 	public TransactionManagerCustomizers platformTransactionManagerCustomizers(
 			ObjectProvider<List<PlatformTransactionManagerCustomizer<?>>> customizers) {
 		return new TransactionManagerCustomizers(customizers.getIfAvailable());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnSingleCandidate(ReactiveTransactionManager.class)
+	public TransactionalOperator transactionalOperator(ReactiveTransactionManager transactionManager) {
+		return TransactionalOperator.create(transactionManager);
 	}
 
 	@Configuration
