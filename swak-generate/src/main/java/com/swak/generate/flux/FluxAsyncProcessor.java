@@ -1,24 +1,40 @@
 package com.swak.generate.flux;
 
-import com.squareup.javapoet.*;
-import com.swak.Constants;
-import com.swak.annotation.FluxAsync;
-
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.SourceVersion;
-import javax.lang.model.element.*;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.tools.Diagnostic;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.tools.Diagnostic;
+
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
+import com.swak.Constants;
+import com.swak.annotation.FluxAsync;
 
 /**
  * 自动身成异步处理的接口类 --- 目前不支持注解
@@ -105,7 +121,14 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 			addSuperClassMethods(interfaceClazz.getSuperclass(), classBuilder);
 		}
 
-		// is class or Interface and has interfaces
+		// is class and has interfaces
+		else if (elem.getKind().isClass()) {
+
+			// add method form super interfaces
+			addSuperInterfaceMethods(interfaceClazz.getInterfaces(), classBuilder);
+		}
+
+		// is interface
 		else {
 
 			// add direct method
