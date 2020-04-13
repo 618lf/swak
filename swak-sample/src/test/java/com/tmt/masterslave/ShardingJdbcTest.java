@@ -3,9 +3,9 @@ package com.tmt.masterslave;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.sample.api.entity.Goods;
+import com.sample.api.facade.GoodsServiceFacade;
 import com.tmt.AppRunnerTest;
-import com.tmt.api.entity.Goods;
-import com.tmt.api.facade.GoodsServiceFacade;
 
 /**
  * 使用 ShardingJdbc 测试读写分离

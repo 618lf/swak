@@ -68,8 +68,7 @@ public class ShardingJdbcConfiguration implements EnvironmentAware {
 	 * Get data source bean.
 	 * 
 	 * @return data source bean
-	 * @throws SQLException
-	 *             SQL exception
+	 * @throws SQLException SQL exception
 	 */
 	@Bean
 	public DataSource dataSource() throws SQLException {
@@ -122,6 +121,6 @@ public class ShardingJdbcConfiguration implements EnvironmentAware {
 		if (dataSourceProps != null) {
 			properties = Maps.toBean(dataSourceProps, properties);
 		}
-		return new HikariDataSourceAutoConfiguration(properties).hikariDataSource();
+		return new HikariDataSourceAutoConfiguration().hikariDataSource(properties);
 	}
 }

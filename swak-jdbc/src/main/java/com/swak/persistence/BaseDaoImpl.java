@@ -45,6 +45,22 @@ public class BaseDaoImpl<T, PK> implements BaseDao<T, PK> {
      */
     @Autowired
     private SqlSessionTemplate sessionTemplate;
+    
+    /**
+	 * 通过注解设置 sessionTemplate
+	 */
+	public BaseDaoImpl() {
+
+	}
+
+	/**
+	 * 支持通过构造的方式设置
+	 * 
+	 * @param sessionTemplate
+	 */
+	public BaseDaoImpl(SqlSessionTemplate sessionTemplate) {
+		this.sessionTemplate = sessionTemplate;
+	}
 
     /**
      * 默认的命名空间

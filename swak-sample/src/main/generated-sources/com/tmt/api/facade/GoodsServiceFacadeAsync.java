@@ -1,5 +1,6 @@
 package com.tmt.api.facade;
 
+import com.sample.api.facade.GoodsServiceFacade;
 import com.weibo.api.motan.rpc.ResponseFuture;
 
 public interface GoodsServiceFacadeAsync extends GoodsServiceFacade {

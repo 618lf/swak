@@ -50,6 +50,7 @@ public interface Constants {
 	String MONGO_PREFIX = "spring.mongo";
 	String EVENT_BUS_PREFIX = "spring.eventbus";
 	String RXTX_PREFIX = "spring.rxtx";
+	String AOP_PREFIX = "spring.aop";
 
 	/**
 	 * 保留ID

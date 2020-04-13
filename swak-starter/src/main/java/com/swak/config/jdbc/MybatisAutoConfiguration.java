@@ -43,7 +43,7 @@ import com.swak.persistence.dialect.H2Dialect;
 import com.swak.persistence.dialect.MySQLDialect;
 import com.swak.persistence.dialect.OracleDialect;
 import com.swak.persistence.dialect.SqlLiteDialect;
-import com.swak.persistence.mybatis.ExecutorInterceptor;
+import com.swak.persistence.mybatis.PagingInterceptor;
 import com.swak.utils.StringUtils;
 
 /**
@@ -60,20 +60,17 @@ import com.swak.utils.StringUtils;
 		HikariDataSourceAutoConfiguration.class })
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMybatis", matchIfMissing = true)
 public class MybatisAutoConfiguration {
-	private final DataSourceProperties dbProperties;
 	private final MybatisProperties properties;
 	private final Interceptor[] interceptors;
 	private final ResourceLoader resourceLoader;
 	private final DatabaseIdProvider databaseIdProvider;
 	private final List<ConfigurationCustomizer> configurationCustomizers;
 
-	public MybatisAutoConfiguration(MybatisProperties properties, DataSourceProperties dbProperties,
-			ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader,
-			ObjectProvider<DatabaseIdProvider> databaseIdProvider,
+	public MybatisAutoConfiguration(MybatisProperties properties, ObjectProvider<Interceptor[]> interceptorsProvider,
+			ResourceLoader resourceLoader, ObjectProvider<DatabaseIdProvider> databaseIdProvider,
 			ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider) {
 		APP_LOGGER.debug("Loading Mybatis");
 		this.properties = properties;
-		this.dbProperties = dbProperties;
 		this.interceptors = interceptorsProvider.getIfAvailable();
 		this.resourceLoader = resourceLoader;
 		this.databaseIdProvider = databaseIdProvider.getIfAvailable();
@@ -91,8 +88,8 @@ public class MybatisAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(Dialect.class)
-	public Dialect dbDialect() {
-		Database db = this.dbProperties.getDb();
+	public Dialect dbDialect(DataSourceProperties dbProperties) {
+		Database db = dbProperties.getDb();
 		if (db == Database.h2) {
 			return new H2Dialect();
 		} else if (db == Database.mysql) {
@@ -151,7 +148,7 @@ public class MybatisAutoConfiguration {
 	private void defaultConfiguration(Configuration configuration, Dialect dialect) {
 
 		// 默认的拦截器
-		ExecutorInterceptor interceptor = new ExecutorInterceptor();
+		PagingInterceptor interceptor = new PagingInterceptor();
 		interceptor.setDialect(dialect);
 		configuration.addInterceptor(interceptor);
 
