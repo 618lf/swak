@@ -6,7 +6,6 @@ import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.security.handler.Handler;
 import com.swak.vertx.security.realm.Realm;
-import com.swak.vertx.security.realm.SimpleRealm;
 
 /**
  * 安全的配置项目
@@ -15,8 +14,8 @@ import com.swak.vertx.security.realm.SimpleRealm;
  */
 public class SecurityConfigurationSupport {
 
+	private Realm realm;
 	private Map<String, Handler> handlers;
-	private Realm realm = new SimpleRealm();
 	private Map<String, String> definitions;
 
 	public Map<String, Handler> getHandlers() {
