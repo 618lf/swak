@@ -47,9 +47,10 @@ import com.swak.persistence.mybatis.PagingInterceptor;
 import com.swak.utils.StringUtils;
 
 /**
- * Mybatis
+ * Mybatis的自动配置
  * 
  * @author lifeng
+ * @date 2020年4月15日 下午9:05:30
  */
 @org.springframework.context.annotation.Configuration
 @ConditionalOnClass({ SqlSessionFactory.class, SqlSessionFactoryBean.class })
