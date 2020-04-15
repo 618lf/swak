@@ -196,28 +196,41 @@ public class MybatisProperties {
 			// 解析自动扫描的类
 			Set<String> mapperLocations = this.parseAutoMapperScanPackages();
 			for (String mapperLocation : mapperLocations) {
-				_mapperLocations.add(
-						StringUtils.format("classpath*:%s/**/*.Mapper.xml", mapperLocation.replaceAll("\\.", "/")));
+				_mapperLocations.add(this.parseMapperLocation(mapperLocation));
 			}
 
 			// 自定义的配置
 			if (this.mapperLocations != null) {
 				for (String mapperLocation : this.mapperLocations) {
-					_mapperLocations.add(
-							StringUtils.format("classpath*:%s/**/*.Mapper.xml", mapperLocation.replaceAll("\\.", "/")));
+					_mapperLocations.add(this.parseMapperLocation(mapperLocation));
 				}
 			}
 
 			// 基础配置
-			mapperLocations.add("classpath*:com/swak/persistence/config/*.Mapper.xml");
-
-			// 返回需要扫描的地址
-			_mapperLocations = mapperLocations;
+			_mapperLocations.add(MAPPER_XML_REGEXS[2]);
 		}
 		return _mapperLocations;
 	}
 
-	// 解析出需要扫码的目录
+	/**
+	 * 如果指定了扫码的dao包，则使用第一条规则转换<br>
+	 * 如果没有指定扫描的dao包，则使用第二条规则转换<br>
+	 * 
+	 * @param source 目标文件路径
+	 * @return 转化之后的路径
+	 */
+	private String parseMapperLocation(String source) {
+		if (StringUtils.endsWith(source, ".dao")) {
+			return StringUtils.format(MAPPER_XML_REGEXS[0], source.replaceAll("\\.", "/"));
+		}
+		return StringUtils.format(MAPPER_XML_REGEXS[1], source.replaceAll("\\.", "/"));
+	}
+
+	/**
+	 * 解析出需要扫码的包
+	 * 
+	 * @return 所有自动扫码的包
+	 */
 	public Set<String> parseAutoMapperScanPackages() {
 		Set<String> mappings = Sets.newHashSet();
 		Set<String> sources = Application.getScanPackages();
@@ -226,11 +239,15 @@ public class MybatisProperties {
 				if (StringUtils.isBlank(source)) {
 					continue;
 				}
-				// mappings.add(StringUtils.format("classpath*:%s/**/dao/*.Mapper.xml",
-				// source.replaceAll("\\.", "/")));
-				mappings.add(source + ".dao");
+				mappings.add(source);
 			}
 		}
 		return mappings;
 	}
+
+	/**
+	 * 目的是让 Mapper 文件的查找规则在 dao 目录下
+	 */
+	private static String[] MAPPER_XML_REGEXS = new String[] { "classpath*:%s/**/*.Mapper.xml",
+			"classpath*:%s/**/dao/*.Mapper.xml", "classpath*:com/swak/persistence/config/*.Mapper.xml" };
 }
