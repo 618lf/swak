@@ -15,20 +15,22 @@ import io.vertx.core.http.HttpServerResponse;
  */
 public class StringHttpMessageConverter implements HttpMessageConverter {
 
-    @Override
-    public boolean canWrite(Class<?> clazz) {
-        return String.class == clazz;
-    }
+	@Override
+	public boolean canWrite(Class<?> clazz) {
+		return String.class == clazz;
+	}
 
-    @Override
-    public void write(Object t, HttpServerResponse response) {
-        String content = (String) t;
-        if (content != null && StringUtils.startsWith(content, Constants.REDIRECT_URL_PREFIX)) {
-            String payload = StringUtils.substringAfter(content, Constants.REDIRECT_URL_PREFIX);
-            response.putHeader(HttpHeaders.LOCATION, payload).setStatusCode(302).end("Redirecting to " + payload + ".");
-            return;
-        }
-        response.putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
-        response.end(content);
-    }
+	@Override
+	public void write(Object t, HttpServerResponse response) {
+		String content = (String) t;
+		if (content != null && StringUtils.startsWith(content, Constants.REDIRECT_URL_PREFIX)) {
+			String payload = StringUtils.substringAfter(content, Constants.REDIRECT_URL_PREFIX);
+			response.putHeader(HttpHeaders.LOCATION, payload).setStatusCode(302).end("Redirecting to " + payload + ".");
+			return;
+		}
+		if (!response.headers().contains(HttpHeaderNames.CONTENT_TYPE)) {
+			response.putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
+		}
+		response.end(content);
+	}
 }
