@@ -2,6 +2,7 @@ package com.swak.config.vertx;
 
 import java.util.Map;
 
+import com.swak.security.JWTAuthOptions;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.security.handler.Handler;
@@ -17,6 +18,7 @@ public class SecurityConfigurationSupport {
 	private Realm realm;
 	private Map<String, Handler> handlers;
 	private Map<String, String> definitions;
+	private JWTAuthOptions jwtAuthOptions;
 
 	public Map<String, Handler> getHandlers() {
 		return handlers;
@@ -28,6 +30,21 @@ public class SecurityConfigurationSupport {
 
 	public Map<String, String> getDefinitions() {
 		return definitions;
+	}
+
+	public JWTAuthOptions getJwtAuthOptions() {
+		return jwtAuthOptions;
+	}
+
+	/**
+	 * 设置JWt授权的配置信息
+	 * 
+	 * @param jwtAuthOptions
+	 * @return
+	 */
+	public SecurityConfigurationSupport setJwtAuthOptions(JWTAuthOptions jwtAuthOptions) {
+		this.jwtAuthOptions = jwtAuthOptions;
+		return this;
 	}
 
 	/**

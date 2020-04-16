@@ -52,7 +52,7 @@ public class SecurityAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(PrincipalStrategy.class)
 	public PrincipalStrategy principalStrategy(HttpServerProperties properties) {
-		JwtAuthProvider jwt = new JwtAuthProvider(properties.getKeyStorePath(), properties.getKeyStorePass(), properties.getJwtTokenName());
+		JwtAuthProvider jwt = new JwtAuthProvider(properties.getKeyStorePath(), properties.getKeyStorePass());
 		return new TokenPrincipalStrategy(jwt);
 	}
 
