@@ -24,7 +24,7 @@ public class TokenExpireTest {
 		// src/test/resources 下的keystore.jceks
 		pw = "123456";
 
-		JwtAuthProvider jwt = new JwtAuthProvider(null, pw);
+		JwtAuthProvider jwt = new JwtAuthProvider(null, pw, "HS512");
 		jwt.setExpiresInSeconds(30);
 		JWTPayload payload = new JWTPayload();
 		payload.put("id", "1");

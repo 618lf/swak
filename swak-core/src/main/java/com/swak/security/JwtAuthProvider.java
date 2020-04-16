@@ -96,7 +96,7 @@ public class JwtAuthProvider {
 	 * @param keyStorePath
 	 * @param keyStorePass
 	 */
-	public JwtAuthProvider(String keyStorePath, String keyStorePass) {
+	public JwtAuthProvider(String keyStorePath, String keyStorePass, String keyStoreAlgorithm) {
 		try {
 			KeyStore keyStore = this.loadKeyStore("jceks", keyStorePath, keyStorePass);
 
@@ -106,7 +106,7 @@ public class JwtAuthProvider {
 		}
 
 		// 默认的配置
-		options = new JWTOptions();
+		options = new JWTOptions().setAlgorithm(keyStoreAlgorithm);
 	}
 
 	private synchronized KeyStore loadKeyStore(String type, String path, String pass)

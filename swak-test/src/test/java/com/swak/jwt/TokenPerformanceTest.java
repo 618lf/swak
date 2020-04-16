@@ -12,7 +12,7 @@ import com.swak.test.utils.MultiThreadTest;
 public class TokenPerformanceTest {
 
 	public static void main(String[] args) {
-		JwtAuthProvider jwt = new JwtAuthProvider(null, "13599794-749a-4290-852a-96f0d44613af");
+		JwtAuthProvider jwt = new JwtAuthProvider(null, "13599794-749a-4290-852a-96f0d44613af", "HS512");
 		JWTPayload payload = new JWTPayload();
 		payload.put("id", "1");
 		payload.put("name", "李锋");

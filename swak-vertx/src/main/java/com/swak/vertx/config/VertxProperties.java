@@ -1,14 +1,16 @@
 package com.swak.vertx.config;
 
+import java.util.Map;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import com.swak.Constants;
 import com.swak.reactivex.transport.TransportProperties;
 import com.swak.utils.Maps;
+
 import io.netty.handler.logging.LogLevel;
 import io.netty.util.ResourceLeakDetector.Level;
 import io.vertx.core.VertxOptions;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.util.Map;
 
 /**
  * Vertx 的属性配置
@@ -68,10 +70,11 @@ public class VertxProperties extends TransportProperties {
 	private int retryMaxTimes = 5;
 
 	/**
-	 * jwt的加解密
+	 * 基于配置
 	 */
 	private String keyStorePath;
 	private String keyStorePass = "secret";
+	private String keyStoreAlgorithm = "HS256";
 	private String jwtTokenName = Constants.TOKEN_NAME;
 
 	public LogLevel getServerLogLevel() {
@@ -272,5 +275,13 @@ public class VertxProperties extends TransportProperties {
 
 	public void setInternalBlockingThreads(int internalBlockingThreads) {
 		this.internalBlockingThreads = internalBlockingThreads;
+	}
+
+	public String getKeyStoreAlgorithm() {
+		return keyStoreAlgorithm;
+	}
+
+	public void setKeyStoreAlgorithm(String keyStoreAlgorithm) {
+		this.keyStoreAlgorithm = keyStoreAlgorithm;
 	}
 }

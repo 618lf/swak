@@ -58,7 +58,7 @@ public class SecurityAutoConfiguration {
 		}
 
 		// 默认的配置方式
-		return new JwtAuthProvider(properties.getKeyStorePath(), properties.getKeyStorePass());
+		return new JwtAuthProvider(properties.getKeyStorePath(), properties.getKeyStorePass(), properties.getKeyStoreAlgorithm());
 	}
 
 	/**

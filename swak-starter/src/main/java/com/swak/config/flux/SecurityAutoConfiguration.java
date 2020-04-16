@@ -29,6 +29,7 @@ import com.swak.security.JwtAuthProvider;
 
 /**
  * 安全配置
+ * 
  * @author lifeng
  */
 @Configuration
@@ -43,7 +44,7 @@ public class SecurityAutoConfiguration {
 	public SecurityAutoConfiguration() {
 		APP_LOGGER.debug("Loading Security Filter");
 	}
-	
+
 	/**
 	 * 默认的 身份管理策略 项目中可以覆盖， 统一使用默认的
 	 * 
@@ -52,7 +53,7 @@ public class SecurityAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(PrincipalStrategy.class)
 	public PrincipalStrategy principalStrategy(HttpServerProperties properties) {
-		JwtAuthProvider jwt = new JwtAuthProvider(properties.getKeyStorePath(), properties.getKeyStorePass());
+		JwtAuthProvider jwt = new JwtAuthProvider(properties.getKeyStorePath(), properties.getKeyStorePass(), null);
 		return new TokenPrincipalStrategy(jwt);
 	}
 
