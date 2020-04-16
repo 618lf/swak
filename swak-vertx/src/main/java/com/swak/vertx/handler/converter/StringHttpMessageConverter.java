@@ -22,13 +22,19 @@ public class StringHttpMessageConverter implements HttpMessageConverter {
 
 	@Override
 	public void write(Object content, HttpServerResponse response) {
+
+		// 支持String的重定向
 		String _content = (String) content;
 		if (_content != null && StringUtils.startsWith(_content, Constants.REDIRECT_URL_PREFIX)) {
 			String payload = StringUtils.substringAfter(_content, Constants.REDIRECT_URL_PREFIX);
 			response.putHeader(HttpHeaders.LOCATION, payload).setStatusCode(302).end("Redirecting to " + payload + ".");
 			return;
 		}
-		response.putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
+
+		// 支持spring的自定义输出类型
+		if (!response.headers().contains(HttpHeaderNames.CONTENT_TYPE)) {
+			response.putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_TEXT);
+		}
 		response.end((String) content);
 	}
 }
