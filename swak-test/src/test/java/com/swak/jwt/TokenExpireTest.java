@@ -22,7 +22,7 @@ public class TokenExpireTest {
 		String pw = "secret";
 
 		// src/test/resources 下的keystore.jceks
-		pw = "13599794-749a-4290-852a-96f0d44613af";
+		pw = "123456";
 
 		JwtAuthProvider jwt = new JwtAuthProvider(null, pw);
 		jwt.setExpiresInSeconds(30);
