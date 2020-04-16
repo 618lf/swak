@@ -16,9 +16,9 @@ public class JWTOptions {
 	private int leeway = 0;
 	private boolean ignoreExpiration = true;
 	/**
-	 * 这个是默认的配置，默认使用：HS512
+	 * 这个是默认的配置，默认使用：HS256
 	 */
-	private String algorithm = "HS512";
+	private String algorithm = "HS256";
 	private JWTHeader header = EMPTY;
 	private boolean noTimestamp = true;
 	private int expiresInSeconds;
