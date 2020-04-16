@@ -66,6 +66,7 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 		// 绑定当前请求
 		context.put(Constants.SUBJECT_NAME, subject);
 
+		// 异步结果
 		return CompletableFuture.completedFuture(subject);
 	}
 
