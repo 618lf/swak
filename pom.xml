@@ -108,11 +108,6 @@
 	</properties>
 	<repositories>
 		<repository>
-			<id>oschina-repos</id>
-			<name>Oschina Releases</name>
-			<url>http://maven.oschina.net/content/groups/public</url>
-		</repository>
-		<repository>
 			<id>aliyun-repos</id>
 			<name>Nexus aliyun</name>
 			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
