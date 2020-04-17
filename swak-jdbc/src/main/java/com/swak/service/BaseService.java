@@ -21,8 +21,11 @@ import com.swak.persistence.BaseDao;
 import com.swak.persistence.QueryCondition;
 
 /**
- * @author TMT 封装了公用操作数据的，但查询的只能在子类内部使用
- *         目的是不让子类外部直接传入sql就可以查询，应在子类内部实现一个sql的方法，在方法中 调用基础的方式来查询数据
+ * 封装了公用操作数据的，但查询的只能在子类内部使用 目的是不让子类外部直接传入sql就可以查询，应在子类内部实现一个sql的方法，在方法中
+ * 调用基础的方式来查询数据
+ * 
+ * @author lifeng
+ * @date 2020年4月17日 下午5:02:58
  */
 public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializable> {
 
@@ -149,6 +152,16 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	public boolean exists(PK id) {
 		return this.getBaseDao().exists(id);
 	}
+	
+	/**
+	 * 删除数据
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public int delete(T entity) {
+		return getBaseDao().delete(entity);
+	}
 
 	/**
 	 * 锁住记录，一定要传递条件， 事务结束后才会释放
@@ -188,16 +201,6 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	protected int updateVersion(T entity) {
 		this.getBaseDao().compareVersion(entity);
 		return getBaseDao().update(entity);
-	}
-
-	/**
-	 * 删除数据
-	 * 
-	 * @param entity
-	 * @return
-	 */
-	protected int delete(T entity) {
-		return getBaseDao().delete(entity);
 	}
 
 	/**
