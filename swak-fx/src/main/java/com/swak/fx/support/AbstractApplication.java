@@ -163,7 +163,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 			Display.getStage().setScene(Display.getScene());
 			this.customStage(Display.getStage(), Display.getSystemTray());
 			page.whenInited().thenAcceptAsync(v -> {
-				this.postInitialized();
+				this.postInitialized(page);
 				mainViewInited.complete(() -> {
 					Display.getStage().show();
 				});
@@ -179,7 +179,8 @@ public abstract class AbstractApplication extends Application implements EventLi
 	/**
 	 * 所有初始化之后
 	 */
-	protected void postInitialized() {
+	protected void postInitialized(AbstractPage mainPage) {
+		Display.getStage().setOnShown(event -> mainPage.onReady());
 	}
 
 	/**
