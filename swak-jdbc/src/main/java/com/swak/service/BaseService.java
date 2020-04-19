@@ -92,15 +92,6 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	}
 
 	/**
-	 * 获取所有值
-	 * 
-	 * @return
-	 */
-	public List<T> getAll() {
-		return getBaseDao().getAll();
-	}
-
-	/**
 	 * 按条件查询
 	 * 
 	 * @param qc
@@ -152,7 +143,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	public boolean exists(PK id) {
 		return this.getBaseDao().exists(id);
 	}
-	
+
 	/**
 	 * 删除数据
 	 * 
@@ -161,6 +152,25 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 */
 	public int delete(T entity) {
 		return getBaseDao().delete(entity);
+	}
+
+	/**
+	 * 批量删除
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public void batchDelete(List<T> entities) {
+		this.getBaseDao().batchDelete(entities);
+	}
+
+	/**
+	 * 获取所有值
+	 * 
+	 * @return
+	 */
+	protected List<T> getAll() {
+		return getBaseDao().getAll();
 	}
 
 	/**
@@ -231,16 +241,6 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 */
 	protected void batchInsert(List<T> entities) {
 		this.getBaseDao().batchInsert(entities);
-	}
-
-	/**
-	 * 批量删除
-	 * 
-	 * @param entity
-	 * @return
-	 */
-	protected void batchDelete(List<T> entities) {
-		this.getBaseDao().batchDelete(entities);
 	}
 
 	/**
