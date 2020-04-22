@@ -54,36 +54,27 @@ public class MapperProxy<T, PK> extends BaseDaoImpl<T, PK> implements Invocation
 				return me.get((PK) args[0]);
 			}
 
-			if ("update".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
-					&& args[1].getClass().getName().equals("java.lang.Object")) {
+			if ("update".equals(methodName) && args.length == 2) {
 				return new Integer(me.update((String) args[0], (T) args[1]));
 			}
 
-			if ("update".equals(methodName) && args.length == 1
-					&& args[0].getClass().getName().equals("java.lang.Object")) {
+			if ("update".equals(methodName) && args.length == 1) {
 				return new Integer(me.update((T) args[0]));
 			}
 
-			if ("delete".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
-					&& args[1].getClass().getName().equals("java.lang.Object")) {
+			if ("delete".equals(methodName) && args.length == 2) {
 				return new Integer(me.delete((String) args[0], (T) args[1]));
 			}
 
-			if ("delete".equals(methodName) && args.length == 1
-					&& args[0].getClass().getName().equals("java.lang.Object")) {
+			if ("delete".equals(methodName) && args.length == 1) {
 				return new Integer(me.delete((T) args[0]));
 			}
 
-			if ("insert".equals(methodName) && args.length == 1
-					&& args[0].getClass().getName().equals("java.lang.Object")) {
+			if ("insert".equals(methodName) && args.length == 1) {
 				return me.insert((T) args[0]);
 			}
 
-			if ("insert".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
-					&& args[1].getClass().getName().equals("java.lang.Object")) {
+			if ("insert".equals(methodName) && args.length == 2) {
 				return me.insert((String) args[0], (T) args[1]);
 			}
 
@@ -97,42 +88,30 @@ public class MapperProxy<T, PK> extends BaseDaoImpl<T, PK> implements Invocation
 			}
 
 			if ("queryForLimitList".equals(methodName) && args.length == 3
-					&& args[0].getClass().getName().equals("java.lang.String")
-					&& args[1].getClass().getName().equals("java.lang.Object")
-					&& args[2].getClass().getName().equals("int")) {
-				return me.queryForLimitList((String) args[0], (Object) args[1], ((Number) args[2]).intValue());
-			}
-
-			if ("queryForLimitList".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("com.swak.persistence.QueryCondition")
-					&& args[1].getClass().getName().equals("int")) {
-				return me.queryForLimitList((QueryCondition) args[0], ((Number) args[1]).intValue());
-			}
-
-			if ("queryForLimitList".equals(methodName) && args.length == 3
-					&& args[0].getClass().getName().equals("java.lang.String")
-					&& args[1].getClass().getName().equals("java.util.Map")
-					&& args[2].getClass().getName().equals("int")) {
+					&& args[1].getClass().getName().equals("java.util.Map")) {
 				return me.queryForLimitList((String) args[0], (Map<String, ?>) args[1], ((Number) args[2]).intValue());
 			}
 
 			if ("queryForLimitList".equals(methodName) && args.length == 3
-					&& args[0].getClass().getName().equals("java.lang.String")
-					&& args[1].getClass().getName().equals("com.swak.persistence.QueryCondition")
-					&& args[2].getClass().getName().equals("int")) {
+					&& args[1].getClass().getName().equals("com.swak.persistence.QueryCondition")) {
 				return me.queryForLimitList((String) args[0], (QueryCondition) args[1], ((Number) args[2]).intValue());
 			}
 
-			if ("queryForGenericsList".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
-					&& args[1].getClass().getName().equals("java.lang.Object")) {
-				return me.queryForGenericsList((String) args[0], (Object) args[1]);
+			if ("queryForLimitList".equals(methodName) && args.length == 3) {
+				return me.queryForLimitList((String) args[0], (Object) args[1], ((Number) args[2]).intValue());
+			}
+
+			if ("queryForLimitList".equals(methodName) && args.length == 2) {
+				return me.queryForLimitList((QueryCondition) args[0], ((Number) args[1]).intValue());
 			}
 
 			if ("queryForGenericsList".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
 					&& args[1].getClass().getName().equals("java.util.Map")) {
 				return me.queryForGenericsList((String) args[0], (Map<String, ?>) args[1]);
+			}
+
+			if ("queryForGenericsList".equals(methodName) && args.length == 2) {
+				return me.queryForGenericsList((String) args[0], (Object) args[1]);
 			}
 
 			if ("queryForMapPageList".equals(methodName) && args.length == 3) {
@@ -143,40 +122,32 @@ public class MapperProxy<T, PK> extends BaseDaoImpl<T, PK> implements Invocation
 				return me.getAll();
 			}
 
-			if ("batchInsert".equals(methodName) && args.length == 1
-					&& args[0].getClass().getName().equals("java.util.List")) {
+			if ("batchInsert".equals(methodName) && args.length == 1) {
 				me.batchInsert((List<T>) args[0]);
 				return null;
 			}
 
-			if ("batchInsert".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
-					&& args[1].getClass().getName().equals("java.util.List")) {
+			if ("batchInsert".equals(methodName) && args.length == 2) {
 				me.batchInsert((String) args[0], (List<T>) args[1]);
 				return null;
 			}
 
-			if ("countByCondition".equals(methodName) && args.length == 1
-					&& args[0].getClass().getName().equals("com.swak.persistence.QueryCondition")) {
+			if ("countByCondition".equals(methodName) && args.length == 1) {
 				return me.countByCondition((QueryCondition) args[0]);
 			}
 
 			if ("countByCondition".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
-					&& args[1].getClass().getName().equals("java.lang.Object")) {
-				return me.countByCondition((String) args[0], (Object) args[1]);
-			}
-
-			if ("countByCondition".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
 					&& args[1].getClass().getName().equals("com.swak.persistence.QueryCondition")) {
 				return me.countByCondition((String) args[0], (QueryCondition) args[1]);
 			}
 
 			if ("countByCondition".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
 					&& args[1].getClass().getName().equals("java.util.Map")) {
 				return me.countByCondition((String) args[0], (Map<String, ?>) args[1]);
+			}
+
+			if ("countByCondition".equals(methodName) && args.length == 2) {
+				return me.countByCondition((String) args[0], (Object) args[1]);
 			}
 
 			if ("queryByCondition".equals(methodName) && args.length == 1) {
@@ -184,25 +155,20 @@ public class MapperProxy<T, PK> extends BaseDaoImpl<T, PK> implements Invocation
 			}
 
 			if ("queryForList".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
 					&& args[1].getClass().getName().equals("java.util.Map")) {
 				return me.queryForList((String) args[0], (Map<String, ?>) args[1]);
 			}
 
 			if ("queryForList".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
 					&& args[1].getClass().getName().equals("com.swak.persistence.QueryCondition")) {
 				return me.queryForList((String) args[0], (QueryCondition) args[1]);
 			}
 
-			if ("queryForList".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
-					&& args[1].getClass().getName().equals("java.lang.Object")) {
+			if ("queryForList".equals(methodName) && args.length == 2) {
 				return me.queryForList((String) args[0], (Object) args[1]);
 			}
 
-			if ("queryForList".equals(methodName) && args.length == 1
-					&& args[0].getClass().getName().equals("java.lang.String")) {
+			if ("queryForList".equals(methodName) && args.length == 1) {
 				return me.queryForList((String) args[0]);
 			}
 
@@ -225,15 +191,12 @@ public class MapperProxy<T, PK> extends BaseDaoImpl<T, PK> implements Invocation
 			}
 
 			if ("queryForObject".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
-					&& args[1].getClass().getName().equals("java.lang.Object")) {
-				return me.queryForObject((String) args[0], (Object) args[1]);
-			}
-
-			if ("queryForObject".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
 					&& args[1].getClass().getName().equals("java.util.Map")) {
 				return me.queryForObject((String) args[0], (Map<String, ?>) args[1]);
+			}
+
+			if ("queryForObject".equals(methodName) && args.length == 2) {
+				return me.queryForObject((String) args[0], (Object) args[1]);
 			}
 
 			if ("queryForAttr".equals(methodName) && args.length == 2) {
@@ -245,27 +208,23 @@ public class MapperProxy<T, PK> extends BaseDaoImpl<T, PK> implements Invocation
 			}
 
 			if ("queryForPageList".equals(methodName) && args.length == 3
-					&& args[0].getClass().getName().equals("java.lang.String")
 					&& args[1].getClass().getName().equals("com.swak.persistence.QueryCondition")
 					&& args[2].getClass().getName().equals("com.swak.entity.Parameters")) {
 				return me.queryForPageList((String) args[0], (QueryCondition) args[1], (Parameters) args[2]);
 			}
 
 			if ("queryForPageList".equals(methodName) && args.length == 3
-					&& args[0].getClass().getName().equals("java.lang.String")
 					&& args[1].getClass().getName().equals("java.util.Map")
 					&& args[2].getClass().getName().equals("com.swak.entity.Parameters")) {
 				return me.queryForPageList((String) args[0], (Map<String, ?>) args[1], (Parameters) args[2]);
 			}
 
-			if ("batchUpdate".equals(methodName) && args.length == 1
-					&& args[0].getClass().getName().equals("java.util.List")) {
+			if ("batchUpdate".equals(methodName) && args.length == 1) {
 				me.batchUpdate((List<T>) args[0]);
 				return null;
 			}
 
 			if ("batchUpdate".equals(methodName) && args.length == 2
-					&& args[0].getClass().getName().equals("java.lang.String")
 					&& args[1].getClass().getName().equals("java.util.List")) {
 				me.batchUpdate((String) args[0], (List<T>) args[1]);
 				return null;
