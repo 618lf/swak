@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.MethodMeta;
-import com.swak.method.classes.OrderService;
+import com.swak.method.classess.OrderService;
 
 public class ClassMethodTest {
 
