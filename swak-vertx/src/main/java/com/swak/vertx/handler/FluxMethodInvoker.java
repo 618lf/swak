@@ -2,8 +2,6 @@ package com.swak.vertx.handler;
 
 import java.lang.reflect.Method;
 
-import com.swak.asm.MethodCache;
-import com.swak.asm.MethodCache.ClassMeta;
 import com.swak.entity.Model;
 import com.swak.entity.Result;
 import com.swak.vertx.transport.VertxProxy;
@@ -20,15 +18,11 @@ public class FluxMethodInvoker extends MethodInvoker implements FluxInvoker {
 
 	private final VertxProxy vertx;
 	private final String address;
-	private final Method method;
-	private final ClassMeta classMeta;
 
 	public FluxMethodInvoker(VertxProxy vertx, Object bean, Method method) {
 		super(bean, method);
-		this.method = method;
 		this.vertx = vertx;
 		this.address = this.getAddress(bean);
-		this.classMeta = MethodCache.set(bean.getClass());
 	}
 
 	/**
@@ -52,7 +46,7 @@ public class FluxMethodInvoker extends MethodInvoker implements FluxInvoker {
 	 */
 	@Override
 	public Object doInvoke(Object[] args) {
-		return this.invoke(vertx, address, classMeta.lookup(method), args).thenApply(this::wrapResult);
+		return this.invoke(vertx, address, methodMeta, args).thenApply(this::wrapResult);
 	}
 
 	/**
