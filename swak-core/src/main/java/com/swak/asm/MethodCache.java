@@ -14,7 +14,6 @@ import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ClassUtils;
 
 import com.swak.Constants;
 import com.swak.annotation.FluxService;
@@ -49,8 +48,7 @@ public class MethodCache {
 	 * @author lifeng
 	 * @date 2020/3/28 17:33
 	 */
-	public static ClassMeta set(Class<?> c) {
-		Class<?> type = ClassUtils.getUserClass(c);
+	public static ClassMeta set(Class<?> type) {
 		CACHES.computeIfAbsent(type, (key) -> {
 			return new ClassMeta(type);
 		});
@@ -65,8 +63,7 @@ public class MethodCache {
 	 * @author lifeng
 	 * @date 2020/3/28 17:35
 	 */
-	public static ClassMeta get(Class<?> c) {
-		Class<?> type = ClassUtils.getUserClass(c);
+	public static ClassMeta get(Class<?> type) {
 		return CACHES.get(type);
 	}
 
