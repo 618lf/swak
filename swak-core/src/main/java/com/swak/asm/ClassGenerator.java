@@ -16,6 +16,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.swak.utils.ReflectUtils;
 
 import javassist.CannotCompileException;
@@ -45,6 +48,8 @@ public class ClassGenerator {
 	 */
 	public interface Dc {
 	}
+
+	private static Logger logger = LoggerFactory.getLogger(ClassGenerator.class);
 
 	private static final AtomicLong CLASS_NAME_COUNTER = new AtomicLong(0);
 
@@ -305,7 +310,9 @@ public class ClassGenerator {
 					}
 				}
 			}
-			 debugWriteFile();
+			if (logger.isDebugEnabled()) {
+				debugWriteFile();
+			}
 			return mCtc.toClass(loader, pd);
 		} catch (NotFoundException | CannotCompileException e) {
 			throw new RuntimeException(e.getMessage(), e);
@@ -314,9 +321,9 @@ public class ClassGenerator {
 
 	private void debugWriteFile() {
 		try {
-			mCtc.debugWriteFile("E://Qiao2.class");
+			File file = new File("D:\\swak_gen\\" + mClassName + ".class");
 			byte[] byteArr = mCtc.toBytecode();
-			FileOutputStream fos = new FileOutputStream(new File("E://Qiao.class"));
+			FileOutputStream fos = new FileOutputStream(file);
 			fos.write(byteArr);
 			fos.close();
 		} catch (IOException | CannotCompileException e) {

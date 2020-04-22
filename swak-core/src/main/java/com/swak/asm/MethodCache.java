@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import com.swak.Constants;
 import com.swak.annotation.FluxService;
+import com.swak.annotation.RestApi;
+import com.swak.annotation.RestPage;
 import com.swak.annotation.TimeOut;
 import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.Maps;
@@ -95,8 +97,9 @@ public class MethodCache {
 			// 级联处理元数据
 			this.cascadeBuildIn(metas, type, null);
 
-			// 如果是接口则会通过 Method找 Meta
-			if (type.isInterface()) {
+			// 如果是接口或者Api则会通过 Method找 Meta
+			if (type.isInterface() || type.getAnnotation(RestApi.class) != null
+					|| type.getAnnotation(RestPage.class) != null) {
 				this.methodIndex = Maps.newHashMap();
 				for (MethodMeta meta : metas) {
 					this.methodIndex.put(meta.getMethod(), meta);
@@ -109,7 +112,7 @@ public class MethodCache {
 					this.namedIndex.put(meta.getMethodDesc(), meta);
 				}
 			}
-			// 服务或Rest或者其他的类
+			// 服务并Api或者其他的类
 			else {
 				this.methodIndex = Maps.newHashMap();
 				this.namedIndex = Maps.newHashMap();
@@ -265,8 +268,11 @@ public class MethodCache {
 		 * @param signature 方法签名
 		 * @return MethodMeta
 		 */
-		public MethodMeta lookup(String signature) {
-			return namedIndex.get(signature);
+		public MethodMeta lookup(String named) {
+			if (!namedIndex.containsKey(named)) {
+				throw new BaseRuntimeException("Please Set Method Public.");
+			}
+			return namedIndex.get(named);
 		}
 
 		/**
@@ -276,6 +282,9 @@ public class MethodCache {
 		 * @return MethodMeta
 		 */
 		public MethodMeta lookup(Method method) {
+			if (!methodIndex.containsKey(method)) {
+				throw new BaseRuntimeException("Please Set method Public.");
+			}
 			return methodIndex.get(method);
 		}
 	}
