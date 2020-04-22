@@ -9,6 +9,7 @@ import org.junit.Test;
 import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.ClassMeta;
 import com.swak.asm.MethodCache.MethodMeta;
+import com.swak.method.classes.OrderService;
 
 public class MethodTest {
 

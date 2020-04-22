@@ -1,6 +1,8 @@
-package com.swak.method;
+package com.swak.method.interfaces;
 
 import java.util.concurrent.CompletableFuture;
+
+import com.swak.method.entity.Order;
 
 /**
  * 测试的订单服务
@@ -8,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
  * @author lifeng
  * @date 2020年4月2日 下午4:09:23
  */
-public interface OrderService extends BaseService<Order> {
+public interface OrderService extends BaseService<Order, Long>, NoGenericsService {
 
 	/**
 	 * 同步获取
