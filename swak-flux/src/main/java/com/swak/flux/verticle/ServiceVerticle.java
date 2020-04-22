@@ -39,8 +39,7 @@ public class ServiceVerticle implements Verticle {
 		Object result = null;
 		Exception error = null;
 		try {
-			result = wrapper.invokeMethod(service, method.getMethodName(), method.getParameterTypes(),
-					request.getArguments());
+			result = wrapper.invokeMethod(service, method.getMethodDesc(), request.getArguments());
 		} catch (Exception e) {
 			error = e;
 			logger.error("执行service错误", e);

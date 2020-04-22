@@ -1,6 +1,7 @@
 package com.swak.asm;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -13,7 +14,7 @@ import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.support.AopUtils;
+import org.springframework.util.ClassUtils;
 
 import com.swak.Constants;
 import com.swak.annotation.FluxService;
@@ -49,7 +50,7 @@ public class MethodCache {
 	 * @date 2020/3/28 17:33
 	 */
 	public static ClassMeta set(Class<?> c) {
-		Class<?> type = AopUtils.getTargetClass(c);
+		Class<?> type = ClassUtils.getUserClass(c);
 		CACHES.computeIfAbsent(type, (key) -> {
 			return new ClassMeta(type);
 		});
@@ -65,7 +66,7 @@ public class MethodCache {
 	 * @date 2020/3/28 17:35
 	 */
 	public static ClassMeta get(Class<?> c) {
-		Class<?> type = AopUtils.getTargetClass(c);
+		Class<?> type = ClassUtils.getUserClass(c);
 		return CACHES.get(type);
 	}
 
@@ -188,7 +189,7 @@ public class MethodCache {
 
 			// 简单方法的缓存
 			for (Method method : methods) {
-				if (!method.isBridge()) {
+				if (!method.isBridge() && (method.getModifiers() & Modifier.PUBLIC) > 0) {
 					metas.add(new MethodMeta(method, paramVariablesMappers));
 				}
 			}
@@ -441,7 +442,7 @@ public class MethodCache {
 					return (Class<?>) ptype;
 				}
 			}
-			throw new BaseRuntimeException("Type Not Support " + type);
+			return Object.class;
 		}
 
 		private Class<?> getNestActualType(Type type, Map<TypeVariable<?>, Type> paramVariablesMappers) {
@@ -456,7 +457,7 @@ public class MethodCache {
 					return this.getActualType(ptype, paramVariablesMappers);
 				}
 			}
-			throw new BaseRuntimeException("Type Not Support " + type);
+			return Object.class;
 		}
 
 		private void initOperators(Method method) {

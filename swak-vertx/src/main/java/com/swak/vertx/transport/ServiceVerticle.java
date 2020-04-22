@@ -68,8 +68,7 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 		Object result = null;
 		Throwable error = null;
 		try {
-			result = wrapper.invokeMethod(service, method.getMethodName(), method.getParameterTypes(),
-					request.getArguments());
+			result = wrapper.invokeMethod(service, method.getMethodName(), request.getArguments());
 		} catch (Throwable e) {
 			error = e.getCause() != null ? e.getCause() : e;
 			logger.error("Invoke [Service:{} - Method: {}] Error.", service.getClass().getName(),

@@ -126,8 +126,7 @@ public class MethodInvoker implements HandlerInvoker {
 
 	@Override
 	public Object doInvoke(Object[] args) throws Throwable {
-		return this.wrapper.invokeMethod(this.bean, this.methodMeta.getMethodName(),
-				this.methodMeta.getParameterTypes(), args);
+		return this.wrapper.invokeMethod(this.bean, this.methodMeta.getMethodDesc(), args);
 	}
 
 	/**
