@@ -90,7 +90,10 @@ public class MethodCache {
 		ClassMeta(Class<?> type) {
 
 			// 所有的元数据
-			Set<MethodMeta> metas = this._cascadeBuild(type, null);
+			Set<MethodMeta> metas = Sets.newHashSet();
+
+			// 级联处理元数据
+			this.cascadeBuildIn(metas, type, null);
 
 			// 如果是接口则会通过 Method找 Meta
 			if (type.isInterface()) {
@@ -106,7 +109,7 @@ public class MethodCache {
 					this.namedIndex.put(meta.getMethodDesc(), meta);
 				}
 			}
-			// 服务和Rest
+			// 服务或Rest或者其他的类
 			else {
 				this.methodIndex = Maps.newHashMap();
 				this.namedIndex = Maps.newHashMap();
@@ -127,13 +130,11 @@ public class MethodCache {
 		 * @param type 类型和接口
 		 * @return 所有的方法元
 		 */
-		private Set<MethodMeta> _cascadeBuild(Class<?> type, Map<TypeVariable<?>, Type> paramVariablesMappers) {
-
-			// 所有的元数据
-			Set<MethodMeta> metas = Sets.newHashSet();
+		private void cascadeBuildIn(Set<MethodMeta> metas, Class<?> type,
+				Map<TypeVariable<?>, Type> paramVariablesMappers) {
 
 			// 只处理自己声明的方法
-			metas.addAll(_build(type, paramVariablesMappers));
+			buildIn(metas, type, paramVariablesMappers);
 
 			// 父类
 			Type[] extendsTypes = null;
@@ -148,7 +149,7 @@ public class MethodCache {
 
 					// 普通类型
 					if (iType instanceof Class) {
-						metas.addAll(_build((Class<?>) iType, paramVariablesMappers));
+						buildIn(metas, (Class<?>) iType, paramVariablesMappers);
 					}
 
 					// 泛型类型
@@ -162,7 +163,7 @@ public class MethodCache {
 								((Class<?>) parameterizedType.getRawType()).getTypeParameters(), paramVariablesMappers);
 
 						// 处理父类型
-						metas.addAll(_cascadeBuild((Class<?>) parameterizedType.getRawType(), actualMappers));
+						cascadeBuildIn(metas, (Class<?>) parameterizedType.getRawType(), actualMappers);
 					}
 
 					// 其他不支持
@@ -171,15 +172,12 @@ public class MethodCache {
 					}
 				}
 			}
-
-			// 返回所有的元数据
-			return metas;
 		}
 
-		private Set<MethodMeta> _build(Class<?> type, Map<TypeVariable<?>, Type> paramVariablesMappers) {
-
-			// 所有的元数据
-			Set<MethodMeta> metas = Sets.newHashSet();
+		/**
+		 * 创建方法,保证不覆盖子类中的复写方法
+		 */
+		private void buildIn(Set<MethodMeta> metas, Class<?> type, Map<TypeVariable<?>, Type> paramVariablesMappers) {
 
 			// 当前类声明的类型
 			Method[] methods = type.getDeclaredMethods();
@@ -187,12 +185,12 @@ public class MethodCache {
 			// 简单方法的缓存
 			for (Method method : methods) {
 				if (!method.isBridge() && (method.getModifiers() & Modifier.PUBLIC) > 0) {
-					metas.add(new MethodMeta(method, paramVariablesMappers));
+					MethodMeta meta = new MethodMeta(method, paramVariablesMappers);
+					if (!metas.contains(meta)) {
+						metas.add(meta);
+					}
 				}
 			}
-
-			// 返回所有的元数据
-			return metas;
 		}
 
 		/**
