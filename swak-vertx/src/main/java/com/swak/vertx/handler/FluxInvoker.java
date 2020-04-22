@@ -1,14 +1,12 @@
 package com.swak.vertx.handler;
 
+import java.util.concurrent.CompletableFuture;
+
 import com.swak.Constants;
-import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.transport.VertxProxy;
 import com.swak.vertx.transport.codec.Msg;
-
-import java.lang.reflect.Method;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * 消息的异步处理
@@ -46,10 +44,7 @@ public interface FluxInvoker {
      * @param args    调用参数
      * @return 异步结果
      */
-    default CompletableFuture<Object> invoke(VertxProxy vertx, String address, Method method, Object[] args) {
-
-        // 获取方法缓存： bug 自动生成的异步接口会丢失接口注解
-        MethodMeta meta = MethodCache.get(method);
+    default CompletableFuture<Object> invoke(VertxProxy vertx, String address, MethodMeta meta, Object[] args) {
 
         // 异步future
         CompletableFuture<Object> future = new CompletableFuture<>();

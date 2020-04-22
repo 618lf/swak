@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 import com.swak.App;
 import com.swak.asm.MethodCache;
+import com.swak.asm.MethodCache.ClassMeta;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.exception.InvokeException;
 import com.swak.vertx.handler.FluxInvoker;
@@ -24,6 +25,7 @@ public class FluxInvokerProxy implements InvocationHandler, MethodInterceptor, F
 	private final VertxProxy vertx;
 	private final Class<?> type;
 	private final String address;
+	private final ClassMeta classMeta;
 
 	/**
 	 * 如果使用的非异步接口，则直接使用本地调用，会导致当前方法阻塞
@@ -40,17 +42,7 @@ public class FluxInvokerProxy implements InvocationHandler, MethodInterceptor, F
 		this.vertx = vertx;
 		this.type = type;
 		this.address = this.getAddress(type);
-		this.initMethods();
-	}
-
-	/**
-	 * 缓存方法
-	 */
-	private void initMethods() {
-		Method[] methods = type.getMethods();
-		for (Method method : methods) {
-			MethodCache.set(method);
-		}
+		this.classMeta = MethodCache.set(this.type);
 	}
 
 	/**
@@ -75,7 +67,7 @@ public class FluxInvokerProxy implements InvocationHandler, MethodInterceptor, F
 	private Object filter(Method method, Object[] args, MethodProxy proxy) throws Throwable {
 
 		// 方法元
-		MethodMeta meta = MethodCache.get(method);
+		MethodMeta meta = classMeta.lookup(method);
 
 		// 是否本地方法
 		if (meta == null || meta.isLocal()) {
@@ -95,6 +87,6 @@ public class FluxInvokerProxy implements InvocationHandler, MethodInterceptor, F
 		}
 
 		// 发起异步调用
-		return this.invoke(vertx, address, method, args);
+		return this.invoke(vertx, address, meta, args);
 	}
 }

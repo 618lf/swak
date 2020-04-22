@@ -2,14 +2,16 @@ package com.swak.vertx.handler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
-import org.springframework.util.ClassUtils;
-
+import com.swak.annotation.Body;
+import com.swak.annotation.Header;
+import com.swak.annotation.Json;
 import com.swak.annotation.Logical;
 import com.swak.annotation.RequiresPermissions;
 import com.swak.annotation.RequiresRoles;
+import com.swak.annotation.Valid;
+import com.swak.asm.MethodCache;
+import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.asm.Wrapper;
 import com.swak.meters.MethodMetrics;
 import com.swak.meters.MetricsFactory;
@@ -17,8 +19,6 @@ import com.swak.security.Permission;
 import com.swak.security.permission.AndPermission;
 import com.swak.security.permission.OrPermission;
 import com.swak.security.permission.SinglePermission;
-import com.swak.utils.ReflectUtils;
-import com.swak.utils.StringUtils;
 import com.swak.utils.router.RouterUtils;
 
 /**
@@ -31,14 +31,10 @@ import com.swak.utils.router.RouterUtils;
 public class MethodInvoker implements HandlerInvoker {
 
 	private final Object bean;
-	private final Class<?> beanType;
-	private final String name;
-	private final String methodName;
 	private final Method method;
 	private final MethodParameter[] parameters;
-	private final Class<?>[] parameterTypes;
-	private volatile Annotation[] annotations;
 	protected MethodMetrics metrics;
+	protected String metricName;
 	protected Permission requiresRoles;
 	protected Permission requiresPermissions;
 
@@ -46,77 +42,31 @@ public class MethodInvoker implements HandlerInvoker {
 	 * 代理此类提高执行效率
 	 */
 	protected Wrapper wrapper;
+	protected MethodMeta methodMeta;
 
-	/**
-	 * Create an instance from a bean instance and a method.
-	 */
 	public MethodInvoker(Object bean, Method method) {
 		this.bean = bean;
-		this.beanType = ClassUtils.getUserClass(bean);
 		this.method = method;
-		this.name = this.beanType.getName() + "." + ReflectUtils.getMethodDesc(this.method);
-		this.methodName = this.method.getName();
+		this.wrapper = Wrapper.getWrapper(this.bean.getClass());
+		this.methodMeta = MethodCache.get(this.bean.getClass()).lookup(this.method);
+		this.metricName = this.bean.getClass().getName() + "." + this.methodMeta.getMethodDesc();
 		this.parameters = this.initMethodParameters();
-		this.parameterTypes = this.method.getParameterTypes();
-		this.wrapper = Wrapper.getWrapper(this.beanType);
 	}
 
 	private MethodParameter[] initMethodParameters() {
-		int count = this.method.getParameterTypes().length;
-		MethodParameter[] result = new MethodParameter[count];
-		for (int i = 0; i < count; i++) {
-			result[i] = new MethodParameter(this.beanType, this.method, i);
+		Class<?>[] parameterTypes = this.methodMeta.getParameterTypes();
+		Class<?>[] nestedParameterTypes = this.methodMeta.getNestedParameterTypes();
+		String[] parameterNames = RouterUtils.getParameterNames(method);
+		MethodParameter[] result = new MethodParameter[parameterTypes.length];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = new MethodParameter(this.method, parameterNames[i], i, parameterTypes[i],
+					nestedParameterTypes[i]);
 		}
 		return result;
 	}
 
-	public Object getBean() {
-		return bean;
-	}
-
-	public Method getMethod() {
-		return method;
-	}
-
-	public Class<?> getBeanType() {
-		return beanType;
-	}
-
 	public MethodParameter[] getParameters() {
 		return parameters;
-	}
-
-	public Annotation[] getAnnotations() {
-		if (this.annotations == null) {
-			this.annotations = this.method.getAnnotations();
-		}
-		return this.annotations;
-	}
-
-	public <A extends Annotation> Annotation getAnnotation(Class<A> annotationType) {
-		Annotation[] paramAnns = this.getAnnotations();
-		if (paramAnns != null) {
-			for (Annotation ann : paramAnns) {
-				if (annotationType.isInstance(ann)) {
-					return ann;
-				}
-			}
-			return null;
-		}
-		return null;
-	}
-
-	public <A extends Annotation> boolean hasAnnotation(Class<A> annotationType) {
-		Annotation[] paramAnns = this.getAnnotations();
-		if (paramAnns != null) {
-			for (Annotation ann : paramAnns) {
-				if (annotationType.isInstance(ann)) {
-					return true;
-				}
-			}
-			return false;
-		}
-		return false;
 	}
 
 	/**
@@ -138,9 +88,6 @@ public class MethodInvoker implements HandlerInvoker {
 		return this.requiresRoles;
 	}
 
-	/**
-	 * 权限
-	 */
 	public Permission getRequiresPermissions() {
 		if (this.requiresPermissions == null) {
 			RequiresPermissions roles = (RequiresPermissions) this.getAnnotation(RequiresPermissions.class);
@@ -157,210 +104,121 @@ public class MethodInvoker implements HandlerInvoker {
 		return this.requiresPermissions;
 	}
 
-	/**
-	 * 设置监控
-	 *
-	 * @param metricsFactory 指标框架
-	 */
+	private <A extends Annotation> Annotation getAnnotation(Class<A> annotationType) {
+		Annotation[] paramAnns = this.method.getAnnotations();
+		if (paramAnns != null) {
+			for (Annotation ann : paramAnns) {
+				if (annotationType.isInstance(ann)) {
+					return ann;
+				}
+			}
+			return null;
+		}
+		return null;
+	}
+
 	@Override
 	public void applyMetrics(MetricsFactory metricsFactory) {
 		if (metricsFactory != null) {
-			metrics = metricsFactory.createMethodMetrics(this.method, name);
+			metrics = metricsFactory.createMethodMetrics(this.method, this.metricName);
 		}
 	}
 
-	/**
-	 * 调用
-	 *
-	 * @param args 参数
-	 * @return 直接结果
-	 */
 	@Override
 	public Object doInvoke(Object[] args) throws Throwable {
-		return this.wrapper.invokeMethod(this.bean, this.methodName, this.parameterTypes, args);
+		return this.wrapper.invokeMethod(this.bean, this.methodMeta.getMethodName(),
+				this.methodMeta.getParameterTypes(), args);
 	}
 
 	/**
-	 * 参考 org.springframework.core.MethodParameter 不需要所有的情况都支持
-	 *
+	 * 不支持 Map 的
+	 * 
 	 * @author lifeng
+	 * @date 2020年4月22日 下午8:36:29
 	 */
-	public static class MethodParameter {
+	public class MethodParameter {
 
-		private Class<?> clazz;
 		private Method method;
 		private int parameterIndex;
-		private volatile String parameterName;
-		private volatile Class<?> parameterType;
-		private volatile Type genericParameterType;
-		private volatile Class<?> nestedParameterType;
-		private volatile Type nestedGenericParameterType;
-		private volatile Annotation[] parameterAnnotations;
+		private String parameterName;
+		private Class<?> parameterType;
+		private Class<?> nestedParameterType;
+		private boolean hasInitAnnotation;
 
-		public MethodParameter(Class<?> clazz, Method method, int parameterIndex) {
-			this.clazz = clazz;
+		private Body body;
+		private Json json;
+		private Header header;
+		private Valid valid;
+
+		public MethodParameter(Method method, String parameterName, int parameterIndex, Class<?> parameterType,
+				Class<?> nestedParameterType) {
 			this.method = method;
 			this.parameterIndex = parameterIndex;
-			String[] parameterNames = RouterUtils.getParameterNames(method);
-			if (parameterNames != null) {
-				this.parameterName = parameterNames[parameterIndex];
+			this.parameterType = parameterType;
+			this.nestedParameterType = nestedParameterType;
+			this.parameterName = parameterName;
+		}
+
+		public String getParameterName() {
+			return parameterName;
+		}
+
+		public Class<?> getParameterType() {
+			return parameterType;
+		}
+
+		public Class<?> getNestedParameterType() {
+			return nestedParameterType;
+		}
+
+		private void initAnnotations() {
+			if (!this.hasInitAnnotation) {
+				Annotation[][] annotationArray = this.method.getParameterAnnotations();
+				Annotation[] paramAnns = annotationArray[this.parameterIndex];
+				if (paramAnns != null) {
+					for (Annotation ann : paramAnns) {
+						if (Body.class.isInstance(ann)) {
+							body = (Body) ann;
+						} else if (Json.class.isInstance(ann)) {
+							json = (Json) ann;
+						} else if (Header.class.isInstance(ann)) {
+							header = (Header) ann;
+						} else if (Valid.class.isInstance(ann)) {
+							valid = (Valid) ann;
+						}
+					}
+				}
+				this.hasInitAnnotation = true;
 			}
-		}
-
-		public Class<?> getClazz() {
-			return clazz;
-		}
-
-		public void setClazz(Class<?> clazz) {
-			this.clazz = clazz;
 		}
 
 		public Method getMethod() {
 			return method;
 		}
 
-		public void setMethod(Method method) {
-			this.method = method;
-		}
-
 		public int getParameterIndex() {
 			return parameterIndex;
 		}
 
-		public void setParameterIndex(int parameterIndex) {
-			this.parameterIndex = parameterIndex;
+		public boolean hasConvertAnnotation() {
+			this.initAnnotations();
+			return this.body != null || this.json != null || this.header != null;
 		}
 
-		public String getParameterName() {
-			if (parameterName == null) {
-				String[] parameterNames = RouterUtils.getParameterNames(method);
-				if (parameterNames != null) {
-					this.parameterName = parameterNames[parameterIndex];
-				} else {
-					this.parameterName = StringUtils.EMPTY;
-				}
-			}
-			return parameterName;
+		public Body getBodyAnnotation() {
+			return body;
 		}
 
-		public void setParameterName(String parameterName) {
-			this.parameterName = parameterName;
+		public Json getJsonAnnotation() {
+			return json;
 		}
 
-		public Class<?> getParameterType() {
-			if (parameterType == null) {
-				if (this.parameterIndex < 0) {
-					Method method = getMethod();
-					parameterType = (method != null ? method.getReturnType() : void.class);
-				} else {
-					parameterType = this.method.getParameterTypes()[this.parameterIndex];
-				}
-			}
-			return parameterType;
+		public Header getHeaderAnnotation() {
+			return header;
 		}
 
-		public Annotation[] getParameterAnnotations() {
-			Annotation[] paramAnns = this.parameterAnnotations;
-			if (paramAnns == null) {
-				Annotation[][] annotationArray = this.method.getParameterAnnotations();
-				int index = this.parameterIndex;
-				paramAnns = (index >= 0 && index < annotationArray.length ? annotationArray[index] : null);
-				this.parameterAnnotations = paramAnns;
-			}
-			return paramAnns;
-		}
-
-		public <A extends Annotation> Annotation getParameterAnnotation(Class<A> annotationType) {
-			Annotation[] paramAnns = this.getParameterAnnotations();
-			if (paramAnns != null) {
-				for (Annotation ann : paramAnns) {
-					if (annotationType.isInstance(ann)) {
-						return ann;
-					}
-				}
-				return null;
-			}
-			return null;
-		}
-
-		public <A extends Annotation> boolean hasParameterAnnotation(Class<A> annotationType) {
-			Annotation[] paramAnns = this.getParameterAnnotations();
-			if (paramAnns != null) {
-				for (Annotation ann : paramAnns) {
-					if (annotationType.isInstance(ann)) {
-						return true;
-					}
-				}
-				return false;
-			}
-			return false;
-		}
-
-		public void setParameterType(Class<?> parameterType) {
-			this.parameterType = parameterType;
-		}
-
-		public Type getGenericParameterType() {
-			if (this.genericParameterType == null) {
-				if (this.parameterIndex < 0) {
-					Method method = getMethod();
-					genericParameterType = (method != null ? method.getGenericReturnType() : void.class);
-				} else {
-					Type[] genericParameterTypes = this.method.getGenericParameterTypes();
-					int index = this.parameterIndex;
-					genericParameterType = (index >= 0 && index < genericParameterTypes.length
-							? genericParameterTypes[index]
-							: getParameterType());
-				}
-			}
-			return genericParameterType;
-		}
-
-		public void setGenericParameterType(Type genericParameterType) {
-			this.genericParameterType = genericParameterType;
-		}
-
-		public Class<?> getNestedParameterType() {
-			if (nestedParameterType == null) {
-				this.initNestedParameter();
-			}
-			return nestedParameterType;
-		}
-
-		public void setNestedParameterType(Class<?> nestedParameterType) {
-			this.nestedParameterType = nestedParameterType;
-		}
-
-		public Type getNestedGenericParameterType() {
-			if (nestedGenericParameterType == null) {
-				this.initNestedParameter();
-			}
-			return nestedGenericParameterType;
-		}
-
-		public void setNestedGenericParameterType(Type nestedGenericParameterType) {
-			this.nestedGenericParameterType = nestedGenericParameterType;
-		}
-
-		private void initNestedParameter() {
-			Type fieldType = this.getGenericParameterType();
-			Class<?> fieldClass = this.getParameterType();
-			if (fieldType instanceof ParameterizedType) {
-				Type[] args = ((ParameterizedType) fieldType).getActualTypeArguments();
-				fieldType = args[0];
-			}
-			if (fieldType instanceof Class) {
-				fieldClass = (Class<?>) fieldType;
-			} else if (fieldType instanceof ParameterizedType) {
-				Type arg = ((ParameterizedType) fieldType).getRawType();
-				if (arg instanceof Class) {
-					fieldClass = (Class<?>) arg;
-				}
-			} else {
-				fieldClass = Object.class;
-			}
-			this.nestedGenericParameterType = fieldType;
-			this.nestedParameterType = fieldClass;
+		public Valid getValidAnnotation() {
+			return valid;
 		}
 	}
 }

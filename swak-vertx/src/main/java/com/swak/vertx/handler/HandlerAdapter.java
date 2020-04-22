@@ -20,7 +20,6 @@ import com.swak.annotation.FluxService;
 import com.swak.annotation.Header;
 import com.swak.annotation.Json;
 import com.swak.annotation.Server;
-import com.swak.annotation.Valid;
 import com.swak.asm.FieldCache;
 import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
@@ -287,8 +286,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			return subject;
 		} else if (parameterType == BindErrors.class) {
 			return this.getBindErrors(context);
-		} else if (parameter.getParameterAnnotations() != null && parameter.getParameterAnnotations().length > 0
-				&& !(parameter.getParameterAnnotations()[0] instanceof Valid)) {
+		} else if (parameter.hasConvertAnnotation()) {
 			return this.resolveAnnotation(parameter, context);
 		} else if (BeanUtils.isSimpleProperty(parameterType)) {
 			return this.doConvert(context.request().getParam(parameter.getParameterName()), parameterType);
@@ -305,14 +303,14 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	 * 解析注解
 	 */
 	private Object resolveAnnotation(MethodParameter parameter, RoutingContext context) {
-		Body body = (Body) parameter.getParameterAnnotation(Body.class);
+		Body body = parameter.getBodyAnnotation();
 		if (body != null) {
 			if (!parameter.getParameterType().isArray() && BeanUtils.isSimpleProperty(parameter.getParameterType())) {
 				return this.doConvert(context.getBodyAsString(), parameter.getParameterType());
 			}
 			return context.getBody().getBytes();
 		}
-		Json json = (Json) parameter.getParameterAnnotation(Json.class);
+		Json json = parameter.getJsonAnnotation();
 		if (json != null) {
 			Class<?> fieldClass = parameter.getParameterType();
 			if (List.class.isAssignableFrom(fieldClass)) {
@@ -323,7 +321,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 			}
 			return JsonMapper.fromJson(context.request().getParam(parameter.getParameterName()), fieldClass);
 		}
-		Header header = (Header) parameter.getParameterAnnotation(Header.class);
+		Header header = parameter.getHeaderAnnotation();
 		if (header != null) {
 			Class<?> fieldClass = parameter.getParameterType();
 			if (Map.class.isAssignableFrom(fieldClass)) {
@@ -343,7 +341,7 @@ public class HandlerAdapter extends AbstractRouterHandler {
 	private Object resolveObjectAndValidate(MethodParameter parameter, RoutingContext context) {
 
 		// 需要验证
-		if (parameter.hasParameterAnnotation(Valid.class) && validator != null) {
+		if (validator != null && parameter.getValidAnnotation() != null) {
 			return this.resolveObject(parameter, context, true);
 		}
 

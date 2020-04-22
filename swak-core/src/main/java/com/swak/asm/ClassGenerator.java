@@ -1,5 +1,8 @@
 package com.swak.asm;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -302,24 +305,24 @@ public class ClassGenerator {
 					}
 				}
 			}
-			// debugWriteFile();
+			 debugWriteFile();
 			return mCtc.toClass(loader, pd);
 		} catch (NotFoundException | CannotCompileException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
-//	private void debugWriteFile() {
-//		try {
-//			mCtc.debugWriteFile("E://Qiao2.class");
-//			byte[] byteArr = mCtc.toBytecode();
-//			FileOutputStream fos = new FileOutputStream(new File("E://Qiao.class"));
-//			fos.write(byteArr);
-//			fos.close();
-//		} catch (IOException | CannotCompileException e) {
-//			e.printStackTrace();
-//		}
-//	}
+	private void debugWriteFile() {
+		try {
+			mCtc.debugWriteFile("E://Qiao2.class");
+			byte[] byteArr = mCtc.toBytecode();
+			FileOutputStream fos = new FileOutputStream(new File("E://Qiao.class"));
+			fos.write(byteArr);
+			fos.close();
+		} catch (IOException | CannotCompileException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void release() {
 		if (mCtc != null) {
