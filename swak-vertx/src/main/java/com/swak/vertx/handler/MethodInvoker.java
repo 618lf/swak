@@ -44,11 +44,11 @@ public class MethodInvoker implements HandlerInvoker {
 	protected Wrapper wrapper;
 	protected MethodMeta methodMeta;
 
-	public MethodInvoker(Object bean, Method method) {
+	public MethodInvoker(Class<?> clazz, Object bean, Method method) {
 		this.bean = bean;
 		this.method = method;
-		this.wrapper = Wrapper.getWrapper(this.bean.getClass());
-		this.methodMeta = MethodCache.get(this.bean.getClass()).lookup(this.method);
+		this.wrapper = Wrapper.getWrapper(clazz);
+		this.methodMeta = MethodCache.get(clazz).lookup(this.method);
 		this.metricName = this.bean.getClass().getName() + "." + this.methodMeta.getMethodDesc();
 		this.parameters = this.initMethodParameters();
 	}

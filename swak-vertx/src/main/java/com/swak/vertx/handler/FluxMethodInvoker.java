@@ -19,20 +19,19 @@ public class FluxMethodInvoker extends MethodInvoker implements FluxInvoker {
 	private final VertxProxy vertx;
 	private final String address;
 
-	public FluxMethodInvoker(VertxProxy vertx, Object bean, Method method) {
-		super(bean, method);
+	public FluxMethodInvoker(VertxProxy vertx, Class<?> clazz, Object bean, Method method) {
+		super(clazz, bean, method);
 		this.vertx = vertx;
-		this.address = this.getAddress(bean);
+		this.address = this.initAddress(clazz);
 	}
 
 	/**
 	 * 初始化地址
 	 */
-	private String getAddress(Object bean) {
+	private String initAddress(Class<?> type) {
 
 		// 优先使用接口，然后使用类
-		Class<?> type = bean.getClass();
-		Class<?>[] interfacesClasses = bean.getClass().getInterfaces();
+		Class<?>[] interfacesClasses = type.getInterfaces();
 		if (interfacesClasses != null && interfacesClasses.length > 0) {
 			type = interfacesClasses[0];
 		}

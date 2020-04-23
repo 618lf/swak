@@ -322,6 +322,7 @@ public class ClassGenerator {
 	private void debugWriteFile() {
 		try {
 			File file = new File("D:\\swak_gen\\" + mClassName + ".class");
+			file.getParentFile().mkdirs();
 			byte[] byteArr = mCtc.toBytecode();
 			FileOutputStream fos = new FileOutputStream(file);
 			fos.write(byteArr);

@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.springframework.util.ClassUtils;
-
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.utils.ClassHelper;
 import com.swak.utils.ReflectUtils;
@@ -70,8 +68,6 @@ public abstract class Wrapper {
 		while (ClassGenerator.isDynamicClass(c)) {
 			c = c.getSuperclass();
 		}
-
-		c = ClassUtils.getUserClass(c);
 
 		if (c == Object.class) {
 			return OBJECT_WRAPPER;

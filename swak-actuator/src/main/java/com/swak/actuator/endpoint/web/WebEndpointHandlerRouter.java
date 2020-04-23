@@ -52,7 +52,7 @@ public class WebEndpointHandlerRouter implements IRouterSupplier {
 		for (ExposableWebEndpoint endpoint : this.webEndpointsSupplier.getEndpoints()) {
 			for (WebOperation operation : endpoint.getOperations()) {
 				WebMvcOperationAdapter adapter = new WebMvcOperationAdapter(operation);
-				MethodInvoker methodInvoker = new MethodInvoker(adapter, method);
+				MethodInvoker methodInvoker = new MethodInvoker(adapter.getClass(), adapter, method);
 				router.get(adapter.getPath()).handler(context -> {
 					handlerAdapter.handle(context, methodInvoker);
 				});
