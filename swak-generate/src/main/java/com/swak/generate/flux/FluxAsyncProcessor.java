@@ -2,6 +2,7 @@ package com.swak.generate.flux;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +37,6 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import com.swak.Constants;
 import com.swak.annotation.FluxAsync;
-import com.swak.utils.Lists;
-import com.swak.utils.Maps;
 
 /**
  * 自动身成异步处理的接口类 --- 目前不支持注解
@@ -59,7 +58,6 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 		} else { // use jvm option -DfluxGeneratePath=xxx
 			TARGET_DIR = System.getProperty(GENERATE_PATH_KEY, "src/main/generated-sources/");
 		}
-
 	}
 
 	@Override
@@ -99,109 +97,68 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 		return true;
 	}
 
+	// 写入异步接口
 	private void writeAsyncClass(Element elem) throws Exception {
 
-		TypeElement interfaceClazz = (TypeElement) elem;
-		String className = interfaceClazz.getSimpleName().toString();
+		// 处理的类类型
+		TypeElement type = (TypeElement) elem;
+		String className = type.getSimpleName().toString();
 
-		// 如果有接口则使用接口的名称
-		if (elem.getKind().isClass() && interfaceClazz.getInterfaces() != null
-				&& interfaceClazz.getInterfaces().size() != 0) {
-			// Definition className with one interface
-			TypeElement de = (TypeElement) ((DeclaredType) interfaceClazz.getInterfaces().get(0)).asElement();
-			className = de.getSimpleName().toString();
+		// 如果有接口则根据接口来生成
+		if (elem.getKind().isClass() && type.getInterfaces() != null && type.getInterfaces().size() != 0) {
+			type = (TypeElement) ((DeclaredType) type.getInterfaces().get(0)).asElement();
+			className = type.getSimpleName().toString();
 		}
 
-		TypeSpec.Builder classBuilder = TypeSpec.interfaceBuilder(className + ASYNC).addModifiers(Modifier.PUBLIC);
+		// 类定义器
+		TypeSpec.Builder builder = TypeSpec.interfaceBuilder(className + ASYNC).addModifiers(Modifier.PUBLIC);
 
-		// add class generic type
-		classBuilder.addTypeVariables(getTypeNames(interfaceClazz.getTypeParameters()));
+		// 级联创建
+		this.cascadeBuildIn(builder, type, new HashMap<>());
 
-		// is class and not interfaces
-		if (elem.getKind().isClass()
-				&& (interfaceClazz.getInterfaces() == null || interfaceClazz.getInterfaces().size() == 0)) {
-
-			// add direct method
-			addMethods(interfaceClazz, classBuilder);
-
-			// add superClass methods
-			addSuperClassMethods(interfaceClazz.getSuperclass(), classBuilder);
-		}
-
-		// is class and has interfaces
-		else if (elem.getKind().isClass()) {
-
-			// add method form super interfaces
-			addSuperInterfaceMethods(interfaceClazz.getInterfaces(), classBuilder);
-		}
-
-		// is interface
-		else {
-
-			// add direct method
-			addMethods(interfaceClazz, classBuilder);
-
-			// add method form super interfaces
-			addSuperInterfaceMethods(interfaceClazz.getInterfaces(), classBuilder);
-		}
-
-		// write class
+		// 将类写入文件
 		JavaFile javaFile = JavaFile
-				.builder(processingEnv.getElementUtils().getPackageOf(interfaceClazz).getQualifiedName().toString(),
-						classBuilder.build())
+				.builder(processingEnv.getElementUtils().getPackageOf(type).getQualifiedName().toString(),
+						builder.build())
 				.build();
 
 		javaFile.writeTo(new File(System.getProperty("basedir"), TARGET_DIR));
 	}
 
-	/**
-	 * 添加方法
-	 * 
-	 * @param interfaceClazz 接口或类
-	 * @param classBuilder   类创建器
-	 */
-	private void addMethods(TypeElement interfaceClazz, TypeSpec.Builder classBuilder) {
-		this.addMethods(interfaceClazz, null, classBuilder);
-	}
+	// 级联的创建
+	@SuppressWarnings("unchecked")
+	private void cascadeBuildIn(TypeSpec.Builder builder, TypeElement type,
+			Map<TypeMirror, TypeMirror> genericTypeMirrorMappers) {
 
-	/**
-	 * 添加方法
-	 * 
-	 * @param interfaceClazz 接口或类
-	 * @param declaredType   接口或类的定义
-	 * @param classBuilder   类 创建器
-	 */
-	private void addMethods(TypeElement interfaceClazz, DeclaredType declaredType, TypeSpec.Builder classBuilder) {
-		Map<TypeMirror, TypeMirror> genericTypeMirrorMappers = this.genericTypeMirrorMappers(interfaceClazz,
-				declaredType);
-		Map<String, TypeName> genericTypeAttrMappers = this.genericTypeAttrMappers(genericTypeMirrorMappers);
-		List<? extends Element> elements = interfaceClazz.getEnclosedElements();
-		if (elements != null && !elements.isEmpty()) {
-			for (Element e : elements) {
-				if (ElementKind.METHOD.equals(e.getKind())) {
-					ExecutableElement method = (ExecutableElement) e;
+		// 添加本类中的方法
+		this.buildIn(builder, type, genericTypeMirrorMappers);
 
-					// must public
-					if (!method.getModifiers().contains(Modifier.PUBLIC)) {
-						continue;
-					}
+		// 如果是接口类型，则查找所有的接口体系
+		List<TypeMirror> extendsTypes = null;
+		if (type.getKind().isInterface()) {
+			extendsTypes = (List<TypeMirror>) type.getInterfaces();
+		}
+		// 如果是类类型， 则查找类体系
+		else if (!ClassName.get(type.getSuperclass()).equals(ClassName.OBJECT)) {
+			extendsTypes = new ArrayList<>();
+			extendsTypes.add(type.getSuperclass());
+		}
 
-					MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getSimpleName().toString())
-							.addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-							.returns(getReturnType(method.getReturnType(), genericTypeMirrorMappers,
-									genericTypeAttrMappers))
-							.addTypeVariables(getTypeNames(method.getTypeParameters()))
-							.addAnnotations(getAnnotationSpec(method.getAnnotationMirrors()));
+		// 处理父类或接口
+		if (extendsTypes != null) {
+			for (TypeMirror sTypeMirror : extendsTypes) {
+				if (sTypeMirror.getKind().equals(TypeKind.DECLARED)) {
 
-					// add method params
-					List<? extends VariableElement> vars = method.getParameters();
-					for (VariableElement var : vars) {
-						TypeName paTypeName = getParamType(var.asType(), genericTypeMirrorMappers,
-								genericTypeAttrMappers);
-						methodBuilder.addParameter(
-								ParameterSpec.builder(paTypeName, var.getSimpleName().toString()).build());
-					}
-					classBuilder.addMethod(methodBuilder.build());
+					// 类型
+					TypeElement de = (TypeElement) ((DeclaredType) sTypeMirror).asElement();
+
+					// 类型参数的转换
+					Map<TypeMirror, TypeMirror> actualMappers = this.genericTypeMirrorMappers(
+							((DeclaredType) sTypeMirror).getTypeArguments(), de.getTypeParameters(),
+							genericTypeMirrorMappers);
+
+					// 级联添加
+					cascadeBuildIn(builder, de, actualMappers);
 				}
 			}
 		}
@@ -213,30 +170,77 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 	 * @param interfaceClazz 类或接口
 	 * @return 泛型的实际类型
 	 */
-	private Map<TypeMirror, TypeMirror> genericTypeMirrorMappers(TypeElement interfaceClazz,
-			DeclaredType declaredType) {
-		Map<TypeMirror, TypeMirror> genericTypeMirrorMappers = Maps.newHashMap();
-		List<? extends TypeParameterElement> genericTypes = interfaceClazz.getTypeParameters();
-		if (genericTypes.size() == 0) {
-			return genericTypeMirrorMappers;
-		}
-		if (declaredType != null) {
-			List<? extends TypeMirror> realTypes = declaredType.getTypeArguments();
-			for (int i = 0; i < genericTypes.size(); i++) {
-				genericTypeMirrorMappers.put(genericTypes.get(i).asType(), realTypes.get(i));
-			}
+	private Map<TypeMirror, TypeMirror> genericTypeMirrorMappers(List<? extends TypeMirror> typeArguments,
+			List<? extends TypeParameterElement> typeParameters, Map<TypeMirror, TypeMirror> actualMappers) {
+		Map<TypeMirror, TypeMirror> genericTypeMirrorMappers = new HashMap<>();
+		for (int i = 0; i < typeParameters.size(); i++) {
+
+			// 实际的类型
+			TypeMirror actualType = typeArguments.get(i);
+
+			// 类型转换
+			actualType = this.getActualParameterizedType(actualType, actualMappers);
+
+			// 这一次处理中的类型
+			genericTypeMirrorMappers.put(typeParameters.get(i).asType(), actualType);
 		}
 		return genericTypeMirrorMappers;
 	}
 
-	/**
-	 * 泛型的实际类型 -- 泛型参数
-	 * 
-	 * @param interfaceClazz 类或接口
-	 * @return 泛型的实际类型
-	 */
+	// 封装之后的类型
+	private TypeMirror getActualParameterizedType(TypeMirror type, Map<TypeMirror, TypeMirror> actualMappers) {
+		if (actualMappers == null || actualMappers.isEmpty()) {
+			return type;
+		}
+		return actualMappers.get(type);
+	}
+
+	// 处理本类中方法
+	private void buildIn(TypeSpec.Builder builder, TypeElement type,
+			Map<TypeMirror, TypeMirror> genericTypeMirrorMappers) {
+
+		Map<String, TypeName> genericTypeAttrMappers = this.genericTypeAttrMappers(genericTypeMirrorMappers);
+
+		// 声明的元素
+		List<? extends Element> elements = type.getEnclosedElements();
+
+		if (elements != null && !elements.isEmpty()) {
+			for (Element e : elements) {
+				if (ElementKind.METHOD.equals(e.getKind())) {
+
+					// 方法
+					ExecutableElement method = (ExecutableElement) e;
+
+					// 只处理公共方法
+					if (!method.getModifiers().contains(Modifier.PUBLIC)) {
+						continue;
+					}
+
+					// 构建方法
+					MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.getSimpleName().toString())
+							.addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+							.returns(getReturnType(method.getReturnType(), genericTypeMirrorMappers,
+									genericTypeAttrMappers))
+							.addTypeVariables(getTypeNames(method.getTypeParameters()))
+							.addAnnotations(getAnnotationSpec(method.getAnnotationMirrors()));
+
+					// 方法的参数
+					List<? extends VariableElement> vars = method.getParameters();
+					for (VariableElement var : vars) {
+						TypeName paTypeName = getParamType(var.asType(), genericTypeMirrorMappers,
+								genericTypeAttrMappers);
+						methodBuilder.addParameter(
+								ParameterSpec.builder(paTypeName, var.getSimpleName().toString()).build());
+					}
+					builder.addMethod(methodBuilder.build());
+				}
+			}
+		}
+	}
+
+	// 类型变量名称和类型名称对应
 	private Map<String, TypeName> genericTypeAttrMappers(Map<TypeMirror, TypeMirror> genericTypeMirrorMappers) {
-		Map<String, TypeName> genericTypeAttrMappers = Maps.newHashMap();
+		Map<String, TypeName> genericTypeAttrMappers = new HashMap<>();
 		genericTypeMirrorMappers.keySet().forEach(key -> {
 			TypeName typeName = TypeName.get(key);
 			if (typeName instanceof TypeVariableName) {
@@ -273,12 +277,10 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 		return ParameterizedTypeName.get(ClassName.get(CompletableFuture.class), realType);
 	}
 
-	/**
-	 * 方法参数
-	 */
+	// 方法参数
 	private TypeName getParamType(TypeMirror type, Map<TypeMirror, TypeMirror> genericTypeMirrorMappers,
 			Map<String, TypeName> genericTypeAttrMappers) {
-		
+
 		// 第一次转换 直接使用的泛型
 		type = genericTypeMirrorMappers.getOrDefault(type, type);
 
@@ -292,7 +294,7 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 			ParameterizedTypeName pTypeName = (ParameterizedTypeName) realType;
 
 			// 如果的泛型类型
-			List<TypeName> realTypes = Lists.newArrayList();
+			List<TypeName> realTypes = new ArrayList<>();
 			for (TypeName attr : pTypeName.typeArguments) {
 				if (attr instanceof TypeVariableName) {
 					realTypes.add(genericTypeAttrMappers.getOrDefault(((TypeVariableName) attr).name, attr));
@@ -310,12 +312,7 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 		return realType;
 	}
 
-	/**
-	 * 没判断集合类型
-	 * 
-	 * @param type
-	 * @return
-	 */
+	// 没判断集合类型
 	private TypeName getNonCollectionTypeName(TypeMirror type) {
 		TypeName realType;
 		if (type == null || type.getKind().equals(TypeKind.VOID)) {
@@ -328,6 +325,7 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 		return realType;
 	}
 
+	// 类型变量名称
 	private List<TypeVariableName> getTypeNames(List<? extends TypeParameterElement> types) {
 		List<TypeVariableName> result = new ArrayList<>();
 		if (types != null && !types.isEmpty()) {
@@ -338,76 +336,8 @@ public class FluxAsyncProcessor extends AbstractProcessor {
 		return result;
 	}
 
-	/**
-	 * 不支持注解的复制
-	 *
-	 * @param types 类型
-	 * @return 注解
-	 */
+	// 注解的复制
 	private List<AnnotationSpec> getAnnotationSpec(List<? extends AnnotationMirror> types) {
-		// if (types != null && !types.isEmpty()) {
-//			for (AnnotationMirror type : types) {
-//				AnnotationSpec.Builder builder = AnnotationSpec
-//						.builder((ClassName) ClassName.get(type.getAnnotationType()));
-//				Map<? extends ExecutableElement, ? extends AnnotationValue> values = type.getElementValues();
-//				if (values != null && !values.isEmpty()) {
-//					values.forEach((key, value) -> {
-//
-//					});
-//				}
-//				result.add(builder.build());
-//			}
-//		}
 		return new ArrayList<>();
-	}
-
-	private void addSuperInterfaceMethods(List<? extends TypeMirror> superInterfaces, TypeSpec.Builder classBuilder) {
-		if (superInterfaces != null && !superInterfaces.isEmpty()) {
-			for (TypeMirror tm : superInterfaces) {
-				try {
-					if (tm.getKind().equals(TypeKind.DECLARED)) {
-						TypeElement de = (TypeElement) ((DeclaredType) tm).asElement();
-						addMethods(de, (DeclaredType) tm, classBuilder);
-						addSuperInterfaceMethods(de.getInterfaces(), classBuilder);
-					}
-				} catch (Exception e) {
-					processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
-							"FluxAsyncProcessor process superinterface " + tm.toString() + " fail. exception:"
-									+ e.getMessage());
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	private void addSuperClassMethods(TypeMirror superClass, TypeSpec.Builder classBuilder) {
-		if (superClass != null && !ClassName.get(superClass).equals(ClassName.OBJECT)) {
-			try {
-				if (superClass.getKind().equals(TypeKind.DECLARED)) {
-					TypeElement de = (TypeElement) ((DeclaredType) superClass).asElement();
-
-					// is class and not interfaces
-					if (de.getKind().isClass() && (de.getInterfaces() == null || de.getInterfaces().size() == 0)) {
-
-						// add direct method
-						addMethods(de, (DeclaredType) superClass, classBuilder);
-
-						// add superClass methods
-						addSuperClassMethods(de.getSuperclass(), classBuilder);
-					}
-
-					// is Interface or is class and has interfaces
-					else {
-						// add method form super interfaces
-						addSuperInterfaceMethods(de.getInterfaces(), classBuilder);
-					}
-				}
-			} catch (Exception e) {
-				processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
-						"FluxAsyncProcessor process superClass " + superClass.toString() + " fail. exception:"
-								+ e.getMessage());
-				e.printStackTrace();
-			}
-		}
 	}
 }
