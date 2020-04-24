@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.swak.Constants;
+import com.swak.annotation.FluxAsync;
 import com.swak.annotation.FluxService;
 import com.swak.annotation.RestApi;
 import com.swak.annotation.RestPage;
@@ -97,22 +98,35 @@ public class MethodCache {
 			// 级联处理元数据
 			this.cascadeBuildIn(metas, type, null);
 
-			// 如果是接口或者Api则会通过 Method找 Meta
-			if (type.isInterface() || type.getAnnotation(RestApi.class) != null
-					|| type.getAnnotation(RestPage.class) != null) {
-				this.methodIndex = Maps.newHashMap();
+			// 同步服务（可以标注在类或接口上）
+			if (type.getAnnotation(FluxAsync.class) != null) {
+				this.namedIndex = Maps.newHashMap();
 				for (MethodMeta meta : metas) {
-					this.methodIndex.put(meta.getMethod(), meta);
+					this.namedIndex.put(meta.getMethodDesc(), meta);
 				}
 			}
-			// 如果仅仅是服务
+			// 类本身是异步方法，不需要生成异步方法
 			else if (type.getAnnotation(FluxService.class) != null) {
 				this.namedIndex = Maps.newHashMap();
 				for (MethodMeta meta : metas) {
 					this.namedIndex.put(meta.getMethodDesc(), meta);
 				}
 			}
-			// 服务并Api或者其他的类
+			// 类是API
+			else if (type.getAnnotation(RestApi.class) != null || type.getAnnotation(RestPage.class) != null) {
+				this.methodIndex = Maps.newHashMap();
+				for (MethodMeta meta : metas) {
+					this.methodIndex.put(meta.getMethod(), meta);
+				}
+			}
+			// 默认认为这个是异步接口
+			else if (type.isInterface()) {
+				this.methodIndex = Maps.newHashMap();
+				for (MethodMeta meta : metas) {
+					this.methodIndex.put(meta.getMethod(), meta);
+				}
+			}
+			// 服务+API是同一个类，或者普通的类
 			else {
 				this.methodIndex = Maps.newHashMap();
 				this.namedIndex = Maps.newHashMap();
