@@ -1,11 +1,11 @@
-package com.swak.vertx.handler;
+package com.swak.vertx.protocol.http;
 
 import com.swak.Constants;
 import com.swak.entity.Result;
 import com.swak.exception.ErrorCode;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.handler.converter.HttpMessageConverter;
+import com.swak.vertx.protocol.http.converter.HttpMessageConverter;
 import com.swak.vertx.transport.HttpConst;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.vertx.ext.web.RoutingContext;

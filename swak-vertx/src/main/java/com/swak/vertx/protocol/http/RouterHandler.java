@@ -1,4 +1,4 @@
-package com.swak.vertx.handler;
+package com.swak.vertx.protocol.http;
 
 import com.swak.vertx.config.AnnotationBean;
 import io.vertx.core.Vertx;

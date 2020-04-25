@@ -1,4 +1,4 @@
-package com.swak.vertx.handler;
+package com.swak.vertx.protocol.http;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.FORBIDDEN;
 import static io.netty.handler.codec.http.HttpResponseStatus.NOT_MODIFIED;

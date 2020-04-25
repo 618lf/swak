@@ -23,59 +23,57 @@ public class VertxProperties extends TransportProperties {
 
 	private String host = null;
 	private int port = 8888;
+	private int imPort = 8889;
+	private boolean enableWebsocket = false;
+	private boolean enableHttp2 = false;
 	private LogLevel serverLogLevel = null;
 	private Level leakDetectionLevel = Level.DISABLED;
 	private boolean threadCache = true;
 	private int eventLoopPoolSize = VertxOptions.DEFAULT_EVENT_LOOP_POOL_SIZE;
-
-	/**
-	 * vertx Blocking 线程
-	 */
-	private int internalBlockingThreads = 10;
-
-	/**
-	 * vertx Verticle worker 线程
-	 */
+	private int internalBlockingThreads = 2;
 	private int workerThreads = 10;
-
-	/**
-	 * 自定义的线程池
-	 */
 	private Map<String, Integer> workers = Maps.newHashMap();
 	private boolean metricAble = true;
 	private long maxEventLoopExecuteTime = VertxOptions.DEFAULT_MAX_EVENT_LOOP_EXECUTE_TIME;
 	private long maxWorkerExecuteTime = VertxOptions.DEFAULT_MAX_WORKER_EXECUTE_TIME;
-
-	/**
-	 * Event Bus 的超时时间默认, 代码都是提交到 Event Bus来协调运行的， Event Bus 中持有 方法提交和执行的引用
-	 */
 	private int sendTimeout = 5 * 60 * 1000;
-
-	/**
-	 * 上传文件的设置
-	 */
 	private String uploadDirectory = "upload-files";
 	private int bodyLimit = -1;
 	private boolean deleteUploadedFilesOnEnd = false;
-
 	private String rootPath = "io.vertx";
 	private int sessionTimeout = 20000;
 	private int connectTimeout = 3000;
-
-	/**
-	 * 重试
-	 */
 	private int retryInitialSleepTime = 1000;
 	private int retryIntervalTimes = 10000;
 	private int retryMaxTimes = 5;
-
-	/**
-	 * 基于配置
-	 */
 	private String keyStorePath;
 	private String keyStorePass = "secret";
 	private String keyStoreAlgorithm = "HS256";
 	private String jwtTokenName = Constants.TOKEN_NAME;
+
+	public boolean isEnableHttp2() {
+		return enableHttp2;
+	}
+
+	public void setEnableHttp2(boolean enableHttp2) {
+		this.enableHttp2 = enableHttp2;
+	}
+
+	public boolean isEnableWebsocket() {
+		return enableWebsocket;
+	}
+
+	public void setEnableWebsocket(boolean enableWebsocket) {
+		this.enableWebsocket = enableWebsocket;
+	}
+
+	public int getImPort() {
+		return imPort;
+	}
+
+	public void setImPort(int imPort) {
+		this.imPort = imPort;
+	}
 
 	public LogLevel getServerLogLevel() {
 		return serverLogLevel;

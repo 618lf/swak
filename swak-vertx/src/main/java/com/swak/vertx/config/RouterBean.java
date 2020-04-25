@@ -9,9 +9,9 @@ import java.util.Set;
 
 import com.swak.annotation.RequestMethod;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.handler.FluxMethodInvoker;
-import com.swak.vertx.handler.MethodInvoker;
-import com.swak.vertx.handler.RouterHandler;
+import com.swak.vertx.protocol.http.FluxMethodInvoker;
+import com.swak.vertx.protocol.http.MethodInvoker;
+import com.swak.vertx.protocol.http.RouterHandler;
 import com.swak.vertx.transport.VertxProxy;
 
 import io.vertx.core.Handler;

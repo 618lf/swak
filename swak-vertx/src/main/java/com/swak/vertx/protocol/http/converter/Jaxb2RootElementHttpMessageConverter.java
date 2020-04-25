@@ -1,4 +1,4 @@
-package com.swak.vertx.handler.converter;
+package com.swak.vertx.protocol.http.converter;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

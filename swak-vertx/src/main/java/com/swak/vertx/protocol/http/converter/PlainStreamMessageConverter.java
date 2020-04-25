@@ -1,4 +1,4 @@
-package com.swak.vertx.handler.converter;
+package com.swak.vertx.protocol.http.converter;
 
 import com.swak.vertx.transport.HttpConst;
 import com.swak.vertx.transport.multipart.PlainFile;

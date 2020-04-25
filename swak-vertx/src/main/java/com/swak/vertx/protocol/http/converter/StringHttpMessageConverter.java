@@ -1,4 +1,4 @@
-package com.swak.vertx.handler.converter;
+package com.swak.vertx.protocol.http.converter;
 
 import com.swak.Constants;
 import com.swak.utils.StringUtils;

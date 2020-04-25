@@ -1,7 +1,7 @@
 package com.swak.vertx.transport;
 
 import com.swak.utils.StringUtils;
-import com.swak.vertx.handler.RouterHandler;
+import com.swak.vertx.protocol.http.RouterHandler;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;

@@ -13,16 +13,16 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 
 import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.handler.HandlerAdapter;
-import com.swak.vertx.handler.ResultHandler;
-import com.swak.vertx.handler.converter.HttpMessageConverter;
-import com.swak.vertx.handler.converter.Jaxb2RootElementHttpMessageConverter;
-import com.swak.vertx.handler.converter.JsonHttpMessageConverter;
-import com.swak.vertx.handler.converter.PlainStreamMessageConverter;
-import com.swak.vertx.handler.converter.StreamMessageConverter;
-import com.swak.vertx.handler.converter.StringHttpMessageConverter;
-import com.swak.vertx.handler.formatter.DateFormatter;
-import com.swak.vertx.handler.formatter.StringEscapeFormatter;
+import com.swak.vertx.protocol.http.HandlerAdapter;
+import com.swak.vertx.protocol.http.ResultHandler;
+import com.swak.vertx.protocol.http.converter.HttpMessageConverter;
+import com.swak.vertx.protocol.http.converter.Jaxb2RootElementHttpMessageConverter;
+import com.swak.vertx.protocol.http.converter.JsonHttpMessageConverter;
+import com.swak.vertx.protocol.http.converter.PlainStreamMessageConverter;
+import com.swak.vertx.protocol.http.converter.StreamMessageConverter;
+import com.swak.vertx.protocol.http.converter.StringHttpMessageConverter;
+import com.swak.vertx.protocol.http.formatter.DateFormatter;
+import com.swak.vertx.protocol.http.formatter.StringEscapeFormatter;
 import com.swak.vertx.transport.server.ReactiveServer;
 
 /**

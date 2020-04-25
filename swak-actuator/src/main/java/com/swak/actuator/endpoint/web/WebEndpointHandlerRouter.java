@@ -8,8 +8,8 @@ import com.swak.Constants;
 import com.swak.actuator.endpoint.InvocationContext;
 import com.swak.annotation.RouterSupplier;
 import com.swak.vertx.config.IRouterSupplier;
-import com.swak.vertx.handler.HandlerAdapter;
-import com.swak.vertx.handler.MethodInvoker;
+import com.swak.vertx.protocol.http.HandlerAdapter;
+import com.swak.vertx.protocol.http.MethodInvoker;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;

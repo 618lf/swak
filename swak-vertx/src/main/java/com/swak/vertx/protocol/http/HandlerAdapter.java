@@ -1,4 +1,4 @@
-package com.swak.vertx.handler;
+package com.swak.vertx.protocol.http;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 import com.swak.validator.Validator;
 import com.swak.validator.errors.BindErrors;
-import com.swak.vertx.handler.MethodInvoker.MethodParameter;
+import com.swak.vertx.protocol.http.MethodInvoker.MethodParameter;
 import com.swak.vertx.security.SecuritySubject;
 import com.swak.vertx.transport.Subject;
 

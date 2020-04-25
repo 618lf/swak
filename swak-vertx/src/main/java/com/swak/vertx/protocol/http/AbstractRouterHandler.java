@@ -1,4 +1,4 @@
-package com.swak.vertx.handler;
+package com.swak.vertx.protocol.http;
 
 import com.swak.exception.BaseRuntimeException;
 import com.swak.vertx.config.AnnotationBean;

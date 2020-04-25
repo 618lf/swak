@@ -1,4 +1,4 @@
-package com.swak.vertx.handler;
+package com.swak.vertx.protocol.http;
 
 import java.util.concurrent.CompletableFuture;
 

@@ -1,4 +1,4 @@
-package com.swak.vertx.handler.formatter;
+package com.swak.vertx.protocol.http.formatter;
 
 import com.swak.utils.StringUtils;
 import org.springframework.core.convert.converter.Converter;
