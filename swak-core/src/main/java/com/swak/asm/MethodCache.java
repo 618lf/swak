@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.swak.Constants;
-import com.swak.annotation.FluxAsync;
 import com.swak.annotation.FluxService;
 import com.swak.annotation.RestApi;
 import com.swak.annotation.RestPage;
@@ -98,29 +97,17 @@ public class MethodCache {
 			// 级联处理元数据
 			this.cascadeBuildIn(metas, type, null);
 
-			// 同步服务（可以标注在类或接口上）
-			if (type.getAnnotation(FluxAsync.class) != null) {
+			// 类本身是异步方法，不需要生成异步方法， 如果本生是异步方法则不需要生成异步接口，则两种索引方式都需要
+			// 在调用时会去做一个补充查询
+			if (type.getAnnotation(FluxService.class) != null) {
 				this.namedIndex = Maps.newHashMap();
 				for (MethodMeta meta : metas) {
 					this.namedIndex.put(meta.getMethodDesc(), meta);
 				}
 			}
-			// 类本身是异步方法，不需要生成异步方法
-			else if (type.getAnnotation(FluxService.class) != null) {
-				this.namedIndex = Maps.newHashMap();
-				for (MethodMeta meta : metas) {
-					this.namedIndex.put(meta.getMethodDesc(), meta);
-				}
-			}
-			// 类是API
-			else if (type.getAnnotation(RestApi.class) != null || type.getAnnotation(RestPage.class) != null) {
-				this.methodIndex = Maps.newHashMap();
-				for (MethodMeta meta : metas) {
-					this.methodIndex.put(meta.getMethod(), meta);
-				}
-			}
-			// 默认认为这个是异步接口
-			else if (type.isInterface()) {
+			// 类是API 或者 异步接口
+			else if (type.getAnnotation(RestApi.class) != null || type.getAnnotation(RestPage.class) != null
+					|| type.isInterface()) {
 				this.methodIndex = Maps.newHashMap();
 				for (MethodMeta meta : metas) {
 					this.methodIndex.put(meta.getMethod(), meta);
@@ -283,6 +270,7 @@ public class MethodCache {
 		 * @return MethodMeta
 		 */
 		public MethodMeta lookup(String named) {
+			this.initNamedIndex();
 			if (!namedIndex.containsKey(named)) {
 				throw new BaseRuntimeException("Please Set Method Public.");
 			}
@@ -296,10 +284,33 @@ public class MethodCache {
 		 * @return MethodMeta
 		 */
 		public MethodMeta lookup(Method method) {
+			this.initMethodIndex();
 			if (!methodIndex.containsKey(method)) {
 				throw new BaseRuntimeException("Please Set method Public.");
 			}
 			return methodIndex.get(method);
+		}
+
+		// 初始化索引
+		private void initMethodIndex() {
+			if (this.methodIndex == null) {
+				Map<Method, MethodMeta> methodIndex = Maps.newHashMap();
+				for (MethodMeta meta : this.namedIndex.values()) {
+					methodIndex.put(meta.getMethod(), meta);
+				}
+				this.methodIndex = methodIndex;
+			}
+		}
+
+		// 初始化索引
+		private void initNamedIndex() {
+			if (this.namedIndex == null) {
+				Map<String, MethodMeta> methodIndex = Maps.newHashMap();
+				for (MethodMeta meta : this.methodIndex.values()) {
+					methodIndex.put(meta.getMethodDesc(), meta);
+				}
+				this.namedIndex = methodIndex;
+			}
 		}
 	}
 
