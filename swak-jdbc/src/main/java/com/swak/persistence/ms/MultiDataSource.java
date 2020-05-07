@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.swak.loadbalance.LoadBalance;
+import com.swak.loadbalance.impl.RoundRobinLoadBalance;
 import com.swak.utils.Lists;
 
 /**
@@ -23,9 +24,9 @@ public class MultiDataSource extends DataSourceWraper implements InitializingBea
 	List<DataSource> dataSources;
 
 	/**
-	 * 负载均衡算法
+	 * 负载均衡算法 -- 默认使用轮询
 	 */
-	LoadBalance<DataSource> loadBalance;
+	LoadBalance<DataSource> loadBalance = new RoundRobinLoadBalance<>();
 
 	/**
 	 * 添加数据源

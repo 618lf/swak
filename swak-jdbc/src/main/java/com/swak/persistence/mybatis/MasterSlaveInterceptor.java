@@ -1,10 +1,13 @@
 package com.swak.persistence.mybatis;
 
 import java.util.Locale;
-import java.util.concurrent.Executor;
 
+import org.apache.ibatis.cache.CacheKey;
+import org.apache.ibatis.executor.Executor;
+import org.apache.ibatis.executor.keygen.SelectKeyGenerator;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
@@ -24,7 +27,9 @@ import com.swak.persistence.datasource.DataSourceHolder;
  */
 @Intercepts({ @Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }),
 		@Signature(type = Executor.class, method = "query", args = { MappedStatement.class, Object.class,
-				RowBounds.class, ResultHandler.class }) })
+				RowBounds.class, ResultHandler.class }),
+		@Signature(type = Executor.class, method = "query", args = { MappedStatement.class, Object.class,
+				RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class }) })
 public class MasterSlaveInterceptor implements Interceptor {
 
 	/**
@@ -37,18 +42,27 @@ public class MasterSlaveInterceptor implements Interceptor {
 
 		// 是否是用事务管理
 		boolean syschronizationActive = TransactionSynchronizationManager.isActualTransactionActive();
-		Object[] objects = invocation.getArgs();
-		MappedStatement mappedStatement = (MappedStatement) objects[0];
 
 		// 默认走主数据源
 		Object lookupKey = MS.Master;
 
 		// 没有事务
 		if (!syschronizationActive) {
-			BoundSql boundSql = mappedStatement.getSqlSource().getBoundSql(objects[1]);
-			String sql = boundSql.getSql().toLowerCase(Locale.CHINA).replaceAll("[\\t\\n\\r]", " ");
-			if (!sql.matches(REGEX)) {
-				lookupKey = MS.Slave;
+
+			// 参数
+			Object[] objects = invocation.getArgs();
+			MappedStatement mappedStatement = (MappedStatement) objects[0];
+
+			// 查询 -- 但是要排除： for update, 排除：SELECT LAST_INSERT_ID()；
+			if (mappedStatement.getSqlCommandType().equals(SqlCommandType.SELECT)
+					&& !mappedStatement.getId().contains(SelectKeyGenerator.SELECT_KEY_SUFFIX)) {
+
+				// 不是 for update
+				BoundSql boundSql = mappedStatement.getSqlSource().getBoundSql(objects[1]);
+				String sql = boundSql.getSql().toLowerCase(Locale.CHINA).replaceAll("[\\t\\n\\r]", " ");
+				if (!sql.matches(REGEX)) {
+					lookupKey = MS.Slave;
+				}
 			}
 		}
 
@@ -72,8 +86,7 @@ public class MasterSlaveInterceptor implements Interceptor {
 	public Object plugin(Object target) {
 		if (target instanceof Executor) {
 			return Plugin.wrap(target, this);
-		} else {
-			return target;
 		}
+		return target;
 	}
 }
