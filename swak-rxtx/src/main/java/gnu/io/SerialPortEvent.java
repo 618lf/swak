@@ -57,7 +57,7 @@
 --------------------------------------------------------------------------*/
 package gnu.io;
 
-import java.util.*;
+import java.util.EventObject;
 
 /**
  * @author Trent Jarvi
@@ -80,7 +80,7 @@ public class SerialPortEvent extends EventObject {
 	public static final int PE = 8;
 	public static final int FE = 9;
 	public static final int BI = 10;
-
+	public static final int HARDWARE_ERROR = 11;
 	private boolean OldValue;
 	private boolean NewValue;
 	private int eventType;
