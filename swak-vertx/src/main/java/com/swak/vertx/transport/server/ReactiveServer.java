@@ -5,11 +5,9 @@ import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.swak.Constants;
-import com.swak.OS;
+import com.swak.reactivex.context.EndPoints;
 import com.swak.reactivex.context.Server;
 import com.swak.reactivex.context.ServerException;
-import com.swak.utils.StringUtils;
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.transport.MainVerticle;
@@ -27,11 +25,9 @@ public class ReactiveServer implements Server {
 	private static Logger Logger = LoggerFactory.getLogger(ReactiveServer.class);
 	private final AnnotationBean annotation;
 	private final MainVerticle mainVerticle;
-	private final VertxProperties properties;
 
 	public ReactiveServer(AnnotationBean annotation, VertxProperties properties) {
 		this.annotation = annotation;
-		this.properties = properties;
 		this.mainVerticle = new MainVerticle(annotation, properties);
 	}
 
@@ -92,13 +88,7 @@ public class ReactiveServer implements Server {
 	 * 显示启动的服务
 	 */
 	@Override
-	public String getAddresses() {
-		StringBuilder address = new StringBuilder();
-		address.append("Host: ").append("%s").append(", ").append(this.mainVerticle.getServicePorts());
-		String hostName = properties.getHost();
-		if (!Constants.LOCALHOST.equals(hostName)) {
-			hostName = OS.ip();
-		}
-		return StringUtils.format(address.toString(), hostName);
+	public EndPoints getEndPoints() {
+		return this.mainVerticle.getEndPoints();
 	}
 }

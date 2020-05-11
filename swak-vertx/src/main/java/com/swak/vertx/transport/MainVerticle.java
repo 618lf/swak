@@ -5,10 +5,13 @@ import java.util.Set;
 
 import org.springframework.aop.support.AopUtils;
 
+import com.swak.Constants;
+import com.swak.OS;
 import com.swak.annotation.Context;
 import com.swak.annotation.Server;
+import com.swak.reactivex.context.EndPoints;
+import com.swak.reactivex.context.EndPoints.EndPoint;
 import com.swak.utils.Lists;
-import com.swak.utils.Sets;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.ServiceBean;
@@ -33,18 +36,25 @@ public class MainVerticle extends AbstractVerticle {
 
 	private final AnnotationBean annotation;
 	private final VertxProperties properties;
-	private String servicePorts;
+	private EndPoints endPoints;
 
 	public MainVerticle(AnnotationBean annotation, VertxProperties properties) {
 		this.annotation = annotation;
 		this.properties = properties;
+
+		// 服务器地址
+		String hostName = properties.getHost();
+		if (!Constants.LOCALHOST.equals(hostName)) {
+			hostName = OS.ip();
+		}
+		this.endPoints = new EndPoints().setHost(hostName);
 	}
 
 	/**
 	 * 服务的端口
 	 */
-	public String getServicePorts() {
-		return servicePorts;
+	public EndPoints getEndPoints() {
+		return endPoints;
 	}
 
 	@Override
@@ -61,13 +71,13 @@ public class MainVerticle extends AbstractVerticle {
 		// 等待所有服务全部启动完成
 		CompositeFuture.all(futures).onComplete(res -> {
 			if (res.succeeded()) {
-				Set<String> ports = Sets.newHashSet();
-				res.result().list().forEach(port -> {
-					if (!StringUtils.EMPTY.equals(port)) {
-						ports.add(String.valueOf(port));
+				List<EndPoint> endPoints = Lists.newArrayList();
+				res.result().list().forEach(endpoint -> {
+					if (endpoint != null && endpoint instanceof EndPoint) {
+						endPoints.add((EndPoint) endpoint);
 					}
 				});
-				servicePorts = StringUtils.join(ports, ", ");
+				this.endPoints.setEndPoints(endPoints);
 				startPromise.complete();
 			} else {
 				startPromise.fail(res.cause());
@@ -76,8 +86,8 @@ public class MainVerticle extends AbstractVerticle {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private List<Future<String>> startServices() {
-		List<Future<String>> futures = Lists.newArrayList();
+	private List<Future<EndPoint>> startServices() {
+		List<Future<EndPoint>> futures = Lists.newArrayList();
 		List<Future> serviceFutures = Lists.newArrayList();
 		Set<ServiceBean> services = annotation.getServices();
 		for (ServiceBean service : services) {
@@ -90,13 +100,13 @@ public class MainVerticle extends AbstractVerticle {
 			}
 		}
 		futures.add(CompositeFuture.all(serviceFutures).map(res -> {
-			return StringUtils.EMPTY;
+			return null;
 		}));
 		return futures;
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Future<String> startWebSocket(ServiceBean service) {
+	private Future<EndPoint> startWebSocket(ServiceBean service) {
 
 		// 启动监听服务
 		List<Future> futures = Lists.newArrayList();
@@ -113,12 +123,13 @@ public class MainVerticle extends AbstractVerticle {
 
 		// 合并成一个结果
 		return CompositeFuture.all(futures).map(res -> {
-			return "WS: " + properties.getImPort() + "[" + intstances + "]";
+			return new EndPoint().setScheme(Server.IM).setHost(this.endPoints.getHost()).setPort(properties.getPort())
+					.setParallel(intstances);
 		});
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Future<String> startHttp(ServiceBean service) {
+	private Future<EndPoint> startHttp(ServiceBean service) {
 
 		// Router 处理器
 		RouterHandler routerHandler = this.getProxyService(service);
@@ -140,15 +151,16 @@ public class MainVerticle extends AbstractVerticle {
 
 		// 合并成一个结果
 		return CompositeFuture.all(futures).map(res -> {
-			return "HTTP: " + properties.getPort() + "[" + intstances + "]";
+			return new EndPoint().setScheme(Server.Http).setHost(this.endPoints.getHost()).setPort(properties.getPort())
+					.setParallel(intstances);
 		});
 	}
 
 	@SuppressWarnings({ "deprecation" })
-	private List<Future<String>> startService(ServiceBean service) {
+	private List<Future<EndPoint>> startService(ServiceBean service) {
 
 		// 发布服务标示
-		List<Future<String>> futures = Lists.newArrayList();
+		List<Future<EndPoint>> futures = Lists.newArrayList();
 
 		// 以worker 的方式发布 默认是并发的执行代码。
 		DeploymentOptions options = new DeploymentOptions().setWorker(true);
@@ -179,7 +191,7 @@ public class MainVerticle extends AbstractVerticle {
 		for (int i = 1; i <= intstances; i++) {
 			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
 					new ServiceVerticle(this.getProxyService(service), service.getServiceType()), options, s));
-			futures.add(stFuture);
+			futures.add(stFuture.map(id -> null));
 		}
 		return futures;
 	}
