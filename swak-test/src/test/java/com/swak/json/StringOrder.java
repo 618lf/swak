@@ -1,14 +1,15 @@
 package com.swak.json;
 
-import com.swak.entity.BaseEntity;
-
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Getter
 @Setter
-public class StringOrder extends BaseEntity<String> {
+@Accessors(chain = true)
+public class StringOrder extends GenEntity<String, String> {
 
 	private static final long serialVersionUID = 1L;
+	private String name2;
 
 }

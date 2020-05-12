@@ -14,11 +14,15 @@ public class JsonMain {
 		StringOrder sorder = new StringOrder();
 		sorder.setId("1024");
 		sorder.setName("我的订单");
+		sorder.setName2("哈哈的订单");
+		sorder.setPk2("pk2");
+		sorder.setPk3("pk3");
 		String sjson = JsonMapper.toJson(sorder);
 		System.out.println(sjson);
 		StringOrder sorder2 = JsonMapper.fromJson(sjson, StringOrder.class);
-		System.out.println(sorder2.getId());
-		
+		System.out
+				.println(sorder2.getId() + ":" + sorder2.getName2() + ":" + sorder2.getPk2() + ":" + sorder2.getPk3());
+
 		LongOrder lorder = new LongOrder();
 		lorder.setId(1024L);
 		lorder.setName("我的订单2");
