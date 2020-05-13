@@ -4,7 +4,9 @@ import com.swak.utils.StringUtils;
 import com.swak.vertx.protocol.http.RouterHandler;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Promise;
+import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 
 /**
@@ -36,9 +38,24 @@ public class HttpServerVerticle extends AbstractVerticle {
 
 		// 发布服务
 		if (StringUtils.isBlank(host)) {
-			vertx.createHttpServer().requestHandler(router).listen(port, res -> startPromise.complete());
+			vertx.createHttpServer().requestHandler(router).listen(port, res -> this.startResult(startPromise, res));
 		} else {
-			vertx.createHttpServer().requestHandler(router).listen(port, host, res -> startPromise.complete());
+			vertx.createHttpServer().requestHandler(router).listen(port, host,
+					res -> this.startResult(startPromise, res));
+		}
+	}
+
+	/**
+	 * 启动异常处理
+	 * 
+	 * @param startPromise
+	 * @param result
+	 */
+	private void startResult(Promise<Void> startPromise, AsyncResult<HttpServer> result) {
+		if (result.failed()) {
+			startPromise.fail(result.cause());
+		} else {
+			startPromise.complete();
 		}
 	}
 }

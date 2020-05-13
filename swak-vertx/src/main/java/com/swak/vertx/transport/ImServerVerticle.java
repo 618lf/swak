@@ -5,8 +5,10 @@ import com.swak.vertx.protocol.ws.ServerWebSocketHolder;
 import com.swak.vertx.protocol.ws.WebSocketHandler;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
+import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.ServerWebSocket;
 
 /**
@@ -34,9 +36,24 @@ public class ImServerVerticle extends AbstractVerticle implements Handler<Server
 	@Override
 	public void start(Promise<Void> startPromise) {
 		if (StringUtils.isBlank(host)) {
-			vertx.createHttpServer().webSocketHandler(this).listen(port, res -> startPromise.complete());
+			vertx.createHttpServer().webSocketHandler(this).listen(port, res -> this.startResult(startPromise, res));
 		} else {
-			vertx.createHttpServer().webSocketHandler(this).listen(port, host, res -> startPromise.complete());
+			vertx.createHttpServer().webSocketHandler(this).listen(port, host,
+					res -> this.startResult(startPromise, res));
+		}
+	}
+
+	/**
+	 * 启动异常处理
+	 * 
+	 * @param startPromise
+	 * @param result
+	 */
+	private void startResult(Promise<Void> startPromise, AsyncResult<HttpServer> result) {
+		if (result.failed()) {
+			startPromise.fail(result.cause());
+		} else {
+			startPromise.complete();
 		}
 	}
 
