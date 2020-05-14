@@ -115,9 +115,9 @@ public class MainVerticle extends AbstractVerticle {
 		DeploymentOptions options = new DeploymentOptions().setWorker(false);
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
-			Future<String> stFuture = Future
-					.future(s -> vertx.deployVerticle(new ImServerVerticle(this.getProxyService(service),
-							service.getServiceType(), properties.getHost(), properties.getImPort()), options, s));
+			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
+					new ImServerVerticle(this.getProxyService(service), service.getServiceType(), properties), options,
+					s));
 			futures.add(stFuture);
 		}
 
@@ -144,8 +144,8 @@ public class MainVerticle extends AbstractVerticle {
 		DeploymentOptions options = new DeploymentOptions().setWorker(false);
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
-			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
-					new HttpServerVerticle(routerHandler, properties.getHost(), properties.getPort()), options, s));
+			Future<String> stFuture = Future
+					.future(s -> vertx.deployVerticle(new HttpServerVerticle(routerHandler, properties), options, s));
 			futures.add(stFuture);
 		}
 

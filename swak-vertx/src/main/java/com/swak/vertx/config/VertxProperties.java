@@ -1,5 +1,6 @@
 package com.swak.vertx.config;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -24,8 +25,12 @@ public class VertxProperties extends TransportProperties {
 	private String host = null;
 	private int port = 8888;
 	private int imPort = 8889;
+
+	/**
+	 * 配置是否开启：WebSocket
+	 */
 	private boolean enableWebsocket = false;
-	
+
 	/**
 	 * http2 需要 配置ssl ，服务的 openssl版本在1.0.2+ 以上才支持 Http2
 	 */
@@ -50,10 +55,76 @@ public class VertxProperties extends TransportProperties {
 	private int retryInitialSleepTime = 1000;
 	private int retryIntervalTimes = 10000;
 	private int retryMaxTimes = 5;
+
+	/**
+	 * 权限验证
+	 */
 	private String keyStorePath;
 	private String keyStorePass = "secret";
 	private String keyStoreAlgorithm = "HS256";
 	private String jwtTokenName = Constants.TOKEN_NAME;
+
+	/**
+	 * 开启压缩
+	 */
+	private boolean compressionSupported;
+	private int compressionLevel = -1;
+
+	/**
+	 * 设置服务器证书
+	 */
+	private boolean useSsl;
+	private boolean useAlpn;
+	private List<String> keyPaths;
+	private List<String> certPaths;
+
+	public boolean isUseSsl() {
+		return useSsl;
+	}
+
+	public void setUseSsl(boolean useSsl) {
+		this.useSsl = useSsl;
+	}
+
+	public boolean isUseAlpn() {
+		return useAlpn;
+	}
+
+	public void setUseAlpn(boolean useAlpn) {
+		this.useAlpn = useAlpn;
+	}
+
+	public List<String> getKeyPaths() {
+		return keyPaths;
+	}
+
+	public void setKeyPaths(List<String> keyPaths) {
+		this.keyPaths = keyPaths;
+	}
+
+	public List<String> getCertPaths() {
+		return certPaths;
+	}
+
+	public void setCertPaths(List<String> certPaths) {
+		this.certPaths = certPaths;
+	}
+
+	public boolean isCompressionSupported() {
+		return compressionSupported;
+	}
+
+	public void setCompressionSupported(boolean compressionSupported) {
+		this.compressionSupported = compressionSupported;
+	}
+
+	public int getCompressionLevel() {
+		return compressionLevel;
+	}
+
+	public void setCompressionLevel(int compressionLevel) {
+		this.compressionLevel = compressionLevel;
+	}
 
 	public boolean isEnableHttp2() {
 		return enableHttp2;

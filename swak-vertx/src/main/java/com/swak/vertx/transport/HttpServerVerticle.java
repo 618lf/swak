@@ -1,12 +1,12 @@
 package com.swak.vertx.transport;
 
 import com.swak.utils.StringUtils;
+import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.protocol.http.RouterHandler;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Promise;
-import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
 
 /**
@@ -15,16 +15,14 @@ import io.vertx.ext.web.Router;
  * @author: lifeng
  * @date: 2020/3/29 21:15
  */
-public class HttpServerVerticle extends AbstractVerticle {
+public class HttpServerVerticle extends AbstractVerticle implements ServerVerticle {
 
-	private String host;
-	private int port;
+	private final VertxProperties properties;
 	private final RouterHandler routerHandler;
 
-	public HttpServerVerticle(RouterHandler routerHandler, String host, int port) {
+	public HttpServerVerticle(RouterHandler routerHandler, VertxProperties properties) {
 		this.routerHandler = routerHandler;
-		this.host = host;
-		this.port = port;
+		this.properties = properties;
 	}
 
 	/**
@@ -36,26 +34,16 @@ public class HttpServerVerticle extends AbstractVerticle {
 		// 获得路由 -- Router 是线程安全的所以多个Verticle实例可以公用
 		Router router = routerHandler.getRouter();
 
-		// 发布服务
-		if (StringUtils.isBlank(host)) {
-			vertx.createHttpServer().requestHandler(router).listen(port, res -> this.startResult(startPromise, res));
-		} else {
-			vertx.createHttpServer().requestHandler(router).listen(port, host,
-					res -> this.startResult(startPromise, res));
-		}
-	}
+		// 服务器配置
+		HttpServerOptions options = this.serverOptions(properties);
 
-	/**
-	 * 启动异常处理
-	 * 
-	 * @param startPromise
-	 * @param result
-	 */
-	private void startResult(Promise<Void> startPromise, AsyncResult<HttpServer> result) {
-		if (result.failed()) {
-			startPromise.fail(result.cause());
+		// 发布服务
+		if (StringUtils.isBlank(properties.getHost())) {
+			vertx.createHttpServer(options).requestHandler(router).listen(properties.getPort(),
+					res -> this.startResult(startPromise, res));
 		} else {
-			startPromise.complete();
+			vertx.createHttpServer(options).requestHandler(router).listen(properties.getPort(), properties.getHost(),
+					res -> this.startResult(startPromise, res));
 		}
 	}
 }
