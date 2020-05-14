@@ -25,6 +25,10 @@ public class VertxProperties extends TransportProperties {
 	private int port = 8888;
 	private int imPort = 8889;
 	private boolean enableWebsocket = false;
+	
+	/**
+	 * http2 需要 配置ssl ，服务的 openssl版本在1.0.2+ 以上才支持 Http2
+	 */
 	private boolean enableHttp2 = false;
 	private LogLevel serverLogLevel = null;
 	private Level leakDetectionLevel = Level.DISABLED;
