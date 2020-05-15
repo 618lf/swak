@@ -616,4 +616,13 @@ public class HandlerAdapter extends AbstractRouterHandler {
 		}
 		return null;
 	}
+
+	/**
+	 * 处理错误消息
+	 * 
+	 * @param e 错误
+	 */
+	public void handle(Throwable e) {
+		logger.error("错误请求处理", e);
+	}
 }

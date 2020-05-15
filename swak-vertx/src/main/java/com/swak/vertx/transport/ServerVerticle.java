@@ -6,6 +6,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.net.JksOptions;
 import io.vertx.core.net.PemKeyCertOptions;
 
 /**
@@ -34,12 +35,18 @@ public interface ServerVerticle {
 		}
 		if (properties.getKeyPaths() != null && properties.getCertPaths() != null && properties.getKeyPaths().size() > 0
 				&& properties.getCertPaths().size() == properties.getKeyPaths().size()) {
-			PemKeyCertOptions pemKeys = new PemKeyCertOptions().setKeyPaths(properties.getKeyPaths())
-					.setCertPaths(properties.getCertPaths());
-			options.setKeyCertOptions(pemKeys);
+			if (properties.getKeyPaths().get(0).endsWith(".pem")) {
+				PemKeyCertOptions pemKeys = new PemKeyCertOptions().setKeyPaths(properties.getKeyPaths())
+						.setCertPaths(properties.getCertPaths());
+				options.setKeyCertOptions(pemKeys);
+			} else if (properties.getKeyPaths().get(0).endsWith(".jks")) {
+				options.setKeyStoreOptions(new JksOptions().setPath(properties.getKeyPaths().get(0))
+						.setPassword(properties.getCertPaths().get(0)));
+			}
 		}
 		options.setSsl(properties.isUseSsl());
 		options.setUseAlpn(properties.isUseAlpn());
+		options.setClientAuth(properties.getClientAuth());
 		return options;
 	}
 

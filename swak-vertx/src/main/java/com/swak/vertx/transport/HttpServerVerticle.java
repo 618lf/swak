@@ -39,11 +39,11 @@ public class HttpServerVerticle extends AbstractVerticle implements ServerVertic
 
 		// 发布服务
 		if (StringUtils.isBlank(properties.getHost())) {
-			vertx.createHttpServer(options).requestHandler(router).listen(properties.getPort(),
-					res -> this.startResult(startPromise, res));
+			vertx.createHttpServer(options).requestHandler(router).exceptionHandler(routerHandler::handle)
+					.listen(properties.getPort(), res -> this.startResult(startPromise, res));
 		} else {
-			vertx.createHttpServer(options).requestHandler(router).listen(properties.getPort(), properties.getHost(),
-					res -> this.startResult(startPromise, res));
+			vertx.createHttpServer(options).requestHandler(router).exceptionHandler(routerHandler::handle)
+					.listen(properties.getPort(), properties.getHost(), res -> this.startResult(startPromise, res));
 		}
 	}
 }

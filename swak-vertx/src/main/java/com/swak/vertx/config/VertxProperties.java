@@ -12,6 +12,7 @@ import com.swak.utils.Maps;
 import io.netty.handler.logging.LogLevel;
 import io.netty.util.ResourceLeakDetector.Level;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.http.ClientAuth;
 
 /**
  * Vertx 的属性配置
@@ -77,6 +78,15 @@ public class VertxProperties extends TransportProperties {
 	private boolean useAlpn;
 	private List<String> keyPaths;
 	private List<String> certPaths;
+	private ClientAuth clientAuth = ClientAuth.NONE;
+
+	public ClientAuth getClientAuth() {
+		return clientAuth;
+	}
+
+	public void setClientAuth(ClientAuth clientAuth) {
+		this.clientAuth = clientAuth;
+	}
 
 	public boolean isUseSsl() {
 		return useSsl;
