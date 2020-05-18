@@ -47,7 +47,7 @@ public class VertxProperties extends TransportProperties {
 	private long maxEventLoopExecuteTime = VertxOptions.DEFAULT_MAX_EVENT_LOOP_EXECUTE_TIME;
 	private long maxWorkerExecuteTime = VertxOptions.DEFAULT_MAX_WORKER_EXECUTE_TIME;
 	private int sendTimeout = 5 * 60 * 1000;
-	private String uploadDirectory = "upload-files";
+	private String uploadDirectory = "uploads";
 	private int bodyLimit = -1;
 	private boolean deleteUploadedFilesOnEnd = false;
 	private String rootPath = "io.vertx";

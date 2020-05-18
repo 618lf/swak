@@ -37,7 +37,10 @@ public interface Encodes {
 	 * @return
 	 */
 	default String crc16(String data) {
-		return crc16(this.decodeHex(data));
+		if (!data.startsWith("SD")) {
+			return crc16(this.decodeHex(data));
+		}
+		return data;
 	}
 
 	/**
