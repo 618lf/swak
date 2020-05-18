@@ -99,11 +99,8 @@
 			<version>${freemarker.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.swak</groupId>
-			<artifactId>swak-kotlin</artifactId>
-			<scope>provided</scope>
-		</dependency>
+		<!-- <dependency> <groupId>com.swak</groupId> <artifactId>swak-kotlin</artifactId> 
+			<scope>provided</scope> </dependency> -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

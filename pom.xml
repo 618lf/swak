@@ -98,8 +98,8 @@
 		<project.version>${project.version}</project.version>
 
 		<!-- plugin setting -->
-        <lombok-maven-plugin>1.18.10.0</lombok-maven-plugin>
-        <maven-compiler-plugin>3.8.1</maven-compiler-plugin>
+		<lombok-maven-plugin>1.18.10.0</lombok-maven-plugin>
+		<maven-compiler-plugin>3.8.1</maven-compiler-plugin>
 		<maven-surefire-plugin>3.0.0-M4</maven-surefire-plugin>
 		<maven-source-plugin>3.2.0</maven-source-plugin>
 		<maven-assembly-plugin>3.2.0</maven-assembly-plugin>
@@ -251,39 +251,14 @@
 	<!-- 插件配置 -->
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.jetbrains.kotlin</groupId>
-				<artifactId>kotlin-maven-plugin</artifactId>
-				<version>${kotlin.version}</version>
-				<executions>
-					<execution>
-						<id>compile</id>
-						<phase>process-sources</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<configuration>
-							<jvmTarget>${jdk.version}</jvmTarget>
-							<sourceDirs>
-								<sourceDir>${project.basedir}/src/main/java</sourceDir>
-							</sourceDirs>
-						</configuration>
-					</execution>
-					<execution>
-						<id>test-compile</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>test-compile</goal>
-						</goals>
-						<configuration>
-							<jvmTarget>${jdk.version}</jvmTarget>
-							<sourceDirs>
-								<sourceDir>${project.basedir}/src/test/java</sourceDir>
-							</sourceDirs>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+			<!-- <plugin> <groupId>org.jetbrains.kotlin</groupId> <artifactId>kotlin-maven-plugin</artifactId> 
+				<version>${kotlin.version}</version> <executions> <execution> <id>compile</id> 
+				<phase>process-sources</phase> <goals> <goal>compile</goal> </goals> <configuration> 
+				<jvmTarget>${jdk.version}</jvmTarget> <sourceDirs> <sourceDir>${project.basedir}/src/main/java</sourceDir> 
+				</sourceDirs> </configuration> </execution> <execution> <id>test-compile</id> 
+				<phase>test-compile</phase> <goals> <goal>test-compile</goal> </goals> <configuration> 
+				<jvmTarget>${jdk.version}</jvmTarget> <sourceDirs> <sourceDir>${project.basedir}/src/test/java</sourceDir> 
+				</sourceDirs> </configuration> </execution> </executions> </plugin> -->
 			<plugin>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok-maven-plugin</artifactId>
