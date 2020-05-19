@@ -57,6 +57,7 @@ public interface Constants {
 	 **/
 	long ROOT = 0L;
 	long INVALID_ID = -1;
+	String STR_INVALID_ID = "-1";
 
 	/**
 	 * 是/否/删除 - TINYINT
