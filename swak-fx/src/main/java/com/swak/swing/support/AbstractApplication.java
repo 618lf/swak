@@ -1,4 +1,4 @@
-package com.swak.fx.support;
+package com.swak.swing.support;
 
 import java.awt.SystemTray;
 import java.util.concurrent.CompletableFuture;
@@ -14,20 +14,11 @@ import com.swak.ui.Event;
 import com.swak.ui.EventListener;
 import com.swak.ui.EventLoopFactory;
 
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.input.Clipboard;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
 /**
- * The Class AbstractApplication.
- *
- * @author Felix Roske
+ * 定义基础的启动流程
+ * 
+ * @author lifeng
+ * @date 2020年5月21日 上午10:33:50
  */
 public abstract class AbstractApplication extends Application implements EventListener {
 
@@ -54,21 +45,18 @@ public abstract class AbstractApplication extends Application implements EventLi
 		this.start(savedArgs).whenComplete((ctx, throwable) -> {
 			if (throwable != null) {
 				LOGGER.error("Failed to load spring application context: ", throwable);
-				Platform.runLater(() -> showErrorAlert(throwable));
+				Display.runUI(() -> showErrorAlert(throwable));
 			}
 		}).thenAcceptBothAsync(splashIsShowing, (ctx, closeSplash) -> {
 			closeSplash.run();
 		});
 	}
 
-	/**
-	 * 执行监听关闭
-	 */
 	@Override
 	public void listen(Event event) {
 		if (event == Event.EXIT) {
-			this.stop(Display.getStage()).whenComplete((v, t) -> {
-				Platform.exit();
+			this.stop().whenComplete((v, t) -> {
+				System.exit(0);
 			});
 		}
 	}
@@ -85,14 +73,14 @@ public abstract class AbstractApplication extends Application implements EventLi
 	 * 
 	 * @param savedArgs
 	 */
-	protected abstract CompletableFuture<Void> stop(final Stage stage);
+	protected abstract CompletableFuture<Void> stop();
 
 	/**
 	 * 程序定制
 	 * 
 	 * @param stage
 	 */
-	protected abstract void customStage(Stage stage, SystemTray tray);
+	protected abstract void customStage(AbstractPage page, SystemTray tray);
 
 	/**
 	 * 创建页面
@@ -109,28 +97,18 @@ public abstract class AbstractApplication extends Application implements EventLi
 	/**
 	 * 启动
 	 */
-	@Override
-	public void start(final Stage stage) throws Exception {
-		Display.setStage(stage);
-		Display.setHostServices(this.getHostServices());
-		Display.setClipboard(Clipboard.getSystemClipboard());
+	public void start() throws Exception {
 		if (splashView != null) {
 			AbstractPage splash = this.createPage(splashView);
-			final Stage splashStage = new Stage(StageStyle.TRANSPARENT);
-			final Scene splashScene = new Scene(splash.getView(), Color.TRANSPARENT);
-			this.customStage(splashStage, null);
-			splashStage.setScene(splashScene);
-			splashStage.initStyle(StageStyle.TRANSPARENT);
-			splashStage.show();
-
+			splash.show();
+			this.customStage(splash, null);
 			splashIsShowing.complete(() -> {
 				splash.waitClose().whenComplete((v, t) -> {
 					Display.runUI(() -> {
 						showMainView().whenComplete((v1, t1) -> {
 							Display.runUI(() -> {
 								v1.run();
-								splashStage.close();
-								splashStage.setScene(null);
+								splash.close();
 							});
 						});
 					});
@@ -156,19 +134,11 @@ public abstract class AbstractApplication extends Application implements EventLi
 		CompletableFuture<Runnable> mainViewInited = new CompletableFuture<>();
 		try {
 			AbstractPage page = this.createPage(mainView);
-			if (Display.getScene() == null) {
-				Display.setScene(new Scene(page.getView()));
-			} else {
-				Display.getScene().setRoot(page.getView());
-			}
-			Display.getStage().setTitle(page.getDefaultTitle());
-			Display.getStage().initStyle(page.getDefaultStyle());
-			Display.getStage().setScene(Display.getScene());
-			this.customStage(Display.getStage(), Display.getSystemTray());
+			this.customStage(page, Display.getSystemTray());
 			page.whenInited().thenAcceptAsync(v -> {
 				this.postInitialized(page);
 				mainViewInited.complete(() -> {
-					Display.getStage().show();
+					page.show();
 				});
 			});
 		} catch (Throwable t) {
@@ -183,7 +153,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 	 * 所有初始化之后
 	 */
 	protected void postInitialized(AbstractPage mainPage) {
-		Display.getStage().setOnShown(event -> mainPage.onReady());
+
 	}
 
 	/**
@@ -192,10 +162,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 	 * @param throwable
 	 */
 	protected void showErrorAlert(Throwable throwable) {
-		Alert alert = new Alert(AlertType.ERROR,
-				"Oops! An unrecoverable error occurred.\n" + "Please contact your software vendor.\n\n"
-						+ "The application will stop now.\n\n" + "Error: " + throwable.getMessage());
-		alert.showAndWait().ifPresent(response -> Platform.exit());
+
 	}
 
 	/**

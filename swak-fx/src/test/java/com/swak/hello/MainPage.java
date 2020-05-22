@@ -4,10 +4,10 @@ import com.swak.fx.support.App;
 import com.swak.fx.support.Dialogs;
 import com.swak.fx.support.Display;
 import com.swak.fx.support.DownloadPane;
-import com.swak.fx.support.Event;
-import com.swak.fx.support.EventListener;
 import com.swak.fx.support.FXMLView;
 import com.swak.fx.support.Window;
+import com.swak.ui.Event;
+import com.swak.ui.EventListener;
 
 import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;

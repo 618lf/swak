@@ -1,4 +1,4 @@
-package com.swak.fx.support;
+package com.swak.ui;
 
 import com.google.common.eventbus.Subscribe;
 

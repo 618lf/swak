@@ -10,10 +10,10 @@ import javax.imageio.ImageIO;
 
 import com.swak.fx.support.AbstractApplication;
 import com.swak.fx.support.Display;
-import com.swak.fx.support.Event;
 import com.swak.hello.ClosePage;
 import com.swak.hello.MainPage;
 import com.swak.hello.SplashPage;
+import com.swak.ui.Event;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -34,6 +34,12 @@ public class MainApplication extends AbstractApplication {
 	@Override
 	protected CompletableFuture<Void> start(String[] savedArgs) {
 		return CompletableFuture.runAsync(() -> {
+			System.out.println("开始启动...");
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+			}
+			System.out.println("启动成功...");
 		});
 	}
 

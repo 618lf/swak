@@ -1,4 +1,4 @@
-package com.swak.fx.support;
+package com.swak.ui;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
