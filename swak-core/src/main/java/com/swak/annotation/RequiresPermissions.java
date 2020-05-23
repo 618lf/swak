@@ -8,23 +8,22 @@ import java.lang.annotation.Target;
 
 /**
  * 新版权限标示
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/28 17:21
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RequiresPermissions {
-	
-	/**
-	 * 需要的角色
-	 * 
-	 * @return
-	 */
-	String[] value() default {};
-	
+
+    /**
+     * 需要的角色
+     */
+    String[] value() default {};
+
     /**
      * The logical operation for the permission check in case multiple roles are specified. AND is the default
      */
-    Logical logical() default Logical.AND; 
+    Logical logical() default Logical.AND;
 }

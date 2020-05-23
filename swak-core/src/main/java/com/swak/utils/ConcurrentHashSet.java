@@ -24,61 +24,62 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * 简单的ConcurrentHashSet 实现
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 14:02
  */
 public class ConcurrentHashSet<E> extends AbstractSet<E> implements Set<E>, java.io.Serializable {
 
-	private static final long serialVersionUID = -8672117787651310382L;
+    private static final long serialVersionUID = 1L;
 
-	private static final Boolean PRESENT = Boolean.TRUE;
+    private static final Boolean PRESENT = Boolean.TRUE;
 
-	private final ConcurrentMap<E, Object> map;
+    private final ConcurrentMap<E, Object> map;
 
-	public ConcurrentHashSet() {
-		map = new ConcurrentHashMap<E, Object>();
-	}
+    public ConcurrentHashSet() {
+        map = new ConcurrentHashMap<E, Object>();
+    }
 
-	public ConcurrentHashSet(int initialCapacity) {
-		map = new ConcurrentHashMap<E, Object>(initialCapacity);
-	}
+    public ConcurrentHashSet(int initialCapacity) {
+        map = new ConcurrentHashMap<E, Object>(initialCapacity);
+    }
 
-	@Override
-	public Iterator<E> iterator() {
-		return map.keySet().iterator();
-	}
+    @Override
+    public Iterator<E> iterator() {
+        return map.keySet().iterator();
+    }
 
-	@Override
-	public int size() {
-		return map.size();
-	}
+    @Override
+    public int size() {
+        return map.size();
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return map.isEmpty();
-	}
+    @Override
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
 
-	@Override
-	public boolean contains(Object o) {
-		return map.containsKey(o);
-	}
+    @Override
+    public boolean contains(Object o) {
+        return map.containsKey(o);
+    }
 
-	@Override
-	public boolean add(E e) {
-		return map.put(e, PRESENT) == null;
-	}
+    @Override
+    public boolean add(E e) {
+        return map.put(e, PRESENT) == null;
+    }
 
-	public boolean addIfAbsent(E e) {
-		return map.putIfAbsent(e, PRESENT) == null;
-	}
+    public boolean addIfAbsent(E e) {
+        return map.putIfAbsent(e, PRESENT) == null;
+    }
 
-	@Override
-	public boolean remove(Object o) {
-		return map.remove(o) == PRESENT;
-	}
+    @Override
+    public boolean remove(Object o) {
+        return map.remove(o) == PRESENT;
+    }
 
-	@Override
-	public void clear() {
-		map.clear();
-	}
+    @Override
+    public void clear() {
+        map.clear();
+    }
 }

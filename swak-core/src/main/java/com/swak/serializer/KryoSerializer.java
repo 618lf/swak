@@ -14,7 +14,7 @@ import com.swak.exception.SerializeException;
  */
 public class KryoSerializer implements Serializer {
 
-	private final static Kryo kryo = new Kryo();
+	private final static Kryo KRYO = new Kryo();
 
 
     @Override
@@ -28,27 +28,30 @@ public class KryoSerializer implements Serializer {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			output = new Output(baos);
-			kryo.writeClassAndObject(output, obj);
+			KRYO.writeClassAndObject(output, obj);
 			output.flush();
 			return baos.toByteArray();
 		}finally{
-			if(output != null)
-				output.close();
+			if(output != null) {
+                output.close();
+            }
 		}
 	}
 
 	@Override
 	public Object deserialize(byte[] bits) throws SerializeException {
-		if(bits == null || bits.length == 0)
-			return null;
+		if(bits == null || bits.length == 0) {
+            return null;
+        }
 		Input ois = null;
 		try {
 			ByteArrayInputStream bais = new ByteArrayInputStream(bits);
 			ois = new Input(bais);
-			return kryo.readClassAndObject(ois);
+			return KRYO.readClassAndObject(ois);
 		} finally {
-			if(ois != null)
-				ois.close();
+			if(ois != null) {
+                ois.close();
+            }
 		}
 	}
 }

@@ -51,7 +51,7 @@ public class ApplicationContextLoader extends AbstractContextLoader {
 		long end = System.currentTimeMillis();
 		if (context instanceof ReactiveServerApplicationContext) {
 			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s" + ", listening on ["
-					+ ((ReactiveServerApplicationContext) context).getServer().getAddresses() + "]");
+					+ ((ReactiveServerApplicationContext) context).getServer().getEndPoints().toString() + "]");
 		} else {
 			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s");
 		}

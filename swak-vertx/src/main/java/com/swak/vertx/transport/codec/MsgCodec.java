@@ -7,41 +7,42 @@ import io.vertx.core.eventbus.MessageCodec;
 
 /**
  * 自定义的消息编解码器
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 21:11
  */
 public class MsgCodec implements MessageCodec<Msg, Msg> {
 
-	/**
-	 * 定义默认的名称
-	 */
-	public static final String CODEC_NAME = "msg-codec";
+    /**
+     * 定义默认的名称
+     */
+    public static final String CODEC_NAME = "msg-codec";
 
-	@Override
-	public void encodeToWire(Buffer buffer, Msg s) {
-		buffer.appendBytes(SerializationUtils.serialize(s));
-	}
+    @Override
+    public void encodeToWire(Buffer buffer, Msg s) {
+        buffer.appendBytes(SerializationUtils.serialize(s));
+    }
 
-	@Override
-	public Msg decodeFromWire(int pos, Buffer buffer) {
-		return (Msg) SerializationUtils.deserialize(buffer.getBytes());
-	}
+    @Override
+    public Msg decodeFromWire(int pos, Buffer buffer) {
+        return (Msg) SerializationUtils.deserialize(buffer.getBytes());
+    }
 
-	/**
-	 * 如果是本地消息则直接返回
-	 */
-	@Override
-	public Msg transform(Msg s) {
-		return s;
-	}
+    /**
+     * 如果是本地消息则直接返回
+     */
+    @Override
+    public Msg transform(Msg s) {
+        return s;
+    }
 
-	@Override
-	public String name() {
-		return CODEC_NAME;
-	}
+    @Override
+    public String name() {
+        return CODEC_NAME;
+    }
 
-	@Override
-	public byte systemCodecID() {
-		return -1;
-	}
+    @Override
+    public byte systemCodecID() {
+        return -1;
+    }
 }

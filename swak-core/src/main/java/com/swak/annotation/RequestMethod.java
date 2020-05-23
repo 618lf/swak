@@ -2,9 +2,24 @@ package com.swak.annotation;
 
 /**
  * 目前只支持get post
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/28 17:21
  */
 public enum RequestMethod {
 
-	ALL, GET, POST
+    /**
+     * all
+     */
+    ALL,
+
+    /**
+     * get
+     */
+    GET,
+
+    /**
+     * post
+     */
+    POST
 }

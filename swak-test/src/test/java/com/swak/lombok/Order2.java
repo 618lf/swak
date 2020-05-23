@@ -1,14 +1,12 @@
 package com.swak.lombok;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import lombok.Data;
 
-@Getter
-@Setter
-@Accessors(chain = true)
+@Data
 public class Order2 {
 
 	private String id;
 	private String name;
+	private OrderState state;
+	private Byte type;
 }

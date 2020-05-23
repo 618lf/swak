@@ -35,6 +35,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.Assert;
 
+import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.asm.Wrapper;
 import com.swak.rocketmq.annotation.ConsumeMode;
@@ -182,6 +183,7 @@ public class EventBus implements BeanFactoryAware, DisposableBean {
 			public void onSuccess(SendResult sendResult) {
 				future.complete(sendResult);
 			}
+
 			@Override
 			public void onException(Throwable e) {
 				future.completeExceptionally(e);
@@ -261,7 +263,6 @@ public class EventBus implements BeanFactoryAware, DisposableBean {
 	 * @author lifeng
 	 */
 	public static class Subscriber {
-		private static Class<?>[] types = new Class<?>[] { Message.class };
 		private long suspendCurrentQueueTimeMillis = 1000;
 		private int delayLevelWhenNextConsume = 0;
 		private String nameServer;
@@ -282,12 +283,18 @@ public class EventBus implements BeanFactoryAware, DisposableBean {
 		private Object listener;
 		private Method method;
 
+		// 处理器
+		private Wrapper wrapper;
+		private MethodMeta methodMeta;
+
 		public Subscriber(Subscribe subscribe) {
 			this.consumeMode = subscribe.consumeMode();
 			this.consumeThreadMax = subscribe.consumeThreadMax();
 			this.messageModel = subscribe.messageModel();
 			this.selectorExpression = subscribe.selectorExpression();
 			this.selectorType = subscribe.selectorType();
+			this.wrapper = Wrapper.getWrapper(listener.getClass());
+			this.methodMeta = MethodCache.get(listener.getClass()).lookup(method);
 		}
 
 		public boolean isRunning() {
@@ -421,10 +428,9 @@ public class EventBus implements BeanFactoryAware, DisposableBean {
 		 * 消费消息
 		 */
 		private void handleMessage(Message message) {
-			Wrapper wrapper = Wrapper.getWrapper(listener.getClass());
 			Object[] args = new Object[] { message };
 			try {
-				wrapper.invokeMethod(listener, method.getName(), types, args);
+				wrapper.invokeMethod(listener, methodMeta.getMethodDesc(), args);
 			} catch (Exception e) {
 				log.error("handle message error: {}", e);
 			}
@@ -452,13 +458,15 @@ public class EventBus implements BeanFactoryAware, DisposableBean {
 	 * @author lifeng
 	 */
 	public static class TransactionHandler implements TransactionListener {
-		private static Class<?>[] types = new Class<?>[] { Message.class };
 		private String name;
 		private ThreadPoolExecutor checkExecutor;
 
 		// 具体的监听器
 		private Object listener;
-		private Method method;
+
+		// 处理器
+		private Wrapper wrapper;
+		private MethodMeta methodMeta;
 
 		public TransactionHandler(Listener subscribe) {
 			this.name = subscribe.txProducerGroup();
@@ -504,10 +512,9 @@ public class EventBus implements BeanFactoryAware, DisposableBean {
 		 * 消费消息
 		 */
 		private void handleMessage(Message message) {
-			Wrapper wrapper = Wrapper.getWrapper(listener.getClass());
 			Object[] args = new Object[] { message };
 			try {
-				wrapper.invokeMethod(listener, method.getName(), types, args);
+				wrapper.invokeMethod(listener, methodMeta.getMethodDesc(), args);
 			} catch (Exception e) {
 				log.error("handle message error: {}", e);
 			}
@@ -524,7 +531,8 @@ public class EventBus implements BeanFactoryAware, DisposableBean {
 		public static TransactionHandler create(Listener subscribe, Object listener, Method method) {
 			TransactionHandler subscriber = new TransactionHandler(subscribe);
 			subscriber.listener = listener;
-			subscriber.method = method;
+			subscriber.wrapper = Wrapper.getWrapper(listener.getClass());
+			subscriber.methodMeta = MethodCache.get(listener.getClass()).lookup(method);
 			return subscriber;
 		}
 	}

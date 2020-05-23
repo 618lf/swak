@@ -1,2 +1,0 @@
-nop=org.apache.dubbo.configcenter.support.nop.NopDynamicConfigurationFactory
-zookeeper=org.apache.dubbo.configcenter.support.zookeeper.ZookeeperDynamicConfigurationFactory

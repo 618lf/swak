@@ -1,33 +1,32 @@
 package com.swak.vertx.security.principal;
 
-import java.util.concurrent.CompletionStage;
-
 import com.swak.vertx.transport.Subject;
 import com.swak.vertx.transport.Token;
-
 import io.vertx.ext.web.RoutingContext;
+
+import java.util.concurrent.CompletionStage;
 
 /**
  * 身份解析
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 20:41
  */
 public interface PrincipalStrategy {
 
-	/**
-	 * 创建身份
-	 * 
-	 * @param session
-	 * @param request
-	 * @param response
-	 */
-	CompletionStage<Subject> createSubject(RoutingContext context);
+    /**
+     * 创建身份
+     *
+     * @param context 请求上下文
+     * @return 异步Subject结果
+     */
+    CompletionStage<Subject> createSubject(RoutingContext context);
 
-	/**
-	 * 创建
-	 * 
-	 * @param subject
-	 * @return
-	 */
-	CompletionStage<Token> generateToken(Subject subject);
+    /**
+     * 生成 Token
+     *
+     * @param subject 请求上下文
+     * @return 异步Token结果
+     */
+    CompletionStage<Token> generateToken(Subject subject);
 }

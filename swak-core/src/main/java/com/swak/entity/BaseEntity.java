@@ -6,46 +6,55 @@ import java.time.LocalDateTime;
 import com.alibaba.fastjson.annotation.JSONField;
 
 /**
- * 基础实体类
- * 
- * @author lifeng
- * @param <PK>
+ * 基础实体类:  bug修复： 如果setXX 返回值不是void，通过反射设置数据的插件会设值失败
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 11:04
  */
 @SuppressWarnings("unchecked")
 public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	protected String name;// 名称
-	protected Long userId;// 创建人ID
-	protected String userName;// 创建人名称
-	protected LocalDateTime createDate;// 创建时间
+	/**
+	 * 名称
+	 */
+	protected String name;
+	/**
+	 * 创建人ID
+	 */
+	protected Long userId;
+	/**
+	 * 创建人名称
+	 */
+	protected String userName;
+	/**
+	 * 创建时间
+	 */
+	protected LocalDateTime createDate;
 
 	public String getName() {
 		return name;
 	}
 
-	public <T> T setName(String name) {
+	public void setName(String name) {
 		this.name = name;
-		return (T) this;
 	}
 
 	public Long getUserId() {
 		return userId;
 	}
 
-	public <T> T setUserId(Long userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
-		return (T) this;
 	}
 
 	public String getUserName() {
 		return userName;
 	}
 
-	public <T> T setUserName(String userName) {
+	public void setUserName(String userName) {
 		this.userName = userName;
-		return (T) this;
 	}
 
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
@@ -53,15 +62,14 @@ public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializabl
 		return createDate;
 	}
 
-	public <T> T setCreateDate(LocalDateTime createDate) {
+	public void setCreateDate(LocalDateTime createDate) {
 		this.createDate = createDate;
-		return (T) this;
 	}
 
 	/**
 	 * 新增操作
-	 * 
-	 * @return
+	 *
+	 * @return 主键
 	 */
 	@Override
 	public PK prePersist() {
@@ -77,8 +85,8 @@ public abstract class BaseEntity<PK> extends IdEntity<PK> implements Serializabl
 
 	/**
 	 * 用户当前的操作
-	 * 
-	 * @param user
+	 *
+	 * @param user 用户数据
 	 */
 	public <T> T userOptions(BaseEntity<Long> user) {
 		this.userId = user.getId();

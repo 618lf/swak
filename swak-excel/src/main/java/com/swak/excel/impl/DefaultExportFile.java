@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -286,7 +285,6 @@ public class DefaultExportFile implements ExportFile {
 						objCell.setCellStyle(getCellStyle(template, null));
 					}
 					objCell.setCellValue(i + 1);
-					objCell.setCellType(CellType.NUMERIC);
 				}
 
 				// 具体的数据

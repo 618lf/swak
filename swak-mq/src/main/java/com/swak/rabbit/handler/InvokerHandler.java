@@ -7,6 +7,7 @@ import java.util.concurrent.CompletionStage;
 import org.springframework.util.Assert;
 
 import com.swak.asm.MethodCache;
+import com.swak.asm.MethodCache.ClassMeta;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.rabbit.EventBus;
 import com.swak.rabbit.annotation.Publisher;
@@ -23,19 +24,13 @@ public class InvokerHandler implements InvocationHandler {
 	private final Class<?> type;
 	private final String queue;
 	private final String routing;
+	private final ClassMeta classMeta;
 
 	public InvokerHandler(Publisher publisher, Class<?> type) {
 		this.queue = publisher.queue();
 		this.routing = StringUtils.isBlank(publisher.routing()) ? this.queue : publisher.routing();
 		this.type = type;
-		this.initMethods();
-	}
-
-	private void initMethods() {
-		Method[] methods = type.getMethods();
-		for (Method method : methods) {
-			MethodCache.set(method);
-		}
+		this.classMeta = MethodCache.set(this.type);
 	}
 
 	/**
@@ -66,7 +61,7 @@ public class InvokerHandler implements InvocationHandler {
 			message = args[2];
 		}
 		// 返回类型决定是同步执行还是异步执行
-		MethodMeta meta = MethodCache.get(method);
+		MethodMeta meta = classMeta.lookup(method);
 		Class<?> returnType = meta.getReturnType();
 
 		// 异步执行

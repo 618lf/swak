@@ -12,23 +12,25 @@ import com.swak.utils.ReflectUtils;
 import javassist.Modifier;
 
 /**
- * Method Wrapper
- * 
- * @author lifeng
+ * Method Wrapper -- 为每一个方法生成一个动态类:其实不可取
  *
- * @param <T>
+ * @author: lifeng
+ * @date: 2020/3/28 17:37
  */
+@Deprecated
 public abstract class Invoker<T> {
 
 	private static AtomicLong INVOKER_COUNTER = new AtomicLong(0);
-	private static Map<Method, Invoker<?>> INVOKER_MAP = new ConcurrentHashMap<Method, Invoker<?>>();
+	private static Map<Method, Invoker<?>> INVOKER_MAP = new ConcurrentHashMap<>();
 
 	/**
 	 * get the invoker
-	 * 
-	 * @param service
-	 * @param method
-	 * @return
+	 *
+	 * @param service 对象
+	 * @param method  方法
+	 * @return Invoker
+	 * @author lifeng
+	 * @date 2020/3/28 17:39
 	 */
 	public static Invoker<?> getInvoker(Object service, Method method) {
 		Invoker<?> invoker = INVOKER_MAP.get(method);
@@ -38,8 +40,8 @@ public abstract class Invoker<T> {
 		}
 		return invoker;
 	}
-    
-	// gen invoke 
+
+	// gen invoke
 	private static Invoker<?> generateInvoker(Object service, Method method) {
 
 		long id = INVOKER_COUNTER.getAndIncrement();
@@ -72,7 +74,7 @@ public abstract class Invoker<T> {
 		methodBuilder.append(resultStr);
 		methodBuilder.append(";\r\n}");
 		cc.addMethod(methodBuilder.toString());
-		
+
 		try {
 			Class<?> invokerClass = cc.toClass();
 			return (Invoker<?>) invokerClass.getConstructor(service.getClass()).newInstance(service);
@@ -82,9 +84,14 @@ public abstract class Invoker<T> {
 			cc.release();
 		}
 	}
-	
+
 	/**
 	 * 通过生成的类调用
+	 *
+	 * @param params 参数
+	 * @return 执行结果
+	 * @author lifeng
+	 * @date 2020/3/28 17:39
 	 */
 	public abstract T invoke(Object... params);
 }

@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
 
 import com.swak.Constants;
+import com.swak.security.JWTAuthOptions;
 import com.swak.security.JwtAuthProvider;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.security.SecurityHandler;
@@ -39,16 +40,25 @@ public class SecurityAutoConfiguration {
 	}
 
 	/**
-	 * Auth 提供器
+	 * Auth 提供器 -- 支持在java 代码中设置密码
 	 * 
 	 * @param properties
 	 * @return
 	 */
 	@Bean
-	public JwtAuthProvider jwtAuth(VertxProperties properties) {
-		JwtAuthProvider jwtAuth = new JwtAuthProvider(properties.getKeyStorePath(), properties.getKeyStorePass(),
-				properties.getJwtTokenName());
-		return jwtAuth;
+	@ConditionalOnMissingBean(JwtAuthProvider.class)
+	public JwtAuthProvider jwtAuth(VertxProperties properties, SecurityConfigurationSupport securityConfig) {
+
+		// jwt 授权配置信息
+		JWTAuthOptions options = securityConfig.getJwtAuthOptions();
+
+		// 通过options 的配置方式
+		if (options != null) {
+			return new JwtAuthProvider(options);
+		}
+
+		// 默认的配置方式
+		return new JwtAuthProvider(properties.getKeyStorePath(), properties.getKeyStorePass(), properties.getKeyStoreAlgorithm());
 	}
 
 	/**
@@ -58,8 +68,8 @@ public class SecurityAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(PrincipalStrategy.class)
-	public PrincipalStrategy principalStrategy(JwtAuthProvider jwtAuth) {
-		return new TokenPrincipalStrategy(jwtAuth);
+	public PrincipalStrategy principalStrategy(JwtAuthProvider jwtAuth, VertxProperties properties) {
+		return new TokenPrincipalStrategy(jwtAuth, properties.getJwtTokenName());
 	}
 
 	/**

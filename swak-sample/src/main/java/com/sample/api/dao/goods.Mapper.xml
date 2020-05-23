@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tmt.api.dao.GoodsDao" >
+  <resultMap id="BaseResult" type="com.tmt.api.entity.Goods"> 
+    <result column="ID" property="id" jdbcType="VARCHAR"/>
+    <result column="NAME" property="name" jdbcType="VARCHAR"/>
+    <result column="REMARKS" property="remarks" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <select id="get" resultMap="BaseResult" parameterType="String">
+   SELECT ID, NAME, REMARKS
+     FROM T_GOODS
+    WHERE ID = #{id}
+  </select>
+  
+  <select id="getOne" resultMap="BaseResult">
+   SELECT ID, NAME, REMARKS FROM T_GOODS LIMIT 1
+  </select>
+  
+  <insert id="insert" parameterType="com.tmt.api.entity.Goods">
+   INSERT INTO T_GOODS (ID, NAME, REMARKS)
+   VALUES (#{id}, #{name}, #{remarks})
+  </insert>
+  
+  <update id="update" parameterType="com.tmt.api.entity.Goods">
+   UPDATE T_GOODS
+      SET NAME = #{name},
+          REMARKS = #{remarks}
+    WHERE ID = #{id}
+  </update>
+</mapper>

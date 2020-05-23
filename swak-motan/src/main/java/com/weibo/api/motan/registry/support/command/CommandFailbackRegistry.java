@@ -117,7 +117,9 @@ public abstract class CommandFailbackRegistry extends FailbackRegistry {
             manager = new CommandServiceManager(urlCopy);
             manager.setRegistry(this);
             CommandServiceManager manager1 = commandManagerMap.putIfAbsent(urlCopy, manager);
-            if (manager1 != null) manager = manager1;
+            if (manager1 != null) {
+                manager = manager1;
+            }
         }
         return manager;
     }

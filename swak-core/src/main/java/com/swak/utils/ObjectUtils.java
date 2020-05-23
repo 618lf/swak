@@ -2,14 +2,14 @@ package com.swak.utils;
 
 /**
  * see com.swak.utils.ObjectUtils
- * 
- * @author lifeng
  *
+ * @author lifeng
  */
 public class ObjectUtils {
 
     // Null-safe equals/hashCode
     //-----------------------------------------------------------------------
+
     /**
      * <p>Compares two objects for equality, where either one or both
      * objects may be {@code null}.</p>
@@ -25,8 +25,8 @@ public class ObjectUtils {
      * ObjectUtils.equals(Boolean.TRUE, Boolean.FALSE) = false
      * </pre>
      *
-     * @param object1  the first object, may be {@code null}
-     * @param object2  the second object, may be {@code null}
+     * @param object1 the first object, may be {@code null}
+     * @param object2 the second object, may be {@code null}
      * @return {@code true} if the values of both objects are the same
      */
     public static boolean equals(Object object1, Object object2) {
@@ -38,7 +38,7 @@ public class ObjectUtils {
         }
         return object1.equals(object2);
     }
-    
+
     /**
      * <p>Gets the hash code of an object returning zero when the
      * object is {@code null}.</p>
@@ -48,7 +48,7 @@ public class ObjectUtils {
      * ObjectUtils.hashCode(obj)    = obj.hashCode()
      * </pre>
      *
-     * @param obj  the object to obtain the hash code of, may be {@code null}
+     * @param obj the object to obtain the hash code of, may be {@code null}
      * @return the hash code of the object, or zero if null
      * @since 2.1
      */

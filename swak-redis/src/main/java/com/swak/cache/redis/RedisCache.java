@@ -159,7 +159,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 	protected String _set(String key, byte[] value) {
 		String keyName = this.getKeyName(key);
 		if (isValid()) {
-			return SyncOperations.set(key, value, this.getLifeTime());
+			return SyncOperations.set(keyName, value, this.getLifeTime());
 		} else {
 			return SyncOperations.set(keyName, value);
 		}

@@ -29,7 +29,7 @@ public class Query {
 	 * @param bean
 	 */
 	public <T> Query(T bean) {
-		Document filter = new Document(bean);
+		Document filter = new Document(bean, false);
 		if (!filter.isEmpty()) {
 			this.filter = Filters.and(filter);
 		}
@@ -46,7 +46,7 @@ public class Query {
 	 */
 	public Query orderBy(Parameters param) {
 		if (StringUtils.isNotBlank(param.getSortField())) {
-			return this.orderBy(param.getSortField(), StringUtils.equals("ascending", param.getSortType()) ? 1 : -1);
+			return this.orderBy(param.getSortField(), StringUtils.equals("ascending", param.getSortType()));
 		}
 		return this;
 	}
@@ -58,7 +58,7 @@ public class Query {
 	 * @return
 	 */
 	public Query orderBy(String key) {
-		return this.orderBy(key, 1);
+		return this.orderBy(key, false);
 	}
 
 	/**
@@ -67,11 +67,11 @@ public class Query {
 	 * @param key
 	 * @return
 	 */
-	public Query orderBy(String key, int order) {
+	public Query orderBy(String key, boolean desc) {
 		if (this.order == null) {
 			this.order = new Order();
 		}
-		this.order.put(key, order);
+		this.order.put(key, desc ? -1 : 1);
 		return this;
 	}
 
@@ -86,6 +86,16 @@ public class Query {
 
 	// ------------- 条件 --------------------
 	private Bson filter;
+	
+	/**
+	 * 添加条件 like
+	 * 
+	 * @param bson
+	 * @return
+	 */
+	public Query like(String key, String value) {
+		return this.and(Filters.regex(key, value));
+	}
 
 	/**
 	 * 添加条件

@@ -17,9 +17,9 @@
 
 package com.swak.codec;
 
-import java.util.Arrays;
-
 import com.swak.utils.StringUtils;
+
+import java.util.Arrays;
 
 
 /**
@@ -29,13 +29,14 @@ import com.swak.utils.StringUtils;
  * This class is thread-safe.
  * </p>
  *
+ * @author lifeng copy
  * @version $Id: BaseNCodec.java 1465182 2013-04-06 04:03:12Z ggregory $
  */
 public abstract class BaseNCodec {
 
     /**
      * Holds thread context so classes can be thread-safe.
-     *
+     * <p>
      * This class is not itself thread-safe; each thread must allocate its own copy.
      *
      * @since 1.7
@@ -99,7 +100,7 @@ public abstract class BaseNCodec {
         @Override
         public String toString() {
             return String.format("%s[buffer=%s, currentLinePos=%s, eof=%s, ibitWorkArea=%s, lbitWorkArea=%s, " +
-                    "modulus=%s, pos=%s, readPos=%s]", this.getClass().getSimpleName(), Arrays.toString(buffer),
+                            "modulus=%s, pos=%s, readPos=%s]", this.getClass().getSimpleName(), Arrays.toString(buffer),
                     currentLinePos, eof, ibitWorkArea, lbitWorkArea, modulus, pos, readPos);
         }
     }
@@ -112,7 +113,7 @@ public abstract class BaseNCodec {
     static final int EOF = -1;
 
     /**
-     *  MIME chunk size per RFC 2045 section 6.8.
+     * MIME chunk size per RFC 2045 section 6.8.
      *
      * <p>
      * The {@value} character limit does not count the trailing CRLF, but counts all other characters, including any
@@ -143,20 +144,29 @@ public abstract class BaseNCodec {
      */
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
-    /** Mask used to extract 8 bits, used in decoding bytes */
+    /**
+     * Mask used to extract 8 bits, used in decoding bytes
+     */
     protected static final int MASK_8BITS = 0xff;
 
     /**
      * Byte used to pad output.
      */
-    protected static final byte PAD_DEFAULT = '='; // Allow static access to default
+    protected static final byte PAD_DEFAULT = '=';
 
-    protected final byte PAD = PAD_DEFAULT; // instance variable just in case it needs to vary later
+    /**
+     * instance variable just in case it needs to vary later
+     */
+    protected final byte PAD = PAD_DEFAULT;
 
-    /** Number of bytes in each full block of unencoded data, e.g. 4 for Base64 and 5 for Base32 */
+    /**
+     * Number of bytes in each full block of unencoded data, e.g. 4 for Base64 and 5 for Base32
+     */
     private final int unencodedBlockSize;
 
-    /** Number of bytes in each full block of encoded data, e.g. 3 for Base64 and 8 for Base32 */
+    /**
+     * Number of bytes in each full block of encoded data, e.g. 3 for Base64 and 8 for Base32
+     */
     private final int encodedBlockSize;
 
     /**
@@ -174,13 +184,14 @@ public abstract class BaseNCodec {
     /**
      * Note <code>lineLength</code> is rounded down to the nearest multiple of {@link #encodedBlockSize}
      * If <code>chunkSeparatorLength</code> is zero, then chunking is disabled.
-     * @param unencodedBlockSize the size of an unencoded block (e.g. Base64 = 3)
-     * @param encodedBlockSize the size of an encoded block (e.g. Base64 = 4)
-     * @param lineLength if &gt; 0, use chunking with a length <code>lineLength</code>
+     *
+     * @param unencodedBlockSize   the size of an unencoded block (e.g. Base64 = 3)
+     * @param encodedBlockSize     the size of an encoded block (e.g. Base64 = 4)
+     * @param lineLength           if &gt; 0, use chunking with a length <code>lineLength</code>
      * @param chunkSeparatorLength the chunk separator length, if relevant
      */
     protected BaseNCodec(final int unencodedBlockSize, final int encodedBlockSize,
-                         final int lineLength, final int chunkSeparatorLength) {
+                        final int lineLength, final int chunkSeparatorLength) {
         this.unencodedBlockSize = unencodedBlockSize;
         this.encodedBlockSize = encodedBlockSize;
         final boolean useChunking = lineLength > 0 && chunkSeparatorLength > 0;
@@ -219,6 +230,7 @@ public abstract class BaseNCodec {
 
     /**
      * Increases our buffer by the {@link #DEFAULT_BUFFER_RESIZE_FACTOR}.
+     *
      * @param context the context to be used
      */
     private byte[] resizeBuffer(final Context context) {
@@ -237,11 +249,11 @@ public abstract class BaseNCodec {
     /**
      * Ensure that the buffer has room for <code>size</code> bytes
      *
-     * @param size minimum spare space required
+     * @param size    minimum spare space required
      * @param context the context to be used
      */
-    protected byte[] ensureBufferSize(final int size, final Context context){
-        if ((context.buffer == null) || (context.buffer.length < context.pos + size)){
+    protected byte[] ensureBufferSize(final int size, final Context context) {
+        if ((context.buffer == null) || (context.buffer.length < context.pos + size)) {
             return resizeBuffer(context);
         }
         return context.buffer;
@@ -253,34 +265,27 @@ public abstract class BaseNCodec {
      * <p>
      * Package protected for access from I/O streams.
      *
-     * @param b
-     *            byte[] array to extract the buffered data into.
-     * @param bPos
-     *            position in byte[] array to start extraction at.
-     * @param bAvail
-     *            amount of bytes we're allowed to extract. We may extract fewer (if fewer are available).
-     * @param context
-     *            the context to be used
-     * @return The number of bytes successfully extracted into the provided byte[] array.
+     * @param b       byte[] array to extract the buffered data into.
+     * @param bAvail  amount of bytes we're allowed to extract. We may extract fewer (if fewer are available).
+     * @param context the context to be used
      */
-    int readResults(final byte[] b, final int bPos, final int bAvail, final Context context) {
+    void readResults(final byte[] b, final int bAvail, final Context context) {
         if (context.buffer != null) {
             final int len = Math.min(available(context), bAvail);
-            System.arraycopy(context.buffer, context.readPos, b, bPos, len);
+            System.arraycopy(context.buffer, context.readPos, b, 0, len);
             context.readPos += len;
             if (context.readPos >= context.pos) {
-                context.buffer = null; // so hasData() will return false, and this method can return -1
+                // so hasData() will return false, and this method can return -1
+                context.buffer = null;
             }
-            return len;
         }
-        return context.eof ? EOF : 0;
     }
 
     /**
      * Checks if a byte value is whitespace or not.
      * Whitespace is taken to mean: space, tab, CR, LF
-     * @param byteToCheck
-     *            the byte to check
+     *
+     * @param byteToCheck the byte to check
      * @return true if byte is whitespace, false otherwise
      */
     protected static boolean isWhiteSpace(final byte byteToCheck) {
@@ -299,11 +304,9 @@ public abstract class BaseNCodec {
      * Encodes an Object using the Base-N algorithm. This method is provided in order to satisfy the requirements of
      * the Encoder interface, and will throw an EncoderException if the supplied object is not of type byte[].
      *
-     * @param obj
-     *            Object to encode
+     * @param obj Object to encode
      * @return An object (of type byte[]) containing the Base-N encoded data which corresponds to the byte[] supplied.
-     * @throws EncoderException
-     *             if the parameter supplied is not of type byte[]
+     * @throws EncoderException if the parameter supplied is not of type byte[]
      */
     public Object encode(final Object obj) throws EncoderException {
         if (!(obj instanceof byte[])) {
@@ -316,8 +319,7 @@ public abstract class BaseNCodec {
      * Encodes a byte[] containing binary data, into a String containing characters in the Base-N alphabet.
      * Uses UTF8 encoding.
      *
-     * @param pArray
-     *            a byte array containing binary data
+     * @param pArray a byte array containing binary data
      * @return A String containing only Base-N character data
      */
     public String encodeToString(final byte[] pArray) {
@@ -330,8 +332,8 @@ public abstract class BaseNCodec {
      *
      * @param pArray a byte array containing binary data
      * @return String containing only character data in the appropriate alphabet.
-    */
-    public String encodeAsString(final byte[] pArray){
+     */
+    public String encodeAsString(final byte[] pArray) {
         return StringUtils.newStringUtf8(encode(pArray));
     }
 
@@ -339,12 +341,10 @@ public abstract class BaseNCodec {
      * Decodes an Object using the Base-N algorithm. This method is provided in order to satisfy the requirements of
      * the Decoder interface, and will throw a DecoderException if the supplied object is not of type byte[] or String.
      *
-     * @param obj
-     *            Object to decode
+     * @param obj Object to decode
      * @return An object (of type byte[]) containing the binary data which corresponds to the byte[] or String
-     *         supplied.
-     * @throws DecoderException
-     *             if the parameter supplied is not of type byte[]
+     * supplied.
+     * @throws DecoderException if the parameter supplied is not of type byte[]
      */
     public Object decode(final Object obj) throws DecoderException {
         if (obj instanceof byte[]) {
@@ -359,8 +359,7 @@ public abstract class BaseNCodec {
     /**
      * Decodes a String containing characters in the Base-N alphabet.
      *
-     * @param pArray
-     *            A String containing Base-N character data
+     * @param pArray A String containing Base-N character data
      * @return a byte array containing binary data
      */
     public byte[] decode(final String pArray) {
@@ -370,8 +369,7 @@ public abstract class BaseNCodec {
     /**
      * Decodes a byte[] containing characters in the Base-N alphabet.
      *
-     * @param pArray
-     *            A byte array containing Base-N character data
+     * @param pArray A byte array containing Base-N character data
      * @return a byte array containing binary data
      */
     public byte[] decode(final byte[] pArray) {
@@ -380,17 +378,16 @@ public abstract class BaseNCodec {
         }
         final Context context = new Context();
         decode(pArray, 0, pArray.length, context);
-        decode(pArray, 0, EOF, context); // Notify decoder of EOF.
+        decode(pArray, 0, EOF, context);
         final byte[] result = new byte[context.pos];
-        readResults(result, 0, result.length, context);
+        readResults(result, result.length, context);
         return result;
     }
 
     /**
      * Encodes a byte[] containing binary data, into a byte[] containing characters in the alphabet.
      *
-     * @param pArray
-     *            a byte array containing binary data
+     * @param pArray a byte array containing binary data
      * @return A byte array containing only the basen alphabetic character data
      */
     public byte[] encode(final byte[] pArray) {
@@ -399,24 +396,41 @@ public abstract class BaseNCodec {
         }
         final Context context = new Context();
         encode(pArray, 0, pArray.length, context);
-        encode(pArray, 0, EOF, context); // Notify encoder of EOF.
+        encode(pArray, 0, EOF, context);
         final byte[] buf = new byte[context.pos - context.readPos];
-        readResults(buf, 0, buf.length, context);
+        readResults(buf, buf.length, context);
         return buf;
     }
 
-    // package protected for access from I/O streams
-    abstract void encode(byte[] pArray, int i, int length, Context context);
+    /**
+     * package protected for access from I/O streams
+     *
+     * @param pArray  data
+     * @param pos     pos
+     * @param length  length
+     * @param context context
+     * @author lifeng
+     * @date 2020/3/29 10:37
+     */
+    public abstract void encode(byte[] pArray, int pos, int length, Context context);
 
-    // package protected for access from I/O streams
-    abstract void decode(byte[] pArray, int i, int length, Context context);
+    /**
+     * package protected for access from I/O streams
+     *
+     * @param pArray  data
+     * @param pos     pos
+     * @param length  length
+     * @param context context
+     * @author lifeng
+     * @date 2020/3/29 10:37
+     */
+    public abstract void decode(byte[] pArray, int pos, int length, Context context);
 
     /**
      * Returns whether or not the <code>octet</code> is in the current alphabet.
      * Does not allow whitespace or pad.
      *
      * @param value The value to test
-     *
      * @return {@code true} if the value is defined in the current alphabet, {@code false} otherwise.
      */
     protected abstract boolean isInAlphabet(byte value);
@@ -426,15 +440,15 @@ public abstract class BaseNCodec {
      * The method optionally treats whitespace and pad as valid.
      *
      * @param arrayOctet byte array to test
-     * @param allowWSPad if {@code true}, then whitespace and PAD are also allowed
-     *
+     * @param allowed    if {@code true}, then whitespace and PAD are also allowed
      * @return {@code true} if all bytes are valid characters in the alphabet or if the byte array is empty;
-     *         {@code false}, otherwise
+     * {@code false}, otherwise
      */
-    public boolean isInAlphabet(final byte[] arrayOctet, final boolean allowWSPad) {
-        for (int i = 0; i < arrayOctet.length; i++) {
-            if (!isInAlphabet(arrayOctet[i]) &&
-                    (!allowWSPad || (arrayOctet[i] != PAD) && !isWhiteSpace(arrayOctet[i]))) {
+    public boolean isInAlphabet(final byte[] arrayOctet, final boolean allowed) {
+        for (byte b : arrayOctet) {
+            boolean flag = !isInAlphabet(b) &&
+                    (!allowed || (b != PAD) && !isWhiteSpace(b));
+            if (flag) {
                 return false;
             }
         }
@@ -447,7 +461,7 @@ public abstract class BaseNCodec {
      *
      * @param basen String to test
      * @return {@code true} if all characters in the String are valid characters in the alphabet or if
-     *         the String is empty; {@code false}, otherwise
+     * the String is empty; {@code false}, otherwise
      * @see #isInAlphabet(byte[], boolean)
      */
     public boolean isInAlphabet(final String basen) {
@@ -456,11 +470,10 @@ public abstract class BaseNCodec {
 
     /**
      * Tests a given byte array to see if it contains any characters within the alphabet or PAD.
-     *
+     * <p>
      * Intended for use in checking line-ending arrays
      *
-     * @param arrayOctet
-     *            byte array to test
+     * @param arrayOctet byte array to test
      * @return {@code true} if any byte is a valid character in the alphabet or PAD; {@code false} otherwise
      */
     protected boolean containsAlphabetOrPad(final byte[] arrayOctet) {
@@ -479,17 +492,17 @@ public abstract class BaseNCodec {
      * Calculates the amount of space needed to encode the supplied array.
      *
      * @param pArray byte[] array which will later be encoded
-     *
      * @return amount of space needed to encoded the supplied array.
      * Returns a long since a max-len array will require > Integer.MAX_VALUE
      */
     public long getEncodedLength(final byte[] pArray) {
         // Calculate non-chunked size - rounded up to allow for padding
         // cast to long is needed to avoid possibility of overflow
-        long len = ((pArray.length + unencodedBlockSize-1)  / unencodedBlockSize) * (long) encodedBlockSize;
-        if (lineLength > 0) { // We're using chunking
+        long len = ((pArray.length + unencodedBlockSize - 1) / unencodedBlockSize) * (long) encodedBlockSize;
+        // We're using chunking
+        if (lineLength > 0) {
             // Round up to nearest multiple
-            len += ((len + lineLength-1) / lineLength) * chunkSeparatorLength;
+            len += ((len + lineLength - 1) / lineLength) * chunkSeparatorLength;
         }
         return len;
     }

@@ -70,7 +70,7 @@ public class OperationMethod {
 			return new StringBuilder(Constants.URL_PATH_SEPARATE).append(Constants.URL_PATH_VARIABLE_PRE).append(name)
 					.append(Constants.URL_PATH_VARIABLE_SUFFIX).toString();
 		}
-		return new StringBuilder(Constants.URL_PATH_SEPARATE).append(Constants._URL_PATH_VARIABLE_PRE).append(name)
-				.append(Constants._URL_PATH_VARIABLE_SUFFIX).toString();
+		return new StringBuilder(Constants.URL_PATH_SEPARATE).append(Constants.URL_PATH_VARIABLE_PRE_X).append(name)
+				.append(Constants.URL_PATH_VARIABLE_SUFFIX_X).toString();
 	}
 }

@@ -6,59 +6,56 @@ import com.swak.utils.XmlParse;
 
 /**
  * 链接请求消息
- * 
- * @author rikky.cai
- * @qq:6687523
- * @Email:6687523@qq.com
- * 
+ *
+ * @author lifeng
  */
 public class ReqMsgLink extends AbstractReqMsg {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private String title;
-	private String description;
-	private String url;
 
-	public String getTitle() {
-		return title;
-	}
+    private static final long serialVersionUID = 1L;
 
-	public String getDescription() {
-		return description;
-	}
+    private String title;
+    private String description;
+    private String url;
 
-	public String getUrl() {
-		return url;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
-	
-	@Override
-	public void read(Element element) {
-		super.read(element);
-		this.title = XmlParse.elementText(element, "Title");
-		this.description = XmlParse.elementText(element, "Description");
-		this.url = XmlParse.elementText(element, "Url");
-	} 
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder msg = new StringBuilder();
-		msg.append("msgId:").append(this.getMsgId()).append("\n");
-		msg.append("title:").append(this.getTitle()).append("\n");
-		msg.append("description:").append(this.getDescription()).append("\n");
-		msg.append("url:").append(this.getUrl()).append("\n");
-		return msg.toString();
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    @Override
+    public void read(Element element) {
+        super.read(element);
+        this.title = XmlParse.elementText(element, "Title");
+        this.description = XmlParse.elementText(element, "Description");
+        this.url = XmlParse.elementText(element, "Url");
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder msg = new StringBuilder();
+        msg.append("msgId:").append(this.getMsgId()).append("\n");
+        msg.append("title:").append(this.getTitle()).append("\n");
+        msg.append("description:").append(this.getDescription()).append("\n");
+        msg.append("url:").append(this.getUrl()).append("\n");
+        return msg.toString();
+    }
 }

@@ -21,8 +21,11 @@ import com.swak.persistence.BaseDao;
 import com.swak.persistence.QueryCondition;
 
 /**
- * @author TMT 封装了公用操作数据的，但查询的只能在子类内部使用
- *         目的是不让子类外部直接传入sql就可以查询，应在子类内部实现一个sql的方法，在方法中 调用基础的方式来查询数据
+ * 封装了公用操作数据的，但查询的只能在子类内部使用 目的是不让子类外部直接传入sql就可以查询，应在子类内部实现一个sql的方法，在方法中
+ * 调用基础的方式来查询数据
+ * 
+ * @author lifeng
+ * @date 2020年4月17日 下午5:02:58
  */
 public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializable> {
 
@@ -89,15 +92,6 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	}
 
 	/**
-	 * 获取所有值
-	 * 
-	 * @return
-	 */
-	public List<T> getAll() {
-		return getBaseDao().getAll();
-	}
-
-	/**
 	 * 按条件查询
 	 * 
 	 * @param qc
@@ -151,6 +145,35 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	}
 
 	/**
+	 * 删除数据
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public int delete(T entity) {
+		return getBaseDao().delete(entity);
+	}
+
+	/**
+	 * 批量删除
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public void batchDelete(List<T> entities) {
+		this.getBaseDao().batchDelete(entities);
+	}
+
+	/**
+	 * 获取所有值
+	 * 
+	 * @return
+	 */
+	protected List<T> getAll() {
+		return getBaseDao().getAll();
+	}
+
+	/**
 	 * 锁住记录，一定要传递条件， 事务结束后才会释放
 	 * 
 	 * @param id
@@ -191,16 +214,6 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	}
 
 	/**
-	 * 删除数据
-	 * 
-	 * @param entity
-	 * @return
-	 */
-	protected int delete(T entity) {
-		return getBaseDao().delete(entity);
-	}
-
-	/**
 	 * 批量更新
 	 * 
 	 * @param entity
@@ -228,16 +241,6 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 */
 	protected void batchInsert(List<T> entities) {
 		this.getBaseDao().batchInsert(entities);
-	}
-
-	/**
-	 * 批量删除
-	 * 
-	 * @param entity
-	 * @return
-	 */
-	protected void batchDelete(List<T> entities) {
-		this.getBaseDao().batchDelete(entities);
 	}
 
 	/**

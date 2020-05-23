@@ -245,6 +245,7 @@ public class ReflectUtil {
 		return getEmptyObject(returnType, new HashMap<Class<?>, Object>(), 0);
 	}
 
+<<<<<<< HEAD
 	private static Object getEmptyObject(Class<?> returnType, Map<Class<?>, Object> emptyInstances, int level) {
 		if (level > 2)
 			return null;
@@ -308,5 +309,70 @@ public class ReflectUtil {
 			return null;
 		}
 	}
+=======
+    private static Object getEmptyObject(Class<?> returnType, Map<Class<?>, Object> emptyInstances, int level) {
+        if (level > 2) {
+            return null;
+        }
+        if (returnType == null) {
+            return null;
+        } else if (returnType == boolean.class || returnType == Boolean.class) {
+            return false;
+        } else if (returnType == char.class || returnType == Character.class) {
+            return '\0';
+        } else if (returnType == byte.class || returnType == Byte.class) {
+            return (byte) 0;
+        } else if (returnType == short.class || returnType == Short.class) {
+            return (short) 0;
+        } else if (returnType == int.class || returnType == Integer.class) {
+            return 0;
+        } else if (returnType == long.class || returnType == Long.class) {
+            return 0L;
+        } else if (returnType == float.class || returnType == Float.class) {
+            return 0F;
+        } else if (returnType == double.class || returnType == Double.class) {
+            return 0D;
+        } else if (returnType.isArray()) {
+            return Array.newInstance(returnType.getComponentType(), 0);
+        } else if (returnType.isAssignableFrom(ArrayList.class)) {
+            return new ArrayList<Object>(0);
+        } else if (returnType.isAssignableFrom(HashSet.class)) {
+            return new HashSet<Object>(0);
+        } else if (returnType.isAssignableFrom(HashMap.class)) {
+            return new HashMap<Object, Object>(0);
+        } else if (String.class.equals(returnType)) {
+            return "";
+        } else if (!returnType.isInterface()) {
+            try {
+                Object value = emptyInstances.get(returnType);
+                if (value == null) {
+                    value = returnType.newInstance();
+                    emptyInstances.put(returnType, value);
+                }
+                Class<?> cls = value.getClass();
+                while (cls != null && cls != Object.class) {
+                    Field[] fields = cls.getDeclaredFields();
+                    for (Field field : fields) {
+                        Object property = getEmptyObject(field.getType(), emptyInstances, level + 1);
+                        if (property != null) {
+                            try {
+                                if (!field.isAccessible()) {
+                                    field.setAccessible(true);
+                                }
+                                field.set(value, property);
+                            } catch (Throwable e) {}
+                        }
+                    }
+                    cls = cls.getSuperclass();
+                }
+                return value;
+            } catch (Throwable e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+>>>>>>> refs/remotes/origin/master
 
 }

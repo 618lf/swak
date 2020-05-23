@@ -60,7 +60,7 @@ public class MethodMetricsImpl extends AbstractMetrics implements MethodMetrics<
 
 	@Override
 	public Timer.Context begin() {
-		if (count != null && !this.counted.monotonic()) {
+		if (count != null && this.counted.monotonic()) {
 			count.inc();
 		}
 		if (time != null) {
@@ -74,7 +74,7 @@ public class MethodMetricsImpl extends AbstractMetrics implements MethodMetrics<
 		if (t != null) {
 			t.stop();
 		}
-		if (count != null && !this.counted.monotonic()) {
+		if (count != null && this.counted.monotonic()) {
 			count.dec();
 		} else if (count != null) {
 			count.inc();

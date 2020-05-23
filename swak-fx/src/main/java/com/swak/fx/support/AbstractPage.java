@@ -74,11 +74,16 @@ public abstract class AbstractPage {
 	}
 
 	/**
+	 * 界面显示
+	 */
+	public void onReady() {
+	}
+
+	/**
 	 * Gets the URL resource. This will be derived from applied annotation value or
 	 * from naming convention.
 	 *
-	 * @param annotation
-	 *            the annotation as defined by inheriting class.
+	 * @param annotation the annotation as defined by inheriting class.
 	 * @return the URL resource
 	 */
 	private URL getURLResource(final FXMLView annotation) {
@@ -107,13 +112,10 @@ public abstract class AbstractPage {
 	/**
 	 * Load synchronously.
 	 *
-	 * @param resource
-	 *            the resource
-	 * @param bundle
-	 *            the bundle
+	 * @param resource the resource
+	 * @param bundle   the bundle
 	 * @return the FXML loader
-	 * @throws IllegalStateException
-	 *             the illegal state exception
+	 * @throws IllegalStateException the illegal state exception
 	 */
 	private FXMLLoader loadSynchronously(final URL resource, final Optional<ResourceBundle> bundle)
 			throws IllegalStateException {
@@ -171,8 +173,7 @@ public abstract class AbstractPage {
 	/**
 	 * Adds the CSS if available.
 	 *
-	 * @param parent
-	 *            the parent
+	 * @param parent the parent
 	 */
 	void addCSSIfAvailable(final Parent parent) {
 
@@ -190,10 +191,8 @@ public abstract class AbstractPage {
 	/**
 	 * Adds the CSS from annotation to parent.
 	 *
-	 * @param parent
-	 *            the parent
-	 * @param annotation
-	 *            the annotation
+	 * @param parent     the parent
+	 * @param annotation the annotation
 	 */
 	private void addCSSFromAnnotation(final Parent parent) {
 		if (annotation != null && annotation.css().length > 0) {
@@ -238,8 +237,7 @@ public abstract class AbstractPage {
 	/**
 	 * Gets the conventional name.
 	 *
-	 * @param ending
-	 *            the suffix to append
+	 * @param ending the suffix to append
 	 * @return the conventional name with stripped ending
 	 */
 	private String getConventionalName(final String ending) {
@@ -276,8 +274,7 @@ public abstract class AbstractPage {
 	/**
 	 * Strip ending.
 	 *
-	 * @param clazz
-	 *            the clazz
+	 * @param clazz the clazz
 	 * @return the string
 	 */
 	private static String stripEnding(final String clazz) {
@@ -303,8 +300,7 @@ public abstract class AbstractPage {
 	/**
 	 * Returns a resource bundle if available
 	 *
-	 * @param name
-	 *            the name of the resource bundle.
+	 * @param name the name of the resource bundle.
 	 * @return the resource bundle
 	 */
 	private Optional<ResourceBundle> getResourceBundle(final String name) {
@@ -355,7 +351,7 @@ public abstract class AbstractPage {
 		newStage.show();
 		return newStage;
 	}
-	
+
 	/**
 	 * 等待页面关闭
 	 */
@@ -367,7 +363,7 @@ public abstract class AbstractPage {
 			return closeFuture;
 		});
 	}
-	
+
 	/**
 	 * 当初始化之后需要处理
 	 * 
@@ -376,9 +372,10 @@ public abstract class AbstractPage {
 	public CompletableFuture<Void> whenInited() {
 		return this.initFuture;
 	}
-	
+
 	/**
 	 * 当结束之后需要处理
+	 * 
 	 * @return
 	 */
 	public CompletableFuture<Void> whenClosed() {

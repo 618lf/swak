@@ -1,16 +1,13 @@
 package com.swak.flux.verticle;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.swak.asm.MethodCache;
+import com.swak.asm.MethodCache.ClassMeta;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.asm.Wrapper;
 import com.swak.utils.ExceptionUtils;
-import com.swak.utils.Maps;
 
 /**
  * 将服务发布成为 verticle
@@ -23,40 +20,26 @@ public class ServiceVerticle implements Verticle {
 
 	private final Object service;
 	private final String address;
+	@SuppressWarnings("unused")
 	private final Class<?> type;
 	private final Wrapper wrapper;
-	private final Map<String, MethodMeta> methods;
+	private final ClassMeta classMeta;
 
 	public ServiceVerticle(Object service, Class<?> type) {
 		this.service = service;
 		this.type = type;
 		this.address = type.getName();
 		this.wrapper = Wrapper.getWrapper(type);
-		this.methods = this.initMethods();
-	}
-
-	private Map<String, MethodMeta> initMethods() {
-		Map<String, MethodMeta> methodMap = Maps.newHashMap();
-		Method[] methods = type.getMethods();
-		for (Method method : methods) {
-			MethodMeta meta = MethodCache.set(method);
-			methodMap.put(meta.getMethodDesc(), meta);
-		}
-		return methodMap;
-	}
-
-	private MethodMeta lookupMethod(String methodDesc) {
-		return methods.get(methodDesc);
+		this.classMeta = MethodCache.set(type);
 	}
 
 	@Override
 	public Msg handle(Msg request) {
-		MethodMeta method = this.lookupMethod(request.getMethodDesc());
+		MethodMeta method = this.classMeta.lookup(request.getMethodDesc());
 		Object result = null;
 		Exception error = null;
 		try {
-			result = wrapper.invokeMethod(service, method.getMethodName(), method.getParameterTypes(),
-					request.getArguments());
+			result = wrapper.invokeMethod(service, method.getMethodDesc(), request.getArguments());
 		} catch (Exception e) {
 			error = e;
 			logger.error("执行service错误", e);

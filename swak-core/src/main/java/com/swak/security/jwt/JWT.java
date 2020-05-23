@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.crypto.Mac;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * JWT and JWS implementation draft-ietf-oauth-json-web-token-32.
  *
@@ -44,10 +48,11 @@ import javax.crypto.Mac;
  */
 public final class JWT {
 
+	// simple random as its value is just to create entropy
 	private static final Random RND = new Random();
 
+	@SuppressWarnings("serial")
 	private static final Map<String, String> ALGORITHM_ALIAS = new HashMap<String, String>() {
-		private static final long serialVersionUID = 1L;
 		{
 			put("HS256", "HMacSHA256");
 			put("HS384", "HMacSHA384");
@@ -62,17 +67,23 @@ public final class JWT {
 	};
 
 	private static final Charset UTF8 = StandardCharsets.UTF_8;
+	private static final Logger log = LoggerFactory.getLogger(JWT.class);
+
+	// as described in the terminology section:
+	// https://tools.ietf.org/html/rfc7515#section-2
 	private static final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
 	private static final Base64.Decoder decoder = Base64.getUrlDecoder();
+
 	private final Map<String, List<Crypto>> cryptoMap = new ConcurrentHashMap<>();
 
-	/**
-	 * only support this method
-	 * 
-	 * @param keyStore
-	 * @param keyStorePassword
-	 */
+	public JWT() {
+		// Spec requires "none" to always be available
+		cryptoMap.put("none", Collections.singletonList(new CryptoNone()));
+	}
+
 	public JWT(final KeyStore keyStore, final char[] keyStorePassword) {
+		this();
+
 		// load MACs
 		for (String alg : Arrays.asList("HS256", "HS384", "HS512")) {
 			try {
@@ -80,8 +91,11 @@ public final class JWT {
 				if (mac != null) {
 					List<Crypto> l = cryptoMap.computeIfAbsent(alg, k -> new ArrayList<>());
 					l.add(new CryptoMac(mac));
+				} else {
+					log.info(alg + " not available");
 				}
 			} catch (RuntimeException e) {
+				log.warn(alg + " not supported", e);
 			}
 		}
 
@@ -92,19 +106,138 @@ public final class JWT {
 				if (certificate != null && privateKey != null) {
 					List<Crypto> l = cryptoMap.computeIfAbsent(alg, k -> new ArrayList<>());
 					l.add(new CryptoSignature(ALGORITHM_ALIAS.get(alg), certificate, privateKey));
+				} else {
+					log.info(alg + " not available");
 				}
 			} catch (RuntimeException e) {
+				e.printStackTrace();
+				log.warn(alg + " not supported");
 			}
 		}
+	}
+
+	@Deprecated
+	public JWT(String key, boolean keyPrivate) {
+		// make sure the none is present
+		this();
+
+		if (keyPrivate) {
+			addSecretKey("RS256", key);
+		} else {
+			addPublicKey("RS256", key);
+		}
+	}
+
+	/**
+	 * Adds a JSON Web Key (rfc7517) to the crypto map.
+	 *
+	 * @param jwk a JSON Web Key
+	 * @return self
+	 */
+	public JWT addJWK(JWK jwk) {
+		List<Crypto> current = cryptoMap.computeIfAbsent(jwk.getAlgorithm(), k -> new ArrayList<>());
+
+		boolean replaced = false;
+
+		for (int i = 0; i < current.size(); i++) {
+			if (current.get(i).getId().equals(jwk.getId())) {
+				// replace
+				current.set(i, jwk);
+				replaced = true;
+			}
+		}
+
+		if (!replaced) {
+			// non existent, add it!
+			current.add(jwk);
+		}
+
+		return this;
+	}
+
+	/**
+	 * Adds a public key for a given JWS algorithm to the crypto map. This is an
+	 * alternative to using keystores since it is common to see these keys when
+	 * dealing with 3rd party services such as Google or Keycloak.
+	 *
+	 * @deprecated Replaced by {@link #addJWK(JWK)}
+	 * @param algorithm the JWS algorithm, e.g.: RS256
+	 * @param key       the base64 DER format of the key (also known as PEM format,
+	 *                  without the header and footer).
+	 * @return self
+	 */
+	@Deprecated
+	public JWT addPublicKey(String algorithm, String key) {
+		return addJWK(new JWK(algorithm, key, null));
+	}
+
+	/**
+	 * Adds a key pair for a given JWS algorithm to the crypto map. This is an
+	 * alternative to using keystores since it is common to see these keys when
+	 * dealing with 3rd party services such as Google or Keycloak.
+	 *
+	 * @deprecated Replaced by {@link #addJWK(JWK)}
+	 * @param algorithm  the JWS algorithm, e.g.: RS256
+	 * @param publicKey  the base64 DER format of the key (also known as PEM format,
+	 *                   without the header and footer).
+	 * @param privateKey the base64 DER format of the key (also known as PEM format,
+	 *                   without the header and footer).
+	 * @return self
+	 */
+	@Deprecated
+	public JWT addKeyPair(String algorithm, String publicKey, String privateKey) {
+		return addJWK(new JWK(algorithm, publicKey, privateKey));
+	}
+
+	/**
+	 * Adds a private key for a given JWS algorithm to the crypto map. This is an
+	 * alternative to using keystores since it is common to see these keys when
+	 * dealing with 3rd party services such as Google.
+	 *
+	 * @deprecated Replaced by {@link #addJWK(JWK)}
+	 * @param algorithm the JWS algorithm, e.g.: RS256
+	 * @param key       the base64 DER format of the key (also known as PEM format,
+	 *                  without the header and footer).
+	 * @return self
+	 */
+	@Deprecated
+	public JWT addSecretKey(String algorithm, String key) {
+		return addJWK(new JWK(algorithm, null, key));
+	}
+
+	/**
+	 * Adds a certificate for a given JWS algorithm to the crypto map. This is an
+	 * alternative to using keystores since it is common to see these keys when
+	 * dealing with 3rd party services such as Google.
+	 *
+	 * @param algorithm the JWS algorithm, e.g.: RS256
+	 * @param cert      the base64 DER format of the key (also known as PEM format,
+	 *                  without the header and footer).
+	 * @return self
+	 */
+	public JWT addCertificate(String algorithm, String cert) {
+		return addJWK(new JWK(algorithm, true, cert, null));
+	}
+
+	/**
+	 * Adds a secret (password) for a given JWS algorithm to the crypto map. This is
+	 * an alternative to using keystores since it is common to see these keys when
+	 * dealing with 3rd party services such as Google.
+	 *
+	 * @param algorithm the JWS algorithm, e.g.: HS256
+	 * @param key       the base64 DER format of the key (also known as PEM format,
+	 *                  without the header and footer).
+	 * @return self
+	 */
+	public JWT addSecret(String algorithm, String key) {
+		return addJWK(new JWK(algorithm, key));
 	}
 
 	/**
 	 * Creates a new Message Authentication Code
 	 *
-	 * @param keyStore
-	 *            a valid JKS
-	 * @param alias
-	 *            algorithm to use e.g.: HmacSHA256
+	 * @param keyStore a valid JKS
+	 * @param alias    algorithm to use e.g.: HmacSHA256
 	 * @return Mac implementation
 	 */
 	private Mac getMac(final KeyStore keyStore, final char[] keyStorePassword, final String alias) {
@@ -128,7 +261,6 @@ public final class JWT {
 	private X509Certificate getCertificate(final KeyStore keyStore, final String alias) {
 		try {
 			return (X509Certificate) keyStore.getCertificate(alias);
-
 		} catch (KeyStoreException e) {
 			throw new RuntimeException(e);
 		}
@@ -137,28 +269,21 @@ public final class JWT {
 	private PrivateKey getPrivateKey(final KeyStore keyStore, final char[] keyStorePassword, final String alias) {
 		try {
 			return (PrivateKey) keyStore.getKey(alias, keyStorePassword);
-
 		} catch (NoSuchAlgorithmException | UnrecoverableKeyException | KeyStoreException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	/**
-	 * 解密
-	 * 
-	 * @param token
-	 * @return
-	 */
 	public JWTPayload decode(final String token) {
 		String[] segments = token.split("\\.");
-		if (segments.length != 3) {
+		if (segments.length != (isUnsecure() ? 2 : 3)) {
 			throw new RuntimeException("Not enough or too many segments");
 		}
 
 		// All segment should be base64
 		String headerSeg = segments[0];
 		String payloadSeg = segments[1];
-		String signatureSeg = segments[2];
+		String signatureSeg = isUnsecure() ? null : segments[2];
 
 		if ("".equals(signatureSeg)) {
 			throw new RuntimeException("Signature is required");
@@ -176,16 +301,26 @@ public final class JWT {
 			throw new RuntimeException("Algorithm not supported");
 		}
 
-		// verify signature. `sign` will return base64 string.
-		byte[] payloadInput = base64urlDecode(signatureSeg);
-		byte[] signingInput = (headerSeg + "." + payloadSeg).getBytes(UTF8);
-
-		for (Crypto c : cryptos) {
-			if (c.verify(payloadInput, signingInput)) {
-				return payload;
-			}
+		// if we only allow secure alg, then none is not a valid option
+		if (!isUnsecure() && "none".equals(alg)) {
+			throw new RuntimeException("Algorithm \"none\" not allowed");
 		}
-		throw new RuntimeException("Signature verification failed");
+
+		// verify signature. `sign` will return base64 string.
+		if (!isUnsecure()) {
+			byte[] payloadInput = base64urlDecode(signatureSeg);
+			byte[] signingInput = (headerSeg + "." + payloadSeg).getBytes(UTF8);
+
+			for (Crypto c : cryptos) {
+				if (c.verify(payloadInput, signingInput)) {
+					return payload;
+				}
+			}
+
+			throw new RuntimeException("Signature verification failed");
+		}
+
+		return payload;
 	}
 
 	public boolean isExpired(JWTPayload jwt, JWTOptions options) {
@@ -201,8 +336,7 @@ public final class JWT {
 		final long now = (System.currentTimeMillis() / 1000);
 
 		if (jwt.containsKey("exp") && !options.isIgnoreExpiration()) {
-			Long exp = jwt.getLong("exp");
-			if (now - options.getLeeway() >= exp) {
+			if (now - options.getLeeway() >= jwt.getLong("exp")) {
 				throw new RuntimeException("Expired JWT token: exp <= now");
 			}
 		}
@@ -226,12 +360,6 @@ public final class JWT {
 		return false;
 	}
 
-	/**
-	 * 
-	 * @param payload
-	 * @param options
-	 * @return
-	 */
 	public String sign(JWTPayload payload, JWTOptions options) {
 		final String algorithm = options.getAlgorithm();
 
@@ -248,7 +376,7 @@ public final class JWT {
 		long timestamp = System.currentTimeMillis() / 1000;
 
 		if (!options.isNoTimestamp()) {
-			payload.put("iat", payload.get("iat") != null ? payload.get("iat") : timestamp);
+			payload.put("iat", payload.get("iat", timestamp));
 		}
 
 		if (options.getExpiresInSeconds() > 0) {
@@ -291,6 +419,10 @@ public final class JWT {
 
 	private static String base64urlEncode(byte[] bytes) {
 		return encoder.encodeToString(bytes);
+	}
+
+	public boolean isUnsecure() {
+		return cryptoMap.size() == 1;
 	}
 
 	public Collection<String> availableAlgorithms() {

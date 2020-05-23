@@ -58,33 +58,35 @@
 package gnu.io;
 
 /**
-* Exception thrown when a method does not support the requested functionality.
-* @author Trent Jarvi
-* @version %I%, %G%
-* @since JDK1.0
-*/
+ * Exception thrown when a method does not support the requested functionality.
+ * 
+ * @author Trent Jarvi
+ * @version %I%, %G%
+ * @since JDK1.0
+ */
 
-public class UnSupportedLoggerException extends Exception
-{
-/**
-	 * 
-	 */
+public class UnSupportedLoggerException extends Exception {
+	/**
+		 * 
+		 */
 	private static final long serialVersionUID = 3270209386138681632L;
-/**
-* create an instances with no message about why the Exception was thrown.
-* @since JDK1.0
-*/
-	public UnSupportedLoggerException()
-	{
+
+	/**
+	 * create an instances with no message about why the Exception was thrown.
+	 * 
+	 * @since JDK1.0
+	 */
+	public UnSupportedLoggerException() {
 		super();
 	}
-/**
-* create an instance with a message about why the Exception was thrown.
-* @param str	A detailed message explaining the reason for the Exception.
-* @since JDK1.0
-*/
-	public UnSupportedLoggerException( String str )
-	{
-		super( str );
+
+	/**
+	 * create an instance with a message about why the Exception was thrown.
+	 * 
+	 * @param str A detailed message explaining the reason for the Exception.
+	 * @since JDK1.0
+	 */
+	public UnSupportedLoggerException(String str) {
+		super(str);
 	}
 }

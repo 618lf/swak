@@ -31,7 +31,7 @@ public class TokenProvider {
 			validateCodeKey = UUID.randomUUID().toString();
 			TokenProvider.setHeader(request, response, key, validateCodeKey);
 		}
-		CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times).putObject(validateCodeKey,
+		CacheManagers.getCache(Constants.TOKEN_CACHE_NAME, Constants.COOKIE_CACHE_TIMES).putObject(validateCodeKey,
 				value);
 	}
 
@@ -47,7 +47,7 @@ public class TokenProvider {
 		try {
 			String validateCodeKey = TokenProvider.getHeader(request, response, key);
 			if (StringUtils.isNotBlank(validateCodeKey)) {
-				Object obj = CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times)
+				Object obj = CacheManagers.getCache(Constants.TOKEN_CACHE_NAME, Constants.COOKIE_CACHE_TIMES)
 						.getObject(validateCodeKey);
 				return (T) (obj);
 			}
@@ -81,7 +81,7 @@ public class TokenProvider {
 	public static void removeAttribute(HttpServerRequest request, HttpServerResponse response, String key) {
 		String validateCodeKey = TokenProvider.getHeader(request, response, key);
 		if (StringUtils.isNotBlank(validateCodeKey)) {
-			CacheManagers.getCache(Constants.token_cache_name, Constants.cookie_cache_times).delete(validateCodeKey);
+			CacheManagers.getCache(Constants.TOKEN_CACHE_NAME, Constants.COOKIE_CACHE_TIMES).delete(validateCodeKey);
 		}
 	}
 	

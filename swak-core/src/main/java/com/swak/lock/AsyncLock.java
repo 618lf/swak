@@ -5,16 +5,17 @@ import java.util.function.Supplier;
 
 /**
  * 异步非阻塞锁
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 11:53
  */
 public interface AsyncLock extends Lock {
 
-	/**
-	 * 返回异步对象，执行完成之后回调继续执行，注意切线程
-	 * 
-	 * @param handler
-	 * @return
-	 */
-	<T> CompletableFuture<T> execute(Supplier<T> handler);
+    /**
+     * 返回异步对象，执行完成之后回调继续执行，注意切线程
+     *
+     * @param handler 任务处理器
+     * @return 异步结果
+     */
+    <T> CompletableFuture<T> execute(Supplier<T> handler);
 }

@@ -13,49 +13,50 @@ import io.netty.channel.epoll.EpollSocketChannel;
 
 /**
  * EpollLoop
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 12:51
  */
 public class EpollLoopResources extends DefaultLoopResources {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	EpollLoopResources(String prefix, int selectCount, int workerCount, boolean daemon,
-			BlockedThreadChecker blockedThreadChecker, long maxExecTime, TimeUnit maxExecTimeUnit) {
-		super(prefix, selectCount, workerCount, daemon, blockedThreadChecker, maxExecTime, maxExecTimeUnit);
-	}
+    EpollLoopResources(String prefix, int selectCount, int workerCount, boolean daemon,
+                       BlockedThreadChecker blockedThreadChecker, long maxExecTime, TimeUnit maxExecTimeUnit) {
+        super(prefix, selectCount, workerCount, daemon, blockedThreadChecker, maxExecTime, maxExecTimeUnit);
+    }
 
-	@Override
-	public Class<? extends ServerChannel> onServerChannel() {
-		return EpollServerSocketChannel.class;
-	}
+    @Override
+    public Class<? extends ServerChannel> onServerChannel() {
+        return EpollServerSocketChannel.class;
+    }
 
-	@Override
-	public Class<? extends Channel> onClientChannel() {
-		return EpollSocketChannel.class;
-	}
+    @Override
+    public Class<? extends Channel> onClientChannel() {
+        return EpollSocketChannel.class;
+    }
 
-	@Override
-	public EventLoopGroup onServerSelect() {
-		if (this.serverSelectLoops == null) {
-			this.serverSelectLoops = new EpollEventLoopGroup(selectCount, threadFactory(this, "Epoll-acceptor-"));
-		}
-		return this.serverSelectLoops;
-	}
+    @Override
+    public EventLoopGroup onServerSelect() {
+        if (this.serverSelectLoops == null) {
+            this.serverSelectLoops = new EpollEventLoopGroup(selectCount, threadFactory(this, "Epoll-acceptor-"));
+        }
+        return this.serverSelectLoops;
+    }
 
-	@Override
-	public EventLoopGroup onServer() {
-		if (this.serverLoops == null) {
-			this.serverLoops = new EpollEventLoopGroup(workerCount, threadFactory(this, "Epoll-eventloop-"));
-		}
-		return this.serverLoops;
-	}
+    @Override
+    public EventLoopGroup onServer() {
+        if (this.serverLoops == null) {
+            this.serverLoops = new EpollEventLoopGroup(workerCount, threadFactory(this, "Epoll-eventloop-"));
+        }
+        return this.serverLoops;
+    }
 
-	@Override
-	public EventLoopGroup onClient() {
-		if (this.serverLoops == null) {
-			this.serverLoops = new EpollEventLoopGroup(workerCount, threadFactory(this, "Epoll-client-"));
-		}
-		return this.serverLoops;
-	}
+    @Override
+    public EventLoopGroup onClient() {
+        if (this.serverLoops == null) {
+            this.serverLoops = new EpollEventLoopGroup(workerCount, threadFactory(this, "Epoll-client-"));
+        }
+        return this.serverLoops;
+    }
 }

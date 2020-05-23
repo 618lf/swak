@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
+import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.asm.Wrapper;
 import com.swak.rabbit.RabbitMQTemplate.MessageHandler;
@@ -91,7 +92,7 @@ public class EventBus {
 	 * @return
 	 */
 	private RabbitMQTemplate apply(RabbitMQTemplate sender) {
-		
+
 		// 定义延迟队列
 		Map<String, Object> agruments = Maps.newHashMap();
 		agruments.put("x-dead-letter-exchange", Constants.retry_channel);
@@ -99,119 +100,119 @@ public class EventBus {
 		agruments.put("x-message-ttl", Constants.dead);
 		sender.exchangeDirectBindQueue(Constants.dead_channel, Constants.dead_channel, Constants.dead_channel,
 				agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry1s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry1s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[0]);
 		sender.exchangeDirectBindQueue(Constants.retry1s_channel, Constants.retry1s_channel, Constants.retry1s_channel,
 				agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry5s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry5s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[1]);
 		sender.exchangeDirectBindQueue(Constants.retry5s_channel, Constants.retry5s_channel, Constants.retry5s_channel,
 				agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry10s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry10s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[2]);
 		sender.exchangeDirectBindQueue(Constants.retry10s_channel, Constants.retry10s_channel,
 				Constants.retry10s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry30s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry30s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[3]);
 		sender.exchangeDirectBindQueue(Constants.retry30s_channel, Constants.retry30s_channel,
 				Constants.retry30s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry60s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry60s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[4]);
 		sender.exchangeDirectBindQueue(Constants.retry60s_channel, Constants.retry60s_channel,
 				Constants.retry60s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry120s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry120s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[5]);
 		sender.exchangeDirectBindQueue(Constants.retry120s_channel, Constants.retry120s_channel,
 				Constants.retry120s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry180s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry180s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[6]);
 		sender.exchangeDirectBindQueue(Constants.retry180s_channel, Constants.retry180s_channel,
 				Constants.retry180s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry240s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry240s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[7]);
 		sender.exchangeDirectBindQueue(Constants.retry240s_channel, Constants.retry240s_channel,
 				Constants.retry240s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry300s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry300s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[8]);
 		sender.exchangeDirectBindQueue(Constants.retry300s_channel, Constants.retry300s_channel,
 				Constants.retry300s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry360s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry360s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[9]);
 		sender.exchangeDirectBindQueue(Constants.retry360s_channel, Constants.retry360s_channel,
 				Constants.retry360s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry420s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry420s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[10]);
 		sender.exchangeDirectBindQueue(Constants.retry420s_channel, Constants.retry420s_channel,
 				Constants.retry420s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry480s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry480s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[11]);
 		sender.exchangeDirectBindQueue(Constants.retry480s_channel, Constants.retry480s_channel,
 				Constants.retry480s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry540s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry540s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[12]);
 		sender.exchangeDirectBindQueue(Constants.retry540s_channel, Constants.retry540s_channel,
 				Constants.retry540s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry600s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry600s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[13]);
 		sender.exchangeDirectBindQueue(Constants.retry600s_channel, Constants.retry600s_channel,
 				Constants.retry600s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry1200s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry1200s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[14]);
 		sender.exchangeDirectBindQueue(Constants.retry1200s_channel, Constants.retry1200s_channel,
 				Constants.retry1200s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry1800s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry1800s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[15]);
 		sender.exchangeDirectBindQueue(Constants.retry1800s_channel, Constants.retry1800s_channel,
 				Constants.retry1800s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry3600s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry3600s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[16]);
 		sender.exchangeDirectBindQueue(Constants.retry3600s_channel, Constants.retry3600s_channel,
 				Constants.retry3600s_channel, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry7200s_channel_cus);
 		agruments.put("x-dead-letter-routing-key", Constants.retry7200s_channel_cus);
 		agruments.put("x-message-ttl", Constants.retrys[17]);
 		sender.exchangeDirectBindQueue(Constants.retry7200s_channel, Constants.retry7200s_channel,
 				Constants.retry7200s_channel, agruments);
-		
+
 		// 定义延迟队列 的消费在队列
 		return this.applyCus(sender);
 	}
-	
+
 	/**
 	 * 默认的队列
 	 * 
@@ -219,105 +220,105 @@ public class EventBus {
 	 * @return
 	 */
 	private RabbitMQTemplate applyCus(RabbitMQTemplate sender) {
-		
+
 		Map<String, Object> agruments = Maps.newHashMap();
 		agruments.put("x-dead-letter-exchange", Constants.retry1s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry1s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry_channel, Constants.retry_channel, Constants.retry_channel,
 				agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry5s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry5s_channel);
-		sender.exchangeDirectBindQueue(Constants.retry1s_channel_cus, Constants.retry1s_channel_cus, Constants.retry1s_channel_cus,
-				agruments);
-		
+		sender.exchangeDirectBindQueue(Constants.retry1s_channel_cus, Constants.retry1s_channel_cus,
+				Constants.retry1s_channel_cus, agruments);
+
 		agruments.put("x-dead-letter-exchange", Constants.retry10s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry10s_channel);
-		sender.exchangeDirectBindQueue(Constants.retry5s_channel_cus, Constants.retry5s_channel_cus, Constants.retry5s_channel_cus,
-				agruments);
-		
+		sender.exchangeDirectBindQueue(Constants.retry5s_channel_cus, Constants.retry5s_channel_cus,
+				Constants.retry5s_channel_cus, agruments);
+
 		agruments.put("x-dead-letter-exchange", Constants.retry30s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry30s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry10s_channel_cus, Constants.retry10s_channel_cus,
 				Constants.retry10s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry60s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry60s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry30s_channel_cus, Constants.retry30s_channel_cus,
 				Constants.retry30s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry120s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry120s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry60s_channel_cus, Constants.retry60s_channel_cus,
 				Constants.retry60s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry180s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry180s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry120s_channel_cus, Constants.retry120s_channel_cus,
 				Constants.retry120s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry240s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry240s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry180s_channel_cus, Constants.retry180s_channel_cus,
 				Constants.retry180s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry300s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry300s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry240s_channel_cus, Constants.retry240s_channel_cus,
 				Constants.retry240s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry360s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry360s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry300s_channel_cus, Constants.retry300s_channel_cus,
 				Constants.retry300s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry420s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry420s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry360s_channel_cus, Constants.retry360s_channel_cus,
 				Constants.retry360s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry480s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry480s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry420s_channel_cus, Constants.retry420s_channel_cus,
 				Constants.retry420s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry540s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry540s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry480s_channel_cus, Constants.retry480s_channel_cus,
 				Constants.retry480s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry600s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry600s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry540s_channel_cus, Constants.retry540s_channel_cus,
 				Constants.retry540s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry1200s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry1200s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry600s_channel_cus, Constants.retry600s_channel_cus,
 				Constants.retry600s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry1800s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry1800s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry1200s_channel_cus, Constants.retry1200s_channel_cus,
 				Constants.retry1200s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry3600s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry3600s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry1800s_channel_cus, Constants.retry1800s_channel_cus,
 				Constants.retry1800s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.retry7200s_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.retry7200s_channel);
 		sender.exchangeDirectBindQueue(Constants.retry3600s_channel_cus, Constants.retry3600s_channel_cus,
 				Constants.retry3600s_channel_cus, agruments);
-		
+
 		agruments.put("x-dead-letter-exchange", Constants.fail_channel);
 		agruments.put("x-dead-letter-routing-key", Constants.fail_channel);
 		sender.exchangeDirectBindQueue(Constants.retry7200s_channel_cus, Constants.retry7200s_channel_cus,
 				Constants.retry7200s_channel_cus, agruments);
-		
+
 		sender.exchangeDirectBindQueue(Constants.fail_channel, Constants.fail_channel, Constants.fail_channel, null);
-		
+
 		return sender;
 	}
 
@@ -365,7 +366,6 @@ public class EventBus {
 	 * 应用消费者
 	 * 
 	 * @Title: applyConsumer
-	 * @Description: TODO(描述)
 	 * @param apply
 	 * @author lifeng
 	 * @date 2019-11-23 12:49:19
@@ -378,7 +378,6 @@ public class EventBus {
 	 * 应用发送者
 	 * 
 	 * @Title: applySender
-	 * @Description: TODO(描述)
 	 * @param apply
 	 * @author lifeng
 	 * @date 2019-11-23 12:49:29
@@ -645,7 +644,6 @@ public class EventBus {
 	 * 定义通用的消息发送接口
 	 * 
 	 * @ClassName: MessagePublisher
-	 * @Description:TODO(描述这个类的作用)
 	 * @author: lifeng
 	 * @date: Nov 22, 2019 10:44:33 AM
 	 */
@@ -655,7 +653,6 @@ public class EventBus {
 		 * 发送消息
 		 * 
 		 * @Title: post
-		 * @Description: TODO(描述)
 		 * @param event
 		 * @author lifeng
 		 * @date 2019-11-22 10:45:36
@@ -666,7 +663,6 @@ public class EventBus {
 		 * 发送消息
 		 * 
 		 * @Title: post
-		 * @Description: TODO(描述)
 		 * @param event
 		 * @author lifeng
 		 * @date 2019-11-22 10:45:36
@@ -677,7 +673,6 @@ public class EventBus {
 		 * 发送消息
 		 * 
 		 * @Title: submit
-		 * @Description: TODO(描述)
 		 * @param event
 		 * @author lifeng
 		 * @date 2019-11-22 10:45:36
@@ -688,7 +683,6 @@ public class EventBus {
 		 * 发送消息
 		 * 
 		 * @Title: submit
-		 * @Description: TODO(描述)
 		 * @param event
 		 * @author lifeng
 		 * @date 2019-11-22 10:45:36
@@ -702,12 +696,14 @@ public class EventBus {
 	 * @author lifeng
 	 */
 	public static class Subscriber implements MessageHandler {
-		private static Class<?>[] types = new Class<?>[] { Message.class };
 		private String queue;
 		private int prefetch;
 		private int parallel;
 		private Object listener;
-		private Method method;
+
+		// 处理器
+		private Wrapper wrapper;
+		private MethodMeta methodMeta;
 
 		public static Subscriber create(Subscribe subscribe, Object listener, Method method) {
 			Subscriber subscriber = new Subscriber();
@@ -715,7 +711,8 @@ public class EventBus {
 			subscriber.prefetch = subscribe.prefetch();
 			subscriber.parallel = subscribe.parallel();
 			subscriber.listener = listener;
-			subscriber.method = method;
+			subscriber.wrapper = Wrapper.getWrapper(listener.getClass());
+			subscriber.methodMeta = MethodCache.get(listener.getClass()).lookup(method);
 			return subscriber;
 		}
 
@@ -725,15 +722,10 @@ public class EventBus {
 		@Override
 		public Object handle(Message message) throws AmqpException {
 			try {
-
-				// 处理器
-				Wrapper wrapper = Wrapper.getWrapper(listener.getClass());
-				Object[] args = new Object[] { message };
-
-				// 执行处理器
-				return wrapper.invokeMethod(listener, method.getName(), types, args);
+				return wrapper.invokeMethod(listener, methodMeta.getMethodDesc(), new Object[] { message });
 			} catch (Exception e) {
-				LOGGER.error("Handler[{}] - Method [{}] Invoke Error：", listener.getClass().getName(), method.getName(), e.getCause());
+				LOGGER.error("Handler[{}] - Method [{}] Invoke Error：", listener.getClass().getName(),
+						methodMeta.getMethodDesc(), e.getCause());
 				throw new AmqpException("处理消费事件错误");
 			}
 		}

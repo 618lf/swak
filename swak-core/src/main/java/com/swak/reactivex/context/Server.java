@@ -1,33 +1,33 @@
 package com.swak.reactivex.context;
 
 /**
- * Simple interface that represents a fully configured web server (for example Tomcat,
- * Jetty, Netty). Allows the server to be {@link #start() started} and {@link #stop()
- * stopped}.
+ * 定义一个服务器
  *
- * @author Phillip Webb
- * @author Dave Syer
- * @since 2.0.0
+ * @author: lifeng
+ * @date: 2020/3/29 12:16
  */
 public interface Server {
 
 	/**
-	 * Starts the web server. Calling this method on an already started server has no
-	 * effect.
-	 * @throws ServerException
+	 * Starts the web server. Calling this method on an already started server has
+	 * no effect.
+	 *
+	 * @throws ServerException 服务器异常
 	 */
 	void start() throws ServerException;
 
 	/**
 	 * Stops the web server. Calling this method on an already stopped server has no
 	 * effect.
-	 * @throws ServerException
+	 *
+	 * @throws ServerException 务器异常
 	 */
 	void stop() throws ServerException;
-	
+
 	/**
 	 * 可能会启动多个服务
-	 * @return
+	 *
+	 * @return 地址
 	 */
-	String getAddresses();
+	EndPoints getEndPoints();
 }

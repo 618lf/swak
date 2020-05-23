@@ -72,7 +72,8 @@ public class StrictRedisLock implements Lock {
 	 * @return
 	 * @throws LockTimeOutException
 	 */
-	public <T> T doHandler(Supplier<T> handler) {
+	@Override
+    public <T> T doHandler(Supplier<T> handler) {
 		boolean hasLock = false;
 		try {
 			if (!!(hasLock = this.lock())) {
@@ -161,6 +162,7 @@ public class StrictRedisLock implements Lock {
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean unlock() {
 		if (lock_value != null) {
 			final byte[] lockKey = this.getName();

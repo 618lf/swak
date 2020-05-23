@@ -4,7 +4,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 
 import com.swak.freemarker.FreeMarkerConfigurer;
-import com.swak.vertx.handler.converter.TemplateHttpMessageConverter;
+import com.swak.vertx.protocol.http.converter.TemplateHttpMessageConverter;
 
 /**
  * 

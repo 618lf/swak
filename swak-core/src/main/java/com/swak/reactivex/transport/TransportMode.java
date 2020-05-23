@@ -1,6 +1,8 @@
 package com.swak.reactivex.transport;
 
 /**
+ * TransportMode
+ *
  * @author lifeng
  */
 public enum TransportMode {
@@ -19,5 +21,5 @@ public enum TransportMode {
     /**
      * OS Adaptation, Linux us EPOLL, Others use NIO
      */
-    OS;
+    OS
 }

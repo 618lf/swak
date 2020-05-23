@@ -84,13 +84,15 @@ public class PagingPage extends Page {
 	/**
 	 * 获取数据
 	 */
-	public <T> List<T> getData() {
+	@Override
+    public <T> List<T> getData() {
 		return super.getData();
 	}
 
 	/**
 	 * 分页参数
 	 */
+	@Override
 	public Parameters getParam() {
 		return super.getParam();
 	}

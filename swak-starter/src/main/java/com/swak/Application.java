@@ -5,7 +5,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -15,15 +14,16 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ClassUtils;
 
+import com.swak.reactivex.context.EndPoints;
 import com.swak.reactivex.context.ReactiveServerApplicationContext;
 import com.swak.reactivex.context.Server;
 import com.swak.utils.Sets;
 
 /**
- * @ComponentScan("com.swak")
- * 
- * @ApplicationBoot
- * @author lifeng
+ * 代理启动 服务器环境
+ *
+ * @author: lifeng
+ * @date: 2020/4/1 12:30
  */
 public class Application extends SpringApplication {
 
@@ -42,7 +42,7 @@ public class Application extends SpringApplication {
 	 * 全局的 context
 	 */
 	private static Application ME;
-	private static ConfigurableApplicationContext _CONTEXT;
+	private static ConfigurableApplicationContext CONTEXT;
 
 	/**
 	 * 初始化
@@ -60,8 +60,8 @@ public class Application extends SpringApplication {
 
 	/**
 	 * 自动发现环境
-	 * 
-	 * @return
+	 *
+	 * @return WebApplicationType
 	 */
 	private WebApplicationType deduceWebApplicationType() {
 		if (ClassUtils.isPresent(REACTIVE_FLUX_ENVIRONMENT_CLASS, null)
@@ -78,44 +78,44 @@ public class Application extends SpringApplication {
 	protected ConfigurableApplicationContext createApplicationContext() {
 		WebApplicationType type = this.getWebApplicationType();
 		if (type == WebApplicationType.REACTIVE) {
-			return (ConfigurableApplicationContext) BeanUtils.instantiateClass(ReactiveServerApplicationContext.class);
+			return BeanUtils.instantiateClass(ReactiveServerApplicationContext.class);
 		}
-		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(AnnotationConfigApplicationContext.class);
+		return BeanUtils.instantiateClass(AnnotationConfigApplicationContext.class);
 	}
 
 	/**
 	 * 启动服务
-	 * 
-	 * @param primarySource
-	 * @param args
-	 * @return
+	 *
+	 * @param primarySource 代码入口
+	 * @param args          参数
+	 * @return 上下文
 	 */
 	public static ConfigurableApplicationContext run(Class<?> primarySource, String... args) {
 		long start = System.currentTimeMillis();
-		_CONTEXT = (ConfigurableApplicationContext) new Application(primarySource).run(args);
+		CONTEXT = new Application(primarySource).run(args);
 		long end = System.currentTimeMillis();
-		if (_CONTEXT instanceof ReactiveServerApplicationContext) {
+		if (CONTEXT instanceof ReactiveServerApplicationContext) {
 			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s" + ", listening on ["
-					+ ((ReactiveServerApplicationContext) _CONTEXT).getServer().getAddresses() + "]");
+					+ ((ReactiveServerApplicationContext) CONTEXT).getServer().getEndPoints().toString() + "]");
 		} else {
 			APP_LOGGER.debug("Server start success in " + (end - start) / 1000 + "s");
 		}
-		return _CONTEXT;
+		return CONTEXT;
 	}
 
 	/**
 	 * 返回发布的地址
-	 * 
-	 * @return
+	 *
+	 * @return 地址
 	 */
-	public static String getAddresses() {
-		if (_CONTEXT != null && _CONTEXT instanceof ReactiveServerApplicationContext) {
+	public static EndPoints getEndPoints() {
+		if (CONTEXT instanceof ReactiveServerApplicationContext) {
 
 			// 获取服务
-			Server server = ((ReactiveServerApplicationContext) _CONTEXT).getServer();
+			Server server = ((ReactiveServerApplicationContext) CONTEXT).getServer();
 
 			// 服务地址
-			return server.getAddresses();
+			return server.getEndPoints();
 		}
 
 		// 其他的情况再说
@@ -126,17 +126,17 @@ public class Application extends SpringApplication {
 	 * 停止服务
 	 */
 	public static void stop() {
-		if (_CONTEXT != null) {
-			exit(_CONTEXT, new ExitCodeGenerator[] {});
-			_CONTEXT = null;
+		if (CONTEXT != null) {
+			exit(CONTEXT);
+			CONTEXT = null;
 			ME = null;
 		}
 	}
 
 	/**
 	 * 当前应用
-	 * 
-	 * @return
+	 *
+	 * @return Application
 	 */
 	public static Application me() {
 		return ME;
@@ -144,8 +144,8 @@ public class Application extends SpringApplication {
 
 	/**
 	 * 返回扫描的包
-	 * 
-	 * @return
+	 *
+	 * @return 扫描的包
 	 */
 	public static Set<String> getScanPackages() {
 		Set<String> packages = Sets.newHashSet();
@@ -163,9 +163,9 @@ public class Application extends SpringApplication {
 
 	/**
 	 * 处理启动类
-	 * 
-	 * @param sourceClass
-	 * @return
+	 *
+	 * @param sourceClass 源码
+	 * @return 扫描的包
 	 */
 	@SuppressWarnings("deprecation")
 	static Set<String> parseComponent(Class<?> sourceClass) {
@@ -185,14 +185,14 @@ public class Application extends SpringApplication {
 
 	/**
 	 * 简单的处理扫描的包
-	 * 
-	 * @param sourceClass
-	 * @param scan
-	 * @return
+	 *
+	 * @param sourceClass 源码入口
+	 * @param scan        扫码器
+	 * @return 扫描的包
 	 */
 	static Set<String> parseComponentScan(Class<?> sourceClass, ComponentScan scan) {
 		String[] packages = scan.basePackages();
-		if (packages == null || packages.length == 0) {
+		if (packages.length == 0) {
 			return Sets.newHashSet(sourceClass.getPackage().getName());
 		}
 		return Sets.newHashSet(packages);
@@ -200,15 +200,15 @@ public class Application extends SpringApplication {
 
 	/**
 	 * 简单的处理引入的包
-	 * 
-	 * @param sourceClass
-	 * @param scan
-	 * @return
+	 *
+	 * @param sourceClass 源码入口
+	 * @param scan        引入路径
+	 * @return 扫描的包
 	 */
 	static Set<String> parseComponentImport(Class<?> sourceClass, Import scan) {
 		Set<String> packages = Sets.newHashSet();
 		Class<?>[] imports = scan.value();
-		if (imports != null && imports.length > 0) {
+		if (imports.length > 0) {
 			for (Class<?> source : imports) {
 				packages.addAll(parseComponent(source));
 			}

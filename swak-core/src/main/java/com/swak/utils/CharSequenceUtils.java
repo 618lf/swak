@@ -22,16 +22,17 @@ import java.lang.reflect.Array;
  * <p>Operations on {@link CharSequence} that are
  * {@code null} safe.</p>
  *
+ * @author lifeng
  * @see CharSequence
  * @since 3.0
  */
 public class CharSequenceUtils {
-	
+
     /**
      * {@code \u000a} linefeed LF ('\n').
      *
      * @see <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6">JLF: Escape Sequences
-     *      for Character and String Literals</a>
+     * for Character and String Literals</a>
      * @since 2.2
      */
     public static final char LF = '\n';
@@ -40,11 +41,11 @@ public class CharSequenceUtils {
      * {@code \u000d} carriage return CR ('\r').
      *
      * @see <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6">JLF: Escape Sequences
-     *      for Character and String Literals</a>
+     * for Character and String Literals</a>
      * @since 2.2
      */
     public static final char CR = '\r';
-    
+
     public static final char DEFAULT_DELIMITER_CHAR = ',';
 
     private static final int NOT_FOUND = -1;
@@ -61,6 +62,7 @@ public class CharSequenceUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Returns a new {@code CharSequence} that is a subsequence of this
      * sequence starting with the {@code char} value at the specified index.</p>
@@ -69,17 +71,18 @@ public class CharSequenceUtils {
      * The length (in {@code char}) of the returned sequence is {@code length() - start},
      * so if {@code start == end} then an empty sequence is returned.</p>
      *
-     * @param cs  the specified subsequence, null returns null
-     * @param start  the start index, inclusive, valid
+     * @param cs    the specified subsequence, null returns null
+     * @param start the start index, inclusive, valid
      * @return a new subsequence, may be null
      * @throws IndexOutOfBoundsException if {@code start} is negative or if
-     *  {@code start} is greater than {@code length()}
+     *                                   {@code start} is greater than {@code length()}
      */
     public static CharSequence subSequence(final CharSequence cs, final int start) {
         return cs == null ? null : cs.subSequence(start, cs.length());
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns the index within <code>cs</code> of the first occurrence of the
      * specified character, starting the search at the specified index.
@@ -112,9 +115,9 @@ public class CharSequenceUtils {
      * <p>All indices are specified in <code>char</code> values
      * (Unicode code units).
      *
-     * @param cs  the {@code CharSequence} to be processed, not null
-     * @param searchChar  the char to be searched for
-     * @param start  the start index, negative starts at the string start
+     * @param cs         the {@code CharSequence} to be processed, not null
+     * @param searchChar the char to be searched for
+     * @param start      the start index, negative starts at the string start
      * @return the index where the search char was found, -1 if not found
      * @since 3.6 updated to behave more like <code>String</code>
      */
@@ -150,22 +153,13 @@ public class CharSequenceUtils {
     /**
      * Used by the indexOf(CharSequence methods) as a green implementation of indexOf.
      *
-     * @param cs the {@code CharSequence} to be processed
+     * @param cs         the {@code CharSequence} to be processed
      * @param searchChar the {@code CharSequence} to be searched for
-     * @param start the start index
+     * @param start      the start index
      * @return the index where the search sequence was found
      */
     static int indexOf(final CharSequence cs, final CharSequence searchChar, final int start) {
         return cs.toString().indexOf(searchChar.toString(), start);
-//        if (cs instanceof String && searchChar instanceof String) {
-//            // TODO: Do we assume searchChar is usually relatively small;
-//            //       If so then calling toString() on it is better than reverting to
-//            //       the green implementation in the else block
-//            return ((String) cs).indexOf((String) searchChar, start);
-//        } else {
-//            // TODO: Implement rather than convert to String
-//            return cs.toString().indexOf(searchChar.toString(), start);
-//        }
     }
 
     /**
@@ -188,9 +182,9 @@ public class CharSequenceUtils {
      * <p>All indices are specified in <code>char</code> values
      * (Unicode code units).
      *
-     * @param cs  the {@code CharSequence} to be processed
-     * @param searchChar  the char to be searched for
-     * @param start  the start index, negative returns -1, beyond length starts at end
+     * @param cs         the {@code CharSequence} to be processed
+     * @param searchChar the char to be searched for
+     * @param start      the start index, negative returns -1, beyond length starts at end
      * @return the index where the search char was found, -1 if not found
      * @since 3.6 updated to behave more like <code>String</code>
      */
@@ -234,22 +228,13 @@ public class CharSequenceUtils {
     /**
      * Used by the lastIndexOf(CharSequence methods) as a green implementation of lastIndexOf
      *
-     * @param cs the {@code CharSequence} to be processed
+     * @param cs         the {@code CharSequence} to be processed
      * @param searchChar the {@code CharSequence} to be searched for
-     * @param start the start index
+     * @param start      the start index
      * @return the index where the search sequence was found
      */
     static int lastIndexOf(final CharSequence cs, final CharSequence searchChar, final int start) {
         return cs.toString().lastIndexOf(searchChar.toString(), start);
-//        if (cs instanceof String && searchChar instanceof String) {
-//            // TODO: Do we assume searchChar is usually relatively small;
-//            //       If so then calling toString() on it is better than reverting to
-//            //       the green implementation in the else block
-//            return ((String) cs).lastIndexOf((String) searchChar, start);
-//        } else {
-//            // TODO: Implement rather than convert to String
-//            return cs.toString().lastIndexOf(searchChar.toString(), start);
-//        }
     }
 
     /**
@@ -273,16 +258,16 @@ public class CharSequenceUtils {
     /**
      * Green implementation of regionMatches.
      *
-     * @param cs the {@code CharSequence} to be processed
+     * @param cs         the {@code CharSequence} to be processed
      * @param ignoreCase whether or not to be case insensitive
-     * @param thisStart the index to start on the {@code cs} CharSequence
-     * @param substring the {@code CharSequence} to be looked for
-     * @param start the index to start on the {@code substring} CharSequence
-     * @param length character length of the region
+     * @param thisStart  the index to start on the {@code cs} CharSequence
+     * @param substring  the {@code CharSequence} to be looked for
+     * @param start      the index to start on the {@code substring} CharSequence
+     * @param length     character length of the region
      * @return whether the region matched
      */
-    static boolean regionMatches(final CharSequence cs, final boolean ignoreCase, final int thisStart,
-            final CharSequence substring, final int start, final int length)    {
+    public static boolean regionMatches(final CharSequence cs, final boolean ignoreCase, final int thisStart,
+                                 final CharSequence substring, final int start, final int length) {
         if (cs instanceof String && substring instanceof String) {
             return ((String) cs).regionMatches(ignoreCase, thisStart, (String) substring, start, length);
         }
@@ -325,7 +310,7 @@ public class CharSequenceUtils {
 
         return true;
     }
-    
+
     /**
      * <p>Returns the length of the specified array.
      * This method can deal with {@code Object} arrays and with primitive arrays.
@@ -341,7 +326,7 @@ public class CharSequenceUtils {
      * ArrayUtils.getLength(["a", "b", "c"]) = 3
      * </pre>
      *
-     * @param array  the array to retrieve the length from, may be null
+     * @param array the array to retrieve the length from, may be null
      * @return The length of the array, or {@code 0} if the array is {@code null}
      * @throws IllegalArgumentException if the object argument is not an array.
      * @since 2.1
@@ -352,29 +337,29 @@ public class CharSequenceUtils {
         }
         return Array.getLength(array);
     }
-    
+
     /**
      * <p>Checks if an array of primitive chars is empty or {@code null}.
      *
-     * @param array  the array to test
+     * @param array the array to test
      * @return {@code true} if the array is empty or {@code null}
      * @since 2.1
      */
     public static boolean isEmpty(final char[] array) {
         return getLength(array) == 0;
     }
-    
+
     /**
      * <p>Checks if an array of Objects is empty or {@code null}.
      *
-     * @param array  the array to test
+     * @param array the array to test
      * @return {@code true} if the array is empty or {@code null}
      * @since 2.1
      */
     public static boolean isEmpty(final Object[] array) {
         return getLength(array) == 0;
     }
-    
+
     /**
      * <p>Reverses the order of the given array.
      *
@@ -382,7 +367,7 @@ public class CharSequenceUtils {
      *
      * <p>This method does nothing for a {@code null} input array.
      *
-     * @param array  the array to reverse, may be {@code null}
+     * @param array the array to reverse, may be {@code null}
      */
     public static void reverse(final Object[] array) {
         if (array == null) {
@@ -390,7 +375,7 @@ public class CharSequenceUtils {
         }
         reverse(array, 0, array.length);
     }
-    
+
     /**
      * <p>
      * Reverses the order of the given array in the given range.
@@ -398,21 +383,18 @@ public class CharSequenceUtils {
      * <p>
      * This method does nothing for a {@code null} input array.
      *
-     * @param array
-     *            the array to reverse, may be {@code null}
-     * @param startIndexInclusive
-     *            the starting index. Under value (&lt;0) is promoted to 0, over value (&gt;array.length) results in no
-     *            change.
-     * @param endIndexExclusive
-     *            elements up to endIndex-1 are reversed in the array. Under value (&lt; start index) results in no
-     *            change. Over value (&gt;array.length) is demoted to array length.
+     * @param array               the array to reverse, may be {@code null}
+     * @param startIndexInclusive the starting index. Under value (&lt;0) is promoted to 0, over value (&gt;array.length) results in no
+     *                            change.
+     * @param endIndexExclusive   elements up to endIndex-1 are reversed in the array. Under value (&lt; start index) results in no
+     *                            change. Over value (&gt;array.length) is demoted to array length.
      * @since 3.2
      */
     public static void reverse(final Object[] array, final int startIndexInclusive, final int endIndexExclusive) {
         if (array == null) {
             return;
         }
-        int i = startIndexInclusive < 0 ? 0 : startIndexInclusive;
+        int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
         Object tmp;
         while (j > i) {
@@ -423,7 +405,7 @@ public class CharSequenceUtils {
             i++;
         }
     }
-    
+
     /**
      * <p>Checks whether the character is ASCII 7 bit printable.</p>
      *
@@ -436,7 +418,7 @@ public class CharSequenceUtils {
      *   CharUtils.isAsciiPrintable('&copy;') = false
      * </pre>
      *
-     * @param ch  the character to check
+     * @param ch the character to check
      * @return true if between 32 and 126 inclusive
      */
     public static boolean isAsciiPrintable(final char ch) {

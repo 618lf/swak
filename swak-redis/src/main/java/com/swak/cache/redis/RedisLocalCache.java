@@ -127,10 +127,11 @@ public class RedisLocalCache extends RedisPubSubHandler implements LocalCache<Ob
 	 *            : cache key
 	 */
 	protected void onDeleteCacheKey(Object key) {
-		if (key instanceof Array)
-			cache.removeAll(Sets.newHashSet((String[]) key));
-		else
-			cache.remove((String) key);
+		if (key instanceof Array) {
+            cache.removeAll(Sets.newHashSet((String[]) key));
+        } else {
+            cache.remove((String) key);
+        }
 	}
 
 	// --------------- 发布事件 ----------------
@@ -142,7 +143,8 @@ public class RedisLocalCache extends RedisPubSubHandler implements LocalCache<Ob
 	 * @param key
 	 *            : cache key
 	 */
-	public void sendEvictCmd(Object key) {
+	@Override
+    public void sendEvictCmd(Object key) {
 		if (key != null) {
 			// 发送广播
 			Command cmd = new Command(Command.OPT_DELETE_KEY, key);

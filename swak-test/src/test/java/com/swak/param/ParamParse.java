@@ -12,7 +12,7 @@ import com.swak.asm.FieldCache;
 import com.swak.test.utils.MultiThreadTest;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Maps;
-import com.swak.vertx.handler.HandlerAdapter;
+import com.swak.vertx.protocol.http.HandlerAdapter;
 
 /**
  * 参数解析

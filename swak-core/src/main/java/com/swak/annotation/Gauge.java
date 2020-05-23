@@ -12,17 +12,20 @@ import com.swak.utils.StringUtils;
  * <p/>
  * Given a method like this:
  * <pre><code>
- *     {@literal @}Gauge(name = "queueSize")
- *     public int getQueueSize() {
- *         return queue.size;
- *     }
- * </code></pre>
+ *       {@literal @}Gauge(name = "queueSize")
+ *       public int getQueueSize() {
+ *           return queue.size;
+ *       }
+ *   </code></pre>
  * <p/>
  * A gauge for the defining class with the name {@code queueSize} will be created which uses the
  * annotated method's return value as its value.
+ *
+ * @author: lifeng
+ * @date: 2020/3/28 17:15
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 public @interface Gauge {
     /**
      * @return The gauge's name.

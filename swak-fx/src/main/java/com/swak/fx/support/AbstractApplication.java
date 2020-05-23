@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
+import com.swak.ui.Event;
+import com.swak.ui.EventListener;
+import com.swak.ui.EventLoopFactory;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -38,8 +41,8 @@ public abstract class AbstractApplication extends Application implements EventLi
 
 	protected AbstractApplication() {
 		splashIsShowing = new CompletableFuture<>();
-		eventBus = new AsyncEventBus("UI.app",
-				Executors.newFixedThreadPool(1, new EventLoopFactory(true, "UI.app", new AtomicLong())));
+		eventBus = new AsyncEventBus("UI.eventbus",
+				Executors.newFixedThreadPool(1, new EventLoopFactory(true, "UI.eventbus", new AtomicLong())));
 		eventBus.register(this);
 		Display.setEventBus(eventBus);
 	}
@@ -170,7 +173,7 @@ public abstract class AbstractApplication extends Application implements EventLi
 			Display.getStage().setScene(Display.getScene());
 			this.customStage(Display.getStage(), Display.getSystemTray());
 			page.whenInited().thenAcceptAsync(v -> {
-				this.postInitialized();
+				this.postInitialized(page);
 				mainViewInited.complete(() -> {
 					Display.getStage().show();
 				});
@@ -186,7 +189,8 @@ public abstract class AbstractApplication extends Application implements EventLi
 	/**
 	 * 所有初始化之后
 	 */
-	protected void postInitialized() {
+	protected void postInitialized(AbstractPage mainPage) {
+		Display.getStage().setOnShown(event -> mainPage.onReady());
 	}
 
 	/**

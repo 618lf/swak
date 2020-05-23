@@ -4,18 +4,43 @@ import java.io.Serializable;
 
 /**
  * 消息头
- * 
+ *
  * @author lifeng
  */
 public interface MsgHead extends Serializable {
 
-	String getToUserName();
+    /**
+     * 微信用户
+     *
+     * @return 消息的接收用户
+     */
+    String getToUserName();
 
-	String getFromUserName();
+    /**
+     * 微信用户
+     *
+     * @return 消息的发送用户
+     */
+    String getFromUserName();
 
-	String getCreateTime();
+    /**
+     * 消息产生时间
+     *
+     * @return 时间
+     */
+    String getCreateTime();
 
-	String getMsgType();
+    /**
+     * 消息类型
+     *
+     * @return 类型
+     */
+    String getMsgType();
 
-	String getEvent();
+    /**
+     * 事件类型
+     *
+     * @return 类型
+     */
+    String getEvent();
 }

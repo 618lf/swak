@@ -29,7 +29,7 @@ public class CodahaleMetricsFactory implements MetricsFactory {
 	}
 
 	@Override
-	public PoolMetrics<?> cteatePoolMetrics(String name, int maxSize) {
+	public PoolMetrics<?> createPoolMetrics(String name, int maxSize) {
 		return new PoolMetricsImpl(registry, name + "pool", maxSize);
 	}
 

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE xml>
-<template>
-	<name>dao</name>
-	<filePath>/${packageName}/${moduleName}/${subModuleName}/dao/</filePath>
-	<fileName>${className}Dao.java</fileName>
-	<templatePath>template/dao.ftl</templatePath>
-</template>

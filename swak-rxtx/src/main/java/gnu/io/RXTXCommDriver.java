@@ -759,12 +759,14 @@ public class RXTXCommDriver implements CommDriver {
 	}
 
 //	/**
-//	 * @return an array containing the serial ports, taken from registry HKEY_LOCAL_MACHINE\HARDWARE\DEVICEMAP\SERIALCOMM
+//	 * @return an array containing the serial ports, taken from registry
+//	 *         HKEY_LOCAL_MACHINE\HARDWARE\DEVICEMAP\SERIALCOMM
 //	 * @throws Exception in case something goes wrong with the registry
 //	 */
 //	private String[] windowsGetSerialPortsFromRegistry() throws Exception {
-//		final TreeMap<String, Object> map = com.sun.jna.platform.win32.Advapi32Util.registryGetValues(com.sun.jna.platform.win32.WinReg.HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM");
-//		
+//		final TreeMap<String, Object> map = com.sun.jna.platform.win32.Advapi32Util.registryGetValues(
+//				com.sun.jna.platform.win32.WinReg.HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM");
+//
 //		final List<String> ports = new ArrayList<String>(map.size());
 //		for (Object p : map.values()) {
 //			if (p != null && p.toString().startsWith("COM"))

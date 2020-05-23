@@ -86,9 +86,11 @@ public class CronKit {
 		}
 
 		public static Bounds getIndex(int index) {
-			for (Bounds en : Bounds.values())
-				if (en.index == index)
-					return en;
+			for (Bounds en : Bounds.values()) {
+                if (en.index == index) {
+                    return en;
+                }
+            }
 			return null;
 		}
 	}
@@ -104,8 +106,9 @@ public class CronKit {
 		Assert.isTrue(items.length == 6 || items.length == 7, "error： cron length must be 6 or 7 ");
 		Long[] cronPosition = new Long[7];
 		cronPosition[6] = ~0L; // 默认为年填充所有
-		for (int i = 0; i < items.length; i++)
-			cronPosition[i] = getField(items[i], i);
+		for (int i = 0; i < items.length; i++) {
+            cronPosition[i] = getField(items[i], i);
+        }
 		return cronPosition;
 	}
 
@@ -116,8 +119,9 @@ public class CronKit {
 		long bits = 0;
 		if (field.contains(",")) {// 判断一个节点多个条件,递归
 			String[] items = field.split(",");
-			for (String chars : items)
-				bits |= getField(chars, index);
+			for (String chars : items) {
+                bits |= getField(chars, index);
+            }
 		} else {
 			int start = 0, end = 0, step = 1;
 			Bounds bound = Bounds.getIndex(index);
@@ -132,8 +136,9 @@ public class CronKit {
 				String[] items = field.split("/");
 				end = bound.max;
 				start = bound.min;
-				if (!items[0].equals("*"))
-					start = parseIntOrName(items[0], bound);
+				if (!items[0].equals("*")) {
+                    start = parseIntOrName(items[0], bound);
+                }
 				step = parseIntOrName(items[1], bound);
 			} else {// 默认 单个
 				start = parseIntOrName(field, bound);
@@ -157,23 +162,27 @@ public class CronKit {
 	private Long getBits(int start, int end, int step) {
 		Long bits = 0L;
 		if (step == 1) // 当step=1时，可以直接反位并异或获取范围值。 这个if其实可以不要，都用下方的for循环匹配也可以
-			return ~(Long.MAX_VALUE << (end + 1)) & (Long.MAX_VALUE << start);
-		for (int i = start; i <= end; i += step)
-			bits |= 1L << i;
+        {
+            return ~(Long.MAX_VALUE << (end + 1)) & (Long.MAX_VALUE << start);
+        }
+		for (int i = start; i <= end; i += step) {
+            bits |= 1L << i;
+        }
 		return bits;
 	}
 
 	private int parseIntOrName(String field, Bounds bound) {
-		if (RegexUtil.isNumber(field))
-			return Integer.parseInt(field);
-		else {
+		if (RegexUtil.isNumber(field)) {
+            return Integer.parseInt(field);
+        } else {
 			field = field.toUpperCase();
-			if (bound == Bounds.months)
-				return months.indexOf(field) + 1;
-			else if (bound == Bounds.dow)
-				return dow.indexOf(field) + 1;
-			else
-				throw new RuntimeException("parseIntOrName No match found:" + field + "[" + bound.index + "]");
+			if (bound == Bounds.months) {
+                return months.indexOf(field) + 1;
+            } else if (bound == Bounds.dow) {
+                return dow.indexOf(field) + 1;
+            } else {
+                throw new RuntimeException("parseIntOrName No match found:" + field + "[" + bound.index + "]");
+            }
 		}
 	}
 
@@ -195,7 +204,9 @@ public class CronKit {
 			while (refresh) {
 				boolean again = false;
 				for (int i = 0; i < crop.length; i++) // 自小而大
-					again |= checkField(cal, Bounds.getIndex(i));
+                {
+                    again |= checkField(cal, Bounds.getIndex(i));
+                }
 				refresh = again;
 			}
 			return DateTimes.convertDateToLDT(cal.getTime());
@@ -226,7 +237,9 @@ public class CronKit {
 
 	private void clearChild(Calendar cal, Bounds bound) {
 		if (bound == Bounds.dow)// dow与dom 只要清空秒,分,时就行了，并不想清空月份
-			bound = Bounds.dom;
+        {
+            bound = Bounds.dom;
+        }
 		for (int i = bound.index - 1; i >= 0; i--) { // 自大而小
 			Bounds tmp = Bounds.getIndex(i);
 			cal.set(tmp.calType, tmp.min);

@@ -7,8 +7,9 @@ import com.swak.utils.Sets;
 
 /**
  * 得到相关的权限
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 21:14
  */
 public class AuthorizationInfo implements Serializable {
 
@@ -25,11 +26,13 @@ public class AuthorizationInfo implements Serializable {
 		return permissions;
 	}
 
-	public void addPermission(String permission) {
+	public AuthorizationInfo addPermission(String permission) {
 		this.permissions.add(permission);
+		return this;
 	}
 
-	public void addRole(String role) {
+	public AuthorizationInfo addRole(String role) {
 		this.roles.add(role);
+		return this;
 	}
 }

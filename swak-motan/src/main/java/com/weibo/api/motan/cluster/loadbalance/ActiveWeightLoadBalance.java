@@ -112,5 +112,4 @@ public class ActiveWeightLoadBalance<T> extends AbstractLoadBalance<T> {
             return referer1.activeRefererCount() - referer2.activeRefererCount();
         }
     }
-
 }

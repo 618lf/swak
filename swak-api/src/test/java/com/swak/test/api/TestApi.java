@@ -3,7 +3,7 @@ package com.swak.test.api;
 import com.swak.annotation.GetMapping;
 import com.swak.annotation.Header;
 import com.swak.annotation.Json;
-import com.swak.annotation.RestController;
+import com.swak.annotation.RestApi;
 import com.swak.entity.Result;
 import com.swak.test.dto.UserDTO;
 
@@ -15,7 +15,7 @@ import com.swak.test.dto.UserDTO;
  * @author: lifeng
  * @date: Nov 14, 2019 11:31:37 AM
  */
-@RestController(path = { "/api/test", "/api/v2/test" })
+@RestApi(path = { "/api/test", "/api/v2/test" })
 public class TestApi {
 
 	/**

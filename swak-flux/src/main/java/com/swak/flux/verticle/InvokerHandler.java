@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 import com.swak.Constants;
 import com.swak.asm.MethodCache;
+import com.swak.asm.MethodCache.ClassMeta;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.exception.BaseRuntimeException;
 import com.swak.utils.StringUtils;
@@ -18,12 +19,13 @@ public class InvokerHandler implements InvocationHandler {
 	private final Class<?> type;
 	private final String address;
 	private final Flux flux;
+	private final ClassMeta classMeta;
 
 	public InvokerHandler(Flux flux, Class<?> type) {
 		this.flux = flux;
 		this.type = type;
 		this.address = this.initAddress();
-		this.initMethods();
+		this.classMeta = MethodCache.set(type);
 	}
 
 	private String initAddress() {
@@ -40,23 +42,16 @@ public class InvokerHandler implements InvocationHandler {
 		return StringUtils.substringBeforeLast(address, Constants.ASYNC_SUFFIX);
 	}
 
-	private void initMethods() {
-		Method[] methods = type.getMethods();
-		for (Method method : methods) {
-			MethodCache.set(method);
-		}
-	}
-
 	/**
 	 * 只支持异步接口的调用
 	 */
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		MethodMeta meta = MethodCache.get(method);
+		MethodMeta meta = classMeta.lookup(method);
 
 		// 构建请求消息
 		Msg request = new Msg(meta, args);
-		
+
 		// 发送消息，处理相应结果
 		return flux.sendMessage(this.address, request).thenApply(res -> {
 			// 约定的通讯协议

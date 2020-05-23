@@ -4,29 +4,30 @@ import com.swak.OS;
 
 /**
  * 协议的通用配置
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 13:07
  */
 public class TransportProperties {
 
-	private TransportMode mode = TransportMode.OS;
+    private TransportMode mode = TransportMode.OS;
 
-	public TransportMode getMode() {
-		if (TransportMode.OS == mode) {
-			return this.getModeByOS();
-		}
-		return mode;
-	}
+    public TransportMode getMode() {
+        if (TransportMode.OS == mode) {
+            return this.getModeByOs();
+        }
+        return mode;
+    }
 
-	public TransportMode getModeByOS() {
-		OS os = OS.me();
-		if (os == OS.linux) {
-			return TransportMode.EPOLL;
-		}
-		return TransportMode.NIO;
-	}
+    private TransportMode getModeByOs() {
+        OS os = OS.me();
+        if (os == OS.linux) {
+            return TransportMode.EPOLL;
+        }
+        return TransportMode.NIO;
+    }
 
-	public void setMode(TransportMode mode) {
-		this.mode = mode;
-	}
+    public void setMode(TransportMode mode) {
+        this.mode = mode;
+    }
 }

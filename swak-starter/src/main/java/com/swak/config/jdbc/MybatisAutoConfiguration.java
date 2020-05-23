@@ -43,13 +43,14 @@ import com.swak.persistence.dialect.H2Dialect;
 import com.swak.persistence.dialect.MySQLDialect;
 import com.swak.persistence.dialect.OracleDialect;
 import com.swak.persistence.dialect.SqlLiteDialect;
-import com.swak.persistence.mybatis.ExecutorInterceptor;
+import com.swak.persistence.mybatis.PagingInterceptor;
 import com.swak.utils.StringUtils;
 
 /**
- * Mybatis
+ * Mybatis的自动配置
  * 
  * @author lifeng
+ * @date 2020年4月15日 下午9:05:30
  */
 @org.springframework.context.annotation.Configuration
 @ConditionalOnClass({ SqlSessionFactory.class, SqlSessionFactoryBean.class })
@@ -59,21 +60,23 @@ import com.swak.utils.StringUtils;
 		SqlLiteDataSourceAutoConfiguration.class, DruidDataSourceAutoConfiguration.class,
 		HikariDataSourceAutoConfiguration.class })
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMybatis", matchIfMissing = true)
+<<<<<<< HEAD
 public class MybatisAutoConfiguration implements InitializingBean {
 	private final DataSourceProperties dbProperties;
+=======
+public class MybatisAutoConfiguration {
+>>>>>>> refs/remotes/origin/master
 	private final MybatisProperties properties;
 	private final Interceptor[] interceptors;
 	private final ResourceLoader resourceLoader;
 	private final DatabaseIdProvider databaseIdProvider;
 	private final List<ConfigurationCustomizer> configurationCustomizers;
 
-	public MybatisAutoConfiguration(MybatisProperties properties, DataSourceProperties dbProperties,
-			ObjectProvider<Interceptor[]> interceptorsProvider, ResourceLoader resourceLoader,
-			ObjectProvider<DatabaseIdProvider> databaseIdProvider,
+	public MybatisAutoConfiguration(MybatisProperties properties, ObjectProvider<Interceptor[]> interceptorsProvider,
+			ResourceLoader resourceLoader, ObjectProvider<DatabaseIdProvider> databaseIdProvider,
 			ObjectProvider<List<ConfigurationCustomizer>> configurationCustomizersProvider) {
 		APP_LOGGER.debug("Loading Mybatis");
 		this.properties = properties;
-		this.dbProperties = dbProperties;
 		this.interceptors = interceptorsProvider.getIfAvailable();
 		this.resourceLoader = resourceLoader;
 		this.databaseIdProvider = databaseIdProvider.getIfAvailable();
@@ -95,8 +98,8 @@ public class MybatisAutoConfiguration implements InitializingBean {
 
 	@Bean
 	@ConditionalOnMissingBean(Dialect.class)
-	public Dialect dbDialect() {
-		Database db = this.dbProperties.getDb();
+	public Dialect dbDialect(DataSourceProperties dbProperties) {
+		Database db = dbProperties.getDb();
 		if (db == Database.h2) {
 			return new H2Dialect();
 		} else if (db == Database.mysql) {
@@ -155,7 +158,7 @@ public class MybatisAutoConfiguration implements InitializingBean {
 	private void defaultConfiguration(Configuration configuration, Dialect dialect) {
 
 		// 默认的拦截器
-		ExecutorInterceptor interceptor = new ExecutorInterceptor();
+		PagingInterceptor interceptor = new PagingInterceptor();
 		interceptor.setDialect(dialect);
 		configuration.addInterceptor(interceptor);
 

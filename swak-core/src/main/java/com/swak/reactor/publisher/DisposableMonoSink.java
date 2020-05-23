@@ -8,66 +8,68 @@ import reactor.util.context.Context;
 
 /**
  * 相当于一个代理
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 13:08
  */
 public class DisposableMonoSink<T> implements MonoSink<T>, Disposable {
 
-	MonoSink<T> delegate;
-	Disposable d;
-	
-	// sink proxy
-	public DisposableMonoSink(MonoSink<T> delegate) {
-		this.delegate = delegate;
-	}
-	@Override
-	public Context currentContext() {
-		return delegate.currentContext();
-	}
+    MonoSink<T> delegate;
+    Disposable d;
 
-	@Override
-	public void success() {
-		delegate.success();
-	}
+    public DisposableMonoSink(MonoSink<T> delegate) {
+        this.delegate = delegate;
+    }
 
-	@Override
-	public void success(T value) {
-		delegate.success(value);
-	}
+    @Override
+    public Context currentContext() {
+        return delegate.currentContext();
+    }
 
-	@Override
-	public void error(Throwable e) {
-		delegate.error(e);
-	}
+    @Override
+    public void success() {
+        delegate.success();
+    }
 
-	@Override
-	public MonoSink<T> onRequest(LongConsumer consumer) {
-		return delegate.onRequest(consumer);
-	}
+    @Override
+    public void success(T value) {
+        delegate.success(value);
+    }
 
-	@Override
-	public MonoSink<T> onCancel(Disposable d) {
-		this.d = d;
-		return delegate.onCancel(d);
-	}
+    @Override
+    public void error(Throwable e) {
+        delegate.error(e);
+    }
 
-	@Override
-	public MonoSink<T> onDispose(Disposable d) {
-		this.d = d;
-		return delegate.onDispose(d);
-	}
-	
-	// disposed proxy
-	@Override
-	public boolean isDisposed() {
-		if (this.d != null) {
-			d.isDisposed();
-		}
-		return false;
-	}
-	@Override
-	public void dispose() {
-		if (this.d != null) {
-			d.dispose();
-		}
-	}
+    @Override
+    public MonoSink<T> onRequest(LongConsumer consumer) {
+        return delegate.onRequest(consumer);
+    }
+
+    @Override
+    public MonoSink<T> onCancel(Disposable d) {
+        this.d = d;
+        return delegate.onCancel(d);
+    }
+
+    @Override
+    public MonoSink<T> onDispose(Disposable d) {
+        this.d = d;
+        return delegate.onDispose(d);
+    }
+
+    @Override
+    public boolean isDisposed() {
+        if (this.d != null) {
+            d.isDisposed();
+        }
+        return false;
+    }
+
+    @Override
+    public void dispose() {
+        if (this.d != null) {
+            d.dispose();
+        }
+    }
 }

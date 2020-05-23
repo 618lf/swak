@@ -76,6 +76,55 @@ public class RXTXPort extends SerialPort {
 	 * I had a report that some JRE's complain when MonitorThread tries to access
 	 * private variables
 	 */
+	/**
+	*/
+	class MonitorThread extends Thread {
+		/**
+		 * Note: these have to be separate boolean flags because the SerialPortEvent
+		 * constants are NOT bit-flags, they are just defined as integers from 1 to 10
+		 * -DPL
+		 */
+		private volatile boolean CTS = false;
+		private volatile boolean DSR = false;
+		private volatile boolean RI = false;
+		private volatile boolean CD = false;
+		private volatile boolean OE = false;
+		private volatile boolean PE = false;
+		private volatile boolean FE = false;
+		private volatile boolean BI = false;
+		private volatile boolean Data = false;
+		private volatile boolean Output = false;
+
+		MonitorThread() {
+			if (debug)
+				z.reportln("RXTXPort:MontitorThread:MonitorThread()");
+		}
+
+		/**
+		 * run the thread and call the event loop.
+		 */
+		public void run() {
+			try {
+				if (debug)
+					z.reportln("RXTXPort:MontitorThread:run()");
+				monThreadisInterrupted = false;
+				eventLoop();
+				eis = 0;
+				if (debug)
+					z.reportln("eventLoop() returned, this is invalid.");
+			} catch (Throwable ex) {
+				HARDWARE_FAULT = true;
+				sendEvent(SerialPortEvent.HARDWARE_ERROR, true);
+			}
+		}
+
+		protected void finalize() throws Throwable {
+			if (debug)
+				z.reportln("RXTXPort:MonitorThread exiting");
+		}
+	}
+
+	protected boolean HARDWARE_FAULT = false;
 	protected final static boolean debug = false;
 	protected final static boolean debug_read = false;
 	protected final static boolean debug_read_results = false;
@@ -87,7 +136,7 @@ public class RXTXPort extends SerialPort {
 
 	static {
 		try {
-			z = new Zystem();
+			z = new Zystem(Zystem.SILENT_MODE);
 		} catch (Exception e) {
 		}
 
@@ -129,6 +178,7 @@ public class RXTXPort extends SerialPort {
 
 		MonitorThreadLock = true;
 		monThread = new MonitorThread();
+		//monThread.setName("RXTXPortMonitor(" + name + ")");
 		monThread.setName("Rxtx.Monitor-" + StringUtils.substringAfterLast(name, "/"));
 		monThread.start();
 		waitForTheNativeCodeSilly();
@@ -636,6 +686,10 @@ public class RXTXPort extends SerialPort {
 		}
 
 		switch (event) {
+		case SerialPortEvent.HARDWARE_ERROR:
+			if (debug_events)
+				z.reportln("HARDWARE_ERROR " + monThread.Data + ")");
+			break;
 		case SerialPortEvent.DATA_AVAILABLE:
 			if (debug_events)
 				z.reportln("DATA_AVAILABLE " + monThread.Data + ")");
@@ -727,6 +781,8 @@ public class RXTXPort extends SerialPort {
 			if (monThread.BI)
 				break;
 			return (false);
+		case SerialPortEvent.HARDWARE_ERROR:
+			break;
 		default:
 			System.err.println("unknown event: " + event);
 			return (false);
@@ -783,6 +839,7 @@ public class RXTXPort extends SerialPort {
 		if (!MonitorThreadAlive) {
 			MonitorThreadLock = true;
 			monThread = new MonitorThread();
+			// monThread.setName("RXTXPortMonitor(" + name + ")");
 			monThread.setName("Rxtx.Monitor-" + this.name);
 			monThread.start();
 			waitForTheNativeCodeSilly();
@@ -805,7 +862,7 @@ public class RXTXPort extends SerialPort {
 			monThread = null;
 			SPEventListener = null;
 			return;
-		} else if (monThread != null && monThread.isAlive()) {
+		} else if (monThread != null && monThread.isAlive() && !HARDWARE_FAULT) {
 			if (debug)
 				z.reportln("	RXTXPort:Interrupt=true");
 			monThreadisInterrupted = true;
@@ -1015,8 +1072,11 @@ public class RXTXPort extends SerialPort {
 				z.reportln("RXTXPort:close detected bad File Descriptor");
 				return;
 			}
-			setDTR(false);
-			setDSR(false);
+			disableRs485();
+			if (!HARDWARE_FAULT)
+				setDTR(false);
+			if (!HARDWARE_FAULT)
+				setDSR(false);
 			if (debug)
 				z.reportln("RXTXPort:close( " + this.name + " ) setting monThreadisInterrupted");
 			if (!monThreadisInterrupted) {
@@ -1033,11 +1093,13 @@ public class RXTXPort extends SerialPort {
 				z.reportln("RXTXPort:close( " + this.name + " ) leaving");
 		} catch (InterruptedException ie) {
 			// somebody called interrupt() on us
-			// we obbey and return without without closing the socket
+			// we obey and return without closing the socket
 			Thread.currentThread().interrupt();
 			return;
 		} finally {
-			IOLockedMutex.writeLock().unlock();
+			if (IOLockedMutex.writeLock().isHeldByCurrentThread()) {
+				IOLockedMutex.writeLock().unlock();
+			}
 		}
 
 	}
@@ -1448,49 +1510,6 @@ public class RXTXPort extends SerialPort {
 			} finally {
 				IOLockedMutex.readLock().unlock();
 			}
-		}
-	}
-
-	/**
-	*/
-	class MonitorThread extends Thread {
-		/**
-		 * Note: these have to be separate boolean flags because the SerialPortEvent
-		 * constants are NOT bit-flags, they are just defined as integers from 1 to 10
-		 * -DPL
-		 */
-		private volatile boolean CTS = false;
-		private volatile boolean DSR = false;
-		private volatile boolean RI = false;
-		private volatile boolean CD = false;
-		private volatile boolean OE = false;
-		private volatile boolean PE = false;
-		private volatile boolean FE = false;
-		private volatile boolean BI = false;
-		private volatile boolean Data = false;
-		private volatile boolean Output = false;
-
-		MonitorThread() {
-			if (debug)
-				z.reportln("RXTXPort:MontitorThread:MonitorThread()");
-		}
-
-		/**
-		 * run the thread and call the event loop.
-		 */
-		public void run() {
-			if (debug)
-				z.reportln("RXTXPort:MontitorThread:run()");
-			monThreadisInterrupted = false;
-			eventLoop();
-			eis = 0;
-			if (debug)
-				z.reportln("eventLoop() returned, eis is invalid.");
-		}
-
-		protected void finalize() throws Throwable {
-			if (debug)
-				z.reportln("RXTXPort:MonitorThread exiting");
 		}
 	}
 
@@ -2004,6 +2023,17 @@ public class RXTXPort extends SerialPort {
 			z.reportln("RXTXPort:clearCommInput()");
 		return nativeClearCommInput();
 	}
+
+	public int enableRs485(boolean busEnableActiveLow, int delayBusEnableBeforeSendMs, int delayBusEnableAfterSendMs) {
+		return controlRs485(fd, true, busEnableActiveLow, delayBusEnableBeforeSendMs, delayBusEnableAfterSendMs);
+	}
+
+	public int disableRs485() {
+		return controlRs485(fd, false, false, 0, 0);
+	}
+
+	private native synchronized int controlRs485(int fd, boolean enable, boolean busEnableActiveLow,
+			int delayBusEnableBeforeSendMs, int delayBusEnableAfterSendMs);
 
 	/*------------------------  END OF CommAPI Extensions -----------------------*/
 }

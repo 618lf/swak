@@ -67,8 +67,9 @@ public class NativeResource {
 	private boolean loaded = false;
 
 	public synchronized void load(String libraryName) throws NativeResourceException {
-		if (loaded)
+		if (loaded) {
 			return;
+		}
 		loaded = true;
 		if (System.getProperty(libraryName + ".userlib") != null) {
 			try {
@@ -100,22 +101,21 @@ public class NativeResource {
 		testNativeCode();
 	}
 
-	private String[] armLibs = { "libNRJavaSerialv8_HF", "libNRJavaSerialv8", "libNRJavaSerialv7_HF",
+	private static final String[] ARM32_LIBS = { "libNRJavaSerialv8_HF", "libNRJavaSerialv8", "libNRJavaSerialv7_HF",
 			"libNRJavaSerialv7", "libNRJavaSerialv6_HF", "libNRJavaSerialv6", "libNRJavaSerialv5" };
+	private static final String[] ARM64_LIBS = { "libNRJavaSerialv8" };
 
 	private void loadLib(String name) throws NativeResourceException {
-
-		String libName = name.substring(name.indexOf("lib") + 3);
 		try {
 			if (OSUtil.isARM()) {
 				// System.err.println("Attempting arm variants");
-				for (int i = 0; i < armLibs.length; i++) {
+				for (String libName : OSUtil.is64Bit() ? ARM64_LIBS : ARM32_LIBS) {
 					try {
-						inJarLoad(armLibs[i]);
-						// System.err.println("Arm lib success! "+armLibs[i]);
+						inJarLoad(libName);
+						// System.err.println("Arm lib success! "+libName);
 						return;
 					} catch (UnsatisfiedLinkError e) {
-						// System.err.println("Is not "+armLibs[i]);
+						// System.err.println("Is not "+libName);
 					}
 				}
 			} else {
@@ -135,7 +135,8 @@ public class NativeResource {
 				ex.printStackTrace();
 			}
 			try {
-				// check to see if the library is availible in standard locations
+				// check to see if the library is available in standard locations
+				String libName = name.substring(name.indexOf("lib") + 3);
 				System.loadLibrary(libName);
 				testNativeCode();
 				return;
@@ -174,7 +175,11 @@ public class NativeResource {
 			}
 		} else if (OSUtil.isLinux()) {
 			if (OSUtil.isARM()) {
-				file = "/META-INF/native/linux/ARM/" + name;
+				if (OSUtil.is64Bit()) {
+					file = "/META-INF/native/linux/ARM_64/" + name;
+				} else {
+					file = "/META-INF/native/linux/ARM_32/" + name;
+				}
 			} else if (OSUtil.isPPC()) {
 				file = "/META-INF/native/linux/PPC/" + name;
 			} else {
@@ -200,8 +205,9 @@ public class NativeResource {
 	}
 
 	private void loadResource(File resource) {
-		if (!resource.canRead())
+		if (!resource.canRead()) {
 			throw new RuntimeException("Cant open JNI file: " + resource.getAbsolutePath());
+		}
 		// System.out.println("Loading: "+resource.getAbsolutePath());
 		try {
 			System.load(resource.getAbsolutePath());
@@ -294,24 +300,16 @@ public class NativeResource {
 	private static class OSUtil {
 		public static boolean is64Bit() {
 			//// System.out.println("Arch: "+getOsArch());
-			return getOsArch().startsWith("x86_64") || getOsArch().startsWith("amd64");
+			return getOsArch().startsWith("x86_64") || getOsArch().startsWith("amd64")
+					|| getOsArch().startsWith("aarch64");
 		}
 
 		public static boolean isARM() {
-			return getOsArch().startsWith("arm");
+			return getOsArch().startsWith("arm") || getOsArch().startsWith("aarch");
 		}
 
 		public static boolean isPPC() {
 			return getOsArch().toLowerCase().contains("ppc");
-		}
-
-		@SuppressWarnings("unused")
-		public static boolean isCortexA8() {
-			if (isARM()) {
-				// TODO check for cortex a8 vs arm9 generic
-				return true;
-			}
-			return false;
 		}
 
 		public static boolean isWindows() {

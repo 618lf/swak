@@ -41,6 +41,7 @@ public class PropertiesMeterFilter implements MeterFilter {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public DistributionStatisticConfig configure(Meter.Id id,
 			DistributionStatisticConfig config) {
 		DistributionStatisticConfig.Builder builder = DistributionStatisticConfig

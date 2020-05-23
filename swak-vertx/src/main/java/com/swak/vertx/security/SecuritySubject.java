@@ -1,9 +1,5 @@
 package com.swak.vertx.security;
 
-import java.io.Serializable;
-import java.util.Set;
-import java.util.concurrent.CompletionStage;
-
 import com.swak.security.Permission;
 import com.swak.security.jwt.JWTObject;
 import com.swak.security.jwt.JWTPayload;
@@ -13,49 +9,54 @@ import com.swak.utils.StringUtils;
 import com.swak.vertx.transport.Principal;
 import com.swak.vertx.transport.Subject;
 import com.swak.vertx.transport.Token;
-
 import io.vertx.ext.web.RoutingContext;
 
+import java.io.Serializable;
+import java.util.Set;
+import java.util.concurrent.CompletionStage;
+
 /**
- * 安全的主体
- * 
- * @author lifeng
+ * 主体
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 21:02
  */
 public class SecuritySubject extends JWTObject implements Subject {
 
+	/**
+	 * 基本身份数据
+	 */
 	private static String ID_ATTR = "id";
 	private static String NAME_ATTR = "name";
 	private static String ROLE_ATTR = "roles";
 	private static String PERMISSION_ATTR = "permissions";
 
-	private Principal principal; // 当前用户的身份
+	/**
+	 * 当前用户的身份、权限，角色
+	 */
+	private Principal principal;
 	private Set<String> roles;
 	private Set<String> permissions;
 
-	/**
-	 * 必须传入 payload
-	 * 
-	 * @param payload
-	 */
 	public SecuritySubject() {
 		this.map = Maps.newHashMap();
 	}
 
 	/**
-	 * 必须传入 payload
-	 * 
-	 * @param payload
+	 * 根据 payload 创建身份信息
+	 *
+	 * @param payload 数据
 	 */
 	public SecuritySubject(JWTPayload payload) {
 		if (payload != null) {
 			this.map = payload.getData();
+			Serializable id = payload.get(ID_ATTR);
+			String name = payload.get(NAME_ATTR);
+			if (id != null) {
+				this.setPrincipal(new Principal(id, name));
+			}
 		} else {
 			this.map = Maps.newHashMap();
-		}
-		Serializable id = payload.get(ID_ATTR);
-		String name = payload.get(NAME_ATTR);
-		if (id != null) {
-			this.setPrincipal(new Principal(id, name));
 		}
 	}
 
@@ -151,15 +152,20 @@ public class SecuritySubject extends JWTObject implements Subject {
 	}
 
 	@Override
+	public Subject setAttach(String key, Object value) {
+		this.map.put(key, value);
+		return this;
+	}
+
+	@Override
+	public Object getAttach(String key) {
+		return this.map.get(key);
+	}
+
+	@Override
 	public JWTPayload toPayload() {
 		this.put(ID_ATTR, principal.getId());
 		this.put(NAME_ATTR, principal.getName());
-		if (roles != null) {
-			this.put(ROLE_ATTR, StringUtils.join(roles, ","));
-		}
-		if (permissions != null) {
-			this.put(PERMISSION_ATTR, StringUtils.join(permissions, ","));
-		}
 		return new JWTPayload(this.map);
 	}
 

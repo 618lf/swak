@@ -67,7 +67,7 @@ import java.util.Vector;
  * @version %I%, %G%
  * @since JDK1.0
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings({ "rawtypes" })
 public class CommPortIdentifier extends Object /* extends Vector? */
 {
 	public static final int PORT_SERIAL = 1; // rs232 Port
@@ -180,6 +180,7 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		exceptions:
 		comments:   
 	------------------------------------------------------------------------------*/
+	@SuppressWarnings("unchecked")
 	public void addPortOwnershipListener(CommPortOwnershipListener c) {
 		if (debug)
 			System.out.println("CommPortIdentifier:addPortOwnershipListener()");
@@ -299,6 +300,7 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 		exceptions:
 		comments:
 	------------------------------------------------------------------------------*/
+	@SuppressWarnings("unchecked")
 	static public Enumeration getPortIdentifiers() {
 		if (debug)
 			System.out.println("static CommPortIdentifier:getPortIdentifiers()");

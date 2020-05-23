@@ -1,35 +1,31 @@
 package com.swak.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import com.swak.utils.StringUtils;
+
+import java.lang.annotation.*;
 
 /**
  * An annotation for marking a method of an annotated object as counted.
- *
+ * <p>
  * <p/>
  * Given a method like this:
  * <pre><code>
- *     {@literal @}Counted(name = "fancyName")
- *     public String fancyName(String name) {
- *         return "Sir Captain " + name;
- *     }
- * </code></pre>
+ *       {@literal @}Counted(name = "fancyName")
+ *       public String fancyName(String name) {
+ *           return "Sir Captain " + name;
+ *       }
+ *  </code></pre>
  * <p/>
  * A counter for the defining class with the name {@code fancyName} will be created and each time the
  * {@code #fancyName(String)} method is invoked, the counter will be marked.
  *
- * @since 3.1
+ * @author: lifeng
+ * @date: 2020/3/28 17:12
  */
 @Inherited
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Target({ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 public @interface Counted {
 
     /**
@@ -44,8 +40,7 @@ public @interface Counted {
     boolean absolute() default true;
 
     /**
-     * @return 
-     * If {@code false} (default), the counter is decremented when the annotated
+     * @return If {@code false} (default), the counter is decremented when the annotated
      * method returns, counting current invocations of the annotated method.
      * If {@code true}, the counter increases monotonically, counting total
      * invocations of the annotated method.

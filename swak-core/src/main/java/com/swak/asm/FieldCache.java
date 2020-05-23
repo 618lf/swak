@@ -16,39 +16,49 @@ import com.swak.utils.Maps;
 import com.swak.utils.ReflectUtils;
 
 /**
- * field cache
- * 
- * @author lifeng
+ * 字段缓存
+ *
+ * @author: lifeng
+ * @date: 2020/3/28 17:33
  */
 public class FieldCache {
 
 	static Map<Class<?>, ClassMeta> CACHES = new ConcurrentHashMap<>();
 
 	/**
-	 * 得到field
-	 * 
-	 * @param method
+	 * 设置 field
+	 *
+	 * @param type 字段类型
+	 * @return ClassMeta 类型元数据
+	 * @author lifeng
+	 * @date 2020/3/28 17:33
 	 */
 	public static ClassMeta set(Class<?> type) {
-		CACHES.putIfAbsent(type, new ClassMeta(type));
+		CACHES.computeIfAbsent(type, (key) -> {
+			return new ClassMeta(type);
+		});
 		return CACHES.get(type);
 	}
 
 	/**
-	 * 获取
-	 * 
-	 * @param type
-	 * @return
+	 * 指定的类型是否存在
+	 *
+	 * @param type 类型
+	 * @return 是否存在
+	 * @author lifeng
+	 * @date 2020/3/28 17:35
 	 */
 	public static boolean exists(Class<?> type) {
 		return CACHES.containsKey(type);
 	}
 
 	/**
-	 * 获取
-	 * 
-	 * @param type
-	 * @return
+	 * 获取元数据
+	 *
+	 * @param type 类型
+	 * @return ClassMeta 类型元数据
+	 * @author lifeng
+	 * @date 2020/3/28 17:35
 	 */
 	public static ClassMeta get(Class<?> type) {
 		return CACHES.get(type);
@@ -56,8 +66,9 @@ public class FieldCache {
 
 	/**
 	 * 类型元数据
-	 * 
-	 * @author lifeng
+	 *
+	 * @author: lifeng
+	 * @date: 2020/3/28 17:36
 	 */
 	public static class ClassMeta {
 
@@ -144,7 +155,7 @@ public class FieldCache {
 
 	/**
 	 * 字段元数据
-	 * 
+	 *
 	 * @author lifeng
 	 */
 	public static class FieldMeta {
@@ -260,9 +271,9 @@ public class FieldCache {
 
 		/**
 		 * 返回对应的实例
-		 * 
-		 * @param annotationType
-		 * @return
+		 *
+		 * @param annotationType 注解类型
+		 * @return 注解
 		 */
 		@SuppressWarnings("unchecked")
 		public <T> T getAnnotation(Class<?> annotationType) {

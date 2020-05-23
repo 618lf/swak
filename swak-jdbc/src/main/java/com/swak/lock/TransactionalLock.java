@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import org.springframework.jdbc.support.JdbcUtils;
 
 import com.swak.exception.DataAccessException;
-import com.swak.persistence.DataSourceHolder;
+import com.swak.persistence.datasource.DataSourceHolder;
 
 /**
  * 数据库的锁, 单独使用连接来锁住表

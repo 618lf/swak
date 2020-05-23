@@ -17,12 +17,12 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.file.FileSystem;
 import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.impl.VertxImpl;
-import io.vertx.core.json.JsonObject;
 
 /**
- * vertx 的配置 bean
- * 
- * @author lifeng
+ * Vertx 的配置 单机版本
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 19:11
  */
 public class StandardVertx implements VertxProxy {
 
@@ -38,24 +38,24 @@ public class StandardVertx implements VertxProxy {
 	}
 
 	/**
-	 * 启动服务器
-	 * 
-	 * @param startFuture
+	 * 启动服务器 -- 持有一个 EventLoopContext
+	 *
+	 * @param apply 启动Vertx
 	 */
 	@Override
 	public void apply(Consumer<Vertx> apply) {
 		Vertx vertx = Vertx.vertx(vertxOptions);
 		apply.accept(vertx);
 		this.vertx = (VertxImpl) vertx;
-		this.context = this.vertx.createEventLoopContext(null, null, new JsonObject(),
+		this.context = this.vertx.createEventLoopContext(this.vertx.getEventLoopGroup().next(), null,
 				Thread.currentThread().getContextClassLoader());
 		this.inited = true;
 	}
 
 	/**
 	 * 停止服务器
-	 * 
-	 * @param startFuture
+	 *
+	 * @param apply 停止Vertx
 	 */
 	@Override
 	public void destroy(Consumer<Vertx> apply) {
@@ -81,15 +81,15 @@ public class StandardVertx implements VertxProxy {
 			throw new BaseRuntimeException("Vertx doesn't inited");
 		}
 		if (Vertx.currentContext() == null) {
-			context.runOnContext((v) -> {
-				this.sentMessageInternal(address, request, timeout, replyHandler);
-			});
+			context.runOnContext((v) -> this.sentMessageInternal(address, request, timeout, replyHandler));
 		} else {
 			this.sentMessageInternal(address, request, timeout, replyHandler);
 		}
 	}
 
-	// 发送消息
+	/**
+	 * 发送消息
+	 */
 	private void sentMessageInternal(String address, Msg request, int timeout,
 			Handler<AsyncResult<Message<Msg>>> replyHandler) {
 		DeliveryOptions deliveryOptions = this.deliveryOptions;
@@ -102,14 +102,11 @@ public class StandardVertx implements VertxProxy {
 
 	/**
 	 * 立即提交代码
-	 * 
-	 * @param supplier
-	 * @return
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> CompletableFuture<T> future(Supplier<T> supplier) {
-		CompletableFuture<T> future = new CompletableFuture<T>();
+		CompletableFuture<T> future = new CompletableFuture<>();
 		this.currentContext().executeBlocking((f) -> {
 			T t = supplier.get();
 			f.complete(t);
@@ -131,7 +128,7 @@ public class StandardVertx implements VertxProxy {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> CompletableFuture<T> order(Supplier<T> supplier) {
-		CompletableFuture<T> future = new CompletableFuture<T>();
+		CompletableFuture<T> future = new CompletableFuture<>();
 		this.currentContext().executeBlocking((f) -> {
 			T t = supplier.get();
 			f.complete(t);
@@ -149,8 +146,6 @@ public class StandardVertx implements VertxProxy {
 
 	/**
 	 * 如果有则使用当前的 context
-	 * 
-	 * @return
 	 */
 	private ContextInternal currentContext() {
 		ContextInternal currentContext = vertx.getContext();
@@ -163,5 +158,13 @@ public class StandardVertx implements VertxProxy {
 	@Override
 	public FileSystem fileSystem() {
 		return this.vertx.fileSystem();
+	}
+
+	/**
+	 * 返回实际的Vertx对象
+	 */
+	@Override
+	public Vertx me() {
+		return this.vertx;
 	}
 }

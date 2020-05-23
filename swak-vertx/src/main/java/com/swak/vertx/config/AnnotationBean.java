@@ -1,11 +1,14 @@
 package com.swak.vertx.config;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.swak.Constants;
+import com.swak.annotation.*;
+import com.swak.exception.BaseRuntimeException;
+import com.swak.utils.Lists;
+import com.swak.utils.Maps;
+import com.swak.utils.Sets;
+import com.swak.utils.StringUtils;
+import com.swak.utils.router.RouterUtils;
+import com.swak.vertx.transport.VertxProxy;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -16,25 +19,17 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.ClassUtils;
 
-import com.swak.annotation.PageController;
-import com.swak.annotation.RequestMapping;
-import com.swak.annotation.RequestMethod;
-import com.swak.annotation.RestController;
-import com.swak.exception.BaseRuntimeException;
-import com.swak.utils.Lists;
-import com.swak.utils.Maps;
-import com.swak.utils.Sets;
-import com.swak.utils.StringUtils;
-import com.swak.utils.router.RouterUtils;
-import com.swak.vertx.annotation.RouterSupplier;
-import com.swak.vertx.annotation.VertxReferer;
-import com.swak.vertx.annotation.VertxService;
-import com.swak.vertx.transport.VertxProxy;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 自动化配置bean
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 18:51
  */
 public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Ordered {
 
@@ -85,9 +80,9 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 
 	/**
 	 * 获得代理类
-	 * 
-	 * @param type
-	 * @return
+	 *
+	 * @param bean java对象
+	 * @return 代理
 	 */
 	public Object getProxy(Object bean) {
 		if (AopUtils.isAopProxy(bean)) {
@@ -98,11 +93,6 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 
 	/**
 	 * init reference field
-	 *
-	 * @param bean
-	 * @param beanName
-	 * @return
-	 * @throws BeansException
 	 */
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -115,12 +105,16 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 		if (isController(clazz)) {
 
 			// 定义错误
-			if (StringUtils.contains(beanName, "/")) {
+			if (StringUtils.contains(beanName, Constants.URL_PATH_SEPARATE)) {
 				throw new BaseRuntimeException(
-						"Use @RestController like this: @RestController(path='/api/goods', value='goodsApi') or @RestController(path='/api/goods')");
+						"Use @RestApi like this: @RestApi(path='/api/goods', value='goodsApi') or @RestApi(path='/api/goods')");
 			}
 
+			// 直接可以将请求映射到service上
+			FluxService fluxService = AnnotatedElementUtils.findMergedAnnotation(clazz, FluxService.class);
 			RequestMapping classMapping = AnnotatedElementUtils.findMergedAnnotation(clazz, RequestMapping.class);
+			assert classMapping != null;
+
 			Method[] methods = clazz.getDeclaredMethods();
 			for (Method method : methods) {
 				RequestMapping methodMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
@@ -128,7 +122,8 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 					continue;
 				}
 
-				RouterBean routerBean = this.router(classMapping, methodMapping, bean, method);
+				RouterBean routerBean = this.router(classMapping, methodMapping, clazz, bean, method,
+						fluxService != null);
 				if (routerBean != null) {
 					routers.add(routerBean);
 				}
@@ -149,10 +144,31 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 		}
 
 		// fill the reference
+		this.cascadeFillReference(clazz, bean);
+
+		// return
+		return bean;
+	}
+
+	/**
+	 * 级联处理自动依赖
+	 *
+	 * @param clazz 类型
+	 * @param bean  java对象
+	 */
+	private void cascadeFillReference(Class<?> clazz, Object bean) {
+		// fill reference
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
 			try {
+<<<<<<< HEAD
 				VertxReferer reference = field.getAnnotation(VertxReferer.class);
+=======
+				if (!field.isAccessible()) {
+					field.setAccessible(true);
+				}
+				FluxReferer reference = field.getAnnotation(FluxReferer.class);
+>>>>>>> refs/remotes/origin/master
 				if (reference != null) {
 					field.setAccessible(true);
 					Object value = refer(reference, field.getType());
@@ -165,20 +181,25 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 						+ " in class " + bean.getClass().getName(), e);
 			}
 		}
-		return bean;
+
+		// super class
+		if (clazz.getSuperclass() != null) {
+			this.cascadeFillReference(clazz.getSuperclass(), bean);
+		}
 	}
 
 	/**
-	 * 是否是 Api 或 Page
-	 * 
-	 * @param clazz
-	 * @return
+	 * 创建路由
+	 *
+	 * @param classMapping  类配置
+	 * @param methodMapping 方法配置
+	 * @param bean          服务bean
+	 * @param method        方法
+	 * @param mergeService  是否直接映射到服务
+	 * @return 路由对象
 	 */
-	protected boolean isController(Class<?> clazz) {
-		return clazz.isAnnotationPresent(RestController.class) || clazz.isAnnotationPresent(PageController.class);
-	}
-
-	protected RouterBean router(RequestMapping classMapping, RequestMapping methodMapping, Object bean, Method method) {
+	protected RouterBean router(RequestMapping classMapping, RequestMapping methodMapping, Class<?> clazz, Object bean,
+			Method method, boolean mergeService) {
 		String[] patterns1 = classMapping.value();
 		String[] patterns2 = methodMapping.value();
 		List<String> result = Lists.newArrayList();
@@ -193,32 +214,34 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 		} else if (patterns2.length != 0) {
 			result = Lists.newArrayList(patterns2);
 		} else {
-			result.add("");
+			result.add(StringUtils.EMPTY);
 		}
 
 		// method
 		RequestMethod requestMethod = classMapping.method() == RequestMethod.ALL ? methodMapping.method()
 				: classMapping.method();
 		requestMethod = requestMethod == RequestMethod.ALL ? null : requestMethod;
-		return new RouterBean(bean, method, result, requestMethod);
+		return new RouterBean(vertx, clazz, bean, method, result, requestMethod, mergeService);
 	}
 
-	protected Object refer(VertxReferer reference, Class<?> interfaceType) {
+	/**
+	 * 创建并缓存依赖
+	 *
+	 * @param reference     依赖配置
+	 * @param interfaceType 接口以及类类型
+	 * @return 代理类
+	 */
+	protected Object refer(FluxReferer reference, Class<?> interfaceType) {
 		ReferenceBean referenceBean = references.get(interfaceType.getName());
 		if (referenceBean == null) {
 			referenceBean = new ReferenceBean(interfaceType);
 			references.put(interfaceType.getName(), referenceBean);
 		}
-		return referenceBean.getRefer(this.getVertx());
+		return referenceBean.getRefer(vertx);
 	}
 
 	/**
 	 * init service config
-	 *
-	 * @param bean
-	 * @param beanName
-	 * @return
-	 * @throws BeansException
 	 */
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -226,19 +249,26 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 		if (AopUtils.isAopProxy(bean)) {
 			clazz = AopUtils.getTargetClass(bean);
 		}
-		VertxService serviceMapping = clazz.getAnnotation(VertxService.class);
-		if (serviceMapping != null) {
-			Class<?>[] classes = ClassUtils.getAllInterfacesForClass(clazz);
-			if (classes == null || classes.length == 0) {
-				throw new BeanInitializationException("Failed to init service " + beanName + " in class "
-						+ bean.getClass().getName() + ", that need realize one interface");
-			}
-			for (Class<?> inter : classes) {
-				if (inter.getName().startsWith("org.springframework.") || !fitWith(serviceMapping, inter)) {
-					continue;
+
+		// 判断是否服务
+		if (this.isServie(clazz)) {
+
+			// 获取服务配置
+			FluxService fluxService = AnnotatedElementUtils.findMergedAnnotation(clazz, FluxService.class);
+
+			// 如果没有接口则使用当前类发布服务
+			if (fluxService != null) {
+				Class<?>[] classes = ClassUtils.getAllInterfacesForClass(clazz);
+				if (classes.length == 0) {
+					classes = new Class<?>[] { clazz };
 				}
-				ServiceBean serviceBean = new ServiceBean(inter, bean, serviceMapping);
-				services.add(serviceBean);
+				for (Class<?> inter : classes) {
+					if (inter.getName().startsWith("org.springframework.") || !fitWith(fluxService, inter)) {
+						continue;
+					}
+					ServiceBean serviceBean = new ServiceBean(inter, bean, fluxService);
+					services.add(serviceBean);
+				}
 			}
 		}
 		return bean;
@@ -246,15 +276,36 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 
 	/**
 	 * 如果继承了多个接口，可以指定需要实现的服务
-	 * 
-	 * @param mapping
-	 * @param inter
-	 * @return
+	 *
+	 * @param mapping 服务配置
+	 * @param inter   接口类型
+	 * @return 是否符合
 	 */
-	private boolean fitWith(VertxService mapping, Class<?> inter) {
-		if (mapping.service() == null || mapping.service() == void.class) {
+	private boolean fitWith(FluxService mapping, Class<?> inter) {
+		if (mapping.service() == void.class) {
 			return true;
 		}
 		return mapping.service() == inter;
+	}
+
+	/**
+	 * 是否是 Api
+	 *
+	 * @param clazz 类
+	 * @return 是否是Api
+	 */
+	protected boolean isController(Class<?> clazz) {
+		return (clazz.isAnnotationPresent(RestApi.class) || clazz.isAnnotationPresent(RestPage.class)
+				|| clazz.isAnnotationPresent(RestService.class));
+	}
+
+	/**
+	 * 是否是 Service
+	 *
+	 * @param clazz 类
+	 * @return 是否是服务
+	 */
+	protected boolean isServie(Class<?> clazz) {
+		return (clazz.isAnnotationPresent(FluxService.class) || clazz.isAnnotationPresent(RestService.class));
 	}
 }

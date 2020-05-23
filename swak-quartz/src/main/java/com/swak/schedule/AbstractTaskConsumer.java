@@ -15,7 +15,7 @@ public abstract class AbstractTaskConsumer {
 	/**
 	 * 消费任务
 	 * 
-	 * @param message
+	 * @param event
 	 * @return
 	 */
 	public CompletionStage<Boolean> tryConsume(TaskEvent event) {

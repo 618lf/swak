@@ -64,6 +64,7 @@ import java.util.Enumeration;
  * @version %I%, %G%
  * @since JDK1.0
  */
+
 @SuppressWarnings("rawtypes")
 class CommPortEnumerator implements Enumeration {
 	private CommPortIdentifier index;

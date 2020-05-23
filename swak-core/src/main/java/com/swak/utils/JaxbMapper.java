@@ -29,14 +29,11 @@ import org.xml.sax.InputSource;
  */
 public class JaxbMapper {
 
-	private static SAXParserFactory FACTORY = SAXParserFactory.newInstance();
-	private static ConcurrentMap<Class<?>, JAXBContext> CONTEXT = null;
 
-	/**
-	 * 池化
-	 */
+	private static ConcurrentMap<Class<?>, JAXBContext> CONTEXT;
+
 	static {
-		CONTEXT = new ConcurrentHashMap<Class<?>, JAXBContext>();
+		CONTEXT = new ConcurrentHashMap<>();
 	}
 
 	/**
@@ -97,9 +94,15 @@ public class JaxbMapper {
 	public static <T> T fromXml(InputStream xml, Class<T> clazz) {
 		try {
 			Unmarshaller unmarshaller = createUnmarshaller(clazz);
+<<<<<<< HEAD
 			SAXParser xmlReader = FACTORY.newSAXParser();
 			Source Source = new SAXSource(xmlReader.getXMLReader(), new InputSource(xml));
 			return (T) unmarshaller.unmarshal(Source);
+=======
+			XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+			Source source = new SAXSource(xmlReader, new InputSource(xml));
+			return (T) unmarshaller.unmarshal(source);
+>>>>>>> refs/remotes/origin/master
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -127,8 +130,7 @@ public class JaxbMapper {
 	public static Unmarshaller createUnmarshaller(Class<?> clazz) {
 		try {
 			JAXBContext jaxbContext = getJaxbContext(clazz);
-			Unmarshaller marshaller = jaxbContext.createUnmarshaller();
-			return marshaller;
+			return jaxbContext.createUnmarshaller();
 		} catch (Exception e) {
 			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz + "]: " + e.getMessage(),
 					e);

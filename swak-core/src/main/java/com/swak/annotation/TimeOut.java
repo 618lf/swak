@@ -8,17 +8,18 @@ import java.lang.annotation.Target;
 
 /**
  * 定义方法执行的超时时间
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/28 17:25
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface TimeOut {
 
-	/**
-	 * -1 使用默认的超时时间
-	 *  0 不超时
-	 * @return
-	 */
-	int value() default -1;
+    /**
+     * -1 使用默认的超时时间
+     * 0 不超时
+     */
+    int value() default -1;
 }

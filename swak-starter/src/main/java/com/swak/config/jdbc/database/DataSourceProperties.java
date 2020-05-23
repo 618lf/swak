@@ -178,6 +178,7 @@ public class DataSourceProperties {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			this.driverClassName = "com.mysql.cj.jdbc.Driver";
+			return;
 		} catch (ClassNotFoundException e) {
 		}
 		try {

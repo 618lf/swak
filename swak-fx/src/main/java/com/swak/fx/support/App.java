@@ -3,6 +3,7 @@ package com.swak.fx.support;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
+import com.swak.ui.Event;
 
 /**
  * 应用 App

@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.collect.Sets;
 import com.sun.javafx.scene.traversal.ParentTraversalEngine;
+import com.swak.ui.EventLoopFactory;
+import com.swak.ui.OS;
 
 import impl.org.controlsfx.ReflectionUtils;
 import javafx.animation.Animation.Status;

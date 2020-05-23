@@ -7,21 +7,25 @@ import java.util.List;
  * JWT 的配置项目
  * 
  * @author lifeng
- * 
+ * @date 2020年4月15日 下午11:35:17
  */
 public class JWTOptions {
 
 	private static final JWTHeader EMPTY = new JWTHeader();
 
 	private int leeway = 0;
-	private boolean ignoreExpiration = true; // 默认不会验证有效期
-	private String algorithm = "HS512";
+	private boolean ignoreExpiration = true;
+	/**
+	 * 这个是默认的配置，默认使用：HS256
+	 */
+	private String algorithm = "HS256";
 	private JWTHeader header = EMPTY;
-	private boolean noTimestamp = true; // 不需要校验是否后创建的token
+	private boolean noTimestamp = true;
 	private int expiresInSeconds;
 	private List<String> audience;
 	private String issuer;
 	private String subject;
+	private List<String> permissions;
 
 	public int getLeeway() {
 		return leeway;
@@ -115,5 +119,34 @@ public class JWTOptions {
 	public JWTOptions setSubject(String subject) {
 		this.subject = subject;
 		return this;
+	}
+
+	/**
+	 * The permissions of this token.
+	 *
+	 * @param permissions the permissions for this token that will be used for AuthZ
+	 * @return fluent API
+	 */
+	public JWTOptions setPermissions(List<String> permissions) {
+		this.permissions = permissions;
+		return this;
+	}
+
+	/**
+	 * Add a permission to this token.
+	 *
+	 * @param permission permission for this token that will be used for AuthZ
+	 * @return fluent API
+	 */
+	public JWTOptions addPermission(String permission) {
+		if (this.permissions == null) {
+			this.permissions = new ArrayList<>();
+		}
+		this.permissions.add(permission);
+		return this;
+	}
+
+	public List<String> getPermissions() {
+		return permissions;
 	}
 }

@@ -57,7 +57,6 @@ public interface ExcelExecuter<T> {
 		} else if (CellType.ERROR == cell.getCellType()) {
 			strValue = String.valueOf(cell.getErrorCellValue());
 		} else {
-			cell.setCellType(CellType.STRING);
 			strValue = cell.getStringCellValue();
 		}
 		if ((CellType.FORMULA == cell.getCellType() || CellType.NUMERIC == cell.getCellType())

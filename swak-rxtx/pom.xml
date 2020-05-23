@@ -20,8 +20,30 @@
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>com.neuronrobotics</groupId>
+			<artifactId>nrjavaserial</artifactId>
+			<version>5.1.1</version>
+		</dependency>
 		<!-- <dependency> <groupId>org.bidib.jbidib.org.qbang.rxtx</groupId> <artifactId>rxtxcomm</artifactId> 
 			<version>2.2</version> </dependency> <dependency> <groupId>com.neuronrobotics</groupId> 
 			<artifactId>nrjavaserial</artifactId> <version>3.15.0</version> </dependency> -->
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok-maven-plugin</artifactId>
+				<version>1.18.10.0</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>delombok</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

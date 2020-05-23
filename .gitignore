@@ -1,0 +1,13 @@
+.project
+.classpath
+target
+classes
+.settings
+lib
+logs
+uploads
+*.iml
+node_modules
+ehcache-disk-store.*
+.idea
+.lock

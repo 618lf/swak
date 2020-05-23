@@ -135,8 +135,9 @@ public class Window extends AbstractPage {
 
 	@FXML
 	public void titleDoubleClick(MouseEvent evt) {
-		if (evt.getClickCount() != 2)
-			return;
+		if (evt.getClickCount() != 2) {
+            return;
+        }
 		maximize(evt);
 	}
 

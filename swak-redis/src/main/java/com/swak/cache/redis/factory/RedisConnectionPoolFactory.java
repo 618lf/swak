@@ -30,7 +30,7 @@ public class RedisConnectionPoolFactory implements RedisConnectionFactory<byte[]
 				return client.getConnection(connectionType);
 			});
 		} catch (Exception e) {
-			return null;
+			throw new RuntimeException("连接Redis服务器失败,请检查服务器地址、端口、密码、防火墙是否配置正确：", e);
 		}
 	}
 

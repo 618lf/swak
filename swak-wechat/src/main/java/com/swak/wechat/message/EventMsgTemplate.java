@@ -23,7 +23,8 @@ public class EventMsgTemplate extends AbstractEventMsg {
 	
 	private String msgId;
 	private String status;
-	public String getMsgId() {
+	@Override
+    public String getMsgId() {
 		return msgId;
 	}
 	public void setMsgId(String msgId) {

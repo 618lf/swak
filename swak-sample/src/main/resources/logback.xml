@@ -11,7 +11,7 @@
 	<!-- 出错日志 appender -->
 	<appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>logs/error/%d{yyyy-MM-dd}.master.log</fileNamePattern>
+			<fileNamePattern>/home/lifeng/logs/error/%d{yyyy-MM-dd}.master.log</fileNamePattern>
 			<maxHistory>60</maxHistory>
 		</rollingPolicy>
 		<encoder>
@@ -19,12 +19,37 @@
 		</encoder>
 	</appender>
 	
+	<!-- 访问日志 appender -->
+	<appender name="ACCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>/home/lifeng/logs/access/%d{yyyy-MM-dd-HH-mm}.master.log</fileNamePattern>
+			<maxHistory>0</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	
     <!-- 默认是错误级别 -->
 	<root level="ERROR">
 	    <appender-ref ref="STDOUT"/>
-	    <appender-ref ref="ERROR"/>
 	</root>
+	
+	<!-- 访问日志 -->
+	<logger name="ACCESS_TRACE" level="info" additivity="false">
+		<appender-ref ref="ACCESS"/>
+	</logger>
 	
 	<!-- 常用的应用程序的日志 -->
 	<logger name="com.swak.Application" level="DEBUG"/>
+	<logger name="com.swak.metrics" level="ERROR"/>
+	<logger name="com.swak.rabbit.TemplateConsumer" level="INFO"/>
+	<logger name="com.swak.vertx.handler.RouterHandler" level="ERROR"/>
+	<logger name="io.netty.util.ResourceLeakDetector" level="ERROR"/>
+	<logger name="io.netty.channel.MultithreadEventLoopGroup" level="ERROR"/>
+	<logger name="io.netty.util.internal.PlatformDependent0" level="ERROR"/>
+	<logger name="io.netty.util.internal.PlatformDependent" level="ERROR"/>
+	<logger name="io.netty.buffer.PooledByteBufAllocator" level="ERROR"/>
+	<logger name="io.netty.buffer.ByteBufUtil" level="ERROR"/>
+	<logger name="Sharding-Sphere-SQL" level="ERROR"/>
 </configuration>

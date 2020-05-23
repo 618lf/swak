@@ -3,12 +3,12 @@ package com.swak.closable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 /**
  * 参考 motan做的一个全局资源释放工具
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 10:14
  */
 public final class ShutDownHook extends Thread {
 
@@ -16,10 +16,10 @@ public final class ShutDownHook extends Thread {
 	private static final int DEFAULT_PRIORITY = 20;
 
 	private static class ShutDownHookHolder {
-		private final static ShutDownHook instance = new ShutDownHook();
+		private final static ShutDownHook INSTANCE = new ShutDownHook();
 	}
 
-	private ArrayList<ClosableObject> resourceList = new ArrayList<ClosableObject>();
+	private ArrayList<ClosableObject> resourceList = new ArrayList<>();
 
 	private ShutDownHook() {
 	}
@@ -29,13 +29,18 @@ public final class ShutDownHook extends Thread {
 		closeAll();
 	}
 
-	// synchronized method to close all the resources in the list
+	/**
+	 * synchronized method to close all the resources in the list
+	 *
+	 * @author lifeng
+	 * @date 2020/3/29 10:15
+	 */
 	private synchronized void closeAll() {
 		Collections.sort(resourceList);
 		for (ClosableObject resource : resourceList) {
 			try {
 				resource.closable.close();
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 			}
 		}
 		resourceList.clear();
@@ -43,41 +48,22 @@ public final class ShutDownHook extends Thread {
 	}
 
 	/**
-	 * 等待关闭
-	 * 
-	 * @param sync
-	 */
-	public static void onClose() {
-		Thread thread = new Thread(() -> {
-			try {
-				ShutDownHook.shutDownFuture.get();
-			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();
-			}
-		});
-		thread.setDaemon(false);
-		thread.setName("App.Server-closeAwait");
-		thread.start();
-	}
-
-	/**
 	 * 执行关闭
-	 * 
-	 * @param sync
+	 *
+	 * @param sync 是否同步，如果同步则会在当前线程中执行
 	 */
 	public static void runHook(boolean sync) {
 		if (sync) {
-			ShutDownHookHolder.instance.run();
+			ShutDownHookHolder.INSTANCE.closeAll();
 		} else {
-			ShutDownHookHolder.instance.start();
+			ShutDownHookHolder.INSTANCE.start();
 		}
 	}
 
 	/**
-	 * 添加关闭
-	 * 
-	 * @param closable
-	 * @param priority
+	 * 添加关闭任务
+	 *
+	 * @param closable 添加关闭任务
 	 */
 	public static void registerShutdownHook(Closable closable) {
 		registerShutdownHook(closable, DEFAULT_PRIORITY);
@@ -85,17 +71,17 @@ public final class ShutDownHook extends Thread {
 
 	/**
 	 * 添加关闭
-	 * 
-	 * @param closable
-	 * @param priority
+	 *
+	 * @param closable 添加关闭任务
+	 * @param priority 优先级
 	 */
 	public static synchronized void registerShutdownHook(Closable closable, int priority) {
-		ShutDownHookHolder.instance.resourceList.add(new ClosableObject(closable, priority));
+		ShutDownHookHolder.INSTANCE.resourceList.add(new ClosableObject(closable, priority));
 	}
 
 	/**
 	 * 可以排序的关闭实体
-	 * 
+	 *
 	 * @author lifeng
 	 */
 	private static class ClosableObject implements Comparable<ClosableObject> {
@@ -109,13 +95,7 @@ public final class ShutDownHook extends Thread {
 
 		@Override
 		public int compareTo(ClosableObject o) {
-			if (this.priority > o.priority) {
-				return -1;
-			} else if (this.priority == o.priority) {
-				return 0;
-			} else {
-				return 1;
-			}
+			return Integer.compare(o.priority, this.priority);
 		}
 	}
 }

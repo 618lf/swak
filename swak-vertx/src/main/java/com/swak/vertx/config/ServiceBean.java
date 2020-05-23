@@ -1,50 +1,55 @@
 package com.swak.vertx.config;
 
-import com.swak.vertx.annotation.VertxService;
+import com.swak.annotation.Context;
+import com.swak.annotation.FluxService;
+import com.swak.annotation.Server;
+
+import lombok.EqualsAndHashCode;
 
 /**
  * 创建服务 bean
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 18:52
  */
+@EqualsAndHashCode
 public class ServiceBean {
 
-	private final Object service;
-	private final Class<?> type;
-	private final VertxService mapping;
+    private final Object service;
+    private final Class<?> type;
+    private final FluxService mapping;
 
-	public ServiceBean(Class<?> type, Object service, VertxService mapping) {
-		this.service = service;
-		this.mapping = mapping;
-		this.type = type;
-	}
+    public ServiceBean(Class<?> type, Object service, FluxService mapping) {
+        this.service = service;
+        this.mapping = mapping;
+        this.type = type;
+    }
 
-	public Class<?> getType() {
-		return type;
-	}
+    public Class<?> getType() {
+        return type;
+    }
 
-	public Object getService() {
-		return service;
-	}
+    public Object getService() {
+        return service;
+    }
 
-	public Class<?> getServiceType() {
-		return type;
-	}
+    public Class<?> getServiceType() {
+        return type;
+    }
 
-	public boolean isHttp() {
-		return mapping.http();
-	}
+    public Server getServer() {
+        return mapping.server();
+    }
 
-	public int getInstances() {
-		return mapping.instances();
-	}
+    public Context getContext() {
+        return mapping.context();
+    }
 
-	public String getUse_pool() {
-		return mapping.use_pool();
-	}
+    public int getInstances() {
+        return mapping.instances();
+    }
 
-	@Deprecated
-	public boolean isAop() {
-		return mapping.isAop();
-	}
+    public String getUse_pool() {
+        return mapping.use_pool();
+    }
 }

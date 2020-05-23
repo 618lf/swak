@@ -16,15 +16,18 @@ import io.vertx.ext.web.RoutingContext;
 
 /**
  * 基于 TOKEN 的身份管理方式, 可以在此做一个服务器端的管理方式，控制账户登录情况
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 20:43
  */
 public class TokenPrincipalStrategy implements PrincipalStrategy {
 
-	private final JwtAuthProvider jwtAuthProvider;
+	private final JwtAuthProvider jwtAuth;
+	private final String tokenName;
 
-	public TokenPrincipalStrategy(JwtAuthProvider jwt) {
-		this.jwtAuthProvider = jwt;
+	public TokenPrincipalStrategy(JwtAuthProvider jwtAuth, String tokenName) {
+		this.jwtAuth = jwtAuth;
+		this.tokenName = tokenName;
 	}
 
 	/**
@@ -37,22 +40,22 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 		try {
 
 			// 从header 中获取 token
-			String token = context.request().getHeader(jwtAuthProvider.getTokenName());
+			String token = context.request().getHeader(this.tokenName);
 
 			// 从cookie 中获取 token
-			Cookie cookie = null;
-			if (StringUtils.isBlank(token) && (cookie = context.getCookie(jwtAuthProvider.getTokenName())) != null
+			Cookie cookie;
+			if (StringUtils.isBlank(token) && (cookie = context.getCookie(this.tokenName)) != null
 					&& !Constants.DELETED_COOKIE_VALUE.equals(cookie.getValue())) {
 				token = cookie.getValue();
 			}
 
 			// 获取 JWTPayload
-			JWTPayload payload = jwtAuthProvider.verifyToken(token);
+			JWTPayload payload = jwtAuth.verifyToken(token);
 
 			// 创建主体
 			subject = new SecuritySubject(payload);
 
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
 
 		// 空实现
@@ -63,6 +66,7 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 		// 绑定当前请求
 		context.put(Constants.SUBJECT_NAME, subject);
 
+		// 异步结果
 		return CompletableFuture.completedFuture(subject);
 	}
 
@@ -72,8 +76,8 @@ public class TokenPrincipalStrategy implements PrincipalStrategy {
 	@Override
 	public CompletionStage<Token> generateToken(Subject subject) {
 		Token token = new Token();
-		token.setName(jwtAuthProvider.getTokenName());
-		token.setToken(jwtAuthProvider.generateToken(subject.toPayload()));
+		token.setName(this.tokenName);
+		token.setToken(jwtAuth.generateToken(subject.toPayload()));
 		return CompletableFuture.completedFuture(token);
 	}
 }

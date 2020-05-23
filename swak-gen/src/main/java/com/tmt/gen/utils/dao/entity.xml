@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE xml>
-<template>
-	<name>entity</name>
-	<filePath>/${packageName}/${moduleName}/${subModuleName}/entity/</filePath>
-	<fileName>${className}.java</fileName>
-	<templatePath>template/entity.ftl</templatePath>
-</template>

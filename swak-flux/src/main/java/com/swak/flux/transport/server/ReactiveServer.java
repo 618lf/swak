@@ -4,13 +4,11 @@ import java.util.function.BiFunction;
 
 import org.springframework.boot.web.server.WebServerException;
 
-import com.swak.Constants;
-import com.swak.OS;
+import com.swak.reactivex.context.EndPoints;
 import com.swak.reactivex.context.Server;
 import com.swak.reactivex.transport.NettyInbound;
 import com.swak.reactivex.transport.NettyOutbound;
 import com.swak.reactivex.transport.tcp.TcpServer;
-import com.swak.utils.StringUtils;
 
 import reactor.core.publisher.Mono;
 
@@ -39,21 +37,11 @@ public class ReactiveServer implements Server {
 	}
 
 	/**
-	 * 服务器监听的端口
+	 * 显示启动的服务
 	 */
 	@Override
-	public String getAddresses() {
-		StringBuilder address = new StringBuilder(realServer.getProtocol());
-		address.append("://").append("%s");
-		int port = realServer.getAddress().getPort();
-		if (port != 80) {
-			address.append(":").append(port);
-		}
-		String hostName = realServer.getAddress().getHostString();
-		if (!Constants.LOCALHOST.equals(hostName)) {
-			hostName = OS.ip();
-		}
-		return StringUtils.format(address.toString(), hostName);
+	public EndPoints getEndPoints() {
+		return null;
 	}
 
 	/**

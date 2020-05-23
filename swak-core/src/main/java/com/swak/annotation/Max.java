@@ -10,25 +10,22 @@ import com.swak.utils.StringUtils;
 
 /**
  * 最大值校验
- * 
- * @author lifeng
+ *
+ * @author: lifeng
+ * @date: 2020/3/28 17:19
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD })
+@Target({ElementType.FIELD})
 @Documented
 public @interface Max {
-	
-	/**
-	 * 最大值
-	 * 
-	 * @return
-	 */
-	int value();
 
-	/**
-	 * 错误描述
-	 * 
-	 * @return
-	 */
-	String msg() default StringUtils.EMPTY;
+    /**
+     * 最大值
+     */
+    int value();
+
+    /**
+     * 错误描述
+     */
+    String msg() default StringUtils.EMPTY;
 }

@@ -3,22 +3,23 @@ package com.swak.exception;
 
 /**
  * 缓存操作异常
- * @author lifeng
  *
+ * @author: lifeng
+ * @date: 2020/3/29 11:27
  */
-public class CacheException extends BaseRuntimeException{
-	
-	private static final long serialVersionUID = 1L;
+public class CacheException extends BaseRuntimeException {
 
-	public CacheException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    private static final long serialVersionUID = 1L;
 
-	public CacheException(String message) {
-		super(message);
-	}
+    public CacheException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public CacheException(Throwable cause) {
-		super(cause);
-	}
+    public CacheException(String message) {
+        super(message);
+    }
+
+    public CacheException(Throwable cause) {
+        super(cause);
+    }
 }

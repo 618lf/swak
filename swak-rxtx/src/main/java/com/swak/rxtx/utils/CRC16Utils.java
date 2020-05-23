@@ -215,8 +215,9 @@ public class CRC16Utils {
 				boolean bit = ((source[i] >> (7 - j) & 1) == 1);
 				boolean c15 = ((wCRCin >> 15 & 1) == 1);
 				wCRCin <<= 1;
-				if (c15 ^ bit)
-					wCRCin ^= wCPoly;
+				if (c15 ^ bit) {
+                    wCRCin ^= wCPoly;
+                }
 			}
 		}
 		wCRCin &= 0xFFFF;
@@ -254,8 +255,9 @@ public class CRC16Utils {
 				boolean bit = ((source[i] >> (7 - j) & 1) == 1);
 				boolean c15 = ((wCRCin >> 15 & 1) == 1);
 				wCRCin <<= 1;
-				if (c15 ^ bit)
-					wCRCin ^= wCPoly;
+				if (c15 ^ bit) {
+                    wCRCin ^= wCPoly;
+                }
 			}
 		}
 		wCRCin &= 0xFFFF;
@@ -293,8 +295,9 @@ public class CRC16Utils {
 				boolean bit = ((source[i] >> (7 - j) & 1) == 1);
 				boolean c15 = ((wCRCin >> 15 & 1) == 1);
 				wCRCin <<= 1;
-				if (c15 ^ bit)
-					wCRCin ^= wCPoly;
+				if (c15 ^ bit) {
+                    wCRCin ^= wCPoly;
+                }
 			}
 		}
 		wCRCin &= 0xFFFF;
@@ -373,8 +376,9 @@ public class CRC16Utils {
 				boolean bit = ((source[i] >> (7 - j) & 1) == 1);
 				boolean c15 = ((wCRCin >> 15 & 1) == 1);
 				wCRCin <<= 1;
-				if (c15 ^ bit)
-					wCRCin ^= wCPoly;
+				if (c15 ^ bit) {
+                    wCRCin ^= wCPoly;
+                }
 			}
 		}
 		wCRCin &= 0xFFFF;
@@ -576,8 +580,9 @@ public class CRC16Utils {
 				boolean bit = ((source[i] >> (7 - j) & 1) == 1);
 				boolean c15 = ((wCRCin >> 15 & 1) == 1);
 				wCRCin <<= 1;
-				if (c15 ^ bit)
-					wCRCin ^= wCPoly;
+				if (c15 ^ bit) {
+                    wCRCin ^= wCPoly;
+                }
 			}
 		}
 		wCRCin &= 0xFFFF;

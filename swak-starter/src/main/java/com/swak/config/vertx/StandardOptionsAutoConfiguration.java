@@ -33,7 +33,12 @@ public class StandardOptionsAutoConfiguration {
 		if (properties.getMode() == TransportMode.EPOLL) {
 			vertxOptions.setPreferNativeTransport(true);
 		}
-		System.setProperty("vertx.disableWebsockets", Boolean.TRUE.toString());
+		if (!properties.isEnableWebsocket()) {
+			System.setProperty("vertx.disableWebsockets", Boolean.TRUE.toString());
+		}
+		if (!properties.isEnableHttp2()) {
+			System.setProperty("vertx.disableH2c", Boolean.TRUE.toString());
+		}
 		vertxOptions.setEventLoopPoolSize(properties.getEventLoopPoolSize());
 		vertxOptions.setWorkerPoolSize(properties.getWorkerThreads());
 		vertxOptions.setInternalBlockingPoolSize(properties.getInternalBlockingThreads());

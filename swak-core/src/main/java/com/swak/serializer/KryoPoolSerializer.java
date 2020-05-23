@@ -10,8 +10,11 @@ import com.swak.exception.SerializeException;
 
 /**
  * Created by chenlei on 14-9-28.
+ *
+ * @author: lifeng
+ * @date: 2020/3/29 13:30
  */
-public class KryoPoolSerializer implements Serializer{
+public class KryoPoolSerializer implements Serializer {
 
     /**
      * Kryo 的包装
@@ -33,17 +36,18 @@ public class KryoPoolSerializer implements Serializer{
 
         /**
          * get o kryo object
+         *
          * @return KryoHolder instance
          */
         KryoHolder get();
 
         /**
          * return object
+         *
          * @param kryo holder
          */
         void offer(KryoHolder kryo);
     }
-
 
 
     /**
@@ -52,14 +56,9 @@ public class KryoPoolSerializer implements Serializer{
      */
     public static class KryoPoolImpl implements KryoPool {
         /**
-         * default is 1500
-         * online server limit 3K
-         */
-
-        /**
          * thread safe list
          */
-        private final Deque<KryoHolder> kryoHolderDeque=new ConcurrentLinkedDeque<KryoHolder>();
+        private final Deque<KryoHolder> kryoHolderDeque = new ConcurrentLinkedDeque<>();
 
         private KryoPoolImpl() {
 
@@ -69,7 +68,7 @@ public class KryoPoolSerializer implements Serializer{
          * @return KryoPool instance
          */
         public static KryoPool getInstance() {
-            return Singleton.pool;
+            return Singleton.POOL;
         }
 
         /**
@@ -85,6 +84,7 @@ public class KryoPoolSerializer implements Serializer{
 
         /**
          * create a new kryo object to application use
+         *
          * @return KryoHolder instance
          */
         public KryoHolder creatInstnce() {
@@ -108,7 +108,7 @@ public class KryoPoolSerializer implements Serializer{
          * creat a Singleton
          */
         private static class Singleton {
-            private static final KryoPool pool = new KryoPoolImpl();
+            private static final KryoPool POOL = new KryoPoolImpl();
         }
     }
 
@@ -119,44 +119,51 @@ public class KryoPoolSerializer implements Serializer{
 
     /**
      * Serialize object
+     *
      * @param obj what to serialize
      * @return return serialize data
      */
     @Override
     public byte[] serialize(Object obj) throws SerializeException {
-    	if (obj == null) return null;
+        if (obj == null) {
+            return null;
+        }
         KryoHolder kryoHolder = null;
         try {
             kryoHolder = KryoPoolImpl.getInstance().get();
-            kryoHolder.output.clear();  //clear Output    -->每次调用的时候  重置
+            //clear Output    -->每次调用的时候  重置
+            kryoHolder.output.clear();
             kryoHolder.kryo.writeClassAndObject(kryoHolder.output, obj);
-            return kryoHolder.output.toBytes();// 无法避免拷贝  ~~~
+            // 无法避免拷贝  ~~~
+            return kryoHolder.output.toBytes();
         } catch (Exception e) {
             throw new SerializeException("Serialize obj exception");
         } finally {
             KryoPoolImpl.getInstance().offer(kryoHolder);
-            obj = null; //GC
         }
     }
 
     /**
      * Deserialize data
+     *
      * @param bytes what to deserialize
      * @return object
      */
     @Override
     public Object deserialize(byte[] bytes) throws SerializeException {
-    	if (bytes == null) {return null;}
-    	KryoHolder kryoHolder = null;
+        if (bytes == null) {
+            return null;
+        }
+        KryoHolder kryoHolder = null;
         try {
             kryoHolder = KryoPoolImpl.getInstance().get();
-            kryoHolder.input.setBuffer(bytes, 0, bytes.length);//call it ,and then use input object  ,discard any array
+            //call it ,and then use input object  ,discard any array
+            kryoHolder.input.setBuffer(bytes, 0, bytes.length);
             return kryoHolder.kryo.readClassAndObject(kryoHolder.input);
         } catch (Exception e) {
             throw new SerializeException("Deserialize bytes exception");
         } finally {
             KryoPoolImpl.getInstance().offer(kryoHolder);
-            bytes = null;       //  for gc
         }
     }
 }
