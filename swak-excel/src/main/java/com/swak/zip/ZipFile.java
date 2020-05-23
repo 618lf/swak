@@ -395,8 +395,7 @@ public class ZipFile {
      * there are no more references to it.
      * @see #close()
      */
-    @SuppressWarnings("deprecation")
-	@Override
+    @Override
     protected void finalize() throws Throwable {
         try {
             if (!closed) {

@@ -11,13 +11,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * 使用Jaxb2.0实现XML<->Java Object的Mapper.
@@ -28,7 +28,6 @@ import org.xml.sax.InputSource;
  * @version 2013-01-15
  */
 public class JaxbMapper {
-
 
 	private static ConcurrentMap<Class<?>, JAXBContext> CONTEXT;
 
@@ -94,15 +93,9 @@ public class JaxbMapper {
 	public static <T> T fromXml(InputStream xml, Class<T> clazz) {
 		try {
 			Unmarshaller unmarshaller = createUnmarshaller(clazz);
-<<<<<<< HEAD
-			SAXParser xmlReader = FACTORY.newSAXParser();
-			Source Source = new SAXSource(xmlReader.getXMLReader(), new InputSource(xml));
-			return (T) unmarshaller.unmarshal(Source);
-=======
 			XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 			Source source = new SAXSource(xmlReader, new InputSource(xml));
 			return (T) unmarshaller.unmarshal(source);
->>>>>>> refs/remotes/origin/master
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

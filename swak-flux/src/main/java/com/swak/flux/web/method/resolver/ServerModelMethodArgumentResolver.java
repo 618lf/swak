@@ -86,7 +86,7 @@ public class ServerModelMethodArgumentResolver extends AbstractMethodArgumentRes
 		}
 		try {
 			Map<String, String> arguments = this.getArguments(request);
-			Object obj = parameter.getParameterType().getDeclaredConstructor().newInstance();
+			Object obj = parameter.getParameterType().newInstance();
 			if (!arguments.isEmpty()) {
 				classMeta = FieldCache.get(parameter.getParameterType());
 				this.fillObjectValue(obj, classMeta.getFields(), parameter.getParameterName(), arguments);

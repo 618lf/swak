@@ -50,7 +50,7 @@ public class RabbitMqPostProcessor implements BeanPostProcessor, ApplicationBoot
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
 			try {
-				if (!field.canAccess(bean)) {
+				if (!field.isAccessible()) {
 					field.setAccessible(true);
 				}
 				Publisher reference = field.getAnnotation(Publisher.class);

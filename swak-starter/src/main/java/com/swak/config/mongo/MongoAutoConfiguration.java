@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PreDestroy;
+
 import org.bson.BsonType;
 import org.bson.codecs.BsonCodecProvider;
 import org.bson.codecs.BsonTypeClassMap;
@@ -117,6 +119,7 @@ public class MongoAutoConfiguration {
 	/**
 	 * 停止释放资源
 	 */
+	@PreDestroy
 	public void close() {
 		if (this.mongo != null) {
 			this.mongo.close();

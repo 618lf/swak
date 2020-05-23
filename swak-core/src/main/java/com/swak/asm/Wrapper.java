@@ -142,19 +142,7 @@ public abstract class Wrapper {
 
 		try {
 			Class<?> wc = cc.toClass();
-<<<<<<< HEAD
-			// setup static field.
-			wc.getField("pts").set(null, pts);
-			wc.getField("pns").set(null, pts.keySet().toArray(new String[0]));
-			wc.getField("mns").set(null, mns.toArray(new String[0]));
-			wc.getField("dmns").set(null, dmns.toArray(new String[0]));
-			int ix = 0;
-			for (Method m : ms.values())
-				wc.getField("mts" + ix++).set(null, m.getParameterTypes());
-			return (Wrapper) wc.getDeclaredConstructor().newInstance();
-=======
 			return (Wrapper) wc.newInstance();
->>>>>>> refs/remotes/origin/master
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Throwable e) {

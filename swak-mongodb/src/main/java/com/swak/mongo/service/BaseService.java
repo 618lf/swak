@@ -238,17 +238,8 @@ public abstract class BaseService<T> {
 	 * @param doc
 	 * @return
 	 */
-<<<<<<< HEAD
-	protected T newInstance() {
-		try {
-			return this.getTargetClass().getDeclaredConstructor().newInstance();
-		} catch (Exception e) {
-			return null;
-		}
-=======
 	protected T toBean(Document doc) {
 		return BeanMaps.toBean(doc, this.getTargetClass());
->>>>>>> refs/remotes/origin/master
 	}
 
 	/**

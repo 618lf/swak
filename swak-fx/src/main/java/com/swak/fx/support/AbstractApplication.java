@@ -1,7 +1,6 @@
 package com.swak.fx.support;
 
 import java.awt.SystemTray;
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -70,7 +69,6 @@ public abstract class AbstractApplication extends Application implements EventLi
 		if (event == Event.EXIT) {
 			this.stop(Display.getStage()).whenComplete((v, t) -> {
 				Platform.exit();
-				System.exit(0);
 			});
 		}
 	}
@@ -102,15 +100,10 @@ public abstract class AbstractApplication extends Application implements EventLi
 	 * @param savedArgs
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
-	 * @throws InvocationTargetException
-	 * @throws IllegalArgumentException
 	 */
 	protected AbstractPage createPage(Class<? extends AbstractPage> view)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException {
-		return view.getDeclaredConstructor().newInstance();
+			throws InstantiationException, IllegalAccessException {
+		return view.newInstance();
 	}
 
 	/**

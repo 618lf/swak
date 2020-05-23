@@ -153,19 +153,6 @@ public final class ReflectUtils {
         return c;
     }
 
-<<<<<<< HEAD
-	/**
-	 * is compatible.
-	 * 
-	 * @param c class.
-	 * @param o instance.
-	 * @return compatible or not.
-	 */
-	public static boolean isCompatible(Class<?> c, Object o) {
-		boolean pt = c.isPrimitive();
-		if (o == null)
-			return !pt;
-=======
     /**
      * is compatible.
      *
@@ -178,7 +165,6 @@ public final class ReflectUtils {
         if (o == null) {
             return !pt;
         }
->>>>>>> refs/remotes/origin/master
 
         if (pt) {
             if (c == int.class) {
@@ -205,26 +191,6 @@ public final class ReflectUtils {
         return c.isInstance(o);
     }
 
-<<<<<<< HEAD
-	/**
-	 * is compatible.
-	 * 
-	 * @param cs class array.
-	 * @param os object array.
-	 * @return compatible or not.
-	 */
-	public static boolean isCompatible(Class<?>[] cs, Object[] os) {
-		int len = cs.length;
-		if (len != os.length)
-			return false;
-		if (len == 0)
-			return true;
-		for (int i = 0; i < len; i++)
-			if (!isCompatible(cs[i], os[i]))
-				return false;
-		return true;
-	}
-=======
     /**
      * is compatible.
      *
@@ -247,7 +213,6 @@ public final class ReflectUtils {
         }
         return true;
     }
->>>>>>> refs/remotes/origin/master
 
     public static String getCodeBase(Class<?> cls) {
         if (cls == null) {
@@ -268,21 +233,6 @@ public final class ReflectUtils {
         return location.getFile();
     }
 
-<<<<<<< HEAD
-	/**
-	 * get name. java.lang.Object[][].class => "java.lang.Object[][]"
-	 * 
-	 * @param c class.
-	 * @return name.
-	 */
-	public static String getName(Class<?> c) {
-		if (c.isArray()) {
-			StringBuilder sb = new StringBuilder();
-			do {
-				sb.append("[]");
-				c = c.getComponentType();
-			} while (c.isArray());
-=======
     /**
      * get name. java.lang.Object[][].class => "java.lang.Object[][]"
      *
@@ -296,7 +246,6 @@ public final class ReflectUtils {
                 sb.append("[]");
                 c = c.getComponentType();
             } while (c.isArray());
->>>>>>> refs/remotes/origin/master
 
             return c.getName() + sb.toString();
         }
@@ -323,28 +272,6 @@ public final class ReflectUtils {
         }
     }
 
-<<<<<<< HEAD
-	/**
-	 * get method name. "void do(int)", "void do()", "int
-	 * do(java.lang.String,boolean)"
-	 * 
-	 * @param m method.
-	 * @return name.
-	 */
-	public static String getName(final Method m) {
-		StringBuilder ret = new StringBuilder();
-		ret.append(getName(m.getReturnType())).append(' ');
-		ret.append(m.getName()).append('(');
-		Class<?>[] parameterTypes = m.getParameterTypes();
-		for (int i = 0; i < parameterTypes.length; i++) {
-			if (i > 0)
-				ret.append(',');
-			ret.append(getName(parameterTypes[i]));
-		}
-		ret.append(')');
-		return ret.toString();
-	}
-=======
     /**
      * get method name. "void do(int)", "void do()", "int
      * do(java.lang.String,boolean)"
@@ -366,7 +293,6 @@ public final class ReflectUtils {
         ret.append(')');
         return ret.toString();
     }
->>>>>>> refs/remotes/origin/master
 
     public static String getSignature(String methodName, Class<?>[] parameterTypes) {
         StringBuilder sb = new StringBuilder(methodName);
@@ -386,25 +312,6 @@ public final class ReflectUtils {
         return sb.toString();
     }
 
-<<<<<<< HEAD
-	/**
-	 * get constructor name. "()", "(java.lang.String,int)"
-	 * 
-	 * @param c constructor.
-	 * @return name.
-	 */
-	public static String getName(final Constructor<?> c) {
-		StringBuilder ret = new StringBuilder("(");
-		Class<?>[] parameterTypes = c.getParameterTypes();
-		for (int i = 0; i < parameterTypes.length; i++) {
-			if (i > 0)
-				ret.append(',');
-			ret.append(getName(parameterTypes[i]));
-		}
-		ret.append(')');
-		return ret.toString();
-	}
-=======
     /**
      * get constructor name. "()", "(java.lang.String,int)"
      *
@@ -423,19 +330,7 @@ public final class ReflectUtils {
         ret.append(')');
         return ret.toString();
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * get class desc. boolean[].class => "[Z" Object.class => "Ljava/lang/Object;"
-	 * 
-	 * @param c class.
-	 * @return desc.
-	 * @throws NotFoundException
-	 */
-	public static String getDesc(Class<?> c) {
-		StringBuilder ret = new StringBuilder();
-=======
     /**
      * get class desc. boolean[].class => "[Z" Object.class => "Ljava/lang/Object;"
      *
@@ -445,7 +340,6 @@ public final class ReflectUtils {
      */
     public static String getDesc(Class<?> c) {
         StringBuilder ret = new StringBuilder();
->>>>>>> refs/remotes/origin/master
 
         while (c.isArray()) {
             ret.append('[');
@@ -481,19 +375,6 @@ public final class ReflectUtils {
         return ret.toString();
     }
 
-<<<<<<< HEAD
-	/**
-	 * get class array desc. [int.class, boolean[].class, Object.class] =>
-	 * "I[ZLjava/lang/Object;"
-	 * 
-	 * @param cs class array.
-	 * @return desc.
-	 * @throws NotFoundException
-	 */
-	public static String getDesc(final Class<?>[] cs) {
-		if (cs.length == 0)
-			return "";
-=======
     /**
      * get class array desc. [int.class, boolean[].class, Object.class] =>
      * "I[ZLjava/lang/Object;"
@@ -506,7 +387,6 @@ public final class ReflectUtils {
         if (cs.length == 0) {
             return "";
         }
->>>>>>> refs/remotes/origin/master
 
         StringBuilder sb = new StringBuilder(64);
         for (Class<?> c : cs) {
@@ -515,23 +395,6 @@ public final class ReflectUtils {
         return sb.toString();
     }
 
-<<<<<<< HEAD
-	/**
-	 * get method desc. int do(int arg1) => "do(I)I" void do(String arg1,boolean
-	 * arg2) => "do(Ljava/lang/String;Z)V"
-	 * 
-	 * @param m method.
-	 * @return desc.
-	 */
-	public static String getDesc(final Method m) {
-		StringBuilder ret = new StringBuilder(m.getName()).append('(');
-		Class<?>[] parameterTypes = m.getParameterTypes();
-		for (int i = 0; i < parameterTypes.length; i++)
-			ret.append(getDesc(parameterTypes[i]));
-		ret.append(')').append(getDesc(m.getReturnType()));
-		return ret.toString();
-	}
-=======
     /**
      * get method desc. int do(int arg1) => "do(I)I" void do(String arg1,boolean
      * arg2) => "do(Ljava/lang/String;Z)V"
@@ -548,24 +411,7 @@ public final class ReflectUtils {
         ret.append(')').append(getDesc(m.getReturnType()));
         return ret.toString();
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * get constructor desc. "()V", "(Ljava/lang/String;I)V"
-	 * 
-	 * @param c constructor.
-	 * @return desc
-	 */
-	public static String getDesc(final Constructor<?> c) {
-		StringBuilder ret = new StringBuilder("(");
-		Class<?>[] parameterTypes = c.getParameterTypes();
-		for (int i = 0; i < parameterTypes.length; i++)
-			ret.append(getDesc(parameterTypes[i]));
-		ret.append(')').append('V');
-		return ret.toString();
-	}
-=======
     /**
      * get constructor desc. "()V", "(Ljava/lang/String;I)V"
      *
@@ -581,25 +427,7 @@ public final class ReflectUtils {
         ret.append(')').append('V');
         return ret.toString();
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * get method desc. "(I)I", "()V", "(Ljava/lang/String;Z)V"
-	 * 
-	 * @param m method.
-	 * @return desc.
-	 */
-	public static String getDescWithoutMethodName(Method m) {
-		StringBuilder ret = new StringBuilder();
-		ret.append('(');
-		Class<?>[] parameterTypes = m.getParameterTypes();
-		for (int i = 0; i < parameterTypes.length; i++)
-			ret.append(getDesc(parameterTypes[i]));
-		ret.append(')').append(getDesc(m.getReturnType()));
-		return ret.toString();
-	}
-=======
     /**
      * get method desc. "(I)I", "()V", "(Ljava/lang/String;Z)V"
      *
@@ -616,49 +444,7 @@ public final class ReflectUtils {
         ret.append(')').append(getDesc(m.getReturnType()));
         return ret.toString();
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * get class desc. Object.class => "Ljava/lang/Object;" boolean[].class => "[Z"
-	 * 
-	 * @param c class.
-	 * @return desc.
-	 * @throws NotFoundException
-	 */
-	public static String getDesc(final CtClass c) throws NotFoundException {
-		StringBuilder ret = new StringBuilder();
-		if (c.isArray()) {
-			ret.append('[');
-			ret.append(getDesc(c.getComponentType()));
-		} else if (c.isPrimitive()) {
-			String t = c.getName();
-			if ("void".equals(t))
-				ret.append(JVM_VOID);
-			else if ("boolean".equals(t))
-				ret.append(JVM_BOOLEAN);
-			else if ("byte".equals(t))
-				ret.append(JVM_BYTE);
-			else if ("char".equals(t))
-				ret.append(JVM_CHAR);
-			else if ("double".equals(t))
-				ret.append(JVM_DOUBLE);
-			else if ("float".equals(t))
-				ret.append(JVM_FLOAT);
-			else if ("int".equals(t))
-				ret.append(JVM_INT);
-			else if ("long".equals(t))
-				ret.append(JVM_LONG);
-			else if ("short".equals(t))
-				ret.append(JVM_SHORT);
-		} else {
-			ret.append('L');
-			ret.append(c.getName().replace('.', '/'));
-			ret.append(';');
-		}
-		return ret.toString();
-	}
-=======
     /**
      * get class desc. Object.class => "Ljava/lang/Object;" boolean[].class => "[Z"
      *
@@ -699,24 +485,7 @@ public final class ReflectUtils {
         }
         return ret.toString();
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * get method desc. "do(I)I", "do()V", "do(Ljava/lang/String;Z)V"
-	 * 
-	 * @param m method.
-	 * @return desc.
-	 */
-	public static String getDesc(final CtMethod m) throws NotFoundException {
-		StringBuilder ret = new StringBuilder(m.getName()).append('(');
-		CtClass[] parameterTypes = m.getParameterTypes();
-		for (int i = 0; i < parameterTypes.length; i++)
-			ret.append(getDesc(parameterTypes[i]));
-		ret.append(')').append(getDesc(m.getReturnType()));
-		return ret.toString();
-	}
-=======
     /**
      * get method desc. "do(I)I", "do()V", "do(Ljava/lang/String;Z)V"
      *
@@ -732,24 +501,7 @@ public final class ReflectUtils {
         ret.append(')').append(getDesc(m.getReturnType()));
         return ret.toString();
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * get constructor desc. "()V", "(Ljava/lang/String;I)V"
-	 * 
-	 * @param c constructor.
-	 * @return desc
-	 */
-	public static String getDesc(final CtConstructor c) throws NotFoundException {
-		StringBuilder ret = new StringBuilder("(");
-		CtClass[] parameterTypes = c.getParameterTypes();
-		for (int i = 0; i < parameterTypes.length; i++)
-			ret.append(getDesc(parameterTypes[i]));
-		ret.append(')').append('V');
-		return ret.toString();
-	}
-=======
     /**
      * get constructor desc. "()V", "(Ljava/lang/String;I)V"
      *
@@ -765,25 +517,7 @@ public final class ReflectUtils {
         ret.append(')').append('V');
         return ret.toString();
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * get method desc. "(I)I", "()V", "(Ljava/lang/String;Z)V".
-	 * 
-	 * @param m method.
-	 * @return desc.
-	 */
-	public static String getDescWithoutMethodName(final CtMethod m) throws NotFoundException {
-		StringBuilder ret = new StringBuilder();
-		ret.append('(');
-		CtClass[] parameterTypes = m.getParameterTypes();
-		for (int i = 0; i < parameterTypes.length; i++)
-			ret.append(getDesc(parameterTypes[i]));
-		ret.append(')').append(getDesc(m.getReturnType()));
-		return ret.toString();
-	}
-=======
     /**
      * get method desc. "(I)I", "()V", "(Ljava/lang/String;Z)V".
      *
@@ -800,47 +534,7 @@ public final class ReflectUtils {
         ret.append(')').append(getDesc(m.getReturnType()));
         return ret.toString();
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * name to desc. java.util.Map[][] => "[[Ljava/util/Map;"
-	 * 
-	 * @param name name.
-	 * @return desc.
-	 */
-	public static String name2desc(String name) {
-		StringBuilder sb = new StringBuilder();
-		int c = 0, index = name.indexOf('[');
-		if (index > 0) {
-			c = (name.length() - index) / 2;
-			name = name.substring(0, index);
-		}
-		while (c-- > 0)
-			sb.append("[");
-		if ("void".equals(name))
-			sb.append(JVM_VOID);
-		else if ("boolean".equals(name))
-			sb.append(JVM_BOOLEAN);
-		else if ("byte".equals(name))
-			sb.append(JVM_BYTE);
-		else if ("char".equals(name))
-			sb.append(JVM_CHAR);
-		else if ("double".equals(name))
-			sb.append(JVM_DOUBLE);
-		else if ("float".equals(name))
-			sb.append(JVM_FLOAT);
-		else if ("int".equals(name))
-			sb.append(JVM_INT);
-		else if ("long".equals(name))
-			sb.append(JVM_LONG);
-		else if ("short".equals(name))
-			sb.append(JVM_SHORT);
-		else
-			sb.append('L').append(name.replace('.', '/')).append(';');
-		return sb.toString();
-	}
-=======
     /**
      * name to desc. java.util.Map[][] => "[[Ljava/util/Map;"
      *
@@ -880,67 +574,7 @@ public final class ReflectUtils {
         }
         return sb.toString();
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * desc to name. "[[I" => "int[][]"
-	 * 
-	 * @param desc desc.
-	 * @return name.
-	 */
-	public static String desc2name(String desc) {
-		StringBuilder sb = new StringBuilder();
-		int c = desc.lastIndexOf('[') + 1;
-		if (desc.length() == c + 1) {
-			switch (desc.charAt(c)) {
-			case JVM_VOID: {
-				sb.append("void");
-				break;
-			}
-			case JVM_BOOLEAN: {
-				sb.append("boolean");
-				break;
-			}
-			case JVM_BYTE: {
-				sb.append("byte");
-				break;
-			}
-			case JVM_CHAR: {
-				sb.append("char");
-				break;
-			}
-			case JVM_DOUBLE: {
-				sb.append("double");
-				break;
-			}
-			case JVM_FLOAT: {
-				sb.append("float");
-				break;
-			}
-			case JVM_INT: {
-				sb.append("int");
-				break;
-			}
-			case JVM_LONG: {
-				sb.append("long");
-				break;
-			}
-			case JVM_SHORT: {
-				sb.append("short");
-				break;
-			}
-			default:
-				throw new RuntimeException();
-			}
-		} else {
-			sb.append(desc.substring(c + 1, desc.length() - 1).replace('/', '.'));
-		}
-		while (c-- > 0)
-			sb.append("[]");
-		return sb.toString();
-	}
-=======
     /**
      * desc to name. "[[I" => "int[][]"
      *
@@ -999,7 +633,6 @@ public final class ReflectUtils {
         }
         return sb.toString();
     }
->>>>>>> refs/remotes/origin/master
 
     public static Class<?> forName(String name) {
         try {
@@ -1009,18 +642,6 @@ public final class ReflectUtils {
         }
     }
 
-<<<<<<< HEAD
-	/**
-	 * name to class. "boolean" => boolean.class "java.util.Map[][]" =>
-	 * java.util.Map[][].class
-	 * 
-	 * @param name name.
-	 * @return Class instance.
-	 */
-	public static Class<?> name2class(String name) throws ClassNotFoundException {
-		return name2class(ClassHelper.getClassLoader(), name);
-	}
-=======
     /**
      * name to class. "boolean" => boolean.class "java.util.Map[][]" =>
      * java.util.Map[][].class
@@ -1031,28 +652,7 @@ public final class ReflectUtils {
     public static Class<?> name2class(String name) throws ClassNotFoundException {
         return name2class(ClassHelper.getClassLoader(), name);
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * name to class. "boolean" => boolean.class "java.util.Map[][]" =>
-	 * java.util.Map[][].class
-	 * 
-	 * @param cl   ClassLoader instance.
-	 * @param name name.
-	 * @return Class instance.
-	 */
-	private static Class<?> name2class(ClassLoader cl, String name) throws ClassNotFoundException {
-		int c = 0, index = name.indexOf('[');
-		if (index > 0) {
-			c = (name.length() - index) / 2;
-			name = name.substring(0, index);
-		}
-		if (c > 0) {
-			StringBuilder sb = new StringBuilder();
-			while (c-- > 0)
-				sb.append("[");
-=======
     /**
      * name to class. "boolean" => boolean.class "java.util.Map[][]" =>
      * java.util.Map[][].class
@@ -1072,7 +672,6 @@ public final class ReflectUtils {
             while (c-- > 0) {
                 sb.append("[");
             }
->>>>>>> refs/remotes/origin/master
 
             if ("void".equals(name)) {
                 sb.append(JVM_VOID);
@@ -1181,19 +780,6 @@ public final class ReflectUtils {
                 throw new ClassNotFoundException("Class not found: " + desc);
         }
 
-<<<<<<< HEAD
-	/**
-	 * desc to class. "[Z" => boolean[].class "[[Ljava/util/Map;" =>
-	 * java.util.Map[][].class
-	 * 
-	 * @param desc desc.
-	 * @return Class instance.
-	 * @throws ClassNotFoundException
-	 */
-	public static Class<?> desc2class(String desc) throws ClassNotFoundException {
-		return desc2class(ClassHelper.getClassLoader(), desc);
-	}
-=======
         if (cl == null) {
             cl = ClassHelper.getClassLoader();
         }
@@ -1204,49 +790,7 @@ public final class ReflectUtils {
         }
         return clazz;
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * desc to class. "[Z" => boolean[].class "[[Ljava/util/Map;" =>
-	 * java.util.Map[][].class
-	 * 
-	 * @param cl   ClassLoader instance.
-	 * @param desc desc.
-	 * @return Class instance.
-	 * @throws ClassNotFoundException
-	 */
-	private static Class<?> desc2class(ClassLoader cl, String desc) throws ClassNotFoundException {
-		switch (desc.charAt(0)) {
-		case JVM_VOID:
-			return void.class;
-		case JVM_BOOLEAN:
-			return boolean.class;
-		case JVM_BYTE:
-			return byte.class;
-		case JVM_CHAR:
-			return char.class;
-		case JVM_DOUBLE:
-			return double.class;
-		case JVM_FLOAT:
-			return float.class;
-		case JVM_INT:
-			return int.class;
-		case JVM_LONG:
-			return long.class;
-		case JVM_SHORT:
-			return short.class;
-		case 'L':
-			desc = desc.substring(1, desc.length() - 1).replace('/', '.'); // "Ljava/lang/Object;" ==>
-																			// "java.lang.Object"
-			break;
-		case '[':
-			desc = desc.replace('/', '.'); // "[[Ljava/lang/Object;" ==> "[[Ljava.lang.Object;"
-			break;
-		default:
-			throw new ClassNotFoundException("Class not found: " + desc);
-		}
-=======
     /**
      * get class array instance.
      *
@@ -1257,7 +801,6 @@ public final class ReflectUtils {
     public static Class<?>[] desc2classArray(String desc) throws ClassNotFoundException {
 		return desc2classArray(ClassHelper.getClassLoader(), desc);
     }
->>>>>>> refs/remotes/origin/master
 
     /**
      * get class array instance.
@@ -1272,19 +815,6 @@ public final class ReflectUtils {
             return EMPTY_CLASS_ARRAY;
         }
 
-<<<<<<< HEAD
-	/**
-	 * get class array instance.
-	 * 
-	 * @param desc desc.
-	 * @return Class class array.
-	 * @throws ClassNotFoundException
-	 */
-	public static Class<?>[] desc2classArray(String desc) throws ClassNotFoundException {
-		Class<?>[] ret = desc2classArray(ClassHelper.getClassLoader(), desc);
-		return ret;
-	}
-=======
         List<Class<?>> cs = new ArrayList<Class<?>>();
         Matcher m = DESC_PATTERN.matcher(desc);
         while (m.find()) {
@@ -1292,21 +822,7 @@ public final class ReflectUtils {
         }
         return cs.toArray(EMPTY_CLASS_ARRAY);
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * get class array instance.
-	 * 
-	 * @param cl   ClassLoader instance.
-	 * @param desc desc.
-	 * @return Class[] class array.
-	 * @throws ClassNotFoundException
-	 */
-	private static Class<?>[] desc2classArray(ClassLoader cl, String desc) throws ClassNotFoundException {
-		if (desc.length() == 0)
-			return EMPTY_CLASS_ARRAY;
-=======
     /**
      * 根据方法签名从类中找出方法。
      *
@@ -1349,62 +865,16 @@ public final class ReflectUtils {
                 types[i] = ReflectUtils.name2class(parameterTypes[i]);
             }
             method = clazz.getMethod(methodName, types);
->>>>>>> refs/remotes/origin/master
 
         }
         SIGNATURE_METHODS_CACHE.put(signature, method);
         return method;
     }
 
-<<<<<<< HEAD
-	/**
-	 * 根据方法签名从类中找出方法。
-	 * 
-	 * @param clazz      查找的类。
-	 * @param methodName 方法签名，形如method1(int, String)。也允许只给方法名不参数只有方法名，形如method2。
-	 * @return 返回查找到的方法。
-	 * @throws NoSuchMethodException
-	 * @throws ClassNotFoundException
-	 * @throws IllegalStateException  给定的方法签名找到多个方法（方法签名中没有指定参数，又有有重载的方法的情况）
-	 */
-	public static Method findMethodByMethodSignature(Class<?> clazz, String methodName, String[] parameterTypes)
-			throws NoSuchMethodException, ClassNotFoundException {
-		String signature = methodName;
-		if (parameterTypes != null && parameterTypes.length > 0) {
-			signature = methodName + StringUtils.join(parameterTypes);
-		}
-		Method method = Signature_METHODS_CACHE.get(signature);
-		if (method != null) {
-			return method;
-		}
-		if (parameterTypes == null) {
-			List<Method> finded = new ArrayList<Method>();
-			for (Method m : clazz.getMethods()) {
-				if (m.getName().equals(methodName)) {
-					finded.add(m);
-				}
-			}
-			if (finded.isEmpty()) {
-				throw new NoSuchMethodException("No such method " + methodName + " in class " + clazz);
-			}
-			if (finded.size() > 1) {
-				String msg = String.format("Not unique method for method name(%s) in class(%s), find %d methods.",
-						methodName, clazz.getName(), finded.size());
-				throw new IllegalStateException(msg);
-			}
-			method = finded.get(0);
-		} else {
-			Class<?>[] types = new Class<?>[parameterTypes.length];
-			for (int i = 0; i < parameterTypes.length; i++) {
-				types[i] = ReflectUtils.name2class(parameterTypes[i]);
-			}
-			method = clazz.getMethod(methodName, types);
-=======
     public static Method findMethodByMethodName(Class<?> clazz, String methodName)
             throws NoSuchMethodException, ClassNotFoundException {
         return findMethodByMethodSignature(clazz, methodName, null);
     }
->>>>>>> refs/remotes/origin/master
 
     public static Constructor<?> findConstructor(Class<?> clazz, Class<?> paramType) throws NoSuchMethodException {
         Constructor<?> targetConstructor;
@@ -1453,29 +923,6 @@ public final class ReflectUtils {
         return getEmptyObject(returnType, new HashMap<Class<?>, Object>(), 0);
     }
 
-<<<<<<< HEAD
-	/**
-	 * 检查对象是否是指定接口的实现。
-	 * <p>
-	 * 不会触发到指定接口的{@link Class}，所以如果ClassLoader中没有指定接口类时，也不会出错。
-	 * 
-	 * @param obj                要检查的对象
-	 * @param interfaceClazzName 指定的接口名
-	 * @return 返回{@code true}，如果对象实现了指定接口；否则返回{@code false}。
-	 */
-	public static boolean isInstance(Object obj, String interfaceClazzName) {
-		for (Class<?> clazz = obj.getClass(); clazz != null
-				&& !clazz.equals(Object.class); clazz = clazz.getSuperclass()) {
-			Class<?>[] interfaces = clazz.getInterfaces();
-			for (Class<?> itf : interfaces) {
-				if (itf.getName().equals(interfaceClazzName)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-=======
     private static Object getEmptyObject(Class<?> returnType, Map<Class<?>, Object> emptyInstances, int level) {
         if (level > 2) {
             return null;
@@ -1540,7 +987,6 @@ public final class ReflectUtils {
             return null;
         }
     }
->>>>>>> refs/remotes/origin/master
 
     public static boolean isBeanPropertyReadMethod(Method method) {
         return method != null && Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers())
@@ -1550,71 +996,6 @@ public final class ReflectUtils {
                 || (method.getName().startsWith("is") && method.getName().length() > 2));
     }
 
-<<<<<<< HEAD
-	private static Object getEmptyObject(Class<?> returnType, Map<Class<?>, Object> emptyInstances, int level) {
-		if (level > 2)
-			return null;
-		if (returnType == null) {
-			return null;
-		} else if (returnType == boolean.class || returnType == Boolean.class) {
-			return false;
-		} else if (returnType == char.class || returnType == Character.class) {
-			return '\0';
-		} else if (returnType == byte.class || returnType == Byte.class) {
-			return (byte) 0;
-		} else if (returnType == short.class || returnType == Short.class) {
-			return (short) 0;
-		} else if (returnType == int.class || returnType == Integer.class) {
-			return 0;
-		} else if (returnType == long.class || returnType == Long.class) {
-			return 0L;
-		} else if (returnType == float.class || returnType == Float.class) {
-			return 0F;
-		} else if (returnType == double.class || returnType == Double.class) {
-			return 0D;
-		} else if (returnType.isArray()) {
-			return Array.newInstance(returnType.getComponentType(), 0);
-		} else if (returnType.isAssignableFrom(ArrayList.class)) {
-			return new ArrayList<Object>(0);
-		} else if (returnType.isAssignableFrom(HashSet.class)) {
-			return new HashSet<Object>(0);
-		} else if (returnType.isAssignableFrom(HashMap.class)) {
-			return new HashMap<Object, Object>(0);
-		} else if (String.class.equals(returnType)) {
-			return "";
-		} else if (!returnType.isInterface()) {
-			try {
-				Object value = emptyInstances.get(returnType);
-				if (value == null) {
-					value = returnType.getDeclaredConstructor().newInstance();
-					emptyInstances.put(returnType, value);
-				}
-				Class<?> cls = value.getClass();
-				while (cls != null && cls != Object.class) {
-					Field[] fields = cls.getDeclaredFields();
-					for (Field field : fields) {
-						Object property = getEmptyObject(field.getType(), emptyInstances, level + 1);
-						if (property != null) {
-							try {
-								if (!field.canAccess(value)) {
-									field.setAccessible(true);
-								}
-								field.set(value, property);
-							} catch (Throwable e) {
-							}
-						}
-					}
-					cls = cls.getSuperclass();
-				}
-				return value;
-			} catch (Throwable e) {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-=======
     public static String getPropertyNameFromBeanReadMethod(Method method) {
         if (isBeanPropertyReadMethod(method)) {
             if (method.getName().startsWith("get")) {
@@ -1626,7 +1007,6 @@ public final class ReflectUtils {
         }
         return null;
     }
->>>>>>> refs/remotes/origin/master
 
     public static boolean isBeanPropertyWriteMethod(Method method) {
         return method != null && Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers())
@@ -1963,36 +1343,6 @@ public final class ReflectUtils {
             return fieldType;
         }
 
-<<<<<<< HEAD
-	/**
-	 * 得到范型类型
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static Type getGenericParamType(Type type) {
-		if (type instanceof ParameterizedType) {
-			return type;
-		}
-		if (type instanceof Class) {
-			return getGenericParamType(((Class<?>) type).getGenericSuperclass());
-		}
-		return type;
-	}
-
-	/**
-	 * 获得字段的的类型
-	 * 
-	 * @param clazz
-	 * @param type
-	 * @param fieldType
-	 * @return
-	 */
-	public static Type getFieldType(final Class<?> clazz, Type fieldType) {
-		if (clazz == null) {
-			return fieldType;
-		}
-=======
         if (fieldType instanceof GenericArrayType) {
             GenericArrayType genericArrayType = (GenericArrayType) fieldType;
             Type componentType = genericArrayType.getGenericComponentType();
@@ -2001,7 +1351,6 @@ public final class ReflectUtils {
                 Type fieldTypeX = Array.newInstance(ReflectUtils.getClass(componentTypeX), 0).getClass();
                 return fieldTypeX;
             }
->>>>>>> refs/remotes/origin/master
 
             return fieldType;
         }
@@ -2011,17 +1360,10 @@ public final class ReflectUtils {
             return fieldType;
         }
 
-<<<<<<< HEAD
-		Type type = (Type) clazz;
-		if (!ReflectUtils.isGenericParamType(type)) {
-			return fieldType;
-		}
-=======
         if (fieldType instanceof TypeVariable) {
             ParameterizedType paramType = (ParameterizedType) ReflectUtils.getGenericParamType(type);
             Class<?> parameterizedClass = ReflectUtils.getClass(paramType);
             final TypeVariable<?> typeVar = (TypeVariable<?>) fieldType;
->>>>>>> refs/remotes/origin/master
 
             TypeVariable<?>[] typeVariables = parameterizedClass.getTypeParameters();
             for (int i = 0; i < typeVariables.length; ++i) {
@@ -2060,23 +1402,6 @@ public final class ReflectUtils {
         return fieldType;
     }
 
-<<<<<<< HEAD
-		return fieldType;
-	}
-
-	/**
-	 * tv : getGenericType, getGenericReturnType, getGenericParameterTypes clazz :
-	 * 所属的类型
-	 * 
-	 * 感觉 getFieldType 就可以获得实际的类型
-	 * 
-	 * 获得类型变量的实际类型
-	 * 
-	 * BaseEntity<Long> 中 id 的实际类型
-	 */
-	public static Type getInheritGenericType(Class<?> clazz, TypeVariable<?> tv) {
-		GenericDeclaration gd = tv.getGenericDeclaration();
-=======
     /**
      * tv : getGenericType, getGenericReturnType, getGenericParameterTypes clazz :
      * 所属的类型
@@ -2089,7 +1414,6 @@ public final class ReflectUtils {
      */
     public static Type getInheritGenericType(Class<?> clazz, TypeVariable<?> tv) {
         GenericDeclaration gd = tv.getGenericDeclaration();
->>>>>>> refs/remotes/origin/master
 
         Class<?> class_gd = null;
         if (gd instanceof Class) {
@@ -2158,17 +1482,9 @@ public final class ReflectUtils {
             }
         }
 
-<<<<<<< HEAD
-		return changed;
-	}
-
-	private ReflectUtils() {
-	}
-=======
         return changed;
     }
 
     private ReflectUtils() {
     }
->>>>>>> refs/remotes/origin/master
 }

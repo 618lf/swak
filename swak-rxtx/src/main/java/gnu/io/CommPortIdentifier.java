@@ -101,8 +101,7 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 			System.out.println("CommPortIdentifier:static initialization()");
 		Sync = new Object();
 		try {
-			CommDriver RXTXDriver = (CommDriver) Class.forName("gnu.io.RXTXCommDriver").getDeclaredConstructor()
-					.newInstance();
+			CommDriver RXTXDriver = (CommDriver) Class.forName("gnu.io.RXTXCommDriver").newInstance();
 			RXTXDriver.initialize();
 		} catch (Throwable e) {
 			System.err.println(e + " thrown while loading " + "gnu.io.RXTXCommDriver");

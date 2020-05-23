@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
@@ -56,21 +57,6 @@ public class Channels {
      */
     protected Consumer<Channel> channelInit;
 
-<<<<<<< HEAD
-	/**
-	 * 创建一个设备管理器
-	 * 
-	 * @param works
-	 * @param heartbeatSeconds
-	 * @param channelInit
-	 */
-	public Channels(int works, int heartbeatSeconds, Consumer<Channel> channelInit) {
-		this.channels = new ConcurrentHashMap<>(works * 2);
-		this.heartbeat = new Heartbeat(heartbeatSeconds);
-		this.eventLoops = new EventLoopGroup(works);
-		this.channelInit = channelInit;
-		_ME = this;
-=======
     /**
      * 是否已经关闭
      */
@@ -89,7 +75,6 @@ public class Channels {
         this.eventLoops = new EventLoopGroup(works);
         this.channelInit = channelInit;
         _ME = this;
->>>>>>> refs/remotes/origin/master
 
         // 关闭系统时，关闭设备来释放资源
         ShutDownHook.registerShutdownHook(() -> {
@@ -99,14 +84,6 @@ public class Channels {
         });
     }
 
-<<<<<<< HEAD
-	/**
-	 * 启动
-	 */
-	public void start() {
-		this.heartbeat.start();
-	}
-=======
     /**
      * 是否运行中
      *
@@ -122,7 +99,6 @@ public class Channels {
     public void start() {
         this.heartbeat.start();
     }
->>>>>>> refs/remotes/origin/master
 
     /**
      * 尝试加载所有的设备
@@ -149,12 +125,6 @@ public class Channels {
         return channel;
     }
 
-<<<<<<< HEAD
-	/**
-	 * 刷新设备 -- 关闭状态才能
-	 */
-	public void connect() {
-=======
     /**
      * 刷新设备
      */
@@ -164,22 +134,7 @@ public class Channels {
              * 查找所有设备
              */
             this.scanChannels();
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-		/**
-		 * 查找所有设备
-		 */
-		this.scanChannels();
-
-		/**
-		 * 刷新所有设备
-		 */
-		channels.forEach((comm, device) -> {
-			device.connect();
-		});
-	}
-=======
             /**
              * 刷新所有设备
              */
@@ -188,22 +143,7 @@ public class Channels {
             });
         }
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * 刷新设备
-	 */
-	public void close() {
-
-		/**
-		 * 刷新所有设备
-		 */
-		channels.forEach((comm, device) -> {
-			device.close();
-		});
-	}
-=======
     /**
      * 刷新设备
      */
@@ -217,27 +157,7 @@ public class Channels {
             });
         }
     }
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-	/**
-	 * 设备心跳, 发现新设备 -- 非关闭状态才发送心跳
-	 */
-	private void heartbeat() {
-		// 设备心跳
-		if (logger.isDebugEnabled()) {
-			logger.debug("设备心跳，设备数:[{}]", channels.size());
-		}
-
-		// 尝试发现新设备
-		this.scanChannels();
-
-		// 处理设备的心跳
-		channels.forEach((comm, channel) -> {
-			channel.heartbeat();
-		});
-	}
-=======
     /**
      * 设备心跳, 发现新设备
      */
@@ -257,7 +177,6 @@ public class Channels {
             });
         }
     }
->>>>>>> refs/remotes/origin/master
 
     /**
      * 心跳
