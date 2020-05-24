@@ -11,13 +11,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * 使用Jaxb2.0实现XML<->Java Object的Mapper.
@@ -29,10 +29,14 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class JaxbMapper {
 
-	private static ConcurrentMap<Class<?>, JAXBContext> CONTEXT;
+	private static SAXParserFactory FACTORY = SAXParserFactory.newInstance();
+	private static ConcurrentMap<Class<?>, JAXBContext> CONTEXT = null;
 
+	/**
+	 * 池化
+	 */
 	static {
-		CONTEXT = new ConcurrentHashMap<>();
+		CONTEXT = new ConcurrentHashMap<Class<?>, JAXBContext>();
 	}
 
 	/**
@@ -93,9 +97,9 @@ public class JaxbMapper {
 	public static <T> T fromXml(InputStream xml, Class<T> clazz) {
 		try {
 			Unmarshaller unmarshaller = createUnmarshaller(clazz);
-			XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-			Source source = new SAXSource(xmlReader, new InputSource(xml));
-			return (T) unmarshaller.unmarshal(source);
+			SAXParser xmlReader = FACTORY.newSAXParser();
+			Source Source = new SAXSource(xmlReader.getXMLReader(), new InputSource(xml));
+			return (T) unmarshaller.unmarshal(Source);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -123,7 +127,8 @@ public class JaxbMapper {
 	public static Unmarshaller createUnmarshaller(Class<?> clazz) {
 		try {
 			JAXBContext jaxbContext = getJaxbContext(clazz);
-			return jaxbContext.createUnmarshaller();
+			Unmarshaller marshaller = jaxbContext.createUnmarshaller();
+			return marshaller;
 		} catch (Exception e) {
 			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz + "]: " + e.getMessage(),
 					e);
