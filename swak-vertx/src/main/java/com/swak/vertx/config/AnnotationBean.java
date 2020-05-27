@@ -1,14 +1,11 @@
 package com.swak.vertx.config;
 
-import com.swak.Constants;
-import com.swak.annotation.*;
-import com.swak.exception.BaseRuntimeException;
-import com.swak.utils.Lists;
-import com.swak.utils.Maps;
-import com.swak.utils.Sets;
-import com.swak.utils.StringUtils;
-import com.swak.utils.router.RouterUtils;
-import com.swak.vertx.transport.VertxProxy;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -19,11 +16,22 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.ClassUtils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.swak.Constants;
+import com.swak.annotation.FluxReferer;
+import com.swak.annotation.FluxService;
+import com.swak.annotation.RequestMapping;
+import com.swak.annotation.RequestMethod;
+import com.swak.annotation.RestApi;
+import com.swak.annotation.RestPage;
+import com.swak.annotation.RestService;
+import com.swak.annotation.RouterSupplier;
+import com.swak.exception.BaseRuntimeException;
+import com.swak.utils.Lists;
+import com.swak.utils.Maps;
+import com.swak.utils.Sets;
+import com.swak.utils.StringUtils;
+import com.swak.utils.router.RouterUtils;
+import com.swak.vertx.transport.VertxProxy;
 
 /**
  * 自动化配置bean
@@ -261,6 +269,7 @@ public class AnnotationBean implements BeanPostProcessor, BeanFactoryAware, Orde
 					if (inter.getName().startsWith("org.springframework.") || !fitWith(fluxService, inter)) {
 						continue;
 					}
+
 					ServiceBean serviceBean = new ServiceBean(inter, bean, fluxService);
 					services.add(serviceBean);
 				}

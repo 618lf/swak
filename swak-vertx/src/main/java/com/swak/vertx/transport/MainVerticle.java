@@ -51,12 +51,30 @@ public class MainVerticle extends AbstractVerticle {
 	}
 
 	/**
+	 * 循环获取Spring Proxy Bean : 此方法需要放在main中执行：解决容器启动死锁的问题<br>
+	 * Bug: 在另外的线程中获取bean 会导致spring 死锁
+	 */
+	public void init() {
+		Set<ServiceBean> services = annotation.getServices();
+		for (ServiceBean service : services) {
+			Object proxy = service.getService();
+			if (!AopUtils.isAopProxy(proxy)) {
+				proxy = annotation.getProxy(service.getService());
+				service.setService(proxy);
+			}
+		}
+	}
+
+	/**
 	 * 服务的端口
 	 */
 	public EndPoints getEndPoints() {
 		return endPoints;
 	}
 
+	/**
+	 * 异步的启动
+	 */
 	@Override
 	@SuppressWarnings({ "rawtypes" })
 	public void start(Promise<Void> startPromise) {
@@ -116,8 +134,7 @@ public class MainVerticle extends AbstractVerticle {
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
 			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
-					new ImServerVerticle(this.getProxyService(service), service.getServiceType(), properties), options,
-					s));
+					new ImServerVerticle(this.getService(service), service.getServiceType(), properties), options, s));
 			futures.add(stFuture);
 		}
 
@@ -132,7 +149,7 @@ public class MainVerticle extends AbstractVerticle {
 	private Future<EndPoint> startHttp(ServiceBean service) {
 
 		// Router 处理器
-		RouterHandler routerHandler = this.getProxyService(service);
+		RouterHandler routerHandler = this.getService(service);
 
 		// 初始化 router
 		routerHandler.initRouter(vertx, annotation);
@@ -190,7 +207,7 @@ public class MainVerticle extends AbstractVerticle {
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
 			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
-					new ServiceVerticle(this.getProxyService(service), service.getServiceType()), options, s));
+					new ServiceVerticle(this.getService(service), service.getServiceType()), options, s));
 			futures.add(stFuture.map(id -> null));
 		}
 		return futures;
@@ -204,12 +221,17 @@ public class MainVerticle extends AbstractVerticle {
 		return intstances;
 	}
 
+	/**
+	 * Bug: 在另外的线程中获取bean 会导致spring 死锁<br>
+	 * 所有获取bean的地方放在 init()在服务启动时在获取。
+	 * 
+	 * @param <T>
+	 * @param service
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
-	private <T> T getProxyService(ServiceBean service) {
+	private <T> T getService(ServiceBean service) {
 		Object proxy = service.getService();
-		if (!AopUtils.isAopProxy(proxy)) {
-			return (T) annotation.getProxy(service.getService());
-		}
 		return (T) proxy;
 	}
 }

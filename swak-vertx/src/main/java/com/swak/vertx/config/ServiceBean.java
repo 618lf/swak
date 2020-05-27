@@ -15,41 +15,45 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 public class ServiceBean {
 
-    private final Object service;
-    private final Class<?> type;
-    private final FluxService mapping;
+	private Object service;
+	private final Class<?> type;
+	private final FluxService mapping;
 
-    public ServiceBean(Class<?> type, Object service, FluxService mapping) {
-        this.service = service;
-        this.mapping = mapping;
-        this.type = type;
-    }
+	public ServiceBean(Class<?> type, Object service, FluxService mapping) {
+		this.service = service;
+		this.mapping = mapping;
+		this.type = type;
+	}
 
-    public Class<?> getType() {
-        return type;
-    }
+	public Class<?> getType() {
+		return type;
+	}
 
-    public Object getService() {
-        return service;
-    }
+	public Object getService() {
+		return service;
+	}
 
-    public Class<?> getServiceType() {
-        return type;
-    }
+	public void setService(Object service) {
+		this.service = service;
+	}
 
-    public Server getServer() {
-        return mapping.server();
-    }
+	public Class<?> getServiceType() {
+		return type;
+	}
 
-    public Context getContext() {
-        return mapping.context();
-    }
+	public Server getServer() {
+		return mapping.server();
+	}
 
-    public int getInstances() {
-        return mapping.instances();
-    }
+	public Context getContext() {
+		return mapping.context();
+	}
 
-    public String getUse_pool() {
-        return mapping.use_pool();
-    }
+	public int getInstances() {
+		return mapping.instances();
+	}
+
+	public String getUse_pool() {
+		return mapping.use_pool();
+	}
 }

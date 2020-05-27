@@ -33,6 +33,11 @@ public class ReactiveServer implements Server {
 
 	@Override
 	public void start() throws ServerException {
+
+		// 初始化服务类
+		this.mainVerticle.init();
+
+		// 发布服务类
 		this.annotation.getVertx().apply(vertx -> {
 			CompletableFuture<Void> startFuture = new CompletableFuture<>();
 
