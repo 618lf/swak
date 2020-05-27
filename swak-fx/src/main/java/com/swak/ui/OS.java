@@ -25,7 +25,7 @@ public enum OS {
 		}
 		return OS.Others;
 	}
-	
+
 	/**
 	 * 当前用户的home
 	 * 
@@ -34,7 +34,16 @@ public enum OS {
 	public static String home() {
 		return System.getProperty("user.home");
 	}
-	
+
+	/**
+	 * java的版本
+	 * 
+	 * @return
+	 */
+	public static String java() {
+		return System.getProperty("java.version");
+	}
+
 	/**
 	 * 执行外部命令
 	 * 
