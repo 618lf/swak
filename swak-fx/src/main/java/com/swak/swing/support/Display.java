@@ -5,6 +5,7 @@ import java.awt.SystemTray;
 import javax.swing.SwingUtilities;
 
 import com.google.common.eventbus.EventBus;
+import com.swak.ui.Events;
 
 /**
  * The enum {@link Display} stores Scene and Stage objects as singletons in this
@@ -19,7 +20,6 @@ public enum Display {
 
 	private static String title;
 	private static SystemTray systemTray;
-	private static EventBus eventBus;
 
 	public static String getTitle() {
 		return title;
@@ -38,11 +38,11 @@ public enum Display {
 	}
 
 	public static EventBus getEventBus() {
-		return eventBus;
+		return Events.eventBus;
 	}
 
 	static void setEventBus(EventBus eventBus) {
-		Display.eventBus = eventBus;
+		Events.eventBus = eventBus;
 	}
 
 	/**

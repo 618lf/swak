@@ -7,6 +7,5 @@ package com.swak.fetty.transport;
  * @date 2020年5月26日 下午1:03:54
  */
 public class BootStarper {
-
 	
 }

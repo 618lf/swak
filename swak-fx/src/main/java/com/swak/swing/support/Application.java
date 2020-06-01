@@ -38,7 +38,7 @@ public class Application {
 	 */
 	public static void launch(final Class<? extends Application> appClass, final String[] args) {
 		try {
-			CONTEXT = appClass.newInstance();
+			CONTEXT = appClass.getDeclaredConstructor().newInstance();
 			CONTEXT.init();
 			CONTEXT.start();
 		} catch (Exception e) {

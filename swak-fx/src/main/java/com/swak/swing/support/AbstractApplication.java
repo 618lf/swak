@@ -1,6 +1,7 @@
 package com.swak.swing.support;
 
 import java.awt.SystemTray;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -88,10 +89,15 @@ public abstract class AbstractApplication extends Application implements EventLi
 	 * @param savedArgs
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
+	 * @throws SecurityException
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalArgumentException
 	 */
 	protected AbstractPage createPage(Class<? extends AbstractPage> view)
-			throws InstantiationException, IllegalAccessException {
-		return view.newInstance();
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException {
+		return view.getDeclaredConstructor().newInstance();
 	}
 
 	/**

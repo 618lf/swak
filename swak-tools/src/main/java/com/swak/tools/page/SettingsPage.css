@@ -1,0 +1,18 @@
+.settings {
+  -fx-text-fill: #fff;
+  -fx-border-width: 3px;
+  -fx-background-radius: 4px;
+  -fx-border-radius: 0px;
+  -fx-background-insets: 0;
+  -fx-font-size: 1.05em;
+  -fx-border-color: #337ab7;
+}
+.settings-title {
+  -fx-font-size: 1.45em;
+}
+.settings-set--title {
+  -fx-font-weight: bold;
+}
+.settings-set--content {
+  -fx-text-fill: #999;
+}

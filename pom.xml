@@ -39,6 +39,7 @@
 		<module>swak-lib</module>
 		<module>swak-generate</module>
 		<module>swak-fetty</module>
+		<module>swak-tools</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.2.6.RELEASE</spring-boot.version>
@@ -46,7 +47,7 @@
 		<cglib.version>3.3.0</cglib.version>
 		<javassist.version>3.27.0-GA</javassist.version>
 		<aspectjweaver.version>1.9.5</aspectjweaver.version>
-		<fastjson.version>1.2.68</fastjson.version>
+		<fastjson.version>1.2.70</fastjson.version>
 		<logback.version>1.2.3</logback.version>
 		<slf4j.version>1.7.30</slf4j.version>
 		<netty.version>4.1.48.Final</netty.version>

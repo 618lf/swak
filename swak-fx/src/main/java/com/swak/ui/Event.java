@@ -13,6 +13,7 @@ public class Event {
 	public static Event START = new Event("start");
 	public static Event DOWNLOAD = new Event("download");
 	public static Event URL = new Event("url");
+	public static Event MESS = new Event("message");
 
 	private String key;
 	private Object message;

@@ -1,0 +1,14 @@
+.splash {
+  -fx-text-fill: #000;
+  -fx-background-radius: 4px;
+  -fx-border-radius: 4px;
+  -fx-background-insets: 0;
+  -fx-background: #fff;
+  -fx-background-color: #fff;
+  -fx-font-size: 0.85em;
+}
+.splash-title {
+  -fx-font-size: 1.85em;
+  -fx-text-fill: #000;
+  -fx-padding: 0 0 0 15;
+}

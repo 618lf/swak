@@ -3,6 +3,7 @@ package com.swak.fx.support;
 import java.awt.SystemTray;
 
 import com.google.common.eventbus.EventBus;
+import com.swak.ui.Events;
 
 import javafx.application.HostServices;
 import javafx.application.Platform;
@@ -27,7 +28,6 @@ public enum Display {
 	private static String title;
 	private static HostServices hostServices;
 	private static SystemTray systemTray;
-	private static EventBus eventBus;
 	private static Clipboard clipboard;
 
 	public static String getTitle() {
@@ -75,11 +75,11 @@ public enum Display {
 	}
 
 	public static EventBus getEventBus() {
-		return eventBus;
+		return Events.eventBus;
 	}
 
-	static void setEventBus(EventBus eventBus) {
-		Display.eventBus = eventBus;
+	static void setEventBus(EventBus bus) {
+		Events.eventBus = bus;
 	}
 
 	public static Clipboard getClipboard() {
@@ -99,7 +99,7 @@ public enum Display {
 	public static java.net.URL load(String path) {
 		return Display.class.getResource(path);
 	}
-	
+
 	/**
 	 * 加载资源
 	 * 

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="root" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="500.0" styleClass="splash" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Pane onDragDetected="#startMoveWindow" onMouseDragged="#moveWindow" onMouseReleased="#endMoveWindow" prefHeight="320.0" prefWidth="200.0" styleClass="splash-panel">
+         <children>
+            <VBox alignment="CENTER" layoutY="80.0" prefWidth="500.0">
+               <children>
+                  <ImageView fx:id="logo" fitHeight="120" fitWidth="120" pickOnBounds="true" preserveRatio="true" styleClass="splash-panel_logo">
+                    <image>
+						<Image url="/com/shenda/starter/page/fx/logo.png" />
+					</image>
+                  </ImageView>
+                  <Label fx:id="title" prefHeight="80.0" styleClass="splash-panel_title" text="深大穿戴.陀螺仪" />
+                  <Label fx:id="dir" styleClass="splash-panel_title"/>
+               </children>
+            </VBox>
+            <ImageView fitHeight="24.0" fitWidth="24.0" layoutX="467.0" layoutY="7.0" onMouseClicked="#onClose" pickOnBounds="true" preserveRatio="true">
+                <image>
+					<Image url="/com/shenda/starter/page/fx/关闭.png" />
+				</image>
+            </ImageView>
+         </children>
+      </Pane>
+      <Pane prefHeight="80.0" prefWidth="200.0">
+        <children>
+            <Button fx:id="dirBtn" styleClass="btn,btn-warning" layoutX="134.0" layoutY="28.0" mnemonicParsing="false" text="选择目录" />
+            <Button fx:id="initBtn" styleClass="btn,btn-warning" layoutX="221.0" layoutY="28.0" mnemonicParsing="false" text="初始化结构" />
+            <Button fx:id="patchBtn" styleClass="btn,btn-success" layoutX="323.0" layoutY="28.0" mnemonicParsing="false" text="创建补丁" />
+         </children>
+      </Pane>
+   </children>
+</VBox>

@@ -1,0 +1,43 @@
+.splash {
+  -fx-text-fill: #fff;
+  -fx-border-width: 3px;
+  -fx-border-color: #3175af;
+  -fx-background-radius: 4px;
+  -fx-border-radius: 4px;
+  -fx-background-insets: 0;
+  -fx-background: #337ab7;
+  -fx-background-color: #337ab7;
+  /* 10px */
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 10, 0, 0, 3);
+  -fx-font-size: 0.85em;
+}
+.splash-panel {
+
+}
+.splash-panel_title {
+  -fx-font-size: 1.85em;
+}
+.splash-progress_wrap {
+  -fx-background: #fff;
+  -fx-background-color: #fff;
+}
+.splash-progress  > .bar {
+  -fx-background-insets: 0;
+  -fx-background-color: #337ab7;
+  -fx-progress-color: #337ab7;
+  -fx-text-fill: #fff;
+  -fx-text-alignment: center;
+  -fx-background-radius: 0px;
+  -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.15), -1px, 0, 0, 0);
+}
+.splash-progress > .track {
+  -fx-pref-height: 10;
+  -fx-background-radius: 0px;
+  -fx-effect: innershadow(gaussian, #eeeeee, 4, 0, 0, 1);
+  -fx-background-color: #f5f5f5;
+}
+.splash-tip {
+  -fx-background: #fff;
+  -fx-background-color: #fff;
+  -fx-font-size: 1.4em;
+}
