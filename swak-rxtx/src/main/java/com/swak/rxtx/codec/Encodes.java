@@ -51,6 +51,6 @@ public interface Encodes {
 	 */
 	default String crc16(byte[] bytes) {
 		int CRC = CRC16Utils.CRC16_MODBUS(bytes, 0, bytes.length);
-		return "SD" + Integer.toHexString(CRC);
+		return "SD" + Integer.toHexString(CRC).toUpperCase();
 	}
 }

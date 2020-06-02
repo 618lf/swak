@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.rxtx.Channels;
 import com.swak.rxtx.enums.Status;
 import com.swak.rxtx.utils.SerialUtils;
 
@@ -104,8 +105,15 @@ public class Channel {
 			// 重新连接
 			this.doConnect();
 
-			// 发送事件
-			this.pipeline.fireConnectEvent(this);
+			// 连接事件
+			if (this.isActive()) {
+				this.pipeline.fireConnectEvent(this);
+			}
+			// 关闭连接事件
+			else {
+				Channels.me().remove(this);
+				this.pipeline.fireCloseEvent(this);
+			}
 		}
 	}
 
@@ -328,6 +336,8 @@ public class Channel {
 					sport.notifyOnDataAvailable(false);
 					sport.removeEventListener();
 					sport.close();
+					sport = null;
+					this.status = Status.断开;
 					this.pipeline.fireCloseEvent(this);
 				}
 				sport = null;
