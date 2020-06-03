@@ -18,40 +18,17 @@
 			<artifactId>swak-fx</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.swak</groupId>
-			<artifactId>swak-jdbc</artifactId>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>${druid.version}</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.mybatis</groupId>
-					<artifactId>mybatis</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.mybatis</groupId>
-					<artifactId>mybatis-spring</artifactId>
+					<groupId>com.alibaba</groupId>
+					<artifactId>jconsole</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>com.alibaba</groupId>
-					<artifactId>druid</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.zaxxer</groupId>
-					<artifactId>HikariCP</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>mysql</groupId>
-					<artifactId>mysql-connector-java</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.h2database</groupId>
-					<artifactId>h2</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.shardingsphere</groupId>
-					<artifactId>sharding-jdbc-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.codehaus.groovy</groupId>
-					<artifactId>groovy</artifactId>
+					<artifactId>tools</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

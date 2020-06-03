@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration debug="false">
+
+	<!-- 控制台 -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>【%logger - %thread】 %msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<!-- 出错日志 appender -->
+	<appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/error/%d{yyyy-MM-dd}.master.log</fileNamePattern>
+			<maxHistory>60</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+		</encoder>
+	</appender>
+	
+    <!-- 默认是错误级别 -->
+	<root level="ERROR">
+	    <appender-ref ref="STDOUT"/>
+	</root>
+
+	<logger name="com.swak.Application" level="DEBUG"/>
+</configuration>

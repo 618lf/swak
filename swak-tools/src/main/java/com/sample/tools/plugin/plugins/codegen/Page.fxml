@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="root" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="500.0" styleClass="settings" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Pane prefHeight="60.0" prefWidth="500.0">
+         <children>
+            <ImageView fitHeight="24.0" fitWidth="24.0" layoutX="467.0" layoutY="7.0" onMouseClicked="#onClose" pickOnBounds="true" preserveRatio="true">
+                <image>
+					<Image url="com/sample/tools/page/关闭2.png" />
+				</image>
+            </ImageView>
+            <Label fx:id="title" layoutX="14.0" layoutY="12.0" styleClass="settings-title" text="开发工具.代码生成" />
+         </children>
+      </Pane>
+      <Pane prefHeight="152.0" prefWidth="500.0">
+         <children>
+            <TextArea fx:id="sqlScript" layoutX="14.0" layoutY="35.0" prefHeight="110.0" prefWidth="469.0" promptText="请复制Sql脚本" styleClass="settings-set--content" />
+            <Label layoutX="14.0" layoutY="14.0" text="请复制Sql脚本" />
+         </children>
+      </Pane>
+      <Pane prefHeight="165.0" prefWidth="500.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="请设置包名" />
+            <TextField fx:id="packageName" layoutX="14.0" layoutY="36.0" prefHeight="23.0" prefWidth="469.0" />
+            <Label layoutX="14.0" layoutY="69.0" text="请设置实体名" />
+            <TextField fx:id="entityName" layoutX="14.0" layoutY="90.0" prefHeight="23.0" prefWidth="469.0" />
+            <Button fx:id="buildBtn" layoutX="14.0" layoutY="127.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="60.0" text="创建" />
+         </children>
+      </Pane>
+   </children>
+</VBox>

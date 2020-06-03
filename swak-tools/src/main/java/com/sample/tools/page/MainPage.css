@@ -1,0 +1,135 @@
+* {
+  -fx-font-family: 'sans-serif';
+}
+.panel {
+  -fx-background-color: #fff;
+  -fx-border-width: 3px;
+  -fx-border-style: solid;
+  -fx-border-color: transparent;
+  -fx-border-radius: 0px;
+  -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.05), 1px, 0, 0, 1px);
+}
+.panel-heading {
+  -fx-padding: 5px 10px;
+  -fx-border-width: 1px;
+  -fx-border-style: solid;
+  -fx-border-color: transparent;
+  -fx-border-radius: 3px, 0, 0, 0;
+}
+.panel-primary {
+  -fx-border-color: #337ab7;
+}
+.panel-primary > .panel-heading {
+  -fx-text-fill: #fff;
+  -fx-fill: #fff;
+  -fx-background-color: #337ab7;
+  -fx-border-color: #337ab7;
+}
+.panel-primary > .panel-heading * {
+  -fx-text-fill: #fff;
+  -fx-fill: #fff;
+}
+.title {
+  -fx-text-fill: #fff;
+  -fx-font-size: 18px;
+  -fx-text-alignment: center;
+  -fx-padding: 0px 10px;
+}
+.download-panel {
+  -fx-background-color: -fx-outer-border, -fx-inner-border, -fx-body-color;
+  -fx-padding: 5 7;
+  -fx-text-fill: #292929;
+}
+.download-panel {
+  -fx-background-insets: 0 0 0 0, 0 0 1 0, 0 0 2 0;
+}
+.download-panel {
+  -fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
+}
+.download-panel .part {
+  -fx-padding: 3 5;
+  -fx-border-width: 1px;
+  -fx-border-style: solid;
+  -fx-border-color: -fx-outer-border;
+  -fx-border-radius: 0px;
+  -fx-text-fill: #292929;
+}
+.download-panel .part:hover {
+  -fx-text-fill: #fff;
+  -fx-background-color: #337ab7;
+  -fx-border-color: #337ab7;
+}
+.download-panel .part:hover .part-title {
+  -fx-text-fill: #fff;
+}
+.download-panel .part:focused {
+  -fx-text-fill: #fff;
+  -fx-fill: #fff;
+  -fx-background-color: #286090;
+  -fx-border-color: #122b40;
+}
+.download-panel .part:hover .part-title {
+  -fx-text-fill: #fff;
+}
+.download-panel .part:pressed {
+  -fx-text-fill: #fff;
+  -fx-fill: #fff;
+  -fx-background-color: #286090;
+  -fx-border-color: #204d74;
+}
+.download-panel .part:pressed:hover {
+  -fx-text-fill: #fff;
+  -fx-fill: #fff;
+  -fx-background-color: #204d74;
+  -fx-border-color: #122b40;
+}
+.download-panel .close-button {
+  -fx-background-color: transparent;
+  -fx-background-insets: 0;
+  -fx-background-radius: 2;
+  -fx-padding: 0 0 0 0;
+  -fx-alignment: center;
+}
+
+.download-panel .close-button:hover {
+  -fx-background-color: linear-gradient(#a3a3a3, #8b8b8b 34%, #777777 36%, #777777 63%, #8b8b8b 65%, #adadad);
+}
+
+.download-panel .close-button:pressed {
+  -fx-background-color: linear-gradient(#a3a3a3, #8b8b8b 34%, #777777 36%, #777777 63%, #8b8b8b 65%, #adadad);
+}
+
+.download-panel .close-button > .graphic {
+  -fx-background-color: #949494;
+  -fx-scale-shape: false;
+  -fx-padding: 4.5 4.5 4.5 4.5;
+}
+
+.download-panel .close-button:hover > .graphic {
+  -fx-background-color: #fefeff;
+}
+
+.download-panel .close-button:pressed > .graphic {
+  -fx-background-color: #cfcfcf;
+}
+
+.download-panel .close-button > .graphic {
+  -fx-shape: "M395.992,296.758l1.794-1.794l7.292,7.292l-1.795,1.794 L395.992,296.758z M403.256,294.992l1.794,1.794l-7.292,7.292l-1.794-1.795 L403.256,294.992z";
+}
+.image-settings {
+  -fx-border-width: 1px;
+  -fx-border-style: solid;
+  -fx-border-color: -fx-outer-border;
+  -fx-border-radius: 0px;
+  -fx-text-fill: #292929;
+}
+.plugin-panel {
+  -fx-padding: 3 5;
+  -fx-border-width: 3px;
+  -fx-border-color: #3175af;
+  -fx-background-radius: 4px;
+  -fx-border-radius: 4px;
+  -fx-background-insets: 0;
+  -fx-background: #337ab7;
+  -fx-background-color: #337ab7;
+}
