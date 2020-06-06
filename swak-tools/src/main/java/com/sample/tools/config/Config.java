@@ -1,48 +1,31 @@
 package com.sample.tools.config;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.HashMap;
 
 /**
  * 系统配置
  * 
  * @author lifeng
  */
-@XmlRootElement(name = "settings")
-public class Config {
+public class Config extends HashMap<String, Object> {
 
-	private String accessIps;
-	private Boolean accessAble;
-	private Mode mode = Mode.client;
+	private static final long serialVersionUID = 1L;
 
-	public String getAccessIps() {
-		return accessIps;
+	public Config string(String key, String value) {
+		this.put(key, value);
+		return this;
 	}
 
-	public void setAccessIps(String accessIps) {
-		this.accessIps = accessIps;
+	public Config integer(String key, int value) {
+		this.put(key, value);
+		return this;
 	}
 
-	public Boolean getAccessAble() {
-		return accessAble;
+	public String string(String key) {
+		return (String) this.get(key);
 	}
 
-	public void setAccessAble(Boolean accessAble) {
-		this.accessAble = accessAble;
-	}
-
-	public boolean accessAble() {
-		return accessAble != null && accessAble;
-	}
-
-	public Mode getMode() {
-		return mode;
-	}
-
-	public void setMode(Mode mode) {
-		this.mode = mode;
-	}
-
-	public boolean server() {
-		return this.mode != null && this.mode == Mode.server;
+	public Integer integer(String key) {
+		return (Integer) this.get(key);
 	}
 }

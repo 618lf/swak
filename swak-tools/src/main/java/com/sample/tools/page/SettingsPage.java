@@ -2,7 +2,6 @@ package com.sample.tools.page;
 
 import java.util.concurrent.CompletableFuture;
 
-import com.sample.tools.config.Mode;
 import com.sample.tools.config.Settings;
 import com.swak.fx.support.Dialogs;
 import com.swak.fx.support.Display;
@@ -49,10 +48,6 @@ public class SettingsPage extends Window {
 		this.serverVersion.setText(new StringBuilder().append(Settings.me().getVersion().getName()).append(".")
 				.append(Settings.me().getVersion().getVersion()).append(" ")
 				.append(Settings.me().getVersion().getDescribe()).toString());
-		this.accessIps.setText(Settings.me().getConfig().getAccessIps());
-		this.accessAble.setSelected(Settings.me().getConfig().accessAble());
-		this.runtimeMode.setSelected(
-				Settings.me().getConfig().getMode() != null && Settings.me().getConfig().getMode() == Mode.server);
 		this.copyOps.setOnMouseClicked(event -> {
 			ClipboardContent clipboardContent = new ClipboardContent();
 			clipboardContent.putString(this.serverHost.getText());
@@ -69,7 +64,6 @@ public class SettingsPage extends Window {
 		});
 		this.accessAble.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			Notifys.info("提醒", (newValue ? "开启" : "关闭") + "系统远程访问成功！");
-			Settings.me().getConfig().setAccessAble(newValue);
 		});
 		this.runtimeMode.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			Notifys.info("提醒", "系统切换到" + (newValue ? "服务器" : "客户端") + "模式！");
@@ -79,11 +73,8 @@ public class SettingsPage extends Window {
 				Display.getClipboard().setContent(clipboardContent);
 				Notifys.info("提醒", "地址复制成功，请在浏览器中访问");
 			}
-			Display.getEventBus().post(Event.MESS.message(newValue ? Mode.server : Mode.client));
-			Settings.me().getConfig().setMode(newValue ? Mode.server : Mode.client);
 		});
 		this.accessIps.textProperty().addListener((observable, oldValue, newValue) -> {
-			Settings.me().getConfig().setAccessIps(newValue);
 		});
 		super.initialize();
 	}

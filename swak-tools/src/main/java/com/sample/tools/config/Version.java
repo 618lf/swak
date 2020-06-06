@@ -1,13 +1,10 @@
 package com.sample.tools.config;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * 版本
  * 
  * @author lifeng
  */
-@XmlRootElement(name = "version")
 public class Version {
 	private String name;
 	private Double version;

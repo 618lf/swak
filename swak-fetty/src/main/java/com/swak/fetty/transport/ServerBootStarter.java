@@ -9,13 +9,24 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.swak.fetty.transport.eventloop.EventLoopGroup;
+
 /**
  * 服务启动
  * 
  * @author lifeng
  * @date 2020年5月26日 下午1:04:38
  */
-public class ServerBootStarter extends BootStarper {
+public class ServerBootStarter extends AbstractBootStarper {
+
+	EventLoopGroup childGroup;
+
+	public AbstractBootStarper group(EventLoopGroup parent, EventLoopGroup childGroup) {
+		assert parent != null;
+		this.group = parent;
+		this.childGroup = childGroup;
+		return this;
+	}
 
 	/**
 	 * 绑定到此端口

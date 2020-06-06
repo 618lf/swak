@@ -18,19 +18,32 @@
             <Label fx:id="title" layoutX="14.0" layoutY="12.0" styleClass="settings-title" text="开发工具.代码生成" />
          </children>
       </Pane>
-      <Pane prefHeight="152.0" prefWidth="500.0">
+      <Pane prefHeight="186.0" prefWidth="500.0">
          <children>
-            <TextArea fx:id="sqlScript" layoutX="14.0" layoutY="35.0" prefHeight="110.0" prefWidth="469.0" promptText="请复制Sql脚本" styleClass="settings-set--content" />
-            <Label layoutX="14.0" layoutY="14.0" text="请复制Sql脚本" />
+            <Label layoutX="14.0" layoutY="14.0" text="选择数据库类型" />
+            <ChoiceBox fx:id="dbType" layoutX="14.0" layoutY="36.0" prefHeight="23.0" prefWidth="115.0" />
+            <Label layoutX="146.0" layoutY="14.0" text="数据库服务地址" />
+            <TextField fx:id="dbIp" layoutX="145.0" layoutY="36.0" prefHeight="23.0" prefWidth="153.0" promptText="数据库服务地址" />
+            <Label layoutX="312.0" layoutY="14.0" text="数据库服务端口" />
+            <TextField fx:id="dbPort" layoutX="311.0" layoutY="36.0" prefHeight="23.0" prefWidth="171.0" promptText="数据库服务端口" />
+            <Label layoutX="14.0" layoutY="69.0" text="用户名" />
+            <TextField fx:id="userName" layoutX="14.0" layoutY="93.0" prefHeight="23.0" prefWidth="218.0" promptText="用户名" />
+            <Label layoutX="254.0" layoutY="69.0" text="密码" />
+            <TextField fx:id="passWord" layoutX="253.0" layoutY="93.0" prefHeight="23.0" prefWidth="230.0" promptText="密码" />
+            <Label layoutX="14.0" layoutY="126.0" text="选择数据库" />
+            <ChoiceBox fx:id="dbSel" layoutX="14.0" layoutY="156.0" prefHeight="23.0" prefWidth="218.0" />
+            <Label layoutX="254.0" layoutY="126.0" text="选择表" />
+            <ChoiceBox fx:id="tableSel" layoutX="255.0" layoutY="156.0" prefHeight="23.0" prefWidth="238.0" />
          </children>
       </Pane>
-      <Pane prefHeight="165.0" prefWidth="500.0">
+      <Pane prefHeight="148.0" prefWidth="500.0">
          <children>
-            <Label layoutX="14.0" layoutY="14.0" text="请设置包名" />
-            <TextField fx:id="packageName" layoutX="14.0" layoutY="36.0" prefHeight="23.0" prefWidth="469.0" />
-            <Label layoutX="14.0" layoutY="69.0" text="请设置实体名" />
-            <TextField fx:id="entityName" layoutX="14.0" layoutY="90.0" prefHeight="23.0" prefWidth="469.0" />
-            <Button fx:id="buildBtn" layoutX="14.0" layoutY="127.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="60.0" text="创建" />
+            <Label layoutX="14.0" layoutY="3.0" text="请设置包名" />
+            <TextField fx:id="packageName" layoutX="14.0" layoutY="25.0" prefHeight="23.0" prefWidth="469.0" promptText="请设置包名" />
+            <Label layoutX="14.0" layoutY="53.0" text="请设置实体名" />
+            <TextField fx:id="entityName" layoutX="14.0" layoutY="74.0" prefHeight="23.0" prefWidth="469.0" promptText="请设置实体名" />
+            <Button fx:id="buildBtn" layoutX="14.0" layoutY="118.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="60.0" text="创建" />
+            <Button fx:id="refreshBtn" layoutX="86.0" layoutY="118.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="60.0" text="刷新" />
          </children>
       </Pane>
    </children>

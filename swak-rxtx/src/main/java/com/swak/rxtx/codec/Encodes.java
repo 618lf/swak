@@ -2,6 +2,7 @@ package com.swak.rxtx.codec;
 
 import com.swak.codec.Hex;
 import com.swak.rxtx.utils.CRC16Utils;
+import com.swak.utils.StringUtils;
 
 /**
  * 编码
@@ -36,9 +37,9 @@ public interface Encodes {
 	 * @param bytes
 	 * @return
 	 */
-	default String crc16(String data) {
+	default String crc16(String data, boolean reverse) {
 		if (!data.startsWith("SD")) {
-			return crc16(this.decodeHex(data));
+			return crc16(this.decodeHex(data), reverse);
 		}
 		return data;
 	}
@@ -49,8 +50,13 @@ public interface Encodes {
 	 * @param bytes
 	 * @return
 	 */
-	default String crc16(byte[] bytes) {
+	default String crc16(byte[] bytes, boolean reverse) {
 		int CRC = CRC16Utils.CRC16_MODBUS(bytes, 0, bytes.length);
-		return "SD" + Integer.toHexString(CRC).toUpperCase();
+		if (reverse) {
+			int h_crc = (CRC & 0xFF) << 8;
+			int s_crc = CRC >>> 8 & 0xFF;
+			CRC = h_crc + s_crc;
+		}
+		return "SD" + StringUtils.leftPad(Integer.toHexString(CRC).toUpperCase(), 4, "0");
 	}
 }

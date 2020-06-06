@@ -2,6 +2,7 @@ package com.sample.tools.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 
 import com.google.common.io.Files;
+import com.google.common.io.LineProcessor;
+import com.swak.utils.JsonMapper;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -105,7 +108,7 @@ public class Settings {
 	public File getLogsPath() {
 		return new File(basePath, "logs");
 	}
-	
+
 	public File getDataPath() {
 		return new File(basePath, "datas");
 	}
@@ -154,8 +157,24 @@ public class Settings {
 	protected void handleConfig() {
 		try {
 			File version = new File(this.getConfigPath(), "settings");
-			InputStream in = Files.asByteSource(version).openStream();
-			this.config = Xmls.fromXml(in, Config.class);
+			String json = Files.readLines(version, StandardCharsets.UTF_8, new LineProcessor<String>() {
+				StringBuilder json = new StringBuilder();
+
+				@Override
+				public boolean processLine(String line) throws IOException {
+					json.append(line);
+					return false;
+				}
+
+				@Override
+				public String getResult() {
+					return json.toString();
+				}
+			});
+			this.config = JsonMapper.fromJson(json, Config.class);
+			if (this.config == null) {
+				this.config = new Config();
+			}
 		} catch (Exception e) {
 			this.config = new Config();
 		}
@@ -249,7 +268,7 @@ public class Settings {
 	public void storeConfig() {
 		try {
 			File version = new File(this.getConfigPath(), "settings");
-			String xml = Xmls.toXml(this.config);
+			String xml = JsonMapper.toJson(this.config);
 			Files.write(xml.getBytes(StandardCharsets.UTF_8), version);
 		} catch (Exception e) {
 		}
