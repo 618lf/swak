@@ -6,8 +6,12 @@ import java.util.concurrent.TimeUnit;
 
 import com.sample.tools.config.Settings;
 import com.sample.tools.plugin.plugins.codegen.gen.DatabaseOperater;
+import com.sample.tools.plugin.plugins.codegen.gen.GenUtils;
+import com.sample.tools.plugin.plugins.codegen.gen.Scheme;
+import com.sample.tools.plugin.plugins.codegen.gen.Table;
 import com.swak.fx.support.Display;
 import com.swak.fx.support.FXMLView;
+import com.swak.fx.support.Notifys;
 import com.swak.fx.support.Window;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.threads.WorkerContext;
@@ -72,6 +76,7 @@ public class Page extends Window {
 		String dbPort = Settings.me().getConfig().string("codegen.port");
 		String userName = Settings.me().getConfig().string("codegen.un");
 		String passWord = Settings.me().getConfig().string("codegen.pw");
+		String packageName = Settings.me().getConfig().string("codegen.pkn");
 		if (StringUtils.isNotBlank(db)) {
 			int i = 0;
 			for (String _db : dbs) {
@@ -97,6 +102,9 @@ public class Page extends Window {
 		if (StringUtils.isNotBlank(passWord)) {
 			this.passWord.setText(passWord);
 		}
+		if (StringUtils.isNotBlank(packageName)) {
+			this.packageName.setText(packageName);
+		}
 		this.dbType.getSelectionModel().selectedItemProperty().addListener((ob, o, n) -> {
 			Settings.me().getConfig().string("codegen.db", n);
 			this.tryOpenDb();
@@ -121,11 +129,16 @@ public class Page extends Window {
 			Settings.me().getConfig().string("codegen.udb", n);
 			this.loadTables();
 		});
-		this.tableSel.selectionModelProperty().addListener((ob, o, n) -> {
-			
+		this.tableSel.getSelectionModel().selectedItemProperty().addListener((ob, o, n) -> {
+			String entityName = StringUtils.contains(n, "_") ? StringUtils.substringAfter(n, "_") : n;
+			entityName = StringUtils.upperCaseFirstOne(StringUtils.convertColumn2Property(entityName));
+			this.entityName.setText(entityName);
+		});
+		this.packageName.textProperty().addListener((ob, o, n) -> {
+			Settings.me().getConfig().string("codegen.pkn", n);
 		});
 		this.buildBtn.setOnAction((actionEvent) -> {
-
+			this.genCode();
 		});
 		this.refreshBtn.setOnAction((actionEvent) -> {
 			this.tryOpenDb();
@@ -197,6 +210,28 @@ public class Page extends Window {
 		});
 	}
 
+	private void genCode() {
+		String udb = this.dbSel.getSelectionModel().getSelectedItem();
+		String utable = this.tableSel.getSelectionModel().getSelectedItem();
+		String packageName = this.packageName.getText();
+		String entityName = this.entityName.getText();
+		if (!(StringUtils.isNotBlank(udb) && StringUtils.isNotBlank(utable) && StringUtils.isNotBlank(packageName)
+				&& StringUtils.isNotBlank(entityName))) {
+			Notifys.error("操作", "请填写正确的信息！");
+			return;
+		}
+		this.context.execute(() -> {
+			if (databaseOperater.isActive()) {
+				Table table = databaseOperater.getTable(udb, utable);
+				Scheme scheme = new Scheme();
+				scheme.setTable(table);
+				scheme.setPackageName(packageName);
+				scheme.setFunctionName(entityName);
+				GenUtils.genCode(scheme);
+			}
+		});
+	}
+
 	/**
 	 * 等待页面关闭
 	 */
@@ -215,6 +250,7 @@ public class Page extends Window {
 	@Override
 	public void onClose(MouseEvent evt) {
 		this.waitClose().thenAcceptAsync((v) -> {
+			Settings.me().storeConfig();
 		}).thenAccept((v) -> {
 			Display.runUI(() -> {
 				super.onClose(evt);

@@ -34,6 +34,15 @@ public interface DatabaseOperater {
 	List<String> getTables(String db);
 
 	/**
+	 * 获得指定的表
+	 * 
+	 * @param db
+	 * @param table
+	 * @return
+	 */
+	Table getTable(String db, String table);
+
+	/**
 	 * 打开链接
 	 */
 	void open();

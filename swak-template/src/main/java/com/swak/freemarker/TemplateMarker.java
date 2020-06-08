@@ -16,9 +16,11 @@ import freemarker.template.Template;
  */
 public class TemplateMarker {
 
+	private static TemplateMarker ME = null;
 	private Configuration configuration;
 
 	public TemplateMarker(Configuration configuration) {
+		ME = this;
 		this.configuration = configuration;
 	}
 
@@ -54,5 +56,15 @@ public class TemplateMarker {
 			throw new BaseRuntimeException("生成数据错误", localIOException);
 		}
 		return out.toString();
+	}
+
+	/**
+	 * 返回模板
+	 * 
+	 * @return
+	 */
+	public static TemplateMarker me() {
+		assert ME != null;
+		return ME;
 	}
 }
