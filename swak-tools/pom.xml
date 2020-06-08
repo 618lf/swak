@@ -67,6 +67,27 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<!-- 定义打包的结构 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>${maven-assembly-plugin}</version>
+				<configuration>
+					<finalName>shenda.wear</finalName>
+					<descriptors>
+						<descriptor>src/main/assembly/make-w64.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>

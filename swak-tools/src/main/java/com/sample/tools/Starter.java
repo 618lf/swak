@@ -22,7 +22,7 @@ import javafx.stage.Stage;
  * @author lifeng
  * @date 2020年6月2日 下午3:15:57
  */
-public class starter extends AbstractApplication {
+public class Starter extends AbstractApplication {
 
 	/**
 	 * 执行监听关闭
@@ -74,6 +74,6 @@ public class starter extends AbstractApplication {
 	public static void main(String[] args) {
 		Settings.intSettings();
 		Platform.setImplicitExit(false);
-		launch(starter.class, MainPage.class, args);
+		launch(Starter.class, MainPage.class, args);
 	}
 }
