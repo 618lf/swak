@@ -56,7 +56,7 @@
 					<target>${jdk.version}</target>
 					<archive>
 						<manifest>
-							<mainClass>com.shenda.NoneModulerUpgrader</mainClass>
+							<mainClass>com.sample.tools.Starter</mainClass>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib</classpathPrefix>
 						</manifest>
@@ -73,7 +73,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>${maven-assembly-plugin}</version>
 				<configuration>
-					<finalName>shenda.wear</finalName>
+					<finalName>swak.tools</finalName>
 					<descriptors>
 						<descriptor>src/main/assembly/make-w64.xml</descriptor>
 					</descriptors>
