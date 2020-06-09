@@ -2,7 +2,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.swak</groupId>
+	<groupId>com.github.618lf</groupId>
 	<artifactId>swak</artifactId>
 	<version>1.0.0_final</version>
 	<packaging>pom</packaging>
@@ -119,137 +119,114 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-fx</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-http</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-kotlin</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-actuator</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-flux</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-jdbc</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-redis</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-quartz</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-excel</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-motan</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-mq</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-rocketmq</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-wechat</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-vertx</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-starter</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-template</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-metrics</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-mongodb</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-rxtx</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
 			<!-- 测试 -->
 			<dependency>
-				<groupId>com.swak</groupId>
+				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-test</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.swak</groupId>
-				<artifactId>swak-sample</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.swak</groupId>
-				<artifactId>swak-sample-api</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<distributionManagement>
-		<repository>
-			<id>nexus-releases</id>
-			<name>Team Nesus Release Repository</name>
-			<url>http://192.168.0.222:7001/nexus/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>nexus-snapshots</id>
-			<name>Team Nesus Snapshot Repository</name>
-			<url>http://192.168.0.222:7001/nexus/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<!-- 插件配置 -->
 	<build>
@@ -342,4 +319,39 @@
 		</resources>
 	</build>
 
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:git://github.com/618lf/swak.git</connection>
+		<developerConnection>scm:git:ssh://github.com:618lf/swak.git</developerConnection>
+		<url>https://github.com/618lf/swak/tree/master</url>
+	</scm>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<name>Snapshot Repository</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<name>Release Repository</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<developers>
+		<developer>
+			<name>Feng Li</name>
+			<email>618lf@163.com</email>
+			<organization>tmt</organization>
+			<timezone>+8</timezone>
+		</developer>
+	</developers>
 </project>

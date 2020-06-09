@@ -2,14 +2,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.swak</groupId>
+		<groupId>com.github.618lf</groupId>
 		<artifactId>swak</artifactId>
 		<version>1.0.0_final</version>
 	</parent>
 	<artifactId>swak-motan</artifactId>
 	<dependencies>
 	<dependency>
-			<groupId>com.swak</groupId>
+			<groupId>com.github.618lf</groupId>
 			<artifactId>swak-core</artifactId>
 		</dependency>
 		<dependency>

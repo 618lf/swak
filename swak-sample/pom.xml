@@ -3,26 +3,26 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.swak</groupId>
+        <groupId>com.github.618lf</groupId>
         <artifactId>swak</artifactId>
         <version>1.0.0_final</version>
     </parent>
     <artifactId>swak-sample</artifactId>
     <dependencies>
         <dependency>
-            <groupId>com.swak</groupId>
+            <groupId>com.github.618lf</groupId>
             <artifactId>swak-vertx</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.swak</groupId>
+            <groupId>com.github.618lf</groupId>
             <artifactId>swak-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.swak</groupId>
+            <groupId>com.github.618lf</groupId>
             <artifactId>swak-motan</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.swak</groupId>
+            <groupId>com.github.618lf</groupId>
             <artifactId>swak-jdbc</artifactId>
             <exclusions>
                 <exclusion>
@@ -32,20 +32,20 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.swak</groupId>
+            <groupId>com.github.618lf</groupId>
             <artifactId>swak-http</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.swak</groupId>
+            <groupId>com.github.618lf</groupId>
             <artifactId>swak-redis</artifactId>
         </dependency>
         <!-- -->
         <dependency>
-            <groupId>com.swak</groupId>
+            <groupId>com.github.618lf</groupId>
             <artifactId>swak-metrics</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.swak</groupId>
+            <groupId>com.github.618lf</groupId>
             <artifactId>swak-mq</artifactId>
         </dependency>
         <dependency>
@@ -54,7 +54,7 @@
             <version>${vertx.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.swak</groupId>
+            <groupId>com.github.618lf</groupId>
             <artifactId>swak-template</artifactId>
         </dependency>
         <dependency>
@@ -64,7 +64,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.swak</groupId>
+            <groupId>com.github.618lf</groupId>
             <artifactId>swak-test</artifactId>
             <scope>test</scope>
         </dependency>
