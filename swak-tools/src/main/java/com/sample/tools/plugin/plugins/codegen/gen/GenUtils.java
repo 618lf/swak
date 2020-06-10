@@ -254,6 +254,11 @@ public class GenUtils {
 
 	// 生成模型数据
 	private static Map<String, Object> getDataModel(Scheme scheme) {
+		// 处理列
+		List<TableColumn> columns = scheme.getTable().getColumns();
+		for (TableColumn column : columns) {
+			prepareColumn(column);
+		}
 		Map<String, Object> model = Maps.newHashMap();
 		model.put("packageName", scheme.getPackageName());
 		model.put("functionName", StringUtils.lowerCaseFirstOne(scheme.getFunctionName()));
@@ -270,12 +275,6 @@ public class GenUtils {
 
 		// 日期
 		model.put("date", DateUtils.getTodayStr());
-
-		// 处理列
-		List<TableColumn> columns = scheme.getTable().getColumns();
-		for (TableColumn column : columns) {
-			prepareColumn(column);
-		}
 		return model;
 	}
 }
