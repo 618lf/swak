@@ -22,8 +22,8 @@ public class RedisTest {
 	 */
 	@Before
 	public void init() {
-		RedisURI node = RedisURI.create("127.0.0.1", Integer.parseInt("6379"));
-		node.setPassword("12345678....");
+		RedisURI node = RedisURI.create("192.168.68.129", Integer.parseInt("6379"));
+		// node.setPassword("12345678....");
 		RedisClient redisClient = RedisClient.create(DefaultClientResources.create(), node);
 		RedisClientDecorator decorator = new RedisClientDecorator(redisClient);
 		RedisConnectionPoolFactory cachePoolFactory = new RedisConnectionPoolFactory(decorator);
