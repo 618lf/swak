@@ -8,7 +8,6 @@
 	<modules>
 		<module>swak-core</module>
 		<module>swak-flux</module>
-		<module>swak-kotlin</module>
 		<module>swak-jdbc</module>
 		<module>swak-redis</module>
 		<module>swak-http</module>
@@ -95,11 +94,6 @@
 		<project.version>${project.version}</project.version>
 	</properties>
 	<repositories>
-		<repository>
-			<id>oschina-repos</id>
-			<name>Oschina Releases</name>
-			<url>http://maven.oschina.net/content/groups/public</url>
-		</repository>
 		<repository>
 			<id>aliyun-repos</id>
 			<name>Nexus aliyun</name>
@@ -245,39 +239,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.jetbrains.kotlin</groupId>
-				<artifactId>kotlin-maven-plugin</artifactId>
-				<version>${kotlin.version}</version>
-				<executions>
-					<execution>
-						<id>compile</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<configuration>
-							<jvmTarget>${jdk.version}</jvmTarget>
-							<sourceDirs>
-								<sourceDir>${project.basedir}/src/main/java</sourceDir>
-							</sourceDirs>
-						</configuration>
-					</execution>
-					<execution>
-						<id>test-compile</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>test-compile</goal>
-						</goals>
-						<configuration>
-							<jvmTarget>${jdk.version}</jvmTarget>
-							<sourceDirs>
-								<sourceDir>${project.basedir}/src/test/java</sourceDir>
-							</sourceDirs>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok-maven-plugin</artifactId>
 				<version>1.18.10.0</version>
@@ -298,10 +259,6 @@
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
 					<encoding>${project.build.sourceEncoding}</encoding>
-					<compilerArgs>
-						<arg>-XDignore.symbol.file</arg>
-					</compilerArgs>
-					<compilerArgument>-proc:none</compilerArgument>
 				</configuration>
 			</plugin>
 			<plugin>

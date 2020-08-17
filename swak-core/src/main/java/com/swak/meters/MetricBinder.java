@@ -1,7 +1,5 @@
 package com.swak.meters;
 
-import com.swak.meters.MetricsFactory;
-
 /**
  * 绑定到指标收集器
  * 

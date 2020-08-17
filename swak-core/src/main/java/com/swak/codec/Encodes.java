@@ -10,10 +10,6 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-import com.swak.codec.Base64;
-import com.swak.codec.DecoderException;
-import com.swak.codec.Hex;
-
 /**
  * 封装各种格式的编码解码工具类.
  * 1.Commons-Codec的 hex/base64 编码
