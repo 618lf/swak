@@ -16,7 +16,7 @@ import com.swak.fx.support.Event;
 import com.swak.hello.ClosePage;
 import com.swak.hello.MainPage;
 import com.swak.hello.SplashPage;
-import com.tmt.AppRunner;
+//import com.tmt.AppRunner;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -38,7 +38,7 @@ public class MainApplication extends AbstractApplication {
 	@Override
 	protected CompletableFuture<Void> start(String[] savedArgs) {
 		return CompletableFuture.runAsync(() -> {
-			this.applicationContext = Application.run(AppRunner.class, savedArgs);
+			// this.applicationContext = Application.run(AppRunner.class, savedArgs);
 		});
 	}
 
