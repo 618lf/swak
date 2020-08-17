@@ -115,13 +115,14 @@ public class MainVerticle extends AbstractVerticle {
 	}
 
 	// 发布成Tcp 服务
+	@SuppressWarnings("deprecation")
 	private List<Future<String>> startService(ServiceBean service) {
 
 		// 发布服务标示
 		List<Future<String>> futures = Lists.newArrayList();
 
 		// 以worker 的方式发布
-		DeploymentOptions options = new DeploymentOptions().setWorker(true);
+		DeploymentOptions options = new DeploymentOptions().setWorker(true).setMultiThreaded(true);
 
 		// 设置了运行的线程池(如果没有配置则，默认只有一个)
 		String usePool = service.getUse_pool();
