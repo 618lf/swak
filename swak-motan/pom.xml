@@ -94,4 +94,23 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin}</version>
+				<executions>
+					<execution>
+						<id>default-compile</id>
+						<configuration>
+							<compilerArgument>-proc:none</compilerArgument>
+							<source>${jdk.version}</source>
+							<target>${jdk.version}</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
