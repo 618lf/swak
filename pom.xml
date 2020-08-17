@@ -107,6 +107,7 @@
 		<maven-source-plugin>3.2.0</maven-source-plugin>
 		<maven-assembly-plugin>3.2.0</maven-assembly-plugin>
 		<maven-jar-plugin>3.2.0</maven-jar-plugin>
+		<maven-javadoc>3.2.0</maven-javadoc>
 		<build-helper-maven-plugin>3.1.0</build-helper-maven-plugin>
 	</properties>
 	<repositories>
@@ -283,6 +284,27 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven-javadoc}</version>
+				<configuration>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<charset>${project.build.sourceEncoding}</charset>
+					<docencoding>${project.build.sourceEncoding}</docencoding>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-gpg-plugin</artifactId> 
+				<version>1.6</version> <executions> <execution> <id>sign-artifacts</id> <phase>verify</phase> 
+				<goals> <goal>sign</goal> </goals> </execution> </executions> </plugin> -->
 		</plugins>
 		<resources>
 			<resource>
