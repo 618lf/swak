@@ -1,0 +1,8 @@
+# spring boot auto load Initializers and Application Listeners 
+# see all spring.factories
+
+# Auto Configuration, SWAK only load Auto Configuration 
+com.swak.ApplicationBoot=\
+org.apache.dubbo.spring.boot.autoconfigure.DubboAutoConfiguration,\
+org.apache.dubbo.spring.boot.autoconfigure.DubboRelaxedBindingAutoConfiguration,\
+org.apache.dubbo.spring.boot.autoconfigure.DubboRelaxedBinding2AutoConfiguration
