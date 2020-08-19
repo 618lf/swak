@@ -4,9 +4,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
 
-import com.swak.cache.SafeEncoder;
-import com.swak.cache.redis.operations.AsyncOperations;
-import com.swak.cache.redis.operations.SyncOperations;
+import com.swak.SafeEncoder;
 import com.swak.redis.RedisTest;
 
 /**
@@ -20,11 +18,8 @@ public class ClientTest extends RedisTest {
 	@Test
 	public void test() throws InterruptedException {
 
-		// 同步处理
-		SyncOperations.set("1", SafeEncoder.encode("1"));
-
-		// 异步处理
-		AsyncOperations.set("1", SafeEncoder.encode("1"));
+		redisService.sync().set("1", SafeEncoder.encode("111"));
+		System.out.println(SafeEncoder.encode(redisService.sync().get("1")));
 
 		// 等待结束
 		new CountDownLatch(1).await();

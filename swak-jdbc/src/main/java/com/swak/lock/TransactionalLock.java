@@ -72,4 +72,14 @@ public class TransactionalLock implements Lock {
 	public boolean unlock() {
 		return true;
 	}
+
+	@Override
+	public boolean tryLock() {
+		return false;
+	}
+
+	@Override
+	public boolean lock() {
+		return false;
+	}
 }

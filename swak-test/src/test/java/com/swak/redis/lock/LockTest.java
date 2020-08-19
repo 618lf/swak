@@ -9,7 +9,6 @@ import com.swak.lock.AsyncLock;
 import com.swak.lock.NoLock;
 import com.swak.lock.OnceInvokeLock;
 import com.swak.lock.OrderInvokeLock;
-import com.swak.lock.redis.StrictRedisLock;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.threads.WorkerContext;
 import com.swak.redis.RedisTest;
