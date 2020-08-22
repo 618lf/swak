@@ -15,7 +15,7 @@ import com.swak.meters.PoolMetrics;
  * @date: 2020/3/29 12:30
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public final class ScheduledContext extends ScheduledThreadPoolExecutor implements Context {
+public class ScheduledContext extends ScheduledThreadPoolExecutor implements Context {
 
     private volatile PoolMetrics metrics;
     private String name;

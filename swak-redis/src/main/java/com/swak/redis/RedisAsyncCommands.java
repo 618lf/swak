@@ -3,12 +3,6 @@ package com.swak.redis;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
-import io.lettuce.core.MapScanCursor;
-import io.lettuce.core.ScanArgs;
-import io.lettuce.core.ScanCursor;
-import io.lettuce.core.ScriptOutputType;
-import io.lettuce.core.ValueScanCursor;
-
 /**
  * 异步操作命令
  * 
@@ -56,6 +50,14 @@ public interface RedisAsyncCommands<K, V> {
 	 * @return
 	 */
 	CompletionStage<String> set(String key, byte[] value, int expire);
+
+	/**
+	 * set
+	 * 
+	 * @param key
+	 * @return
+	 */
+	CompletionStage<String> set(String key, byte[] value, Expiration expiration, SetOption setOption);
 
 	/**
 	 * del
@@ -168,14 +170,14 @@ public interface RedisAsyncCommands<K, V> {
 	 */
 	CompletionStage<String> hMSet(String key, Map<byte[], byte[]> map);
 
-	/**
-	 * hscan
-	 * 
-	 * @param key
-	 * @param value
-	 * @return
-	 */
-	CompletionStage<MapScanCursor<byte[], byte[]>> hscan(String key, ScanCursor cursor, ScanArgs scanArgs);
+//	/**
+//	 * hscan
+//	 * 
+//	 * @param key
+//	 * @param value
+//	 * @return
+//	 */
+//	CompletionStage<Cursor<Map.Entry<byte[], byte[]>>> hscan(String key, ScanOptions options);
 
 	/**
 	 * sAdd
@@ -213,14 +215,14 @@ public interface RedisAsyncCommands<K, V> {
 	 */
 	CompletionStage<Long> sLen(String key);
 
-	/**
-	 * sscan
-	 * 
-	 * @param key
-	 * @param value
-	 * @return
-	 */
-	CompletionStage<ValueScanCursor<byte[]>> sscan(String key, ScanCursor cursor, ScanArgs scanArgs);
+//	/**
+//	 * sscan
+//	 * 
+//	 * @param key
+//	 * @param value
+//	 * @return
+//	 */
+//	CompletionStage<Cursor<byte[]>> sscan(String key, ScanOptions scanArgs);
 
 	/**
 	 * loadScript
@@ -236,7 +238,7 @@ public interface RedisAsyncCommands<K, V> {
 	 * @param key
 	 * @return
 	 */
-	<T> CompletionStage<T> runScript(String script, ScriptOutputType type, byte[][] values);
+	<T> CompletionStage<T> runScript(String script, ReturnType type, byte[][] values, byte[][] params);
 
 	/**
 	 * runScript -- 脚本已经通过 loadScript 安装好
@@ -244,5 +246,5 @@ public interface RedisAsyncCommands<K, V> {
 	 * @param key
 	 * @return
 	 */
-	<T> CompletionStage<T> runShaScript(String script, ScriptOutputType type, byte[][] values);
+	<T> CompletionStage<T> runShaScript(String script, ReturnType type, byte[][] values, byte[][] params);
 }

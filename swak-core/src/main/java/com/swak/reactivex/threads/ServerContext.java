@@ -19,7 +19,7 @@ import com.swak.meters.PoolMetrics;
  * @date: 2020/3/29 12:31
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public final class ServerContext extends ThreadPoolExecutor implements Context {
+public class ServerContext extends ThreadPoolExecutor implements Context {
 
     /**
      * 1 minutes

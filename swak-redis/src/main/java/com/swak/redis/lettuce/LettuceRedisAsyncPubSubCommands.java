@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.swak.SafeEncoder;
 import com.swak.redis.MessageListener;
 import com.swak.redis.RedisAsyncPubSubCommands;
+import com.swak.redis.RedisPubSubFutrue;
 
 import io.lettuce.core.pubsub.RedisPubSubAdapter;
 import io.lettuce.core.pubsub.api.async.RedisPubSubAsyncCommands;
@@ -128,5 +129,25 @@ public class LettuceRedisAsyncPubSubCommands implements RedisAsyncPubSubCommands
 	@Override
 	public CompletionStage<Void> unSubscribe(byte[]... channels) {
 		return this.connect.unsubscribe(channels);
+	}
+
+	/**
+	 * 订阅，等待消息到达
+	 */
+	@Override
+	public RedisPubSubFutrue subscribeOnce(byte[] onceChannel) {
+		LettuceRedisPubSubFuture futrue = new LettuceRedisPubSubFuture(SafeEncoder.encode(onceChannel));
+		this.connect.getStatefulConnection().addListener(futrue);
+		this.connect.subscribe(onceChannel);
+		return futrue;
+	}
+
+	/**
+	 * 删除订阅
+	 */
+	@Override
+	public void unSubscribe(RedisPubSubFutrue future) {
+		LettuceRedisPubSubFuture _futrue = (LettuceRedisPubSubFuture) future;
+		this.connect.getStatefulConnection().removeListener(_futrue);
 	}
 }

@@ -3,10 +3,14 @@ package com.swak.redis.lettuce;
 import java.util.Map;
 
 import com.swak.SafeEncoder;
+import com.swak.redis.Expiration;
 import com.swak.redis.RedisCommands;
+import com.swak.redis.ReturnType;
 import com.swak.redis.Scripts;
+import com.swak.redis.SetOption;
 
 import io.lettuce.core.ScriptOutputType;
+import io.lettuce.core.SetArgs;
 import io.lettuce.core.cluster.api.sync.RedisClusterCommands;
 
 /**
@@ -39,7 +43,7 @@ public class LettuceRedisCommands implements RedisCommands<byte[], byte[]> {
 	/**
 	 * get
 	 * 
-	 * @param key	
+	 * @param key
 	 * @return
 	 */
 	public byte[] get(String key) {
@@ -65,8 +69,32 @@ public class LettuceRedisCommands implements RedisCommands<byte[], byte[]> {
 	public String set(String key, byte[] value, int expire) {
 		String script = Scripts.PUT_LUA;
 		byte[][] values = new byte[][] { SafeEncoder.encode(key), value, SafeEncoder.encode(String.valueOf(expire)) };
-		this.runScript(script, ScriptOutputType.INTEGER, values);
+		this.runScript(script, ReturnType.INTEGER, values, null);
 		return key;
+	}
+
+	/**
+	 * 高级设置，可以代替其他的setNx等
+	 */
+	@Override
+	public String set(String key, byte[] value, Expiration expiration, SetOption setOption) {
+		SetArgs setArgs = new SetArgs();
+		if (setOption != null) {
+			switch (setOption) {
+			case SET_IF_ABSENT:
+				setArgs.nx();
+				break;
+			case SET_IF_PRESENT:
+				setArgs.xx();
+				break;
+			default:
+				break;
+			}
+		}
+		if (expiration != null) {
+			setArgs.px(expiration.getExpirationTimeInMilliseconds());
+		}
+		return this.connect.set(SafeEncoder.encode(key), value, setArgs);
 	}
 
 	/**
@@ -294,6 +322,16 @@ public class LettuceRedisCommands implements RedisCommands<byte[], byte[]> {
 	public Long sLen(String key) {
 		return connect.scard(SafeEncoder.encode(key));
 	}
+	
+	/**
+	 * loadScript
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public String loadScript(String script) {
+		return connect.scriptLoad(SafeEncoder.encode(script));
+	}
 
 	/**
 	 * runScript
@@ -301,7 +339,19 @@ public class LettuceRedisCommands implements RedisCommands<byte[], byte[]> {
 	 * @param key
 	 * @return
 	 */
-	public <T> T runScript(String script, ScriptOutputType type, byte[][] values) {
-		return connect.eval(script, type, values, values[0]);
+	public <T> T runScript(String script, ReturnType type, byte[][] values, byte[][] params) {
+		ScriptOutputType outputType = ScriptOutputType.valueOf(type.name());
+		return connect.eval(script, outputType, values, params);
+	}
+	
+	/**
+	 * runScript -- 脚本已经通过 loadScript 安装好
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public <T> T runShaScript(String script, ReturnType type, byte[][] values, byte[][] params) {
+		ScriptOutputType outputType = ScriptOutputType.valueOf(type.name());
+		return connect.evalsha(script, outputType, values, params);
 	}
 }

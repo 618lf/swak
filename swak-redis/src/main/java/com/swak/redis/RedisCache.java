@@ -11,8 +11,6 @@ import com.swak.exception.SerializeException;
 import com.swak.serializer.SerializationUtils;
 import com.swak.utils.Lists;
 
-import io.lettuce.core.ScriptOutputType;
-
 /**
  * Redis 需要在配置文件中配置,以后在添加详细的参数
  * 
@@ -142,7 +140,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 		String script = Scripts.GET_LUA;
 		byte[][] values = new byte[][] { SafeEncoder.encode(this.getKeyName(key)),
 				SafeEncoder.encode(String.valueOf(this.getLifeTime())) };
-		return cacheManager.getRedisService().sync().runScript(script, ScriptOutputType.VALUE, values);
+		return cacheManager.getRedisService().sync().runScript(script, ReturnType.VALUE, values, null);
 	}
 
 	/**
@@ -194,7 +192,7 @@ public class RedisCache<T> extends NameableCache implements Cache<T> {
 		String script = Scripts.EXISTS_LUA;
 		byte[][] values = new byte[][] { SafeEncoder.encode(this.getKeyName(key)),
 				SafeEncoder.encode(String.valueOf(this.getLifeTime())) };
-		Long count = cacheManager.getRedisService().sync().runScript(script, ScriptOutputType.INTEGER, values);
+		Long count = cacheManager.getRedisService().sync().runScript(script, ReturnType.INTEGER, values, null);
 		return count != null && count > 0;
 	}
 

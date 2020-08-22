@@ -64,22 +64,4 @@ public class TransactionalLock implements Lock {
 	public String name() {
 		return name;
 	}
-
-	/**
-	 * 方法执行完（正常结束，或异常结束）自动的释放锁
-	 */
-	@Override
-	public boolean unlock() {
-		return true;
-	}
-
-	@Override
-	public boolean tryLock() {
-		return false;
-	}
-
-	@Override
-	public boolean lock() {
-		return false;
-	}
 }

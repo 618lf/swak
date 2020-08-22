@@ -2,8 +2,6 @@ package com.swak.redis;
 
 import java.util.Map;
 
-import io.lettuce.core.ScriptOutputType;
-
 /**
  * 同步操作命令
  * 
@@ -43,6 +41,14 @@ public interface RedisCommands<K, V> {
 	 * @return
 	 */
 	String set(String key, byte[] value, int expire);
+
+	/**
+	 * set
+	 * 
+	 * @param key
+	 * @return
+	 */
+	String set(String key, byte[] value, Expiration expiration, SetOption setOption);
 
 	/**
 	 * del
@@ -228,10 +234,26 @@ public interface RedisCommands<K, V> {
 	Long sLen(String key);
 
 	/**
+	 * loadScript
+	 * 
+	 * @param key
+	 * @return
+	 */
+	String loadScript(String script);
+
+	/**
 	 * runScript
 	 * 
 	 * @param key
 	 * @return
 	 */
-	<T> T runScript(String script, ScriptOutputType type, byte[][] values);
+	<T> T runScript(String script, ReturnType type, byte[][] values, byte[][] params);
+
+	/**
+	 * runScript -- 脚本已经通过 loadScript 安装好
+	 * 
+	 * @param key
+	 * @return
+	 */
+	<T> T runShaScript(String script, ReturnType type, byte[][] values, byte[][] params);
 }

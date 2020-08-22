@@ -13,21 +13,6 @@ public class NoLock implements Lock {
 		return "NO-LOCK";
 	}
 
-	@Override
-	public boolean tryLock() {
-		return true;
-	}
-
-	@Override
-	public boolean lock() {
-		return true;
-	}
-
-	@Override
-	public boolean unlock() {
-		return true;
-	}
-
 	/**
 	 * 创建一个无锁
 	 *

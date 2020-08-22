@@ -13,8 +13,6 @@ import com.swak.exception.SerializeException;
 import com.swak.serializer.SerializationUtils;
 import com.swak.utils.Lists;
 
-import io.lettuce.core.ScriptOutputType;
-
 public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 
 	private RedisCacheManager cacheManager;
@@ -187,7 +185,7 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 		String script = Scripts.GET_LUA;
 		byte[][] values = new byte[][] { SafeEncoder.encode(this.getKeyName(key)),
 				SafeEncoder.encode(String.valueOf(this.getLifeTime())) };
-		return cacheManager.getRedisService().async().runScript(script, ScriptOutputType.VALUE, values);
+		return cacheManager.getRedisService().async().runScript(script, ReturnType.VALUE, values, null);
 	}
 
 	/**
@@ -238,7 +236,7 @@ public class AsyncRedisCache<T> extends NameableCache implements AsyncCache<T> {
 		String script = Scripts.EXISTS_LUA;
 		byte[][] values = new byte[][] { SafeEncoder.encode(this.getKeyName(key)),
 				SafeEncoder.encode(String.valueOf(this.getLifeTime())) };
-		return cacheManager.getRedisService().async().runScript(script, ScriptOutputType.INTEGER, values);
+		return cacheManager.getRedisService().async().runScript(script, ReturnType.INTEGER, values, null);
 	}
 
 	/**

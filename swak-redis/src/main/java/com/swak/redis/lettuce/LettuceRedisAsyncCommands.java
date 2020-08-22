@@ -4,14 +4,14 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
 import com.swak.SafeEncoder;
+import com.swak.redis.Expiration;
 import com.swak.redis.RedisAsyncCommands;
+import com.swak.redis.ReturnType;
 import com.swak.redis.Scripts;
+import com.swak.redis.SetOption;
 
-import io.lettuce.core.MapScanCursor;
-import io.lettuce.core.ScanArgs;
-import io.lettuce.core.ScanCursor;
 import io.lettuce.core.ScriptOutputType;
-import io.lettuce.core.ValueScanCursor;
+import io.lettuce.core.SetArgs;
 import io.lettuce.core.cluster.api.async.RedisClusterAsyncCommands;
 
 /**
@@ -77,7 +77,31 @@ public class LettuceRedisAsyncCommands implements RedisAsyncCommands<byte[], byt
 	public CompletionStage<String> set(String key, byte[] value, int expire) {
 		String script = Scripts.PUT_LUA;
 		byte[][] values = new byte[][] { SafeEncoder.encode(key), value, SafeEncoder.encode(String.valueOf(expire)) };
-		return this.runScript(script, ScriptOutputType.INTEGER, values).thenApply(s -> key);
+		return this.runScript(script, ReturnType.INTEGER, values, null).thenApply(s -> key);
+	}
+
+	/**
+	 * 高级设置，可以代替其他的setNx等
+	 */
+	@Override
+	public CompletionStage<String> set(String key, byte[] value, Expiration expiration, SetOption setOption) {
+		SetArgs setArgs = new SetArgs();
+		if (setOption != null) {
+			switch (setOption) {
+			case SET_IF_ABSENT:
+				setArgs.nx();
+				break;
+			case SET_IF_PRESENT:
+				setArgs.xx();
+				break;
+			default:
+				break;
+			}
+		}
+		if (expiration != null) {
+			setArgs.px(expiration.getExpirationTimeInMilliseconds());
+		}
+		return this.connect.set(SafeEncoder.encode(key), value, setArgs);
 	}
 
 	/**
@@ -217,16 +241,17 @@ public class LettuceRedisAsyncCommands implements RedisAsyncCommands<byte[], byt
 		return connect.hmset(SafeEncoder.encode(key), map);
 	}
 
-	/**
-	 * hscan
-	 * 
-	 * @param key
-	 * @param value
-	 * @return
-	 */
-	public CompletionStage<MapScanCursor<byte[], byte[]>> hscan(String key, ScanCursor cursor, ScanArgs scanArgs) {
-		return connect.hscan(SafeEncoder.encode(key), cursor, scanArgs);
-	}
+//	/**
+//	 * hscan
+//	 * 
+//	 * @param key
+//	 * @param value
+//	 * @return
+//	 */
+//	public CompletionStage<MapScanCursor<byte[], byte[]>> hscan(String key, ScanOptions scanArgs) {
+//		connect.hscan(key, null, ScanArgs.Builder.limit(scanArgs.getCount()).match(scanArgs.getPattern()));
+//		return connect.hscan(SafeEncoder.encode(key), cursor, scanArgs);
+//	}
 
 	/**
 	 * sAdd
@@ -272,16 +297,16 @@ public class LettuceRedisAsyncCommands implements RedisAsyncCommands<byte[], byt
 		return connect.scard(SafeEncoder.encode(key));
 	}
 
-	/**
-	 * sscan
-	 * 
-	 * @param key
-	 * @param value
-	 * @return
-	 */
-	public CompletionStage<ValueScanCursor<byte[]>> sscan(String key, ScanCursor cursor, ScanArgs scanArgs) {
-		return connect.sscan(SafeEncoder.encode(key), cursor, scanArgs);
-	}
+//	/**
+//	 * sscan
+//	 * 
+//	 * @param key
+//	 * @param value
+//	 * @return
+//	 */
+//	public CompletionStage<ValueScanCursor<byte[]>> sscan(String key, ScanCursor cursor, ScanArgs scanArgs) {
+//		return connect.sscan(SafeEncoder.encode(key), cursor, scanArgs);
+//	}
 
 	/**
 	 * loadScript
@@ -299,8 +324,9 @@ public class LettuceRedisAsyncCommands implements RedisAsyncCommands<byte[], byt
 	 * @param key
 	 * @return
 	 */
-	public <T> CompletionStage<T> runScript(String script, ScriptOutputType type, byte[][] values) {
-		return connect.eval(script, type, values, values[0]);
+	public <T> CompletionStage<T> runScript(String script, ReturnType type, byte[][] values, byte[][] params) {
+		ScriptOutputType outputType = ScriptOutputType.valueOf(type.name());
+		return connect.eval(script, outputType, values, params);
 	}
 
 	/**
@@ -309,7 +335,8 @@ public class LettuceRedisAsyncCommands implements RedisAsyncCommands<byte[], byt
 	 * @param key
 	 * @return
 	 */
-	public <T> CompletionStage<T> runShaScript(String script, ScriptOutputType type, byte[][] values) {
-		return connect.evalsha(script, type, values, values[0]);
+	public <T> CompletionStage<T> runShaScript(String script, ReturnType type, byte[][] values, byte[][] params) {
+		ScriptOutputType outputType = ScriptOutputType.valueOf(type.name());
+		return connect.evalsha(script, outputType, values, params);
 	}
 }

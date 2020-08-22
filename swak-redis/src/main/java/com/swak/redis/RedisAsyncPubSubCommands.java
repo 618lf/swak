@@ -58,4 +58,20 @@ public interface RedisAsyncPubSubCommands<K, V> {
 	 * @return
 	 */
 	CompletionStage<Void> unSubscribe(byte[]... channels);
+
+	/**
+	 * 订阅一次，等到消息到达
+	 * 
+	 * @param channel
+	 * @return
+	 */
+	RedisPubSubFutrue subscribeOnce(byte[] channel);
+	
+	/**
+	 * 订阅一次，等到消息到达
+	 * 
+	 * @param channel
+	 * @return
+	 */
+	void unSubscribe(RedisPubSubFutrue future);
 }
