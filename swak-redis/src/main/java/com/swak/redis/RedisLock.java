@@ -22,7 +22,7 @@ import com.swak.reactivex.threads.TimerContext.ScheduledTimerTask;
  * @author lifeng
  * @date 2020年8月19日 下午10:59:16
  */
-public class RedisLock implements MessageListener, Lock {
+public class RedisLock implements Lock {
 	private static final ConcurrentMap<String, ExpirationEntry> EXPIRATION_RENEWAL_MAP = new ConcurrentHashMap<>();
 	private static Logger log = LoggerFactory.getLogger(RedisLock.class);
 
@@ -276,16 +276,6 @@ public class RedisLock implements MessageListener, Lock {
 	}
 
 	/**
-	 * 收到的消息
-	 */
-	@Override
-	public void onMessage(String channel, byte[] message) {
-		if (this.getLockTopic().equals(channel)) {
-
-		}
-	}
-
-	/**
 	 * 尝试释放锁
 	 * 
 	 * @param threadId
@@ -301,7 +291,7 @@ public class RedisLock implements MessageListener, Lock {
 	 * 2. 判断 key 中的 当前线程 是否存在，如果已存在，添加重入次数，并设置过期时间。<br/>
 	 * 3. 返回 key 的 ttl 时间。<br/>
 	 */
-	public CompletionStage<Long> tryLockAsync(String key, long expirationTimeInMilliseconds, String threadId) {
+	private CompletionStage<Long> tryLockAsync(String key, long expirationTimeInMilliseconds, String threadId) {
 		byte[][] keys = new byte[][] { SafeEncoder.encode(key) };
 		byte[][] argvs = new byte[][] { SafeEncoder.encode(String.valueOf(expirationTimeInMilliseconds)),
 				SafeEncoder.encode(threadId) };
@@ -323,7 +313,7 @@ public class RedisLock implements MessageListener, Lock {
 	 * 
 	 * @param key
 	 */
-	public CompletionStage<Long> tryUnLockAsync(String key, String topic, long expirationTimeInMilliseconds,
+	private CompletionStage<Long> tryUnLockAsync(String key, String topic, long expirationTimeInMilliseconds,
 			String threadId) {
 		byte[][] keys = new byte[][] { SafeEncoder.encode(key) };
 		byte[][] argvs = new byte[][] { SafeEncoder.encode(topic),
@@ -342,7 +332,7 @@ public class RedisLock implements MessageListener, Lock {
 	 * @param threadId
 	 * @return
 	 */
-	public CompletionStage<Boolean> renewExpirationAsync(long threadId) {
+	private CompletionStage<Boolean> renewExpirationAsync(long threadId) {
 		return this.renewExpirationAsync(name, expirationTimeInMilliseconds, this.getThreadId(threadId));
 	}
 
@@ -352,7 +342,7 @@ public class RedisLock implements MessageListener, Lock {
 	 * 
 	 * @param key
 	 */
-	public CompletionStage<Boolean> renewExpirationAsync(String key, long expirationTimeInMilliseconds,
+	private CompletionStage<Boolean> renewExpirationAsync(String key, long expirationTimeInMilliseconds,
 			String threadId) {
 		byte[][] keys = new byte[][] { SafeEncoder.encode(key) };
 		byte[][] argvs = new byte[][] { SafeEncoder.encode(String.valueOf(expirationTimeInMilliseconds)),

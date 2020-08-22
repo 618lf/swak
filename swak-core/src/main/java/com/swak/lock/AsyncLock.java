@@ -57,4 +57,28 @@ public interface AsyncLock {
 		});
 		return future;
 	}
+
+	/**
+	 * 异步的锁项
+	 * 
+	 * @return
+	 */
+	AsyncLockItem newLockItem();
+
+	/**
+	 * 异步锁
+	 * 
+	 * @author lifeng
+	 * @date 2020年8月22日 下午5:43:54
+	 */
+	public static interface AsyncLockItem {
+
+		/**
+		 * 执行处理 - 持有锁之后才会执行代码
+		 *
+		 * @param handler 任务处理
+		 * @return 结果
+		 */
+		<T> CompletableFuture<T> doHandler(Supplier<CompletableFuture<T>> handler);
+	}
 }

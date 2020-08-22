@@ -10,6 +10,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -299,7 +301,7 @@ public class AsyncRedisLock implements AsyncLock, MessageListener {
 	 * 2. 判断 key 中的 当前线程 是否存在，如果已存在，添加重入次数，并设置过期时间。<br/>
 	 * 3. 返回 key 的 ttl 时间。<br/>
 	 */
-	public CompletionStage<Long> tryLockAsync(String key, long expirationTimeInMilliseconds, String threadId) {
+	private CompletionStage<Long> tryLockAsync(String key, long expirationTimeInMilliseconds, String threadId) {
 		byte[][] keys = new byte[][] { SafeEncoder.encode(key) };
 		byte[][] argvs = new byte[][] { SafeEncoder.encode(String.valueOf(expirationTimeInMilliseconds)),
 				SafeEncoder.encode(threadId) };
@@ -321,7 +323,7 @@ public class AsyncRedisLock implements AsyncLock, MessageListener {
 	 * 
 	 * @param key
 	 */
-	public CompletionStage<Long> tryUnLockAsync(String key, String topic, long expirationTimeInMilliseconds,
+	private CompletionStage<Long> tryUnLockAsync(String key, String topic, long expirationTimeInMilliseconds,
 			String threadId) {
 		byte[][] keys = new byte[][] { SafeEncoder.encode(key) };
 		byte[][] argvs = new byte[][] { SafeEncoder.encode(topic),
@@ -340,7 +342,7 @@ public class AsyncRedisLock implements AsyncLock, MessageListener {
 	 * @param threadId
 	 * @return
 	 */
-	public CompletionStage<Boolean> renewExpirationAsync(long threadId) {
+	private CompletionStage<Boolean> renewExpirationAsync(long threadId) {
 		return this.renewExpirationAsync(name, expirationTimeInMilliseconds, this.getThreadId(threadId));
 	}
 
@@ -350,7 +352,7 @@ public class AsyncRedisLock implements AsyncLock, MessageListener {
 	 * 
 	 * @param key
 	 */
-	public CompletionStage<Boolean> renewExpirationAsync(String key, long expirationTimeInMilliseconds,
+	private CompletionStage<Boolean> renewExpirationAsync(String key, long expirationTimeInMilliseconds,
 			String threadId) {
 		byte[][] keys = new byte[][] { SafeEncoder.encode(key) };
 		byte[][] argvs = new byte[][] { SafeEncoder.encode(String.valueOf(expirationTimeInMilliseconds)),
@@ -433,6 +435,34 @@ public class AsyncRedisLock implements AsyncLock, MessageListener {
 		public AsyncRedisLockTask(Long lockId, CompletableFuture<Void> future) {
 			this.lockId = lockId;
 			this.future = future;
+		}
+	}
+
+	@Override
+	public AsyncLockItem newLockItem() {
+		return null;
+	}
+
+	/**
+	 * 锁任务
+	 * 
+	 * @author lifeng
+	 * @date 2020年8月22日 上午11:41:16
+	 */
+	public static class AsyncRedisLockItem implements AsyncLockItem {
+
+		private static AtomicLong SN = new AtomicLong(1);
+		AsyncRedisLock lock;
+		private Long sn;
+
+		public AsyncRedisLockItem(AsyncRedisLock lock) {
+			this.lock = lock;
+			this.sn = SN.getAndIncrement();
+		}
+
+		@Override
+		public <T> CompletableFuture<T> doHandler(Supplier<CompletableFuture<T>> handler) {
+			return lock.doHandler(sn, handler);
 		}
 	}
 }

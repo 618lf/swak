@@ -1,5 +1,7 @@
 package com.swak.redis;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import com.swak.reactivex.threads.Contexts;
@@ -15,6 +17,8 @@ import com.swak.reactivex.threads.TimerContext.ScheduledTimerTask;
 public class RedisService {
 	private static TimerContext TIMEOUT_TIMER = Contexts.createTimerContext("SWAK.REDIS_TIMER", true, 1,
 			TimeUnit.SECONDS, 100, TimeUnit.MILLISECONDS);
+	private static final ConcurrentMap<String, RedisLock> LOCKS = new ConcurrentHashMap<>();
+	private static final ConcurrentMap<String, AsyncRedisLock> ASYNC_LOCKS = new ConcurrentHashMap<>();
 	private final RedisConnectionFactory<byte[], byte[]> factory;
 
 	public RedisService(RedisConnectionFactory<byte[], byte[]> factory) {
@@ -67,7 +71,9 @@ public class RedisService {
 	 * @return
 	 */
 	public RedisLock getLock(String name) {
-		return new RedisLock(this, name);
+		return LOCKS.computeIfAbsent(name, (key) -> {
+			return new RedisLock(this, key);
+		});
 	}
 
 	/**
@@ -77,6 +83,8 @@ public class RedisService {
 	 * @return
 	 */
 	public AsyncRedisLock getAsyncLock(String name) {
-		return new AsyncRedisLock(this, name);
+		return ASYNC_LOCKS.computeIfAbsent("async-" + name, (key) -> {
+			return new AsyncRedisLock(this, key);
+		});
 	}
 }
