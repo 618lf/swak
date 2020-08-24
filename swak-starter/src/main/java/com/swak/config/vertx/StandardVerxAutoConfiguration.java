@@ -30,7 +30,7 @@ public class StandardVerxAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public VertxProxy vertxBean(VertxOptions vertxOptions, DeliveryOptions deliveryOptions) {
+	public VertxProxy standardVertx(VertxOptions vertxOptions, DeliveryOptions deliveryOptions) {
 		return new StandardVertx(vertxOptions, deliveryOptions);
 	}
 }

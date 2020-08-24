@@ -13,33 +13,11 @@ import lombok.EqualsAndHashCode;
  * @date: 2020/3/29 18:52
  */
 @EqualsAndHashCode
-public class ServiceBean implements AbstractConfig{
+public class ServiceBean implements AbstractConfig {
 
-	private Object service;
-	private final Class<?> type;
-	private final FluxService mapping;
-
-	public ServiceBean(Class<?> type, Object service, FluxService mapping) {
-		this.service = service;
-		this.mapping = mapping;
-		this.type = type;
-	}
-
-	public Class<?> getType() {
-		return type;
-	}
-
-	public Object getService() {
-		return service;
-	}
-
-	public void setService(Object service) {
-		this.service = service;
-	}
-
-	public Class<?> getServiceType() {
-		return type;
-	}
+	private Object ref;
+	private Class<?> type;
+	private FluxService mapping;
 
 	public Server getServer() {
 		return mapping.server();
@@ -55,5 +33,29 @@ public class ServiceBean implements AbstractConfig{
 
 	public String getUse_pool() {
 		return mapping.use_pool();
+	}
+
+	public Object getRef() {
+		return ref;
+	}
+
+	public void setRef(Object ref) {
+		this.ref = ref;
+	}
+
+	public Class<?> getType() {
+		return type;
+	}
+
+	public void setType(Class<?> type) {
+		this.type = type;
+	}
+
+	public FluxService getMapping() {
+		return mapping;
+	}
+
+	public void setMapping(FluxService mapping) {
+		this.mapping = mapping;
 	}
 }

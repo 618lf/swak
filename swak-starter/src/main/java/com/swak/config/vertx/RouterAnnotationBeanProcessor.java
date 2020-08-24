@@ -48,6 +48,7 @@ public class RouterAnnotationBeanProcessor implements EnvironmentAware, BeanDefi
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanDefinitionName);
 			Class<?> beanClass = null;
 			if (beanDefinition instanceof AbstractBeanDefinition
+					&& ((AbstractBeanDefinition) beanDefinition).hasBeanClass()
 					&& (beanClass = ((AbstractBeanDefinition) beanDefinition).getBeanClass()) != null
 					&& this.isController(beanClass)) {
 				this.registerServiceBeanDefinition((DefaultListableBeanFactory) beanFactory, beanDefinitionName,
@@ -71,7 +72,7 @@ public class RouterAnnotationBeanProcessor implements EnvironmentAware, BeanDefi
 	}
 
 	private String generateServiceBeanName(Class<?> interfaceClass, Method method) {
-		return new StringBuilder("@RestApi").append(" ").append(interfaceClass.getName()).append(" ")
+		return new StringBuilder("@RestApi").append(" ").append(interfaceClass.getName()).append(".")
 				.append(ReflectUtils.getDesc(method)).toString();
 	}
 

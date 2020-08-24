@@ -44,6 +44,7 @@ public class ServiceAnnotationBeanPostProcessor implements EnvironmentAware, Bea
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanDefinitionName);
 			Class<?> beanClass = null;
 			if (beanDefinition instanceof AbstractBeanDefinition
+					&& ((AbstractBeanDefinition) beanDefinition).hasBeanClass()
 					&& (beanClass = ((AbstractBeanDefinition) beanDefinition).getBeanClass()) != null
 					&& this.isServie(beanClass)) {
 				this.registerServiceBeanDefinition((DefaultListableBeanFactory) beanFactory, beanDefinitionName,
@@ -71,8 +72,7 @@ public class ServiceAnnotationBeanPostProcessor implements EnvironmentAware, Bea
 	}
 
 	private String generateServiceBeanName(String beanName, Class<?> interfaceClass) {
-		return new StringBuilder(beanName).append("@FluxService").append(" ").append(interfaceClass.getName())
-				.toString();
+		return new StringBuilder("@FluxService").append(" ").append(interfaceClass.getName()).toString();
 	}
 
 	private AbstractBeanDefinition registryBeans(Class<?> beanClass, String beanName, FluxService mapping) {

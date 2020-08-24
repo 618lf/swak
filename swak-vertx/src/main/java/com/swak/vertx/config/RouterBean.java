@@ -152,4 +152,28 @@ public class RouterBean implements Handler<RoutingContext>, InitializingBean, Ab
 	public void handle(RoutingContext context) {
 		this.handlerAdapter.handle(context, methodInvoker);
 	}
+
+	public Class<?> getType() {
+		return type;
+	}
+
+	public void setType(Class<?> type) {
+		this.type = type;
+	}
+
+	public Object getRef() {
+		return ref;
+	}
+
+	public void setRef(Object ref) {
+		this.ref = ref;
+	}
+
+	public Method getMethod() {
+		return method;
+	}
+
+	public void setMethod(Method method) {
+		this.method = method;
+	}
 }

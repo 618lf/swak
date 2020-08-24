@@ -115,7 +115,7 @@ public class MainVerticle extends AbstractVerticle {
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
 			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
-					new ImServerVerticle(this.getService(service), service.getServiceType(), properties), options, s));
+					new ImServerVerticle(this.getService(service), service.getType(), properties), options, s));
 			futures.add(stFuture);
 		}
 
@@ -187,8 +187,8 @@ public class MainVerticle extends AbstractVerticle {
 		// 配置发布多个服务
 		int intstances = getDeploymentIntstances(service);
 		for (int i = 1; i <= intstances; i++) {
-			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
-					new ServiceVerticle(this.getService(service), service.getServiceType()), options, s));
+			Future<String> stFuture = Future.future(s -> vertx
+					.deployVerticle(new ServiceVerticle(this.getService(service), service.getType()), options, s));
 			futures.add(stFuture.map(id -> null));
 		}
 		return futures;
@@ -212,7 +212,7 @@ public class MainVerticle extends AbstractVerticle {
 	 */
 	@SuppressWarnings("unchecked")
 	private <T> T getService(ServiceBean service) {
-		Object proxy = service.getService();
+		Object proxy = service.getRef();
 		return (T) proxy;
 	}
 }
