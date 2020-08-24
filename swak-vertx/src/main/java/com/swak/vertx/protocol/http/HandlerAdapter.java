@@ -1,6 +1,5 @@
 package com.swak.vertx.protocol.http;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -24,7 +23,6 @@ import com.swak.asm.FieldCache;
 import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
 import com.swak.exception.ErrorCode;
-import com.swak.meters.MetricsFactory;
 import com.swak.security.Permission;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
@@ -56,53 +54,10 @@ public class HandlerAdapter extends AbstractRouterHandler {
 
 	@Autowired(required = false)
 	private Validator validator;
-	@Autowired(required = false)
-	private MetricsFactory metricsFactory;
 	@Autowired
 	private ConversionService conversionService;
 	@Autowired
 	private ResultHandler resultHandler;
-
-	/**
-	 * 初始化处理器
-	 */
-	@Override
-	public void initHandler(MethodInvoker handler) {
-		MethodParameter[] parameters = handler.getParameters();
-		for (MethodParameter parameter : parameters) {
-			// 实际的类型
-			Class<?> parameterType = parameter.getNestedParameterType();
-
-			// 对于集合类型支持第一层
-			this.initField(parameterType);
-		}
-
-		// 应用监控
-		handler.applyMetrics(metricsFactory);
-	}
-
-	/**
-	 * 组装类型，子类型也一并组装
-	 */
-	private void initField(Class<?> parameterType) {
-		if (parameterType == null || parameterType == HttpServerRequest.class
-				|| parameterType == HttpServerResponse.class || parameterType == RoutingContext.class
-				|| parameterType == Subject.class || parameterType == BindErrors.class
-				|| BeanUtils.isSimpleProperty(parameterType) || Collection.class.isAssignableFrom(parameterType)
-				|| List.class.isAssignableFrom(parameterType) || Map.class.isAssignableFrom(parameterType)) {
-			return;
-		}
-
-		// 不存在的类型需要去解析, 防止死循环
-		if (!FieldCache.exists(parameterType)) {
-			// 缓存父类型
-			FieldCache.set(parameterType);
-
-			// 子类型
-			ClassMeta classMeta = FieldCache.get(parameterType);
-			classMeta.getFields().values().forEach(field -> this.initField(field.getNestedFieldClass()));
-		}
-	}
 
 	/**
 	 * handle 前置处理

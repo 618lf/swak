@@ -10,6 +10,7 @@ import com.swak.fetty.transport.channel.Channel;
  * @author lifeng
  * @date 2020年6月4日 下午5:14:28
  */
+@SuppressWarnings("unused")
 public class DefaultPromise implements ChannelPromise {
 	private static final AtomicReferenceFieldUpdater<DefaultPromise, Object> RESULT_UPDATER = AtomicReferenceFieldUpdater
 			.newUpdater(DefaultPromise.class, Object.class, "result");

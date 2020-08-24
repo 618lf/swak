@@ -9,7 +9,7 @@ import io.vertx.ext.web.Router;
  * @author: lifeng
  * @date: 2020/3/29 19:09
  */
-public interface IRouterSupplier {
+public interface IRouterSupplier extends AbstractConfig{
 
     /**
      * Router

@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.transport.VertxProxy;
 import com.swak.vertx.transport.server.ReactiveServer;
@@ -28,16 +27,33 @@ public class VertxAutoConfiguration {
 	}
 
 	/**
-	 * 加载服务器的配置
-	 * 
-	 * 需要先启动 VertxHandler
+	 * 加载服务配置处理器
 	 * 
 	 * @return
 	 */
 	@Bean
-	public AnnotationBean annotationBean(VertxProxy vertx) {
-		AnnotationBean annotationBean = new AnnotationBean(vertx);
-		return annotationBean;
+	public ServiceAnnotationBeanPostProcessor serviceAnnotationBeanPostProcessor() {
+		return new ServiceAnnotationBeanPostProcessor();
+	}
+
+	/**
+	 * 加载依赖配置处理器
+	 * 
+	 * @return
+	 */
+	@Bean
+	public ReferenceAnnotationBeanPostProcessor referenceAnnotationBeanPostProcessor() {
+		return new ReferenceAnnotationBeanPostProcessor();
+	}
+
+	/**
+	 * 加载路由配置处理器
+	 * 
+	 * @return
+	 */
+	@Bean
+	public RouterAnnotationBeanProcessor routerAnnotationBeanProcessor() {
+		return new RouterAnnotationBeanProcessor();
 	}
 
 	/**
@@ -46,7 +62,7 @@ public class VertxAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public ReactiveServer httpServer(AnnotationBean annotationBean, VertxProperties properties) {
+	public ReactiveServer httpServer(VertxProxy vertx, VertxProperties properties) {
 		// threadCache
 		if (!properties.isThreadCache()) {
 			System.setProperty("io.netty.allocator.tinyCacheSize", "0");
@@ -57,6 +73,6 @@ public class VertxAutoConfiguration {
 		if (properties.getLeakDetectionLevel() != null) {
 			System.setProperty("io.netty.leakDetection.level", properties.getLeakDetectionLevel().name());
 		}
-		return new ReactiveServer(annotationBean, properties);
+		return new ReactiveServer(vertx, properties);
 	}
 }

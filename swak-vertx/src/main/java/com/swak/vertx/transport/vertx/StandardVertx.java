@@ -1,4 +1,4 @@
-package com.swak.vertx.config;
+package com.swak.vertx.transport.vertx;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;

@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import com.swak.reactivex.context.EndPoints;
 import com.swak.reactivex.context.Server;
 import com.swak.reactivex.context.ServerException;
-import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.transport.MainVerticle;
+import com.swak.vertx.transport.VertxProxy;
 
 import io.vertx.core.DeploymentOptions;
 
@@ -23,22 +23,19 @@ import io.vertx.core.DeploymentOptions;
 public class ReactiveServer implements Server {
 
 	private static Logger Logger = LoggerFactory.getLogger(ReactiveServer.class);
-	private final AnnotationBean annotation;
 	private final MainVerticle mainVerticle;
+	private final VertxProxy vertx;
 
-	public ReactiveServer(AnnotationBean annotation, VertxProperties properties) {
-		this.annotation = annotation;
-		this.mainVerticle = new MainVerticle(annotation, properties);
+	public ReactiveServer(VertxProxy vertx, VertxProperties properties) {
+		this.vertx = vertx;
+		this.mainVerticle = new MainVerticle(properties);
 	}
 
 	@Override
 	public void start() throws ServerException {
 
-		// 初始化服务类
-		this.mainVerticle.init();
-
 		// 发布服务类
-		this.annotation.getVertx().apply(vertx -> {
+		this.vertx.apply(vertx -> {
 			CompletableFuture<Void> startFuture = new CompletableFuture<>();
 
 			// 以worker 的方式发布
@@ -72,7 +69,7 @@ public class ReactiveServer implements Server {
 
 	@Override
 	public void stop() throws ServerException {
-		this.annotation.getVertx().destroy(vertx -> {
+		this.vertx.destroy(vertx -> {
 			CompletableFuture<Void> stopFuture = new CompletableFuture<>();
 			vertx.close(res -> {
 				if (res.succeeded()) {

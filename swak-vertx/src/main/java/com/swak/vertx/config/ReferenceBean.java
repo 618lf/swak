@@ -1,5 +1,7 @@
 package com.swak.vertx.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.swak.vertx.proxy.ProxyFactory;
 import com.swak.vertx.transport.VertxProxy;
 
@@ -11,23 +13,37 @@ import com.swak.vertx.transport.VertxProxy;
  */
 public class ReferenceBean {
 
-    private final Class<?> type;
-    private Object refer;
+	@Autowired
+	private VertxProxy vertx;
+	private Class<?> type;
+	private Object refer;
 
-    public ReferenceBean(Class<?> type) {
-        this.type = type;
-    }
+	public Class<?> getType() {
+		return type;
+	}
 
-    /**
-     * 获得代理对象,可以切换为其他代理实现
-     *
-     * @param vertx vertx代理
-     * @return 代理对象
-     */
-    public Object getRefer(VertxProxy vertx) {
-        if (refer == null) {
-            refer = ProxyFactory.newProxy(vertx, type);
-        }
-        return refer;
-    }
+	public void setType(Class<?> type) {
+		this.type = type;
+	}
+
+	public Object getRefer() {
+		return refer;
+	}
+
+	public void setRefer(Object refer) {
+		this.refer = refer;
+	}
+
+	/**
+	 * 获得代理对象,可以切换为其他代理实现
+	 *
+	 * @param vertx vertx代理
+	 * @return 代理对象
+	 */
+	public Object get() {
+		if (refer == null) {
+			refer = ProxyFactory.newProxy(vertx, type);
+		}
+		return refer;
+	}
 }

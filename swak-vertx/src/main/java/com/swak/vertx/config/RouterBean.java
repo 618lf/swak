@@ -7,8 +7,17 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+
+import com.swak.annotation.FluxService;
+import com.swak.annotation.RequestMapping;
 import com.swak.annotation.RequestMethod;
+import com.swak.meters.MetricsFactory;
+import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
+import com.swak.utils.router.RouterUtils;
 import com.swak.vertx.protocol.http.FluxMethodInvoker;
 import com.swak.vertx.protocol.http.MethodInvoker;
 import com.swak.vertx.protocol.http.RouterHandler;
@@ -28,18 +37,55 @@ import lombok.EqualsAndHashCode;
  * @date: 2020/3/29 18:55
  */
 @EqualsAndHashCode
-public class RouterBean implements Handler<RoutingContext> {
+public class RouterBean implements Handler<RoutingContext>, InitializingBean, AbstractConfig {
 
-	private final Set<String> patterns;
-	private final RequestMethod requestMethod;
-	private final MethodInvoker methodInvoker;
+	@Autowired
+	private VertxProxy proxy;
+	@Autowired
 	private RouterHandler handlerAdapter;
+	@Autowired(required = false)
+	private MetricsFactory metricsFactory;
+	private Set<String> patterns;
+	private RequestMethod requestMethod;
+	private MethodInvoker methodInvoker;
+	private Class<?> type;
+	private Object ref;
+	private Method method;
 
-	public RouterBean(VertxProxy vertx, Class<?> clazz, Object bean, Method method, List<String> patterns,
-			RequestMethod requestMethod, boolean mergeService) {
-		this.patterns = this.prependLeadingSlash(patterns);
-		this.requestMethod = requestMethod;
-		this.methodInvoker = this.prependMethodHandler(vertx, clazz, bean, method, mergeService);
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		FluxService mapping = AnnotatedElementUtils.findMergedAnnotation(type, FluxService.class);
+		RequestMapping classMapping = AnnotatedElementUtils.findMergedAnnotation(type, RequestMapping.class);
+		RequestMapping methodMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
+
+		String[] patterns1 = classMapping.value();
+		String[] patterns2 = methodMapping.value();
+		List<String> result = Lists.newArrayList();
+		if (patterns1.length != 0 && patterns2.length != 0) {
+			for (String pattern1 : patterns1) {
+				for (String pattern2 : patterns2) {
+					result.add(RouterUtils.combine(pattern1, pattern2));
+				}
+			}
+		} else if (patterns1.length != 0) {
+			result = Lists.newArrayList(patterns1);
+		} else if (patterns2.length != 0) {
+			result = Lists.newArrayList(patterns2);
+		} else {
+			result.add(StringUtils.EMPTY);
+		}
+
+		// patterns
+		this.patterns = this.prependLeadingSlash(result);
+
+		// method
+		RequestMethod requestMethod = classMapping.method() == RequestMethod.ALL ? methodMapping.method()
+				: classMapping.method();
+		this.requestMethod = requestMethod == RequestMethod.ALL ? null : requestMethod;
+		this.methodInvoker = this.prependMethodHandler(proxy, type, ref, method, mapping != null);
+
+		// 应用监控
+		this.methodInvoker.applyMetrics(metricsFactory);
 	}
 
 	/**
@@ -68,20 +114,10 @@ public class RouterBean implements Handler<RoutingContext> {
 	 * @param mergeService
 	 * @return
 	 */
-	private MethodInvoker prependMethodHandler(VertxProxy vertx, Class<?> clazz, Object bean, Method method, boolean mergeService) {
-		return mergeService ? new FluxMethodInvoker(vertx, clazz, bean, method) : new MethodInvoker(clazz, bean, method);
-	}
-
-	/**
-	 * 设置适配器
-	 *
-	 * @param handlerAdapter
-	 * @return
-	 */
-	public RouterBean adapter(RouterHandler handlerAdapter) {
-		this.handlerAdapter = handlerAdapter;
-		this.handlerAdapter.initHandler(methodInvoker);
-		return this;
+	private MethodInvoker prependMethodHandler(VertxProxy vertx, Class<?> clazz, Object bean, Method method,
+			boolean mergeService) {
+		return mergeService ? new FluxMethodInvoker(vertx, clazz, bean, method)
+				: new MethodInvoker(clazz, bean, method);
 	}
 
 	/**

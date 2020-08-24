@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import com.swak.vertx.config.StandardVertx;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.transport.VertxProxy;
 import com.swak.vertx.transport.server.ReactiveServer;
+import com.swak.vertx.transport.vertx.StandardVertx;
 
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.DeliveryOptions;

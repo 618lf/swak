@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
  * @date: 2020/3/29 18:52
  */
 @EqualsAndHashCode
-public class ServiceBean {
+public class ServiceBean implements AbstractConfig{
 
 	private Object service;
 	private final Class<?> type;

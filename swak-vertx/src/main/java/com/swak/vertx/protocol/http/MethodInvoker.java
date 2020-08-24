@@ -2,6 +2,11 @@ package com.swak.vertx.protocol.http;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.BeanUtils;
 
 import com.swak.annotation.Body;
 import com.swak.annotation.Header;
@@ -10,6 +15,8 @@ import com.swak.annotation.Logical;
 import com.swak.annotation.RequiresPermissions;
 import com.swak.annotation.RequiresRoles;
 import com.swak.annotation.Valid;
+import com.swak.asm.FieldCache;
+import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.asm.Wrapper;
@@ -20,6 +27,12 @@ import com.swak.security.permission.AndPermission;
 import com.swak.security.permission.OrPermission;
 import com.swak.security.permission.SinglePermission;
 import com.swak.utils.router.RouterUtils;
+import com.swak.validator.errors.BindErrors;
+import com.swak.vertx.transport.Subject;
+
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.RoutingContext;
 
 /**
  * 基于 method 的执行器
@@ -51,6 +64,7 @@ public class MethodInvoker implements HandlerInvoker {
 		this.methodMeta = MethodCache.get(clazz).lookup(this.method);
 		this.metricName = this.bean.getClass().getName() + "." + this.methodMeta.getMethodDesc();
 		this.parameters = this.initMethodParameters();
+		this.initCache();
 	}
 
 	private MethodParameter[] initMethodParameters() {
@@ -63,6 +77,40 @@ public class MethodInvoker implements HandlerInvoker {
 					nestedParameterTypes[i]);
 		}
 		return result;
+	}
+
+	private void initCache() {
+		MethodParameter[] parameters = this.getParameters();
+		for (MethodParameter parameter : parameters) {
+			// 实际的类型
+			Class<?> parameterType = parameter.getNestedParameterType();
+
+			// 对于集合类型支持第一层
+			this.initField(parameterType);
+		}
+	}
+
+	/**
+	 * 组装类型，子类型也一并组装
+	 */
+	private void initField(Class<?> parameterType) {
+		if (parameterType == null || parameterType == HttpServerRequest.class
+				|| parameterType == HttpServerResponse.class || parameterType == RoutingContext.class
+				|| parameterType == Subject.class || parameterType == BindErrors.class
+				|| BeanUtils.isSimpleProperty(parameterType) || Collection.class.isAssignableFrom(parameterType)
+				|| List.class.isAssignableFrom(parameterType) || Map.class.isAssignableFrom(parameterType)) {
+			return;
+		}
+
+		// 不存在的类型需要去解析, 防止死循环
+		if (!FieldCache.exists(parameterType)) {
+			// 缓存父类型
+			FieldCache.set(parameterType);
+
+			// 子类型
+			ClassMeta classMeta = FieldCache.get(parameterType);
+			classMeta.getFields().values().forEach(field -> this.initField(field.getNestedFieldClass()));
+		}
 	}
 
 	public MethodParameter[] getParameters() {

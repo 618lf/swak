@@ -3,8 +3,6 @@ package com.swak.vertx.transport;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.aop.support.AopUtils;
-
 import com.swak.Constants;
 import com.swak.OS;
 import com.swak.annotation.Context;
@@ -13,8 +11,8 @@ import com.swak.reactivex.context.EndPoints;
 import com.swak.reactivex.context.EndPoints.EndPoint;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.config.AnnotationBean;
 import com.swak.vertx.config.ServiceBean;
+import com.swak.vertx.config.VertxConfigs;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.protocol.http.RouterHandler;
 import com.swak.vertx.transport.codec.Msg;
@@ -34,12 +32,10 @@ import io.vertx.core.Promise;
  */
 public class MainVerticle extends AbstractVerticle {
 
-	private final AnnotationBean annotation;
 	private final VertxProperties properties;
 	private EndPoints endPoints;
 
-	public MainVerticle(AnnotationBean annotation, VertxProperties properties) {
-		this.annotation = annotation;
+	public MainVerticle(VertxProperties properties) {
 		this.properties = properties;
 
 		// 服务器地址
@@ -48,21 +44,6 @@ public class MainVerticle extends AbstractVerticle {
 			hostName = OS.ip();
 		}
 		this.endPoints = new EndPoints().setHost(hostName);
-	}
-
-	/**
-	 * 循环获取Spring Proxy Bean : 此方法需要放在main中执行：解决容器启动死锁的问题<br>
-	 * Bug: 在另外的线程中获取bean 会导致spring 死锁
-	 */
-	public void init() {
-		Set<ServiceBean> services = annotation.getServices();
-		for (ServiceBean service : services) {
-			Object proxy = service.getService();
-			if (!AopUtils.isAopProxy(proxy)) {
-				proxy = annotation.getProxy(service.getService());
-				service.setService(proxy);
-			}
-		}
 	}
 
 	/**
@@ -107,7 +88,7 @@ public class MainVerticle extends AbstractVerticle {
 	private List<Future<EndPoint>> startServices() {
 		List<Future<EndPoint>> futures = Lists.newArrayList();
 		List<Future> serviceFutures = Lists.newArrayList();
-		Set<ServiceBean> services = annotation.getServices();
+		Set<ServiceBean> services = VertxConfigs.me().getServices();
 		for (ServiceBean service : services) {
 			if (service.getServer() == Server.Http) {
 				futures.add(this.startHttp(service));
@@ -152,7 +133,7 @@ public class MainVerticle extends AbstractVerticle {
 		RouterHandler routerHandler = this.getService(service);
 
 		// 初始化 router
-		routerHandler.initRouter(vertx, annotation);
+		routerHandler.getRouter();
 
 		// 启动监听服务
 		List<Future> futures = Lists.newArrayList();
