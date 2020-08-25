@@ -15,27 +15,33 @@ import org.springframework.stereotype.Controller;
  * @author: lifeng
  * @date: 2020/3/28 17:23
  */
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @RestApi
 public @interface RestPage {
 
-    /**
-     * 设置 bean name， 不能用其他的替换，识别不到
-     */
-    @AliasFor(annotation = Controller.class, attribute = "value")
-    String value() default "";
+	/**
+	 * 设置 bean name， 不能用其他的替换，识别不到
+	 */
+	@AliasFor(annotation = Controller.class, attribute = "value")
+	String value() default "";
 
-    /**
-     * 支持的 path
-     */
-    @AliasFor(annotation = RequestMapping.class, value = "value")
-    String[] path() default {};
+	/**
+	 * 支持的 path
+	 */
+	@AliasFor(annotation = RequestMapping.class, value = "value")
+	String[] path() default {};
 
-    /**
-     * 支持的 method
-     */
-    @AliasFor(annotation = RequestMapping.class)
-    RequestMethod method() default RequestMethod.ALL;
+	/**
+	 * 支持的 method
+	 */
+	@AliasFor(annotation = RequestMapping.class)
+	RequestMethod method() default RequestMethod.ALL;
+
+	/**
+	 * 发布的端口
+	 */
+	@AliasFor(annotation = RestApi.class)
+	int port() default -1;
 }

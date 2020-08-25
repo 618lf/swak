@@ -13,8 +13,9 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 
 import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.protocol.http.HandlerAdapter;
 import com.swak.vertx.protocol.http.ResultHandler;
+import com.swak.vertx.protocol.http.RouterHandler;
+import com.swak.vertx.protocol.http.RouterHandlerAdapter;
 import com.swak.vertx.protocol.http.converter.HttpMessageConverter;
 import com.swak.vertx.protocol.http.converter.Jaxb2RootElementHttpMessageConverter;
 import com.swak.vertx.protocol.http.converter.JsonHttpMessageConverter;
@@ -23,6 +24,8 @@ import com.swak.vertx.protocol.http.converter.StreamMessageConverter;
 import com.swak.vertx.protocol.http.converter.StringHttpMessageConverter;
 import com.swak.vertx.protocol.http.formatter.DateFormatter;
 import com.swak.vertx.protocol.http.formatter.StringEscapeFormatter;
+import com.swak.vertx.protocol.ws.WebSocketHandler;
+import com.swak.vertx.protocol.ws.WebSocketHandlerAdapter;
 import com.swak.vertx.transport.server.ReactiveServer;
 
 /**
@@ -79,12 +82,22 @@ public class RouterAutoConfiguration {
 	}
 
 	/**
-	 * 请求映射器
+	 * 请求处理器
 	 * 
 	 * @return
 	 */
 	@Bean
-	public HandlerAdapter handlerAdapter() {
-		return new HandlerAdapter();
+	public RouterHandler routerHandler() {
+		return new RouterHandlerAdapter();
+	}
+
+	/**
+	 * IM处理器
+	 * 
+	 * @return
+	 */
+	@Bean
+	public WebSocketHandler webSocketHandler() {
+		return new WebSocketHandlerAdapter();
 	}
 }

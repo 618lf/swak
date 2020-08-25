@@ -1,7 +1,6 @@
 package com.swak.vertx.config;
 
-import com.swak.vertx.transport.VertxProxy;
-
+import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;
 
 /**
@@ -10,13 +9,13 @@ import io.vertx.ext.web.Router;
  * @author: lifeng
  * @date: 2020/3/29 19:08
  */
-public interface IRouterConfig extends AbstractConfig{
+public interface IRouterConfig extends AbstractConfig {
 
-    /**
-     * 对 router 进行配置
-     *
-     * @param vertx  代理vertx
-     * @param router router
-     */
-    void apply(VertxProxy vertx, Router router);
+	/**
+	 * 对 router 进行配置
+	 *
+	 * @param vertx  代理vertx
+	 * @param router router
+	 */
+	void apply(Vertx vertx, Router router);
 }

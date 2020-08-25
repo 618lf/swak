@@ -2,7 +2,6 @@ package com.swak.vertx.config;
 
 import com.swak.annotation.Context;
 import com.swak.annotation.FluxService;
-import com.swak.annotation.Server;
 
 import lombok.EqualsAndHashCode;
 
@@ -18,10 +17,6 @@ public class ServiceBean implements AbstractConfig {
 	private Object ref;
 	private Class<?> type;
 	private FluxService mapping;
-
-	public Server getServer() {
-		return mapping.server();
-	}
 
 	public Context getContext() {
 		return mapping.context();

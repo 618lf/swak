@@ -1,6 +1,5 @@
 package com.swak.vertx.protocol.http;
 
-import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
 /**
@@ -10,13 +9,6 @@ import io.vertx.ext.web.RoutingContext;
  * @date: 2020/3/29 20:20
  */
 public interface RouterHandler {
-
-	/**
-	 * 返回初始化之后的 Router
-	 *
-	 * @return Router
-	 */
-	Router getRouter();
 
 	/**
 	 * 路由处理器

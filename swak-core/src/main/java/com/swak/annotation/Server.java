@@ -9,11 +9,6 @@ package com.swak.annotation;
 public enum Server {
 
 	/**
-	 * 内部 EventBus 调度
-	 */
-	EventBus,
-
-	/**
 	 * 对外提供 Http 服务
 	 */
 	Http,
@@ -21,7 +16,7 @@ public enum Server {
 	/**
 	 * 对外提供 WebSocket 服务
 	 */
-	IM,
+	Ws,
 
 	/**
 	 * 对外提供Tcp 服务 -- 目前暂未支持

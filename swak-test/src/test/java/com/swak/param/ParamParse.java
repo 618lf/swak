@@ -12,7 +12,7 @@ import com.swak.asm.FieldCache;
 import com.swak.test.utils.MultiThreadTest;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Maps;
-import com.swak.vertx.protocol.http.HandlerAdapter;
+import com.swak.vertx.protocol.http.RouterHandlerAdapter;
 
 /**
  * 参数解析
@@ -21,11 +21,11 @@ import com.swak.vertx.protocol.http.HandlerAdapter;
  */
 public class ParamParse {
 
-	private HandlerAdapter handler;
+	private RouterHandlerAdapter handler;
 
 	public ParamParse()
 			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		handler = new HandlerAdapter();
+		handler = new RouterHandlerAdapter();
 		Field field = handler.getClass().getDeclaredField("conversionService");
 		FormattingConversionService service = new DefaultFormattingConversionService();
 		field.setAccessible(true);

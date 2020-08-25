@@ -14,6 +14,7 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import com.swak.annotation.FluxService;
 import com.swak.annotation.RequestMapping;
 import com.swak.annotation.RequestMethod;
+import com.swak.annotation.RestApi;
 import com.swak.meters.MetricsFactory;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
@@ -51,10 +52,12 @@ public class RouterBean implements Handler<RoutingContext>, InitializingBean, Ab
 	private Class<?> type;
 	private Object ref;
 	private Method method;
+	private int port;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		FluxService mapping = AnnotatedElementUtils.findMergedAnnotation(type, FluxService.class);
+		RestApi apiMapping = AnnotatedElementUtils.findMergedAnnotation(type, RestApi.class);
+		FluxService serviceMapping = AnnotatedElementUtils.findMergedAnnotation(type, FluxService.class);
 		RequestMapping classMapping = AnnotatedElementUtils.findMergedAnnotation(type, RequestMapping.class);
 		RequestMapping methodMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
 
@@ -75,6 +78,9 @@ public class RouterBean implements Handler<RoutingContext>, InitializingBean, Ab
 			result.add(StringUtils.EMPTY);
 		}
 
+		// 端口
+		this.port = apiMapping.port();
+
 		// patterns
 		this.patterns = this.prependLeadingSlash(result);
 
@@ -82,7 +88,7 @@ public class RouterBean implements Handler<RoutingContext>, InitializingBean, Ab
 		RequestMethod requestMethod = classMapping.method() == RequestMethod.ALL ? methodMapping.method()
 				: classMapping.method();
 		this.requestMethod = requestMethod == RequestMethod.ALL ? null : requestMethod;
-		this.methodInvoker = this.prependMethodHandler(proxy, type, ref, method, mapping != null);
+		this.methodInvoker = this.prependMethodHandler(proxy, type, ref, method, serviceMapping != null);
 
 		// 应用监控
 		this.methodInvoker.applyMetrics(metricsFactory);
@@ -175,5 +181,17 @@ public class RouterBean implements Handler<RoutingContext>, InitializingBean, Ab
 
 	public void setMethod(Method method) {
 		this.method = method;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public RouterHandler getHandlerAdapter() {
+		return handlerAdapter;
 	}
 }

@@ -23,7 +23,7 @@ public interface ServerVerticle {
 	 * @param properties
 	 * @return
 	 */
-	default HttpServerOptions serverOptions(VertxProperties properties) {
+	default HttpServerOptions httpServerOptions(VertxProperties properties) {
 
 		HttpServerOptions options = new HttpServerOptions();
 

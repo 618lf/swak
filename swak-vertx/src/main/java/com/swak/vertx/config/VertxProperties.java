@@ -25,7 +25,7 @@ public class VertxProperties extends TransportProperties {
 
 	private String host = null;
 	private int port = 8888;
-	private int imPort = 8889;
+	private int webSocketPort = 8889;
 
 	/**
 	 * 配置是否开启：WebSocket
@@ -152,12 +152,12 @@ public class VertxProperties extends TransportProperties {
 		this.enableWebsocket = enableWebsocket;
 	}
 
-	public int getImPort() {
-		return imPort;
+	public int getWebSocketPort() {
+		return webSocketPort;
 	}
 
-	public void setImPort(int imPort) {
-		this.imPort = imPort;
+	public void setWebSocketPort(int webSocketPort) {
+		this.webSocketPort = webSocketPort;
 	}
 
 	public LogLevel getServerLogLevel() {

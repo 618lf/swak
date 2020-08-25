@@ -14,9 +14,7 @@ import com.swak.utils.Sets;
 import com.swak.vertx.config.IRouterConfig;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.security.SecurityHandler;
-import com.swak.vertx.transport.VertxProxy;
 
-import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 
@@ -66,15 +64,9 @@ public class AppConfiguration {
 	public SecurityConfigurationSupport securitySupport() {
 		// 权限配置
 		SecurityConfigurationSupport support = new SecurityConfigurationSupport();
-		support.definition("/api/login=anno")
-		       .definition("/api/logout=anno")
-		       .definition("/api/reqister=anno")
-			   .definition("/api/goods=anno")
-			   .definition("/api/param=anno")
-			   .definition("/api/test=anno")
-			   .definition("/api/user/=user")
-			   .definition("/api/manage/=user, role[admin]")
-			   .definition("/=user");
+		support.definition("/api/login=anno").definition("/api/logout=anno").definition("/api/reqister=anno")
+				.definition("/api/goods=anno").definition("/api/param=anno").definition("/api/test=anno")
+				.definition("/api/user/=user").definition("/api/manage/=user, role[admin]").definition("/=user");
 		return support;
 	}
 
@@ -85,21 +77,17 @@ public class AppConfiguration {
 	 */
 	@Bean
 	public IRouterConfig routerConfig(SecurityHandler securityHandler, VertxProperties properties) {
-		return new IRouterConfig() {
-			@Override
-			public void apply(VertxProxy vertx, Router router) {
-				Set<String> headers = Sets.newHashSet();
-				headers.add("X-Requested-With");
-				headers.add(properties.getJwtTokenName());
-				router.route().handler(CorsHandler.create("*").allowedHeaders(headers));
-				router.route()
-						.handler(BodyHandler.create(properties.getUploadDirectory())
-								.setBodyLimit(properties.getBodyLimit())
-								.setDeleteUploadedFilesOnEnd(properties.isDeleteUploadedFilesOnEnd()));
-				// router.route().handler(StaticHandler.create("static")); //
-				// 使用内部阻塞线程处理和work线程不是同一种线程
-				router.route().handler(securityHandler);
-			}
+		return (vertx, router) -> {
+			Set<String> headers = Sets.newHashSet();
+			headers.add("X-Requested-With");
+			headers.add(properties.getJwtTokenName());
+			router.route().handler(CorsHandler.create("*").allowedHeaders(headers));
+			router.route()
+					.handler(BodyHandler.create(properties.getUploadDirectory()).setBodyLimit(properties.getBodyLimit())
+							.setDeleteUploadedFilesOnEnd(properties.isDeleteUploadedFilesOnEnd()));
+			// router.route().handler(StaticHandler.create("static")); //
+			// 使用内部阻塞线程处理和work线程不是同一种线程
+			router.route().handler(securityHandler);
 		};
 	}
 }

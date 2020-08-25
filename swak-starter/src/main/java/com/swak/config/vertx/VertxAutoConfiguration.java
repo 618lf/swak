@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.vertx.config.VertxProperties;
+import com.swak.vertx.protocol.http.RouterHandler;
+import com.swak.vertx.protocol.ws.WebSocketHandler;
 import com.swak.vertx.transport.VertxProxy;
 import com.swak.vertx.transport.server.ReactiveServer;
 
@@ -62,7 +64,8 @@ public class VertxAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public ReactiveServer httpServer(VertxProxy vertx, VertxProperties properties) {
+	public ReactiveServer httpServer(VertxProxy vertx, RouterHandler routerHandler, WebSocketHandler webSocketHandler,
+			VertxProperties properties) {
 		// threadCache
 		if (!properties.isThreadCache()) {
 			System.setProperty("io.netty.allocator.tinyCacheSize", "0");
@@ -73,6 +76,6 @@ public class VertxAutoConfiguration {
 		if (properties.getLeakDetectionLevel() != null) {
 			System.setProperty("io.netty.leakDetection.level", properties.getLeakDetectionLevel().name());
 		}
-		return new ReactiveServer(vertx, properties);
+		return new ReactiveServer(vertx, properties, routerHandler, webSocketHandler);
 	}
 }

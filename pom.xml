@@ -13,7 +13,6 @@
 		<module>swak-jdbc</module>
 		<module>swak-redis</module>
 		<module>swak-http</module>
-		<module>swak-actuator</module>
 		<module>swak-groovy</module>
 		<module>swak-motan</module>
 		<module>swak-vertx</module>

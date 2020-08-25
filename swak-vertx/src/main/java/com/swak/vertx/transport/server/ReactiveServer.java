@@ -9,8 +9,10 @@ import com.swak.reactivex.context.EndPoints;
 import com.swak.reactivex.context.Server;
 import com.swak.reactivex.context.ServerException;
 import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.transport.MainVerticle;
+import com.swak.vertx.protocol.http.RouterHandler;
+import com.swak.vertx.protocol.ws.WebSocketHandler;
 import com.swak.vertx.transport.VertxProxy;
+import com.swak.vertx.transport.vertx.MainVerticle;
 
 import io.vertx.core.DeploymentOptions;
 
@@ -26,9 +28,10 @@ public class ReactiveServer implements Server {
 	private final MainVerticle mainVerticle;
 	private final VertxProxy vertx;
 
-	public ReactiveServer(VertxProxy vertx, VertxProperties properties) {
+	public ReactiveServer(VertxProxy vertx, VertxProperties properties, RouterHandler routerHandler,
+			WebSocketHandler webSocketHandler) {
 		this.vertx = vertx;
-		this.mainVerticle = new MainVerticle(properties);
+		this.mainVerticle = new MainVerticle(routerHandler, webSocketHandler, properties);
 	}
 
 	@Override

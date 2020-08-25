@@ -1,7 +1,11 @@
 package com.swak.vertx.config;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import com.swak.utils.Maps;
 import com.swak.utils.Sets;
 
 /**
@@ -19,8 +23,8 @@ public class VertxConfigs {
 	}
 
 	private final Set<ServiceBean> services = Sets.newOrderSet();
-	private final Set<RouterBean> routers = Sets.newOrderSet();
-	private final Set<IRouterSupplier> routerSuppliers = Sets.newOrderSet();
+	private final Map<Integer, List<RouterBean>> routers = Maps.newOrderMap();
+	private final Map<Integer, List<WebSocketBean>> webSockets = Maps.newOrderMap();
 	private final Set<IRouterConfig> routerConfigs = Sets.newOrderSet();
 
 	private VertxConfigs() {
@@ -30,16 +34,16 @@ public class VertxConfigs {
 		return services;
 	}
 
-	public Set<RouterBean> getRouters() {
+	public Map<Integer, List<RouterBean>> getRouters() {
 		return routers;
-	}
-
-	public Set<IRouterSupplier> getRouterSuppliers() {
-		return routerSuppliers;
 	}
 
 	public Set<IRouterConfig> getRouterConfigs() {
 		return routerConfigs;
+	}
+
+	public Map<Integer, List<WebSocketBean>> getWebSockets() {
+		return webSockets;
 	}
 
 	public VertxConfigs add(AbstractConfig bean) {
@@ -47,8 +51,8 @@ public class VertxConfigs {
 			this.add((ServiceBean) bean);
 		} else if (bean instanceof RouterBean) {
 			this.add((RouterBean) bean);
-		} else if (bean instanceof IRouterSupplier) {
-			this.add((IRouterSupplier) bean);
+		} else if (bean instanceof WebSocketBean) {
+			this.add((WebSocketBean) bean);
 		} else if (bean instanceof IRouterConfig) {
 			this.add((IRouterConfig) bean);
 		}
@@ -61,12 +65,22 @@ public class VertxConfigs {
 	}
 
 	public VertxConfigs add(RouterBean bean) {
-		routers.add(bean);
+		List<RouterBean> beans = routers.get(bean.getPort());
+		if (beans == null) {
+			beans = new LinkedList<>();
+			routers.put(bean.getPort(), beans);
+		}
+		beans.add(bean);
 		return this;
 	}
 
-	public VertxConfigs add(IRouterSupplier bean) {
-		routerSuppliers.add(bean);
+	public VertxConfigs add(WebSocketBean bean) {
+		List<WebSocketBean> beans = webSockets.get(bean.getPort());
+		if (beans == null) {
+			beans = new LinkedList<>();
+			webSockets.put(bean.getPort(), beans);
+		}
+		beans.add(bean);
 		return this;
 	}
 

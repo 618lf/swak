@@ -25,11 +25,6 @@ public @interface FluxService {
     String value() default StringUtils.EMPTY;
 
     /**
-     * 运行的模式
-     */
-    Server server() default Server.EventBus;
-
-    /**
      * 定义是否顺序执行 handler，每个Verticle 都有一个 Context，通过这个Context来提交需要运行的 HandlerHodler
      * <br>
      * <p>
