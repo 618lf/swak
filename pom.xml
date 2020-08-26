@@ -17,7 +17,6 @@
 		<module>swak-motan</module>
 		<module>swak-vertx</module>
 		<module>swak-starter</module>
-		<module>swak-sample</module>
 		<module>swak-qrcode</module>
 		<module>swak-quartz</module>
 		<module>swak-excel</module>
@@ -37,7 +36,6 @@
 		<module>swak-jdbc-async</module>
 		<module>swak-lib</module>
 		<module>swak-generate</module>
-		<module>swak-fetty</module>
 		<module>swak-tools</module>
 	</modules>
 	<properties>
@@ -49,7 +47,7 @@
 		<fastjson.version>1.2.70</fastjson.version>
 		<logback.version>1.2.3</logback.version>
 		<slf4j.version>1.7.30</slf4j.version>
-		<netty.version>4.1.48.Final</netty.version>
+		<netty.version>4.1.51.Final</netty.version>
 		<reactor.version>3.3.4.RELEASE</reactor.version>
 		<micrometer.version>1.4.1</micrometer.version>
 		<HdrHistogram.version>2.1.12</HdrHistogram.version>

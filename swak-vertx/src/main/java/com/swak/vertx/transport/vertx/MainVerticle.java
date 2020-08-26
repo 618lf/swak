@@ -22,7 +22,6 @@ import com.swak.vertx.config.ServiceBean;
 import com.swak.vertx.config.VertxConfigs;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.protocol.http.ErrorHandler;
-import com.swak.vertx.protocol.http.RouterHandler;
 import com.swak.vertx.protocol.im.ImRouter;
 import com.swak.vertx.protocol.im.ImRouter.ImRoute;
 import com.swak.vertx.transport.ServerVerticle;
@@ -45,7 +44,8 @@ import io.vertx.ext.web.Router;
  * @date: 2020/3/29 21:17
  */
 public class MainVerticle extends AbstractVerticle implements ServerVerticle {
-	protected Logger routerLogger = LoggerFactory.getLogger(RouterHandler.class);
+
+	protected Logger routerLogger = LoggerFactory.getLogger(ServerVerticle.class);
 
 	private final VertxProperties properties;
 	private EndPoints endPoints;
