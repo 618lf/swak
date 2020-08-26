@@ -10,15 +10,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.protocol.http.ResultHandler;
-import com.swak.vertx.protocol.http.RouterHandler;
-import com.swak.vertx.protocol.http.RouterHandlerAdapter;
-import com.swak.vertx.protocol.http.converter.HttpMessageConverter;
-import com.swak.vertx.protocol.http.converter.Jaxb2RootElementHttpMessageConverter;
-import com.swak.vertx.protocol.http.converter.JsonHttpMessageConverter;
-import com.swak.vertx.protocol.http.converter.PlainStreamMessageConverter;
-import com.swak.vertx.protocol.http.converter.StreamMessageConverter;
-import com.swak.vertx.protocol.http.converter.StringHttpMessageConverter;
+import com.swak.vertx.protocol.im.ImHandler;
+import com.swak.vertx.protocol.im.ImHandlerAdapter;
+import com.swak.vertx.protocol.im.ResultHandler;
+import com.swak.vertx.protocol.im.converter.HttpMessageConverter;
+import com.swak.vertx.protocol.im.converter.Jaxb2RootElementHttpMessageConverter;
+import com.swak.vertx.protocol.im.converter.JsonHttpMessageConverter;
+import com.swak.vertx.protocol.im.converter.PlainStreamMessageConverter;
+import com.swak.vertx.protocol.im.converter.StreamMessageConverter;
+import com.swak.vertx.protocol.im.converter.StringHttpMessageConverter;
 import com.swak.vertx.transport.server.ReactiveServer;
 
 /**
@@ -30,7 +30,7 @@ import com.swak.vertx.transport.server.ReactiveServer;
 @ConditionalOnClass({ ReactiveServer.class })
 @EnableConfigurationProperties(VertxProperties.class)
 @Import(FormatterAutoConfiguration.class)
-public class RouterAutoConfiguration {
+public class ImAutoConfiguration {
 
 	/**
 	 * 请求映射器
@@ -59,12 +59,12 @@ public class RouterAutoConfiguration {
 	}
 
 	/**
-	 * 请求处理器
+	 * IM处理器
 	 * 
 	 * @return
 	 */
 	@Bean
-	public RouterHandler routerHandler() {
-		return new RouterHandlerAdapter();
+	public ImHandler webSocketHandler() {
+		return new ImHandlerAdapter();
 	}
 }

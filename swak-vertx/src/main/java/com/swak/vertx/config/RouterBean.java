@@ -19,8 +19,8 @@ import com.swak.meters.MetricsFactory;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.swak.utils.router.RouterUtils;
-import com.swak.vertx.protocol.http.FluxMethodInvoker;
-import com.swak.vertx.protocol.http.MethodInvoker;
+import com.swak.vertx.invoker.FluxMethodInvoker;
+import com.swak.vertx.invoker.MethodInvoker;
 import com.swak.vertx.protocol.http.RouterHandler;
 import com.swak.vertx.transport.VertxProxy;
 

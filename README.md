@@ -283,6 +283,19 @@ ContextRefreshedEvent > startReactiveServer > ReactiveServerInitializedEvent
 
 新功能1： api doc 的自动生成 -- 开发中(目前遇到的问题是，使用的jar无法获取 classes 的类)  
 新功能2： 代码生成工具 -- 待开发   
+新功能2： 支持 websocket  
+
+# 版本1.0.0  之 websocket认证
+1.open时发参数  
+var  ws = new WebSocket("ws://....");  
+ws.onopen=function(){  
+    ws.send(token)  
+}  
+2.url里带参数  
+var  ws = new WebSocket("ws://url/1/3/9");  
+var  ws = new WebSocket("ws://url?userid=1"); 
+3.替换子协议   
+var  ws = new WebSocket("ws://url"，【token】);
 
 
 # 版本1.0.2  （预留的版本）

@@ -1,4 +1,4 @@
-package com.swak.vertx.protocol.http;
+package com.swak.vertx.invoker;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -46,7 +46,7 @@ public class MethodInvoker implements HandlerInvoker {
 	private final Object bean;
 	private final Method method;
 	private final MethodParameter[] parameters;
-	protected MethodMetrics metrics;
+	public MethodMetrics metrics;
 	protected String metricName;
 	protected Permission requiresRoles;
 	protected Permission requiresPermissions;

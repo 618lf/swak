@@ -1,5 +1,7 @@
 package com.swak.vertx.protocol.http;
 
+import com.swak.vertx.invoker.MethodInvoker;
+
 import io.vertx.ext.web.RoutingContext;
 
 /**
@@ -17,11 +19,4 @@ public interface RouterHandler {
 	 * @param handler 处理器
 	 */
 	void handle(RoutingContext context, MethodInvoker handler);
-
-	/**
-	 * 处理错误消息
-	 * 
-	 * @param e 错误
-	 */
-	void handle(Throwable e);
 }

@@ -1,4 +1,4 @@
-package com.swak.vertx.protocol.http;
+package com.swak.vertx.invoker;
 
 import com.swak.meters.MetricsFactory;
 

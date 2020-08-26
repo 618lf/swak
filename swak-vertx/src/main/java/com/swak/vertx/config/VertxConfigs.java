@@ -24,7 +24,7 @@ public class VertxConfigs {
 
 	private final Set<ServiceBean> services = Sets.newOrderSet();
 	private final Map<Integer, List<RouterBean>> routers = Maps.newOrderMap();
-	private final Map<Integer, List<WebSocketBean>> webSockets = Maps.newOrderMap();
+	private final Map<Integer, List<ImBean>> webSockets = Maps.newOrderMap();
 	private final Set<IRouterConfig> routerConfigs = Sets.newOrderSet();
 
 	private VertxConfigs() {
@@ -42,7 +42,7 @@ public class VertxConfigs {
 		return routerConfigs;
 	}
 
-	public Map<Integer, List<WebSocketBean>> getWebSockets() {
+	public Map<Integer, List<ImBean>> getWebSockets() {
 		return webSockets;
 	}
 
@@ -51,8 +51,8 @@ public class VertxConfigs {
 			this.add((ServiceBean) bean);
 		} else if (bean instanceof RouterBean) {
 			this.add((RouterBean) bean);
-		} else if (bean instanceof WebSocketBean) {
-			this.add((WebSocketBean) bean);
+		} else if (bean instanceof ImBean) {
+			this.add((ImBean) bean);
 		} else if (bean instanceof IRouterConfig) {
 			this.add((IRouterConfig) bean);
 		}
@@ -74,8 +74,8 @@ public class VertxConfigs {
 		return this;
 	}
 
-	public VertxConfigs add(WebSocketBean bean) {
-		List<WebSocketBean> beans = webSockets.get(bean.getPort());
+	public VertxConfigs add(ImBean bean) {
+		List<ImBean> beans = webSockets.get(bean.getPort());
 		if (beans == null) {
 			beans = new LinkedList<>();
 			webSockets.put(bean.getPort(), beans);

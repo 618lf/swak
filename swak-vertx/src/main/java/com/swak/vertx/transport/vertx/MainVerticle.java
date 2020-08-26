@@ -16,14 +16,15 @@ import com.swak.reactivex.context.EndPoints.EndPoint;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 import com.swak.vertx.config.IRouterConfig;
+import com.swak.vertx.config.ImBean;
 import com.swak.vertx.config.RouterBean;
 import com.swak.vertx.config.ServiceBean;
 import com.swak.vertx.config.VertxConfigs;
 import com.swak.vertx.config.VertxProperties;
-import com.swak.vertx.config.WebSocketBean;
 import com.swak.vertx.protocol.http.ErrorHandler;
 import com.swak.vertx.protocol.http.RouterHandler;
-import com.swak.vertx.protocol.ws.WebSocketHandler;
+import com.swak.vertx.protocol.im.ImRouter;
+import com.swak.vertx.protocol.im.ImRouter.ImRoute;
 import com.swak.vertx.transport.ServerVerticle;
 import com.swak.vertx.transport.codec.Msg;
 import com.swak.vertx.transport.codec.MsgCodec;
@@ -46,14 +47,10 @@ import io.vertx.ext.web.Router;
 public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 	protected Logger routerLogger = LoggerFactory.getLogger(RouterHandler.class);
 
-	private final RouterHandler routerHandler;
-	private final WebSocketHandler webSocketHandler;
 	private final VertxProperties properties;
 	private EndPoints endPoints;
 
-	public MainVerticle(RouterHandler routerHandler, WebSocketHandler webSocketHandler, VertxProperties properties) {
-		this.routerHandler = routerHandler;
-		this.webSocketHandler = webSocketHandler;
+	public MainVerticle(VertxProperties properties) {
 		this.properties = properties;
 
 		// 服务器地址
@@ -193,8 +190,7 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		int intstances = getDeploymentIntstances(-1);
 		for (int i = 1; i <= intstances; i++) {
 			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
-					new HttpServerVerticle(router, routerHandler, httpServerOptions, properties.getHost(), deployPort),
-					options, s));
+					new HttpServerVerticle(router, httpServerOptions, properties.getHost(), deployPort), options, s));
 			futures.add(stFuture);
 		}
 
@@ -236,7 +232,7 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 
 	private List<Future<EndPoint>> startWebSockets() {
 		List<Future<EndPoint>> futures = Lists.newArrayList();
-		Map<Integer, List<WebSocketBean>> routers = VertxConfigs.me().getWebSockets();
+		Map<Integer, List<ImBean>> routers = VertxConfigs.me().getWebSockets();
 
 		// 发布成多个Http服务
 		routers.keySet().forEach(port -> {
@@ -247,9 +243,12 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Future<EndPoint> startWebSocket(int port, List<WebSocketBean> routers) {
+	private Future<EndPoint> startWebSocket(int port, List<ImBean> routers) {
 
 		int deployPort = port <= 0 ? properties.getWebSocketPort() : port;
+
+		// 处理器
+		ImRouter imRouter = this.getImRouter(routers);
 
 		// 服务器配置
 		HttpServerOptions httpServerOptions = this.httpServerOptions(properties);
@@ -262,8 +261,7 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		int intstances = getDeploymentIntstances(-1);
 		for (int i = 1; i <= intstances; i++) {
 			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
-					new WebSockerServerVerticle(webSocketHandler, httpServerOptions, properties.getHost(), deployPort),
-					options, s));
+					new ImServerVerticle(imRouter, httpServerOptions, properties.getHost(), deployPort), options, s));
 			futures.add(stFuture);
 		}
 
@@ -272,6 +270,24 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 			return new EndPoint().setScheme(Server.Ws).setHost(this.endPoints.getHost()).setPort(properties.getPort())
 					.setParallel(intstances);
 		});
+	}
+
+	private ImRouter getImRouter(List<ImBean> routers) {
+		ImRouter imRouter = new ImRouter();
+
+		// 单个路由定义
+		for (ImBean rb : routers) {
+			rb.mounton(imRouter);
+		}
+
+		// 打印路由信息
+		if (routerLogger.isDebugEnabled()) {
+			List<ImRoute> routes = imRouter.getRoutes();
+			for (ImRoute route : routes) {
+				routerLogger.debug("{}", route.getOps() != null ? route.getOps().toString() : "All");
+			}
+		}
+		return imRouter;
 	}
 
 	private int getDeploymentIntstances(int intstances) {

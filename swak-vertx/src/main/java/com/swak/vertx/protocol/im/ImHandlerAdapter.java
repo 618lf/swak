@@ -1,4 +1,4 @@
-package com.swak.vertx.protocol.http;
+package com.swak.vertx.protocol.im;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,23 +36,17 @@ import com.swak.vertx.security.SecuritySubject;
 import com.swak.vertx.transport.Subject;
 
 import io.vertx.core.MultiMap;
-import io.vertx.core.http.HttpConnection;
-import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.impl.VertxThread;
-import io.vertx.core.net.impl.ConnectionBase;
-import io.vertx.ext.web.RoutingContext;
 
 /**
- * 请求执行器, 定义为 http 服务入口
- *
- * @author: lifeng
- * @date: 2020/3/29 19:48
+ * 
+ * @author lifeng
+ * @date 2020年8月25日 下午2:26:45
  */
-public class RouterHandlerAdapter implements RouterHandler {
+public class ImHandlerAdapter implements ImHandler {
 
-	protected Logger logger = LoggerFactory.getLogger(RouterHandler.class);
+	protected Logger logger = LoggerFactory.getLogger(ImHandler.class);
 
 	@Autowired(required = false)
 	private Validator validator;
@@ -68,11 +62,8 @@ public class RouterHandlerAdapter implements RouterHandler {
 		return handler.metrics != null ? handler.metrics.begin() : null;
 	}
 
-	/**
-	 * 处理请求
-	 */
 	@Override
-	public void handle(RoutingContext context, MethodInvoker handler) {
+	public void handle(ImContext context, MethodInvoker handler) {
 		Subject subject = context.get(Constants.SUBJECT_NAME);
 		CompletionStage<Boolean> authFuture = this.checkPermissions(subject, handler);
 		if (authFuture != null) {
@@ -131,7 +122,7 @@ public class RouterHandlerAdapter implements RouterHandler {
 	 * 执行处理
 	 */
 	@SuppressWarnings("unchecked")
-	private void doHandler(RoutingContext context, MethodInvoker handler) {
+	private void doHandler(ImContext context, MethodInvoker handler) {
 		Object metrics = this.preHandle(handler);
 		try {
 			Object[] params = this.parseParameters(context, handler);
@@ -157,7 +148,7 @@ public class RouterHandlerAdapter implements RouterHandler {
 	/**
 	 * 在之前的 Context 中处理
 	 */
-	private void handleResultOnContext(Object result, Throwable e, RoutingContext context, MethodInvoker handler,
+	private void handleResultOnContext(Object result, Throwable e, ImContext context, MethodInvoker handler,
 			Object metrics) {
 		ContextInternal currContext = this.getContext(context);
 		if (currContext != null) {
@@ -167,14 +158,10 @@ public class RouterHandlerAdapter implements RouterHandler {
 		}
 	}
 
-	private ContextInternal getContext(RoutingContext context) {
-		HttpConnection conn = context.request().connection();
-		if (conn instanceof ConnectionBase) {
-			ContextInternal connContext = ((ConnectionBase) conn).getContext();
-			ContextInternal currContext = this.getContext();
-			return (connContext != null && (currContext == null || connContext != currContext)) ? connContext : null;
-		}
-		return null;
+	private ContextInternal getContext(ImContext context) {
+		ContextInternal connContext = context.getContext();
+		ContextInternal currContext = this.getContext();
+		return (connContext != null && (currContext == null || connContext != currContext)) ? connContext : null;
 	}
 
 	/**
@@ -191,8 +178,7 @@ public class RouterHandlerAdapter implements RouterHandler {
 	/**
 	 * 处理结果
 	 */
-	private void handleResult(Object result, Throwable e, RoutingContext context, MethodInvoker handler,
-			Object metrics) {
+	private void handleResult(Object result, Throwable e, ImContext context, MethodInvoker handler, Object metrics) {
 		try {
 			resultHandler.handleResult(result, e, context);
 		} finally {
@@ -213,7 +199,7 @@ public class RouterHandlerAdapter implements RouterHandler {
 	/**
 	 * 解析参数
 	 */
-	private Object[] parseParameters(RoutingContext context, MethodInvoker handler) {
+	private Object[] parseParameters(ImContext context, MethodInvoker handler) {
 		MethodParameter[] parameters = handler.getParameters();
 		Object[] args = new Object[parameters.length];
 		for (int i = 0; i < parameters.length; i++) {
@@ -226,13 +212,9 @@ public class RouterHandlerAdapter implements RouterHandler {
 	/**
 	 * 支持的参数解析(方便测试)
 	 */
-	private Object parseParameter(MethodParameter parameter, RoutingContext context) {
+	private Object parseParameter(MethodParameter parameter, ImContext context) {
 		Class<?> parameterType = parameter.getParameterType();
-		if (parameterType == HttpServerRequest.class) {
-			return context.request();
-		} else if (parameterType == HttpServerResponse.class) {
-			return context.response();
-		} else if (parameterType == RoutingContext.class) {
+		if (parameterType == ImContext.class) {
 			return context;
 		} else if (parameterType == Subject.class) {
 			Subject subject = context.get(Constants.SUBJECT_NAME);
@@ -259,13 +241,13 @@ public class RouterHandlerAdapter implements RouterHandler {
 	/**
 	 * 解析注解
 	 */
-	private Object resolveAnnotation(MethodParameter parameter, RoutingContext context) {
+	private Object resolveAnnotation(MethodParameter parameter, ImContext context) {
 		Body body = parameter.getBodyAnnotation();
 		if (body != null) {
 			if (!parameter.getParameterType().isArray() && BeanUtils.isSimpleProperty(parameter.getParameterType())) {
-				return this.doConvert(context.getBodyAsString(), parameter.getParameterType());
+				return this.doConvert(context.request().getBodyAsString(), parameter.getParameterType());
 			}
-			return context.getBody().getBytes();
+			return context.request().getBody().getBytes();
 		}
 		Json json = parameter.getJsonAnnotation();
 		if (json != null) {
@@ -286,8 +268,7 @@ public class RouterHandlerAdapter implements RouterHandler {
 			} else if (List.class.isAssignableFrom(fieldClass)) {
 				return context.request().headers().getAll(parameter.getParameterName());
 			}
-			return this.doConvert(context.request().getHeader(parameter.getParameterName()),
-					parameter.getParameterType());
+			return this.doConvert(context.request().getHeader(parameter.getParameterName()), parameter.getParameterType());
 		}
 		return null;
 	}
@@ -295,7 +276,7 @@ public class RouterHandlerAdapter implements RouterHandler {
 	/**
 	 * 解析参数并验证
 	 */
-	private Object resolveObjectAndValidate(MethodParameter parameter, RoutingContext context) {
+	private Object resolveObjectAndValidate(MethodParameter parameter, ImContext context) {
 
 		// 需要验证
 		if (validator != null && parameter.getValidAnnotation() != null) {
@@ -309,7 +290,7 @@ public class RouterHandlerAdapter implements RouterHandler {
 	/**
 	 * 初始化绑定错误
 	 */
-	private BindErrors getBindErrors(RoutingContext context) {
+	private BindErrors getBindErrors(ImContext context) {
 		BindErrors errors = context.get(Constants.VALIDATE_NAME);
 		if (errors == null) {
 			errors = BindErrors.of(Maps.newHashMap());
@@ -321,7 +302,7 @@ public class RouterHandlerAdapter implements RouterHandler {
 	/**
 	 * 直接解析对象参数 （只填充第一层, 第二层）
 	 */
-	private Object resolveObject(MethodParameter parameter, RoutingContext context, boolean check) {
+	private Object resolveObject(MethodParameter parameter, ImContext context, boolean check) {
 		Map<String, Object> arguments = this.parseArguments(context.request().params().iterator());
 		return this.resolveObject(parameter.getParameterType(), parameter.getParameterName(), arguments, context,
 				check);
@@ -337,7 +318,7 @@ public class RouterHandlerAdapter implements RouterHandler {
 	 * @param check     是否校验
 	 * @return 解析后的参数
 	 */
-	public Object resolveObject(Class<?> clazz, String pname, Map<String, Object> arguments, RoutingContext context,
+	public Object resolveObject(Class<?> clazz, String pname, Map<String, Object> arguments, ImContext context,
 			boolean check) {
 		Object obj = null;
 		try {
@@ -354,7 +335,7 @@ public class RouterHandlerAdapter implements RouterHandler {
 
 	@SuppressWarnings("unchecked")
 	private void fillObjectValue(Object obj, Map<String, FieldMeta> fields, String paramName,
-			Map<String, Object> arguments, RoutingContext context, boolean check) throws IllegalArgumentException {
+			Map<String, Object> arguments, ImContext context, boolean check) throws IllegalArgumentException {
 
 		// 优先使用下一级的数据
 		Object values = arguments;
@@ -445,7 +426,7 @@ public class RouterHandlerAdapter implements RouterHandler {
 	 * list 子类型的解析
 	 */
 	@SuppressWarnings("unchecked")
-	private Object resolveChildObject(Class<?> clazz, Map<String, Object> arguments, RoutingContext context,
+	private Object resolveChildObject(Class<?> clazz, Map<String, Object> arguments, ImContext context,
 			boolean check) {
 		List<Object> values = Lists.newArrayList();
 		arguments.forEach((key, value) -> {
@@ -457,7 +438,7 @@ public class RouterHandlerAdapter implements RouterHandler {
 		return values;
 	}
 
-	private Map<String, Object> parseHeaders(RoutingContext request) {
+	private Map<String, Object> parseHeaders(ImContext request) {
 		MultiMap maps = request.request().headers();
 		Map<String, Object> arguments = new LinkedHashMap<>();
 		maps.forEach(entry -> arguments.put(entry.getKey(), entry.getValue()));

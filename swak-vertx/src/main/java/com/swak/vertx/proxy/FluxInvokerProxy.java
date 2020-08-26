@@ -8,7 +8,7 @@ import com.swak.asm.MethodCache;
 import com.swak.asm.MethodCache.ClassMeta;
 import com.swak.asm.MethodCache.MethodMeta;
 import com.swak.exception.InvokeException;
-import com.swak.vertx.protocol.http.FluxInvoker;
+import com.swak.vertx.invoker.FluxInvoker;
 import com.swak.vertx.transport.VertxProxy;
 
 import net.sf.cglib.proxy.MethodInterceptor;

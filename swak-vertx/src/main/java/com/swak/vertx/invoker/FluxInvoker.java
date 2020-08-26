@@ -1,4 +1,4 @@
-package com.swak.vertx.protocol.http;
+package com.swak.vertx.invoker;
 
 import java.util.concurrent.CompletableFuture;
 

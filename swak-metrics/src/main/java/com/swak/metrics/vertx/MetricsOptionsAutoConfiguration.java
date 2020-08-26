@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Configuration;
 
-import com.swak.config.vertx.StandardOptionsAutoConfiguration;
+import com.swak.config.vertx.StandardVerxAutoConfiguration;
 import com.swak.meters.MetricsFactory;
 import com.swak.metrics.MetricsAutoConfiguration;
 
@@ -21,7 +21,7 @@ import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 @Configuration
 @ConditionalOnClass(DropwizardMetricsOptions.class)
 @ConditionalOnBean({ VertxOptions.class, MetricsFactory.class })
-@AutoConfigureAfter({ MetricsAutoConfiguration.class, StandardOptionsAutoConfiguration.class })
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, StandardVerxAutoConfiguration.class })
 public class MetricsOptionsAutoConfiguration {
 
 	@Autowired

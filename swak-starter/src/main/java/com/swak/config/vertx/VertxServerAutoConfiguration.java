@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.protocol.http.RouterHandler;
-import com.swak.vertx.protocol.ws.WebSocketHandler;
+import com.swak.vertx.protocol.im.ImHandler;
 import com.swak.vertx.transport.VertxProxy;
 import com.swak.vertx.transport.server.ReactiveServer;
 
@@ -21,9 +21,9 @@ import com.swak.vertx.transport.server.ReactiveServer;
 @Configuration
 @ConditionalOnClass(ReactiveServer.class)
 @EnableConfigurationProperties(VertxProperties.class)
-public class VertxAutoConfiguration {
+public class VertxServerAutoConfiguration {
 
-	public VertxAutoConfiguration() {
+	public VertxServerAutoConfiguration() {
 		APP_LOGGER.debug("Loading Vertx");
 		System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
 	}
@@ -57,6 +57,16 @@ public class VertxAutoConfiguration {
 	public RouterAnnotationBeanProcessor routerAnnotationBeanProcessor() {
 		return new RouterAnnotationBeanProcessor();
 	}
+	
+	/**
+	 * 加载路由配置处理器
+	 * 
+	 * @return
+	 */
+	@Bean
+	public ImAnnotationBeanProcessor imAnnotationBeanProcessor() {
+		return new ImAnnotationBeanProcessor();
+	}
 
 	/**
 	 * Http 服务器
@@ -64,7 +74,7 @@ public class VertxAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public ReactiveServer httpServer(VertxProxy vertx, RouterHandler routerHandler, WebSocketHandler webSocketHandler,
+	public ReactiveServer httpServer(VertxProxy vertx, RouterHandler routerHandler, ImHandler webSocketHandler,
 			VertxProperties properties) {
 		// threadCache
 		if (!properties.isThreadCache()) {
@@ -76,6 +86,6 @@ public class VertxAutoConfiguration {
 		if (properties.getLeakDetectionLevel() != null) {
 			System.setProperty("io.netty.leakDetection.level", properties.getLeakDetectionLevel().name());
 		}
-		return new ReactiveServer(vertx, properties, routerHandler, webSocketHandler);
+		return new ReactiveServer(vertx, properties);
 	}
 }
