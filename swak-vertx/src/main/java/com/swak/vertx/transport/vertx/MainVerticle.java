@@ -148,8 +148,8 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		// 配置发布多个服务
 		int intstances = getDeploymentIntstances(service.getInstances());
 		for (int i = 1; i <= intstances; i++) {
-			Future<String> stFuture = Future.future(s -> vertx
-					.deployVerticle(new ServiceVerticle(this.getService(service), service.getType()), options, s));
+			Future<String> stFuture = Future.future(
+					s -> vertx.deployVerticle(new ServiceVerticle(service.getRef(), service.getType()), options, s));
 			futures.add(stFuture.map(id -> null));
 		}
 		// 合并成一个结果
@@ -174,6 +174,8 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 	@SuppressWarnings("rawtypes")
 	private Future<EndPoint> startHttp(int port, List<RouterBean> routers) {
 
+		// 发布的 Host、Port
+		String deployHost = properties.getHost();
 		int deployPort = port <= 0 ? properties.getPort() : port;
 
 		// 获得路由 -- Router 是线程安全的所以多个Verticle实例可以公用
@@ -190,7 +192,7 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		int intstances = getDeploymentIntstances(-1);
 		for (int i = 1; i <= intstances; i++) {
 			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
-					new HttpServerVerticle(router, httpServerOptions, properties.getHost(), deployPort), options, s));
+					new HttpServerVerticle(router, httpServerOptions, deployHost, deployPort), options, s));
 			futures.add(stFuture);
 		}
 
@@ -245,6 +247,8 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 	@SuppressWarnings("rawtypes")
 	private Future<EndPoint> startWebSocket(int port, List<ImBean> routers) {
 
+		// 发布的 Host、Port
+		String deployHost = properties.getHost();
 		int deployPort = port <= 0 ? properties.getWebSocketPort() : port;
 
 		// 处理器
@@ -261,7 +265,7 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		int intstances = getDeploymentIntstances(-1);
 		for (int i = 1; i <= intstances; i++) {
 			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
-					new ImServerVerticle(imRouter, httpServerOptions, properties.getHost(), deployPort), options, s));
+					new ImServerVerticle(imRouter, httpServerOptions, deployHost, deployPort), options, s));
 			futures.add(stFuture);
 		}
 
@@ -273,6 +277,8 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 	}
 
 	private ImRouter getImRouter(List<ImBean> routers) {
+
+		// Im 的 Router
 		ImRouter imRouter = new ImRouter();
 
 		// 单个路由定义
@@ -295,19 +301,5 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 			intstances = properties.getEventLoopPoolSize();
 		}
 		return intstances;
-	}
-
-	/**
-	 * Bug: 在另外的线程中获取bean 会导致spring 死锁<br>
-	 * 所有获取bean的地方放在 init()在服务启动时在获取。
-	 * 
-	 * @param <T>
-	 * @param service
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	private <T> T getService(ServiceBean service) {
-		Object proxy = service.getRef();
-		return (T) proxy;
 	}
 }
