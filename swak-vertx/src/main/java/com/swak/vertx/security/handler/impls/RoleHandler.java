@@ -6,12 +6,12 @@ import java.util.concurrent.CompletionStage;
 import com.swak.entity.Result;
 import com.swak.exception.ErrorCode;
 import com.swak.security.Permission;
+import com.swak.security.Subject;
+import com.swak.vertx.security.Context;
 import com.swak.vertx.security.handler.PathDefinition;
 import com.swak.vertx.transport.HttpConst;
-import com.swak.vertx.transport.Subject;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
-import io.vertx.ext.web.RoutingContext;
 
 /**
  * 需要判断用户拥有什么角色
@@ -25,7 +25,7 @@ public class RoleHandler extends PermissionPathDefinitionHandler implements Path
      * 判断用户需要拥有的权限
      */
     @Override
-    public CompletionStage<Boolean> isAccessDenied(RoutingContext context, Subject subject) {
+    public CompletionStage<Boolean> isAccessDenied(Context context, Subject subject) {
 
         // 获取权限
         Permission permission = this.getPermission(context);
@@ -43,9 +43,9 @@ public class RoleHandler extends PermissionPathDefinitionHandler implements Path
      * 如果不继续执行则怎么处理
      */
     @Override
-    public CompletableFuture<Boolean> onAccessDenied(RoutingContext context, Subject subject) {
-        context.response().putHeader(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
-        context.response().end(Result.error(ErrorCode.ACCESS_DENIED).toJson());
+    public CompletableFuture<Boolean> onAccessDenied(Context context, Subject subject) {
+        context.header(HttpHeaderNames.CONTENT_TYPE, HttpConst.APPLICATION_JSON);
+        context.end(Result.error(ErrorCode.ACCESS_DENIED).toJson());
         return CompletableFuture.completedFuture(false);
     }
 }

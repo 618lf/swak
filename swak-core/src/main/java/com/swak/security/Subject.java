@@ -1,12 +1,9 @@
-package com.swak.vertx.transport;
+package com.swak.security;
 
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
-import com.swak.security.Permission;
 import com.swak.security.jwt.JWTPayload;
-
-import io.vertx.ext.web.RoutingContext;
 
 /**
  * 主体
@@ -37,7 +34,7 @@ public interface Subject {
 	 * @param context 请求上下文
 	 * @return 异步Token结果
 	 */
-	CompletionStage<Token> login(RoutingContext context);
+	CompletionStage<Token> login(Object context);
 
 	/**
 	 * 是否有权限

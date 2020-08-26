@@ -7,12 +7,10 @@ import java.util.concurrent.CompletionStage;
 import org.springframework.util.CollectionUtils;
 
 import com.swak.security.Permission;
+import com.swak.security.Subject;
+import com.swak.security.Token;
 import com.swak.vertx.security.principal.PrincipalStrategy;
 import com.swak.vertx.security.realm.Realm;
-import com.swak.vertx.transport.Subject;
-import com.swak.vertx.transport.Token;
-
-import io.vertx.ext.web.RoutingContext;
 
 /**
  * 安全管理的基本定義
@@ -44,7 +42,7 @@ public class SecurityManager {
 	 * @param context 请求上下文
 	 * @return 主体
 	 */
-	public CompletionStage<Subject> createSubject(RoutingContext context) {
+	public CompletionStage<Subject> createSubject(Context context) {
 		return strategy.createSubject(context);
 	}
 
@@ -55,7 +53,7 @@ public class SecurityManager {
 	 * @param context 请求上下文
 	 * @return token
 	 */
-	public CompletionStage<Token> login(Subject subject, RoutingContext context) {
+	public CompletionStage<Token> login(Subject subject, Context context) {
 		return this.realm.doAuthentication(subject, context).thenCompose(principal -> {
 			if (principal != null) {
 				subject.setPrincipal(principal);

@@ -25,7 +25,7 @@ public class VertxConfigs {
 	private final Set<ServiceBean> services = Sets.newOrderSet();
 	private final Map<Integer, List<RouterBean>> routers = Maps.newOrderMap();
 	private final Map<Integer, List<ImBean>> webSockets = Maps.newOrderMap();
-	private final Set<IRouterConfig> routerConfigs = Sets.newOrderSet();
+	private final Set<RouterConfig> routerConfigs = Sets.newOrderSet();
 
 	private VertxConfigs() {
 	}
@@ -38,7 +38,7 @@ public class VertxConfigs {
 		return routers;
 	}
 
-	public Set<IRouterConfig> getRouterConfigs() {
+	public Set<RouterConfig> getRouterConfigs() {
 		return routerConfigs;
 	}
 
@@ -53,8 +53,8 @@ public class VertxConfigs {
 			this.add((RouterBean) bean);
 		} else if (bean instanceof ImBean) {
 			this.add((ImBean) bean);
-		} else if (bean instanceof IRouterConfig) {
-			this.add((IRouterConfig) bean);
+		} else if (bean instanceof RouterConfig) {
+			this.add((RouterConfig) bean);
 		}
 		return this;
 	}
@@ -84,7 +84,7 @@ public class VertxConfigs {
 		return this;
 	}
 
-	public VertxConfigs add(IRouterConfig bean) {
+	public VertxConfigs add(RouterConfig bean) {
 		routerConfigs.add(bean);
 		return this;
 	}

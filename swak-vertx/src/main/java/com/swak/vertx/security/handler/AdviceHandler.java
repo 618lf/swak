@@ -1,10 +1,10 @@
 package com.swak.vertx.security.handler;
 
-import com.swak.vertx.transport.Subject;
-import io.vertx.ext.web.RoutingContext;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+
+import com.swak.security.Subject;
+import com.swak.vertx.security.Context;
 
 /**
  * 访问控制器
@@ -18,7 +18,7 @@ public abstract class AdviceHandler implements Handler {
      * 执行处理
      */
     @Override
-    public CompletionStage<Boolean> handle(RoutingContext context, Subject subject, HandlerChain chain) {
+    public CompletionStage<Boolean> handle(Context context, Subject subject, HandlerChain chain) {
         return this.isAccessDenied(context, subject).thenCompose(allowed -> {
             if (!allowed) {
                 return this.onAccessDenied(context, subject);
@@ -39,7 +39,7 @@ public abstract class AdviceHandler implements Handler {
      * @param subject 用户主体
      * @return 异步结果
      */
-    public CompletionStage<Boolean> isAccessDenied(RoutingContext context, Subject subject) {
+    public CompletionStage<Boolean> isAccessDenied(Context context, Subject subject) {
         return CompletableFuture.completedFuture(true);
     }
 
@@ -50,7 +50,7 @@ public abstract class AdviceHandler implements Handler {
 	 * @param subject 用户主体
 	 * @return 异步结果
      */
-    public CompletionStage<Boolean> onAccessDenied(RoutingContext context, Subject subject) {
+    public CompletionStage<Boolean> onAccessDenied(Context context, Subject subject) {
         return CompletableFuture.completedFuture(true);
     }
 }

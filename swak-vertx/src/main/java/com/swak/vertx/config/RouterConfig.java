@@ -9,7 +9,7 @@ import io.vertx.ext.web.Router;
  * @author: lifeng
  * @date: 2020/3/29 19:08
  */
-public interface IRouterConfig extends AbstractConfig {
+public interface RouterConfig extends AbstractConfig {
 
 	/**
 	 * 对 router 进行配置

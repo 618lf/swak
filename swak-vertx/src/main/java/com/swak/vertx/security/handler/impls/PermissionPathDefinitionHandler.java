@@ -1,5 +1,7 @@
 package com.swak.vertx.security.handler.impls;
 
+import java.util.Map;
+
 import com.swak.Constants;
 import com.swak.security.Permission;
 import com.swak.security.permission.AndPermission;
@@ -8,11 +10,9 @@ import com.swak.security.permission.Permissions;
 import com.swak.security.permission.SinglePermission;
 import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
+import com.swak.vertx.security.Context;
 import com.swak.vertx.security.handler.AdviceHandler;
 import com.swak.vertx.security.handler.PathDefinition;
-import io.vertx.ext.web.RoutingContext;
-
-import java.util.Map;
 
 /**
  * 基于 Permission 的权限定义方式
@@ -71,7 +71,7 @@ public abstract class PermissionPathDefinitionHandler extends AdviceHandler impl
      * @param context 请求上下文
      * @return Permission
      */
-    protected Permission getPermission(RoutingContext context) {
+    protected Permission getPermission(Context context) {
         String key = context.get(CHAIN_RESOLVE_PATH);
         return params.get(key);
     }

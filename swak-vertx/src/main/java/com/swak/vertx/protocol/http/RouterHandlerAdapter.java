@@ -24,6 +24,7 @@ import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
 import com.swak.exception.ErrorCode;
 import com.swak.security.Permission;
+import com.swak.security.Subject;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
@@ -33,7 +34,6 @@ import com.swak.validator.errors.BindErrors;
 import com.swak.vertx.invoker.MethodInvoker;
 import com.swak.vertx.invoker.MethodInvoker.MethodParameter;
 import com.swak.vertx.security.SecuritySubject;
-import com.swak.vertx.transport.Subject;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpConnection;

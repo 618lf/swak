@@ -4,9 +4,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import com.swak.vertx.transport.Subject;
-
-import io.vertx.ext.web.RoutingContext;
+import com.swak.security.Subject;
+import com.swak.vertx.security.Context;
 
 /**
  * 简单的执行链实现
@@ -27,7 +26,7 @@ public class SimpleHandlerChain implements HandlerChain {
      * 执行handler 链
      */
     @Override
-    public CompletionStage<Boolean> doHandler(RoutingContext context, Subject subject) {
+    public CompletionStage<Boolean> doHandler(Context context, Subject subject) {
         // 执行handler链， 如果有handler 返回false，就不回继续执行代码
         if (this.handlers != null && this.index < this.handlers.size()) {
             return this.handlers.get(this.index++).handle(context, subject, this);

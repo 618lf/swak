@@ -1,4 +1,4 @@
-package com.swak.vertx.transport;
+package com.swak.security;
 
 import com.alibaba.fastjson.util.TypeUtils;
 

@@ -3,11 +3,10 @@ package com.swak.vertx.security.realm;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import com.swak.vertx.transport.AuthorizationInfo;
-import com.swak.vertx.transport.Principal;
-import com.swak.vertx.transport.Subject;
-
-import io.vertx.ext.web.RoutingContext;
+import com.swak.security.AuthorizationInfo;
+import com.swak.security.Principal;
+import com.swak.security.Subject;
+import com.swak.vertx.security.Context;
 
 /**
  * 获取权限域信息
@@ -25,7 +24,7 @@ public interface Realm {
 	 * @param context 请求上下文
 	 * @return 用户身份信息
 	 */
-	default CompletionStage<Principal> doAuthentication(Subject subject, RoutingContext context) {
+	default CompletionStage<Principal> doAuthentication(Subject subject, Context context) {
 		return CompletableFuture.completedFuture(subject.getPrincipal());
 	}
 

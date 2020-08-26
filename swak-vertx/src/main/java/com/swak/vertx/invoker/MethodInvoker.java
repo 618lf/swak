@@ -23,12 +23,15 @@ import com.swak.asm.Wrapper;
 import com.swak.meters.MethodMetrics;
 import com.swak.meters.MetricsFactory;
 import com.swak.security.Permission;
+import com.swak.security.Subject;
 import com.swak.security.permission.AndPermission;
 import com.swak.security.permission.OrPermission;
 import com.swak.security.permission.SinglePermission;
 import com.swak.utils.router.RouterUtils;
 import com.swak.validator.errors.BindErrors;
-import com.swak.vertx.transport.Subject;
+import com.swak.vertx.protocol.im.ImContext;
+import com.swak.vertx.protocol.im.ImContext.ImRequest;
+import com.swak.vertx.protocol.im.ImContext.ImResponse;
 
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -96,9 +99,11 @@ public class MethodInvoker implements HandlerInvoker {
 	private void initField(Class<?> parameterType) {
 		if (parameterType == null || parameterType == HttpServerRequest.class
 				|| parameterType == HttpServerResponse.class || parameterType == RoutingContext.class
-				|| parameterType == Subject.class || parameterType == BindErrors.class
-				|| BeanUtils.isSimpleProperty(parameterType) || Collection.class.isAssignableFrom(parameterType)
-				|| List.class.isAssignableFrom(parameterType) || Map.class.isAssignableFrom(parameterType)) {
+				|| parameterType == ImRequest.class || parameterType == ImResponse.class
+				|| parameterType == ImContext.class || parameterType == Subject.class
+				|| parameterType == BindErrors.class || BeanUtils.isSimpleProperty(parameterType)
+				|| Collection.class.isAssignableFrom(parameterType) || List.class.isAssignableFrom(parameterType)
+				|| Map.class.isAssignableFrom(parameterType)) {
 			return;
 		}
 

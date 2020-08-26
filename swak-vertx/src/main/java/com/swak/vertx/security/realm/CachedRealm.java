@@ -1,15 +1,15 @@
 package com.swak.vertx.security.realm;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
 import com.swak.cache.AsyncCache;
 import com.swak.cache.Cache;
 import com.swak.cache.CacheManager;
 import com.swak.cache.Entity;
-import com.swak.vertx.transport.AuthorizationInfo;
-import com.swak.vertx.transport.Principal;
-import com.swak.vertx.transport.Subject;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import com.swak.security.AuthorizationInfo;
+import com.swak.security.Principal;
+import com.swak.security.Subject;
 
 /**
  * 提供缓存的支持

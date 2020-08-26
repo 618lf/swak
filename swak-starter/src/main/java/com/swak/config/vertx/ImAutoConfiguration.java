@@ -38,7 +38,7 @@ public class ImAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public ResultHandler resultHandler(ObjectProvider<List<HttpMessageConverter>> converters) {
+	public ResultHandler imResultHandler(ObjectProvider<List<HttpMessageConverter>> converters) {
 		ResultHandler resultHandler = new ResultHandler();
 		addConverters(resultHandler);
 		List<HttpMessageConverter> $converters = converters.getIfAvailable();
@@ -64,7 +64,7 @@ public class ImAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public ImHandler webSocketHandler() {
+	public ImHandler imHandler() {
 		return new ImHandlerAdapter();
 	}
 }

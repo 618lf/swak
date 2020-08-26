@@ -1,19 +1,18 @@
 package com.swak.vertx.security;
 
+import java.io.Serializable;
+import java.util.Set;
+import java.util.concurrent.CompletionStage;
+
 import com.swak.security.Permission;
+import com.swak.security.Principal;
+import com.swak.security.Subject;
+import com.swak.security.Token;
 import com.swak.security.jwt.JWTObject;
 import com.swak.security.jwt.JWTPayload;
 import com.swak.utils.Maps;
 import com.swak.utils.Sets;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.transport.Principal;
-import com.swak.vertx.transport.Subject;
-import com.swak.vertx.transport.Token;
-import io.vertx.ext.web.RoutingContext;
-
-import java.io.Serializable;
-import java.util.Set;
-import java.util.concurrent.CompletionStage;
 
 /**
  * 主体
@@ -72,8 +71,8 @@ public class SecuritySubject extends JWTObject implements Subject {
 	}
 
 	@Override
-	public CompletionStage<Token> login(RoutingContext context) {
-		return SecurityUtils.getSecurityManager().login(this, context);
+	public CompletionStage<Token> login(Object context) {
+		return SecurityUtils.getSecurityManager().login(this, Context.of(context));
 	}
 
 	@Override

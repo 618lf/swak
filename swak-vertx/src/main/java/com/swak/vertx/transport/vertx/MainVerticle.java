@@ -15,7 +15,7 @@ import com.swak.reactivex.context.EndPoints;
 import com.swak.reactivex.context.EndPoints.EndPoint;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.config.IRouterConfig;
+import com.swak.vertx.config.RouterConfig;
 import com.swak.vertx.config.ImBean;
 import com.swak.vertx.config.RouterBean;
 import com.swak.vertx.config.ServiceBean;
@@ -211,8 +211,8 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		router.errorHandler(500, new ErrorHandler(500));
 
 		// 路由基本配置
-		Set<IRouterConfig> configs = VertxConfigs.me().getRouterConfigs();
-		for (IRouterConfig config : configs) {
+		Set<RouterConfig> configs = VertxConfigs.me().getRouterConfigs();
+		for (RouterConfig config : configs) {
 			config.apply(vertx, router);
 		}
 

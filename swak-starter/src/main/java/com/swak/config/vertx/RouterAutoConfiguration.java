@@ -38,7 +38,7 @@ public class RouterAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public ResultHandler resultHandler(ObjectProvider<List<HttpMessageConverter>> converters) {
+	public ResultHandler routerResultHandler(ObjectProvider<List<HttpMessageConverter>> converters) {
 		ResultHandler resultHandler = new ResultHandler();
 		addConverters(resultHandler);
 		List<HttpMessageConverter> $converters = converters.getIfAvailable();

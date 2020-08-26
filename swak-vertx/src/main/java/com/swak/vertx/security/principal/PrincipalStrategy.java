@@ -1,10 +1,10 @@
 package com.swak.vertx.security.principal;
 
-import com.swak.vertx.transport.Subject;
-import com.swak.vertx.transport.Token;
-import io.vertx.ext.web.RoutingContext;
-
 import java.util.concurrent.CompletionStage;
+
+import com.swak.security.Subject;
+import com.swak.security.Token;
+import com.swak.vertx.security.Context;
 
 /**
  * 身份解析
@@ -20,7 +20,7 @@ public interface PrincipalStrategy {
      * @param context 请求上下文
      * @return 异步Subject结果
      */
-    CompletionStage<Subject> createSubject(RoutingContext context);
+    CompletionStage<Subject> createSubject(Context context);
 
     /**
      * 生成 Token

@@ -1,4 +1,4 @@
-package com.swak.vertx.transport;
+package com.swak.security;
 
 /**
  * Token

@@ -24,6 +24,7 @@ import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
 import com.swak.exception.ErrorCode;
 import com.swak.security.Permission;
+import com.swak.security.Subject;
 import com.swak.utils.JsonMapper;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
@@ -32,8 +33,9 @@ import com.swak.validator.Validator;
 import com.swak.validator.errors.BindErrors;
 import com.swak.vertx.invoker.MethodInvoker;
 import com.swak.vertx.invoker.MethodInvoker.MethodParameter;
+import com.swak.vertx.protocol.im.ImContext.ImRequest;
+import com.swak.vertx.protocol.im.ImContext.ImResponse;
 import com.swak.vertx.security.SecuritySubject;
-import com.swak.vertx.transport.Subject;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.impl.ContextInternal;
@@ -214,7 +216,11 @@ public class ImHandlerAdapter implements ImHandler {
 	 */
 	private Object parseParameter(MethodParameter parameter, ImContext context) {
 		Class<?> parameterType = parameter.getParameterType();
-		if (parameterType == ImContext.class) {
+		if (parameterType == ImRequest.class) {
+			return context.request();
+		} else if (parameterType == ImResponse.class) {
+			return context.response();
+		} else if (parameterType == ImContext.class) {
 			return context;
 		} else if (parameterType == Subject.class) {
 			Subject subject = context.get(Constants.SUBJECT_NAME);
@@ -268,7 +274,8 @@ public class ImHandlerAdapter implements ImHandler {
 			} else if (List.class.isAssignableFrom(fieldClass)) {
 				return context.request().headers().getAll(parameter.getParameterName());
 			}
-			return this.doConvert(context.request().getHeader(parameter.getParameterName()), parameter.getParameterType());
+			return this.doConvert(context.request().getHeader(parameter.getParameterName()),
+					parameter.getParameterType());
 		}
 		return null;
 	}
@@ -426,8 +433,7 @@ public class ImHandlerAdapter implements ImHandler {
 	 * list 子类型的解析
 	 */
 	@SuppressWarnings("unchecked")
-	private Object resolveChildObject(Class<?> clazz, Map<String, Object> arguments, ImContext context,
-			boolean check) {
+	private Object resolveChildObject(Class<?> clazz, Map<String, Object> arguments, ImContext context, boolean check) {
 		List<Object> values = Lists.newArrayList();
 		arguments.forEach((key, value) -> {
 			if (value instanceof Map) {
