@@ -15,9 +15,10 @@ import com.swak.reactivex.context.EndPoints;
 import com.swak.reactivex.context.EndPoints.EndPoint;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
-import com.swak.vertx.config.RouterConfig;
 import com.swak.vertx.config.ImBean;
+import com.swak.vertx.config.ImConfig;
 import com.swak.vertx.config.RouterBean;
+import com.swak.vertx.config.RouterConfig;
 import com.swak.vertx.config.ServiceBean;
 import com.swak.vertx.config.VertxConfigs;
 import com.swak.vertx.config.VertxProperties;
@@ -271,7 +272,7 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 
 		// 合并成一个结果
 		return CompositeFuture.all(futures).map(res -> {
-			return new EndPoint().setScheme(Server.Ws).setHost(this.endPoints.getHost()).setPort(properties.getPort())
+			return new EndPoint().setScheme(Server.Im).setHost(this.endPoints.getHost()).setPort(deployPort)
 					.setParallel(intstances);
 		});
 	}
@@ -280,6 +281,12 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 
 		// Im 的 Router
 		ImRouter imRouter = new ImRouter();
+
+		// 路由基本配置
+		Set<ImConfig> configs = VertxConfigs.me().getImConfigs();
+		for (ImConfig config : configs) {
+			config.apply(vertx, imRouter);
+		}
 
 		// 单个路由定义
 		for (ImBean rb : routers) {

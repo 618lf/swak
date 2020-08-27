@@ -16,7 +16,7 @@ public enum Server {
 	/**
 	 * 对外提供 WebSocket 服务
 	 */
-	Ws,
+	Im,
 
 	/**
 	 * 对外提供Tcp 服务 -- 目前暂未支持

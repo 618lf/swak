@@ -170,11 +170,11 @@ public class ImRouter implements Handler<ServerWebSocket> {
 
 		});
 
-		ImOps ops;
+		ImOps ops = ImOps.All;
 		Handler<ImContext> handler;
 
 		public ImRoute ops(ImOps ops) {
-			this.ops = ops;
+			this.ops = ops == null ? ImOps.All : ops;
 			return this;
 		}
 

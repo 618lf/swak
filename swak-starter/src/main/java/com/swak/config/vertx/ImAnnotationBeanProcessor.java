@@ -19,8 +19,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 
 import com.swak.annotation.ImApi;
+import com.swak.annotation.ImMapping;
 import com.swak.annotation.ImService;
-import com.swak.annotation.RequestMapping;
 import com.swak.utils.ReflectUtils;
 import com.swak.vertx.config.ImBean;
 
@@ -60,7 +60,7 @@ public class ImAnnotationBeanProcessor implements EnvironmentAware, BeanDefiniti
 			Class<?> beanClass) {
 		Method[] methods = beanClass.getDeclaredMethods();
 		for (Method method : methods) {
-			RequestMapping methodMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
+			ImMapping methodMapping = AnnotatedElementUtils.findMergedAnnotation(method, ImMapping.class);
 			if (methodMapping == null) {
 				continue;
 			}
