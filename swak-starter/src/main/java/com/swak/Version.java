@@ -1,6 +1,7 @@
 package com.swak;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -8,6 +9,9 @@ import java.net.URLConnection;
 import java.security.CodeSource;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+
+import com.swak.utils.IOUtils;
 
 /**
  * 版本号
@@ -51,9 +55,8 @@ public final class Version {
 			if (connection instanceof JarURLConnection) {
 				return getImplementationVersion(((JarURLConnection) connection).getJarFile());
 			}
-			try (JarFile jarFile = new JarFile(new File(codeSourceLocation.toURI()))) {
-				return getImplementationVersion(jarFile);
-			}
+			File manifestFile = new File(new File(codeSourceLocation.toURI()), "META-INF/MANIFEST.MF");
+			return getImplementationVersion(manifestFile);
 		} catch (Exception ex) {
 			return null;
 		}
@@ -61,5 +64,16 @@ public final class Version {
 
 	private static String getImplementationVersion(JarFile jarFile) throws IOException {
 		return jarFile.getManifest().getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+	}
+
+	private static String getImplementationVersion(File manifestFile) throws IOException {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(manifestFile);
+			Manifest manifest = new Manifest(fis);
+			return manifest.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+		} finally {
+			IOUtils.closeQuietly(fis);
+		}
 	}
 }
