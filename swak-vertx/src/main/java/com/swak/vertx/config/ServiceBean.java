@@ -1,5 +1,8 @@
 package com.swak.vertx.config;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+
 import com.swak.annotation.Context;
 import com.swak.annotation.FluxService;
 
@@ -11,23 +14,22 @@ import lombok.EqualsAndHashCode;
  * @author: lifeng
  * @date: 2020/3/29 18:52
  */
-@EqualsAndHashCode
-public class ServiceBean implements AbstractConfig {
+@EqualsAndHashCode(callSuper = false)
+public class ServiceBean extends AbstractBean implements InitializingBean {
 
 	private Object ref;
-	private Class<?> type;
-	private FluxService mapping;
+	private Class<?> beanClass;
+	private Class<?> interClass;
+	private Context context;
+	private int instances;
+	private String pool;
 
-	public Context getContext() {
-		return mapping.context();
-	}
-
-	public int getInstances() {
-		return mapping.instances();
-	}
-
-	public String getUse_pool() {
-		return mapping.use_pool();
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		FluxService mapping = AnnotatedElementUtils.findMergedAnnotation(beanClass, FluxService.class);
+		this.context = mapping.context();
+		this.instances = mapping.instances();
+		this.pool = mapping.pool();
 	}
 
 	public Object getRef() {
@@ -38,19 +40,31 @@ public class ServiceBean implements AbstractConfig {
 		this.ref = ref;
 	}
 
-	public Class<?> getType() {
-		return type;
+	public Context getContext() {
+		return context;
 	}
 
-	public void setType(Class<?> type) {
-		this.type = type;
+	public int getInstances() {
+		return instances;
 	}
 
-	public FluxService getMapping() {
-		return mapping;
+	public String getPool() {
+		return pool;
 	}
 
-	public void setMapping(FluxService mapping) {
-		this.mapping = mapping;
+	public Class<?> getBeanClass() {
+		return beanClass;
+	}
+
+	public void setBeanClass(Class<?> beanClass) {
+		this.beanClass = beanClass;
+	}
+
+	public Class<?> getInterClass() {
+		return interClass;
+	}
+
+	public void setInterClass(Class<?> interClass) {
+		this.interClass = interClass;
 	}
 }

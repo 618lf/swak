@@ -65,7 +65,7 @@ public class ServiceAnnotationBeanPostProcessor implements EnvironmentAware, Bea
 			if (inter.getName().startsWith("org.springframework.") || !fitWith(mapping, inter)) {
 				continue;
 			}
-			AbstractBeanDefinition serviceBeanDefinition = this.registryBeans(inter, beanDefinitionName, mapping);
+			AbstractBeanDefinition serviceBeanDefinition = this.registryBeans(beanClass, inter, beanDefinitionName);
 			beanFactory.registerBeanDefinition(this.generateServiceBeanName(beanDefinitionName, inter),
 					serviceBeanDefinition);
 		}
@@ -75,12 +75,12 @@ public class ServiceAnnotationBeanPostProcessor implements EnvironmentAware, Bea
 		return new StringBuilder("@FluxService").append(" ").append(interfaceClass.getName()).toString();
 	}
 
-	private AbstractBeanDefinition registryBeans(Class<?> beanClass, String beanName, FluxService mapping) {
+	private AbstractBeanDefinition registryBeans(Class<?> beanClass, Class<?> interClass, String beanName) {
 		BeanDefinitionBuilder builder = rootBeanDefinition(ServiceBean.class);
 		String resolvedBeanName = environment.resolvePlaceholders(beanName);
 		builder.addPropertyReference("ref", resolvedBeanName);
-		builder.addPropertyValue("type", beanClass);
-		builder.addPropertyValue("mapping", mapping);
+		builder.addPropertyValue("beanClass", beanClass);
+		builder.addPropertyValue("interClass", interClass);
 		return builder.getBeanDefinition();
 	}
 

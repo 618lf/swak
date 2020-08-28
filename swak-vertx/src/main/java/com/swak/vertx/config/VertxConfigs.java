@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.swak.utils.Ints;
 import com.swak.utils.Maps;
 import com.swak.utils.Sets;
 
@@ -23,8 +24,8 @@ public class VertxConfigs {
 	}
 
 	private final Set<ServiceBean> services = Sets.newOrderSet();
-	private final Map<Integer, List<RouterBean>> routers = Maps.newOrderMap();
-	private final Map<Integer, List<ImBean>> webSockets = Maps.newOrderMap();
+	private final Map<Integer, BeansConfig> routers = Maps.newOrderMap();
+	private final Map<Integer, BeansConfig> webSockets = Maps.newOrderMap();
 	private final Set<RouterConfig> routerConfigs = Sets.newOrderSet();
 	private final Set<ImConfig> imConfigs = Sets.newOrderSet();
 
@@ -35,7 +36,7 @@ public class VertxConfigs {
 		return services;
 	}
 
-	public Map<Integer, List<RouterBean>> getRouters() {
+	public Map<Integer, BeansConfig> getRouters() {
 		return routers;
 	}
 
@@ -43,7 +44,7 @@ public class VertxConfigs {
 		return routerConfigs;
 	}
 
-	public Map<Integer, List<ImBean>> getWebSockets() {
+	public Map<Integer, BeansConfig> getWebSockets() {
 		return webSockets;
 	}
 
@@ -72,22 +73,18 @@ public class VertxConfigs {
 	}
 
 	public VertxConfigs add(RouterBean bean) {
-		List<RouterBean> beans = routers.get(bean.getPort());
-		if (beans == null) {
-			beans = new LinkedList<>();
-			routers.put(bean.getPort(), beans);
-		}
-		beans.add(bean);
+		BeansConfig beanConfig = routers.computeIfAbsent(bean.getPort(), (port) -> {
+			return new BeansConfig();
+		});
+		beanConfig.add(bean);
 		return this;
 	}
 
 	public VertxConfigs add(ImBean bean) {
-		List<ImBean> beans = webSockets.get(bean.getPort());
-		if (beans == null) {
-			beans = new LinkedList<>();
-			webSockets.put(bean.getPort(), beans);
-		}
-		beans.add(bean);
+		BeansConfig beanConfig = webSockets.computeIfAbsent(bean.getPort(), (port) -> {
+			return new BeansConfig();
+		});
+		beanConfig.add(bean);
 		return this;
 	}
 
@@ -99,5 +96,36 @@ public class VertxConfigs {
 	public VertxConfigs add(ImConfig bean) {
 		imConfigs.add(bean);
 		return this;
+	}
+
+	/**
+	 * Bean定义
+	 */
+	public static class BeansConfig {
+		private int instances = -1;
+		private List<AbstractBean> beans = new LinkedList<>();
+
+		public int getInstances() {
+			return instances;
+		}
+
+		public void setInstances(int instances) {
+			this.instances = instances;
+		}
+
+		@SuppressWarnings("unchecked")
+		public <T> List<T> getBeans() {
+			return (List<T>) beans;
+		}
+
+		public void setBeans(List<AbstractBean> beans) {
+			this.beans = beans;
+		}
+
+		public BeansConfig add(AbstractBean bean) {
+			this.beans.add(bean);
+			this.instances = Ints.max(this.instances, bean.getInstances());
+			return this;
+		}
 	}
 }

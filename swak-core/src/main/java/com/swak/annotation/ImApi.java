@@ -31,6 +31,11 @@ public @interface ImApi {
 	String value() default StringUtils.EMPTY;
 
 	/**
+	 * 支持的 path
+	 */
+	String path() default StringUtils.EMPTY;
+
+	/**
 	 * 支持的 method
 	 */
 	@AliasFor(annotation = ImMapping.class)
@@ -40,4 +45,9 @@ public @interface ImApi {
 	 * 发布的端口
 	 */
 	int port() default -1;
+	
+    /**
+     * 发布服务的个数
+     */
+    int instances() default 1;
 }

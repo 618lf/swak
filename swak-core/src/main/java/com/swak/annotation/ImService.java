@@ -61,7 +61,7 @@ public @interface ImService {
 	 * 可以设置在哪个 pool 中运行
 	 */
 	@AliasFor(annotation = FluxService.class)
-	String use_pool() default StringUtils.EMPTY;
+	String pool() default StringUtils.EMPTY;
 
 	/**
 	 * 指定服务类

@@ -38,11 +38,11 @@ public class ImServerVerticle extends AbstractVerticle implements ServerVerticle
 
 		// 发布服务
 		if (StringUtils.isBlank(host)) {
-			vertx.createHttpServer(options).webSocketHandler(imRouter).exceptionHandler(this::handle).listen(port,
-					res -> this.startResult(startPromise, res));
+			vertx.createHttpServer(options).webSocketHandler(imRouter.newHandler()).exceptionHandler(this::handle)
+					.listen(port, res -> this.startResult(startPromise, res));
 		} else {
-			vertx.createHttpServer(options).webSocketHandler(imRouter).exceptionHandler(this::handle).listen(port, host,
-					res -> this.startResult(startPromise, res));
+			vertx.createHttpServer(options).webSocketHandler(imRouter.newHandler()).exceptionHandler(this::handle)
+					.listen(port, host, res -> this.startResult(startPromise, res));
 		}
 	}
 

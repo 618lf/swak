@@ -97,11 +97,12 @@ public class MethodInvoker implements HandlerInvoker {
 	 * 组装类型，子类型也一并组装
 	 */
 	private void initField(Class<?> parameterType) {
-		if (parameterType == null || parameterType == HttpServerRequest.class
-				|| parameterType == HttpServerResponse.class || parameterType == RoutingContext.class
-				|| parameterType == ImRequest.class || parameterType == ImResponse.class
-				|| parameterType == ImContext.class || parameterType == Subject.class
-				|| parameterType == BindErrors.class || BeanUtils.isSimpleProperty(parameterType)
+		if (parameterType == null || HttpServerRequest.class.isAssignableFrom(parameterType)
+				|| HttpServerResponse.class.isAssignableFrom(parameterType)
+				|| RoutingContext.class.isAssignableFrom(parameterType)
+				|| ImRequest.class.isAssignableFrom(parameterType) || ImResponse.class.isAssignableFrom(parameterType)
+				|| ImContext.class.isAssignableFrom(parameterType) || Subject.class.isAssignableFrom(parameterType)
+				|| BindErrors.class.isAssignableFrom(parameterType) || BeanUtils.isSimpleProperty(parameterType)
 				|| Collection.class.isAssignableFrom(parameterType) || List.class.isAssignableFrom(parameterType)
 				|| Map.class.isAssignableFrom(parameterType)) {
 			return;

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.swak.annotation.ImOps;
 import com.swak.utils.Maps;
+import com.swak.vertx.protocol.im.ImRouter.ImMatch;
 import com.swak.vertx.protocol.im.ImRouter.ImRouteChain;
 import com.swak.vertx.protocol.im.ImRouter.ImRouteState;
 
@@ -25,6 +26,7 @@ import io.vertx.core.impl.VertxThread;
 public class ImContextImpl implements ImContext {
 
 	int index;
+	String path;
 	ImOps ops;
 	ServerWebSocket socket;
 	Throwable error;
@@ -35,33 +37,37 @@ public class ImContextImpl implements ImContext {
 	ContextInternal context;
 	ImRequestImpl request;
 	ImResponseImpl response;
+	Map<String, String> variables;
 
 	public ImContextImpl(ImOps ops, ImRouteState routeState, ServerWebSocket socket) {
 		this.ops = ops;
-		this.chain = routeState.get(ops);
+		this.path = socket.path();
 		this.socket = socket;
 		this.init();
 	}
 
 	public ImContextImpl(ImOps ops, ImRouteState routeState, ServerWebSocket socket, Throwable error) {
 		this.ops = ops;
+		this.path = socket.path();
 		this.socket = socket;
 		this.routeState = routeState;
 		this.error = error;
-		this.chain = routeState.get(ops);
 		this.init();
 	}
 
 	public ImContextImpl(ImOps ops, ImRouteState routeState, ServerWebSocket socket, WebSocketFrame message) {
 		this.ops = ops;
+		this.path = socket.path();
 		this.routeState = routeState;
 		this.socket = socket;
 		this.message = message;
-		this.chain = routeState.get(ops);
 		this.init();
 	}
 
 	private void init() {
+		ImMatch match = this.routeState.lookup(new ImPredicate(this.path, this.ops));
+		this.chain = match.getChain();
+		this.variables = match.getVariables();
 		this.context = this.context();
 		this.request = new ImRequestImpl();
 		this.response = new ImResponseImpl();
@@ -157,10 +163,10 @@ public class ImContextImpl implements ImContext {
 		public String uri() {
 			return socket.path();
 		}
-		
+
 		@Override
 		public String getParam(String param) {
-			return null;
+			return variables.get(param);
 		}
 
 		@Override

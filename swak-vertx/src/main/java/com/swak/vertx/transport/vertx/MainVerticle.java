@@ -21,6 +21,7 @@ import com.swak.vertx.config.RouterBean;
 import com.swak.vertx.config.RouterConfig;
 import com.swak.vertx.config.ServiceBean;
 import com.swak.vertx.config.VertxConfigs;
+import com.swak.vertx.config.VertxConfigs.BeansConfig;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.protocol.http.ErrorHandler;
 import com.swak.vertx.protocol.im.ImRouter;
@@ -137,7 +138,7 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		}
 
 		// 自定义的线程池
-		String usePool = service.getUse_pool();
+		String usePool = service.getPool();
 		Integer poolSize = properties.getWorkers().get(usePool);
 		if (StringUtils.isNotBlank(usePool)) {
 			options.setWorkerPoolName("vert.x-worker-" + usePool + "-thread");
@@ -149,8 +150,8 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		// 配置发布多个服务
 		int intstances = getDeploymentIntstances(service.getInstances());
 		for (int i = 1; i <= intstances; i++) {
-			Future<String> stFuture = Future.future(
-					s -> vertx.deployVerticle(new ServiceVerticle(service.getRef(), service.getType()), options, s));
+			Future<String> stFuture = Future.future(s -> vertx
+					.deployVerticle(new ServiceVerticle(service.getRef(), service.getInterClass()), options, s));
 			futures.add(stFuture.map(id -> null));
 		}
 		// 合并成一个结果
@@ -162,18 +163,19 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 	private List<Future<EndPoint>> startHttps() {
 
 		List<Future<EndPoint>> futures = Lists.newArrayList();
-		Map<Integer, List<RouterBean>> routers = VertxConfigs.me().getRouters();
+		Map<Integer, BeansConfig> routers = VertxConfigs.me().getRouters();
 
 		// 发布成多个Http服务
 		routers.keySet().forEach(port -> {
-			futures.add(this.startHttp(port, routers.get(port)));
+			BeansConfig config = routers.get(port);
+			futures.add(this.startHttp(port, config.getInstances(), config.getBeans()));
 		});
 
 		return futures;
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Future<EndPoint> startHttp(int port, List<RouterBean> routers) {
+	private Future<EndPoint> startHttp(int port, int instances, List<RouterBean> routers) {
 
 		// 发布的 Host、Port
 		String deployHost = properties.getHost();
@@ -190,7 +192,7 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 
 		// 以EventLoop 的方式发布
 		DeploymentOptions options = new DeploymentOptions().setWorker(false);
-		int intstances = getDeploymentIntstances(-1);
+		int intstances = getDeploymentIntstances(instances);
 		for (int i = 1; i <= intstances; i++) {
 			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
 					new HttpServerVerticle(router, httpServerOptions, deployHost, deployPort), options, s));
@@ -235,18 +237,19 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 
 	private List<Future<EndPoint>> startWebSockets() {
 		List<Future<EndPoint>> futures = Lists.newArrayList();
-		Map<Integer, List<ImBean>> routers = VertxConfigs.me().getWebSockets();
+		Map<Integer, BeansConfig> routers = VertxConfigs.me().getWebSockets();
 
 		// 发布成多个Http服务
 		routers.keySet().forEach(port -> {
-			futures.add(this.startWebSocket(port, routers.get(port)));
+			BeansConfig config = routers.get(port);
+			futures.add(this.startWebSocket(port, config.getInstances(), config.getBeans()));
 		});
 
 		return futures;
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Future<EndPoint> startWebSocket(int port, List<ImBean> routers) {
+	private Future<EndPoint> startWebSocket(int port, int instances, List<ImBean> routers) {
 
 		// 发布的 Host、Port
 		String deployHost = properties.getHost();
@@ -263,7 +266,7 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 
 		// 以EventLoop 的方式发布
 		DeploymentOptions options = new DeploymentOptions().setWorker(false);
-		int intstances = getDeploymentIntstances(-1);
+		int intstances = getDeploymentIntstances(instances);
 		for (int i = 1; i <= intstances; i++) {
 			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
 					new ImServerVerticle(imRouter, httpServerOptions, deployHost, deployPort), options, s));

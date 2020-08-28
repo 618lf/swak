@@ -216,20 +216,20 @@ public class ImHandlerAdapter implements ImHandler {
 	 */
 	private Object parseParameter(MethodParameter parameter, ImContext context) {
 		Class<?> parameterType = parameter.getParameterType();
-		if (parameterType == ImRequest.class) {
+		if (ImRequest.class.isAssignableFrom(parameterType)) {
 			return context.request();
-		} else if (parameterType == ImResponse.class) {
+		} else if (ImResponse.class.isAssignableFrom(parameterType)) {
 			return context.response();
-		} else if (parameterType == ImContext.class) {
+		} else if (ImContext.class.isAssignableFrom(parameterType)) {
 			return context;
-		} else if (parameterType == Subject.class) {
+		} else if (Subject.class.isAssignableFrom(parameterType)) {
 			Subject subject = context.get(Constants.SUBJECT_NAME);
 			if (subject == null) {
 				subject = new SecuritySubject();
 				context.put(Constants.SUBJECT_NAME, subject);
 			}
 			return subject;
-		} else if (parameterType == BindErrors.class) {
+		} else if (BindErrors.class.isAssignableFrom(parameterType)) {
 			return this.getBindErrors(context);
 		} else if (parameter.hasConvertAnnotation()) {
 			return this.resolveAnnotation(parameter, context);

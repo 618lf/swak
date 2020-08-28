@@ -44,4 +44,10 @@ public @interface RestPage {
 	 */
 	@AliasFor(annotation = RestApi.class)
 	int port() default -1;
+	
+    /**
+     * 发布服务的个数
+     */
+	@AliasFor(annotation = RestApi.class)
+    int instances() default -1;
 }

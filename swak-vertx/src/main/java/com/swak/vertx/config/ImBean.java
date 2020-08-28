@@ -27,7 +27,7 @@ import io.vertx.core.Handler;
  * @author lifeng
  * @date 2020年8月25日 下午2:36:24
  */
-public class ImBean implements Handler<ImContext>, InitializingBean, AbstractConfig {
+public class ImBean extends AbstractBean implements Handler<ImContext>, InitializingBean {
 
 	@Autowired
 	private VertxProxy proxy;
@@ -39,6 +39,7 @@ public class ImBean implements Handler<ImContext>, InitializingBean, AbstractCon
 	private Class<?> type;
 	private Object ref;
 	private Method method;
+	private String path;
 	private int port;
 	private ImOps ops;
 
@@ -49,8 +50,14 @@ public class ImBean implements Handler<ImContext>, InitializingBean, AbstractCon
 		ImMapping classMapping = AnnotatedElementUtils.findMergedAnnotation(type, ImMapping.class);
 		ImMapping methodMapping = AnnotatedElementUtils.findMergedAnnotation(method, ImMapping.class);
 
+		// 支持的路径
+		this.path = apiMapping.path();
+
 		// 端口
 		this.port = apiMapping.port();
+
+		// 服务个数
+		this.instances = apiMapping.instances();
 
 		// method
 		ImOps requestMethod = classMapping.method() == ImOps.All ? methodMapping.method() : classMapping.method();
@@ -86,7 +93,7 @@ public class ImBean implements Handler<ImContext>, InitializingBean, AbstractCon
 	 */
 	public void mounton(ImRouter router) {
 		ImRoute route = router.route();
-		route.ops(ops).handler(this);
+		route.path(path).ops(ops).handler(this);
 	}
 
 	public int getPort() {
@@ -119,5 +126,13 @@ public class ImBean implements Handler<ImContext>, InitializingBean, AbstractCon
 
 	public void setMethod(Method method) {
 		this.method = method;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 }

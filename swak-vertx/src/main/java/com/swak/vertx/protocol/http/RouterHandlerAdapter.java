@@ -228,20 +228,20 @@ public class RouterHandlerAdapter implements RouterHandler {
 	 */
 	private Object parseParameter(MethodParameter parameter, RoutingContext context) {
 		Class<?> parameterType = parameter.getParameterType();
-		if (parameterType == HttpServerRequest.class) {
+		if (HttpServerRequest.class.isAssignableFrom(parameterType)) {
 			return context.request();
-		} else if (parameterType == HttpServerResponse.class) {
+		} else if (HttpServerResponse.class.isAssignableFrom(parameterType)) {
 			return context.response();
-		} else if (parameterType == RoutingContext.class) {
+		} else if (RoutingContext.class.isAssignableFrom(parameterType)) {
 			return context;
-		} else if (parameterType == Subject.class) {
+		} else if (Subject.class.isAssignableFrom(parameterType)) {
 			Subject subject = context.get(Constants.SUBJECT_NAME);
 			if (subject == null) {
 				subject = new SecuritySubject();
 				context.put(Constants.SUBJECT_NAME, subject);
 			}
 			return subject;
-		} else if (parameterType == BindErrors.class) {
+		} else if (BindErrors.class.isAssignableFrom(parameterType)) {
 			return this.getBindErrors(context);
 		} else if (parameter.hasConvertAnnotation()) {
 			return this.resolveAnnotation(parameter, context);

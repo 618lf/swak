@@ -46,4 +46,9 @@ public @interface RestApi {
 	 * 发布的端口
 	 */
 	int port() default -1;
+	
+    /**
+     * 发布服务的个数
+     */
+    int instances() default -1;
 }

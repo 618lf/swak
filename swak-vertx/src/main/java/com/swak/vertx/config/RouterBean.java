@@ -29,7 +29,6 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import lombok.EqualsAndHashCode;
 
 /**
  * 路由 bean
@@ -37,8 +36,7 @@ import lombok.EqualsAndHashCode;
  * @author: lifeng
  * @date: 2020/3/29 18:55
  */
-@EqualsAndHashCode
-public class RouterBean implements Handler<RoutingContext>, InitializingBean, AbstractConfig {
+public class RouterBean extends AbstractBean implements Handler<RoutingContext>, InitializingBean {
 
 	@Autowired
 	private VertxProxy proxy;
@@ -80,6 +78,9 @@ public class RouterBean implements Handler<RoutingContext>, InitializingBean, Ab
 
 		// 端口
 		this.port = apiMapping.port();
+
+		// 服务个数
+		this.instances = apiMapping.instances();
 
 		// patterns
 		this.patterns = this.prependLeadingSlash(result);
