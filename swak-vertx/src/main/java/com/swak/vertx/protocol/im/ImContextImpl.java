@@ -14,6 +14,7 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.http.WebSocketFrame;
+import io.vertx.core.http.impl.VertxHttpUtils;
 import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.impl.VertxThread;
 
@@ -71,6 +72,7 @@ public class ImContextImpl implements ImContext {
 		this.context = this.context();
 		this.request = new ImRequestImpl();
 		this.response = new ImResponseImpl();
+		this.request.params.addAll(match.getVariables());
 	}
 
 	/**
@@ -139,6 +141,8 @@ public class ImContextImpl implements ImContext {
 	 */
 	public class ImRequestImpl implements ImRequest {
 
+		private MultiMap params;
+
 		@Override
 		public String getBodyAsString() {
 			return message != null ? message.textData() : null;
@@ -171,7 +175,10 @@ public class ImContextImpl implements ImContext {
 
 		@Override
 		public MultiMap params() {
-			return null;
+			if (params == null) {
+				params = VertxHttpUtils.params(uri());
+			}
+			return params;
 		}
 	}
 
