@@ -124,11 +124,6 @@
 			</dependency>
 			<dependency>
 				<groupId>com.swak</groupId>
-				<artifactId>swak-kotlin</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.swak</groupId>
 				<artifactId>swak-actuator</artifactId>
 				<version>${project.version}</version>
 			</dependency>
