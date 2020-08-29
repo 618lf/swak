@@ -40,10 +40,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.swak</groupId>
-			<artifactId>swak-kotlin</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.swak</groupId>
 			<artifactId>swak-actuator</artifactId>
 		</dependency>
 		<dependency>
