@@ -88,5 +88,11 @@
 			<artifactId>swak-mongodb</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.squareup</groupId>
+			<artifactId>javapoet</artifactId>
+			<version>${javapoet.version}</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 </project>
