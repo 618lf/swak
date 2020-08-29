@@ -1,11 +1,9 @@
 package com.swak.utils;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -13,37 +11,34 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
-import com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler;
 
 /**
  * 使用Jaxb2.0实现XML<->Java Object的Mapper.
  * 
- * 在创建时需要设定所有需要序列化的Root对象的Class.
- * 特别支持Root对象是Collection的情形.
+ * 在创建时需要设定所有需要序列化的Root对象的Class. 特别支持Root对象是Collection的情形.
  * 
  * @author calvin
  * @version 2013-01-15
  */
-@SuppressWarnings("restriction")
 public class JaxbMapper {
 
+	private static SAXParserFactory FACTORY = SAXParserFactory.newInstance();
 	private static ConcurrentMap<Class<?>, JAXBContext> CONTEXT = null;
-	
+
 	/**
 	 * 池化
 	 */
 	static {
 		CONTEXT = new ConcurrentHashMap<Class<?>, JAXBContext>();
 	}
-	
+
 	/**
 	 * Java Object->Xml without encoding.
 	 */
@@ -55,27 +50,25 @@ public class JaxbMapper {
 	 * Java Object->Xml with encoding.
 	 */
 	public static String toXml(Object root, Class<?> clazz) {
-		Marshaller marshaller = null;
 		try {
 			StringWriter writer = new StringWriter();
-			marshaller = createMarshaller(clazz);
+			Marshaller marshaller = createMarshaller(clazz);
 			marshaller.marshal(root, writer);
 			String xml = writer.toString();
 			IOUtils.closeQuietly(writer);
 			return xml;
 		} catch (JAXBException e) {
-			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz
-					+ "]: " + e.getMessage(), e);
+			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz + "]: " + e.getMessage(),
+					e);
 		}
 	}
-	
+
 	/**
 	 * Java Object->Xml with encoding.
 	 */
 	public static void toXml(Object root, OutputStream out) {
-		Marshaller marshaller = null;
 		try {
-			marshaller = createMarshaller(root.getClass());
+			Marshaller marshaller = createMarshaller(root.getClass());
 			marshaller.marshal(root, new StreamResult(out));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -87,27 +80,25 @@ public class JaxbMapper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T fromXml(String xml, Class<T> clazz) {
-		Unmarshaller unmarshaller = null;
 		try {
-			unmarshaller = createUnmarshaller(clazz);
+			Unmarshaller unmarshaller = createUnmarshaller(clazz);
 			StringReader reader = new StringReader(xml);
 			return (T) unmarshaller.unmarshal(reader);
 		} catch (JAXBException e) {
-			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz
-					+ "]: " + e.getMessage(), e);
+			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz + "]: " + e.getMessage(),
+					e);
 		}
 	}
-	
+
 	/**
 	 * Xml->Java Object.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T fromXml(InputStream xml, Class<T> clazz) {
-		Unmarshaller unmarshaller = null;
 		try {
-			unmarshaller = createUnmarshaller(clazz);
-			XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-			Source Source = new SAXSource(xmlReader, new InputSource(xml));
+			Unmarshaller unmarshaller = createUnmarshaller(clazz);
+			SAXParser xmlReader = FACTORY.newSAXParser();
+			Source Source = new SAXSource(xmlReader.getXMLReader(), new InputSource(xml));
 			return (T) unmarshaller.unmarshal(Source);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -115,8 +106,7 @@ public class JaxbMapper {
 	}
 
 	/**
-	 * 创建Marshaller并设定encoding(可为null).
-	 * 线程不安全，需要每次创建或pooling。
+	 * 创建Marshaller并设定encoding(可为null). 线程不安全，需要每次创建或pooling。
 	 */
 	public static Marshaller createMarshaller(Class<?> clazz) {
 		try {
@@ -124,20 +114,15 @@ public class JaxbMapper {
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-			marshaller.setProperty(CharacterEscapeHandler.class.getName(), new CharacterEscapeHandler() {
-                public void escape(char[] ac, int i, int j, boolean flag,Writer writer) throws IOException {
-                writer.write( ac, i, j ); }
-            });
 			return marshaller;
 		} catch (Exception e) {
-			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz
-					+ "]: " + e.getMessage(), e);
+			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz + "]: " + e.getMessage(),
+					e);
 		}
 	}
 
 	/**
-	 * 创建UnMarshaller.
-	 * 线程不安全，需要每次创建或pooling。
+	 * 创建UnMarshaller. 线程不安全，需要每次创建或pooling。
 	 */
 	public static Unmarshaller createUnmarshaller(Class<?> clazz) {
 		try {
@@ -145,8 +130,8 @@ public class JaxbMapper {
 			Unmarshaller marshaller = jaxbContext.createUnmarshaller();
 			return marshaller;
 		} catch (Exception e) {
-			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz
-					+ "]: " + e.getMessage(), e);
+			throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz + "]: " + e.getMessage(),
+					e);
 		}
 	}
 
@@ -157,8 +142,8 @@ public class JaxbMapper {
 				jaxbContext = JAXBContext.newInstance(clazz);
 				CONTEXT.putIfAbsent(clazz, jaxbContext);
 			} catch (JAXBException ex) {
-				throw new RuntimeException("Could not instantiate JAXBContext for class [" + clazz
-						+ "]: " + ex.getMessage(), ex);
+				throw new RuntimeException(
+						"Could not instantiate JAXBContext for class [" + clazz + "]: " + ex.getMessage(), ex);
 			}
 		}
 		return jaxbContext;
