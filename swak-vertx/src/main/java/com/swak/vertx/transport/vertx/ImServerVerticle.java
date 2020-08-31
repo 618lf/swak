@@ -33,10 +33,12 @@ public class ImServerVerticle extends AbstractVerticle implements ServerVerticle
 		this.port = port;
 	}
 
+	/**
+	 * 如果发布多个服务，则可以开启多个Worker， 接收请求后可以接入多个Worker
+	 */
 	@Override
 	public void start(Promise<Void> startPromise) {
 
-		// 发布服务
 		if (StringUtils.isBlank(host)) {
 			vertx.createHttpServer(options).webSocketHandler(imRouter.newHandler()).exceptionHandler(this::handle)
 					.listen(port, res -> this.startResult(startPromise, res));

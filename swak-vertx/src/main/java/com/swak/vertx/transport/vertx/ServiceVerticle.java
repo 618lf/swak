@@ -41,7 +41,8 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 	}
 
 	/**
-	 * 启动服务, startFuture.complete 底层也没有修改，暂时不知道修改方案
+	 * 如果发布多个服务，则轮询使用多个服务 <br>
+	 * @ConcurrentCyclicSequence.next() 逻辑部分
 	 */
 	@Override
 	public void start(Promise<Void> startPromise) {

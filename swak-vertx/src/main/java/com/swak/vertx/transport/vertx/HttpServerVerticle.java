@@ -34,12 +34,10 @@ public class HttpServerVerticle extends AbstractVerticle implements ServerVertic
 	}
 
 	/**
-	 * startFuture.complete 底层也没有修改，暂时不知道修改方案
+	 * 如果发布多个服务，则可以开启多个Worker， 接收请求后可以接入多个Worker
 	 */
 	@Override
 	public void start(Promise<Void> startPromise) {
-
-		// 发布服务
 		if (StringUtils.isBlank(host)) {
 			vertx.createHttpServer(options).requestHandler(router).exceptionHandler(this::handle).listen(port,
 					res -> this.startResult(startPromise, res));
