@@ -44,6 +44,7 @@ public class ImContextImpl implements ImContext {
 		this.ops = ops;
 		this.path = socket.path();
 		this.socket = socket;
+		this.routeState = routeState;
 		this.init();
 	}
 

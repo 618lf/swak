@@ -7,6 +7,7 @@ import com.swak.annotation.ImOps;
 
 import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Exclude;
+import lombok.ToString;
 
 /**
  * 条件
@@ -14,6 +15,7 @@ import lombok.EqualsAndHashCode.Exclude;
  * @author lifeng
  * @date 2020年8月28日 上午12:54:22
  */
+@ToString
 @EqualsAndHashCode
 public class ImPredicate {
 
@@ -21,12 +23,14 @@ public class ImPredicate {
 	 * 匹配的模式
 	 */
 	@Exclude
+	@lombok.ToString.Exclude
 	Pattern pattern;
 
 	/**
 	 * 匹配的分组
 	 */
 	@Exclude
+	@lombok.ToString.Exclude
 	List<String> groups;
 
 	/**
@@ -68,13 +72,13 @@ public class ImPredicate {
 			return false;
 		}
 
-		// 不满足匹配
-		if (pattern.matcher(other.path) == null) {
+		// 不满足路径必须有值
+		if (other.path == null) {
 			return false;
 		}
 
 		// 满足条件
-		return true;
+		return pattern.matcher(other.path).matches();
 	}
 
 	/**
@@ -90,7 +94,11 @@ public class ImPredicate {
 			return false;
 		}
 
-		// 路径要全匹配
-		return this.path.equals(other.path);
+		// 不满足路径要全匹配
+		if (!this.path.equals(other.path)) {
+			return false;
+		}
+
+		return true;
 	}
 }

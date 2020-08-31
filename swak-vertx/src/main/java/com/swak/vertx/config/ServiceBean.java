@@ -1,6 +1,5 @@
 package com.swak.vertx.config;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import com.swak.annotation.Context;
@@ -15,7 +14,7 @@ import lombok.EqualsAndHashCode;
  * @date: 2020/3/29 18:52
  */
 @EqualsAndHashCode(callSuper = false)
-public class ServiceBean extends AbstractBean implements InitializingBean {
+public class ServiceBean extends AbstractBean {
 
 	private Object ref;
 	private Class<?> beanClass;
@@ -25,7 +24,7 @@ public class ServiceBean extends AbstractBean implements InitializingBean {
 	private String pool;
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void initializing() throws Exception {
 		FluxService mapping = AnnotatedElementUtils.findMergedAnnotation(beanClass, FluxService.class);
 		this.context = mapping.context();
 		this.instances = mapping.instances();

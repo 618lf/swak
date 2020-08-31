@@ -13,9 +13,11 @@ import com.swak.annotation.ImOps;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 import com.swak.utils.Sets;
+import com.swak.utils.StringUtils;
 
 import io.vertx.core.Handler;
 import io.vertx.core.http.ServerWebSocket;
+import lombok.ToString;
 
 /**
  * Im 路由器
@@ -50,36 +52,6 @@ public class ImRouter {
 	public ImRoute route() {
 		ImRoute route = new ImRoute();
 		routes.add(route);
-		return handleRoutePath(route);
-	}
-
-	/**
-	 * 处理路径配置
-	 * 
-	 * @return
-	 */
-	private ImRoute handleRoutePath(ImRoute route) {
-		String path = route.getPath();
-		path = RE_OPERATORS_NO_STAR.matcher(path).replaceAll("\\\\$1");
-		Matcher m = RE_TOKEN_SEARCH.matcher(path);
-		StringBuffer sb = new StringBuffer();
-		List<String> groups = new ArrayList<>();
-		int index = 0;
-		while (m.find()) {
-			String param = "p" + index;
-			String group = m.group().substring(1);
-			if (groups.contains(group)) {
-				throw new IllegalArgumentException(
-						"Cannot use identifier " + group + " more than once in pattern string");
-			}
-			m.appendReplacement(sb, "(?<" + param + ">[^/]+)");
-			groups.add(group);
-			index++;
-		}
-		m.appendTail(sb);
-		path = sb.toString();
-		route.path = path;
-		route.groups = groups;
 		return route;
 	}
 
@@ -207,7 +179,7 @@ public class ImRouter {
 			if (router.groups.isEmpty()) {
 				Set<String> paths = Sets.newHashSet();
 				for (ImRoute route : router.routes) {
-					paths.add(route.getPath());
+					paths.add(this.handleRoutePath(route).getPath());
 				}
 				for (String path : paths) {
 					this.groupRouteChains(path, ImOps.Connect);
@@ -232,6 +204,36 @@ public class ImRouter {
 			if (chain.routes.isEmpty()) {
 				router.groups.remove(pattern);
 			}
+		}
+
+		/**
+		 * 处理路径配置
+		 * 
+		 * @return
+		 */
+		private ImRoute handleRoutePath(ImRoute route) {
+			String path = StringUtils.defaultString(route.getPath(), StringUtils.EMPTY);
+			path = RE_OPERATORS_NO_STAR.matcher(path).replaceAll("\\\\$1");
+			Matcher m = RE_TOKEN_SEARCH.matcher(path);
+			StringBuffer sb = new StringBuffer();
+			List<String> groups = new ArrayList<>();
+			int index = 0;
+			while (m.find()) {
+				String param = "p" + index;
+				String group = m.group().substring(1);
+				if (groups.contains(group)) {
+					throw new IllegalArgumentException(
+							"Cannot use identifier " + group + " more than once in pattern string");
+				}
+				m.appendReplacement(sb, "(?<" + param + ">[^/]+)");
+				groups.add(group);
+				index++;
+			}
+			m.appendTail(sb);
+			path = sb.toString();
+			route.path = path;
+			route.groups = groups;
+			return route;
 		}
 
 		@Override
@@ -334,6 +336,7 @@ public class ImRouter {
 	 * @author lifeng
 	 * @date 2020年8月25日 下午10:45:45
 	 */
+	@ToString
 	public static class ImRoute {
 
 		/**
@@ -343,10 +346,12 @@ public class ImRouter {
 
 		});
 
-		List<String> groups;
 		String path;
 		ImOps ops = ImOps.All;
+		@lombok.ToString.Exclude
 		Handler<ImContext> handler;
+		@lombok.ToString.Exclude
+		List<String> groups;
 
 		public ImRoute path(String path) {
 			this.path = path;

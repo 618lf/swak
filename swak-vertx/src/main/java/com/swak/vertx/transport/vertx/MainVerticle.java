@@ -180,6 +180,7 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		// 发布的 Host、Port
 		String deployHost = properties.getHost();
 		int deployPort = port <= 0 ? properties.getPort() : port;
+		int intstances = getDeploymentIntstances(instances);
 
 		// 获得路由 -- Router 是线程安全的所以多个Verticle实例可以公用
 		Router router = this.getRouter(routers);
@@ -192,7 +193,6 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 
 		// 以EventLoop 的方式发布
 		DeploymentOptions options = new DeploymentOptions().setWorker(false);
-		int intstances = getDeploymentIntstances(instances);
 		for (int i = 1; i <= intstances; i++) {
 			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
 					new HttpServerVerticle(router, httpServerOptions, deployHost, deployPort), options, s));
@@ -251,9 +251,10 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 	@SuppressWarnings("rawtypes")
 	private Future<EndPoint> startWebSocket(int port, int instances, List<ImBean> routers) {
 
-		// 发布的 Host、Port
+		// 发布的 Host、Port、intstances
 		String deployHost = properties.getHost();
 		int deployPort = port <= 0 ? properties.getWebSocketPort() : port;
+		int intstances = getDeploymentIntstances(instances);
 
 		// 处理器
 		ImRouter imRouter = this.getImRouter(routers);
@@ -266,7 +267,6 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 
 		// 以EventLoop 的方式发布
 		DeploymentOptions options = new DeploymentOptions().setWorker(false);
-		int intstances = getDeploymentIntstances(instances);
 		for (int i = 1; i <= intstances; i++) {
 			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
 					new ImServerVerticle(imRouter, httpServerOptions, deployHost, deployPort), options, s));

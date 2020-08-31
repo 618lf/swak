@@ -61,7 +61,7 @@ public @interface RestService {
 	 * 发布服务的个数
 	 */
 	@AliasFor(annotation = FluxService.class)
-	int instances() default 1;
+	int instances() default -1;
 
 	/**
 	 * 可以设置在哪个 pool 中运行

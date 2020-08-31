@@ -2,7 +2,6 @@ package com.swak.vertx.config;
 
 import java.lang.reflect.Method;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
@@ -27,7 +26,7 @@ import io.vertx.core.Handler;
  * @author lifeng
  * @date 2020年8月25日 下午2:36:24
  */
-public class ImBean extends AbstractBean implements Handler<ImContext>, InitializingBean {
+public class ImBean extends AbstractBean implements Handler<ImContext> {
 
 	@Autowired
 	private VertxProxy proxy;
@@ -43,8 +42,11 @@ public class ImBean extends AbstractBean implements Handler<ImContext>, Initiali
 	private int port;
 	private ImOps ops;
 
+	/**
+	 * 有可能收集 Bean 的时候这个 init 还没执行
+	 */
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void initializing() throws Exception {
 		ImApi apiMapping = AnnotatedElementUtils.findMergedAnnotation(type, ImApi.class);
 		FluxService serviceMapping = AnnotatedElementUtils.findMergedAnnotation(type, FluxService.class);
 		ImMapping classMapping = AnnotatedElementUtils.findMergedAnnotation(type, ImMapping.class);

@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
@@ -36,7 +35,7 @@ import io.vertx.ext.web.RoutingContext;
  * @author: lifeng
  * @date: 2020/3/29 18:55
  */
-public class RouterBean extends AbstractBean implements Handler<RoutingContext>, InitializingBean {
+public class RouterBean extends AbstractBean implements Handler<RoutingContext> {
 
 	@Autowired
 	private VertxProxy proxy;
@@ -53,7 +52,7 @@ public class RouterBean extends AbstractBean implements Handler<RoutingContext>,
 	private int port;
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void initializing() throws Exception {
 		RestApi apiMapping = AnnotatedElementUtils.findMergedAnnotation(type, RestApi.class);
 		FluxService serviceMapping = AnnotatedElementUtils.findMergedAnnotation(type, FluxService.class);
 		RequestMapping classMapping = AnnotatedElementUtils.findMergedAnnotation(type, RequestMapping.class);
