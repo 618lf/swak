@@ -172,14 +172,14 @@ public class ImRouter {
 					return new ImMatch(pattern, router.groups.get(pattern));
 				}
 			}
-			return new ImMatch(null, ImRouteChain.NONE);
+			return ImMatch.NONE;
 		}
 
 		private synchronized void groupRouteChains() {
 			if (router.groups.isEmpty()) {
 				Set<String> paths = Sets.newHashSet();
 				for (ImRoute route : router.routes) {
-					paths.add(this.handleRoutePath(route).getPath());
+					paths.add(route.getPath());
 				}
 				for (String path : paths) {
 					this.groupRouteChains(path, ImOps.Connect);
@@ -191,7 +191,7 @@ public class ImRouter {
 		}
 
 		private synchronized void groupRouteChains(String path, ImOps ops) {
-			ImPredicate pattern = new ImPredicate(path, ops).setPattern(Pattern.compile(path));
+			ImPredicate pattern = new ImPredicate(path, ops);
 			ImRouteChain chain = router.groups.computeIfAbsent(pattern, (key) -> {
 				return new ImRouteChain();
 			});
@@ -203,6 +203,8 @@ public class ImRouter {
 			}
 			if (chain.routes.isEmpty()) {
 				router.groups.remove(pattern);
+			} else {
+				this.handleImPredicate(pattern);
 			}
 		}
 
@@ -211,8 +213,8 @@ public class ImRouter {
 		 * 
 		 * @return
 		 */
-		private ImRoute handleRoutePath(ImRoute route) {
-			String path = StringUtils.defaultString(route.getPath(), StringUtils.EMPTY);
+		private ImPredicate handleImPredicate(ImPredicate pattern) {
+			String path = pattern.path;
 			path = RE_OPERATORS_NO_STAR.matcher(path).replaceAll("\\\\$1");
 			Matcher m = RE_TOKEN_SEARCH.matcher(path);
 			StringBuffer sb = new StringBuffer();
@@ -231,9 +233,9 @@ public class ImRouter {
 			}
 			m.appendTail(sb);
 			path = sb.toString();
-			route.path = path;
-			route.groups = groups;
-			return route;
+			pattern.pattern = Pattern.compile(path);
+			pattern.groups = groups;
+			return pattern;
 		}
 
 		@Override
@@ -271,6 +273,9 @@ public class ImRouter {
 	}
 
 	public static class ImMatch {
+
+		static ImMatch NONE = none();
+
 		private ImPredicate match;
 		private ImRouteChain chain;
 		private Map<String, String> variables;
@@ -296,6 +301,12 @@ public class ImRouter {
 			this.variables = variables;
 			return this;
 		}
+
+		public static ImMatch none() {
+			ImMatch NONE = new ImMatch(null, new ImRouteChain());
+			NONE.variables = Maps.newHashMap();
+			return NONE;
+		}
 	}
 
 	/**
@@ -305,8 +316,6 @@ public class ImRouter {
 	 * @date 2020年8月25日 下午11:44:24
 	 */
 	public static class ImRouteChain {
-
-		static ImRouteChain NONE = new ImRouteChain();
 
 		List<ImRoute> routes;
 
@@ -346,15 +355,13 @@ public class ImRouter {
 
 		});
 
-		String path;
-		ImOps ops = ImOps.All;
+		private String path;
+		private ImOps ops = ImOps.All;
 		@lombok.ToString.Exclude
 		Handler<ImContext> handler;
-		@lombok.ToString.Exclude
-		List<String> groups;
 
 		public ImRoute path(String path) {
-			this.path = path;
+			this.path = StringUtils.defaultString(path, StringUtils.EMPTY);
 			return this;
 		}
 

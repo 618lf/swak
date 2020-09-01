@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import com.swak.annotation.ImOps;
+import com.swak.utils.StringUtils;
 
 import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Exclude;
@@ -95,7 +96,7 @@ public class ImPredicate {
 		}
 
 		// 不满足路径要全匹配
-		if (!this.path.equals(other.path)) {
+		if (StringUtils.isNotBlank(other.path) && !this.path.equals(other.path)) {
 			return false;
 		}
 

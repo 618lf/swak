@@ -73,7 +73,7 @@ public class ImContextImpl implements ImContext {
 		this.context = this.context();
 		this.request = new ImRequestImpl();
 		this.response = new ImResponseImpl();
-		this.request.params.addAll(match.getVariables());
+		this.request.params().addAll(match.getVariables());
 	}
 
 	/**
