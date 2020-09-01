@@ -118,7 +118,7 @@ public class ImRouter {
 				Matcher m = pattern.matcher(path);
 				if (m.matches()) {
 					if (m.groupCount() > 0) {
-						if (groups != null && groups.isEmpty()) {
+						if (groups != null && !groups.isEmpty()) {
 							// Pattern - named params
 							// decode the path as it could contain escaped chars.
 							for (int i = 0; i < Math.min(groups.size(), m.groupCount()); i++) {
@@ -355,7 +355,7 @@ public class ImRouter {
 
 		});
 
-		private String path;
+		private String path = StringUtils.EMPTY;
 		private ImOps ops = ImOps.All;
 		@lombok.ToString.Exclude
 		Handler<ImContext> handler;
