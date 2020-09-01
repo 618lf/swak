@@ -1,3 +1,24 @@
+扎伊尔
+扎伊尔
+The Republic of Zaire
+泽西
+泽西
+Jersey
+英属维尔京
+英属维尔京
+The British Virgin Islands
+根西
+根西
+Guernsey
+百慕大
+百慕大
+Bermuda
+马恩岛
+马恩岛
+The Isle of Man
+开曼
+开曼
+Cayman
 香港特别行政区
 香港特别行政区
 Hong Kong
@@ -49,7 +70,7 @@ Commonwealth oftheBahamas
 巴林
 巴林王国
 Bahrain
-孟加拉国
+孟加拉
 孟加拉人民共和国
 Bangladesh
 巴巴多斯
@@ -73,9 +94,9 @@ Bhutan
 玻利维亚
 多民族玻利维亚国
 Bolivia
-波黑
+南斯拉夫
 波斯尼亚和黑塞哥维那
-Bosnia and Herzegovina
+Yugoslavia（Bosnia and Herzegovina）
 博茨瓦纳
 博茨瓦纳共和国
 Botswana
@@ -364,7 +385,7 @@ Moldova
 摩纳哥
 摩纳哥公国
 Monaco
-蒙古国
+蒙古
 蒙古国
 Mongolia
 黑山
@@ -412,8 +433,8 @@ Niue
 北塞浦路斯*
 北塞浦路斯土耳其共和国
 Northern Cyprus
-北马其顿
-北马其顿共和国
+马其顿
+马其顿共和国
 North Macedonia
 挪威
 挪威王国

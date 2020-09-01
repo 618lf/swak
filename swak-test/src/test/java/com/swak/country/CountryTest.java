@@ -13,6 +13,7 @@ import com.swak.utils.Maps;
 import com.swak.utils.StringUtils;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -23,7 +24,7 @@ import lombok.ToString;
  */
 public class CountryTest {
 
-	public static void main(String[] args) throws FileNotFoundException, IOException {
+	public static List<Country> countrys() throws IOException {
 		List<String> lines = IOUtils.readLines(CountryTest.class.getResourceAsStream("国家地区列表.txt"));
 		List<Country> countrys = Lists.newArrayList();
 		for (int i = 0; i < lines.size(); i = i + 3) {
@@ -33,7 +34,12 @@ public class CountryTest {
 			country.py = StringUtils.upperCase(String.valueOf(country.code.charAt(0)));
 			countrys.add(country);
 		}
+		return countrys;
+	}
 
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+		List<Country> countrys = countrys();
+		System.out.println(countrys.size());
 		Map<String, Classify> classifys = Maps.newOrderMap();
 		for (Country country : countrys) {
 			Classify classify = classifys.computeIfAbsent(country.py, (key) -> {
@@ -55,6 +61,7 @@ public class CountryTest {
 	}
 }
 
+@Setter
 @Getter
 @ToString
 class Country {

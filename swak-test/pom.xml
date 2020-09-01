@@ -25,12 +25,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.618lf</groupId>
-			<artifactId>swak-actuator</artifactId>
+			<artifactId>swak-redis</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.github.618lf</groupId>
-			<artifactId>swak-redis</artifactId>
+			<artifactId>swak-excel</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
