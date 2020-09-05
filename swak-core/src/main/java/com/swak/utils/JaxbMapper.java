@@ -15,9 +15,10 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.xml.sax.InputSource;
+
+import com.swak.utils.xml.CDataXMLStreamWriter;
 
 /**
  * 使用Jaxb2.0实现XML<->Java Object的Mapper.
@@ -53,7 +54,7 @@ public class JaxbMapper {
 		try {
 			StringWriter writer = new StringWriter();
 			Marshaller marshaller = createMarshaller(clazz);
-			marshaller.marshal(root, writer);
+			marshaller.marshal(root, CDataXMLStreamWriter.createWriter(writer));
 			String xml = writer.toString();
 			IOUtils.closeQuietly(writer);
 			return xml;
@@ -69,7 +70,7 @@ public class JaxbMapper {
 	public static void toXml(Object root, OutputStream out) {
 		try {
 			Marshaller marshaller = createMarshaller(root.getClass());
-			marshaller.marshal(root, new StreamResult(out));
+			marshaller.marshal(root, CDataXMLStreamWriter.createWriter(out));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
