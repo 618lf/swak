@@ -9,7 +9,6 @@
 	<modules>
 		<module>swak-core</module>
 		<module>swak-flux</module>
-		<module>swak-kotlin</module>
 		<module>swak-jdbc</module>
 		<module>swak-redis</module>
 		<module>swak-http</module>
@@ -124,16 +123,6 @@
 			<dependency>
 				<groupId>com.github.618lf</groupId>
 				<artifactId>swak-http</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.github.618lf</groupId>
-				<artifactId>swak-kotlin</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.github.618lf</groupId>
-				<artifactId>swak-actuator</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
