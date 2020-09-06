@@ -36,6 +36,7 @@
 		<module>swak-lib</module>
 		<module>swak-generate</module>
 		<module>swak-tools</module>
+		<module>swak-dubbo-async</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.3.3.RELEASE</spring-boot.version>
