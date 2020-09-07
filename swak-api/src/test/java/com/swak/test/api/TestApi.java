@@ -1,5 +1,7 @@
 package com.swak.test.api;
 
+import java.util.concurrent.CompletableFuture;
+
 import com.swak.annotation.GetMapping;
 import com.swak.annotation.Header;
 import com.swak.annotation.Json;
@@ -27,10 +29,10 @@ public class TestApi {
 	 * @param name 用户名称
 	 * @param names 用户名称
 	 * @param user 用户名称
-	 * @return com.swak.test.dto.UserDTO
+	 * @return 异步结果
 	 */
 	@GetMapping(value = "one")
-	public Result one(@Header String name, @Json String names, UserDTO user) {
+	public CompletableFuture<Result> one(@Header String name, @Json String names, UserDTO user) {
 		return null;
 	}
 }
