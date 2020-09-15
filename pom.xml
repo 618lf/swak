@@ -37,6 +37,7 @@
 		<module>swak-generate</module>
 		<module>swak-tools</module>
 		<module>swak-dubbo-async</module>
+		<module>swak-zookeeper</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.3.3.RELEASE</spring-boot.version>
@@ -66,7 +67,6 @@
 		<vertx.version>3.9.0</vertx.version>
 		<qrcode.version>3.4.0</qrcode.version>
 		<javapoet.version>1.12.1</javapoet.version>
-		<zookeeper.version>3.6.0</zookeeper.version>
 		<zkclient.version>0.11</zkclient.version>
 		<metrics.version>4.1.5</metrics.version>
 		<quartz.version>2.3.2</quartz.version>
@@ -78,6 +78,10 @@
 		<rabbitmq.version>5.8.0</rabbitmq.version>
 		<rocketmq.version>4.7.0</rocketmq.version>
 		<lombok.version>1.18.12</lombok.version>
+		<dubbo.version>2.7.7</dubbo.version>
+		<curator.version>5.1.0</curator.version>
+		<zookeeper.version>3.6.1</zookeeper.version>
+		<seata.version>1.3.0</seata.version>
 
 		<!-- test -->
 		<junit.version>4.13</junit.version>

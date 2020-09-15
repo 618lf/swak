@@ -1,27 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.github.618lf</groupId>
 		<artifactId>swak</artifactId>
 		<version>1.0.0_final</version>
 	</parent>
-	<artifactId>swak-dubbo</artifactId>
+	<artifactId>swak-zookeeper</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>com.github.618lf</groupId>
 			<artifactId>swak-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.dubbo</groupId>
-			<artifactId>dubbo</artifactId>
-			<version>${dubbo.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.dubbo</groupId>
-			<artifactId>dubbo-spring-boot-starter</artifactId>
-			<version>${dubbo.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.curator</groupId>
@@ -65,17 +55,6 @@
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>io.seata</groupId>
-			<artifactId>seata-all</artifactId>
-			<version>${seata.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-webmvc</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
