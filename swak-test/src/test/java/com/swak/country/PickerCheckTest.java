@@ -11,6 +11,13 @@ import javax.script.ScriptEngineManager;
 import com.swak.utils.IOUtils;
 import com.swak.utils.JsonMapper;
 
+/**
+ * 国家不全 -- 不建议使用
+ * 
+ * @author lifeng
+ * @date 2020年9月11日 下午4:00:49
+ */
+@Deprecated
 public class PickerCheckTest {
 
 	// 加载国家数据
@@ -41,10 +48,10 @@ public class PickerCheckTest {
 
 		List<Country> countrys = countrys();
 		System.out.println(countrys.size());
-		
+
 		for (Country country : countrys) {
 			System.out.println(country);
 		}
-		
+
 	}
 }
