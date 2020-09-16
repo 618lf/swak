@@ -51,6 +51,7 @@ public interface Constants {
 	String EVENT_BUS_PREFIX = "spring.eventbus";
 	String RXTX_PREFIX = "spring.rxtx";
 	String AOP_PREFIX = "spring.aop";
+	String ZOOKEEPER_PREFIX = "spring.zookeeper";
 
 	/**
 	 * 保留ID

@@ -210,6 +210,11 @@
 				<artifactId>swak-rxtx</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.github.618lf</groupId>
+				<artifactId>swak-zookeeper</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
 			<!-- 测试 -->
 			<dependency>

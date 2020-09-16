@@ -93,6 +93,11 @@
 			<artifactId>swak-rxtx</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.github.618lf</groupId>
+			<artifactId>swak-zookeeper</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
