@@ -17,6 +17,7 @@ com.swak.config.freemarker.FreeMarkerAutoConfiguration,\
 com.swak.config.eventbus.EventBusAutoConfiguration,\
 com.swak.config.mq.RabbitMqAutoConfiguration,\
 com.swak.config.mongo.MongoAutoConfiguration,\
+com.swak.config.zookeeper.ZookeeperAutoConfiguration,\
 com.swak.config.motan.MotanAutoConfiguration,\
 com.swak.config.motan.MotanCommandLineRunner,\
 com.swak.config.rxtx.RxtxAutoConfiguration,\
