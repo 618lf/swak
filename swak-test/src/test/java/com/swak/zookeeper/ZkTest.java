@@ -3,6 +3,8 @@ package com.swak.zookeeper;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
+import org.apache.zookeeper.CreateMode;
+
 import com.swak.config.zookeeper.ZookeeperAutoConfiguration;
 import com.swak.config.zookeeper.ZookeeperProperties;
 
@@ -11,7 +13,9 @@ public class ZkTest {
 	public static void main(String[] args) throws InterruptedException, BrokenBarrierException {
 		CyclicBarrier latch = new CyclicBarrier(2);
 		ZookeeperProperties properties = new ZookeeperProperties();
-		properties.setAddress("192.168.137.100:2181,192.168.137.100:2182");
+		properties.setAddress("192.168.137.100:2181");
+		properties.setUsername("admin");
+		properties.setPassword("admin");
 		ZookeeperAutoConfiguration configuration = new ZookeeperAutoConfiguration(properties);
 		ZookeeperService zookeeperService = configuration.zookeeperService();
 		zookeeperService.addStateListener(stat -> {
@@ -31,7 +35,7 @@ public class ZkTest {
 		latch.await();
 		String path = "/hanqian/lock";
 		System.out.println("创建前");
-		zookeeperService.asyncCreate(path, false).whenComplete((r, e) -> {
+		zookeeperService.asyncCreate(path, CreateMode.PERSISTENT).whenComplete((r, e) -> {
 			if (e != null) {
 				System.out.println("创建失败！" + e.getMessage());
 			} else {

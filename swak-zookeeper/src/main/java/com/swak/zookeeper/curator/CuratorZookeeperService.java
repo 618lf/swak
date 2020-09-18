@@ -17,6 +17,7 @@ import org.apache.curator.framework.api.CuratorWatcher;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.x.async.AsyncCuratorFramework;
@@ -30,6 +31,7 @@ import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swak.lock.Lock;
 import com.swak.utils.Sets;
 import com.swak.zookeeper.ChildListener;
 import com.swak.zookeeper.DataListener;
@@ -65,6 +67,11 @@ public class CuratorZookeeperService implements ZookeeperService, ConnectionStat
 		this.asyncClient = AsyncCuratorFramework.wrap(client);
 		this.client.getConnectionStateListenable().addListener(this);
 		this.client.start();
+	}
+
+	@Override
+	public long id() {
+		return lastSessionId;
 	}
 
 	@Override
@@ -320,60 +327,38 @@ public class CuratorZookeeperService implements ZookeeperService, ConnectionStat
 	}
 
 	@Override
-	public void create(String path, boolean ephemeral) {
-		if (ephemeral) {
-			createEphemeral(path);
-		} else {
-			createPersistent(path);
+	public void create(String path, CreateMode mode) {
+		try {
+			client.create().creatingParentsIfNeeded().withMode(mode).forPath(path);
+		} catch (Exception e) {
+			throw new IllegalStateException(e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public void create(String path, String content, boolean ephemeral) {
-		if (ephemeral) {
-			createEphemeral(path, content);
-		} else {
-			createPersistent(path, content);
+	public void create(String path, String content, CreateMode mode) {
+		byte[] dataBytes = content.getBytes(CHARSET);
+		if (this.checkExists(path)) {
+			this.update(path, content);
 		}
-	}
-
-	protected void createEphemeral(String path) {
 		try {
-			client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(path);
-		} catch (Exception e) {
-			throw new IllegalStateException(e.getMessage(), e);
-		}
-	}
-
-	protected void createEphemeral(String path, String data) {
-		byte[] dataBytes = data.getBytes(CHARSET);
-		try {
-			client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(path, dataBytes);
-		} catch (Exception e) {
-			throw new IllegalStateException(e.getMessage(), e);
-		}
-	}
-
-	protected void createPersistent(String path) {
-		try {
-			client.create().creatingParentsIfNeeded().forPath(path);
-		} catch (NodeExistsException e) {
-			logger.warn("ZNode " + path + " already exists.", e);
-		} catch (Exception e) {
-			throw new IllegalStateException(e.getMessage(), e);
-		}
-	}
-
-	protected void createPersistent(String path, String data) {
-		byte[] dataBytes = data.getBytes(CHARSET);
-		try {
-			client.create().creatingParentsIfNeeded().forPath(path, dataBytes);
+			client.create().creatingParentsIfNeeded().withMode(mode).forPath(path, dataBytes);
 		} catch (NodeExistsException e) {
 			try {
 				client.setData().forPath(path, dataBytes);
 			} catch (Exception e1) {
 				throw new IllegalStateException(e.getMessage(), e1);
 			}
+		} catch (Exception e) {
+			throw new IllegalStateException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public void update(String path, String content) {
+		byte[] dataBytes = content.getBytes(CHARSET);
+		try {
+			client.setData().forPath(path, dataBytes);
 		} catch (Exception e) {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
@@ -447,43 +432,9 @@ public class CuratorZookeeperService implements ZookeeperService, ConnectionStat
 	}
 
 	@Override
-	public CompletableFuture<Void> asyncCreate(String path, boolean ephemeral) {
-		if (ephemeral) {
-			return this.asyncCreateEphemeral(path);
-		}
-		return this.asyncCreatePersistent(path);
-	}
-
-	protected CompletableFuture<Void> asyncCreateEphemeral(String path) {
+	public CompletableFuture<Void> asyncCreate(String path, CreateMode mode) {
 		CompletableFuture<Void> result = new CompletableFuture<>();
-		this.asyncClient.create().withOptions(Sets.newHashSet(CreateOption.createParentsIfNeeded), CreateMode.EPHEMERAL)
-				.forPath(path).whenComplete((r, e) -> {
-					if (e != null) {
-						result.completeExceptionally(e);
-					} else {
-						result.complete(null);
-					}
-				});
-		return result;
-	}
-
-	protected CompletableFuture<Void> asyncCreateEphemeral(String path, String data) {
-		byte[] dataBytes = data.getBytes(CHARSET);
-		CompletableFuture<Void> result = new CompletableFuture<>();
-		this.asyncClient.create().withOptions(Sets.newHashSet(CreateOption.createParentsIfNeeded), CreateMode.EPHEMERAL)
-				.forPath(path, dataBytes).whenComplete((r, e) -> {
-					if (e != null) {
-						result.completeExceptionally(e);
-					} else {
-						result.complete(null);
-					}
-				});
-		return result;
-	}
-
-	protected CompletableFuture<Void> asyncCreatePersistent(String path) {
-		CompletableFuture<Void> result = new CompletableFuture<>();
-		this.asyncClient.create().withOptions(Sets.newHashSet(CreateOption.createParentsIfNeeded)).forPath(path)
+		this.asyncClient.create().withOptions(Sets.newHashSet(CreateOption.createParentsIfNeeded), mode).forPath(path)
 				.whenComplete((r, e) -> {
 					if (e != null) {
 						result.completeExceptionally(e);
@@ -494,10 +445,28 @@ public class CuratorZookeeperService implements ZookeeperService, ConnectionStat
 		return result;
 	}
 
-	protected CompletableFuture<Void> asyncCreatePersistent(String path, String data) {
-		byte[] dataBytes = data.getBytes(CHARSET);
+	@Override
+	public CompletableFuture<Void> asyncCreate(String path, String content, CreateMode mode) {
 		CompletableFuture<Void> result = new CompletableFuture<>();
-		this.asyncClient.create().withOptions(Sets.newHashSet(CreateOption.createParentsIfNeeded))
+		this.asyncCheckExists(path).thenCompose(res -> {
+			if (res) {
+				return this.asyncUpdate(path, content);
+			}
+			return this._asyncCreate(path, content, mode);
+		}).whenComplete((r, e) -> {
+			if (e != null) {
+				result.completeExceptionally(e);
+			} else {
+				result.complete(null);
+			}
+		});
+		return result;
+	}
+
+	public CompletableFuture<Void> _asyncCreate(String path, String content, CreateMode mode) {
+		CompletableFuture<Void> result = new CompletableFuture<>();
+		byte[] dataBytes = content.getBytes(CHARSET);
+		this.asyncClient.create().withOptions(Sets.newHashSet(CreateOption.createParentsIfNeeded), CreateMode.EPHEMERAL)
 				.forPath(path, dataBytes).whenComplete((r, e) -> {
 					if (e != null) {
 						result.completeExceptionally(e);
@@ -509,11 +478,17 @@ public class CuratorZookeeperService implements ZookeeperService, ConnectionStat
 	}
 
 	@Override
-	public CompletableFuture<Void> asyncCreate(String path, String content, boolean ephemeral) {
-		if (ephemeral) {
-			return this.asyncCreateEphemeral(path, content);
-		}
-		return this.asyncCreatePersistent(path, content);
+	public CompletableFuture<Void> asyncUpdate(String path, String content) {
+		CompletableFuture<Void> result = new CompletableFuture<>();
+		byte[] dataBytes = content.getBytes(CHARSET);
+		this.asyncClient.setData().forPath(path, dataBytes).whenComplete((r, e) -> {
+			if (e != null) {
+				result.completeExceptionally(e);
+			} else {
+				result.complete(null);
+			}
+		});
+		return result;
 	}
 
 	@Override
@@ -541,5 +516,34 @@ public class CuratorZookeeperService implements ZookeeperService, ConnectionStat
 					}
 				});
 		return result;
+	}
+
+	@Override
+	public Lock newLock(String path) {
+		InterProcessMutex interLock = new InterProcessMutex(client, path);
+		return new Lock() {
+			@Override
+			public String name() {
+				return path;
+			}
+
+			@Override
+			public void lock() {
+				try {
+					interLock.acquire();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+			@Override
+			public void unlock() {
+				try {
+					interLock.release();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
 	}
 }
