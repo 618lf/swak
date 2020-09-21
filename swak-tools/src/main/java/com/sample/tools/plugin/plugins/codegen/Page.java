@@ -107,7 +107,15 @@ public class Page extends Window {
 		}
 		this.dbType.getSelectionModel().selectedItemProperty().addListener((ob, o, n) -> {
 			Settings.me().getConfig().string("codegen.db", n);
-			this.tryOpenDb();
+			if (o == null || n == null || !o.equals(n)) {
+				this.dbIp.setText(null);
+				this.dbPort.setText(null);
+				this.userName.setText(null);
+				this.passWord.setText(null);
+				this.dbSel.getItems().clear();
+				this.tableSel.getItems().clear();
+				this.tryOpenDb();
+			}
 		});
 		this.dbIp.textProperty().addListener((ob, o, n) -> {
 			Settings.me().getConfig().string("codegen.ip", n);
@@ -228,6 +236,7 @@ public class Page extends Window {
 				scheme.setPackageName(packageName);
 				scheme.setFunctionName(entityName);
 				GenUtils.genCode(scheme);
+				Notifys.info("代码创建成功", "生成的代码已经保存在桌面！");
 			}
 		});
 	}

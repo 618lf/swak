@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.sample.tools.plugin.plugins.codegen.gen.dialects.MsSqlOperater;
+import com.sample.tools.plugin.plugins.codegen.gen.dialects.MySqlOperater;
 import com.swak.utils.Lists;
 
 /**
@@ -148,6 +149,9 @@ public interface DatabaseOperater {
 	public static DatabaseOperater build(String db, String ip, String port, String userName, String passWord) {
 		if ("MSSQL".equalsIgnoreCase(db)) {
 			return new MsSqlOperater(ip, port, userName, passWord);
+		}
+		if ("MYSQL".equalsIgnoreCase(db)) {
+			return new MySqlOperater(ip, port, userName, passWord);
 		}
 		return null;
 	}
