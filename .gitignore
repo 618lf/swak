@@ -11,3 +11,4 @@ node_modules
 ehcache-disk-store.*
 .idea
 .lock
+.cache

@@ -22,7 +22,7 @@ public class RedisProperties extends TransportProperties{
 	private int localOffHeadMB = 5; // MB
 	private int localDiskMB = 10;// MB
 	private int localLiveSeconds = 60;
-	private String localDiskPath = "cache";
+	private String localDiskPath = ".cache";
 	
 	public int getLocalPoolSize() {
 		return localPoolSize;
