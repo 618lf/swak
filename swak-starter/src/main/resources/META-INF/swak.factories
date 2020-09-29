@@ -21,6 +21,7 @@ com.swak.config.zookeeper.ZookeeperAutoConfiguration,\
 com.swak.config.motan.MotanAutoConfiguration,\
 com.swak.config.motan.MotanCommandLineRunner,\
 com.swak.config.rxtx.RxtxAutoConfiguration,\
+com.swak.config.hazelcast.HazelcastAutoConfiguration,\
 com.swak.config.flux.FluxAutoConfiguration,\
 com.swak.config.flux.SecurityAutoConfiguration,\
 com.swak.config.flux.RouterAutoConfiguration,\

@@ -69,6 +69,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.github.618lf</groupId>
+			<artifactId>swak-hazelcast</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>${lombok.version}</version>
