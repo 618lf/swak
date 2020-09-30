@@ -1,7 +1,5 @@
 package com.swak.hazelcast;
 
-import com.hazelcast.cluster.MembershipEvent;
-import com.hazelcast.cluster.MembershipListener;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.MulticastConfig;
 import com.hazelcast.config.TcpIpConfig;
@@ -15,7 +13,7 @@ import com.hazelcast.core.HazelcastInstance;
  * @author lifeng
  * @date 2020年9月29日 下午12:12:22
  */
-public class HazelcastTest {
+public class HazelcastTest2 {
 
 	public static void main(String[] args) {
 
@@ -28,25 +26,12 @@ public class HazelcastTest {
 		TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
 		tcpIpConfig.setEnabled(true);
 
+		// 开启集群
 		HazelcastInstance server1 = Hazelcast.newHazelcastInstance(config);
-		server1.getCluster().addMembershipListener(new MembershipListener() {
-
-			@Override
-			public void memberAdded(MembershipEvent membershipEvent) {
-				System.out.println("集群添加");
-			}
-
-			@Override
-			public void memberRemoved(MembershipEvent membershipEvent) {
-				System.out.println("集群删除");
-			}
-		});
-
 		System.out.println("启动~");
-		
-		// 消费消息
 		server1.getTopic("log").addMessageListener((m) -> {
 			System.out.println("消费消息：" + m);
 		});
+		server1.getTopic("log").publish("123");
 	}
 }

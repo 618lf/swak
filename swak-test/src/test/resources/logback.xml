@@ -9,7 +9,7 @@
 	</appender>
 	
     <!-- 默认是错误级别 -->
-	<root level="INFO">
+	<root level="ERROR">
 	    <appender-ref ref="STDOUT"/>
 	</root>
 	<logger name="com.swak.reactivex.threads.BlockedThreadChecker" level="INFO"/>
