@@ -55,6 +55,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.618lf</groupId>
+			<artifactId>swak-jdbc-async</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.618lf</groupId>
 			<artifactId>swak-vertx</artifactId>
 			<scope>provided</scope>
 		</dependency>
