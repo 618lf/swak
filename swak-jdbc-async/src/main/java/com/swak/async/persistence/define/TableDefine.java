@@ -1,6 +1,7 @@
 package com.swak.async.persistence.define;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ import com.swak.annotation.Table;
 import com.swak.asm.FieldCache;
 import com.swak.asm.FieldCache.ClassMeta;
 import com.swak.asm.FieldCache.FieldMeta;
+import com.swak.entity.BaseEntity;
+import com.swak.entity.IdEntity;
 import com.swak.utils.Lists;
 import com.swak.utils.StringUtils;
 
@@ -56,12 +59,13 @@ public class TableDefine<T> {
 		this.name = this.tableMapping();
 
 		// 类型注册
-		ClassMeta meta = FieldCache.set(entity);
+		ClassMeta meta = FieldCache.set(entity, true);
 
 		// 属性元数据
 		Map<String, FieldMeta> fields = meta.getFields();
 
 		// 循环处理
+		// 不使用 BaseEntity、 IdEntity 中的字段
 		fields.values().forEach(field -> {
 			if (this.supportType(field) && this.ignored(field)) {
 				this.addColumn(ColumnDefine.of(this.columnMapping(field), field.getPropertyName(), field));
@@ -152,7 +156,22 @@ public class TableDefine<T> {
 		Class<?> type = field.getFieldClass();
 		return (ClassUtils.isPrimitiveOrWrapper(type) || Enum.class.isAssignableFrom(type)
 				|| CharSequence.class.isAssignableFrom(type) || Date.class.isAssignableFrom(type)
-				|| BigDecimal.class.isAssignableFrom(type)) && !type.isArray();
+				|| BigDecimal.class.isAssignableFrom(type) || LocalDateTime.class.isAssignableFrom(type))
+				&& !type.isArray() && !isNoUseBaseEntityField(field);
+	}
+
+	/**
+	 * 是否是基类中的字段: 如果需要则在实体中重新定义字段
+	 * 
+	 * @param field
+	 * @return
+	 */
+	protected boolean isNoUseBaseEntityField(FieldMeta field) {
+		if (field.getField().getDeclaringClass() == BaseEntity.class
+				|| field.getField().getDeclaringClass() == IdEntity.class) {
+			return field.getField().getAnnotation(Column.class) == null;
+		}
+		return false;
 	}
 
 	/**
@@ -213,7 +232,7 @@ public class TableDefine<T> {
 	protected String tableMapping() {
 		Table table = this.entity.getAnnotation(Table.class);
 		if (table == null || StringUtils.isBlank(table.value())) {
-			return StringUtils.convertProperty2Column(this.entity.getSimpleName());
+			return StringUtils.convertProperty2Column(StringUtils.lowerCaseFirstOne(this.entity.getSimpleName()));
 		}
 		return table.value();
 	}

@@ -166,7 +166,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @return
 	 */
 	public TransactionalFuture pageByCondition(TransactionContext context, QueryCondition qc, Parameters param) {
-		return this.page(context, SqlMap.QUERY_BY_CONDITION, qc, param);
+		return this.page(context, SqlMap.QUERY, qc, param);
 	}
 
 	/**
@@ -321,7 +321,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @return
 	 */
 	public CompletableFuture<Page> pageByCondition(QueryCondition qc, Parameters param) {
-		return this.page(SqlMap.QUERY_BY_CONDITION, qc, param);
+		return this.page(SqlMap.QUERY, qc, param);
 	}
 
 	/**

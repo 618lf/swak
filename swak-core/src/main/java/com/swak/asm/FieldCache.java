@@ -34,8 +34,20 @@ public class FieldCache {
 	 * @date 2020/3/28 17:33
 	 */
 	public static ClassMeta set(Class<?> type) {
+		return set(type, false);
+	}
+
+	/**
+	 * 设置 field
+	 *
+	 * @param type 字段类型
+	 * @return ClassMeta 类型元数据
+	 * @author lifeng
+	 * @date 2020/3/28 17:33
+	 */
+	public static ClassMeta set(Class<?> type, boolean order) {
 		CACHES.computeIfAbsent(type, (key) -> {
-			return new ClassMeta(type);
+			return new ClassMeta(type, order);
 		});
 		return CACHES.get(type);
 	}
@@ -75,10 +87,10 @@ public class FieldCache {
 		// 用属性名称作为key
 		private final Map<String, FieldMeta> fields;
 
-		public ClassMeta(Class<?> type) {
+		public ClassMeta(Class<?> type, boolean order) {
 
 			// 所有的字段
-			fields = Maps.newHashMap();
+			fields = order ? Maps.newOrderMap() : Maps.newHashMap();
 
 			// 声明的字段
 			Field[] declaredFields = type.getDeclaredFields();

@@ -1,5 +1,6 @@
 package com.swak.async.persistence.define;
 
+import com.swak.annotation.Pk;
 import com.swak.asm.FieldCache.FieldMeta;
 
 /**
@@ -24,6 +25,15 @@ public class ColumnDefine {
 	 * Java 类型
 	 */
 	public FieldMeta javaField;
+
+	/**
+	 * 是否是主键列
+	 * 
+	 * @return
+	 */
+	public boolean isPk() {
+		return javaField.getAnnotation(Pk.class) != null || "id".equals(javaProperty);
+	}
 
 	/**
 	 * 定义列

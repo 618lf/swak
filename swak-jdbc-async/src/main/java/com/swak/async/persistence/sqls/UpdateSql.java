@@ -18,7 +18,7 @@ public class UpdateSql<T> extends BaseSql<T> {
 	protected String parseScript() {
 		// SQL 脚本
 		StringBuilder sql = new StringBuilder();
-		sql.append(UPDATE).append(SPACE).append(this.parseTable()).append(SPACE).append(SET);
+		sql.append(UPDATE).append(SPACE).append(this.parseTable()).append(SPACE).append(SET).append(SPACE);
 		sql.append(this.parseUpdateParams());
 		sql.append(WHERE).append(SPACE).append(this.parseEqualsIdParams());
 		return sql.toString();

@@ -106,7 +106,7 @@ public abstract class BaseSql<T> implements Sql<T> {
 	 */
 	protected String parseTable() {
 		StringBuilder sql = new StringBuilder();
-		sql.append(this.table.name).append(SPACE);
+		sql.append(this.table.name);
 		return sql.toString();
 	}
 
@@ -146,10 +146,12 @@ public abstract class BaseSql<T> implements Sql<T> {
 	protected String parseUpdateParams() {
 		StringBuilder sql = new StringBuilder();
 		for (ColumnDefine column : this.table.columns) {
-			String property = column.javaProperty;
-			String name = column.name;
-			sql.append(name).append(EQUALS).append(OCCUPIED).append(SPLIT);
-			this.params.add(property);
+			if (!column.isPk()) {
+				String property = column.javaProperty;
+				String name = column.name;
+				sql.append(name).append(EQUALS).append(OCCUPIED).append(SPLIT);
+				this.params.add(property);
+			}
 		}
 		if (this.table.hasColumn()) {
 			sql.delete(sql.lastIndexOf(SPLIT), sql.length() - 1);

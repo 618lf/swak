@@ -2,6 +2,7 @@ package com.swak.entity;
 
 import java.io.Serializable;
 
+import com.swak.annotation.Column;
 import com.swak.incrementer.IdGen;
 
 /**
@@ -13,6 +14,11 @@ import com.swak.incrementer.IdGen;
 public abstract class IdEntity<PK> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 一般作为主键列， 使用此标志表明：自动识别时需要识别为字段
+	 */
+	@Column
 	protected PK id;
 	protected Integer version;
 

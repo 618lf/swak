@@ -34,9 +34,7 @@ public class SqlMap<T> {
 	public final static String DELETE = "delete";
 	public final static String GET = "get";
 	public final static String QUERY = "query";
-	public final static String COUNT = "count";
-	public final static String QUERY_BY_CONDITION = "queryByCondition";
-	public final static String COUNT_BY_CONDITION = "queryByConditionStat";
+	public final static String COUNT = "queryStat";
 
 	/**
 	 * 表定义
@@ -80,7 +78,5 @@ public class SqlMap<T> {
 		this.sqls.put(GET, new GetSql<T>(this.table, modelMapper));
 		this.sqls.put(QUERY, new QuerySql<T>(this.table, modelMapper));
 		this.sqls.put(COUNT, new CountSql<T>(this.table, countMapper));
-		this.sqls.put(QUERY_BY_CONDITION, new QuerySql<T>(this.table, modelMapper));
-		this.sqls.put(COUNT_BY_CONDITION, new CountSql<T>(this.table, countMapper));
 	}
 }
