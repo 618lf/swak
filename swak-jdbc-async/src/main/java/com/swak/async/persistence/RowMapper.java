@@ -1,4 +1,4 @@
-package com.swak.persistence.async;
+package com.swak.async.persistence;
 
 import java.sql.SQLException;
 

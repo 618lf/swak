@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.swak.Constants;
+import com.swak.async.persistence.JdbcTemplate;
 import com.swak.config.jdbc.async.MysqlAsyncPoolConfiguration;
-import com.swak.persistence.async.AsyncJdbcTemplate;
 
 import io.vertx.sqlclient.Pool;
 import io.vertx.sqlclient.SqlClient;
@@ -40,7 +40,7 @@ public class AsyncJdbcTemplateAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public AsyncJdbcTemplate asyncJdbcTemplate(Pool pool) {
-		return new AsyncJdbcTemplate(pool);
+	public JdbcTemplate asyncJdbcTemplate(Pool pool) {
+		return new JdbcTemplate(pool);
 	}
 }

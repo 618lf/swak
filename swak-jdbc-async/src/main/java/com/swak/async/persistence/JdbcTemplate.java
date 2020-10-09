@@ -1,12 +1,11 @@
-package com.swak.persistence.async;
+package com.swak.async.persistence;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.DisposableBean;
 
-import com.google.common.collect.Maps;
+import com.swak.async.tx.TransactionContext;
 import com.swak.utils.Lists;
 
 import io.vertx.sqlclient.Pool;
@@ -21,14 +20,14 @@ import io.vertx.sqlclient.Tuple;
  * @author lifeng
  * @date 2020年9月30日 下午8:06:14
  */
-public class AsyncJdbcTemplate implements DisposableBean {
+public class JdbcTemplate implements DisposableBean {
 
 	/**
 	 * 对应的 sql 操作池
 	 */
 	private final Pool pool;
 
-	public AsyncJdbcTemplate(Pool pool) {
+	public JdbcTemplate(Pool pool) {
 		this.pool = pool;
 	}
 
@@ -68,13 +67,26 @@ public class AsyncJdbcTemplate implements DisposableBean {
 	}
 
 	/**
-	 * 提交事务
+	 * 执行Sql
 	 * 
-	 * @param context
-	 * @return
+	 * @param sql   sql语句
+	 * @param param 参数
+	 * @return 执行结果
 	 */
-	public CompletableFuture<Void> commit(TransactionContext context) {
-		return context.commit().thenApply(res -> null);
+	public CompletableFuture<Void> update(String sql, List<Object> params) {
+		CompletableFuture<Void> future = new CompletableFuture<>();
+		try {
+			this.pool.preparedQuery(sql).execute(Tuple.wrap(params), (res) -> {
+				if (res.cause() != null) {
+					future.completeExceptionally(res.cause());
+				} else {
+					future.complete(null);
+				}
+			});
+		} catch (Exception e) {
+			future.completeExceptionally(e);
+		}
+		return future;
 	}
 
 	/**
@@ -86,7 +98,7 @@ public class AsyncJdbcTemplate implements DisposableBean {
 	 * @return 查询结果
 	 */
 	public <T> CompletableFuture<List<T>> query(String sql, RowMapper<T> rowMapper) {
-		return this.query(sql, Maps.newHashMap(), rowMapper);
+		return this.query(sql, Lists.newArrayList(), rowMapper);
 	}
 
 	/**
@@ -98,9 +110,9 @@ public class AsyncJdbcTemplate implements DisposableBean {
 	 * @param rowMapper 转换映射
 	 * @return 查询结果
 	 */
-	public <T> CompletableFuture<List<T>> query(String sql, Map<String, ?> param, RowMapper<T> rowMapper) {
+	public <T> CompletableFuture<List<T>> query(String sql, List<Object> params, RowMapper<T> rowMapper) {
 		CompletableFuture<List<T>> future = new CompletableFuture<>();
-		pool.preparedQuery(sql).execute(Tuple.wrap(param.values()), (res) -> {
+		pool.preparedQuery(sql).execute(Tuple.wrap(params), (res) -> {
 			if (res.cause() != null) {
 				future.completeExceptionally(res.cause());
 			} else {
@@ -118,7 +130,7 @@ public class AsyncJdbcTemplate implements DisposableBean {
 	 * @return
 	 */
 	public CompletableFuture<Integer> count(String sql) {
-		return this.count(sql, Maps.newHashMap());
+		return this.count(sql, Lists.newArrayList());
 	}
 
 	/**
@@ -128,9 +140,9 @@ public class AsyncJdbcTemplate implements DisposableBean {
 	 * @param param
 	 * @return
 	 */
-	public CompletableFuture<Integer> count(String sql, Map<String, ?> param) {
+	public CompletableFuture<Integer> count(String sql, List<Object> params) {
 		CompletableFuture<List<Integer>> future = new CompletableFuture<>();
-		pool.preparedQuery(sql).execute(Tuple.wrap(param.values()), (res) -> {
+		pool.preparedQuery(sql).execute(Tuple.wrap(params), (res) -> {
 			if (res.cause() != null) {
 				future.completeExceptionally(res.cause());
 			} else {

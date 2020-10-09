@@ -1,6 +1,6 @@
 package com.swak.jdbc;
 
-import com.swak.persistence.async.BaseAsyncJdbcDao;
+import com.swak.async.persistence.BaseDao;
 
 /**
  * 异步操作
@@ -8,6 +8,6 @@ import com.swak.persistence.async.BaseAsyncJdbcDao;
  * @author lifeng
  * @date 2020年10月3日 下午5:57:56
  */
-public class UserDao extends BaseAsyncJdbcDao {
+public class UserDao extends BaseDao<User, Long> {
 
 }

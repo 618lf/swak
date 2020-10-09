@@ -1,4 +1,4 @@
-package com.swak.persistence.async;
+package com.swak.async.tx;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,6 +35,11 @@ class TransactionContextImmutability {
 	 * 只读 -- 只能用于查询
 	 */
 	boolean readOnly = false;
+
+	/**
+	 * 需要回滚的异常，默认仅仅运行时异常需要回滚
+	 */
+	Class<Throwable> rollbackFor;
 
 	/**
 	 * 是否准备OK
@@ -74,14 +79,8 @@ class TransactionContextImmutability {
 	 * 
 	 * @return
 	 */
-	CompletableFuture<TransactionContext> future() {
-		if (!this.readOnly) {
-			return new CompletableFuture<TransactionContext>();
-		}
-		return new CompletableFuture<TransactionContext>().exceptionally(e -> {
-			this.close();
-			return TransactionContext.error(e);
-		});
+	TransactionalFuture future() {
+		return new TransactionalFuture();
 	}
 
 	/**
@@ -103,6 +102,28 @@ class TransactionContextImmutability {
 		CompletableFuture<Void> completed = new CompletableFuture<>();
 		if (!this.readOnly) {
 			this.tx.commit(res -> {
+				if (res.cause() != null) {
+					completed.completeExceptionally(res.cause());
+				} else {
+					completed.complete(null);
+				}
+			});
+		} else {
+			this.close();
+			completed.complete(null);
+		}
+		return completed;
+	}
+
+	/**
+	 * 回滚
+	 * 
+	 * @return
+	 */
+	CompletableFuture<Void> rollback() {
+		CompletableFuture<Void> completed = new CompletableFuture<>();
+		if (!this.readOnly) {
+			this.tx.rollback(res -> {
 				if (res.cause() != null) {
 					completed.completeExceptionally(res.cause());
 				} else {
