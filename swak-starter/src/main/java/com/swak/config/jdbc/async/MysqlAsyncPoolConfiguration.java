@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.swak.async.tx.TransactionalAspect;
 import com.swak.config.jdbc.AsyncDataSourceProperties;
 
 import io.vertx.mysqlclient.MySQLConnectOptions;
@@ -14,7 +15,7 @@ import io.vertx.sqlclient.Pool;
 import io.vertx.sqlclient.PoolOptions;
 
 /**
- * 支持
+ * 支持异步Sql
  * 
  * @author lifeng
  * @date 2020年9月30日 下午8:12:13
@@ -48,4 +49,13 @@ public class MysqlAsyncPoolConfiguration {
 		return client;
 	}
 
+	/**
+	 * 启用声明式事务
+	 * 
+	 * @return
+	 */
+	@Bean
+	public TransactionalAspect transactionalAspect() {
+		return new TransactionalAspect();
+	}
 }

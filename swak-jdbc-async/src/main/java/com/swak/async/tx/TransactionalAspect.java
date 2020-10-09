@@ -1,11 +1,14 @@
 package com.swak.async.tx;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,13 @@ public class TransactionalAspect implements Ordered {
 	private void cut() {
 	}
 
+	/**
+	 * 定义增强
+	 * 
+	 * @param point
+	 * @return
+	 * @throws Throwable
+	 */
 	@Around("cut()")
 	public Object around(ProceedingJoinPoint point) throws Throwable {
 		TransactionContext context = null;
@@ -56,11 +66,13 @@ public class TransactionalAspect implements Ordered {
 	 */
 	private TransactionContext beginTransactional(ProceedingJoinPoint point) {
 		TransactionContext context = null;
+		Transactional transaction = this.getMethod(point).getAnnotation(Transactional.class);
 		Object[] args = point.getArgs();
-		if (args != null && args.length >= 1 && args[0] instanceof TransactionContext) {
+		if (transaction != null && args != null && args.length >= 1 && args[0] instanceof TransactionContext) {
 			context = (TransactionContext) args[0];
-			context = jdbcTemplate.beginTransaction(context).acquire();
-			args[0] = context;
+			context = transaction.readOnly() ? jdbcTemplate.beginQuery(context)
+					: jdbcTemplate.beginTransaction(context);
+			args[0] = context.acquire().setRollbackFor(transaction.rollbackFor());
 		}
 		return context;
 	}
@@ -102,6 +114,18 @@ public class TransactionalAspect implements Ordered {
 				future.complete(o);
 			}
 		});
+	}
+
+	/**
+	 * 获得当前的 Method
+	 * 
+	 * @param point
+	 * @return
+	 */
+	private Method getMethod(ProceedingJoinPoint point) {
+		Signature s = point.getSignature();
+		MethodSignature ms = (MethodSignature) s;
+		return ms.getMethod();
 	}
 
 	/**

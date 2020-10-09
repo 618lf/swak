@@ -39,7 +39,7 @@ class TransactionContextImmutability {
 	/**
 	 * 需要回滚的异常，默认仅仅运行时异常需要回滚
 	 */
-	Class<Throwable> rollbackFor;
+	Class<? extends Throwable>[] rollbackFor;
 
 	/**
 	 * 是否准备OK

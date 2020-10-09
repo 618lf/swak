@@ -236,10 +236,20 @@ public class TransactionContext {
 	 * @return
 	 */
 	public TransactionalFuture finish(Throwable error) {
-		if (error != null && this.context.rollbackFor != null
-				&& error.getClass().isAssignableFrom(this.context.rollbackFor)) {
+		// 自定义的回滚异常
+		if (error != null && this.context.rollbackFor != null && this.context.rollbackFor.length > 0) {
+			for (int i = 0; i < this.context.rollbackFor.length; i++) {
+				Class<? extends Throwable> e = this.context.rollbackFor[i];
+				if (error.getClass().isAssignableFrom(e)) {
+					return this.rollback();
+				}
+			}
+		}
+		// 默认的回滚异常
+		else if (error != null && error.getClass().isAssignableFrom(RuntimeException.class)) {
 			return this.rollback();
 		}
+		// 提交
 		return this.commit();
 	}
 
@@ -339,8 +349,8 @@ public class TransactionContext {
 	 * @param ex
 	 * @return
 	 */
-	public TransactionContext setRollbackFor(Class<Throwable> ex) {
-		this.context.rollbackFor = ex;
+	public TransactionContext setRollbackFor(Class<? extends Throwable>[] exs) {
+		this.context.rollbackFor = exs;
 		return this;
 	}
 
