@@ -34,56 +34,52 @@ public class ReactiveServer implements Server {
 	@Override
 	public void start() throws ServerException {
 
-		// 发布服务类
-		this.vertx.apply(vertx -> {
-			CompletableFuture<Void> startFuture = new CompletableFuture<>();
+		CompletableFuture<Void> startFuture = new CompletableFuture<>();
 
-			// 以worker 的方式发布
-			DeploymentOptions options = new DeploymentOptions().setWorker(true);
+		// 以worker 的方式发布
+		DeploymentOptions options = new DeploymentOptions().setWorker(true);
 
-			// 发布启动 主服务
-			vertx.deployVerticle(mainVerticle, options, res -> {
-				if (res.succeeded()) {
-					startFuture.complete(null);
-				} else {
-					startFuture.completeExceptionally(res.cause());
-				}
-			});
-
-			// 监听状态
-			startFuture.whenComplete((s, v) -> {
-				if (v != null) {
-					Logger.error("Start Server Error:", v);
-					throw new RuntimeException(v);
-				}
-			});
-
-			// 应该会阻塞在这里
-			try {
-				startFuture.get();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+		// 发布启动 主服务
+		this.vertx.me().deployVerticle(mainVerticle, options, res -> {
+			if (res.succeeded()) {
+				startFuture.complete(null);
+			} else {
+				startFuture.completeExceptionally(res.cause());
 			}
 		});
+
+		// 监听状态
+		startFuture.whenComplete((s, v) -> {
+			if (v != null) {
+				Logger.error("Start Server Error:", v);
+				throw new RuntimeException(v);
+			}
+		});
+
+		// 应该会阻塞在这里
+		try {
+			startFuture.get();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
 	public void stop() throws ServerException {
-		this.vertx.destroy(vertx -> {
-			CompletableFuture<Void> stopFuture = new CompletableFuture<>();
-			vertx.close(res -> {
-				if (res.succeeded()) {
-					stopFuture.complete(null);
-				} else {
-					stopFuture.completeExceptionally(res.cause());
-				}
-			});
-			try {
-				stopFuture.get();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+		CompletableFuture<Void> stopFuture = new CompletableFuture<>();
+		this.vertx.me().close(res -> {
+			if (res.succeeded()) {
+				stopFuture.complete(null);
+			} else {
+				stopFuture.completeExceptionally(res.cause());
 			}
 		});
+
+		try {
+			stopFuture.get();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

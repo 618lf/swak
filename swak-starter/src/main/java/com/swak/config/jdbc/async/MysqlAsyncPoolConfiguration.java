@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.swak.async.tx.TransactionalAspect;
 import com.swak.config.jdbc.AsyncDataSourceProperties;
+import com.swak.vertx.transport.VertxProxy;
 
 import io.vertx.mysqlclient.MySQLConnectOptions;
 import io.vertx.mysqlclient.MySQLPool;
@@ -34,7 +35,7 @@ public class MysqlAsyncPoolConfiguration {
 	 * @return
 	 */
 	@Bean
-	public Pool asyncJdbcPool() {
+	public Pool asyncJdbcPool(VertxProxy vertx) {
 		MySQLConnectOptions connectOptions = new MySQLConnectOptions().setPort(properties.getPort())
 				.setHost(properties.getHost()).setDatabase(properties.getDatabase()).setUser(properties.getUsername())
 				.setPassword(properties.getPassword());
@@ -43,7 +44,7 @@ public class MysqlAsyncPoolConfiguration {
 		PoolOptions poolOptions = new PoolOptions().setMaxSize(properties.getMaxActive());
 
 		// Create the client pool
-		MySQLPool client = MySQLPool.pool(connectOptions, poolOptions);
+		MySQLPool client = MySQLPool.pool(vertx.me(), connectOptions, poolOptions);
 
 		// 返回操作池
 		return client;

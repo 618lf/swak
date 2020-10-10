@@ -1,10 +1,8 @@
 package com.swak.vertx.transport.vertx;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.swak.exception.BaseRuntimeException;
 import com.swak.vertx.transport.VertxProxy;
 import com.swak.vertx.transport.codec.Msg;
 
@@ -28,40 +26,15 @@ public class StandardVertx implements VertxProxy {
 
 	protected VertxOptions vertxOptions;
 	protected DeliveryOptions deliveryOptions;
-	protected boolean inited;
 	protected VertxImpl vertx;
 	protected ContextInternal context;
 
 	public StandardVertx(VertxOptions vertxOptions, DeliveryOptions deliveryOptions) {
 		this.vertxOptions = vertxOptions;
 		this.deliveryOptions = deliveryOptions;
-	}
-
-	/**
-	 * 启动服务器 -- 持有一个 EventLoopContext
-	 *
-	 * @param apply 启动Vertx
-	 */
-	@Override
-	public void apply(Consumer<Vertx> apply) {
-		Vertx vertx = Vertx.vertx(vertxOptions);
-		apply.accept(vertx);
-		this.vertx = (VertxImpl) vertx;
+		this.vertx = (VertxImpl)Vertx.vertx(vertxOptions);
 		this.context = this.vertx.createEventLoopContext(this.vertx.getEventLoopGroup().next(), null,
 				Thread.currentThread().getContextClassLoader());
-		this.inited = true;
-	}
-
-	/**
-	 * 停止服务器
-	 *
-	 * @param apply 停止Vertx
-	 */
-	@Override
-	public void destroy(Consumer<Vertx> apply) {
-		if (this.inited) {
-			apply.accept(this.vertx);
-		}
 	}
 
 	/**
@@ -77,9 +50,6 @@ public class StandardVertx implements VertxProxy {
 	 */
 	@Override
 	public void sentMessage(String address, Msg request, int timeout, Handler<AsyncResult<Message<Msg>>> replyHandler) {
-		if (!this.inited) {
-			throw new BaseRuntimeException("Vertx doesn't inited");
-		}
 		if (Vertx.currentContext() == null) {
 			context.runOnContext((v) -> this.sentMessageInternal(address, request, timeout, replyHandler));
 		} else {
