@@ -46,7 +46,7 @@ public class MysqlAsyncPoolConfiguration {
 		// Create the client pool
 		MySQLPool client = MySQLPool.pool(vertx.me(), connectOptions, poolOptions);
 
-		// 返回操作池
+		// Return pool
 		return client;
 	}
 
