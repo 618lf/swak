@@ -181,6 +181,17 @@ public class ImContextImpl implements ImContext {
 			}
 			return params;
 		}
+
+		@Override
+		public String remoteAddress() {
+			return socket.remoteAddress().host();
+		}
+
+		@Override
+		public String localAddress() {
+			return socket.localAddress().host();
+		}
+
 	}
 
 	/**

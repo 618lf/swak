@@ -133,6 +133,20 @@ public interface ImContext {
 		 * @return
 		 */
 		String uri();
+
+		/**
+		 * 远端地址
+		 * 
+		 * @return
+		 */
+		String remoteAddress();
+		
+		/**
+		 * 本地地址
+		 * 
+		 * @return
+		 */
+		String localAddress();
 	}
 
 	/**

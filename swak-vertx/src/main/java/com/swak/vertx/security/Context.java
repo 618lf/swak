@@ -1,5 +1,6 @@
 package com.swak.vertx.security;
 
+import com.swak.utils.StringUtils;
 import com.swak.vertx.protocol.im.ImContext;
 
 import io.vertx.ext.web.RoutingContext;
@@ -19,6 +20,13 @@ public interface Context {
 	 * @return
 	 */
 	void next();
+
+	/**
+	 * 请求地址
+	 * 
+	 * @return
+	 */
+	String remoteAddress();
 
 	/**
 	 * 请求地址
@@ -94,6 +102,11 @@ public interface Context {
 		}
 
 		@Override
+		public String remoteAddress() {
+			return context.request().remoteAddress();
+		}
+
+		@Override
 		public String uri() {
 			return context.request().uri();
 		}
@@ -148,6 +161,20 @@ public interface Context {
 		@Override
 		public String uri() {
 			return context.request().uri();
+		}
+
+		@Override
+		public String remoteAddress() {
+			String remoteAddr = context.request().getHeader("X-Real-IP");
+			if (StringUtils.isBlank(remoteAddr)) {
+				remoteAddr = context.request().getHeader("X-Forwarded-For");
+			} else if (StringUtils.isBlank(remoteAddr)) {
+				remoteAddr = context.request().getHeader("Proxy-Client-IP");
+			} else if (StringUtils.isBlank(remoteAddr)) {
+				remoteAddr = context.request().getHeader("WL-Proxy-Client-IP");
+			}
+			return remoteAddr != null ? remoteAddr
+					: (context.request().remoteAddress() != null ? context.request().remoteAddress().host() : null);
 		}
 
 		@Override
