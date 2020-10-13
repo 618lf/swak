@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.swak.async.datasource.DataSource;
 import com.swak.async.persistence.Sql;
+import com.swak.async.persistence.SqlResult;
 import com.swak.async.tx.TransactionContext;
 import com.swak.persistence.QueryCondition;
 
@@ -65,9 +66,9 @@ public class SqlExecuter {
 	/**
 	 * 执行Sql
 	 */
-	private <T> SessionFuture<List<T>> execute(Sql<T> sql, T entity, QueryCondition query) {
+	private <T> SessionFuture<SqlResult> execute(Sql<T> sql, T entity, QueryCondition query) {
 		SqlSession session = new SqlSession(dataSource);
-		SessionFuture<List<T>> sessionFuture = new SessionFuture<>(session);
+		SessionFuture<SqlResult> sessionFuture = new SessionFuture<>(session);
 		session.execute(sql, sql.newParam().setEntity(entity).setQuery(query)).whenComplete((r, e) -> {
 			if (e != null) {
 				sessionFuture.completeExceptionally(e);
@@ -115,7 +116,7 @@ public class SqlExecuter {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					future.complete(t);
+					future.complete(t.get());
 				}
 			});
 		} catch (Exception e) {
@@ -138,7 +139,7 @@ public class SqlExecuter {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					future.complete(t);
+					future.complete(t.get());
 				}
 			});
 		} catch (Exception e) {
@@ -154,7 +155,6 @@ public class SqlExecuter {
 	 * @param param 参数
 	 * @return 执行结果
 	 */
-	@SuppressWarnings("rawtypes")
 	public <T> CompletableFuture<Integer> count(Sql<T> sql, QueryCondition qc) {
 		CompletableFuture<Integer> future = new CompletableFuture<Integer>();
 		try {
@@ -162,13 +162,7 @@ public class SqlExecuter {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					try {
-						List ts = (List) t;
-						Integer count = ts != null && ts.size() > 0 ? (Integer) ts.get(0) : 0;
-						future.complete(count);
-					} catch (Exception ex) {
-						future.completeExceptionally(ex);
-					}
+					future.complete(t.getInt());
 				}
 			});
 		} catch (Exception e) {

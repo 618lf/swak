@@ -1,11 +1,11 @@
 package com.swak.async.execute;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.swak.async.datasource.DataSource;
 import com.swak.async.persistence.Sql;
 import com.swak.async.persistence.SqlParam;
+import com.swak.async.persistence.SqlResult;
 import com.swak.async.persistence.sqls.Dml;
 import com.swak.persistence.MS;
 
@@ -57,7 +57,7 @@ public class SqlSession {
 	 * @param sql
 	 * @param handler
 	 */
-	public <T> CompletableFuture<List<T>> execute(Sql<T> sql, boolean transaction, SqlParam<T> param) {
+	public <T> CompletableFuture<SqlResult> execute(Sql<T> sql, boolean transaction, SqlParam<T> param) {
 		return this.select(transaction, sql).thenCompose(client -> {
 			return sql.execute(client, param);
 		});
@@ -70,7 +70,7 @@ public class SqlSession {
 	 * @param sql
 	 * @param handler
 	 */
-	public <T> CompletableFuture<List<T>> execute(Sql<T> sql, SqlParam<T> param) {
+	public <T> CompletableFuture<SqlResult> execute(Sql<T> sql, SqlParam<T> param) {
 		return this.select(false, sql).thenCompose(client -> {
 			return sql.execute(client, param);
 		});

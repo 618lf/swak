@@ -1,11 +1,11 @@
 package com.swak.async.tx;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.swak.async.execute.SqlSession;
 import com.swak.async.persistence.Sql;
+import com.swak.async.persistence.SqlResult;
 import com.swak.persistence.QueryCondition;
 
 /**
@@ -80,7 +80,7 @@ public class TransactionContext {
 	/**
 	 * 执行Sql
 	 */
-	protected <T> CompletableFuture<List<T>> execute(Sql<T> sql, T entity, QueryCondition query) {
+	protected <T> CompletableFuture<SqlResult> execute(Sql<T> sql, T entity, QueryCondition query) {
 
 		// 已经提交直接抛出异常
 		if (this.context.commited.get()) {

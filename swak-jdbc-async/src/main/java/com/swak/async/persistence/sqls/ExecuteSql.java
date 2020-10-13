@@ -6,6 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.Sql;
 import com.swak.async.persistence.SqlParam;
+import com.swak.async.persistence.SqlResult;
 import com.swak.utils.Lists;
 
 import io.vertx.sqlclient.Row;
@@ -56,8 +57,8 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 	 * @return
 	 */
 	@Override
-	public <U> CompletableFuture<List<U>> execute(SqlClient client, SqlParam<T> param) {
-		CompletableFuture<List<U>> future = new CompletableFuture<>();
+	public CompletableFuture<SqlResult> execute(SqlClient client, SqlParam<T> param) {
+		CompletableFuture<SqlResult> future = new CompletableFuture<>();
 		client.preparedQuery(this.parseScript(param)).execute(Tuple.wrap(this.parseParams(param)), (res) -> {
 			if (res.cause() != null) {
 				future.completeExceptionally(res.cause());
@@ -68,7 +69,7 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 		return future;
 	}
 
-	protected <U> void rowMappers(CompletableFuture<List<U>> future, RowSet<Row> rows, RowMapper<U> rowMapper) {
+	protected <U> void rowMappers(CompletableFuture<SqlResult> future, RowSet<Row> rows, RowMapper<U> rowMapper) {
 		try {
 			List<U> ts = Lists.newArrayList();
 			if (rowMapper != null) {
@@ -80,7 +81,7 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 					rowNum++;
 				}
 			}
-			future.complete(ts);
+			future.complete(new SqlResult(ts));
 		} catch (Exception e) {
 			future.completeExceptionally(e);
 		}

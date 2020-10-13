@@ -1,6 +1,5 @@
 package com.swak.async.persistence;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import io.vertx.sqlclient.SqlClient;
@@ -20,7 +19,7 @@ public interface Sql<T> {
 	 * @param param  参数
 	 * @return
 	 */
-	<U> CompletableFuture<List<U>> execute(SqlClient client, SqlParam<T> param);
+	CompletableFuture<SqlResult> execute(SqlClient client, SqlParam<T> param);
 
 	/**
 	 * 参数
