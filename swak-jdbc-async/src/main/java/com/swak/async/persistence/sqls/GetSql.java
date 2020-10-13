@@ -24,7 +24,7 @@ public class GetSql<T> extends QuerySql<T> {
 		sql.append(SELECT).append(SPACE).append(this.parseColumns()).append(FROM).append(SPACE)
 				.append(this.parseTable(param)).append(SPACE);
 		sql.append(WHERE).append(SPACE).append(this.parseEqualsIdParams());
-		return sql.toString();
+		return this.parseQuery(sql.toString(), param.query);
 	}
 
 	/**

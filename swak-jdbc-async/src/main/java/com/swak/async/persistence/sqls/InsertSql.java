@@ -22,7 +22,7 @@ public class InsertSql<T> extends ShardingSql<T> implements Dml<T> {
 	public String parseScript(SqlParam<T> param) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(INSERT).append(SPACE).append(this.parseTable(param)).append(LEFT_KH);
-		sql.append(this.parseColumns()).append(RIGHT_KH);
+		sql.append(this.parseColumns()).append(RIGHT_KH).append(SPACE);
 		sql.append(VALUES).append(LEFT_KH).append(this.parseInsertParams()).append(RIGHT_KH);
 		return sql.toString();
 	}

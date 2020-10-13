@@ -101,7 +101,7 @@ public class QueryCondition implements Serializable {
 	}
 
 	/**
-	 * 获得此列设置的值： 只支持 SingleValue
+	 * 获得此列设置的值： 只支持 =
 	 * 
 	 * @param column
 	 * @return
@@ -109,8 +109,9 @@ public class QueryCondition implements Serializable {
 	public Object getColumnValue(String column) {
 		List<SingleValue> svalues = criteria.getCriteriaWithSingleValue();
 		if (svalues.size() > 0) {
+			String condition = column + " =";
 			for (SingleValue value : svalues) {
-				if (value.getCondition().equals(column)) {
+				if (value.getCondition().equals(condition)) {
 					return value.getValue();
 				}
 			}
@@ -302,6 +303,7 @@ public class QueryCondition implements Serializable {
 			return this;
 		}
 
+		// 存储WithSingleValue
 		public Criteria andEqualTo(String column, Object value) {
 			addCriterion(new StringBuilder(column).append(" =").toString(), value);
 			return this;

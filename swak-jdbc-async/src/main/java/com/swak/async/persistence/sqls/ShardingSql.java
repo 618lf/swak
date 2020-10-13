@@ -7,6 +7,8 @@ import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.define.ColumnDefine;
 import com.swak.async.persistence.define.TableDefine;
 import com.swak.async.sharding.ShardingStrategys;
+import com.swak.persistence.QueryCondition;
+import com.swak.utils.StringUtils;
 
 /**
  * 定义基础的语句块
@@ -37,6 +39,7 @@ public abstract class ShardingSql<T> extends ExecuteSql<T> implements Sql<T> {
 	protected static final String VALUES = "VALUES";
 	protected static final String COUNT = "COUNT(1) C";
 	protected static final String LOCK = "FOR UPDATE";
+	protected static final String PADDING = "1=1";
 
 	/**
 	 * 表定义
@@ -50,6 +53,20 @@ public abstract class ShardingSql<T> extends ExecuteSql<T> implements Sql<T> {
 	 */
 	public ShardingSql(TableDefine<T> table) {
 		this.table = table;
+	}
+
+	/**
+	 * 解析条件
+	 */
+	protected String parseQuery(String sql, QueryCondition query) {
+		String queryCondition = query == null ? StringUtils.EMPTY : query.toString();
+		if (StringUtils.isNotBlank(queryCondition) && StringUtils.contains(sql, WHERE)) {
+			return new StringBuilder(sql).append(SPACE).append(AND).append(SPACE).append(PADDING).append(SPACE)
+					.append(queryCondition).toString();
+		} else if (StringUtils.isNotBlank(queryCondition)) {
+			return new StringBuilder(sql).append(WHERE).append(SPACE).append(queryCondition).toString();
+		}
+		return sql;
 	}
 
 	/**

@@ -24,7 +24,7 @@ public class ExistsSql<T> extends CountSql<T> {
 		sql.append(SELECT).append(SPACE).append(COUNT).append(SPACE).append(FROM).append(SPACE)
 				.append(this.parseTable(param)).append(SPACE);
 		sql.append(WHERE).append(SPACE).append(this.parseEqualsIdParams());
-		return sql.toString();
+		return this.parseQuery(sql.toString(), param.query);
 	}
 
 	/**

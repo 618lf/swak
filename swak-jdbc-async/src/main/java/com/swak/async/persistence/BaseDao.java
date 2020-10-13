@@ -11,9 +11,9 @@ import com.swak.async.execute.SqlExecuter;
 import com.swak.async.persistence.define.SqlMap;
 import com.swak.async.persistence.sqls.CountSql;
 import com.swak.async.persistence.sqls.DeleteSql;
-import com.swak.async.persistence.sqls.DirectQuerySql;
 import com.swak.async.persistence.sqls.GetSql;
 import com.swak.async.persistence.sqls.InsertSql;
+import com.swak.async.persistence.sqls.PageSql;
 import com.swak.async.persistence.sqls.QuerySql;
 import com.swak.async.persistence.sqls.UpdateSql;
 import com.swak.async.tx.TransactionContext;
@@ -195,22 +195,10 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 		return ctx.count(countSql, qc).txCompose(context -> {
 			Integer count = context.getValue() == null ? 0 : context.getValue();
 			param.setRecordCount(count);
-			if (count == 0) {
-				return TransactionalFuture.completedFuture(context.setValue(Lists.newArrayList()));
-			} else {
-				int pageNum = param.getPageIndex();
-				int pageSize = param.getPageSize();
-				int pageCount = getPageCount(count, pageSize);
-				if (pageNum > pageCount) {
-					pageNum = pageCount;
-				}
-				String querySqlString = querySql.parseScript(querySql.newParam().setQuery(qc));
-				DirectQuerySql<T> directQuerySql = new DirectQuerySql<>(
-						dialect.getLimitString(querySqlString, (pageNum - 1) * pageSize, pageSize),
-						Lists.newArrayList(), querySql.rowMap());
-				return context.query(directQuerySql, qc);
+			if (count > 0) {
+				return context.query(new PageSql<>(querySql, dialect, param), qc);
 			}
-
+			return TransactionalFuture.completedFuture(context.setValue(Lists.newArrayList()));
 		}).txApply(context -> {
 			return context.setValue(new Page(param, context.getValue()));
 		});
@@ -354,37 +342,12 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 		}).txCompose(context -> {
 			Integer count = context.getValue() == null ? 0 : context.getValue();
 			param.setRecordCount(count);
-			if (count == 0) {
-				return TransactionalFuture.completedFuture(context.setValue(Lists.newArrayList()));
-			} else {
-				int pageNum = param.getPageIndex();
-				int pageSize = param.getPageSize();
-				int pageCount = getPageCount(count, pageSize);
-				if (pageNum > pageCount) {
-					pageNum = pageCount;
-				}
-				String querySqlString = querySql.parseScript(querySql.newParam().setQuery(qc));
-				DirectQuerySql<T> directQuerySql = new DirectQuerySql<>(
-						dialect.getLimitString(querySqlString, (pageNum - 1) * pageSize, pageSize),
-						Lists.newArrayList(), querySql.rowMap());
-				return context.query(directQuerySql, qc);
+			if (count > 0) {
+				return context.query(new PageSql<>(querySql, dialect, param), qc);
 			}
-
+			return TransactionalFuture.completedFuture(context.setValue(Lists.newArrayList()));
 		}).finish(context -> {
 			return new Page(param, context.getValue());
 		});
-	}
-
-	/**
-	 * page count
-	 * 
-	 * @param recordCount
-	 * @param pageSize
-	 * @return
-	 */
-	private int getPageCount(int recordCount, int pageSize) {
-		if (recordCount == 0)
-			return 0;
-		return recordCount % pageSize > 0 ? ((recordCount / pageSize) + 1) : (recordCount / pageSize);
 	}
 }

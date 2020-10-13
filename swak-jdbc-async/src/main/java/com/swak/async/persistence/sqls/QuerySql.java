@@ -26,7 +26,7 @@ public class QuerySql<T> extends ShardingSql<T> implements Dql<T> {
 		StringBuilder sql = new StringBuilder();
 		sql.append(SELECT).append(SPACE).append(this.parseColumns()).append(FROM).append(SPACE)
 				.append(this.parseTable(param)).append(SPACE);
-		return sql.toString();
+		return this.parseQuery(sql.toString(), param.query);
 	}
 
 	@Override

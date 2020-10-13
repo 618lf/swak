@@ -24,7 +24,7 @@ public class DeleteSql<T> extends ShardingSql<T> implements Dml<T> {
 		sql.append(DELETE).append(SPACE).append(FROM).append(SPACE).append(TABLE).append(SPACE)
 				.append(this.parseTable(param)).append(SPACE);
 		sql.append(WHERE).append(SPACE).append(this.parseEqualsIdParams());
-		return sql.toString();
+		return this.parseQuery(sql.toString(), param.query);
 	}
 
 	/**
