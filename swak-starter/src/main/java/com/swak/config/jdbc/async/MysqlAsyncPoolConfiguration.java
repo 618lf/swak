@@ -2,17 +2,18 @@ package com.swak.config.jdbc.async;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.swak.async.datasource.DataSource;
 import com.swak.async.tx.TransactionalAspect;
 import com.swak.config.jdbc.AsyncDataSourceProperties;
 import com.swak.vertx.transport.VertxProxy;
 
 import io.vertx.mysqlclient.MySQLConnectOptions;
 import io.vertx.mysqlclient.MySQLPool;
-import io.vertx.sqlclient.Pool;
 import io.vertx.sqlclient.PoolOptions;
 
 /**
@@ -35,7 +36,8 @@ public class MysqlAsyncPoolConfiguration {
 	 * @return
 	 */
 	@Bean
-	public Pool asyncJdbcPool(VertxProxy vertx) {
+	@ConditionalOnMissingBean(DataSource.class)
+	public DataSource asyncJdbcPool(VertxProxy vertx) {
 		MySQLConnectOptions connectOptions = new MySQLConnectOptions().setPort(properties.getPort())
 				.setHost(properties.getHost()).setDatabase(properties.getDatabase()).setUser(properties.getUsername())
 				.setPassword(properties.getPassword());
@@ -47,7 +49,7 @@ public class MysqlAsyncPoolConfiguration {
 		MySQLPool client = MySQLPool.pool(vertx.me(), connectOptions, poolOptions);
 
 		// Return pool
-		return client;
+		return new DataSource(client);
 	}
 
 	/**

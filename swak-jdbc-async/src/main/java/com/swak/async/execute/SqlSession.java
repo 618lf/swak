@@ -3,11 +3,12 @@ package com.swak.async.execute;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.swak.async.datasource.DataSource;
 import com.swak.async.persistence.Sql;
 import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.sqls.Dml;
+import com.swak.persistence.MS;
 
-import io.vertx.sqlclient.Pool;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.SqlConnection;
 import io.vertx.sqlclient.Transaction;
@@ -23,7 +24,7 @@ public class SqlSession {
 	/**
 	 * 连接池：可能是一个代理
 	 */
-	Pool pool;
+	DataSource dataSource;
 
 	/**
 	 * 连接
@@ -45,8 +46,8 @@ public class SqlSession {
 	 * 
 	 * @param pool
 	 */
-	SqlSession(Pool pool) {
-		this.pool = pool;
+	SqlSession(DataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 
 	/**
@@ -70,7 +71,7 @@ public class SqlSession {
 	 * @param handler
 	 */
 	public <T> CompletableFuture<List<T>> execute(Sql<T> sql, SqlParam<T> param) {
-		return this.selectPool(false, sql).thenCompose(client -> {
+		return this.select(false, sql).thenCompose(client -> {
 			return sql.execute(client, param);
 		});
 	}
@@ -81,7 +82,7 @@ public class SqlSession {
 	<T> CompletableFuture<SqlClient> select(boolean transaction, Sql<T> sql) {
 		if (!this.prepared.isDone()) {
 			try {
-				this.pool.getConnection((res) -> {
+				this.dataSource.getConnection(this.getType(transaction, sql), (res) -> {
 					if (res.cause() != null) {
 						this.prepared.completeExceptionally(res.cause());
 					} else {
@@ -96,21 +97,10 @@ public class SqlSession {
 		return this.prepared;
 	}
 
-	/**
-	 * 开启
-	 */
-	<T> CompletableFuture<SqlClient> selectPool(boolean transaction, Sql<T> sql) {
-		if (!this.prepared.isDone()) {
-			this.prepared.complete(this.pool);
-		}
-		return this.prepared;
+	<T> MS getType(boolean transaction, Sql<T> sql) {
+		return (sql instanceof Dml || transaction) ? MS.Master : MS.Slave;
 	}
 
-	/**
-	 * 开启事务
-	 * 
-	 * @param sql
-	 */
 	<T> void selectTx(boolean transaction, Sql<T> sql) {
 		try {
 			if (sql instanceof Dml || transaction) {
@@ -122,6 +112,18 @@ public class SqlSession {
 		} catch (Exception e) {
 			this.prepared.completeExceptionally(e);
 		}
+	}
+
+	/**
+	 * 结束
+	 * 
+	 * @return
+	 */
+	public CompletableFuture<Void> finish(Throwable error) {
+		if (error != null && error.getClass().isAssignableFrom(RuntimeException.class)) {
+			return this.rollback();
+		}
+		return this.commit();
 	}
 
 	/**

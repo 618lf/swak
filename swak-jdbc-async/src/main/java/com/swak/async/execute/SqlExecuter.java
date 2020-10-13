@@ -3,11 +3,10 @@ package com.swak.async.execute;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.swak.async.datasource.DataSource;
 import com.swak.async.persistence.Sql;
 import com.swak.async.tx.TransactionContext;
 import com.swak.persistence.QueryCondition;
-
-import io.vertx.sqlclient.Pool;
 
 /**
  * Sql 执行器: 管理整个Sql 的执行，实现Sql的二次处理： 读写分离，分表
@@ -20,10 +19,10 @@ public class SqlExecuter {
 	/**
 	 * 连接池 -- 可能有多个, 或者是一个代理
 	 */
-	Pool pool;
+	DataSource dataSource;
 
-	public SqlExecuter(Pool pool) {
-		this.pool = pool;
+	public SqlExecuter(DataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 
 	/**
@@ -60,7 +59,23 @@ public class SqlExecuter {
 	 * @return
 	 */
 	public SqlSession open() {
-		return new SqlSession(pool);
+		return new SqlSession(dataSource);
+	}
+
+	/**
+	 * 执行Sql
+	 */
+	private <T> SessionFuture<List<T>> execute(Sql<T> sql, T entity, QueryCondition query) {
+		SqlSession session = new SqlSession(dataSource);
+		SessionFuture<List<T>> sessionFuture = new SessionFuture<>(session);
+		session.execute(sql, sql.newParam().setEntity(entity).setQuery(query)).whenComplete((r, e) -> {
+			if (e != null) {
+				sessionFuture.completeExceptionally(e);
+			} else {
+				sessionFuture.complete(r);
+			}
+		});
+		return sessionFuture;
 	}
 
 	/**
@@ -73,7 +88,7 @@ public class SqlExecuter {
 	public <T> CompletableFuture<Void> update(Sql<T> sql, T entity) {
 		CompletableFuture<Void> future = new CompletableFuture<>();
 		try {
-			this.open().execute(sql, sql.newParam().setEntity(entity)).whenComplete((r, e) -> {
+			this.execute(sql, entity, null).finish((t, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
@@ -96,11 +111,11 @@ public class SqlExecuter {
 	public <T> CompletableFuture<List<T>> query(Sql<T> sql, T entity) {
 		CompletableFuture<List<T>> future = new CompletableFuture<List<T>>();
 		try {
-			this.open().execute(sql, sql.newParam().setEntity(entity)).whenComplete((r, e) -> {
+			this.execute(sql, entity, null).finish((t, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					future.complete(r);
+					future.complete(t);
 				}
 			});
 		} catch (Exception e) {
@@ -119,11 +134,11 @@ public class SqlExecuter {
 	public <T> CompletableFuture<List<T>> query(Sql<T> sql, QueryCondition qc) {
 		CompletableFuture<List<T>> future = new CompletableFuture<List<T>>();
 		try {
-			this.open().execute(sql, sql.newParam().setQuery(qc)).whenComplete((r, e) -> {
+			this.execute(sql, null, qc).finish((t, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					future.complete(r);
+					future.complete(t);
 				}
 			});
 		} catch (Exception e) {
@@ -143,13 +158,17 @@ public class SqlExecuter {
 	public <T> CompletableFuture<Integer> count(Sql<T> sql, QueryCondition qc) {
 		CompletableFuture<Integer> future = new CompletableFuture<Integer>();
 		try {
-			this.open().execute(sql, sql.newParam().setQuery(qc)).whenComplete((r, e) -> {
+			this.execute(sql, null, qc).finish((t, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					List ts = (List) r;
-					Integer count = ts != null && ts.size() > 0 ? (Integer) ts.get(0) : 0;
-					future.complete(count);
+					try {
+						List ts = (List) t;
+						Integer count = ts != null && ts.size() > 0 ? (Integer) ts.get(0) : 0;
+						future.complete(count);
+					} catch (Exception ex) {
+						future.completeExceptionally(ex);
+					}
 				}
 			});
 		} catch (Exception e) {
