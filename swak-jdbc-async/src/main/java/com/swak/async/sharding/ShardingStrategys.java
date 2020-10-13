@@ -82,7 +82,7 @@ public class ShardingStrategys {
 			throw new RuntimeException("分表属性值缺失：" + fieldString);
 		}
 		Map<String, Object> context = Maps.newHashMap();
-		context.put("fieldString", value);
+		context.put(fieldString, value);
 		return param.table.name + linkString + shardingScriptExecutor.execute(fieldString + algorithmString, context);
 	}
 

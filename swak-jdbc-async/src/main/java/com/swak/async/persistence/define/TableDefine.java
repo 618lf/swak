@@ -70,7 +70,7 @@ public class TableDefine<T> {
 		this.name = this.tableMapping();
 
 		// 类型注册
-		ClassMeta meta = FieldCache.set(entity, true);
+		this.meta = FieldCache.set(entity, true);
 
 		// 属性元数据
 		Map<String, FieldMeta> fields = meta.getFields();

@@ -132,7 +132,8 @@ public class SqlParam<T> {
 	 * @param fieldName
 	 * @return
 	 */
-	public Object getFieldValue(String fieldName) {
+	@SuppressWarnings({ "unchecked" })
+	public <U> U getFieldValue(String fieldName) {
 		FieldMeta meta = this.table.meta.getFields().get(fieldName);
 		if (meta == null) {
 			return null;
@@ -156,6 +157,6 @@ public class SqlParam<T> {
 		}
 
 		// 返回获取的值
-		return value;
+		return (U) value;
 	}
 }
