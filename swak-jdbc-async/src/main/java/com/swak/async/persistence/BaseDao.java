@@ -7,9 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.swak.async.execute.SqlExecuter;
 import com.swak.async.persistence.define.SqlMap;
 import com.swak.async.persistence.sqls.CountSql;
 import com.swak.async.persistence.sqls.DeleteSql;
+import com.swak.async.persistence.sqls.DirectQuerySql;
 import com.swak.async.persistence.sqls.GetSql;
 import com.swak.async.persistence.sqls.InsertSql;
 import com.swak.async.persistence.sqls.QuerySql;
@@ -34,7 +36,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	protected static Logger logger = LoggerFactory.getLogger(BaseDao.class);
 
 	@Autowired
-	private JdbcTemplate jdbcTemplate;
+	private SqlExecuter sqlExecuter;
 	@Autowired
 	private Dialect dialect;
 
@@ -44,7 +46,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @return
 	 */
 	public TransactionalFuture beginQuery() {
-		return TransactionalFuture.completedFuture(jdbcTemplate.beginQuery(null));
+		return TransactionalFuture.completedFuture(sqlExecuter.beginQuery(null));
 	}
 
 	/**
@@ -53,7 +55,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @return
 	 */
 	public TransactionalFuture beginTransaction() {
-		return TransactionalFuture.completedFuture(jdbcTemplate.beginTransaction(null));
+		return TransactionalFuture.completedFuture(sqlExecuter.beginTransaction(null));
 	}
 
 	// ******************** 事务的版本 ****************************
@@ -68,7 +70,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	public TransactionalFuture insert(TransactionContext context, T entity) {
 		final PK pk = entity instanceof IdEntity ? ((IdEntity<PK>) entity).prePersist() : null;
 		InsertSql<T> sql = this.getSql(SqlMap.INSERT);
-		return context.update(sql.script(), sql.parse(entity)).txApply(ctx -> ctx.setValue(pk));
+		return context.update(sql, entity).txApply(ctx -> ctx.setValue(pk));
 	}
 
 	/**
@@ -79,7 +81,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 */
 	public TransactionalFuture update(TransactionContext context, T entity) {
 		UpdateSql<T> sql = this.getSql(SqlMap.UPDATE);
-		return context.update(sql.script(), sql.parse(entity));
+		return context.update(sql, entity);
 	}
 
 	/**
@@ -89,7 +91,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 */
 	public TransactionalFuture delete(TransactionContext context, T entity) {
 		DeleteSql<T> sql = this.getSql(SqlMap.DELETE);
-		return context.update(sql.script(), sql.parse(entity));
+		return context.update(sql, entity);
 	}
 
 	/**
@@ -102,7 +104,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 */
 	public TransactionalFuture get(TransactionContext context, T entity) {
 		GetSql<T> sql = this.getSql(SqlMap.GET);
-		return context.query(sql.script(), sql.parse(entity), sql.getMapper()).txApply(ctx -> {
+		return context.query(sql, entity).txApply(ctx -> {
 			List<T> datas = ctx.getValue();
 			return ctx.setValue(datas != null && datas.size() >= 1 ? datas.get(0) : null);
 		});
@@ -130,7 +132,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 */
 	public TransactionalFuture query(TransactionContext context, String sql, QueryCondition qc) {
 		QuerySql<T> querySql = this.getSql(sql);
-		return context.query(querySql.parseScriptWithCondition(qc), Lists.newArrayList(), querySql.getMapper());
+		return context.query(querySql, qc);
 	}
 
 	/**
@@ -154,7 +156,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 */
 	public TransactionalFuture count(TransactionContext context, String sql, QueryCondition qc) {
 		CountSql<T> querySql = this.getSql(sql);
-		return context.count(querySql.parseScriptWithCondition(qc), Lists.newArrayList());
+		return context.count(querySql, qc);
 	}
 
 	/**
@@ -180,10 +182,9 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	public TransactionalFuture page(TransactionContext context, String sql, QueryCondition qc, Parameters param) {
 		if (param.getPageIndex() == Parameters.NO_PAGINATION || param.getPageSize() == Parameters.NO_PAGINATION) {
 			QuerySql<T> querySql = this.getSql(sql);
-			return context.query(querySql.parseScriptWithCondition(qc), Lists.newArrayList(), querySql.getMapper())
-					.txApply(ctx -> {
-						return ctx.setValue(new Page(param, ctx.getValue()));
-					});
+			return context.query(querySql, qc).txApply(ctx -> {
+				return ctx.setValue(new Page(param, ctx.getValue()));
+			});
 		}
 		return this.doPage(context, sql, qc, param);
 	}
@@ -191,7 +192,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	private TransactionalFuture doPage(TransactionContext ctx, String sql, QueryCondition qc, Parameters param) {
 		QuerySql<T> querySql = this.getSql(sql);
 		CountSql<T> countSql = this.getSql(sql + "Stat");
-		return ctx.count(countSql.parseScriptWithCondition(qc), Lists.newArrayList()).txCompose(context -> {
+		return ctx.count(countSql, qc).txCompose(context -> {
 			Integer count = context.getValue() == null ? 0 : context.getValue();
 			param.setRecordCount(count);
 			if (count == 0) {
@@ -203,8 +204,11 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 				if (pageNum > pageCount) {
 					pageNum = pageCount;
 				}
-				return context.query(dialect.getLimitString(querySql.parseScriptWithCondition(qc),
-						(pageNum - 1) * pageSize, pageSize), Lists.newArrayList(), querySql.getMapper());
+				String querySqlString = querySql.parseScript(null, qc);
+				DirectQuerySql<T> directQuerySql = new DirectQuerySql<>(
+						dialect.getLimitString(querySqlString, (pageNum - 1) * pageSize, pageSize),
+						Lists.newArrayList(), querySql.rowMap());
+				return context.query(directQuerySql, qc);
 			}
 
 		}).txApply(context -> {
@@ -224,7 +228,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	public CompletableFuture<PK> insert(T entity) {
 		final PK pk = entity instanceof IdEntity ? ((IdEntity<PK>) entity).prePersist() : null;
 		InsertSql<T> sql = this.getSql(SqlMap.INSERT);
-		return jdbcTemplate.update(sql.script(), sql.parse(entity)).thenApply(res -> pk);
+		return sqlExecuter.update(sql, entity).thenApply(res -> pk);
 	}
 
 	/**
@@ -235,7 +239,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 */
 	public CompletableFuture<Void> update(T entity) {
 		UpdateSql<T> sql = this.getSql(SqlMap.UPDATE);
-		return jdbcTemplate.update(sql.script(), sql.parse(entity));
+		return sqlExecuter.update(sql, entity);
 	}
 
 	/**
@@ -245,7 +249,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 */
 	public CompletableFuture<Void> delete(T entity) {
 		DeleteSql<T> sql = this.getSql(SqlMap.DELETE);
-		return jdbcTemplate.update(sql.script(), sql.parse(entity));
+		return sqlExecuter.update(sql, entity);
 	}
 
 	/**
@@ -258,7 +262,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 */
 	public CompletableFuture<T> get(T entity) {
 		GetSql<T> sql = this.getSql(SqlMap.GET);
-		return jdbcTemplate.query(sql.script(), sql.parse(entity), sql.getMapper()).thenApply(datas -> {
+		return sqlExecuter.query(sql, entity).thenApply(datas -> {
 			return datas != null && datas.size() >= 1 ? datas.get(0) : null;
 		});
 	}
@@ -285,7 +289,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 */
 	public CompletableFuture<List<T>> query(String sql, QueryCondition qc) {
 		QuerySql<T> querySql = this.getSql(sql);
-		return jdbcTemplate.query(querySql.parseScriptWithCondition(qc), Lists.newArrayList(), querySql.getMapper());
+		return sqlExecuter.query(querySql, qc);
 	}
 
 	/**
@@ -309,7 +313,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 */
 	public CompletableFuture<Integer> count(String sql, QueryCondition qc) {
 		CountSql<T> querySql = this.getSql(sql);
-		return jdbcTemplate.count(querySql.parseScriptWithCondition(qc), Lists.newArrayList());
+		return sqlExecuter.count(querySql, qc);
 	}
 
 	/**
@@ -335,7 +339,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	public CompletableFuture<Page> page(String sql, QueryCondition qc, Parameters param) {
 		if (param.getPageIndex() == Parameters.NO_PAGINATION || param.getPageSize() == Parameters.NO_PAGINATION) {
 			QuerySql<T> querySql = this.getSql(sql);
-			return jdbcTemplate.query(querySql.parseScriptWithCondition(qc), querySql.getMapper()).thenApply(lst -> {
+			return sqlExecuter.query(querySql, qc).thenApply(lst -> {
 				return new Page(param, lst);
 			});
 		}
@@ -346,7 +350,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 		QuerySql<T> querySql = this.getSql(sql);
 		CountSql<T> countSql = this.getSql(sql + "Stat");
 		return this.beginQuery().txCompose(context -> {
-			return context.count(countSql.parseScriptWithCondition(qc), Lists.newArrayList());
+			return context.count(countSql, qc);
 		}).txCompose(context -> {
 			Integer count = context.getValue() == null ? 0 : context.getValue();
 			param.setRecordCount(count);
@@ -359,8 +363,11 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 				if (pageNum > pageCount) {
 					pageNum = pageCount;
 				}
-				return context.query(dialect.getLimitString(querySql.parseScriptWithCondition(qc),
-						(pageNum - 1) * pageSize, pageSize), Lists.newArrayList(), querySql.getMapper());
+				String querySqlString = querySql.parseScript(null, qc);
+				DirectQuerySql<T> directQuerySql = new DirectQuerySql<>(
+						dialect.getLimitString(querySqlString, (pageNum - 1) * pageSize, pageSize),
+						Lists.newArrayList(), querySql.rowMap());
+				return context.query(directQuerySql, qc);
 			}
 
 		}).finish(context -> {

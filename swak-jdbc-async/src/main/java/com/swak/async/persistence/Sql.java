@@ -1,6 +1,11 @@
 package com.swak.async.persistence;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import com.swak.persistence.QueryCondition;
+
+import io.vertx.sqlclient.SqlClient;
 
 /**
  * SQL 语句
@@ -11,16 +16,14 @@ import java.util.List;
 public interface Sql<T> {
 
 	/**
-	 * 返回SQL脚本: insert into table(c1, c2, c3) values(:c1, :c2, :c3);
+	 * 执行Sql
 	 * 
+	 * @param <U>
+	 * @param client
+	 * @param transaction
+	 * @param entity
+	 * @param query
 	 * @return
 	 */
-	String script();
-
-	/**
-	 * 解析参数：按照参数顺序排列
-	 * 
-	 * @return
-	 */
-	List<Object> parse(T entity);
+	<U> CompletableFuture<List<U>> execute(SqlClient client, T entity, QueryCondition query);
 }

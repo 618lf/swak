@@ -4,14 +4,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.swak.async.persistence.RowMapper;
-import com.swak.utils.Lists;
-
-import io.vertx.sqlclient.Pool;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.RowIterator;
-import io.vertx.sqlclient.RowSet;
-import io.vertx.sqlclient.Tuple;
+import com.swak.async.execute.SqlSession;
+import com.swak.async.persistence.Sql;
+import com.swak.persistence.QueryCondition;
 
 /**
  * 事务上下文
@@ -50,22 +45,10 @@ public class TransactionContext {
 	 * 
 	 * @param pool
 	 */
-	private TransactionContext(Pool pool, boolean readOnly) {
+	private TransactionContext(SqlSession session, boolean readOnly) {
 		this.context = new TransactionContextImmutability();
-		this.context.pool = pool;
+		this.context.session = session;
 		this.context.readOnly = readOnly;
-		try {
-			this.context.pool.getConnection((res) -> {
-				if (res.cause() != null) {
-					this.context.prepared.completeExceptionally(res.cause());
-				} else {
-					this.context.connection = res.result();
-					this.context.begin();
-				}
-			});
-		} catch (Exception e) {
-			this.context.prepared.completeExceptionally(e);
-		}
 	}
 
 	/**
@@ -95,9 +78,9 @@ public class TransactionContext {
 	}
 
 	/**
-	 * 开启事务
+	 * 执行Sql
 	 */
-	protected CompletableFuture<Void> prepared() {
+	protected <T> CompletableFuture<List<T>> execute(Sql<T> sql, T entity, QueryCondition query) {
 
 		// 已经提交直接抛出异常
 		if (this.context.commited.get()) {
@@ -105,7 +88,7 @@ public class TransactionContext {
 		}
 
 		// 获取连接
-		return this.context.prepared;
+		return this.context.session.execute(sql, this.context.readOnly, entity, query);
 	}
 
 	/**
@@ -115,20 +98,14 @@ public class TransactionContext {
 	 * @param param 参数
 	 * @return 执行结果
 	 */
-	public TransactionalFuture update(String sql, List<Object> params) {
-		TransactionalFuture future = this.context.future();
+	public <T> TransactionalFuture update(Sql<T> sql, T entity) {
+		TransactionalFuture future = new TransactionalFuture();
 		try {
-			this.prepared().whenComplete((r, e) -> {
+			this.execute(sql, entity, null).whenComplete((r, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					this.context.channel().preparedQuery(sql).execute(Tuple.wrap(params), (res) -> {
-						if (res.cause() != null) {
-							future.completeExceptionally(res.cause());
-						} else {
-							future.complete(this.next().setValue(null));
-						}
-					});
+					future.complete(this.next().setValue(null));
 				}
 			});
 		} catch (Exception e) {
@@ -144,20 +121,14 @@ public class TransactionContext {
 	 * @param param 参数
 	 * @return 执行结果
 	 */
-	public <T> TransactionalFuture query(String sql, List<Object> params, RowMapper<T> rowMapper) {
-		TransactionalFuture future = this.context.future();
+	public <T> TransactionalFuture query(Sql<T> sql, T entity) {
+		TransactionalFuture future = new TransactionalFuture();
 		try {
-			this.prepared().whenComplete((r, e) -> {
+			this.execute(sql, entity, null).whenComplete((r, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					this.context.channel().preparedQuery(sql).execute(Tuple.wrap(params), (res) -> {
-						if (res.cause() != null) {
-							future.completeExceptionally(res.cause());
-						} else {
-							this.rowMappers(future, res.result(), rowMapper);
-						}
-					});
+					future.complete(this.next().setValue(r));
 				}
 			});
 		} catch (Exception e) {
@@ -173,20 +144,14 @@ public class TransactionContext {
 	 * @param param 参数
 	 * @return 执行结果
 	 */
-	public <T> TransactionalFuture count(String sql, List<Object> params) {
-		TransactionalFuture future = this.context.future();
+	public <T> TransactionalFuture query(Sql<T> sql, QueryCondition qc) {
+		TransactionalFuture future = new TransactionalFuture();
 		try {
-			this.prepared().whenComplete((r, e) -> {
+			this.execute(sql, null, qc).whenComplete((r, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					this.context.channel().preparedQuery(sql).execute(Tuple.wrap(params), (res) -> {
-						if (res.cause() != null) {
-							future.completeExceptionally(res.cause());
-						} else {
-							this.classMapper(future, res.result(), Integer.class);
-						}
-					});
+					future.complete(this.next().setValue(r));
 				}
 			});
 		} catch (Exception e) {
@@ -195,39 +160,27 @@ public class TransactionContext {
 		return future;
 	}
 
-	private <T> void classMapper(CompletableFuture<TransactionContext> future, RowSet<Row> rows, Class<T> mapperClass) {
+	/**
+	 * 执行Sql
+	 * 
+	 * @param sql   sql语句
+	 * @param param 参数
+	 * @return 执行结果
+	 */
+	public <T> TransactionalFuture count(Sql<T> sql, QueryCondition qc) {
+		TransactionalFuture future = new TransactionalFuture();
 		try {
-			Object value = null;
-			RowIterator<Row> datas = rows.iterator();
-			if (datas.hasNext()) {
-				Row row = datas.next();
-				if (Integer.class.isAssignableFrom(mapperClass)) {
-					value = row.getInteger(1);
-				} else if (Long.class.isAssignableFrom(mapperClass)) {
-					value = row.getLong(1);
+			this.execute(sql, null, qc).whenComplete((r, e) -> {
+				if (e != null) {
+					future.completeExceptionally(e);
+				} else {
+					future.complete(this.next().setValue(r));
 				}
-			}
-			future.complete(this.next().setValue(value));
+			});
 		} catch (Exception e) {
 			future.completeExceptionally(e);
 		}
-	}
-
-	private <T> void rowMappers(CompletableFuture<TransactionContext> future, RowSet<Row> rows,
-			RowMapper<T> rowMapper) {
-		try {
-			List<T> ts = Lists.newArrayList();
-			RowIterator<Row> datas = rows.iterator();
-			int rowNum = 0;
-			while (datas.hasNext()) {
-				Row row = datas.next();
-				ts.add(rowMapper.mapRow(row, rowNum));
-				rowNum++;
-			}
-			future.complete(this.next().setValue(ts));
-		} catch (Exception e) {
-			future.completeExceptionally(e);
-		}
+		return future;
 	}
 
 	/**
@@ -261,7 +214,7 @@ public class TransactionContext {
 	private TransactionalFuture commit() {
 		TransactionalFuture future = new TransactionalFuture();
 		if (this.context.commited.compareAndSet(false, true)) {
-			this.context.commit().whenComplete((r, e) -> {
+			this.context.session.commit().whenComplete((r, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
@@ -282,7 +235,7 @@ public class TransactionContext {
 	private TransactionalFuture rollback() {
 		TransactionalFuture future = new TransactionalFuture();
 		if (this.context.commited.compareAndSet(false, true)) {
-			this.context.rollback().whenComplete((r, e) -> {
+			this.context.session.rollback().whenComplete((r, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
@@ -360,8 +313,8 @@ public class TransactionContext {
 	 * @param pool
 	 * @return
 	 */
-	public static TransactionContext of(Pool pool, boolean readOnly) {
-		return new TransactionContext(pool, readOnly);
+	public static TransactionContext of(SqlSession session, boolean readOnly) {
+		return new TransactionContext(session, readOnly);
 	}
 
 }

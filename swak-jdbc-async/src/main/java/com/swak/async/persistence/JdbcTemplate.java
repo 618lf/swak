@@ -5,7 +5,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.DisposableBean;
 
-import com.swak.async.tx.TransactionContext;
 import com.swak.utils.Lists;
 
 import io.vertx.sqlclient.Pool;
@@ -36,34 +35,6 @@ public class JdbcTemplate implements DisposableBean {
 		if (pool != null) {
 			pool.close();
 		}
-	}
-
-	/**
-	 * 只读事务 -- 其实是为了多次查询使用一次连接
-	 * 
-	 * @param context
-	 * @return
-	 */
-	public TransactionContext beginQuery(TransactionContext context) {
-		TransactionContext continueTransactionContext = context;
-		if (continueTransactionContext == null || continueTransactionContext.isCommited()) {
-			continueTransactionContext = TransactionContext.of(pool, true);
-		}
-		return continueTransactionContext;
-	}
-
-	/**
-	 * 开启事务
-	 * 
-	 * @param context
-	 * @return
-	 */
-	public TransactionContext beginTransaction(TransactionContext context) {
-		TransactionContext continueTransactionContext = context;
-		if (continueTransactionContext == null || continueTransactionContext.isCommited()) {
-			continueTransactionContext = TransactionContext.of(pool, false);
-		}
-		return continueTransactionContext;
 	}
 
 	/**

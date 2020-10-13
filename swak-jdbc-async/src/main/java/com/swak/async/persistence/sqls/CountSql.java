@@ -10,7 +10,7 @@ import com.swak.persistence.QueryCondition;
  * @author lifeng
  * @date 2020年10月8日 下午7:49:16
  */
-public class CountSql<T> extends BaseSql<T> {
+public class CountSql<T> extends BaseSql<T> implements Dql<T> {
 
 	RowMapper<Integer> map;
 
@@ -20,45 +20,16 @@ public class CountSql<T> extends BaseSql<T> {
 	}
 
 	@Override
-	protected String parseScript() {
-
-		// sql 语句
+	public String parseScript(T entity, QueryCondition query) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(SELECT).append(SPACE).append(COUNT).append(SPACE).append(FROM).append(SPACE)
 				.append(this.parseTable()).append(SPACE);
-
-		// 返回Sql 语句
 		return sql.toString();
 	}
 
-	/**
-	 * 编译查询条件
-	 * 
-	 * @param qc
-	 * @return
-	 */
-	public String parseScriptWithCondition(QueryCondition qc) {
-
-		// 解析Sql
-		String sql = this.parseScript();
-
-		// 如果已经设置了 WHERE
-		if (sql.endsWith("WHERE")) {
-			sql = new StringBuilder(sql).append(" 1=1 ").append(qc.toString()).toString();
-		} else {
-			sql = new StringBuilder(sql).append(" WHERE 1=1 ").append(qc.toString()).toString();
-		}
-
-		// 返回查询
-		return sql;
-	}
-
-	/**
-	 * 获取映射
-	 * 
-	 * @return
-	 */
-	public RowMapper<Integer> getMap() {
-		return map;
+	@Override
+	@SuppressWarnings("unchecked")
+	public <U> RowMapper<U> rowMap() {
+		return (RowMapper<U>) map;
 	}
 }

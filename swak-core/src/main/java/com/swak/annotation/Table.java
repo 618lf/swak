@@ -23,4 +23,18 @@ public @interface Table {
 	 * 配置表名，默认按照驼峰取表名
 	 */
 	String value() default StringUtils.EMPTY;
+
+	/**
+	 * 分片表达式 -- 分片算法表达式
+	 * 
+	 * @return
+	 */
+	String shardingAlgorithm() default StringUtils.EMPTY;
+
+	/**
+	 * 分片实现类
+	 * 
+	 * @return
+	 */
+	Class<?> shardingClass() default Void.class;
 }

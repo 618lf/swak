@@ -2,6 +2,7 @@ package com.swak.async.persistence.sqls;
 
 import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.define.TableDefine;
+import com.swak.persistence.QueryCondition;
 
 /**
  * 删除脚本
@@ -16,17 +17,11 @@ public class ExistsSql<T> extends CountSql<T> {
 	}
 
 	@Override
-	protected String parseScript() {
-
-		// sql 语句
+	public String parseScript(T entity, QueryCondition query) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(SELECT).append(SPACE).append(COUNT).append(SPACE).append(FROM).append(SPACE)
 				.append(this.parseTable()).append(SPACE);
-
-		// 拼接条件
 		sql.append(WHERE).append(SPACE).append(this.parseEqualsIdParams());
-
-		// 返回Sql 语句
 		return sql.toString();
 	}
 }

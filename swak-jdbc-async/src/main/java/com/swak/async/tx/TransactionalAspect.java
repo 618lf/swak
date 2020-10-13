@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 
-import com.swak.async.persistence.JdbcTemplate;
+import com.swak.async.execute.SqlExecuter;
 
 /**
  * 事务配置切面
@@ -27,7 +27,7 @@ public class TransactionalAspect implements Ordered {
 	private Logger logger = LoggerFactory.getLogger(TransactionalAspect.class);
 
 	@Autowired
-	private JdbcTemplate jdbcTemplate;
+	private SqlExecuter sqlExecuter;
 
 	/**
 	 * 定义切入点
@@ -70,8 +70,7 @@ public class TransactionalAspect implements Ordered {
 		Object[] args = point.getArgs();
 		if (transaction != null && args != null && args.length >= 1 && args[0] instanceof TransactionContext) {
 			context = (TransactionContext) args[0];
-			context = transaction.readOnly() ? jdbcTemplate.beginQuery(context)
-					: jdbcTemplate.beginTransaction(context);
+			context = transaction.readOnly() ? sqlExecuter.beginQuery(context) : sqlExecuter.beginTransaction(context);
 			args[0] = context.acquire().setRollbackFor(transaction.rollbackFor());
 		}
 		return context;

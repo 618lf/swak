@@ -7,6 +7,7 @@ import java.util.Set;
 import com.swak.async.persistence.Sql;
 import com.swak.async.persistence.define.ColumnDefine;
 import com.swak.async.persistence.define.TableDefine;
+import com.swak.persistence.QueryCondition;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 
@@ -18,7 +19,7 @@ import net.sf.cglib.beans.BeanMap;
  * @author lifeng
  * @date 2020年10月8日 下午3:03:20
  */
-public abstract class BaseSql<T> implements Sql<T> {
+public abstract class BaseSql<T> extends ExecuteSql<T> implements Sql<T> {
 
 	/**
 	 * SQL 关键字
@@ -45,41 +46,15 @@ public abstract class BaseSql<T> implements Sql<T> {
 	/**
 	 * 表定义
 	 */
-	protected TableDefine<T> table;
-	protected String script;
-	protected List<String> params = Lists.newArrayList();
+	protected final TableDefine<T> table;
 
+	/**
+	 * 创建的基本的Sql
+	 * 
+	 * @param table
+	 */
 	public BaseSql(TableDefine<T> table) {
 		this.table = table;
-		this.script = this.parseScript();
-	}
-
-	@Override
-	public String script() {
-		return script;
-	}
-
-	@Override
-	public List<Object> parse(T entity) {
-
-		// 解析实体
-		Map<String, Object> maps = this.BeantoMap(entity);
-
-		// 实际的参数
-		List<Object> params = Lists.newArrayList(this.params.size());
-
-		// 循环获取值
-		for (String key : this.params) {
-
-			// 获取值
-			Object value = maps.get(key);
-
-			// 存储值
-			params.add(value);
-		}
-
-		// 返回解析的值
-		return params;
 	}
 
 	/**
@@ -132,7 +107,6 @@ public abstract class BaseSql<T> implements Sql<T> {
 		StringBuilder sql = new StringBuilder();
 		for (ColumnDefine column : this.table.columns) {
 			sql.append(OCCUPIED).append(SPLIT);
-			this.params.add(column.javaProperty);
 		}
 		if (this.table.hasColumn()) {
 			sql.delete(sql.lastIndexOf(SPLIT), sql.length() - 1);
@@ -150,7 +124,6 @@ public abstract class BaseSql<T> implements Sql<T> {
 				String property = column.javaProperty;
 				String name = column.name;
 				sql.append(name).append(EQUALS).append(OCCUPIED).append(SPLIT);
-				this.params.add(property);
 			}
 		}
 		if (this.table.hasColumn()) {
@@ -167,7 +140,6 @@ public abstract class BaseSql<T> implements Sql<T> {
 		if (this.table.pk != null && this.table.pk.columns != null) {
 			for (ColumnDefine column : this.table.pk.columns) {
 				sql.append(column.name).append(EQUALS).append(OCCUPIED).append(AND);
-				this.params.add(column.javaProperty);
 			}
 			sql.delete(sql.lastIndexOf(AND), sql.length() - 1);
 		} else if (this.table.pk != null) {
@@ -178,7 +150,21 @@ public abstract class BaseSql<T> implements Sql<T> {
 	}
 
 	/**
-	 * 解析脚本
+	 * 解析参数
 	 */
-	protected abstract String parseScript();
+	@Override
+	public List<Object> parseParams(T entity, QueryCondition query) {
+		List<Object> params = Lists.newArrayList(this.params.size());
+		if (entity != null) {
+			try {
+				Map<String, Object> maps = this.BeantoMap(entity);
+				for (String key : this.params) {
+					Object value = maps.get(key);
+					params.add(value);
+				}
+			} catch (Exception e) {
+			}
+		}
+		return params;
+	}
 }
