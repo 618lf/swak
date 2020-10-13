@@ -73,7 +73,7 @@ public class SqlExecuter {
 	public <T> CompletableFuture<Void> update(Sql<T> sql, T entity) {
 		CompletableFuture<Void> future = new CompletableFuture<>();
 		try {
-			this.open().execute(sql, entity, null).whenComplete((r, e) -> {
+			this.open().execute(sql, sql.newParam().setEntity(entity)).whenComplete((r, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
@@ -96,7 +96,7 @@ public class SqlExecuter {
 	public <T> CompletableFuture<List<T>> query(Sql<T> sql, T entity) {
 		CompletableFuture<List<T>> future = new CompletableFuture<List<T>>();
 		try {
-			this.open().execute(sql, entity, null).whenComplete((r, e) -> {
+			this.open().execute(sql, sql.newParam().setEntity(entity)).whenComplete((r, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
@@ -119,7 +119,7 @@ public class SqlExecuter {
 	public <T> CompletableFuture<List<T>> query(Sql<T> sql, QueryCondition qc) {
 		CompletableFuture<List<T>> future = new CompletableFuture<List<T>>();
 		try {
-			this.open().execute(sql, null, qc).whenComplete((r, e) -> {
+			this.open().execute(sql, sql.newParam().setQuery(qc)).whenComplete((r, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
@@ -143,7 +143,7 @@ public class SqlExecuter {
 	public <T> CompletableFuture<Integer> count(Sql<T> sql, QueryCondition qc) {
 		CompletableFuture<Integer> future = new CompletableFuture<Integer>();
 		try {
-			this.open().execute(sql, null, qc).whenComplete((r, e) -> {
+			this.open().execute(sql, sql.newParam().setQuery(qc)).whenComplete((r, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {

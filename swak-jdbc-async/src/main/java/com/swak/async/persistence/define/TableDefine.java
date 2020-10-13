@@ -28,9 +28,19 @@ import com.swak.utils.StringUtils;
 public class TableDefine<T> {
 
 	/**
+	 * 类定义
+	 */
+	public ClassMeta meta;
+
+	/**
 	 * 对应的java 类型
 	 */
 	public Class<T> entity;
+
+	/**
+	 * 表定义
+	 */
+	public Table define;
 
 	/**
 	 * 表名称
@@ -56,6 +66,7 @@ public class TableDefine<T> {
 
 		// 实体定义
 		this.entity = entity;
+		this.define = entity.getAnnotation(Table.class);
 		this.name = this.tableMapping();
 
 		// 类型注册
@@ -253,5 +264,21 @@ public class TableDefine<T> {
 			pks.add(column);
 		}
 		return pks;
+	}
+
+	/**
+	 * 得到属性值
+	 * 
+	 * @param entity
+	 * @return
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 */
+	public Object getFieldValue(T entity, String fieldName) throws IllegalArgumentException, IllegalAccessException {
+		FieldMeta meta = this.meta.getFields().get(fieldName);
+		if (meta == null) {
+			return null;
+		}
+		return meta.getField().get(entity);
 	}
 }

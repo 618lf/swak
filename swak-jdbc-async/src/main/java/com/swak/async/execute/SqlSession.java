@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.swak.async.persistence.Sql;
+import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.sqls.Dml;
-import com.swak.persistence.QueryCondition;
 
 import io.vertx.sqlclient.Pool;
 import io.vertx.sqlclient.SqlClient;
@@ -56,9 +56,9 @@ public class SqlSession {
 	 * @param sql
 	 * @param handler
 	 */
-	public <T> CompletableFuture<List<T>> execute(Sql<T> sql, boolean transaction, T entity, QueryCondition query) {
+	public <T> CompletableFuture<List<T>> execute(Sql<T> sql, boolean transaction, SqlParam<T> param) {
 		return this.select(transaction, sql).thenCompose(client -> {
-			return sql.execute(client, entity, query);
+			return sql.execute(client, param);
 		});
 	}
 
@@ -69,9 +69,9 @@ public class SqlSession {
 	 * @param sql
 	 * @param handler
 	 */
-	public <T> CompletableFuture<List<T>> execute(Sql<T> sql, T entity, QueryCondition query) {
+	public <T> CompletableFuture<List<T>> execute(Sql<T> sql, SqlParam<T> param) {
 		return this.selectPool(false, sql).thenCompose(client -> {
-			return sql.execute(client, entity, query);
+			return sql.execute(client, param);
 		});
 	}
 

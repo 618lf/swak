@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.Sql;
-import com.swak.persistence.QueryCondition;
+import com.swak.async.persistence.SqlParam;
 import com.swak.utils.Lists;
 
 import io.vertx.sqlclient.Row;
@@ -29,7 +29,7 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 	 * @param query
 	 * @return
 	 */
-	public abstract String parseScript(T entity, QueryCondition query);
+	public abstract String parseScript(SqlParam<T> param);
 
 	/**
 	 * 解析参数
@@ -38,7 +38,7 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 	 * @param query
 	 * @return
 	 */
-	public abstract List<Object> parseParams(T entity, QueryCondition query);
+	public abstract List<Object> parseParams(SqlParam<T> param);
 
 	/**
 	 * 映射
@@ -55,16 +55,16 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 	 * @param sql
 	 * @return
 	 */
-	public <U> CompletableFuture<List<U>> execute(SqlClient client, T entity, QueryCondition query) {
+	@Override
+	public <U> CompletableFuture<List<U>> execute(SqlClient client, SqlParam<T> param) {
 		CompletableFuture<List<U>> future = new CompletableFuture<>();
-		client.preparedQuery(this.parseScript(entity, query)).execute(Tuple.wrap(this.parseParams(entity, query)),
-				(res) -> {
-					if (res.cause() != null) {
-						future.completeExceptionally(res.cause());
-					} else {
-						this.rowMappers(future, res.result(), this.rowMap());
-					}
-				});
+		client.preparedQuery(this.parseScript(param)).execute(Tuple.wrap(this.parseParams(param)), (res) -> {
+			if (res.cause() != null) {
+				future.completeExceptionally(res.cause());
+			} else {
+				this.rowMappers(future, res.result(), this.rowMap());
+			}
+		});
 		return future;
 	}
 

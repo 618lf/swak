@@ -100,6 +100,24 @@ public class QueryCondition implements Serializable {
 		return value;
 	}
 
+	/**
+	 * 获得此列设置的值： 只支持 SingleValue
+	 * 
+	 * @param column
+	 * @return
+	 */
+	public Object getColumnValue(String column) {
+		List<SingleValue> svalues = criteria.getCriteriaWithSingleValue();
+		if (svalues.size() > 0) {
+			for (SingleValue value : svalues) {
+				if (value.getCondition().equals(column)) {
+					return value.getValue();
+				}
+			}
+		}
+		return null;
+	}
+
 	// ---------------条件-----------------------
 	public static class SingleValue {
 		private String condition;

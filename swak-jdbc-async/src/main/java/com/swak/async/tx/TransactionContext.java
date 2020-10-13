@@ -88,7 +88,8 @@ public class TransactionContext {
 		}
 
 		// 获取连接
-		return this.context.session.execute(sql, this.context.readOnly, entity, query);
+		return this.context.session.execute(sql, this.context.readOnly,
+				sql.newParam().setEntity(entity).setQuery(query));
 	}
 
 	/**

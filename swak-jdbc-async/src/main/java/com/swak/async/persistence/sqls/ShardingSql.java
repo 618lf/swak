@@ -1,16 +1,12 @@
 package com.swak.async.persistence.sqls;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import com.swak.async.persistence.Sql;
+import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.define.ColumnDefine;
 import com.swak.async.persistence.define.TableDefine;
-import com.swak.persistence.QueryCondition;
-import com.swak.utils.Maps;
-
-import net.sf.cglib.beans.BeanMap;
+import com.swak.async.sharding.ShardingStrategys;
 
 /**
  * 定义基础的语句块
@@ -18,7 +14,7 @@ import net.sf.cglib.beans.BeanMap;
  * @author lifeng
  * @date 2020年10月8日 下午3:03:20
  */
-public abstract class BaseSql<T> extends ExecuteSql<T> implements Sql<T> {
+public abstract class ShardingSql<T> extends ExecuteSql<T> implements Sql<T> {
 
 	/**
 	 * SQL 关键字
@@ -52,36 +48,8 @@ public abstract class BaseSql<T> extends ExecuteSql<T> implements Sql<T> {
 	 * 
 	 * @param table
 	 */
-	public BaseSql(TableDefine<T> table) {
+	public ShardingSql(TableDefine<T> table) {
 		this.table = table;
-	}
-
-	/**
-	 * 通过cglib 高效的转换, 不能使用lombok的链式功能
-	 * 
-	 * @param bean
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	protected Map<String, Object> BeantoMap(T bean) {
-		Map<String, Object> map = Maps.newHashMap();
-		if (bean != null) {
-			BeanMap beanMap = BeanMap.create(bean);
-			Set<String> keys = beanMap.keySet();
-			for (Object key : keys) {
-				map.put(String.valueOf(key), beanMap.get(key));
-			}
-		}
-		return map;
-	}
-
-	/**
-	 * 解析表
-	 */
-	protected String parseTable(T entity, QueryCondition query) {
-		StringBuilder sql = new StringBuilder();
-		sql.append(this.table.name);
-		return sql.toString();
 	}
 
 	/**
@@ -110,5 +78,20 @@ public abstract class BaseSql<T> extends ExecuteSql<T> implements Sql<T> {
 		}
 		sql.delete(sql.lastIndexOf(AND), sql.length() - 1);
 		return sql.toString();
+	}
+
+	/**
+	 * 创建基本的参数
+	 */
+	@Override
+	public SqlParam<T> newParam() {
+		return new SqlParam<T>().setTable(table);
+	}
+
+	/**
+	 * 解析表
+	 */
+	protected String parseTable(SqlParam<T> param) {
+		return ShardingStrategys.shardingTable(param);
 	}
 }

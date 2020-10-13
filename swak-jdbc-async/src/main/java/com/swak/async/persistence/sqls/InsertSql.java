@@ -1,13 +1,10 @@
 package com.swak.async.persistence.sqls;
 
 import java.util.List;
-import java.util.Map;
 
 import com.swak.async.persistence.RowMapper;
-import com.swak.async.persistence.define.ColumnDefine;
+import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.define.TableDefine;
-import com.swak.persistence.QueryCondition;
-import com.swak.utils.Lists;
 
 /**
  * 插入SQL
@@ -15,16 +12,16 @@ import com.swak.utils.Lists;
  * @author lifeng
  * @date 2020年10月7日 下午11:31:12
  */
-public class InsertSql<T> extends BaseSql<T> implements Dml<T> {
+public class InsertSql<T> extends ShardingSql<T> implements Dml<T> {
 
 	public InsertSql(TableDefine<T> table) {
 		super(table);
 	}
 
 	@Override
-	public String parseScript(T entity, QueryCondition query) {
+	public String parseScript(SqlParam<T> param) {
 		StringBuilder sql = new StringBuilder();
-		sql.append(INSERT).append(SPACE).append(this.parseTable(entity, query)).append(LEFT_KH);
+		sql.append(INSERT).append(SPACE).append(this.parseTable(param)).append(LEFT_KH);
 		sql.append(this.parseColumns()).append(RIGHT_KH);
 		sql.append(VALUES).append(LEFT_KH).append(this.parseInsertParams()).append(RIGHT_KH);
 		return sql.toString();
@@ -42,20 +39,8 @@ public class InsertSql<T> extends BaseSql<T> implements Dml<T> {
 	}
 
 	@Override
-	public List<Object> parseParams(T entity, QueryCondition query) {
-		List<ColumnDefine> columns = this.table.columns;
-		List<Object> params = Lists.newArrayList(columns.size());
-		if (entity != null) {
-			try {
-				Map<String, Object> maps = this.BeantoMap(entity);
-				for (ColumnDefine column : columns) {
-					Object value = maps.get(column.javaProperty);
-					params.add(value);
-				}
-			} catch (Exception e) {
-			}
-		}
-		return params;
+	public List<Object> parseParams(SqlParam<T> param) {
+		return param.getEntityValues();
 	}
 
 	@Override

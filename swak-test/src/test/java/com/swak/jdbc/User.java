@@ -10,7 +10,7 @@ import com.swak.entity.BaseEntity;
  * @author lifeng
  * @date 2020年10月9日 下午9:44:45
  */
-@Table(value = "CLOUD_USER")
+@Table(value = "CLOUD_USER", shardingAlgorithm = "_id%12")
 public class User extends BaseEntity<Long> {
 
 	private static final long serialVersionUID = 1L;

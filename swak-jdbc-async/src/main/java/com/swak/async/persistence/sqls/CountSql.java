@@ -3,8 +3,8 @@ package com.swak.async.persistence.sqls;
 import java.util.List;
 
 import com.swak.async.persistence.RowMapper;
+import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.define.TableDefine;
-import com.swak.persistence.QueryCondition;
 
 /**
  * 总数查询
@@ -12,7 +12,7 @@ import com.swak.persistence.QueryCondition;
  * @author lifeng
  * @date 2020年10月8日 下午7:49:16
  */
-public class CountSql<T> extends BaseSql<T> implements Dql<T> {
+public class CountSql<T> extends ShardingSql<T> implements Dql<T> {
 
 	RowMapper<Integer> map;
 
@@ -22,15 +22,15 @@ public class CountSql<T> extends BaseSql<T> implements Dql<T> {
 	}
 
 	@Override
-	public String parseScript(T entity, QueryCondition query) {
+	public String parseScript(SqlParam<T> param) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(SELECT).append(SPACE).append(COUNT).append(SPACE).append(FROM).append(SPACE)
-				.append(this.parseTable(entity, query)).append(SPACE);
+				.append(this.parseTable(param)).append(SPACE);
 		return sql.toString();
 	}
 
 	@Override
-	public List<Object> parseParams(T entity, QueryCondition query) {
+	public List<Object> parseParams(SqlParam<T> param) {
 		return null;
 	}
 

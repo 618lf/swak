@@ -3,8 +3,6 @@ package com.swak.async.persistence;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import com.swak.persistence.QueryCondition;
-
 import io.vertx.sqlclient.SqlClient;
 
 /**
@@ -18,12 +16,16 @@ public interface Sql<T> {
 	/**
 	 * 执行Sql
 	 * 
-	 * @param <U>
-	 * @param client
-	 * @param transaction
-	 * @param entity
-	 * @param query
+	 * @param client 执行器
+	 * @param param  参数
 	 * @return
 	 */
-	<U> CompletableFuture<List<U>> execute(SqlClient client, T entity, QueryCondition query);
+	<U> CompletableFuture<List<U>> execute(SqlClient client, SqlParam<T> param);
+
+	/**
+	 * 参数
+	 * 
+	 * @return
+	 */
+	SqlParam<T> newParam();
 }

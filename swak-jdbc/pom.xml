@@ -99,9 +99,8 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy</artifactId>
-			<version>${groovy.version}</version>
+			<groupId>com.github.618lf</groupId>
+			<artifactId>swak-groovy</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>

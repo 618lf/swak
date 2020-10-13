@@ -3,7 +3,7 @@ package com.swak.async.persistence.sqls;
 import java.util.List;
 
 import com.swak.async.persistence.RowMapper;
-import com.swak.persistence.QueryCondition;
+import com.swak.async.persistence.SqlParam;
 
 /**
  * 直接查询Sql
@@ -24,12 +24,12 @@ public class DirectQuerySql<T> extends ExecuteSql<T> implements Dql<T> {
 	}
 
 	@Override
-	public String parseScript(T entity, QueryCondition query) {
+	public String parseScript(SqlParam<T> param) {
 		return sql;
 	}
 
 	@Override
-	public List<Object> parseParams(T entity, QueryCondition query) {
+	public List<Object> parseParams(SqlParam<T> param) {
 		return params;
 	}
 
@@ -37,5 +37,13 @@ public class DirectQuerySql<T> extends ExecuteSql<T> implements Dql<T> {
 	@SuppressWarnings("unchecked")
 	public <U> RowMapper<U> rowMap() {
 		return (RowMapper<U>) map;
+	}
+
+	/**
+	 * 创建基本的参数
+	 */
+	@Override
+	public SqlParam<T> newParam() {
+		return new SqlParam<T>().setTable(null);
 	}
 }

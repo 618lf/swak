@@ -204,7 +204,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 				if (pageNum > pageCount) {
 					pageNum = pageCount;
 				}
-				String querySqlString = querySql.parseScript(null, qc);
+				String querySqlString = querySql.parseScript(querySql.newParam().setQuery(qc));
 				DirectQuerySql<T> directQuerySql = new DirectQuerySql<>(
 						dialect.getLimitString(querySqlString, (pageNum - 1) * pageSize, pageSize),
 						Lists.newArrayList(), querySql.rowMap());
@@ -363,7 +363,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 				if (pageNum > pageCount) {
 					pageNum = pageCount;
 				}
-				String querySqlString = querySql.parseScript(null, qc);
+				String querySqlString = querySql.parseScript(querySql.newParam().setQuery(qc));
 				DirectQuerySql<T> directQuerySql = new DirectQuerySql<>(
 						dialect.getLimitString(querySqlString, (pageNum - 1) * pageSize, pageSize),
 						Lists.newArrayList(), querySql.rowMap());
