@@ -14,7 +14,6 @@ public class UserDao extends BaseDao<User, Long> {
 	public String toString() {
 		StringBuilder s = new StringBuilder();
 		this.sqlMap.sqls.forEach((name, sql) -> {
-			s.append(name).append("\t\t").append(sql.script()).append("\n");
 		});
 		return s.toString();
 	}

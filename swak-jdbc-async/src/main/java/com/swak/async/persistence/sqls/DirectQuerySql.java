@@ -16,7 +16,6 @@ public class DirectQuerySql<T> extends ExecuteSql<T> implements Dql<T> {
 	private String sql;
 	private List<Object> params;
 	private RowMapper<T> map;
-	protected boolean transaction;
 
 	public DirectQuerySql(String sql, List<Object> params, RowMapper<T> map) {
 		this.sql = sql;

@@ -8,7 +8,6 @@ import com.swak.async.persistence.Sql;
 import com.swak.async.persistence.define.ColumnDefine;
 import com.swak.async.persistence.define.TableDefine;
 import com.swak.persistence.QueryCondition;
-import com.swak.utils.Lists;
 import com.swak.utils.Maps;
 
 import net.sf.cglib.beans.BeanMap;
@@ -79,7 +78,7 @@ public abstract class BaseSql<T> extends ExecuteSql<T> implements Sql<T> {
 	/**
 	 * 解析表
 	 */
-	protected String parseTable() {
+	protected String parseTable(T entity, QueryCondition query) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(this.table.name);
 		return sql.toString();
@@ -103,68 +102,13 @@ public abstract class BaseSql<T> extends ExecuteSql<T> implements Sql<T> {
 	/**
 	 * 解析插入列
 	 */
-	protected String parseInsertParams() {
-		StringBuilder sql = new StringBuilder();
-		for (ColumnDefine column : this.table.columns) {
-			sql.append(OCCUPIED).append(SPLIT);
-		}
-		if (this.table.hasColumn()) {
-			sql.delete(sql.lastIndexOf(SPLIT), sql.length() - 1);
-		}
-		return sql.toString();
-	}
-
-	/**
-	 * 解析插入列
-	 */
-	protected String parseUpdateParams() {
-		StringBuilder sql = new StringBuilder();
-		for (ColumnDefine column : this.table.columns) {
-			if (!column.isPk()) {
-				String property = column.javaProperty;
-				String name = column.name;
-				sql.append(name).append(EQUALS).append(OCCUPIED).append(SPLIT);
-			}
-		}
-		if (this.table.hasColumn()) {
-			sql.delete(sql.lastIndexOf(SPLIT), sql.length() - 1);
-		}
-		return sql.toString();
-	}
-
-	/**
-	 * 解析插入列
-	 */
 	protected String parseEqualsIdParams() {
 		StringBuilder sql = new StringBuilder();
-		if (this.table.pk != null && this.table.pk.columns != null) {
-			for (ColumnDefine column : this.table.pk.columns) {
-				sql.append(column.name).append(EQUALS).append(OCCUPIED).append(AND);
-			}
-			sql.delete(sql.lastIndexOf(AND), sql.length() - 1);
-		} else if (this.table.pk != null) {
-			ColumnDefine column = this.table.pk.single;
-			sql.append(column.name).append(EQUALS).append(OCCUPIED);
+		List<ColumnDefine> pks = this.table.getPkColumns();
+		for (ColumnDefine column : pks) {
+			sql.append(column.name).append(EQUALS).append(OCCUPIED).append(AND);
 		}
+		sql.delete(sql.lastIndexOf(AND), sql.length() - 1);
 		return sql.toString();
-	}
-
-	/**
-	 * 解析参数
-	 */
-	@Override
-	public List<Object> parseParams(T entity, QueryCondition query) {
-		List<Object> params = Lists.newArrayList(this.params.size());
-		if (entity != null) {
-			try {
-				Map<String, Object> maps = this.BeantoMap(entity);
-				for (String key : this.params) {
-					Object value = maps.get(key);
-					params.add(value);
-				}
-			} catch (Exception e) {
-			}
-		}
-		return params;
 	}
 }

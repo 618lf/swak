@@ -236,4 +236,22 @@ public class TableDefine<T> {
 		}
 		return table.value();
 	}
+
+	/**
+	 * 获得主键
+	 * 
+	 * @return
+	 */
+	public List<ColumnDefine> getPkColumns() {
+		List<ColumnDefine> pks = Lists.newArrayList();
+		if (this.pk != null && this.pk.columns != null) {
+			for (ColumnDefine column : this.pk.columns) {
+				pks.add(column);
+			}
+		} else if (this.pk != null) {
+			ColumnDefine column = this.pk.single;
+			pks.add(column);
+		}
+		return pks;
+	}
 }

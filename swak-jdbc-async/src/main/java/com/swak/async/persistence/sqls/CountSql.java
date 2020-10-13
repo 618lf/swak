@@ -1,5 +1,7 @@
 package com.swak.async.persistence.sqls;
 
+import java.util.List;
+
 import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.define.TableDefine;
 import com.swak.persistence.QueryCondition;
@@ -23,8 +25,13 @@ public class CountSql<T> extends BaseSql<T> implements Dql<T> {
 	public String parseScript(T entity, QueryCondition query) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(SELECT).append(SPACE).append(COUNT).append(SPACE).append(FROM).append(SPACE)
-				.append(this.parseTable()).append(SPACE);
+				.append(this.parseTable(entity, query)).append(SPACE);
 		return sql.toString();
+	}
+
+	@Override
+	public List<Object> parseParams(T entity, QueryCondition query) {
+		return null;
 	}
 
 	@Override
