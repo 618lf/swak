@@ -9,7 +9,7 @@ import java.util.function.BiConsumer;
  * @author lifeng
  * @date 2020年10月13日 下午10:08:26
  */
-public class SessionFuture<T> extends CompletableFuture<T> {
+class SessionFuture<T> extends CompletableFuture<T> {
 
 	final SqlSession session;
 
