@@ -17,7 +17,9 @@ public class TransactionalFuture extends CompletableFuture<TransactionContext> {
 	public <U> TransactionalFuture txApply(Function<? super TransactionContext, ? extends U> fn) {
 		TransactionalFuture future = new TransactionalFuture();
 		super.whenComplete((context, e) -> {
-			if (e != null || context == null) {
+			if (e != null) {
+				future.completeExceptionally(e);
+			} else if (context == null) {
 				future.completeExceptionally(new TransactionLoseException());
 			} else {
 				this.completeApply(context, fn, future);
@@ -32,7 +34,9 @@ public class TransactionalFuture extends CompletableFuture<TransactionContext> {
 	public <U> TransactionalFuture txCompose(Function<? super TransactionContext, ? extends TransactionalFuture> fn) {
 		TransactionalFuture composeFuture = new TransactionalFuture();
 		super.whenComplete((context, e) -> {
-			if (e != null || context == null) {
+			if (e != null) {
+				composeFuture.completeExceptionally(e);
+			} else if (context == null) {
 				composeFuture.completeExceptionally(new TransactionLoseException());
 			} else if (fn == null) {
 				composeFuture.complete(context);
@@ -53,15 +57,7 @@ public class TransactionalFuture extends CompletableFuture<TransactionContext> {
 	public <U> CompletableFuture<U> finish(Function<? super TransactionContext, ? extends U> fn) {
 		CompletableFuture<U> future = new CompletableFuture<>();
 		super.whenComplete((context, e) -> {
-			try {
-				if (context != null) {
-					this.finish(e, context, fn, future);
-				} else {
-					throw new TransactionLoseException();
-				}
-			} catch (Exception ex) {
-				future.completeExceptionally(ex);
-			}
+			this.finish(e, context, fn, future);
 		});
 		return future;
 	}

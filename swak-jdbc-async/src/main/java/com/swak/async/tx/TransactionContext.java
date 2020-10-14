@@ -129,7 +129,7 @@ public class TransactionContext {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					future.complete(this.next().setValue(r));
+					future.complete(this.next().setValue(r.get()));
 				}
 			});
 		} catch (Exception e) {
@@ -152,7 +152,7 @@ public class TransactionContext {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					future.complete(this.next().setValue(r));
+					future.complete(this.next().setValue(r.get()));
 				}
 			});
 		} catch (Exception e) {
@@ -175,7 +175,7 @@ public class TransactionContext {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					future.complete(this.next().setValue(r));
+					future.complete(this.next().setValue(r.getInt()));
 				}
 			});
 		} catch (Exception e) {

@@ -36,9 +36,9 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	protected static Logger logger = LoggerFactory.getLogger(BaseDao.class);
 
 	@Autowired
-	private SqlExecuter sqlExecuter;
+	protected SqlExecuter sqlExecuter;
 	@Autowired
-	private Dialect dialect;
+	protected Dialect dialect;
 
 	/**
 	 * 开启只读事务 -- 且必须手动提交
@@ -70,7 +70,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	public TransactionalFuture insert(TransactionContext context, T entity) {
 		final PK pk = entity instanceof IdEntity ? ((IdEntity<PK>) entity).prePersist() : null;
 		InsertSql<T> sql = this.getSql(SqlMap.INSERT);
-		return context.update(sql, entity).txApply(ctx -> ctx.setValue(pk));
+		return context.update(sql, entity).txApply(ctx -> pk);
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 		GetSql<T> sql = this.getSql(SqlMap.GET);
 		return context.query(sql, entity).txApply(ctx -> {
 			List<T> datas = ctx.getValue();
-			return ctx.setValue(datas != null && datas.size() >= 1 ? datas.get(0) : null);
+			return datas != null && datas.size() >= 1 ? datas.get(0) : null;
 		});
 	}
 
@@ -183,7 +183,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 		if (param.getPageIndex() == Parameters.NO_PAGINATION || param.getPageSize() == Parameters.NO_PAGINATION) {
 			QuerySql<T> querySql = this.getSql(sql);
 			return context.query(querySql, qc).txApply(ctx -> {
-				return ctx.setValue(new Page(param, ctx.getValue()));
+				return new Page(param, ctx.getValue());
 			});
 		}
 		return this.doPage(context, sql, qc, param);
@@ -200,7 +200,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 			}
 			return TransactionalFuture.completedFuture(context.setValue(Lists.newArrayList()));
 		}).txApply(context -> {
-			return context.setValue(new Page(param, context.getValue()));
+			return new Page(param, context.getValue());
 		});
 	}
 

@@ -3,6 +3,9 @@ package com.swak.async.persistence.sqls;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.Sql;
 import com.swak.async.persistence.SqlParam;
@@ -22,6 +25,8 @@ import io.vertx.sqlclient.Tuple;
  * @date 2020年10月12日 下午8:53:18
  */
 public abstract class ExecuteSql<T> implements Sql<T> {
+
+	protected static Logger logger = LoggerFactory.getLogger(Sql.class);
 
 	/**
 	 * 解析脚本
@@ -58,8 +63,13 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 	 */
 	@Override
 	public CompletableFuture<SqlResult> execute(SqlClient client, SqlParam<T> param) {
+		String sql = this.parseScript(param);
+		List<Object> params = this.parseParams(param);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Sql:{}、Param：{}", sql, params);
+		}
 		CompletableFuture<SqlResult> future = new CompletableFuture<>();
-		client.preparedQuery(this.parseScript(param)).execute(Tuple.wrap(this.parseParams(param)), (res) -> {
+		client.preparedQuery(sql).execute(Tuple.wrap(params), (res) -> {
 			if (res.cause() != null) {
 				future.completeExceptionally(res.cause());
 			} else {

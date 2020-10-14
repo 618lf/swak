@@ -2,7 +2,11 @@ package com.swak.async.persistence.maps;
 
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.swak.async.persistence.RowMapper;
+import com.swak.async.persistence.Sql;
 import com.swak.async.persistence.define.ColumnDefine;
 import com.swak.async.persistence.define.TableDefine;
 
@@ -15,6 +19,8 @@ import io.vertx.sqlclient.Row;
  * @date 2020年10月8日 下午7:01:39
  */
 public class ModelMapper<T> implements RowMapper<T> {
+
+	protected static Logger logger = LoggerFactory.getLogger(Sql.class);
 
 	TableDefine<T> table;
 
@@ -37,6 +43,7 @@ public class ModelMapper<T> implements RowMapper<T> {
 				column.javaField.getMethod().invoke(t, value);
 			}
 		} catch (Exception e) {
+			logger.error("解析结果错误：", e);
 		}
 		return t;
 	}

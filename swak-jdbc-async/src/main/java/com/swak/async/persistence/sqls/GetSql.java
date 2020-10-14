@@ -27,9 +27,6 @@ public class GetSql<T> extends QuerySql<T> {
 		return this.parseQuery(sql.toString(), param.query);
 	}
 
-	/**
-	 * 解析参数
-	 */
 	@Override
 	public List<Object> parseParams(SqlParam<T> param) {
 		return param.getEntityIdValues();

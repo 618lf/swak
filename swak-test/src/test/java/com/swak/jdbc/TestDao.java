@@ -1,6 +1,16 @@
 package com.swak.jdbc;
 
+import java.util.concurrent.CountDownLatch;
+
+import org.junit.Before;
 import org.junit.Test;
+
+import com.swak.async.datasource.DataSource;
+import com.swak.async.execute.SqlExecuter;
+
+import io.vertx.mysqlclient.MySQLConnectOptions;
+import io.vertx.mysqlclient.MySQLPool;
+import io.vertx.sqlclient.PoolOptions;
 
 /**
  * 测试
@@ -10,15 +20,53 @@ import org.junit.Test;
  */
 public class TestDao {
 
-	@Test
-	public void test1() {
+	SqlExecuter sqlExecuter;
+	UserDao userDao;
+	UserService userService;
 
-		UserDao userDao = new UserDao();
+	/**
+	 * 开始
+	 */
+	@Before
+	public void init() {
+		MySQLConnectOptions connectOptions = new MySQLConnectOptions().setPort(3306).setHost("192.168.137.100")
+				.setDatabase("cloud").setUser("root").setPassword("rootadmin");
 
-		// 执行模型注册
+		// Pool options
+		PoolOptions poolOptions = new PoolOptions().setMaxSize(5);
+
+		// Create the client pool
+		MySQLPool client = MySQLPool.pool(connectOptions, poolOptions);
+
+		// 执行器
+		sqlExecuter = new SqlExecuter(new DataSource(client));
+		userDao = new UserDao();
+		userDao.setSqlExecuter(sqlExecuter);
 		userDao.registerModel();
+		userService = new UserService();
+		userService.setUserDao(userDao);
+	}
 
-		// 输出解析的Sql
-		System.out.println(userDao.toString());
+	@Test
+	public void get() throws InterruptedException {
+		User user = new User();
+		user.setId(1L);
+		userService.get(user).thenAccept(r -> {
+			System.out.println("结果：" + (r != null ? r.getName() : "~无数据"));
+		});
+		new CountDownLatch(1).await();
+	}
+
+	@Test
+	public void update() throws InterruptedException {
+		User user = new User();
+		user.setId(1L);
+		userService.save().whenComplete((r, e) -> {
+			if (e != null) {
+				e.printStackTrace();
+			}
+			System.out.println("执行结束");
+		});
+		new CountDownLatch(1).await();
 	}
 }
