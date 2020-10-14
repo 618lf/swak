@@ -106,7 +106,7 @@ public class QueryCondition implements Serializable {
 	 * @param column
 	 * @return
 	 */
-	public Object getColumnValue(String column) {
+	public Object getEqualColumnValue(String column) {
 		List<SingleValue> svalues = criteria.getCriteriaWithSingleValue();
 		if (svalues.size() > 0) {
 			String condition = column + " =";

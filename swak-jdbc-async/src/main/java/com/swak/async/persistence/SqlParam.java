@@ -154,7 +154,7 @@ public class SqlParam<T> {
 		// 获取查询条件中的值
 		if (value == null && query != null) {
 			String column = StringUtils.convertProperty2Column(fieldName);
-			value = query.getColumnValue(column);
+			value = query.getEqualColumnValue(column);
 		}
 
 		// 返回获取的值
