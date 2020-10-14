@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.swak.async.datasource.DataSource;
 import com.swak.async.persistence.Sql;
+import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.SqlResult;
 import com.swak.async.tx.TransactionContext;
 import com.swak.persistence.QueryCondition;
@@ -66,10 +67,10 @@ public class SqlExecuter {
 	/**
 	 * 执行Sql
 	 */
-	private <T> SessionFuture<SqlResult> execute(Sql<T> sql, T entity, QueryCondition query) {
+	private <T> SessionFuture<SqlResult> execute(Sql<T> sql, SqlParam<T> param) {
 		SqlSession session = new SqlSession(dataSource);
 		SessionFuture<SqlResult> sessionFuture = new SessionFuture<>(session);
-		session.execute(sql, sql.newParam().setEntity(entity).setQuery(query)).whenComplete((r, e) -> {
+		session.execute(sql, param).whenComplete((r, e) -> {
 			if (e != null) {
 				sessionFuture.completeExceptionally(e);
 			} else {
@@ -89,7 +90,7 @@ public class SqlExecuter {
 	public <T> CompletableFuture<Void> update(Sql<T> sql, T entity) {
 		CompletableFuture<Void> future = new CompletableFuture<>();
 		try {
-			this.execute(sql, entity, null).finish((t, e) -> {
+			this.execute(sql, sql.newParam().setEntity(entity)).finish((t, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
@@ -112,7 +113,7 @@ public class SqlExecuter {
 	public <T> CompletableFuture<List<T>> query(Sql<T> sql, T entity) {
 		CompletableFuture<List<T>> future = new CompletableFuture<List<T>>();
 		try {
-			this.execute(sql, entity, null).finish((t, e) -> {
+			this.execute(sql, sql.newParam().setEntity(entity)).finish((t, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
@@ -135,7 +136,7 @@ public class SqlExecuter {
 	public <T> CompletableFuture<List<T>> query(Sql<T> sql, QueryCondition qc) {
 		CompletableFuture<List<T>> future = new CompletableFuture<List<T>>();
 		try {
-			this.execute(sql, null, qc).finish((t, e) -> {
+			this.execute(sql, sql.newParam()).finish((t, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
@@ -158,7 +159,7 @@ public class SqlExecuter {
 	public <T> CompletableFuture<Integer> count(Sql<T> sql, QueryCondition qc) {
 		CompletableFuture<Integer> future = new CompletableFuture<Integer>();
 		try {
-			this.execute(sql, null, qc).finish((t, e) -> {
+			this.execute(sql, sql.newParam().setQuery(qc)).finish((t, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
