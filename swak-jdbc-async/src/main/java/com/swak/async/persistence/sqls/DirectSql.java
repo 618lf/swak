@@ -11,13 +11,13 @@ import com.swak.async.persistence.SqlParam;
  * @author lifeng
  * @date 2020年10月12日 下午8:51:30
  */
-public class DirectQuerySql<T> extends ExecuteSql<T> implements Dql<T> {
+public class DirectSql<T> extends ExecuteSql<T> implements Dql<T> {
 
 	private String sql;
 	private List<Object> params;
 	private RowMapper<T> map;
 
-	public DirectQuerySql(String sql, List<Object> params, RowMapper<T> map) {
+	public DirectSql(String sql, List<Object> params, RowMapper<T> map) {
 		this.sql = sql;
 		this.params = params;
 		this.map = map;
