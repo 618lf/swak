@@ -225,7 +225,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @param sql
 	 * @param param
 	 */
-	public CompletableFuture<Void> update(T entity) {
+	public CompletableFuture<Integer> update(T entity) {
 		UpdateSql<T> sql = this.getSql(SqlMap.UPDATE);
 		return sqlExecuter.update(sql, entity);
 	}
@@ -235,7 +235,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * 
 	 * @param sql
 	 */
-	public CompletableFuture<Void> delete(T entity) {
+	public CompletableFuture<Integer> delete(T entity) {
 		DeleteSql<T> sql = this.getSql(SqlMap.DELETE);
 		return sqlExecuter.update(sql, entity);
 	}

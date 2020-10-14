@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.swak.asm.FieldCache.FieldMeta;
+import com.swak.async.parameter.ParaGetters;
 import com.swak.async.persistence.define.ColumnDefine;
 import com.swak.async.persistence.define.TableDefine;
 import com.swak.persistence.QueryCondition;
@@ -118,7 +119,7 @@ public class SqlParam<T> {
 				Map<String, Object> maps = this.BeantoMap(entity);
 				for (ColumnDefine column : pks) {
 					Object value = maps.get(column.javaProperty);
-					params.add(value);
+					params.add(ParaGetters.toJdbc(value));
 				}
 			} catch (Exception e) {
 			}

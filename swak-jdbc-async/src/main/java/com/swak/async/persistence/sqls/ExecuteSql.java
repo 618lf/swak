@@ -10,6 +10,7 @@ import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.Sql;
 import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.SqlResult;
+import com.swak.async.persistence.maps.UpdateMapper;
 import com.swak.utils.Lists;
 
 import io.vertx.sqlclient.Row;
@@ -81,8 +82,10 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 
 	protected <U> void rowMappers(CompletableFuture<SqlResult> future, RowSet<Row> rows, RowMapper<U> rowMapper) {
 		try {
-			List<U> ts = Lists.newArrayList();
-			if (rowMapper != null) {
+			if (rowMapper != null && rowMapper instanceof UpdateMapper) {
+				future.complete(new SqlResult(rows.rowCount()));
+			} else if (rowMapper != null) {
+				List<U> ts = Lists.newArrayList();
 				RowIterator<Row> datas = rows.iterator();
 				int rowNum = 0;
 				while (datas.hasNext()) {
@@ -90,8 +93,10 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 					ts.add(rowMapper.mapRow(row, rowNum));
 					rowNum++;
 				}
+				future.complete(new SqlResult(ts));
+			} else {
+				future.complete(new SqlResult(Lists.newArrayList()));
 			}
-			future.complete(new SqlResult(ts));
 		} catch (Exception e) {
 			future.completeExceptionally(e);
 		}

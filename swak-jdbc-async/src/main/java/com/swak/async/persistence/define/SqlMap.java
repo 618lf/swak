@@ -7,6 +7,7 @@ import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.Sql;
 import com.swak.async.persistence.maps.CountMapper;
 import com.swak.async.persistence.maps.ModelMapper;
+import com.swak.async.persistence.maps.UpdateMapper;
 import com.swak.async.persistence.sqls.CountSql;
 import com.swak.async.persistence.sqls.DeleteSql;
 import com.swak.async.persistence.sqls.ExistsSql;
@@ -68,13 +69,14 @@ public class SqlMap<T> {
 		// 默认的映射
 		RowMapper<T> modelMapper = new ModelMapper<>(this.table);
 		RowMapper<Integer> countMapper = new CountMapper();
+		RowMapper<Integer> updateMapper = new UpdateMapper();
 
 		// 注册Sql
 		this.sqls.put(EXISTS, new ExistsSql<T>(this.table, countMapper));
 		this.sqls.put(LOCK, new LockSql<T>(this.table, modelMapper));
-		this.sqls.put(INSERT, new InsertSql<T>(this.table));
-		this.sqls.put(UPDATE, new UpdateSql<T>(this.table));
-		this.sqls.put(DELETE, new DeleteSql<T>(this.table));
+		this.sqls.put(INSERT, new InsertSql<T>(this.table, updateMapper));
+		this.sqls.put(UPDATE, new UpdateSql<T>(this.table, updateMapper));
+		this.sqls.put(DELETE, new DeleteSql<T>(this.table, updateMapper));
 		this.sqls.put(GET, new GetSql<T>(this.table, modelMapper));
 		this.sqls.put(QUERY, new QuerySql<T>(this.table, modelMapper));
 		this.sqls.put(COUNT, new CountSql<T>(this.table, countMapper));

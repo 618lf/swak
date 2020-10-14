@@ -15,8 +15,11 @@ import com.swak.async.persistence.define.TableDefine;
  */
 public class UpdateSql<T> extends ShardingSql<T> implements Dml<T> {
 
-	public UpdateSql(TableDefine<T> table) {
+	RowMapper<Integer> map;
+
+	public UpdateSql(TableDefine<T> table, RowMapper<Integer> map) {
 		super(table);
+		this.map = map;
 	}
 
 	@Override
@@ -51,7 +54,8 @@ public class UpdateSql<T> extends ShardingSql<T> implements Dml<T> {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <U> RowMapper<U> rowMap() {
-		return null;
+		return (RowMapper<U>) map;
 	}
 }

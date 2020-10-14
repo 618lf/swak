@@ -202,7 +202,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 * @param sql
 	 * @param param
 	 */
-	protected CompletableFuture<Void> update(T entity) {
+	protected CompletableFuture<Integer> update(T entity) {
 		return this.getBaseDao().update(entity);
 	}
 
@@ -211,7 +211,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 * 
 	 * @param sql
 	 */
-	protected CompletableFuture<Void> delete(T entity) {
+	protected CompletableFuture<Integer> delete(T entity) {
 		return this.getBaseDao().delete(entity);
 	}
 

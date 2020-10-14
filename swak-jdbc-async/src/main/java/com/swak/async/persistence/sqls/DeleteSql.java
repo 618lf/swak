@@ -14,8 +14,11 @@ import com.swak.async.persistence.define.TableDefine;
  */
 public class DeleteSql<T> extends ShardingSql<T> implements Dml<T> {
 
-	public DeleteSql(TableDefine<T> table) {
+	RowMapper<Integer> map;
+
+	public DeleteSql(TableDefine<T> table, RowMapper<Integer> map) {
 		super(table);
+		this.map = map;
 	}
 
 	@Override
@@ -36,7 +39,8 @@ public class DeleteSql<T> extends ShardingSql<T> implements Dml<T> {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <U> RowMapper<U> rowMap() {
-		return null;
+		return (RowMapper<U>) map;
 	}
 }

@@ -87,14 +87,14 @@ public class SqlExecuter {
 	 * @param param 参数
 	 * @return 执行结果
 	 */
-	public <T> CompletableFuture<Void> update(Sql<T> sql, T entity) {
-		CompletableFuture<Void> future = new CompletableFuture<>();
+	public <T> CompletableFuture<Integer> update(Sql<T> sql, T entity) {
+		CompletableFuture<Integer> future = new CompletableFuture<>();
 		try {
 			this.execute(sql, sql.newParam().setEntity(entity)).finish((t, e) -> {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					future.complete(null);
+					future.complete(t.getInt());
 				}
 			});
 		} catch (Exception e) {
@@ -117,7 +117,7 @@ public class SqlExecuter {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					future.complete(t.get());
+					future.complete(t.getList());
 				}
 			});
 		} catch (Exception e) {
@@ -140,7 +140,7 @@ public class SqlExecuter {
 				if (e != null) {
 					future.completeExceptionally(e);
 				} else {
-					future.complete(t.get());
+					future.complete(t.getList());
 				}
 			});
 		} catch (Exception e) {
