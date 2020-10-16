@@ -14,6 +14,7 @@ import com.swak.vertx.transport.vertx.StandardVertx;
 
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.core.file.FileSystemOptions;
 
 /**
  * 配置单机版本的 vertx
@@ -48,6 +49,11 @@ public class StandardVerxAutoConfiguration {
 		vertxOptions.setInternalBlockingPoolSize(properties.getInternalBlockingThreads());
 		vertxOptions.setMaxEventLoopExecuteTime(properties.getMaxEventLoopExecuteTime());
 		vertxOptions.setMaxWorkerExecuteTime(properties.getMaxWorkerExecuteTime());
+		FileSystemOptions fileSystemOptions = new FileSystemOptions();
+		fileSystemOptions.setClassPathResolvingEnabled(properties.isClassPathResolvingEnabled());
+		fileSystemOptions.setFileCachingEnabled(properties.isFileCachingEnabled());
+		fileSystemOptions.setFileCacheDir(properties.getFileCacheDir());
+		vertxOptions.setFileSystemOptions(fileSystemOptions);
 		return vertxOptions;
 	}
 

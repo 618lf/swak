@@ -52,12 +52,13 @@ public final class ShutDownHook extends Thread {
 	 *
 	 * @param sync 是否同步，如果同步则会在当前线程中执行
 	 */
-	public static void runHook(boolean sync) {
+	public static CompletableFuture<Void> runHook(boolean sync) {
 		if (sync) {
 			ShutDownHookHolder.INSTANCE.closeAll();
 		} else {
 			ShutDownHookHolder.INSTANCE.start();
 		}
+		return shutDownFuture;
 	}
 
 	/**

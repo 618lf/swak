@@ -12,6 +12,7 @@ import com.swak.utils.Maps;
 import io.netty.handler.logging.LogLevel;
 import io.netty.util.ResourceLeakDetector.Level;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.file.FileSystemOptions;
 import io.vertx.core.http.ClientAuth;
 
 /**
@@ -79,6 +80,37 @@ public class VertxProperties extends TransportProperties {
 	private List<String> keyPaths;
 	private List<String> certPaths;
 	private ClientAuth clientAuth = ClientAuth.NONE;
+
+	/**
+	 * 文件处理
+	 */
+	private boolean classPathResolvingEnabled = false; // FileSystemOptions.DEFAULT_CLASS_PATH_RESOLVING_ENABLED;
+	private boolean fileCachingEnabled = false; // FileSystemOptions.DEFAULT_FILE_CACHING_ENABLED;
+	private String fileCacheDir = FileSystemOptions.DEFAULT_FILE_CACHING_DIR;
+
+	public boolean isClassPathResolvingEnabled() {
+		return classPathResolvingEnabled;
+	}
+
+	public void setClassPathResolvingEnabled(boolean classPathResolvingEnabled) {
+		this.classPathResolvingEnabled = classPathResolvingEnabled;
+	}
+
+	public boolean isFileCachingEnabled() {
+		return fileCachingEnabled;
+	}
+
+	public void setFileCachingEnabled(boolean fileCachingEnabled) {
+		this.fileCachingEnabled = fileCachingEnabled;
+	}
+
+	public String getFileCacheDir() {
+		return fileCacheDir;
+	}
+
+	public void setFileCacheDir(String fileCacheDir) {
+		this.fileCacheDir = fileCacheDir;
+	}
 
 	public ClientAuth getClientAuth() {
 		return clientAuth;

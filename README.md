@@ -29,10 +29,6 @@ swak-qrcode   -- 二维码生成的工具包
 swak-quartz   -- 定时任务的实现  
 swak-redis    -- 基于lettuce 的redis操作客户端，简单封装，更好使用。  
 swak-rocketmq -- 只是记录  
-swak-sample   --   
-swak-sample-api --   
-swak-sample-rpc --   
-swak-sample-vertx -- 演示项目，可以参考  
 swak-starter  -- 启动项目，基于并改造至springboot。提供最基本模板的启动依赖。  
 swak-template -- 居于freemarker 的模板技术  
 swak-test     -- 测试项目  
@@ -206,9 +202,8 @@ Http1xServerConnection -- 一次请求的处理
 -- 还没研究他的处理方式
 
 问题3： 验证框架，感觉使用简单点的方式就够了。
-<<<<<<< HEAD
-
 -- 已经实现了一版简单的，适合当前系统的版本
+
 问题3： 发现循环依赖会导致aop失效，@lazy能避免这个问题。
 
 -- 并非循环依赖的问题，二是postBeanprocess 中获取的bean 不一定是spring加工完成的bean。
@@ -296,6 +291,21 @@ var  ws = new WebSocket("ws://url/1/3/9");
 var  ws = new WebSocket("ws://url?userid=1"); 
 3.替换子协议   
 var  ws = new WebSocket("ws://url"，【token】);
+
+# 版本1.0.0 功能
+1、程序的启动   
+使用springboot的启动方式，可以通过maven打成可执行的jar，也可以通过springbootmaven插件打成fatjar  
+
+2、程序的停止 
+第一种：可以通过创建一个管理员api，通过他来发送停止命令    
+第二种： 通过信号量的处理 ， 系统中默认注册的信号处理器  
+org.springframework.context.support.ApplicationContext 系统关闭处理事件
+io.vertx.core.file.impl.FileResolver 的关闭处理事件（默认设置不启用文件缓存）
+java.util.logging.LogManager.Cleaner 
+org.h2.engine.OnExitDatabaseCloser （如果使用了h2数据库）
+
+
+
 
 
 # 版本1.0.2  （预留的版本）
