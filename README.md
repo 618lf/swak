@@ -305,9 +305,6 @@ java.util.logging.LogManager.Cleaner
 org.h2.engine.OnExitDatabaseCloser （如果使用了h2数据库）
 
 
-
-
-
 # 版本1.0.2  （预留的版本）
 此版本是未来的版本，对标vertx 的 4.0 系列，等vertx的4.0出可用版本之后启用此版本
 

@@ -19,21 +19,24 @@ import com.swak.closable.ShutDownHook;
  */
 public class AppShuter implements ApplicationListener<ContextClosedEvent> {
 
-    @Override
-    public void onApplicationEvent(ContextClosedEvent event) {
-        ApplicationContext context = event.getApplicationContext();
-        String[] boots = context.getBeanNamesForType(Boot.class);
-        if (boots.length > 0) {
-            APP_LOGGER.debug("======== system startup Destorying ========");
-            Arrays.stream(boots).forEach(s -> {
-                Boot boot = context.getBean(s, Boot.class);
-                APP_LOGGER.debug("Sync destory - {}", boot.describe());
-                boot.destory();
-            });
-            APP_LOGGER.debug("======== system startup Destoryed  ========");
-        }
+	@Override
+	public void onApplicationEvent(ContextClosedEvent event) {
+		ApplicationContext context = event.getApplicationContext();
+		String[] boots = context.getBeanNamesForType(Boot.class);
+		if (boots.length > 0) {
+			APP_LOGGER.debug("======== system startup Destorying ========");
+			Arrays.stream(boots).forEach(s -> {
+				Boot boot = context.getBean(s, Boot.class);
+				APP_LOGGER.debug("Sync destory - {}", boot.describe());
+				boot.destory();
+			});
+			APP_LOGGER.debug("======== system startup Destoryed  ========");
+		}
 
-        // 同步关闭资源
-        ShutDownHook.runHook(true);
-    }
+		// 同步关闭资源 -- 等待资源的关闭
+		try {
+			ShutDownHook.runHook(true).get();
+		} catch (Exception e) {
+		}
+	}
 }
