@@ -25,30 +25,30 @@ import com.swak.utils.StringUtils;
 public @interface RestApi {
 
 	/**
-	 * 设置 bean name， 不能用其他的替换，识别不到
+	 * @return 设置 bean name， 不能用其他的替换，识别不到
 	 */
 	@AliasFor(annotation = Controller.class, attribute = "value")
 	String value() default StringUtils.EMPTY;
 
 	/**
-	 * 支持的 path
+	 * @return 支持的 path
 	 */
 	@AliasFor(annotation = RequestMapping.class, value = "value")
 	String[] path() default {};
 
 	/**
-	 * 支持的 method
+	 * @return 支持的 method
 	 */
 	@AliasFor(annotation = RequestMapping.class)
 	RequestMethod method() default RequestMethod.ALL;
 
 	/**
-	 * 发布的端口
+	 * @return 发布的端口
 	 */
 	int port() default -1;
 	
     /**
-     * 发布服务的个数
+     * @return 发布服务的个数
      */
     int instances() default -1;
 }

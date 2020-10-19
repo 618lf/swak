@@ -16,17 +16,17 @@ import java.lang.annotation.*;
 public @interface Length {
 
     /**
-     * 最小值
+     * @return 最小值
      */
     int min() default 0;
 
     /**
-     * 最大值
+     * @return 最大值
      */
     int max() default Integer.MAX_VALUE;
 
     /**
-     * 错误描述
+     * @return 错误描述
      */
     String msg() default StringUtils.EMPTY;
 }

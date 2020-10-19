@@ -11,19 +11,18 @@
 
 package com.swak.reactivex.threads;
 
-import java.util.LinkedList;
-import java.util.concurrent.Executor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.LinkedList;
 
 /**
  * A task queue that always run all tasks in order. The executor to run the
  * tasks is passed when the tasks when the tasks are executed, this executor is
  * not guaranteed to be used, as if several tasks are queued, the original
  * thread will be used.
- *
- * More specifically, any call B to the {@link #execute(Runnable, Executor)}
+ * <p>
+ * More specifically, any call B to the
  * method that happens-after another call A to the same method, will result in
  * B's task running after A's.
  *
@@ -33,67 +32,62 @@ import org.slf4j.LoggerFactory;
  */
 public class TaskQueue {
 
-	static final Logger log = LoggerFactory.getLogger(TaskQueue.class);
+    static final Logger log = LoggerFactory.getLogger(TaskQueue.class);
+    private final LinkedList<Task> tasks = new LinkedList<>();
+    private final Runnable runner;
+    private Context current;
 
-	private static class Task {
+    public TaskQueue() {
+        runner = this::run;
+    }
 
-		private final Runnable runnable;
-		private final Context exec;
+    private void run() {
+        for (; ; ) {
+            final Task task;
+            synchronized (tasks) {
+                task = tasks.poll();
+                if (task == null) {
+                    current = null;
+                    return;
+                }
+                if (task.exec != current) {
+                    tasks.addFirst(task);
+                    task.exec.execute(runner);
+                    current = task.exec;
+                    return;
+                }
+            }
+            try {
+                task.runnable.run();
+            } catch (Throwable t) {
+                log.error("Caught unexpected Throwable", t);
+            }
+        }
+    }
 
-		public Task(Runnable runnable, Context exec) {
-			this.runnable = runnable;
-			this.exec = exec;
-		}
-	}
+    /**
+     * Run a task.
+     *
+     * @param task the task to run.
+     */
+    public void execute(Runnable task, Context executor) {
+        synchronized (tasks) {
+            tasks.add(new Task(task, executor));
+            if (current == null) {
+                current = executor;
+                executor.execute(runner);
+            }
+        }
+    }
 
-	// @protectedby tasks
-	private final LinkedList<Task> tasks = new LinkedList<>();
+    private static class Task {
 
-	// @protectedby tasks
-	private Context current;
+        private final Runnable runnable;
+        private final Context exec;
 
-	private final Runnable runner;
-
-	public TaskQueue() {
-		runner = this::run;
-	}
-
-	private void run() {
-		for (;;) {
-			final Task task;
-			synchronized (tasks) {
-				task = tasks.poll();
-				if (task == null) {
-					current = null;
-					return;
-				}
-				if (task.exec != current) {
-					tasks.addFirst(task);
-					task.exec.execute(runner);
-					current = task.exec;
-					return;
-				}
-			}
-			try {
-				task.runnable.run();
-			} catch (Throwable t) {
-				log.error("Caught unexpected Throwable", t);
-			}
-		}
-	};
-
-	/**
-	 * Run a task.
-	 *
-	 * @param task the task to run.
-	 */
-	public void execute(Runnable task, Context executor) {
-		synchronized (tasks) {
-			tasks.add(new Task(task, executor));
-			if (current == null) {
-				current = executor;
-				executor.execute(runner);
-			}
-		}
-	}
+        public Task(Runnable runnable, Context exec) {
+            this.runnable = runnable;
+            this.exec = exec;
+        }
+    }
 }

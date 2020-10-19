@@ -16,7 +16,7 @@ import com.swak.utils.StringUtils;
 public @interface Phone {
 
     /**
-     * 错误描述
+     * @return 错误描述
      */
     String msg() default StringUtils.EMPTY;
 }

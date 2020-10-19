@@ -31,7 +31,6 @@ import com.swak.security.options.SecretOptions;
  */
 public class JWTAuthOptions {
 
-	// Defaults
 	private static final String PERMISSIONS_CLAIM_KEY = "permissions";
 	private static final JWTOptions JWT_OPTIONS = new JWTOptions();
 

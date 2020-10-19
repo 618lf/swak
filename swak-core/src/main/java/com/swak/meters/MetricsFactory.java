@@ -14,6 +14,7 @@ public interface MetricsFactory {
     /**
      * 返回实际的指标注册
      *
+     * @param <T> 类型
      * @return 指标注册
      */
     <T> T metricRegistry();

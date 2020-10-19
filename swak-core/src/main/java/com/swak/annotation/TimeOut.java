@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 public @interface TimeOut {
 
     /**
-     * -1 使用默认的超时时间
+     * @return -1 使用默认的超时时间
      * 0 不超时
      */
     int value() default -1;

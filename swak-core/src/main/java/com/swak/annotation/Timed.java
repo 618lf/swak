@@ -11,17 +11,21 @@ import com.swak.utils.StringUtils;
 
 /**
  * An annotation for marking a method of an annotated object as timed.
- * <p/>
+ * <p>
  * Given a method like this:
- * <pre><code>
+ * 
+ * <pre>
+ * <code>
  *       {@literal @}Timed(name = "fancyName")
  *       public String fancyName(String name) {
  *          return "Sir Captain " + name;
  *      }
- *   </code></pre>
- * <p/>
- * A timer for the defining class with the name {@code fancyName} will be created and each time the
- * {@code #fancyName(String)} method is invoked, the method's execution will be timed.
+ *   </code>
+ * </pre>
+ * <p>
+ * A timer for the defining class with the name {@code fancyName} will be
+ * created and each time the {@code #fancyName(String)} method is invoked, the
+ * method's execution will be timed.
  *
  * @author: lifeng
  * @date: 2020/3/28 17:24
@@ -29,16 +33,17 @@ import com.swak.utils.StringUtils;
 @Inherited
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 public @interface Timed {
-    /**
-     * @return The name of the timer.
-     */
-    String name() default StringUtils.EMPTY;
+	/**
+	 * @return The name of the timer.
+	 */
+	String name() default StringUtils.EMPTY;
 
-    /**
-     * @return If {@code true}, use the given name as an absolute name. If {@code false}, use the given name
-     * relative to the annotated class. When annotating a class, this must be {@code false}.
-     */
-    boolean absolute() default true;
+	/**
+	 * @return If {@code true}, use the given name as an absolute name. If
+	 *         {@code false}, use the given name relative to the annotated class.
+	 *         When annotating a class, this must be {@code false}.
+	 */
+	boolean absolute() default true;
 }

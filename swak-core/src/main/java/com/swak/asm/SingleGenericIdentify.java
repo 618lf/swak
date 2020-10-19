@@ -13,7 +13,7 @@ public interface SingleGenericIdentify<T> {
 	/**
 	 * 目标对象 T 的实际类型
 	 * 
-	 * @return
+	 * @return 目标对象 T 的实际类型
 	 */
 	@SuppressWarnings("unchecked")
 	default Class<T> getEntityClass() {

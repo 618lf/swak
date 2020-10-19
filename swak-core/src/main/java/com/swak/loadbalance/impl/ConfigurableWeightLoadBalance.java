@@ -1,131 +1,131 @@
 package com.swak.loadbalance.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.swak.loadbalance.Referer;
+
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.swak.loadbalance.Referer;
-
 /**
  * 配置权重
- * 
+ *
  * @author lifeng
  * @date 2020年4月30日 上午11:03:25
  */
 public class ConfigurableWeightLoadBalance<T> extends ActiveWeightLoadBalance<T> {
 
-	private volatile RefererListCacheHolder<T> holder;
-	private final String prefix;
-	private final String weights;
+    private final String prefix;
+    private final String weights;
+    private volatile RefererListCacheHolder<T> holder;
 
-	public ConfigurableWeightLoadBalance(String prefix, String weights) {
-		this.weights = weights;
-		this.prefix = prefix;
-	}
+    public ConfigurableWeightLoadBalance(String prefix, String weights) {
+        this.weights = weights;
+        this.prefix = prefix;
+    }
 
-	@Override
-	protected String prefix() {
-		return prefix;
-	}
+    @Override
+    protected String prefix() {
+        return prefix;
+    }
 
-	@Override
-	public void onRefresh(List<T> referers) {
-		super.onRefresh(referers);
-		this.holder = new MultiGroupHolder(weights, this.getReferers());
-	}
+    @Override
+    public void onRefresh(List<T> referers) {
+        super.onRefresh(referers);
+        this.holder = new MultiGroupHolder(weights, this.getReferers());
+    }
 
-	@Override
-	protected Referer<T> doSelect() {
-		return holder.next();
-	}
+    @Override
+    protected Referer<T> doSelect() {
+        return holder.next();
+    }
 
-	static abstract class RefererListCacheHolder<T> {
-		abstract Referer<T> next();
-	}
+    static abstract class RefererListCacheHolder<T> {
 
-	class MultiGroupHolder extends RefererListCacheHolder<T> {
+        /**
+         * 下一个依赖
+         *
+         * @return 依赖
+         */
+        abstract Referer<T> next();
+    }
 
-		private int randomKeySize = 0;
-		private List<String> randomKeyList = new ArrayList<String>();
-		private Map<String, AtomicInteger> cursors = new HashMap<String, AtomicInteger>();
-		private Map<String, List<Referer<T>>> groupReferers = new HashMap<>();
+    class MultiGroupHolder extends RefererListCacheHolder<T> {
 
-		MultiGroupHolder(String weights, List<Referer<T>> list) {
-			String[] groupsAndWeights = weights.split(",");
-			int[] weightsArr = new int[groupsAndWeights.length];
-			Map<String, Integer> weightsMap = new HashMap<String, Integer>(groupsAndWeights.length);
-			int i = 0;
-			for (String groupAndWeight : groupsAndWeights) {
-				String[] gw = groupAndWeight.split(":");
-				if (gw.length == 2) {
-					Integer w = Integer.valueOf(gw[1]);
-					weightsMap.put(gw[0], w);
-					groupReferers.put(gw[0], new ArrayList<Referer<T>>());
-					weightsArr[i++] = w;
-				}
-			}
+        private int randomKeySize = 0;
+        private List<String> randomKeyList = new ArrayList<>();
+        private Map<String, AtomicInteger> cursors = new HashMap<>();
+        private Map<String, List<Referer<T>>> groupReferers = new HashMap<>();
 
-			// 求出最大公约数，若不为1，对权重做除法
-			int weightGcd = findGcd(weightsArr);
-			if (weightGcd != 1) {
-				for (Map.Entry<String, Integer> entry : weightsMap.entrySet()) {
-					weightsMap.put(entry.getKey(), entry.getValue() / weightGcd);
-				}
-			}
+        MultiGroupHolder(String weights, List<Referer<T>> list) {
+            String[] groupsAndWeights = weights.split(",");
+            int[] weightsArr = new int[groupsAndWeights.length];
+            Map<String, Integer> weightsMap = new HashMap<>(groupsAndWeights.length);
+            int i = 0;
+            for (String groupAndWeight : groupsAndWeights) {
+                String[] gw = groupAndWeight.split(":");
+                if (gw.length == 2) {
+                    Integer w = Integer.valueOf(gw[1]);
+                    weightsMap.put(gw[0], w);
+                    groupReferers.put(gw[0], new ArrayList<>());
+                    weightsArr[i++] = w;
+                }
+            }
 
-			for (Map.Entry<String, Integer> entry : weightsMap.entrySet()) {
-				for (int j = 0; j < entry.getValue(); j++) {
-					randomKeyList.add(entry.getKey());
-				}
-			}
-			Collections.shuffle(randomKeyList);
-			randomKeySize = randomKeyList.size();
+            // 求出最大公约数，若不为1，对权重做除法
+            int weightGcd = findGcd(weightsArr);
+            if (weightGcd != 1) {
+                weightsMap.replaceAll((k, v) -> v / weightGcd);
+            }
 
-			for (String key : weightsMap.keySet()) {
-				cursors.put(key, new AtomicInteger(0));
-			}
+            for (Map.Entry<String, Integer> entry : weightsMap.entrySet()) {
+                for (int j = 0; j < entry.getValue(); j++) {
+                    randomKeyList.add(entry.getKey());
+                }
+            }
+            Collections.shuffle(randomKeyList);
+            randomKeySize = randomKeyList.size();
 
-			for (Referer<T> referer : list) {
-				groupReferers.get(referer.getName()).add(referer);
-			}
-		}
+            for (String key : weightsMap.keySet()) {
+                cursors.put(key, new AtomicInteger(0));
+            }
 
-		@Override
-		Referer<T> next() {
-			String group = randomKeyList.get(ThreadLocalRandom.current().nextInt(randomKeySize));
-			AtomicInteger ai = cursors.get(group);
-			List<Referer<T>> referers = groupReferers.get(group);
-			return referers.get(getNonNegative(ai.getAndIncrement()) % referers.size());
-		}
+            for (Referer<T> referer : list) {
+                groupReferers.get(referer.getName()).add(referer);
+            }
+        }
 
-		// 求最大公约数
-		private int findGcd(int n, int m) {
-			return (n == 0 || m == 0) ? n + m : findGcd(m, n % m);
-		}
+        @Override
+        Referer<T> next() {
+            String group = randomKeyList.get(ThreadLocalRandom.current().nextInt(randomKeySize));
+            AtomicInteger ai = cursors.get(group);
+            List<Referer<T>> referers = groupReferers.get(group);
+            return referers.get(getNonNegative(ai.getAndIncrement()) % referers.size());
+        }
 
-		// 求最大公约数
-		private int findGcd(int[] arr) {
-			int i = 0;
-			for (; i < arr.length - 1; i++) {
-				arr[i + 1] = findGcd(arr[i], arr[i + 1]);
-			}
-			return findGcd(arr[i], arr[i - 1]);
-		}
+        // 求最大公约数
+        private int findGcd(int n, int m) {
+            return (n == 0 || m == 0) ? n + m : findGcd(m, n % m);
+        }
 
-		/**
-		 * 通过二进制位操作将originValue转化为非负数: 0和正数返回本身
-		 * 负数通过二进制首位取反转化为正数或0（Integer.MIN_VALUE将转换为0） return non-negative int value of
-		 * originValue
-		 * 
-		 * @param originValue
-		 * @return positive int
-		 */
-		public int getNonNegative(int originValue) {
-			return 0x7fffffff & originValue;
-		}
-	}
+        // 求最大公约数
+        private int findGcd(int[] arr) {
+            int i = 0;
+            for (; i < arr.length - 1; i++) {
+                arr[i + 1] = findGcd(arr[i], arr[i + 1]);
+            }
+            return findGcd(arr[i], arr[i - 1]);
+        }
+
+        /**
+         * 通过二进制位操作将originValue转化为非负数: 0和正数返回本身
+         * 负数通过二进制首位取反转化为正数或0（Integer.MIN_VALUE将转换为0） return non-negative int value of
+         * originValue
+         *
+         * @param originValue 原始值
+         * @return positive int
+         */
+        public int getNonNegative(int originValue) {
+            return 0x7fffffff & originValue;
+        }
+    }
 }

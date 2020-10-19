@@ -18,11 +18,9 @@ public interface Lock {
 
 	/**
 	 * 占用锁，如果失败则抛出异常
-	 * 
-	 * @return
 	 */
 	default void lock() {
-	};
+	}
 
 	/**
 	 * 释放锁 -- 特殊情况下，一般不需要执行
@@ -30,7 +28,7 @@ public interface Lock {
 	 * @return 是否释放
 	 */
 	default void unlock() {
-	};
+	}
 
 	/**
 	 * 执行处理 - 持有锁之后才会执行代码

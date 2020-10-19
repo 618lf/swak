@@ -22,9 +22,7 @@ package com.swak.security.options;
  */
 public class KeyStoreOptions {
 
-	// Defaults
 	private static final String TYPE = "jceks";
-
 	private String type;
 	private String path;
 	private String password;

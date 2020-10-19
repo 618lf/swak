@@ -20,14 +20,12 @@ import com.swak.utils.StringUtils;
 public @interface Column {
 
 	/**
-	 * 配置列名，默认按照驼峰取列名
+	 * @return 配置列名，默认按照驼峰取列名
 	 */
 	String value() default StringUtils.EMPTY;
 
 	/**
-	 * 忽略
-	 * 
-	 * @return
+	 * @return 忽略
 	 */
 	boolean ignore() default false;
 }

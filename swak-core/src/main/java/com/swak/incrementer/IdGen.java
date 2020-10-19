@@ -46,8 +46,9 @@ public final class IdGen {
 
 	/**
 	 * 判断一个id是否有效 全局定义 id 为-1无效
-	 *
-	 * @param id id值
+	 * 
+	 * @param <T> 类型
+	 * @param id  值
 	 * @return 是否有效
 	 */
 	public static <T> Boolean isInvalidId(T id) {
@@ -76,7 +77,8 @@ public final class IdGen {
 
 	/**
 	 * 生成主键
-	 *
+	 * 
+	 * @param <T> 类型
 	 * @return 主键
 	 */
 	public static <T> T id() {

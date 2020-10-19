@@ -12,7 +12,7 @@
 	<fileSets>
 		<fileSet>
 			<directory>src/main/resources</directory>
-			<outputDirectory>/config</outputDirectory>
+			<outputDirectory>${file.separator}config</outputDirectory>
 			<includes>
 				<include>application*.properties</include>
 				<include>logback.xml</include>
@@ -22,7 +22,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>src/main/resources</directory>
-			<outputDirectory>/statics</outputDirectory>
+			<outputDirectory>${file.separator}statics</outputDirectory>
 			<includes>
 				<include>static/**</include>
 				<include>upload/**</include>
@@ -30,7 +30,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>src/main/db</directory>
-			<outputDirectory>/config</outputDirectory>
+			<outputDirectory>${file.separator}config</outputDirectory>
 			<includes>
 				<include>sqlite/*.db</include>
 			</includes>
@@ -38,7 +38,7 @@
 		<fileSet>
 			<directory>src/main/bin</directory>
 			<fileMode>0777</fileMode>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>${file.separator}</outputDirectory>
 			<includes>
 				<include>*.bat</include>
 				<include>*.vbs</include>
@@ -47,7 +47,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>${project.basedir}</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>${file.separator}</outputDirectory>
 			<includes>
 				<include>README*</include>
 				<include>LICENSE*</include>
@@ -56,20 +56,20 @@
 		</fileSet>
 		<fileSet>
 			<directory>${project.build.directory}</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>${file.separator}</outputDirectory>
 			<includes>
 				<include>${project.artifactId}-*.jar</include>
 			</includes>
 		</fileSet>
 		<fileSet>
 			<directory>E:\学习\jres\jre-8u202-windows-x64\jre1.8.0_202\</directory>
-			<outputDirectory>/java</outputDirectory>
+			<outputDirectory>${file.separator}java</outputDirectory>
 		</fileSet>
 	</fileSets>
 	<dependencySets>
 		<dependencySet>
 			<useProjectArtifact>false</useProjectArtifact>
-			<outputDirectory>/lib</outputDirectory>
+			<outputDirectory>${file.separator}lib</outputDirectory>
 			<fileMode>666</fileMode>
 			<scope>runtime</scope>
 			<excludes>
@@ -78,7 +78,7 @@
 		</dependencySet>
 		<dependencySet>
 			<useProjectArtifact>false</useProjectArtifact>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>${file.separator}</outputDirectory>
 			<fileMode>666</fileMode>
 			<scope>runtime</scope>
 			<includes>

@@ -18,12 +18,12 @@ import java.lang.annotation.Target;
 public @interface RequiresRoles {
 
     /**
-     * 需要的角色
+     * @return 需要的角色
      */
     String[] value() default {};
 
     /**
-     * The logical operation for the permission check in case multiple roles are specified. AND is the default
+     * @return The logical operation for the permission check in case multiple roles are specified. AND is the default
      */
     Logical logical() default Logical.AND;
 }

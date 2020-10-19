@@ -18,12 +18,12 @@ import java.lang.annotation.Target;
 public @interface RequestMapping {
 
     /**
-     * 支持的 path
+     * @return 支持的 path
      */
     String[] value() default {};
 
     /**
-     * 支持的 method
+     * @return 支持的 method
      */
     RequestMethod method() default RequestMethod.ALL;
 }

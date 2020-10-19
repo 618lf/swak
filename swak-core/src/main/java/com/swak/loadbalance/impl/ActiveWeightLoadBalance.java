@@ -27,10 +27,9 @@ public class ActiveWeightLoadBalance<T> extends AbstractLoadBalance<T> {
 
 		int refererSize = referers.size();
 		int currentCursor = 0;
-		int currentAvailableCursor = 0;
 		Referer<T> selected = null;
 
-		while (currentAvailableCursor < MAX_REFERER_COUNT && currentCursor < refererSize) {
+		while (currentCursor < refererSize) {
 			Referer<T> referer = referers.get(currentCursor % referers.size());
 			currentCursor++;
 

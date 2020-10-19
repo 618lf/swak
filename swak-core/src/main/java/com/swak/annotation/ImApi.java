@@ -25,29 +25,30 @@ import com.swak.utils.StringUtils;
 public @interface ImApi {
 
 	/**
-	 * 设置 bean name， 不能用其他的替换，识别不到
+	 * @return 设置 bean name， 不能用其他的替换，识别不到
 	 */
 	@AliasFor(annotation = Controller.class, attribute = "value")
 	String value() default StringUtils.EMPTY;
 
 	/**
-	 * 支持的 path
+	 * @return 支持的 path
 	 */
 	String path() default StringUtils.EMPTY;
 
 	/**
-	 * 支持的 method
+	 * @return 支持的 method
+	 * 
 	 */
 	@AliasFor(annotation = ImMapping.class)
 	ImOps method() default ImOps.All;
 
 	/**
-	 * 发布的端口
+	 * @return 发布的端口
 	 */
 	int port() default -1;
-	
-    /**
-     * 发布服务的个数
-     */
-    int instances() default 1;
+
+	/**
+	 * @return 发布服务的个数
+	 */
+	int instances() default 1;
 }

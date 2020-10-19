@@ -1,15 +1,14 @@
 package com.swak.reactivex.threads;
 
+import com.swak.meters.MetricsFactory;
+import com.swak.reactivex.transport.TransportMode;
+import com.swak.reactivex.transport.resources.LoopResources;
+import io.netty.channel.EventLoop;
+
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.TimeUnit;
-
-import com.swak.meters.MetricsFactory;
-import com.swak.reactivex.transport.TransportMode;
-import com.swak.reactivex.transport.resources.LoopResources;
-
-import io.netty.channel.EventLoop;
 
 /**
  * 持有所有的线程池的地址
@@ -29,23 +28,10 @@ public class Contexts {
 				TimeUnit.NANOSECONDS);
 	}
 
-	private void applyMetricsFactory() {
-		CONTEXTS.forEach((context, o) -> context.applyMetrics(metricsFactory));
-	}
-
-	private void holdContext(Context context) {
-		CONTEXTS.put(context, O);
-		if (metricsFactory != null) {
-			context.applyMetrics(metricsFactory);
-		}
-	}
-
-	private static class Holder {
-		private static Contexts instance = new Contexts();
-	}
-
 	/**
 	 * 设置指标监控工厂
+	 * 
+	 * @param metricsFactory 设置指标监控工厂
 	 */
 	public static void setMetricsFactory(MetricsFactory metricsFactory) {
 		Holder.instance.metricsFactory = metricsFactory;
@@ -79,6 +65,7 @@ public class Contexts {
 	 * @param coreThreads     核心线程数
 	 * @param maxThreads      最大线程数
 	 * @param keepAliveTime   线程保持的时间
+	 * @param unit            unit
 	 * @param queueCapacity   队列
 	 * @param maxExecTime     最大执行时间
 	 * @param maxExecTimeUnit 最大执行时间类型
@@ -171,14 +158,14 @@ public class Contexts {
 
 	/**
 	 * 创建延迟执行任务线程池 -- 不要执行耗时的任务
-	 * 
-	 * @param prefix
-	 * @param daemon
-	 * @param maxExecTime
-	 * @param maxExecTimeUnit
-	 * @param tickDuration
-	 * @param unit
-	 * @return
+	 *
+	 * @param prefix          线程名称前缀
+	 * @param daemon          是否后台线程
+	 * @param maxExecTime     最大执行时间
+	 * @param maxExecTimeUnit 最大执行时间类型
+	 * @param tickDuration    最大执行时间
+	 * @param unit            最大执行时间类型
+	 * @return 线程上下文
 	 */
 	public static TimerContext createTimerContext(String prefix, boolean daemon, long maxExecTime,
 			TimeUnit maxExecTimeUnit, long tickDuration, TimeUnit unit) {
@@ -216,5 +203,20 @@ public class Contexts {
 		EventLoopContext context = new EventLoopContext(eventLoop);
 		Holder.instance.holdContext(context);
 		return context;
+	}
+
+	private void applyMetricsFactory() {
+		CONTEXTS.forEach((context, o) -> context.applyMetrics(metricsFactory));
+	}
+
+	private void holdContext(Context context) {
+		CONTEXTS.put(context, O);
+		if (metricsFactory != null) {
+			context.applyMetrics(metricsFactory);
+		}
+	}
+
+	private static class Holder {
+		private static Contexts instance = new Contexts();
 	}
 }

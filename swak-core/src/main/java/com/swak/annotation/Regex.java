@@ -20,12 +20,12 @@ import com.swak.utils.StringUtils;
 public @interface Regex {
 
     /**
-     * 正则表达式
+     * @return 正则表达式
      */
     String value();
 
     /**
-     * 错误描述
+     * @return 错误描述
      */
     String msg() default StringUtils.EMPTY;
 }

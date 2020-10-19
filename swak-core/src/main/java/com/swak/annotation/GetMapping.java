@@ -17,7 +17,7 @@ import java.lang.annotation.*;
 public @interface GetMapping {
 
     /**
-     * 支持的 path
+     * @return  支持的 path
      */
     @AliasFor(annotation = RequestMapping.class)
     String[] value() default {};

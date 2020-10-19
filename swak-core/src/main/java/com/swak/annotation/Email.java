@@ -11,12 +11,12 @@ import com.swak.utils.StringUtils;
  * @date: 2020/3/28 17:13
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
+@Target({ ElementType.FIELD })
 @Documented
 public @interface Email {
 
-    /**
-     * 错误描述
-     */
-    String msg() default StringUtils.EMPTY;
+	/**
+	 * @return 错误描述
+	 */
+	String msg() default StringUtils.EMPTY;
 }

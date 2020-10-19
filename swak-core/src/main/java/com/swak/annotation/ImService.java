@@ -25,19 +25,19 @@ import com.swak.utils.StringUtils;
 public @interface ImService {
 
 	/**
-	 * 实例化的名称
+	 * @return 实例化的名称
 	 */
 	@AliasFor(annotation = FluxService.class)
 	String value() default StringUtils.EMPTY;
 
 	/**
-	 * 支持的 method
+	 * @return 支持的 method
 	 */
 	@AliasFor(annotation = ImMapping.class)
 	ImOps method() default ImOps.All;
 
 	/**
-	 * 定义是否顺序执行 handler，每个Verticle 都有一个 Context，通过这个Context来提交需要运行的 HandlerHodler
+	 * @return 定义是否顺序执行 handler，每个Verticle 都有一个 Context，通过这个Context来提交需要运行的 HandlerHodler
 	 * <br>
 	 * <p>
 	 * WorkContext 中持有一个Queue，来保证运行这个Verticle的handler是顺序的。<br>
@@ -52,25 +52,25 @@ public @interface ImService {
 	Context context() default Context.Concurrent;
 
 	/**
-	 * 发布服务的个数
+	 * @return 发布服务的个数
 	 */
 	@AliasFor(annotation = FluxService.class)
 	int instances() default 1;
 
 	/**
-	 * 可以设置在哪个 pool 中运行
+	 * @return 可以设置在哪个 pool 中运行
 	 */
 	@AliasFor(annotation = FluxService.class)
 	String pool() default StringUtils.EMPTY;
 
 	/**
-	 * 指定服务类
+	 * @return 指定服务类
 	 */
 	@AliasFor(annotation = FluxService.class)
 	Class<?> service() default void.class;
 
 	/**
-	 * 发布的端口
+	 * @return 发布的端口
 	 */
 	@AliasFor(annotation = RestApi.class)
 	int port() default -1;

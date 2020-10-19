@@ -11,6 +11,7 @@ public interface IdGenerator {
     /**
      * 提供服务
      *
+     * @param <T> 返回值类型
      * @return id
      */
     <T> T id();

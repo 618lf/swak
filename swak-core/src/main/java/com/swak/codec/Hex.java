@@ -223,11 +223,9 @@ public class Hex {
      * @param array An array of character bytes containing hexadecimal digits
      * @return A byte array containing binary data decoded from the supplied byte
      * array (representing characters).
-     * @throws DecoderException Thrown if an odd number of characters is supplied to
-     *                          this function
      * @see #decodeHex(char[])
      */
-    public byte[] decode(final byte[] array) throws DecoderException {
+    public byte[] decode(final byte[] array) {
         return decodeHex(new String(array, getCharset()).toCharArray());
     }
 

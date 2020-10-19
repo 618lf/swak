@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 public @interface ImMapping {
 
 	/**
-	 * 支持的 method
+	 * @return  支持的 method
 	 */
 	ImOps method() default ImOps.All;
 }

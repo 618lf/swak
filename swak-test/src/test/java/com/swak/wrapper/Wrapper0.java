@@ -15,6 +15,7 @@ import com.swak.entity.Parameters;
 import com.swak.persistence.QueryCondition;
 
 public class Wrapper0 extends Wrapper implements Dc {
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object invokeMethod(Object var1, String var2, Object[] var3) throws InvocationTargetException, NoSuchMethodException {
         OrderDao var4;

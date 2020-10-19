@@ -21,7 +21,7 @@ public class OrderContext implements Context {
 	/**
 	 * 创建同步执行器
 	 * 
-	 * @param context
+	 * @param context 上下文
 	 */
 	public OrderContext(Context context) {
 		this.context = context;

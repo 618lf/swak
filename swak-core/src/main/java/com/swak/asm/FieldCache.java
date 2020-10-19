@@ -46,9 +46,7 @@ public class FieldCache {
 	 * @date 2020/3/28 17:33
 	 */
 	public static ClassMeta set(Class<?> type, boolean order) {
-		CACHES.computeIfAbsent(type, (key) -> {
-			return new ClassMeta(type, order);
-		});
+		CACHES.computeIfAbsent(type, (key) -> new ClassMeta(type, order));
 		return CACHES.get(type);
 	}
 

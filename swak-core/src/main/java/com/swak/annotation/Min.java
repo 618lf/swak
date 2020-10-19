@@ -16,12 +16,12 @@ import java.lang.annotation.*;
 public @interface Min {
 
     /**
-     * 最小值
+     * @return 最小值
      */
     int value();
 
     /**
-     * 错误描述
+     * @return 错误描述
      */
     String msg() default StringUtils.EMPTY;
 }

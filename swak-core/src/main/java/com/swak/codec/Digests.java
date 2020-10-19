@@ -1,12 +1,12 @@
 package com.swak.codec;
 
+import com.swak.Constants;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
-
-import com.swak.Constants;
 
 /**
  * 支持SHA-1/MD5消息摘要的工具类.
@@ -119,7 +119,12 @@ public class Digests {
         }
     }
 
-    // 生成字符串摘要
+    /**
+     * 生成字符串摘要
+     *
+     * @param input 输入
+     * @return md5
+     */
     public static String md5(String input) {
         return Encodes.encodeHex(md5(input.getBytes(Constants.DEFAULT_ENCODING)));
     }

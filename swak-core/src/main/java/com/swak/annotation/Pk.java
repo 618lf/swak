@@ -20,7 +20,7 @@ import com.swak.utils.StringUtils;
 public @interface Pk {
 
 	/**
-	 * 配置列名，默认按照驼峰取列名
+	 * @return 配置列名，默认按照驼峰取列名
 	 */
 	String value() default StringUtils.EMPTY;
 

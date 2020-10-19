@@ -730,7 +730,8 @@ public class Base64 extends BaseNCodec {
             startSrc = 1;
             len--;
         }
-        final int startDst = bitlen / 8 - len; // to pad w/ nulls as per spec
+        // to pad w/ nulls as per spec
+        final int startDst = bitlen / 8 - len;
         final byte[] resizedBytes = new byte[bitlen / 8];
         System.arraycopy(bigBytes, startSrc, resizedBytes, startDst, len);
         return resizedBytes;
