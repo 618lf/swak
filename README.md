@@ -2,11 +2,11 @@
 
 可以通过如下坐标在系统中引入   
 ```
-&lt;dependency&gt;  
-	&lt;groupId&gt;com.github.618lf&lt;/groupId&gt; 
-	&lt;artifactId&gt;swak-starter&lt;/artifactId&gt;  
-	&lt;version&gt;1.0.0_final&lt;/version&gt;  
-&lt;/dependency&gt; 
+`<dependency>`  
+	`<groupId>com.github.618lf</groupId>`  
+	`<artifactId>swak-starter</artifactId> ` 
+	`<version>1.0.0_final</version> ` 
+`</dependency>`
 ```
 # swak
 目前这个配置下Eclipse 下能lombok正常的编译、打包   
