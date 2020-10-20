@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.618lf</groupId>
 	<artifactId>swak</artifactId>
-	<version>1.0.0_final</version>
+	<version>1.1.0_final</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>swak-core</module>
@@ -49,7 +49,7 @@
 		<fastjson.version>1.2.73</fastjson.version>
 		<logback.version>1.2.3</logback.version>
 		<slf4j.version>1.7.30</slf4j.version>
-		<netty.version>4.1.52.Final</netty.version>
+		<netty.version>4.1.53.Final</netty.version>
 		<reactor.version>3.3.10.RELEASE</reactor.version>
 		<micrometer.version>1.5.5</micrometer.version>
 		<HdrHistogram.version>2.1.12</HdrHistogram.version>
@@ -65,7 +65,7 @@
 		<HikariCP.version>3.4.5</HikariCP.version>
 		<async.httpclient.version>2.12.1</async.httpclient.version>
 		<motan.version>1.1.8</motan.version>
-		<vertx.version>3.9.3</vertx.version>
+		<vertx.version>3.9.4</vertx.version>
 		<qrcode.version>3.4.0</qrcode.version>
 		<javapoet.version>1.12.1</javapoet.version>
 		<zkclient.version>0.11</zkclient.version>
