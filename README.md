@@ -1,13 +1,13 @@
 # 已发布到maven中央仓库 http://repo1.maven.org/maven2/
 
 可以通过如下坐标在系统中引入   
-```
-`<dependency>`  
-	`<groupId>com.github.618lf</groupId>`  
-	`<artifactId>swak-starter</artifactId> ` 
-	`<version>1.0.0_final</version> ` 
-`</dependency>`
-```
+````
+<dependency> 
+	<groupId>com.github.618lf</groupId>
+	<artifactId>swak-starter</artifactId>
+	<version>1.0.0_final</version>
+</dependency>
+````
 # swak
 目前这个配置下Eclipse 下能lombok正常的编译、打包   
 swak分为很多单独的模块，每个模块都是单独的功能，相互之间没有强依赖，可以单独使用。  
