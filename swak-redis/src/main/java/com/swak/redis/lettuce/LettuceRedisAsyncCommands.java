@@ -77,7 +77,8 @@ public class LettuceRedisAsyncCommands implements RedisAsyncCommands<byte[], byt
 	public CompletionStage<String> set(String key, byte[] value, int expire) {
 		String script = Scripts.PUT_LUA;
 		byte[][] values = new byte[][] { SafeEncoder.encode(key), value, SafeEncoder.encode(String.valueOf(expire)) };
-		return this.runScript(script, ReturnType.INTEGER, values, null).thenApply(s -> key);
+		byte[][] params = new byte[][] {};
+		return this.runScript(script, ReturnType.INTEGER, values, params).thenApply(s -> key);
 	}
 
 	/**

@@ -69,7 +69,8 @@ public class LettuceRedisCommands implements RedisCommands<byte[], byte[]> {
 	public String set(String key, byte[] value, int expire) {
 		String script = Scripts.PUT_LUA;
 		byte[][] values = new byte[][] { SafeEncoder.encode(key), value, SafeEncoder.encode(String.valueOf(expire)) };
-		this.runScript(script, ReturnType.INTEGER, values, null);
+		byte[][] params = new byte[][] {};
+		this.runScript(script, ReturnType.INTEGER, values, params);
 		return key;
 	}
 

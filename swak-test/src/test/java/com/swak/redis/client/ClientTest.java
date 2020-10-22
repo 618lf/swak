@@ -24,4 +24,14 @@ public class ClientTest extends RedisTest {
 		// 等待结束
 		new CountDownLatch(1).await();
 	}
+	
+	@Test
+	public void script() throws InterruptedException {
+
+		
+		System.out.println(redisService.sync().ttl("11"));
+		
+		// 等待结束
+		new CountDownLatch(1).await();
+	}
 }

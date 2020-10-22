@@ -23,7 +23,7 @@ public class RedisTest {
 	 */
 	@Before
 	public void init() {
-		RedisURI node = RedisURI.create("127.0.0.1", Integer.parseInt("6379"));
+		RedisURI node = RedisURI.create("192.168.137.100", Integer.parseInt("6379"));
 		node.setPassword("12345678....");
 		RedisClient redisClient = RedisClient.create(DefaultClientResources.create(), node);
 		LettuceClientDecorator decorator = new LettuceClientDecorator(redisClient);
