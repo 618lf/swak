@@ -29,7 +29,8 @@ public class VertxProperties extends TransportProperties {
 	private int webSocketPort = 8889;
 
 	/**
-	 * 配置是否开启：WebSocket
+	 * 配置是否开启：WebSocket， 如果配置了@ImApi则会开启支持
+	 * 
 	 */
 	private boolean enableWebsocket = false;
 
