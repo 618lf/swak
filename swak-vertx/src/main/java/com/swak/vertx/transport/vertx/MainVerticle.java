@@ -84,11 +84,11 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		// 启动服务组件
 		futures.addAll(this.startServices());
 
-		// 启动Http组件
-		futures.addAll(this.startHttps());
-
 		// 启动WebSocket组件
 		futures.addAll(this.startWebSockets());
+
+		// 启动Http组件
+		futures.addAll(this.startHttps());
 
 		// 等待所有服务全部启动完成
 		CompositeFuture.all(futures).onComplete(res -> {

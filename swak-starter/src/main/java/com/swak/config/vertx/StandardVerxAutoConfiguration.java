@@ -38,6 +38,8 @@ public class StandardVerxAutoConfiguration {
 		if (properties.getMode() == TransportMode.EPOLL) {
 			vertxOptions.setPreferNativeTransport(true);
 		}
+		// HttpHandlers 根据 HttpServerImpl 的值 DISABLE_WEBSOCKETS 来判断 是否需要禁用 websocket
+		// 目前是无法自定义的， 可以在真实启用 Websocket 在开启这个参数
 		if (!properties.isEnableWebsocket()) {
 			System.setProperty("vertx.disableWebsockets", Boolean.TRUE.toString());
 		}

@@ -39,6 +39,9 @@ public class ImServerVerticle extends AbstractVerticle implements ServerVerticle
 	@Override
 	public void start(Promise<Void> startPromise) {
 
+		// 开启WebSocket的支持
+		System.setProperty("vertx.disableWebsockets", Boolean.FALSE.toString());
+
 		if (StringUtils.isBlank(host)) {
 			vertx.createHttpServer(options).webSocketHandler(imRouter.newHandler()).exceptionHandler(this::handle)
 					.listen(port, res -> this.startResult(startPromise, res));
