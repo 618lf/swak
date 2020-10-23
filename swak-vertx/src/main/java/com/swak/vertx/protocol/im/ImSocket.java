@@ -10,6 +10,21 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface ImSocket {
 
+	
+	/**
+	 * 远端地址
+	 * 
+	 * @return
+	 */
+	String remoteAddress();
+
+	/**
+	 * 本地地址
+	 * 
+	 * @return
+	 */
+	String localAddress();
+
 	/**
 	 * 发送消息
 	 * 

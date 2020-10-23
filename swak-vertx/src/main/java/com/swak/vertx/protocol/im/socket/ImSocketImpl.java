@@ -21,6 +21,16 @@ public class ImSocketImpl implements ImSocket {
 	}
 
 	@Override
+	public String remoteAddress() {
+		return socket.remoteAddress().host();
+	}
+
+	@Override
+	public String localAddress() {
+		return socket.localAddress().host();
+	}
+
+	@Override
 	public void sendText(String text) {
 		socket.writeTextMessage(text);
 	}
