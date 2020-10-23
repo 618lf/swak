@@ -7,6 +7,7 @@ import com.swak.utils.Maps;
 import com.swak.vertx.protocol.im.ImRouter.ImMatch;
 import com.swak.vertx.protocol.im.ImRouter.ImRouteChain;
 import com.swak.vertx.protocol.im.ImRouter.ImRouteState;
+import com.swak.vertx.protocol.im.socket.ImSocketImpl;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -39,6 +40,7 @@ public class ImContextImpl implements ImContext {
 	ImRequestImpl request;
 	ImResponseImpl response;
 	Map<String, String> variables;
+	ImSocket imSocket;
 
 	public ImContextImpl(ImOps ops, ImRouteState routeState, ServerWebSocket socket) {
 		this.ops = ops;
@@ -74,6 +76,7 @@ public class ImContextImpl implements ImContext {
 		this.request = new ImRequestImpl();
 		this.response = new ImResponseImpl();
 		this.request.params().addAll(match.getVariables());
+		this.imSocket = new ImSocketImpl(this.socket);
 	}
 
 	/**
@@ -132,6 +135,11 @@ public class ImContextImpl implements ImContext {
 	@Override
 	public ImResponse response() {
 		return this.response;
+	}
+
+	@Override
+	public ImSocket socket() {
+		return this.imSocket;
 	}
 
 	/**

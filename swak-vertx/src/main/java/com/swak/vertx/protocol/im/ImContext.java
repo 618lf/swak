@@ -76,6 +76,13 @@ public interface ImContext {
 	ImResponse response();
 
 	/**
+	 * socket 信息
+	 * 
+	 * @return
+	 */
+	ImSocket socket();
+
+	/**
 	 * 请求
 	 * 
 	 * @author lifeng
@@ -140,7 +147,7 @@ public interface ImContext {
 		 * @return
 		 */
 		String remoteAddress();
-		
+
 		/**
 		 * 本地地址
 		 * 
