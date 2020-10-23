@@ -220,6 +220,8 @@ public class ImHandlerAdapter implements ImHandler {
 			return context.request();
 		} else if (ImResponse.class.isAssignableFrom(parameterType)) {
 			return context.response();
+		} else if (ImSocket.class.isAssignableFrom(parameterType)) {
+			return context.socket();
 		} else if (ImContext.class.isAssignableFrom(parameterType)) {
 			return context;
 		} else if (Subject.class.isAssignableFrom(parameterType)) {
