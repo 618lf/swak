@@ -13,8 +13,10 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.Cookie;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.http.WebSocketFrame;
+import io.vertx.core.http.impl.ServerWebSocketImpl;
 import io.vertx.core.http.impl.VertxHttpUtils;
 import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.impl.VertxThread;
@@ -30,7 +32,7 @@ public class ImContextImpl implements ImContext {
 	int index;
 	String path;
 	ImOps ops;
-	ServerWebSocket socket;
+	ServerWebSocketImpl socket;
 	Throwable error;
 	WebSocketFrame message;
 	ImRouteState routeState;
@@ -45,7 +47,7 @@ public class ImContextImpl implements ImContext {
 	public ImContextImpl(ImOps ops, ImRouteState routeState, ServerWebSocket socket) {
 		this.ops = ops;
 		this.path = socket.path();
-		this.socket = socket;
+		this.socket = (ServerWebSocketImpl) socket;
 		this.routeState = routeState;
 		this.init();
 	}
@@ -53,7 +55,7 @@ public class ImContextImpl implements ImContext {
 	public ImContextImpl(ImOps ops, ImRouteState routeState, ServerWebSocket socket, Throwable error) {
 		this.ops = ops;
 		this.path = socket.path();
-		this.socket = socket;
+		this.socket = (ServerWebSocketImpl) socket;
 		this.routeState = routeState;
 		this.error = error;
 		this.init();
@@ -63,7 +65,7 @@ public class ImContextImpl implements ImContext {
 		this.ops = ops;
 		this.path = socket.path();
 		this.routeState = routeState;
-		this.socket = socket;
+		this.socket = (ServerWebSocketImpl) socket;
 		this.message = message;
 		this.init();
 	}
@@ -170,6 +172,11 @@ public class ImContextImpl implements ImContext {
 		@Override
 		public String getHeader(String header) {
 			return socket.headers().get(header);
+		}
+
+		@Override
+		public Cookie getCookie(String name) {
+			return socket.originalRequest().getCookie(name);
 		}
 
 		@Override

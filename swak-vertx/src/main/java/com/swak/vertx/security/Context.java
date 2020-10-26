@@ -134,8 +134,9 @@ public interface Context {
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public <T> T cookie(String name) {
-			return null;
+			return (T) context.request().getCookie(name);
 		}
 
 		@Override

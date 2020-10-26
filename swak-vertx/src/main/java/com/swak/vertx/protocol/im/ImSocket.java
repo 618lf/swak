@@ -10,7 +10,6 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface ImSocket {
 
-	
 	/**
 	 * 远端地址
 	 * 

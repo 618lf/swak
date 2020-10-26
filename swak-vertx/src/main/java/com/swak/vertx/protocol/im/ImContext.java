@@ -6,6 +6,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.Cookie;
 import io.vertx.core.impl.ContextInternal;
 
 /**
@@ -125,6 +126,14 @@ public interface ImContext {
 		 * @return
 		 */
 		MultiMap headers();
+
+		/**
+		 * 获取cookie
+		 * 
+		 * @param name
+		 * @return
+		 */
+		Cookie getCookie(String name);
 
 		/**
 		 * 指定头部
