@@ -17,15 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import com.swak.Constants;
+import com.swak.booter.ApplicationBooter;
 import com.swak.cache.CacheManagers;
 import com.swak.redis.RedisCacheManager;
 import com.swak.redis.RedisConnectionFactory;
@@ -43,7 +43,7 @@ import com.swak.redis.policy.ExpiryPolicys;
 @EnableConfigurationProperties(RedisProperties.class)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableRedis", matchIfMissing = true)
 @Import({ LettuceAutoConfiguration.class })
-public class RedisAutoConfiguration implements ApplicationListener<ContextRefreshedEvent> {
+public class RedisAutoConfiguration implements ApplicationBooter {
 
 	@Autowired
 	private RedisProperties cacheProperties;
@@ -123,7 +123,7 @@ public class RedisAutoConfiguration implements ApplicationListener<ContextRefres
 	 * 系统初始化
 	 */
 	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
+	public void onApplicationEvent(ApplicationContext context) {
 		if (this.redisLocalCache != null) {
 			this.redisLocalCache.start();
 		}

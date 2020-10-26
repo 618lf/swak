@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.Constants;
+import com.swak.closable.ShutDownHook;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.reactivex.transport.resources.LoopResources;
@@ -57,7 +58,7 @@ public class LettuceAutoConfiguration {
 	 * @see 自定义eventloop之后需要自己管理停止
 	 * @return
 	 */
-	@Bean(destroyMethod = "shutdown")
+	@Bean
 	public ClientResources clientResources(ObjectProvider<CommandLatencyCollector> commandLatencyCollectorProvider) {
 		System.setProperty("io.lettuce.core.epoll", "false");
 		System.setProperty("io.lettuce.core.kqueue", "false");
@@ -78,6 +79,12 @@ public class LettuceAutoConfiguration {
 		ClientResources clientResources = DefaultClientResources.builder()
 				.commandLatencyCollector(commandLatencyCollector).eventLoopGroupProvider(eventLoopGroupProvider)
 				.eventExecutorGroup(eventLoopGroup).nettyCustomizer(new SharedNettyCustomizer()).build();
+		ShutDownHook.registerShutdownHook(() -> {
+			try {
+				clientResources.shutdown().get();
+			} catch (Exception e) {
+			}
+		});
 		return clientResources;
 	}
 
