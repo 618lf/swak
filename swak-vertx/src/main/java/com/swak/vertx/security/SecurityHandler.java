@@ -163,7 +163,7 @@ public class SecurityHandler implements io.vertx.core.Handler<Context>, Initiali
 	}
 
 	/**
-	 * 处理 Http 请求
+	 * 处理 Ws 请求：可以指定什么类型的请求需要走这个处理器
 	 * 
 	 * @return
 	 */

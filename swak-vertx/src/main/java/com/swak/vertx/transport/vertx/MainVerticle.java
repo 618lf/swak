@@ -81,8 +81,15 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		// 自定义一些配置
 		vertx.eventBus().registerDefaultCodec(Msg.class, new MsgCodec());
 
+		// 默认端口,数量转换
+		VertxConfigs.me().mergeDefaults(properties.getPort(), properties.getWebSocketPort(),
+				properties.getEventLoopPoolSize());
+
 		// 启动服务组件
 		futures.addAll(this.startServices());
+
+		// 启动统一服务组件
+		futures.addAll(this.startUnifyServers());
 
 		// 启动WebSocket组件
 		futures.addAll(this.startWebSockets());
@@ -148,7 +155,7 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		}
 
 		// 配置发布多个服务
-		int intstances = getDeploymentIntstances(service.getInstances());
+		int intstances = service.getInstances() <= 0 ? properties.getEventLoopPoolSize() : service.getInstances();
 		for (int i = 1; i <= intstances; i++) {
 			Future<String> stFuture = Future.future(s -> vertx
 					.deployVerticle(new ServiceVerticle(service.getRef(), service.getInterClass()), options, s));
@@ -167,20 +174,20 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 
 		// 发布成多个Http服务
 		routers.keySet().forEach(port -> {
-			BeansConfig config = routers.get(port);
-			futures.add(this.startHttp(port, config.getInstances(), config.getBeans()));
+			if (!VertxConfigs.me().getUnifys().containsKey(port)) {
+				BeansConfig config = routers.get(port);
+				futures.add(this.startHttp(port, config.getInstances(), config.getBeans()));
+			}
 		});
 
 		return futures;
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Future<EndPoint> startHttp(int port, int instances, List<RouterBean> routers) {
+	private Future<EndPoint> startHttp(int deployPort, int intstances, List<RouterBean> routers) {
 
 		// 发布的 Host、Port
 		String deployHost = properties.getHost();
-		int deployPort = port <= 0 ? properties.getPort() : port;
-		int intstances = getDeploymentIntstances(instances);
 
 		// 获得路由 -- Router 是线程安全的所以多个Verticle实例可以公用
 		Router router = this.getRouter(routers);
@@ -241,20 +248,20 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 
 		// 发布成多个Http服务
 		routers.keySet().forEach(port -> {
-			BeansConfig config = routers.get(port);
-			futures.add(this.startWebSocket(port, config.getInstances(), config.getBeans()));
+			if (!VertxConfigs.me().getUnifys().containsKey(port)) {
+				BeansConfig config = routers.get(port);
+				futures.add(this.startWebSocket(port, config.getInstances(), config.getBeans()));
+			}
 		});
 
 		return futures;
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Future<EndPoint> startWebSocket(int port, int instances, List<ImBean> routers) {
+	private Future<EndPoint> startWebSocket(int deployPort, int intstances, List<ImBean> routers) {
 
 		// 发布的 Host、Port、intstances
 		String deployHost = properties.getHost();
-		int deployPort = port <= 0 ? properties.getWebSocketPort() : port;
-		int intstances = getDeploymentIntstances(instances);
 
 		// 处理器
 		ImRouter imRouter = this.getImRouter(routers);
@@ -306,10 +313,53 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		return imRouter;
 	}
 
-	private int getDeploymentIntstances(int intstances) {
-		if (intstances <= 0) {
-			intstances = properties.getEventLoopPoolSize();
+	private List<Future<EndPoint>> startUnifyServers() {
+		List<Future<EndPoint>> futures = Lists.newArrayList();
+
+		Map<Integer, BeansConfig> routers = VertxConfigs.me().getUnifys();
+		Map<Integer, BeansConfig> httpRouters = VertxConfigs.me().getRouters();
+		Map<Integer, BeansConfig> imRouters = VertxConfigs.me().getWebSockets();
+
+		// 发布成多个统一服务
+		routers.keySet().forEach(port -> {
+			BeansConfig config = routers.get(port);
+			futures.add(this.startUnifyServer(port, config.getInstances(), httpRouters.get(port).getBeans(),
+					imRouters.get(port).getBeans()));
+		});
+
+		return futures;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Future<EndPoint> startUnifyServer(int deployPort, int intstances, List<RouterBean> httpRouters,
+			List<ImBean> imRouters) {
+
+		// 发布的 Host、Port、intstances
+		String deployHost = properties.getHost();
+
+		// 处理器
+		Router httpRouter = this.getRouter(httpRouters);
+		ImRouter imRouter = this.getImRouter(imRouters);
+
+		// 服务器配置
+		HttpServerOptions httpServerOptions = this.httpServerOptions(properties);
+
+		// 启动监听服务
+		List<Future> futures = Lists.newArrayList();
+
+		// 以EventLoop 的方式发布
+		DeploymentOptions options = new DeploymentOptions().setWorker(false);
+		for (int i = 1; i <= intstances; i++) {
+			Future<String> stFuture = Future.future(s -> vertx.deployVerticle(
+					new UnifyServerVerticle(httpRouter, imRouter, httpServerOptions, deployHost, deployPort), options,
+					s));
+			futures.add(stFuture);
 		}
-		return intstances;
+
+		// 合并成一个结果
+		return CompositeFuture.all(futures).map(res -> {
+			return new EndPoint().setScheme(Server.Unify).setHost(this.endPoints.getHost()).setPort(deployPort)
+					.setParallel(intstances);
+		});
 	}
 }

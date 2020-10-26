@@ -9,6 +9,11 @@ package com.swak.annotation;
 public enum Server {
 
 	/**
+	 * 对外提供 Http, Im 服务
+	 */
+	Unify,
+	
+	/**
 	 * 对外提供 Http 服务
 	 */
 	Http,
