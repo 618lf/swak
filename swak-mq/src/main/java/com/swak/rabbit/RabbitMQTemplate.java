@@ -339,7 +339,9 @@ public class RabbitMQTemplate
 	// 关闭完成
 	@Override
 	public void shutdownCompleted(ShutdownSignalException cause) {
-		logger.error("Connection shutdown", cause);
+		if (cause != null) {
+			logger.error("Connection shutdown Error", cause);
+		}
 	}
 
 	/**
