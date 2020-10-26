@@ -1,14 +1,16 @@
 package com.swak.reactivex.threads;
 
-import com.swak.meters.MetricsFactory;
-import com.swak.reactivex.transport.TransportMode;
-import com.swak.reactivex.transport.resources.LoopResources;
-import io.netty.channel.EventLoop;
-
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.TimeUnit;
+
+import com.swak.closable.ShutDownHook;
+import com.swak.meters.MetricsFactory;
+import com.swak.reactivex.transport.TransportMode;
+import com.swak.reactivex.transport.resources.LoopResources;
+
+import io.netty.channel.EventLoop;
 
 /**
  * 持有所有的线程池的地址
@@ -26,6 +28,9 @@ public class Contexts {
 	private Contexts() {
 		this.blockedThreadChecker = new BlockedThreadChecker(1000, TimeUnit.MILLISECONDS, 2L * 1000 * 1000000,
 				TimeUnit.NANOSECONDS);
+		ShutDownHook.registerShutdownHook(() -> {
+			this.blockedThreadChecker.close();
+		});
 	}
 
 	/**
@@ -55,6 +60,9 @@ public class Contexts {
 		ServerContext context = new ServerContext(prefix, coreThreads, maxThreads, queueCapacity,
 				Holder.instance.blockedThreadChecker, maxExecTime, maxExecTimeUnit, handler);
 		Holder.instance.holdContext(context);
+		ShutDownHook.registerShutdownHook(() -> {
+			context.shutdown();
+		});
 		return context;
 	}
 
@@ -78,6 +86,9 @@ public class Contexts {
 		ServerContext context = new ServerContext(prefix, coreThreads, maxThreads, keepAliveTime, unit, queueCapacity,
 				Holder.instance.blockedThreadChecker, maxExecTime, maxExecTimeUnit, handler);
 		Holder.instance.holdContext(context);
+		ShutDownHook.registerShutdownHook(() -> {
+			context.shutdown();
+		});
 		return context;
 	}
 
@@ -96,6 +107,9 @@ public class Contexts {
 		WorkerContext context = new WorkerContext(prefix, nThreads, daemon, Holder.instance.blockedThreadChecker,
 				maxExecTime, maxExecTimeUnit);
 		Holder.instance.holdContext(context);
+		ShutDownHook.registerShutdownHook(() -> {
+			context.shutdown();
+		});
 		return context;
 	}
 
@@ -115,6 +129,9 @@ public class Contexts {
 		WorkerContext context = new WorkerContext(prefix, nThreads, daemon, Holder.instance.blockedThreadChecker,
 				maxExecTime, maxExecTimeUnit, maxQueue);
 		Holder.instance.holdContext(context);
+		ShutDownHook.registerShutdownHook(() -> {
+			context.shutdown();
+		});
 		return context;
 	}
 
@@ -135,6 +152,9 @@ public class Contexts {
 		WorkerContext context = new WorkerContext(prefix, nThreads, daemon, Holder.instance.blockedThreadChecker,
 				maxExecTime, maxExecTimeUnit, maxQueue, handler);
 		Holder.instance.holdContext(context);
+		ShutDownHook.registerShutdownHook(() -> {
+			context.shutdown();
+		});
 		return context;
 	}
 
@@ -153,6 +173,9 @@ public class Contexts {
 		ScheduledContext context = new ScheduledContext(prefix, nThreads, daemon, Holder.instance.blockedThreadChecker,
 				maxExecTime, maxExecTimeUnit);
 		Holder.instance.holdContext(context);
+		ShutDownHook.registerShutdownHook(() -> {
+			context.shutdown();
+		});
 		return context;
 	}
 
@@ -172,6 +195,9 @@ public class Contexts {
 		TimerContext context = new TimerContext(prefix, daemon, Holder.instance.blockedThreadChecker, maxExecTime,
 				maxExecTimeUnit, tickDuration, unit);
 		Holder.instance.holdContext(context);
+		ShutDownHook.registerShutdownHook(() -> {
+			context.stop();
+		});
 		return context;
 	}
 
@@ -189,8 +215,12 @@ public class Contexts {
 	 */
 	public static LoopResources createEventLoopResources(TransportMode mode, Integer select, Integer worker,
 			String prefix, boolean daemon, long maxExecTime, TimeUnit maxExecTimeUnit) {
-		return LoopResources.create(mode, prefix, select, worker, daemon, Holder.instance.blockedThreadChecker, 2,
-				maxExecTimeUnit);
+		LoopResources context = LoopResources.create(mode, prefix, select, worker, daemon,
+				Holder.instance.blockedThreadChecker, 2, maxExecTimeUnit);
+		ShutDownHook.registerShutdownHook(() -> {
+			context.dispose();
+		});
+		return context;
 	}
 
 	/**
