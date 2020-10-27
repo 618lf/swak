@@ -1,5 +1,7 @@
 package com.swak.config.vertx;
 
+import static com.swak.Application.APP_LOGGER;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,6 +27,11 @@ import io.vertx.core.file.FileSystemOptions;
 @ConditionalOnMissingBean(StandardVertx.class)
 @EnableConfigurationProperties(VertxProperties.class)
 public class StandardVerxAutoConfiguration {
+
+	public StandardVerxAutoConfiguration() {
+		APP_LOGGER.debug("Loading Vertx");
+		System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
+	}
 
 	/**
 	 * 构建配置

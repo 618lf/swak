@@ -24,8 +24,7 @@ import com.swak.vertx.transport.server.ReactiveServer;
 public class VertxServerAutoConfiguration {
 
 	public VertxServerAutoConfiguration() {
-		APP_LOGGER.debug("Loading Vertx");
-		System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
+		APP_LOGGER.debug("Loading Reactive Server");
 	}
 
 	/**

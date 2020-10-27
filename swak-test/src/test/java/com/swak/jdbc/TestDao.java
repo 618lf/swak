@@ -29,6 +29,9 @@ public class TestDao {
 	 */
 	@Before
 	public void init() {
+		
+		System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
+		
 		MySQLConnectOptions connectOptions = new MySQLConnectOptions().setPort(3306).setHost("192.168.137.100")
 				.setDatabase("cloud").setUser("root").setPassword("rootadmin");
 

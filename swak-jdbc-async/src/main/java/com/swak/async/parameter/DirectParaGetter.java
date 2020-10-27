@@ -19,11 +19,12 @@ public class DirectParaGetter implements ParaGetter {
 
 	@Override
 	public boolean support(Class<?> fieldClass) {
-		return fieldClass.isAssignableFrom(Byte.class) || fieldClass.isAssignableFrom(Short.class)
-				|| fieldClass.isAssignableFrom(Integer.class) || fieldClass.isAssignableFrom(Long.class)
-				|| fieldClass.isAssignableFrom(Double.class) || fieldClass.isAssignableFrom(Float.class)
-				|| fieldClass.isAssignableFrom(Numeric.class) || fieldClass.isAssignableFrom(LocalDate.class)
-				|| fieldClass.isAssignableFrom(Duration.class) || fieldClass.isAssignableFrom(LocalDateTime.class);
+		return fieldClass.isAssignableFrom(String.class) || fieldClass.isAssignableFrom(Byte.class)
+				|| fieldClass.isAssignableFrom(Short.class) || fieldClass.isAssignableFrom(Integer.class)
+				|| fieldClass.isAssignableFrom(Long.class) || fieldClass.isAssignableFrom(Double.class)
+				|| fieldClass.isAssignableFrom(Float.class) || fieldClass.isAssignableFrom(Numeric.class)
+				|| fieldClass.isAssignableFrom(LocalDate.class) || fieldClass.isAssignableFrom(Duration.class)
+				|| fieldClass.isAssignableFrom(LocalDateTime.class);
 	}
 
 	@Override
