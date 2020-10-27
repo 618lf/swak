@@ -27,6 +27,11 @@ public class TransactionContext {
 	private Object value;
 
 	/**
+	 * 错误
+	 */
+	private Throwable error;
+
+	/**
 	 * 引用次数 -- 使用事务注解时才需要用到
 	 */
 	private AtomicInteger reference;
@@ -104,13 +109,13 @@ public class TransactionContext {
 		try {
 			this.execute(sql, entity, null).whenComplete((r, e) -> {
 				if (e != null) {
-					future.completeExceptionally(e);
+					future.complete(this.setError(e));
 				} else {
 					future.complete(this.next().setValue(null));
 				}
 			});
-		} catch (Exception e) {
-			future.completeExceptionally(e);
+		} catch (Throwable e) {
+			future.complete(this.setError(e));
 		}
 		return future;
 	}
@@ -127,13 +132,13 @@ public class TransactionContext {
 		try {
 			this.execute(sql, entity, null).whenComplete((r, e) -> {
 				if (e != null) {
-					future.completeExceptionally(e);
+					future.complete(this.setError(e));
 				} else {
 					future.complete(this.next().setValue(r.getList()));
 				}
 			});
 		} catch (Exception e) {
-			future.completeExceptionally(e);
+			future.complete(this.setError(e));
 		}
 		return future;
 	}
@@ -150,13 +155,13 @@ public class TransactionContext {
 		try {
 			this.execute(sql, null, qc).whenComplete((r, e) -> {
 				if (e != null) {
-					future.completeExceptionally(e);
+					future.complete(this.setError(e));
 				} else {
 					future.complete(this.next().setValue(r.getList()));
 				}
 			});
 		} catch (Exception e) {
-			future.completeExceptionally(e);
+			future.complete(this.setError(e));
 		}
 		return future;
 	}
@@ -173,13 +178,13 @@ public class TransactionContext {
 		try {
 			this.execute(sql, null, qc).whenComplete((r, e) -> {
 				if (e != null) {
-					future.completeExceptionally(e);
+					future.complete(this.setError(e));
 				} else {
 					future.complete(this.next().setValue(r.getInt()));
 				}
 			});
 		} catch (Exception e) {
-			future.completeExceptionally(e);
+			future.complete(this.setError(e));
 		}
 		return future;
 	}
@@ -189,35 +194,39 @@ public class TransactionContext {
 	 * 
 	 * @return
 	 */
-	public TransactionalFuture finish(Throwable error) {
+	public TransactionalFuture finish(Throwable ex) {
+
+		// 错误
+		Throwable error = ex != null ? ex : this.error;
+
 		// 自定义的回滚异常
 		if (error != null && this.context.rollbackFor != null && this.context.rollbackFor.length > 0) {
 			for (int i = 0; i < this.context.rollbackFor.length; i++) {
 				Class<? extends Throwable> e = this.context.rollbackFor[i];
 				if (error.getClass().isAssignableFrom(e)) {
-					return this.rollback();
+					return this.rollback(error);
 				}
 			}
 		}
 		// 默认的回滚异常
 		else if (error != null && error.getClass().isAssignableFrom(RuntimeException.class)) {
-			return this.rollback();
+			return this.rollback(error);
 		}
 		// 提交
-		return this.commit();
+		return this.commit(error);
 	}
 
 	/**
-	 * 提交
+	 * 提交 -- 需要将错误抛出到前端
 	 * 
 	 * @return
 	 */
-	private TransactionalFuture commit() {
+	private TransactionalFuture commit(Throwable error) {
 		TransactionalFuture future = new TransactionalFuture();
 		if (this.context.commited.compareAndSet(false, true)) {
 			this.context.session.commit().whenComplete((r, e) -> {
-				if (e != null) {
-					future.completeExceptionally(e);
+				if (e != null || error != null) {
+					future.completeExceptionally(e != null ? e : error);
 				} else {
 					future.complete(this);
 				}
@@ -229,16 +238,16 @@ public class TransactionContext {
 	}
 
 	/**
-	 * 回滚
+	 * 回滚 -- 需要将错误抛出到前端
 	 * 
 	 * @return
 	 */
-	private TransactionalFuture rollback() {
+	private TransactionalFuture rollback(Throwable error) {
 		TransactionalFuture future = new TransactionalFuture();
 		if (this.context.commited.compareAndSet(false, true)) {
 			this.context.session.rollback().whenComplete((r, e) -> {
-				if (e != null) {
-					future.completeExceptionally(e);
+				if (e != null || error != null) {
+					future.completeExceptionally(e != null ? e : error);
 				} else {
 					future.complete(this);
 				}
@@ -278,13 +287,33 @@ public class TransactionContext {
 	}
 
 	/**
+	 * 返回错误
+	 * 
+	 * @return
+	 */
+	public Throwable getError() {
+		return error;
+	}
+
+	/**
 	 * 设置当时值
 	 * 
-	 * @param value
+	 * @param value 当时值
 	 * @return
 	 */
 	public TransactionContext setValue(Object value) {
 		this.value = value;
+		return this;
+	}
+
+	/**
+	 * 设置错误
+	 * 
+	 * @param error 错误
+	 * @return
+	 */
+	public TransactionContext setError(Throwable error) {
+		this.error = error;
 		return this;
 	}
 

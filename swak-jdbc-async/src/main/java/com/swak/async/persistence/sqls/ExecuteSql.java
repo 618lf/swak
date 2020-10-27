@@ -72,6 +72,7 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 		CompletableFuture<SqlResult> future = new CompletableFuture<>();
 		client.preparedQuery(sql).execute(Tuple.wrap(params), (res) -> {
 			if (res.cause() != null) {
+				logger.error("执行Sql:{}、Param：{}发生异常：", sql, params, res.cause());
 				future.completeExceptionally(res.cause());
 			} else {
 				this.rowMappers(future, res.result(), this.rowMap());
@@ -98,6 +99,7 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 				future.complete(new SqlResult(Lists.newArrayList()));
 			}
 		} catch (Exception e) {
+			logger.error("执行Sql异常：", e);
 			future.completeExceptionally(e);
 		}
 	}

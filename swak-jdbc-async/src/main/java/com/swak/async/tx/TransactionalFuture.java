@@ -17,10 +17,10 @@ public class TransactionalFuture extends CompletableFuture<TransactionContext> {
 	public <U> TransactionalFuture txApply(Function<? super TransactionContext, ? extends U> fn) {
 		TransactionalFuture future = new TransactionalFuture();
 		super.whenComplete((context, e) -> {
-			if (e != null) {
-				future.completeExceptionally(e);
-			} else if (context == null) {
-				future.completeExceptionally(new TransactionLoseException());
+			if (e != null || context.getError() != null) {
+				future.complete(context.setError(e != null ? e : context.getError()));
+			} else if (fn == null) {
+				future.complete(context);
 			} else {
 				this.completeApply(context, fn, future);
 			}
@@ -34,10 +34,8 @@ public class TransactionalFuture extends CompletableFuture<TransactionContext> {
 	public <U> TransactionalFuture txCompose(Function<? super TransactionContext, ? extends TransactionalFuture> fn) {
 		TransactionalFuture composeFuture = new TransactionalFuture();
 		super.whenComplete((context, e) -> {
-			if (e != null) {
-				composeFuture.completeExceptionally(e);
-			} else if (context == null) {
-				composeFuture.completeExceptionally(new TransactionLoseException());
+			if (e != null || context.getError() != null) {
+				composeFuture.complete(context.setError(e != null ? e : context.getError()));
 			} else if (fn == null) {
 				composeFuture.complete(context);
 			} else {
@@ -91,10 +89,9 @@ public class TransactionalFuture extends CompletableFuture<TransactionContext> {
 			TransactionalFuture future) {
 		try {
 			U u = fn.apply(context);
-			context.setValue(u);
-			future.complete(context);
-		} catch (Exception e) {
-			future.completeExceptionally(e);
+			future.complete(context.setValue(u));
+		} catch (Throwable e) {
+			future.complete(context.setError(e));
 		}
 	}
 
@@ -104,13 +101,13 @@ public class TransactionalFuture extends CompletableFuture<TransactionContext> {
 			TransactionalFuture txFuture = fn.apply(context);
 			txFuture.whenComplete((r, e) -> {
 				if (e != null) {
-					future.completeExceptionally(e);
+					future.complete(r.setError(e));
 				} else {
 					future.complete(r);
 				}
 			});
-		} catch (Exception e) {
-			future.completeExceptionally(e);
+		} catch (Throwable e) {
+			future.complete(context.setError(e));
 		}
 	}
 
