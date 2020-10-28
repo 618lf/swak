@@ -45,7 +45,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * 
 	 * @return
 	 */
-	public TransactionalFuture beginQuery() {
+	public TransactionalFuture<Void> beginQuery() {
 		return TransactionalFuture.completedFuture(sqlExecuter.beginQuery(null));
 	}
 
@@ -54,7 +54,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * 
 	 * @return
 	 */
-	public TransactionalFuture beginTransaction() {
+	public TransactionalFuture<Void> beginTransaction() {
 		return TransactionalFuture.completedFuture(sqlExecuter.beginTransaction(null));
 	}
 
@@ -67,10 +67,12 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @param param
 	 */
 	@SuppressWarnings("unchecked")
-	public TransactionalFuture insert(TransactionContext context, T entity) {
-		final PK pk = entity instanceof IdEntity ? ((IdEntity<PK>) entity).prePersist() : null;
+	public TransactionalFuture<T> insert(TransactionContext context, T entity) {
+		if (entity instanceof IdEntity) {
+			((IdEntity<PK>) entity).prePersist();
+		}
 		InsertSql<T> sql = this.getSql(SqlMap.INSERT);
-		return context.update(sql, entity).txApply(ctx -> pk);
+		return context.update(sql, entity).txApply(ctx -> entity);
 	}
 
 	/**
@@ -79,7 +81,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @param sql
 	 * @param param
 	 */
-	public TransactionalFuture update(TransactionContext context, T entity) {
+	public TransactionalFuture<Integer> update(TransactionContext context, T entity) {
 		UpdateSql<T> sql = this.getSql(SqlMap.UPDATE);
 		return context.update(sql, entity);
 	}
@@ -89,7 +91,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * 
 	 * @param sql
 	 */
-	public TransactionalFuture delete(TransactionContext context, T entity) {
+	public TransactionalFuture<Integer> delete(TransactionContext context, T entity) {
 		DeleteSql<T> sql = this.getSql(SqlMap.DELETE);
 		return context.update(sql, entity);
 	}
@@ -102,7 +104,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @param rowMapper
 	 * @return
 	 */
-	public TransactionalFuture get(TransactionContext context, T entity) {
+	public TransactionalFuture<T> get(TransactionContext context, T entity) {
 		GetSql<T> sql = this.getSql(SqlMap.GET);
 		return context.query(sql, entity).txApply(ctx -> {
 			List<T> datas = ctx.getValue();
@@ -118,7 +120,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @param rowMapper
 	 * @return
 	 */
-	public TransactionalFuture queryByCondition(TransactionContext context, QueryCondition qc) {
+	public TransactionalFuture<List<T>> queryByCondition(TransactionContext context, QueryCondition qc) {
 		return this.query(context, SqlMap.QUERY, qc);
 	}
 
@@ -130,7 +132,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @param rowMapper
 	 * @return
 	 */
-	public TransactionalFuture query(TransactionContext context, String sql, QueryCondition qc) {
+	public TransactionalFuture<List<T>> query(TransactionContext context, String sql, QueryCondition qc) {
 		QuerySql<T> querySql = this.getSql(sql);
 		return context.query(querySql, qc);
 	}
@@ -143,7 +145,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @param rowMapper
 	 * @return
 	 */
-	public TransactionalFuture countByCondition(TransactionContext context, QueryCondition qc) {
+	public TransactionalFuture<Integer> countByCondition(TransactionContext context, QueryCondition qc) {
 		return this.count(context, SqlMap.COUNT, qc);
 	}
 
@@ -154,7 +156,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @param param
 	 * @return
 	 */
-	public TransactionalFuture count(TransactionContext context, String sql, QueryCondition qc) {
+	public TransactionalFuture<Integer> count(TransactionContext context, String sql, QueryCondition qc) {
 		CountSql<T> querySql = this.getSql(sql);
 		return context.count(querySql, qc);
 	}
@@ -167,7 +169,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @param rowMapper
 	 * @return
 	 */
-	public TransactionalFuture pageByCondition(TransactionContext context, QueryCondition qc, Parameters param) {
+	public TransactionalFuture<Page> pageByCondition(TransactionContext context, QueryCondition qc, Parameters param) {
 		return this.page(context, SqlMap.QUERY, qc, param);
 	}
 
@@ -179,7 +181,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 	 * @param rowMapper
 	 * @return
 	 */
-	public TransactionalFuture page(TransactionContext context, String sql, QueryCondition qc, Parameters param) {
+	public TransactionalFuture<Page> page(TransactionContext context, String sql, QueryCondition qc, Parameters param) {
 		if (param.getPageIndex() == Parameters.NO_PAGINATION || param.getPageSize() == Parameters.NO_PAGINATION) {
 			QuerySql<T> querySql = this.getSql(sql);
 			return context.query(querySql, qc).txApply(ctx -> {
@@ -189,7 +191,7 @@ public class BaseDao<T, PK> extends ModelRegister<T, PK> {
 		return this.doPage(context, sql, qc, param);
 	}
 
-	private TransactionalFuture doPage(TransactionContext ctx, String sql, QueryCondition qc, Parameters param) {
+	private TransactionalFuture<Page> doPage(TransactionContext ctx, String sql, QueryCondition qc, Parameters param) {
 		QuerySql<T> querySql = this.getSql(sql);
 		CountSql<T> countSql = this.getSql(sql + "Stat");
 		return ctx.count(countSql, qc).txCompose(context -> {

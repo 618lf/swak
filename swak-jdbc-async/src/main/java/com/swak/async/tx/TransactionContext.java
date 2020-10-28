@@ -1,5 +1,6 @@
 package com.swak.async.tx;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -104,14 +105,14 @@ public class TransactionContext {
 	 * @param param 参数
 	 * @return 执行结果
 	 */
-	public <T> TransactionalFuture update(Sql<T> sql, T entity) {
-		TransactionalFuture future = new TransactionalFuture();
+	public <T> TransactionalFuture<Integer> update(Sql<T> sql, T entity) {
+		TransactionalFuture<Integer> future = new TransactionalFuture<>();
 		try {
 			this.execute(sql, entity, null).whenComplete((r, e) -> {
 				if (e != null) {
 					future.complete(this.setError(e));
 				} else {
-					future.complete(this.next().setValue(null));
+					future.complete(this.next().setValue(r.getInt()));
 				}
 			});
 		} catch (Throwable e) {
@@ -127,8 +128,8 @@ public class TransactionContext {
 	 * @param param 参数
 	 * @return 执行结果
 	 */
-	public <T> TransactionalFuture query(Sql<T> sql, T entity) {
-		TransactionalFuture future = new TransactionalFuture();
+	public <T> TransactionalFuture<List<T>> query(Sql<T> sql, T entity) {
+		TransactionalFuture<List<T>> future = new TransactionalFuture<>();
 		try {
 			this.execute(sql, entity, null).whenComplete((r, e) -> {
 				if (e != null) {
@@ -150,8 +151,8 @@ public class TransactionContext {
 	 * @param param 参数
 	 * @return 执行结果
 	 */
-	public <T> TransactionalFuture query(Sql<T> sql, QueryCondition qc) {
-		TransactionalFuture future = new TransactionalFuture();
+	public <T> TransactionalFuture<List<T>> query(Sql<T> sql, QueryCondition qc) {
+		TransactionalFuture<List<T>> future = new TransactionalFuture<>();
 		try {
 			this.execute(sql, null, qc).whenComplete((r, e) -> {
 				if (e != null) {
@@ -173,8 +174,8 @@ public class TransactionContext {
 	 * @param param 参数
 	 * @return 执行结果
 	 */
-	public <T> TransactionalFuture count(Sql<T> sql, QueryCondition qc) {
-		TransactionalFuture future = new TransactionalFuture();
+	public <T> TransactionalFuture<Integer> count(Sql<T> sql, QueryCondition qc) {
+		TransactionalFuture<Integer> future = new TransactionalFuture<>();
 		try {
 			this.execute(sql, null, qc).whenComplete((r, e) -> {
 				if (e != null) {
@@ -194,7 +195,7 @@ public class TransactionContext {
 	 * 
 	 * @return
 	 */
-	public TransactionalFuture finish(Throwable ex) {
+	public TransactionalFuture<Void> finish(Throwable ex) {
 
 		// 错误
 		Throwable error = ex != null ? ex : this.error;
@@ -221,8 +222,8 @@ public class TransactionContext {
 	 * 
 	 * @return
 	 */
-	private TransactionalFuture commit(Throwable error) {
-		TransactionalFuture future = new TransactionalFuture();
+	private TransactionalFuture<Void> commit(Throwable error) {
+		TransactionalFuture<Void> future = new TransactionalFuture<>();
 		if (this.context.commited.compareAndSet(false, true)) {
 			this.context.session.commit().whenComplete((r, e) -> {
 				if (e != null || error != null) {
@@ -242,8 +243,8 @@ public class TransactionContext {
 	 * 
 	 * @return
 	 */
-	private TransactionalFuture rollback(Throwable error) {
-		TransactionalFuture future = new TransactionalFuture();
+	private TransactionalFuture<Void> rollback(Throwable error) {
+		TransactionalFuture<Void> future = new TransactionalFuture<>();
 		if (this.context.commited.compareAndSet(false, true)) {
 			this.context.session.rollback().whenComplete((r, e) -> {
 				if (e != null || error != null) {
@@ -322,7 +323,7 @@ public class TransactionContext {
 	 * 
 	 * @return
 	 */
-	public TransactionalFuture toFuture() {
+	public TransactionalFuture<Void> toFuture() {
 		return TransactionalFuture.completedFuture(this);
 	}
 

@@ -42,7 +42,8 @@ class UserService extends BaseService<User, Long> {
 			user.setName("税务公社");
 			return this.update(context, user);
 		}).finish(context -> {
-			return context.getValue();
+			System.out.println("修改数据数量:" + context.getValue());
+			return null;
 		});
 	}
 }
