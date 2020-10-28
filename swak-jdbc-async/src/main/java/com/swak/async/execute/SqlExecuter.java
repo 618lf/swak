@@ -33,8 +33,8 @@ public class SqlExecuter {
 	 * @param context
 	 * @return
 	 */
-	public TransactionContext beginQuery(TransactionContext context) {
-		TransactionContext continueTransactionContext = context;
+	public <T> TransactionContext<T> beginQuery(TransactionContext<T> context) {
+		TransactionContext<T> continueTransactionContext = context;
 		if (continueTransactionContext == null || continueTransactionContext.isCommited()) {
 			continueTransactionContext = TransactionContext.of(open(), true);
 		}
@@ -47,8 +47,8 @@ public class SqlExecuter {
 	 * @param context
 	 * @return
 	 */
-	public TransactionContext beginTransaction(TransactionContext context) {
-		TransactionContext continueTransactionContext = context;
+	public <T> TransactionContext<T> beginTransaction(TransactionContext<T> context) {
+		TransactionContext<T> continueTransactionContext = context;
 		if (continueTransactionContext == null || continueTransactionContext.isCommited()) {
 			continueTransactionContext = TransactionContext.of(open(), false);
 		}

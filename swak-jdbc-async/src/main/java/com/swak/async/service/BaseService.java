@@ -78,7 +78,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 * @param sql
 	 * @param param
 	 */
-	protected TransactionalFuture<T> insert(TransactionContext context, T entity) {
+	protected <U> TransactionalFuture<T> insert(TransactionContext<U> context, T entity) {
 		return this.getBaseDao().insert(context, entity);
 	}
 
@@ -88,7 +88,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 * @param sql
 	 * @param param
 	 */
-	protected TransactionalFuture<Integer> update(TransactionContext context, T entity) {
+	protected <U> TransactionalFuture<Integer> update(TransactionContext<U> context, T entity) {
 		return this.getBaseDao().update(context, entity);
 	}
 
@@ -97,7 +97,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 * 
 	 * @param sql
 	 */
-	protected TransactionalFuture<Integer> delete(TransactionContext context, T entity) {
+	protected <U> TransactionalFuture<Integer> delete(TransactionContext<U> context, T entity) {
 		return this.getBaseDao().delete(context, entity);
 	}
 
@@ -109,7 +109,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 * @param rowMapper
 	 * @return
 	 */
-	public TransactionalFuture<T> get(TransactionContext context, T entity) {
+	public <U> TransactionalFuture<T> get(TransactionContext<U> context, T entity) {
 		return this.getBaseDao().get(context, entity);
 	}
 
@@ -121,7 +121,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 * @param rowMapper
 	 * @return
 	 */
-	public TransactionalFuture<List<T>> queryByCondition(TransactionContext context, QueryCondition qc) {
+	public <U> TransactionalFuture<List<T>> queryByCondition(TransactionContext<U> context, QueryCondition qc) {
 		return this.getBaseDao().queryByCondition(context, qc);
 	}
 
@@ -133,7 +133,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 * @param rowMapper
 	 * @return
 	 */
-	protected TransactionalFuture<List<T>> query(TransactionContext context, String sql, QueryCondition qc) {
+	protected <U> TransactionalFuture<List<T>> query(TransactionContext<U> context, String sql, QueryCondition qc) {
 		return this.getBaseDao().query(context, sql, qc);
 	}
 
@@ -145,7 +145,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 * @param rowMapper
 	 * @return
 	 */
-	public TransactionalFuture<Integer> countByCondition(TransactionContext context, QueryCondition qc) {
+	public <U> TransactionalFuture<Integer> countByCondition(TransactionContext<U> context, QueryCondition qc) {
 		return this.getBaseDao().countByCondition(context, qc);
 	}
 
@@ -156,7 +156,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 * @param param
 	 * @return
 	 */
-	protected TransactionalFuture<Integer> count(TransactionContext context, String sql, QueryCondition qc) {
+	protected <U> TransactionalFuture<Integer> count(TransactionContext<U> context, String sql, QueryCondition qc) {
 		return this.getBaseDao().count(context, sql, qc);
 	}
 
@@ -168,7 +168,8 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 * @param rowMapper
 	 * @return
 	 */
-	public TransactionalFuture<Page> pageByCondition(TransactionContext context, QueryCondition qc, Parameters param) {
+	public <U> TransactionalFuture<Page> pageByCondition(TransactionContext<U> context, QueryCondition qc,
+			Parameters param) {
 		return this.getBaseDao().pageByCondition(context, qc, param);
 	}
 
@@ -180,7 +181,7 @@ public abstract class BaseService<T extends IdEntity<PK>, PK extends Serializabl
 	 * @param rowMapper
 	 * @return
 	 */
-	protected TransactionalFuture<Page> page(TransactionContext context, String sql, QueryCondition qc,
+	protected <U> TransactionalFuture<Page> page(TransactionContext<U> context, String sql, QueryCondition qc,
 			Parameters param) {
 		return this.getBaseDao().page(context, sql, qc, param);
 	}

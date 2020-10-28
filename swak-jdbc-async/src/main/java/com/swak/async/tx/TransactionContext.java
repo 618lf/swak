@@ -15,7 +15,7 @@ import com.swak.persistence.QueryCondition;
  * @author lifeng
  * @date 2020年9月30日 下午10:14:26
  */
-public class TransactionContext {
+public class TransactionContext<U> {
 
 	/**
 	 * 事务上下文
@@ -25,7 +25,7 @@ public class TransactionContext {
 	/**
 	 * 当前值
 	 */
-	private Object value;
+	private U value;
 
 	/**
 	 * 错误
@@ -62,7 +62,7 @@ public class TransactionContext {
 	 * 
 	 * @return
 	 */
-	TransactionContext acquire() {
+	TransactionContext<U> acquire() {
 		if (this.reference == null) {
 			this.reference = new AtomicInteger(1);
 		} else {
@@ -110,13 +110,13 @@ public class TransactionContext {
 		try {
 			this.execute(sql, entity, null).whenComplete((r, e) -> {
 				if (e != null) {
-					future.complete(this.setError(e));
+					future.completeValue(this, e, null);
 				} else {
-					future.complete(this.next().setValue(r.getInt()));
+					future.completeValue(this, null, r.getInt());
 				}
 			});
-		} catch (Throwable e) {
-			future.complete(this.setError(e));
+		} catch (Exception e) {
+			future.completeValue(this, e, null);
 		}
 		return future;
 	}
@@ -133,13 +133,13 @@ public class TransactionContext {
 		try {
 			this.execute(sql, entity, null).whenComplete((r, e) -> {
 				if (e != null) {
-					future.complete(this.setError(e));
+					future.completeValue(this, e, null);
 				} else {
-					future.complete(this.next().setValue(r.getList()));
+					future.completeValue(this, null, r.getList());
 				}
 			});
 		} catch (Exception e) {
-			future.complete(this.setError(e));
+			future.completeValue(this, e, null);
 		}
 		return future;
 	}
@@ -156,13 +156,13 @@ public class TransactionContext {
 		try {
 			this.execute(sql, null, qc).whenComplete((r, e) -> {
 				if (e != null) {
-					future.complete(this.setError(e));
+					future.completeValue(this, e, null);
 				} else {
-					future.complete(this.next().setValue(r.getList()));
+					future.completeValue(this, null, r.getList());
 				}
 			});
 		} catch (Exception e) {
-			future.complete(this.setError(e));
+			future.completeValue(this, e, null);
 		}
 		return future;
 	}
@@ -179,13 +179,13 @@ public class TransactionContext {
 		try {
 			this.execute(sql, null, qc).whenComplete((r, e) -> {
 				if (e != null) {
-					future.complete(this.setError(e));
+					future.completeValue(this, e, null);
 				} else {
-					future.complete(this.next().setValue(r.getInt()));
+					future.completeValue(this, null, r.getInt());
 				}
 			});
 		} catch (Exception e) {
-			future.complete(this.setError(e));
+			future.completeValue(this, e, null);
 		}
 		return future;
 	}
@@ -229,11 +229,11 @@ public class TransactionContext {
 				if (e != null || error != null) {
 					future.completeExceptionally(e != null ? e : error);
 				} else {
-					future.complete(this);
+					future.completeValue(this, null, null);
 				}
 			});
 		} else {
-			future.complete(this);
+			future.completeValue(this, null, null);
 		}
 		return future;
 	}
@@ -250,11 +250,11 @@ public class TransactionContext {
 				if (e != null || error != null) {
 					future.completeExceptionally(e != null ? e : error);
 				} else {
-					future.complete(this);
+					future.completeValue(this, null, null);
 				}
 			});
 		} else {
-			future.complete(this);
+			future.completeValue(this, null, null);
 		}
 		return future;
 	}
@@ -273,8 +273,8 @@ public class TransactionContext {
 	 * 
 	 * @return
 	 */
-	private TransactionContext next() {
-		return new TransactionContext(this.context);
+	<T> TransactionContext<T> nextU() {
+		return new TransactionContext<T>(this.context);
 	}
 
 	/**
@@ -282,9 +282,8 @@ public class TransactionContext {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public <T> T getValue() {
-		return (T) value;
+	public U getValue() {
+		return value;
 	}
 
 	/**
@@ -302,7 +301,7 @@ public class TransactionContext {
 	 * @param value 当时值
 	 * @return
 	 */
-	public TransactionContext setValue(Object value) {
+	public TransactionContext<U> setValue(U value) {
 		this.value = value;
 		return this;
 	}
@@ -313,7 +312,7 @@ public class TransactionContext {
 	 * @param error 错误
 	 * @return
 	 */
-	public TransactionContext setError(Throwable error) {
+	public TransactionContext<U> setError(Throwable error) {
 		this.error = error;
 		return this;
 	}
@@ -324,7 +323,7 @@ public class TransactionContext {
 	 * @return
 	 */
 	public TransactionalFuture<Void> toFuture() {
-		return TransactionalFuture.completedFuture(this);
+		return TransactionalFuture.completedFuture(this, null);
 	}
 
 	/**
@@ -333,7 +332,7 @@ public class TransactionContext {
 	 * @param ex
 	 * @return
 	 */
-	public TransactionContext setRollbackFor(Class<? extends Throwable>[] exs) {
+	public TransactionContext<U> setRollbackFor(Class<? extends Throwable>[] exs) {
 		this.context.rollbackFor = exs;
 		return this;
 	}
@@ -344,8 +343,8 @@ public class TransactionContext {
 	 * @param pool
 	 * @return
 	 */
-	public static TransactionContext of(SqlSession session, boolean readOnly) {
-		return new TransactionContext(session, readOnly);
+	public static <T> TransactionContext<T> of(SqlSession session, boolean readOnly) {
+		return new TransactionContext<T>(session, readOnly);
 	}
 
 }

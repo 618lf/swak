@@ -9,18 +9,29 @@ import java.util.function.Function;
  * @author lifeng
  * @date 2020年10月9日 上午8:43:00
  */
-public class TransactionalFuture<T> extends CompletableFuture<TransactionContext> {
+public class TransactionalFuture<T> extends CompletableFuture<TransactionContext<T>> {
+
+	/**
+	 * 完成此异步事件
+	 */
+	<U> boolean completeValue(TransactionContext<U> context, Throwable e, T t) {
+		TransactionContext<T> nextContext = context.nextU();
+		if (e != null) {
+			nextContext.setError(e);
+		}
+		return this.complete(nextContext.setValue(t));
+	}
 
 	/**
 	 * 事务性继续
 	 */
-	public <U> TransactionalFuture<U> txApply(Function<? super TransactionContext, ? extends U> fn) {
+	public <U> TransactionalFuture<U> txApply(Function<? super TransactionContext<T>, ? extends U> fn) {
 		TransactionalFuture<U> future = new TransactionalFuture<>();
 		super.whenComplete((context, e) -> {
 			if (e != null || context.getError() != null) {
-				future.complete(context.setError(e != null ? e : context.getError()));
+				future.completeValue(context, e != null ? e : context.getError(), null);
 			} else if (fn == null) {
-				future.complete(context);
+				future.completeValue(context, null, null);
 			} else {
 				this.completeApply(context, fn, future);
 			}
@@ -32,13 +43,13 @@ public class TransactionalFuture<T> extends CompletableFuture<TransactionContext
 	 * 事务性继续
 	 */
 	public <U> TransactionalFuture<U> txCompose(
-			Function<? super TransactionContext, ? extends TransactionalFuture<U>> fn) {
+			Function<? super TransactionContext<T>, ? extends TransactionalFuture<U>> fn) {
 		TransactionalFuture<U> composeFuture = new TransactionalFuture<>();
 		super.whenComplete((context, e) -> {
 			if (e != null || context.getError() != null) {
-				composeFuture.complete(context.setError(e != null ? e : context.getError()));
+				composeFuture.completeValue(context, e != null ? e : context.getError(), null);
 			} else if (fn == null) {
-				composeFuture.complete(context);
+				composeFuture.completeValue(context, null, null);
 			} else {
 				this.completeCompose(context, fn, composeFuture);
 			}
@@ -53,7 +64,7 @@ public class TransactionalFuture<T> extends CompletableFuture<TransactionContext
 	 * @param fn
 	 * @return
 	 */
-	public <U> CompletableFuture<U> finish(Function<? super TransactionContext, ? extends U> fn) {
+	public <U> CompletableFuture<U> finish(Function<? super TransactionContext<T>, ? extends U> fn) {
 		CompletableFuture<U> future = new CompletableFuture<>();
 		super.whenComplete((context, e) -> {
 			this.finish(e, context, fn, future);
@@ -61,8 +72,8 @@ public class TransactionalFuture<T> extends CompletableFuture<TransactionContext
 		return future;
 	}
 
-	private <U> void finish(Throwable e, TransactionContext context,
-			Function<? super TransactionContext, ? extends U> fn, CompletableFuture<U> future) {
+	private <U> void finish(Throwable e, TransactionContext<T> context,
+			Function<? super TransactionContext<T>, ? extends U> fn, CompletableFuture<U> future) {
 		try {
 			context.finish(e).whenComplete((o1, e1) -> {
 				if (e1 != null) {
@@ -76,8 +87,8 @@ public class TransactionalFuture<T> extends CompletableFuture<TransactionContext
 		}
 	}
 
-	private <U> void completeApply(TransactionContext context, Function<? super TransactionContext, ? extends U> fn,
-			CompletableFuture<U> future) {
+	private <U> void completeApply(TransactionContext<T> context,
+			Function<? super TransactionContext<T>, ? extends U> fn, CompletableFuture<U> future) {
 		try {
 			U u = fn.apply(context);
 			future.complete(u);
@@ -86,18 +97,19 @@ public class TransactionalFuture<T> extends CompletableFuture<TransactionContext
 		}
 	}
 
-	private <U> void completeApply(TransactionContext context, Function<? super TransactionContext, ? extends U> fn,
-			TransactionalFuture<U> future) {
+	private <U> void completeApply(TransactionContext<T> context,
+			Function<? super TransactionContext<T>, ? extends U> fn, TransactionalFuture<U> future) {
 		try {
 			U u = fn.apply(context);
-			future.complete(context.setValue(u));
+			future.completeValue(context, null, u);
 		} catch (Throwable e) {
-			future.complete(context.setError(e));
+			future.completeValue(context, e, null);
 		}
 	}
 
-	private <U> void completeCompose(TransactionContext context,
-			Function<? super TransactionContext, ? extends TransactionalFuture<U>> fn, TransactionalFuture<U> future) {
+	private <U> void completeCompose(TransactionContext<T> context,
+			Function<? super TransactionContext<T>, ? extends TransactionalFuture<U>> fn,
+			TransactionalFuture<U> future) {
 		try {
 			TransactionalFuture<U> txFuture = fn.apply(context);
 			txFuture.whenComplete((r, e) -> {
@@ -108,7 +120,7 @@ public class TransactionalFuture<T> extends CompletableFuture<TransactionContext
 				}
 			});
 		} catch (Throwable e) {
-			future.complete(context.setError(e));
+			future.completeValue(context, e, null);
 		}
 	}
 
@@ -118,9 +130,9 @@ public class TransactionalFuture<T> extends CompletableFuture<TransactionContext
 	 * @param context
 	 * @return
 	 */
-	public static <U> TransactionalFuture<U> completedFuture(TransactionContext context) {
+	public static <U, T> TransactionalFuture<U> completedFuture(TransactionContext<T> context, U u) {
 		TransactionalFuture<U> future = new TransactionalFuture<>();
-		future.complete(context);
+		future.completeValue(context, null, u);
 		return future;
 	}
 }

@@ -44,8 +44,8 @@ public class TransactionalAspect implements Ordered {
 	 * @throws Throwable
 	 */
 	@Around("cut()")
-	public Object around(ProceedingJoinPoint point) throws Throwable {
-		TransactionContext context = null;
+	public <T> Object around(ProceedingJoinPoint point) throws Throwable {
+		TransactionContext<T> context = null;
 		try {
 			context = this.beginTransactional(point);
 			Object result = point.proceed();
@@ -64,8 +64,9 @@ public class TransactionalAspect implements Ordered {
 	 * 
 	 * @param point
 	 */
-	private TransactionContext beginTransactional(ProceedingJoinPoint point) {
-		TransactionContext context = null;
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private <T> TransactionContext<T> beginTransactional(ProceedingJoinPoint point) {
+		TransactionContext<T> context = null;
 		Transactional transaction = this.getMethod(point).getAnnotation(Transactional.class);
 		Object[] args = point.getArgs();
 		if (transaction != null && args != null && args.length >= 1 && args[0] instanceof TransactionContext) {
@@ -104,7 +105,7 @@ public class TransactionalAspect implements Ordered {
 	 * @param context
 	 * @param future
 	 */
-	private void finishTransactional(Object o, Throwable e, TransactionContext context,
+	private <T> void finishTransactional(Object o, Throwable e, TransactionContext<T> context,
 			CompletableFuture<Object> future) {
 		context.finish(e).whenComplete((o1, e1) -> {
 			if (e1 != null) {

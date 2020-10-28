@@ -37,7 +37,7 @@ public class MemberService extends BaseService<User, Long> {
 	 * @return
 	 */
 	@Transactional
-	public CompletableFuture<Long> saveUseAnno1(TransactionContext ctx, User user) {
+	public <U> CompletableFuture<Long> saveUseAnno1(TransactionContext<U> ctx, User user) {
 		return ctx.toFuture().txCompose(context -> {
 			return this.insert(context, user);
 		}).txCompose(context -> {
@@ -53,7 +53,7 @@ public class MemberService extends BaseService<User, Long> {
 	 * @return
 	 */
 	@Transactional
-	public CompletableFuture<Long> saveUseAnno2(TransactionContext ctx, User user) {
+	public <U> CompletableFuture<Long> saveUseAnno2(TransactionContext<U> ctx, User user) {
 		return ctx.toFuture().txCompose(context -> {
 			return this.insert(context, user);
 		}).txCompose(context -> {
