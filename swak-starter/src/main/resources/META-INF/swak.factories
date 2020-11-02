@@ -34,5 +34,5 @@ com.swak.config.vertx.VertxServerAutoConfiguration,\
 com.swak.config.metrics.MetricsAutoConfiguration.java,\
 com.swak.config.metrics.ContexteMetricsConfiguration,\
 com.swak.config.metrics.HikariDataSourceMetricsConfiguration,\
-com.swak.config.metrics.RabbitMqMetricsConfiguration
-com.swak.config.metrics.VertxMetricsOptionsAutoConfiguration,\
+com.swak.config.metrics.RabbitMqMetricsConfiguration,\
+com.swak.config.metrics.VertxMetricsOptionsAutoConfiguration
