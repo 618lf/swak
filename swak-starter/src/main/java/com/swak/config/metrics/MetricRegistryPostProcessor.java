@@ -1,4 +1,4 @@
-package com.swak.metrics;
+package com.swak.config.metrics;
 
 import java.util.concurrent.TimeUnit;
 

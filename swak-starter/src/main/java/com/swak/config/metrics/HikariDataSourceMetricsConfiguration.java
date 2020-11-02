@@ -1,4 +1,4 @@
-package com.swak.metrics.jdbc;
+package com.swak.config.metrics;
 
 import java.util.Map;
 
@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 
 import com.swak.config.jdbc.DataSourceAutoConfiguration;
 import com.swak.meters.MetricsFactory;
-import com.swak.metrics.MetricsAutoConfiguration;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.metrics.dropwizard.CodahaleMetricsTrackerFactory;
 

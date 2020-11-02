@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -10,7 +11,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.github.618lf</groupId>
-			<artifactId>swak-starter</artifactId>
+			<artifactId>swak-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
@@ -36,21 +37,6 @@
 					<artifactId>vertx-shell</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.github.618lf</groupId>
-			<artifactId>swak-vertx</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.618lf</groupId>
-			<artifactId>swak-jdbc</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.618lf</groupId>
-			<artifactId>swak-mq</artifactId>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

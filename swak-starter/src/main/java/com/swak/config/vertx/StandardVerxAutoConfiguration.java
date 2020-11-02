@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.vertx.config.VertxProperties;
@@ -23,6 +24,7 @@ import io.vertx.core.file.FileSystemOptions;
  * 
  * @author lifeng
  */
+@Configuration
 @ConditionalOnClass(ReactiveServer.class)
 @ConditionalOnMissingBean(StandardVertx.class)
 @EnableConfigurationProperties(VertxProperties.class)

@@ -108,6 +108,11 @@
 			<artifactId>swak-hazelcast</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.github.618lf</groupId>
+			<artifactId>swak-metrics</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

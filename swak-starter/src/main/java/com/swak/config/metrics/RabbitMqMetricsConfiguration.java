@@ -1,4 +1,4 @@
-package com.swak.metrics.mq;
+package com.swak.config.metrics;
 
 import java.util.Map;
 
@@ -11,11 +11,10 @@ import org.springframework.context.annotation.Configuration;
 import com.rabbitmq.client.impl.StandardMetricsCollector;
 import com.swak.config.mq.RabbitMqAutoConfiguration;
 import com.swak.meters.MetricsFactory;
-import com.swak.metrics.MetricsAutoConfiguration;
 import com.swak.rabbit.RabbitMQTemplate;
 
 /**
- * 如果是 HikariDataSource 则启用
+ * Mq 启动指标统计
  * 
  * @author lifeng
  */

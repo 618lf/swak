@@ -1,4 +1,4 @@
-package com.swak.metrics;
+package com.swak.config.metrics;
 
 import static com.swak.Application.APP_LOGGER;
 
@@ -6,6 +6,7 @@ import java.lang.management.ManagementFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +32,7 @@ import com.swak.metrics.impl.CodahaleMetricsFactory;
  * 
  * @author lifeng
  */
-@Configuration
+@ConditionalOnClass(MetricRegistry.class)
 public class MetricsAutoConfiguration {
 
 	public MetricsAutoConfiguration() {
