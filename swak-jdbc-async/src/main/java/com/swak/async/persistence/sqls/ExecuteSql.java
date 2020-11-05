@@ -11,6 +11,8 @@ import com.swak.async.persistence.Sql;
 import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.SqlResult;
 import com.swak.async.persistence.maps.UpdateMapper;
+import com.swak.meters.MetricsFactory;
+import com.swak.meters.SqlMetrics;
 import com.swak.utils.Lists;
 
 import io.vertx.sqlclient.Row;
@@ -28,6 +30,21 @@ import io.vertx.sqlclient.Tuple;
 public abstract class ExecuteSql<T> implements Sql<T> {
 
 	protected static Logger logger = LoggerFactory.getLogger(Sql.class);
+
+	protected MetricsFactory metricsFactory;
+
+	public ExecuteSql(MetricsFactory metricsFactory) {
+		this.metricsFactory = metricsFactory;
+	}
+
+	/**
+	 * 返回指标统计
+	 * 
+	 * @return
+	 */
+	public MetricsFactory getMetricsFactory() {
+		return metricsFactory;
+	}
 
 	/**
 	 * 解析脚本
@@ -69,6 +86,11 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Sql:{}、Param：{}", sql, params);
 		}
+
+		// 开始统计
+		SqlMetrics<Object> metrics = this.beingMetrics(sql);
+		Object context = metrics != null ? metrics.begin() : null;
+
 		CompletableFuture<SqlResult> future = new CompletableFuture<>();
 		client.preparedQuery(sql).execute(Tuple.wrap(params), (res) -> {
 			if (res.cause() != null) {
@@ -76,6 +98,11 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 				future.completeExceptionally(res.cause());
 			} else {
 				this.rowMappers(future, res.result(), this.rowMap());
+			}
+
+			// 结束统计
+			if (metrics != null) {
+				metrics.end(context, res.cause() == null);
 			}
 		});
 		return future;
@@ -102,5 +129,12 @@ public abstract class ExecuteSql<T> implements Sql<T> {
 			logger.error("执行Sql异常：", e);
 			future.completeExceptionally(e);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected SqlMetrics<Object> beingMetrics(String sql) {
+		SqlMetrics<Object> metrics = metricsFactory != null ? (SqlMetrics<Object>) metricsFactory.createSqlMetrics(sql)
+				: null;
+		return metrics;
 	}
 }

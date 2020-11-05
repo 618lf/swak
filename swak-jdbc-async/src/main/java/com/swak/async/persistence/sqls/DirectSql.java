@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.SqlParam;
+import com.swak.meters.MetricsFactory;
 
 /**
  * 直接查询Sql
@@ -17,7 +18,8 @@ public class DirectSql<T> extends ExecuteSql<T> implements Dql<T> {
 	private List<Object> params;
 	private RowMapper<T> map;
 
-	public DirectSql(String sql, List<Object> params, RowMapper<T> map) {
+	public DirectSql(String sql, List<Object> params, RowMapper<T> map, MetricsFactory metricsFactory) {
+		super(metricsFactory);
 		this.sql = sql;
 		this.params = params;
 		this.map = map;

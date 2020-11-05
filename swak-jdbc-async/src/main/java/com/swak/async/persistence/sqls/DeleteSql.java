@@ -5,6 +5,7 @@ import java.util.List;
 import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.define.TableDefine;
+import com.swak.meters.MetricsFactory;
 
 /**
  * 删除脚本
@@ -16,8 +17,8 @@ public class DeleteSql<T> extends ShardingSql<T> implements Dml<T> {
 
 	RowMapper<Integer> map;
 
-	public DeleteSql(TableDefine<T> table, RowMapper<Integer> map) {
-		super(table);
+	public DeleteSql(TableDefine<T> table, RowMapper<Integer> map, MetricsFactory metricsFactory) {
+		super(table, metricsFactory);
 		this.map = map;
 	}
 

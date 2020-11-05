@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.swak.Constants;
-import com.swak.async.datasource.DataSource;
-import com.swak.async.execute.SqlExecuter;
+import com.swak.async.persistence.datasource.DataSource;
+import com.swak.async.persistence.execute.SqlExecuter;
 import com.swak.config.jdbc.async.MysqlAsyncPoolConfiguration;
 
 import io.vertx.sqlclient.SqlClient;

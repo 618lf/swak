@@ -6,7 +6,8 @@ import com.swak.async.persistence.Sql;
 import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.define.ColumnDefine;
 import com.swak.async.persistence.define.TableDefine;
-import com.swak.async.sharding.ShardingStrategys;
+import com.swak.async.persistence.sharding.ShardingStrategys;
+import com.swak.meters.MetricsFactory;
 import com.swak.persistence.QueryCondition;
 import com.swak.utils.StringUtils;
 
@@ -51,7 +52,8 @@ public abstract class ShardingSql<T> extends ExecuteSql<T> implements Sql<T> {
 	 * 
 	 * @param table
 	 */
-	public ShardingSql(TableDefine<T> table) {
+	public ShardingSql(TableDefine<T> table, MetricsFactory metricsFactory) {
+		super(metricsFactory);
 		this.table = table;
 	}
 

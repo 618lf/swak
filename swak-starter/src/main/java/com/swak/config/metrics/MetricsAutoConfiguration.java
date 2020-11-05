@@ -26,9 +26,7 @@ import com.swak.meters.MetricsFactory;
 import com.swak.metrics.impl.CodahaleMetricsFactory;
 
 /**
- * 这个配置想的作用是将
- * 
- * 配置 MeterRegistry 和 提供一些默认的指标
+ * 这个配置想的作用是将配置 MeterRegistry 和 提供一些默认的指标
  * 
  * @author lifeng
  */

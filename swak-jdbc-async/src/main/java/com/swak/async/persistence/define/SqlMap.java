@@ -16,6 +16,7 @@ import com.swak.async.persistence.sqls.InsertSql;
 import com.swak.async.persistence.sqls.LockSql;
 import com.swak.async.persistence.sqls.QuerySql;
 import com.swak.async.persistence.sqls.UpdateSql;
+import com.swak.meters.MetricsFactory;
 
 /**
  * Sql 映射
@@ -48,11 +49,16 @@ public class SqlMap<T> {
 	public Map<String, Sql<T>> sqls = Maps.newHashMap();
 
 	/**
+	 * Sql 统计
+	 */
+	public MetricsFactory metricsFactory;
+
+	/**
 	 * 定义SqlMap
 	 * 
 	 * @param table
 	 */
-	public SqlMap(TableDefine<T> table) {
+	public SqlMap(TableDefine<T> table, MetricsFactory metricsFactory) {
 
 		// 表定义
 		this.table = table;
@@ -72,13 +78,13 @@ public class SqlMap<T> {
 		RowMapper<Integer> updateMapper = new UpdateMapper();
 
 		// 注册Sql
-		this.sqls.put(EXISTS, new ExistsSql<T>(this.table, countMapper));
-		this.sqls.put(LOCK, new LockSql<T>(this.table, modelMapper));
-		this.sqls.put(INSERT, new InsertSql<T>(this.table, updateMapper));
-		this.sqls.put(UPDATE, new UpdateSql<T>(this.table, updateMapper));
-		this.sqls.put(DELETE, new DeleteSql<T>(this.table, updateMapper));
-		this.sqls.put(GET, new GetSql<T>(this.table, modelMapper));
-		this.sqls.put(QUERY, new QuerySql<T>(this.table, modelMapper));
-		this.sqls.put(COUNT, new CountSql<T>(this.table, countMapper));
+		this.sqls.put(EXISTS, new ExistsSql<T>(this.table, countMapper, metricsFactory));
+		this.sqls.put(LOCK, new LockSql<T>(this.table, modelMapper, metricsFactory));
+		this.sqls.put(INSERT, new InsertSql<T>(this.table, updateMapper, metricsFactory));
+		this.sqls.put(UPDATE, new UpdateSql<T>(this.table, updateMapper, metricsFactory));
+		this.sqls.put(DELETE, new DeleteSql<T>(this.table, updateMapper, metricsFactory));
+		this.sqls.put(GET, new GetSql<T>(this.table, modelMapper, metricsFactory));
+		this.sqls.put(QUERY, new QuerySql<T>(this.table, modelMapper, metricsFactory));
+		this.sqls.put(COUNT, new CountSql<T>(this.table, countMapper, metricsFactory));
 	}
 }

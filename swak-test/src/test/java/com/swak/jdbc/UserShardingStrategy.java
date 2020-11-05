@@ -1,7 +1,7 @@
 package com.swak.jdbc;
 
 import com.swak.async.persistence.SqlParam;
-import com.swak.async.sharding.ShardingStrategy;
+import com.swak.async.persistence.sharding.ShardingStrategy;
 
 /**
  * 用户分片

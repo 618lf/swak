@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.swak.asm.FieldCache.FieldMeta;
-import com.swak.async.parameter.ParaGetters;
 import com.swak.async.persistence.define.ColumnDefine;
 import com.swak.async.persistence.define.TableDefine;
+import com.swak.async.persistence.parameter.ParaGetters;
 import com.swak.persistence.QueryCondition;
 import com.swak.utils.Lists;
 import com.swak.utils.Maps;

@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct;
 import com.swak.asm.BisGenericIdentify;
 import com.swak.async.persistence.define.SqlMap;
 import com.swak.async.persistence.define.TableDefine;
+import com.swak.async.persistence.metrics.MetricsCollector;
 
 /**
  * 模型注册
@@ -37,7 +38,7 @@ public class ModelRegister<T, PK> implements BisGenericIdentify<T, PK> {
 		this.table = new TableDefine<T>(entity);
 
 		// 定义映射
-		this.sqlMap = new SqlMap<T>(this.table);
+		this.sqlMap = new SqlMap<T>(this.table, MetricsCollector.getMetricsFactory());
 	}
 
 	/**

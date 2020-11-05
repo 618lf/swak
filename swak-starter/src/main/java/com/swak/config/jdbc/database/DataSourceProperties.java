@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.swak.Constants;
 import com.swak.persistence.Database;
+import com.swak.persistence.JDBCDrivers;
 import com.swak.utils.StringUtils;
 
 /**
@@ -152,40 +153,11 @@ public class DataSourceProperties {
 		this.password = password;
 	}
 
-	/**
-	 * 自动适配驱动
-	 * 
-	 * @return
-	 */
 	public String getDriverClassName() {
-		this.driverFit();
+		if (StringUtils.isBlank(driverClassName)) {
+			driverClassName = JDBCDrivers.getDriverClassName(this.url);
+		}
 		return driverClassName;
-	}
-
-	public void driverFit() {
-		if (!StringUtils.isBlank(driverClassName) || db == null) {
-			return;
-		}
-		if (db == Database.mysql || db == Database.sharding) {
-			this.driverFitMysql();
-		} else if (db == Database.h2) {
-			this.driverClassName = "org.h2.Driver";
-		}
-	}
-
-	// mysql 驱动的自动发现
-	private void driverFitMysql() {
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			this.driverClassName = "com.mysql.cj.jdbc.Driver";
-			return;
-		} catch (ClassNotFoundException e) {
-		}
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			this.driverClassName = "com.mysql.jdbc.Driver";
-		} catch (ClassNotFoundException e) {
-		}
 	}
 
 	public void setDriverClassName(String driverClassName) {

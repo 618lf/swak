@@ -14,7 +14,7 @@ public class PageSql<T> extends ShardingSql<T> {
 	Parameters pageParam;
 
 	public PageSql(QuerySql<T> querySql, Dialect dialect, Parameters param) {
-		super(querySql.table);
+		super(querySql.table, querySql.metricsFactory);
 		this.querySql = querySql;
 		this.dialect = dialect;
 		this.pageParam = param;

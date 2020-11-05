@@ -8,6 +8,7 @@ import com.swak.annotation.Timed;
 import com.swak.meters.MethodMetrics;
 import com.swak.meters.MetricsFactory;
 import com.swak.meters.PoolMetrics;
+import com.swak.meters.SqlMetrics;
 
 /**
  * 基于 Codahale 指标创建工厂
@@ -48,5 +49,10 @@ public class CodahaleMetricsFactory implements MetricsFactory {
 
 	private boolean applyMethod(Method method) {
 		return method.isAnnotationPresent(Timed.class) || method.isAnnotationPresent(Counted.class);
+	}
+
+	@Override
+	public SqlMetrics<?> createSqlMetrics(String sql) {
+		return SqlMetricsImpl.get(registry, sql);
 	}
 }

@@ -6,6 +6,7 @@ import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.define.ColumnDefine;
 import com.swak.async.persistence.define.TableDefine;
+import com.swak.meters.MetricsFactory;
 
 /**
  * 添加脚本
@@ -17,8 +18,8 @@ public class UpdateSql<T> extends ShardingSql<T> implements Dml<T> {
 
 	RowMapper<Integer> map;
 
-	public UpdateSql(TableDefine<T> table, RowMapper<Integer> map) {
-		super(table);
+	public UpdateSql(TableDefine<T> table, RowMapper<Integer> map, MetricsFactory metricsFactory) {
+		super(table, metricsFactory);
 		this.map = map;
 	}
 

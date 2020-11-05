@@ -5,6 +5,7 @@ import java.util.List;
 import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.define.TableDefine;
+import com.swak.meters.MetricsFactory;
 
 /**
  * 查询
@@ -16,8 +17,8 @@ public class QuerySql<T> extends ShardingSql<T> implements Dql<T> {
 
 	protected RowMapper<T> map;
 
-	public QuerySql(TableDefine<T> table, RowMapper<T> map) {
-		super(table);
+	public QuerySql(TableDefine<T> table, RowMapper<T> map, MetricsFactory metricsFactory) {
+		super(table, metricsFactory);
 		this.map = map;
 	}
 

@@ -5,8 +5,8 @@ import java.util.concurrent.CountDownLatch;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.swak.async.datasource.DataSource;
-import com.swak.async.execute.SqlExecuter;
+import com.swak.async.persistence.datasource.DataSource;
+import com.swak.async.persistence.execute.SqlExecuter;
 
 import io.vertx.mysqlclient.MySQLConnectOptions;
 import io.vertx.mysqlclient.MySQLPool;

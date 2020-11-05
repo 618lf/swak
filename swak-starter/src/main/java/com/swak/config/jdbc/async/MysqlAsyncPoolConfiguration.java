@@ -7,8 +7,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.swak.async.datasource.DataSource;
-import com.swak.async.tx.TransactionalAspect;
+import com.swak.async.persistence.datasource.DataSource;
+import com.swak.async.persistence.tx.TransactionalAspect;
 import com.swak.config.jdbc.AsyncDataSourceProperties;
 import com.swak.vertx.transport.VertxProxy;
 

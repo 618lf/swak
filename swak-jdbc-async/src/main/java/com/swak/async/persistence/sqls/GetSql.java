@@ -5,6 +5,7 @@ import java.util.List;
 import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.define.TableDefine;
+import com.swak.meters.MetricsFactory;
 
 /**
  * 通过主键查询
@@ -14,8 +15,8 @@ import com.swak.async.persistence.define.TableDefine;
  */
 public class GetSql<T> extends QuerySql<T> {
 
-	public GetSql(TableDefine<T> table, RowMapper<T> map) {
-		super(table, map);
+	public GetSql(TableDefine<T> table, RowMapper<T> map, MetricsFactory metricsFactory) {
+		super(table, map, metricsFactory);
 	}
 
 	@Override

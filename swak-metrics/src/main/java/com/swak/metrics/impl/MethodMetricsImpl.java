@@ -18,8 +18,6 @@ import com.swak.utils.StringUtils;
  */
 public class MethodMetricsImpl extends AbstractMetrics implements MethodMetrics<Timer.Context> {
 
-	private MetricRegistry registry;
-	private String baseName;
 	private Timer time;
 	private Counter count;
 	private Counted counted;
@@ -62,6 +60,8 @@ public class MethodMetricsImpl extends AbstractMetrics implements MethodMetrics<
 	public Timer.Context begin() {
 		if (count != null && this.counted.monotonic()) {
 			count.inc();
+		} else {
+			count.dec();
 		}
 		if (time != null) {
 			return time.time();

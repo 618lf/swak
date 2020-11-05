@@ -1,8 +1,8 @@
 package com.swak.jdbc;
 
-import com.swak.async.execute.SqlExecuter;
 import com.swak.async.persistence.BaseDao;
 import com.swak.async.persistence.SqlParam;
+import com.swak.async.persistence.execute.SqlExecuter;
 import com.swak.async.persistence.sqls.ExecuteSql;
 
 /**

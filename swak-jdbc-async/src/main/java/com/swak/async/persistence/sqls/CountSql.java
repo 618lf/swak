@@ -5,6 +5,7 @@ import java.util.List;
 import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.define.TableDefine;
+import com.swak.meters.MetricsFactory;
 
 /**
  * 总数查询
@@ -16,8 +17,8 @@ public class CountSql<T> extends ShardingSql<T> implements Dql<T> {
 
 	RowMapper<Integer> map;
 
-	public CountSql(TableDefine<T> table, RowMapper<Integer> map) {
-		super(table);
+	public CountSql(TableDefine<T> table, RowMapper<Integer> map, MetricsFactory metricsFactory) {
+		super(table, metricsFactory);
 		this.map = map;
 	}
 

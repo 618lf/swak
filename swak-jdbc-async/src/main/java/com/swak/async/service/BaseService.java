@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import com.swak.App;
 import com.swak.async.persistence.BaseDao;
-import com.swak.async.tx.TransactionContext;
-import com.swak.async.tx.TransactionalFuture;
+import com.swak.async.persistence.tx.TransactionContext;
+import com.swak.async.persistence.tx.TransactionalFuture;
 import com.swak.entity.IdEntity;
 import com.swak.entity.Page;
 import com.swak.entity.Parameters;

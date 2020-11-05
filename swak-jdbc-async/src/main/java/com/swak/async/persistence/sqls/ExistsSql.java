@@ -5,6 +5,7 @@ import java.util.List;
 import com.swak.async.persistence.RowMapper;
 import com.swak.async.persistence.SqlParam;
 import com.swak.async.persistence.define.TableDefine;
+import com.swak.meters.MetricsFactory;
 
 /**
  * 删除脚本
@@ -14,8 +15,8 @@ import com.swak.async.persistence.define.TableDefine;
  */
 public class ExistsSql<T> extends CountSql<T> {
 
-	public ExistsSql(TableDefine<T> table, RowMapper<Integer> map) {
-		super(table, map);
+	public ExistsSql(TableDefine<T> table, RowMapper<Integer> map, MetricsFactory metricsFactory) {
+		super(table, map, metricsFactory);
 	}
 
 	@Override
