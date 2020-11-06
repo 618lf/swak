@@ -2,12 +2,16 @@ package com.swak.config.vertx;
 
 import static com.swak.Application.APP_LOGGER;
 
+import java.util.List;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.swak.config.customizer.VertxOptionsCustomizer;
 import com.swak.reactivex.transport.TransportMode;
 import com.swak.vertx.config.VertxProperties;
 import com.swak.vertx.transport.VertxProxy;
@@ -30,9 +34,15 @@ import io.vertx.core.file.FileSystemOptions;
 @EnableConfigurationProperties(VertxProperties.class)
 public class StandardVerxAutoConfiguration {
 
-	public StandardVerxAutoConfiguration() {
-		APP_LOGGER.debug("Loading Vertx");
+	private VertxProperties properties;
+	private List<VertxOptionsCustomizer> customizers;
+
+	public StandardVerxAutoConfiguration(VertxProperties properties,
+			ObjectProvider<List<VertxOptionsCustomizer>> customizersProvider) {
+		APP_LOGGER.debug("Loading Standard Vertx");
 		System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
+		this.properties = properties;
+		this.customizers = customizersProvider.getIfAvailable();
 	}
 
 	/**
@@ -42,7 +52,7 @@ public class StandardVerxAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public VertxOptions vertxOptions(VertxProperties properties) {
+	public VertxOptions vertxOptions() {
 		VertxOptions vertxOptions = new VertxOptions();
 		if (properties.getMode() == TransportMode.EPOLL) {
 			vertxOptions.setPreferNativeTransport(true);
@@ -65,6 +75,11 @@ public class StandardVerxAutoConfiguration {
 		fileSystemOptions.setFileCachingEnabled(properties.isFileCachingEnabled());
 		fileSystemOptions.setFileCacheDir(properties.getFileCacheDir());
 		vertxOptions.setFileSystemOptions(fileSystemOptions);
+		if (this.customizers != null && !this.customizers.isEmpty()) {
+			for (VertxOptionsCustomizer customizer : this.customizers) {
+				customizer.customize(vertxOptions);
+			}
+		}
 		return vertxOptions;
 	}
 

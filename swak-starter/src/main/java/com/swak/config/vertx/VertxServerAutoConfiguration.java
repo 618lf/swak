@@ -68,7 +68,7 @@ public class VertxServerAutoConfiguration {
 	}
 
 	/**
-	 * Http 服务器
+	 * 响应式服务器
 	 * 
 	 * @return
 	 */

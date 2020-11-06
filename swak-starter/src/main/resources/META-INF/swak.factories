@@ -31,7 +31,7 @@ com.swak.config.vertx.RouterAutoConfiguration,\
 com.swak.config.vertx.ImAutoConfiguration,\
 com.swak.config.vertx.StandardVerxAutoConfiguration,\
 com.swak.config.vertx.VertxServerAutoConfiguration,\
-com.swak.config.metrics.MetricsAutoConfiguration.java,\
+com.swak.config.metrics.MetricsAutoConfiguration,\
 com.swak.config.metrics.SqlMetricsConfiguration,\
 com.swak.config.metrics.AsyncSqlMetricsConfiguration,\
 com.swak.config.metrics.ContexteMetricsConfiguration,\

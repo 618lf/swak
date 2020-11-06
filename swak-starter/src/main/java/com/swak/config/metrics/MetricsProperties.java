@@ -27,11 +27,11 @@ import com.swak.Constants;
 @ConfigurationProperties(prefix = Constants.ACTUATOR_METRICS)
 public class MetricsProperties {
 
-	private Reporter reporter;
-	private Pool pool;
-	private Jvm jvm;
-	private Sql sql;
-	private Method method;
+	private Reporter reporter = new Reporter();
+	private Pool pool = new Pool();
+	private Jvm jvm = new Jvm();
+	private Sql sql = new Sql();
+	private Method method = new Method();
 
 	public Pool getPool() {
 		return pool;

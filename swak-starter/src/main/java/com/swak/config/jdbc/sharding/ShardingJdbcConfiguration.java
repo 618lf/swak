@@ -19,10 +19,12 @@ package com.swak.config.jdbc.sharding;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 import com.swak.Constants;
+import com.swak.config.customizer.DataSourceOptionsCustomizer;
 import com.swak.config.jdbc.database.DataSourceProperties;
 import com.swak.config.jdbc.database.HikariDataSourceAutoConfiguration;
 import com.swak.utils.Maps;
@@ -61,8 +64,13 @@ public class ShardingJdbcConfiguration implements EnvironmentAware {
 	private ShardingJdbcMasterSlaveRuleConfigurationProperties masterSlaveProperties;
 	@Autowired
 	private DataSourceProperties properties;
+	private ObjectProvider<List<DataSourceOptionsCustomizer>> customizersProvider;
 
 	private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
+
+	public ShardingJdbcConfiguration(ObjectProvider<List<DataSourceOptionsCustomizer>> customizersProvider) {
+		this.customizersProvider = customizersProvider;
+	}
 
 	/**
 	 * Get data source bean.
@@ -121,6 +129,6 @@ public class ShardingJdbcConfiguration implements EnvironmentAware {
 		if (dataSourceProps != null) {
 			properties = Maps.toBean(dataSourceProps, properties);
 		}
-		return new HikariDataSourceAutoConfiguration().hikariDataSource(properties);
+		return new HikariDataSourceAutoConfiguration(customizersProvider).hikariDataSource(properties);
 	}
 }

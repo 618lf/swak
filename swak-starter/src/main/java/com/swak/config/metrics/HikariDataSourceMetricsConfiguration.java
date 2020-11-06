@@ -1,16 +1,12 @@
 package com.swak.config.metrics;
 
-import java.util.Map;
-
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.swak.config.jdbc.DataSourceAutoConfiguration;
+import com.swak.config.customizer.DataSourceOptionsCustomizer;
 import com.swak.meters.MetricsFactory;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.metrics.dropwizard.CodahaleMetricsTrackerFactory;
@@ -23,13 +19,12 @@ import com.zaxxer.hikari.metrics.dropwizard.CodahaleMetricsTrackerFactory;
 @Configuration
 @ConditionalOnClass(HikariDataSource.class)
 @ConditionalOnBean({ MetricsFactory.class })
-@AutoConfigureAfter({ MetricsAutoConfiguration.class, DataSourceAutoConfiguration.class })
+@AutoConfigureAfter({ MetricsAutoConfiguration.class })
 public class HikariDataSourceMetricsConfiguration {
 
-	@Autowired
-	public void hikariDataSourceMetricsPostProcessor(MetricsFactory metricsFactory,
-			Map<String, DataSource> dataSources) {
-		dataSources.forEach((beanName, dataSource) -> {
+	@Bean
+	public DataSourceOptionsCustomizer dataSourceOptionsCustomizer(MetricsFactory metricsFactory) {
+		return (dataSource) -> {
 			if (dataSource instanceof HikariDataSource) {
 				HikariDataSource hdataSource = (HikariDataSource) dataSource;
 				if (hdataSource.getMetricRegistry() == null && hdataSource.getMetricsTrackerFactory() == null) {
@@ -37,6 +32,6 @@ public class HikariDataSourceMetricsConfiguration {
 							new CodahaleMetricsTrackerFactory(metricsFactory.metricRegistry()));
 				}
 			}
-		});
+		};
 	}
 }

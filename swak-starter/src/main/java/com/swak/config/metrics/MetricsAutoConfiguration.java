@@ -34,6 +34,7 @@ import com.swak.metrics.impl.CodahaleMetricsFactory;
  * 
  * @author lifeng
  */
+@Configuration
 @ConditionalOnClass(MetricRegistry.class)
 @EnableConfigurationProperties(MetricsProperties.class)
 public class MetricsAutoConfiguration {

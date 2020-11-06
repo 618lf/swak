@@ -2,10 +2,10 @@ package com.swak.config.metrics;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.ApplicationContext;
 
 import com.codahale.metrics.ScheduledReporter;
+import com.swak.booter.ApplicationBooter;
 import com.swak.meters.MetricBinder;
 import com.swak.meters.MetricsFactory;
 import com.swak.utils.ConcurrentHashSet;
@@ -15,7 +15,7 @@ import com.swak.utils.ConcurrentHashSet;
  * 
  * @author lifeng
  */
-public class MetricRegistryPostProcessor implements BeanPostProcessor, ApplicationListener<ContextRefreshedEvent> {
+public class MetricRegistryPostProcessor implements BeanPostProcessor, ApplicationBooter {
 
 	private MetricsFactory metricsFactory;
 	private MetricsProperties properties;
@@ -44,7 +44,7 @@ public class MetricRegistryPostProcessor implements BeanPostProcessor, Applicati
 	 * 系统起来之后收集指标，上报
 	 */
 	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
+	public void onApplicationEvent(ApplicationContext context) {
 		if (metricsFactory != null) {
 			binders.stream().forEach(binder -> {
 				binder.bindTo(metricsFactory);

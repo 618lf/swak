@@ -37,7 +37,7 @@ public class DbCheckTest {
 				"jdbc:mysql://127.0.0.1:3306/cloud?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8");
 		properties.setUsername("root");
 		properties.setPassword("rootadmin");
-		DataSource dataSource = new HikariDataSourceAutoConfiguration().hikariDataSource(properties);
+		DataSource dataSource = new HikariDataSourceAutoConfiguration(null).hikariDataSource(properties);
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		return new NamedParameterJdbcTemplate(jdbcTemplate);
 	}
@@ -73,7 +73,7 @@ public class DbCheckTest {
 				System.out.println(oecd);
 			}
 		}
-		
+
 		System.out.println("====== 协定国家是否在国家列表中都存在： ======");
 		countrys = CountryTest.countrys();
 		for (Oecd oecd : oecds) {

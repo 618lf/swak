@@ -2,6 +2,7 @@ package com.swak.config.mq;
 
 import static com.swak.Application.APP_LOGGER;
 
+import java.util.List;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.swak.Constants;
+import com.swak.config.customizer.RabbitOptionsCustomizer;
 import com.swak.rabbit.EventBus;
 import com.swak.rabbit.RabbitMQProperties;
 import com.swak.rabbit.RabbitMQTemplate;
@@ -41,9 +43,11 @@ public class RabbitMqAutoConfiguration {
 	@Autowired
 	private RabbitMQProperties properties;
 	private ThreadFactory threadFactory;
+	private List<RabbitOptionsCustomizer> customizers;
 
-	public RabbitMqAutoConfiguration() {
+	public RabbitMqAutoConfiguration(ObjectProvider<List<RabbitOptionsCustomizer>> customizersProvider) {
 		APP_LOGGER.debug("Loading MQ");
+		this.customizers = customizersProvider.getIfAvailable();
 	}
 
 	/**
@@ -100,6 +104,11 @@ public class RabbitMqAutoConfiguration {
 					.setTopologyRecoveryExecutor(executor);
 		}
 		template.setDaemonFactory(threadFactory);
+		if (this.customizers != null && !this.customizers.isEmpty()) {
+			for (RabbitOptionsCustomizer customizer : this.customizers) {
+				customizer.customize(template);
+			}
+		}
 	}
 
 	/**
