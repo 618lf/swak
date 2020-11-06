@@ -1,20 +1,10 @@
 package com.swak.vertx.transport.vertx;
 
-import java.util.concurrent.CompletionStage;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.swak.asm.MethodCache;
-import com.swak.asm.MethodCache.ClassMeta;
-import com.swak.asm.MethodCache.MethodMeta;
-import com.swak.asm.Wrapper;
+import com.swak.vertx.config.ServiceBean;
 import com.swak.vertx.transport.codec.Msg;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Handler;
 import io.vertx.core.Promise;
-import io.vertx.core.eventbus.Message;
 
 /**
  * 服务 Verticle
@@ -22,22 +12,14 @@ import io.vertx.core.eventbus.Message;
  * @author: lifeng
  * @date: 2020/3/29 21:20
  */
-public class ServiceVerticle extends AbstractVerticle implements Handler<Message<Msg>> {
+public class ServiceVerticle extends AbstractVerticle {
 
-	private static Logger logger = LoggerFactory.getLogger(ServiceVerticle.class);
-
-	private final Object service;
+	private final ServiceBean service;
 	private final String address;
-	private final Class<?> type;
-	private final Wrapper wrapper;
-	private final ClassMeta classMeta;
 
-	public ServiceVerticle(Object service, Class<?> type) {
+	public ServiceVerticle(ServiceBean service) {
 		this.service = service;
-		this.type = type;
-		this.address = type.getName();
-		this.wrapper = Wrapper.getWrapper(type);
-		this.classMeta = MethodCache.set(this.type);
+		this.address = service.getInterClass().getName();
 	}
 
 	/**
@@ -46,7 +28,7 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 	 */
 	@Override
 	public void start(Promise<Void> startPromise) {
-		this.getVertx().eventBus().<Msg>consumer(address).handler(this);
+		this.getVertx().eventBus().<Msg>consumer(address).handler(service);
 		startPromise.complete();
 	}
 
@@ -56,56 +38,5 @@ public class ServiceVerticle extends AbstractVerticle implements Handler<Message
 	@Override
 	public void stop() {
 		this.getVertx().eventBus().consumer(address).unregister();
-	}
-
-	/**
-	 * 处理消息
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public void handle(Message<Msg> event) {
-		Msg request = event.body();
-		MethodMeta method = this.classMeta.lookup(request.getMethodDesc());
-		Object result = null;
-		Throwable error = null;
-		try {
-			result = wrapper.invokeMethod(service, method.getMethodDesc(), request.getArguments());
-		} catch (Throwable e) {
-			error = new RuntimeException(String.format("Invoke [Service:{%s} - Method: {%s}] Error.",
-					service.getClass().getName(), method.getMethodDesc()), e.getCause() != null ? e.getCause() : e);
-			logger.error("Invoke [Service:{} - Method: {}] Error.", service.getClass().getName(),
-					method.getMethodDesc(), e);
-		}
-		Msg response = request.reset();
-
-		// 错误消息
-		if (error != null) {
-			response.setError(error);
-			event.reply(response);
-		}
-
-		// 实现了异步接口,异步代码执行完成之后再回复
-		else if (result instanceof CompletionStage) {
-			CompletionStage<Object> resultFuture = (CompletionStage<Object>) result;
-			resultFuture.whenComplete((r, e) -> {
-				if (e == null) {
-					response.setResult(r);
-				} else {
-					response.setError(e);
-				}
-				event.reply(response);
-			});
-		}
-
-		// 可以不用异步接口
-		else if (result != null) {
-			response.setResult(result);
-			event.reply(response);
-		}
-
-		// 回复空消息
-		else {
-			event.reply(response);
-		}
 	}
 }

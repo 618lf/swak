@@ -6,8 +6,11 @@ import java.lang.management.ManagementFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,6 +23,7 @@ import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
+import com.swak.Constants;
 import com.swak.meters.MetricBinder;
 import com.swak.meters.Metrics;
 import com.swak.meters.MetricsFactory;
@@ -31,7 +35,11 @@ import com.swak.metrics.impl.CodahaleMetricsFactory;
  * @author lifeng
  */
 @ConditionalOnClass(MetricRegistry.class)
+@EnableConfigurationProperties(MetricsProperties.class)
 public class MetricsAutoConfiguration {
+
+	@Autowired
+	private MetricsProperties properties;
 
 	public MetricsAutoConfiguration() {
 		APP_LOGGER.debug("Loading Metrics Monitor");
@@ -44,7 +52,9 @@ public class MetricsAutoConfiguration {
 	 */
 	@Bean
 	public CodahaleMetricsFactory metricsFactory() {
-		return new CodahaleMetricsFactory(new MetricRegistry());
+		return new CodahaleMetricsFactory(new MetricRegistry()).setMethodOpen(properties.getMethod().isOpen())
+				.setMethodCollectAll(properties.getMethod().isAll()).setPoolOpen(properties.getPool().isOpen())
+				.setSqlOpen(properties.getSql().isOpen());
 	}
 
 	/**
@@ -55,7 +65,7 @@ public class MetricsAutoConfiguration {
 	 */
 	@Bean
 	public MetricRegistryPostProcessor meterRegistryPostProcessor(MetricsFactory metricsFactory) {
-		return new MetricRegistryPostProcessor(metricsFactory);
+		return new MetricRegistryPostProcessor(metricsFactory, properties);
 	}
 
 	/**
@@ -87,6 +97,7 @@ public class MetricsAutoConfiguration {
 	 * @author lifeng
 	 */
 	@Configuration
+	@ConditionalOnProperty(prefix = Constants.ACTUATOR_METRICS, name = "jvm.open", matchIfMissing = true)
 	static class JvmMeterBindersConfiguration {
 
 		@Bean

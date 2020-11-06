@@ -1,5 +1,6 @@
 package com.swak.vertx.invoker;
 
+import com.swak.meters.MethodMetrics;
 import com.swak.meters.MetricsFactory;
 
 /**
@@ -15,7 +16,8 @@ public interface HandlerInvoker {
 	 *
 	 * @param metricsFactory 指标框架
 	 */
-	void applyMetrics(MetricsFactory metricsFactory);
+	@SuppressWarnings("rawtypes")
+	MethodMetrics applyMetrics(MetricsFactory metricsFactory);
 	
 	/**
 	 * 调用

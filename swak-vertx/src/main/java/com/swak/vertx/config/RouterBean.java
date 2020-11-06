@@ -151,14 +151,6 @@ public class RouterBean extends AbstractBean implements Handler<RoutingContext> 
 		return this;
 	}
 
-	/**
-	 * 执行请求
-	 */
-	@Override
-	public void handle(RoutingContext context) {
-		this.handlerAdapter.handle(context, methodInvoker);
-	}
-
 	public Class<?> getType() {
 		return type;
 	}
@@ -193,5 +185,13 @@ public class RouterBean extends AbstractBean implements Handler<RoutingContext> 
 
 	public RouterHandler getHandlerAdapter() {
 		return handlerAdapter;
+	}
+	
+	/**
+	 * 执行请求
+	 */
+	@Override
+	public void handle(RoutingContext context) {
+		this.handlerAdapter.handle(context, methodInvoker);
 	}
 }

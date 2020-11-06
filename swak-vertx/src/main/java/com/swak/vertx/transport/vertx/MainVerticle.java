@@ -157,8 +157,8 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		// 配置发布多个服务
 		int intstances = service.getInstances() <= 0 ? properties.getEventLoopPoolSize() : service.getInstances();
 		for (int i = 1; i <= intstances; i++) {
-			Future<String> stFuture = Future.future(s -> vertx
-					.deployVerticle(new ServiceVerticle(service.getRef(), service.getInterClass()), options, s));
+			Future<String> stFuture = Future
+					.future(s -> vertx.deployVerticle(new ServiceVerticle(service), options, s));
 			futures.add(stFuture.map(id -> null));
 		}
 		// 合并成一个结果

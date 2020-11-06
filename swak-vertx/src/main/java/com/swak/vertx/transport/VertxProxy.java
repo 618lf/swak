@@ -33,7 +33,7 @@ public interface VertxProxy {
 	 *
 	 * @param address      地址
 	 * @param request      请求
-	 * @param timeout      超时时间
+	 * @param timeout      发送的超时时间
 	 * @param replyHandler 回调
 	 */
 	void sentMessage(String address, Msg request, int timeout, Handler<AsyncResult<Message<Msg>>> replyHandler);

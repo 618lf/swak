@@ -1,7 +1,5 @@
 package com.swak.config.metrics;
 
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationListener;
@@ -20,11 +18,13 @@ import com.swak.utils.ConcurrentHashSet;
 public class MetricRegistryPostProcessor implements BeanPostProcessor, ApplicationListener<ContextRefreshedEvent> {
 
 	private MetricsFactory metricsFactory;
+	private MetricsProperties properties;
 	private ScheduledReporter reporter;
 	private final ConcurrentHashSet<MetricBinder> binders = new ConcurrentHashSet<>();
 
-	public MetricRegistryPostProcessor(MetricsFactory metricsFactory) {
+	public MetricRegistryPostProcessor(MetricsFactory metricsFactory, MetricsProperties properties) {
 		this.metricsFactory = metricsFactory;
+		this.properties = properties;
 	}
 
 	/**
@@ -51,7 +51,8 @@ public class MetricRegistryPostProcessor implements BeanPostProcessor, Applicati
 			});
 		}
 		if (reporter != null) {
-			reporter.start(1, 10, TimeUnit.SECONDS);
+			reporter.start(properties.getReporter().getInitialDelay(), properties.getReporter().getPeriod(),
+					properties.getReporter().getUnit());
 		}
 	}
 }

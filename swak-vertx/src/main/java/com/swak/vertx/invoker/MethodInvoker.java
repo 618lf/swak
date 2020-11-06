@@ -49,8 +49,6 @@ public class MethodInvoker implements HandlerInvoker {
 	private final Object bean;
 	private final Method method;
 	private final MethodParameter[] parameters;
-	public MethodMetrics metrics;
-	protected String metricName;
 	protected Permission requiresRoles;
 	protected Permission requiresPermissions;
 
@@ -60,12 +58,16 @@ public class MethodInvoker implements HandlerInvoker {
 	protected Wrapper wrapper;
 	protected MethodMeta methodMeta;
 
+	/**
+	 * 使用指标统计
+	 */
+	public MethodMetrics metrics;
+
 	public MethodInvoker(Class<?> clazz, Object bean, Method method) {
 		this.bean = bean;
 		this.method = method;
 		this.wrapper = Wrapper.getWrapper(clazz);
 		this.methodMeta = MethodCache.get(clazz).lookup(this.method);
-		this.metricName = this.bean.getClass().getName() + "." + this.methodMeta.getMethodDesc();
 		this.parameters = this.initMethodParameters();
 		this.initCache();
 	}
@@ -172,10 +174,10 @@ public class MethodInvoker implements HandlerInvoker {
 	}
 
 	@Override
-	public void applyMetrics(MetricsFactory metricsFactory) {
-		if (metricsFactory != null) {
-			metrics = metricsFactory.createMethodMetrics(this.method, this.metricName);
-		}
+	public MethodMetrics applyMetrics(MetricsFactory metricsFactory) {
+		String metricName = this.bean.getClass().getName() + "." + this.methodMeta.getMethodDesc();
+		this.metrics = this.methodMeta.applyMetrics(metricsFactory, metricName);
+		return this.metrics;
 	}
 
 	@Override

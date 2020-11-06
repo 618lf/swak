@@ -136,7 +136,7 @@ public class RouterHandlerAdapter implements RouterHandler {
 		try {
 			Object[] params = this.parseParameters(context, handler);
 			Object result = this.doHandler(handler, params);
-			if (result instanceof CompletionStage) {
+			if (result != null && result instanceof CompletionStage) {
 				CompletionStage<Object> resultFuture = (CompletionStage<Object>) result;
 				resultFuture.whenComplete((v, e) -> this.handleResultOnContext(v, e, context, handler, metrics));
 			} else {

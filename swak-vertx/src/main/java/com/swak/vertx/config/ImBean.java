@@ -83,11 +83,6 @@ public class ImBean extends AbstractBean implements Handler<ImContext> {
 				: new MethodInvoker(clazz, bean, method);
 	}
 
-	@Override
-	public void handle(ImContext context) {
-		this.handlerAdapter.handle(context, methodInvoker);
-	}
-
 	/**
 	 * 挂载
 	 * 
@@ -136,5 +131,10 @@ public class ImBean extends AbstractBean implements Handler<ImContext> {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	@Override
+	public void handle(ImContext context) {
+		this.handlerAdapter.handle(context, methodInvoker);
 	}
 }
