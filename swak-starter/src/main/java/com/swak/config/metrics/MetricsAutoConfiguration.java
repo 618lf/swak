@@ -28,6 +28,7 @@ import com.swak.meters.MetricBinder;
 import com.swak.meters.Metrics;
 import com.swak.meters.MetricsFactory;
 import com.swak.metrics.impl.CodahaleMetricsFactory;
+import com.swak.reactivex.threads.Contexts;
 
 /**
  * 这个配置想的作用是将配置 MeterRegistry 和 提供一些默认的指标
@@ -53,9 +54,11 @@ public class MetricsAutoConfiguration {
 	 */
 	@Bean
 	public CodahaleMetricsFactory metricsFactory() {
-		return new CodahaleMetricsFactory(new MetricRegistry()).setMethodOpen(properties.getMethod().isOpen())
-				.setMethodCollectAll(properties.getMethod().isAll()).setPoolOpen(properties.getPool().isOpen())
-				.setSqlOpen(properties.getSql().isOpen());
+		CodahaleMetricsFactory metricsFactory = new CodahaleMetricsFactory(new MetricRegistry())
+				.setMethodOpen(properties.getMethod().isOpen()).setMethodCollectAll(properties.getMethod().isAll())
+				.setPoolOpen(properties.getPool().isOpen()).setSqlOpen(properties.getSql().isOpen());
+		Contexts.setMetricsFactory(metricsFactory);
+		return metricsFactory;
 	}
 
 	/**

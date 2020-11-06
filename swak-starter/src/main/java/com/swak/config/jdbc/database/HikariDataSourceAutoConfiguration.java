@@ -24,7 +24,7 @@ import com.zaxxer.hikari.HikariDataSource;
  */
 @ConditionalOnClass({ HikariDataSource.class })
 @ConditionalOnMissingBean(DataSource.class)
-public class HikariDataSourceAutoConfiguration {
+public class HikariDataSourceAutoConfiguration extends MetricsConfiguration {
 
 	private List<DataSourceOptionsCustomizer> customizers;
 

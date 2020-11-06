@@ -16,17 +16,19 @@ import com.swak.persistence.datasource.DataSourceHolder;
 
 /**
  * 配置 Druid
+ * 
  * @author lifeng
  */
-@ConditionalOnClass({DruidDataSource.class})
+@ConditionalOnClass({ DruidDataSource.class })
 @ConditionalOnMissingBean(DataSource.class)
-public class DruidDataSourceAutoConfiguration {
+public class DruidDataSourceAutoConfiguration extends MetricsConfiguration {
 
 	@Autowired
 	private DataSourceProperties properties;
-	
+
 	/**
 	 * 构建 DruidDataSource
+	 * 
 	 * @return
 	 */
 	@Bean
@@ -63,14 +65,15 @@ public class DruidDataSourceAutoConfiguration {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		// 设置链接
 		DataSourceHolder.setDataSource(dataSource);
 		return dataSource;
 	}
-	
+
 	/**
 	 * 提供 HikariDataSourcePool 指标查询
+	 * 
 	 * @return
 	 */
 	@Bean

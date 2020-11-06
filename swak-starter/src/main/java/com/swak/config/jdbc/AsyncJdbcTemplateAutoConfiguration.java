@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Import;
 import com.swak.Constants;
 import com.swak.async.persistence.datasource.DataSource;
 import com.swak.async.persistence.execute.SqlExecuter;
+import com.swak.config.jdbc.async.MetricsConfiguration;
 import com.swak.config.jdbc.async.MysqlAsyncPoolConfiguration;
 
 import io.vertx.sqlclient.SqlClient;
@@ -27,7 +28,7 @@ import io.vertx.sqlclient.SqlClient;
 @EnableConfigurationProperties(AsyncDataSourceProperties.class)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableAsyncJdbc", matchIfMissing = true)
 @Import(MysqlAsyncPoolConfiguration.class)
-public class AsyncJdbcTemplateAutoConfiguration {
+public class AsyncJdbcTemplateAutoConfiguration extends MetricsConfiguration{
 
 	public AsyncJdbcTemplateAutoConfiguration() {
 		APP_LOGGER.debug("Loading AsyncJdbc");

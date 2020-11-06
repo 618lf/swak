@@ -23,7 +23,7 @@ import com.swak.persistence.datasource.DataSourceHolder;
 @ConditionalOnClass({ SQLiteDataSource.class })
 @ConditionalOnMissingBean(DataSource.class)
 @ConditionalOnProperty(prefix = Constants.DATASOURCE_PREFIX, name = "db", havingValue = "sqlite", matchIfMissing = false)
-public class SqlLiteDataSourceAutoConfiguration {
+public class SqlLiteDataSourceAutoConfiguration extends MetricsConfiguration {
 
 	@Autowired
 	private DataSourceProperties properties;

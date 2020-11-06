@@ -38,6 +38,7 @@ import com.swak.Constants;
 import com.swak.config.customizer.DataSourceOptionsCustomizer;
 import com.swak.config.jdbc.database.DataSourceProperties;
 import com.swak.config.jdbc.database.HikariDataSourceAutoConfiguration;
+import com.swak.config.jdbc.database.MetricsConfiguration;
 import com.swak.utils.Maps;
 import com.swak.utils.PropertyKit;
 
@@ -56,7 +57,7 @@ import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 @EnableConfigurationProperties({ ShardingJdbcShardingRuleConfigurationProperties.class,
 		ShardingJdbcMasterSlaveRuleConfigurationProperties.class })
 @ConditionalOnProperty(prefix = Constants.DATASOURCE_PREFIX, name = "db", havingValue = "sharding", matchIfMissing = false)
-public class ShardingJdbcConfiguration implements EnvironmentAware {
+public class ShardingJdbcConfiguration extends MetricsConfiguration implements EnvironmentAware {
 
 	@Autowired
 	private ShardingJdbcShardingRuleConfigurationProperties shardingProperties;
