@@ -3,8 +3,8 @@
 
 # Auto Configuration, SWAK only load Auto Configuration 
 com.swak.ApplicationBoot=\
+com.swak.config.AppAutoConfiguration,\
 com.swak.config.aop.AopAutoConfiguration,\
-com.swak.config.ApplicationAutoConfiguration,\
 com.swak.config.validator.ValidatorAutoConfiguration,\
 com.swak.config.jdbc.DataSourceAutoConfiguration,\
 com.swak.config.jdbc.DataSourceTransactionManagerConfiguration,\
@@ -31,6 +31,8 @@ com.swak.config.vertx.RouterAutoConfiguration,\
 com.swak.config.vertx.ImAutoConfiguration,\
 com.swak.config.vertx.StandardVerxAutoConfiguration,\
 com.swak.config.vertx.VertxServerAutoConfiguration,\
+com.swak.config.metrics.AsyncDataSourceMetricsConfiguration,\
+com.swak.config.metrics.SyncDataSourceMetricsConfiguration,\
 com.swak.config.metrics.MetricsAutoConfiguration,\
 com.swak.config.metrics.HikariDataSourceMetricsConfiguration,\
 com.swak.config.metrics.RabbitMqMetricsConfiguration,\

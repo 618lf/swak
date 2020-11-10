@@ -3,15 +3,18 @@ package com.swak.config.jdbc.database;
 import static com.swak.Application.APP_LOGGER;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.swak.config.customizer.SyncDataSourceOptionsCustomizer;
 import com.swak.persistence.datasource.DataSourceHolder;
 
 /**
@@ -21,7 +24,7 @@ import com.swak.persistence.datasource.DataSourceHolder;
  */
 @ConditionalOnClass({ DruidDataSource.class })
 @ConditionalOnMissingBean(DataSource.class)
-public class DruidDataSourceAutoConfiguration extends MetricsConfiguration {
+public class DruidDataSourceAutoConfiguration {
 
 	@Autowired
 	private DataSourceProperties properties;
@@ -32,7 +35,7 @@ public class DruidDataSourceAutoConfiguration extends MetricsConfiguration {
 	 * @return
 	 */
 	@Bean
-	public DataSource druidDataSource() {
+	public DataSource druidDataSource(ObjectProvider<List<SyncDataSourceOptionsCustomizer>> customizersProvider) {
 		APP_LOGGER.debug("Loading Druid DataSource");
 		DruidDataSource dataSource = new DruidDataSource();
 		dataSource.setUrl(properties.getUrl());
@@ -64,6 +67,15 @@ public class DruidDataSourceAutoConfiguration extends MetricsConfiguration {
 			dataSource.setFilters(properties.getFilters());
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}
+
+		List<SyncDataSourceOptionsCustomizer> customizers = customizersProvider != null
+				? customizersProvider.getIfAvailable()
+				: null;
+		if (customizers != null && !customizers.isEmpty()) {
+			for (SyncDataSourceOptionsCustomizer customizer : customizers) {
+				customizer.customize(dataSource);
+			}
 		}
 
 		// 设置链接

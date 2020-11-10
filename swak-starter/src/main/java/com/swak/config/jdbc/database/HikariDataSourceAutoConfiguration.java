@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.jdbc.metadata.HikariDataSourcePoolMetadata;
 import org.springframework.context.annotation.Bean;
 
-import com.swak.config.customizer.DataSourceOptionsCustomizer;
+import com.swak.config.customizer.SyncDataSourceOptionsCustomizer;
 import com.swak.persistence.datasource.DataSourceHolder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -24,13 +24,10 @@ import com.zaxxer.hikari.HikariDataSource;
  */
 @ConditionalOnClass({ HikariDataSource.class })
 @ConditionalOnMissingBean(DataSource.class)
-public class HikariDataSourceAutoConfiguration extends MetricsConfiguration {
+public class HikariDataSourceAutoConfiguration {
 
-	private List<DataSourceOptionsCustomizer> customizers;
-
-	public HikariDataSourceAutoConfiguration(ObjectProvider<List<DataSourceOptionsCustomizer>> customizersProvider) {
+	public HikariDataSourceAutoConfiguration() {
 		APP_LOGGER.debug("Loading Hikari DataSource");
-		this.customizers = customizersProvider != null ? customizersProvider.getIfAvailable() : null;
 	}
 
 	/**
@@ -39,7 +36,8 @@ public class HikariDataSourceAutoConfiguration extends MetricsConfiguration {
 	 * @return
 	 */
 	@Bean
-	public DataSource hikariDataSource(DataSourceProperties properties) {
+	public DataSource hikariDataSource(DataSourceProperties properties,
+			ObjectProvider<List<SyncDataSourceOptionsCustomizer>> customizersProvider) {
 		HikariConfig config = new HikariConfig();
 		config.setPoolName(properties.getName());
 		config.setJdbcUrl(properties.getUrl());
@@ -67,8 +65,11 @@ public class HikariDataSourceAutoConfiguration extends MetricsConfiguration {
 		HikariDataSource dataSource = new HikariDataSource(config);
 		DataSourceHolder.setDataSource(dataSource);
 
-		if (this.customizers != null && !this.customizers.isEmpty()) {
-			for (DataSourceOptionsCustomizer customizer : this.customizers) {
+		List<SyncDataSourceOptionsCustomizer> customizers = customizersProvider != null
+				? customizersProvider.getIfAvailable()
+				: null;
+		if (customizers != null && !customizers.isEmpty()) {
+			for (SyncDataSourceOptionsCustomizer customizer : customizers) {
 				customizer.customize(dataSource);
 			}
 		}

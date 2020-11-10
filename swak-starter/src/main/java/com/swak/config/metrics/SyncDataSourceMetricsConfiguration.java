@@ -1,29 +1,32 @@
 package com.swak.config.metrics;
 
+import javax.sql.DataSource;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.swak.config.customizer.DataSourceOptionsCustomizer;
+import com.swak.config.customizer.SyncDataSourceOptionsCustomizer;
 import com.swak.meters.MetricsFactory;
+import com.swak.persistence.metrics.MetricsCollector;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.metrics.dropwizard.CodahaleMetricsTrackerFactory;
 
 /**
- * 如果是 HikariDataSource 则启用
+ * 启用指标监控
  * 
  * @author lifeng
  */
 @Configuration
-@ConditionalOnClass(HikariDataSource.class)
+@ConditionalOnClass({ DataSource.class })
 @ConditionalOnBean({ MetricsFactory.class })
 @AutoConfigureAfter({ MetricsAutoConfiguration.class })
-public class HikariDataSourceMetricsConfiguration {
+public class SyncDataSourceMetricsConfiguration {
 
 	@Bean
-	public DataSourceOptionsCustomizer dataSourceOptionsCustomizer(MetricsFactory metricsFactory) {
+	public SyncDataSourceOptionsCustomizer dataSourceOptionsCustomizer(MetricsFactory metricsFactory) {
 		return (dataSource) -> {
 			if (dataSource instanceof HikariDataSource) {
 				HikariDataSource hdataSource = (HikariDataSource) dataSource;
@@ -32,6 +35,7 @@ public class HikariDataSourceMetricsConfiguration {
 							new CodahaleMetricsTrackerFactory(metricsFactory.metricRegistry()));
 				}
 			}
+			MetricsCollector.registryMetricsFactory(metricsFactory);
 		};
 	}
 }

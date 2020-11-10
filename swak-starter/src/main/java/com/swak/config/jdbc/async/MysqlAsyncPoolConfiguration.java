@@ -1,5 +1,8 @@
 package com.swak.config.jdbc.async;
 
+import java.util.List;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -9,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.swak.async.persistence.datasource.DataSource;
 import com.swak.async.persistence.tx.TransactionalAspect;
+import com.swak.config.customizer.AsyncDataSourceOptionsCustomizer;
 import com.swak.config.jdbc.AsyncDataSourceProperties;
 import com.swak.vertx.transport.VertxProxy;
 
@@ -37,7 +41,8 @@ public class MysqlAsyncPoolConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(DataSource.class)
-	public DataSource asyncJdbcPool(VertxProxy vertx) {
+	public DataSource asyncJdbcPool(VertxProxy vertx,
+			ObjectProvider<List<AsyncDataSourceOptionsCustomizer>> customizersProvider) {
 		MySQLConnectOptions connectOptions = new MySQLConnectOptions().setPort(properties.getPort())
 				.setHost(properties.getHost()).setDatabase(properties.getDatabase()).setUser(properties.getUsername())
 				.setPassword(properties.getPassword());
@@ -48,8 +53,19 @@ public class MysqlAsyncPoolConfiguration {
 		// Create the client pool
 		MySQLPool client = MySQLPool.pool(vertx.me(), connectOptions, poolOptions);
 
+		// create datasource
+		DataSource dataSource = new DataSource(client);
+		List<AsyncDataSourceOptionsCustomizer> customizers = customizersProvider != null
+				? customizersProvider.getIfAvailable()
+				: null;
+		if (customizers != null && !customizers.isEmpty()) {
+			for (AsyncDataSourceOptionsCustomizer customizer : customizers) {
+				customizer.customize(dataSource);
+			}
+		}
+
 		// Return pool
-		return new DataSource(client);
+		return dataSource;
 	}
 
 	/**

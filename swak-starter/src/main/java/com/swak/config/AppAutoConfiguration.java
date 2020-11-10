@@ -20,7 +20,7 @@ import com.swak.booter.AppShuter;
  */
 @Configuration
 @EnableConfigurationProperties(ApplicationProperties.class)
-public class ApplicationAutoConfiguration {
+public class AppAutoConfiguration {
 
 	@Autowired
 	private ApplicationContext context;

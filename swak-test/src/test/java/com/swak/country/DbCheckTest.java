@@ -37,7 +37,7 @@ public class DbCheckTest {
 				"jdbc:mysql://127.0.0.1:3306/cloud?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8");
 		properties.setUsername("root");
 		properties.setPassword("rootadmin");
-		DataSource dataSource = new HikariDataSourceAutoConfiguration(null).hikariDataSource(properties);
+		DataSource dataSource = new HikariDataSourceAutoConfiguration().hikariDataSource(properties, null);
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 		return new NamedParameterJdbcTemplate(jdbcTemplate);
 	}

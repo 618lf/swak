@@ -35,10 +35,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 import com.swak.Constants;
-import com.swak.config.customizer.DataSourceOptionsCustomizer;
+import com.swak.config.customizer.SyncDataSourceOptionsCustomizer;
 import com.swak.config.jdbc.database.DataSourceProperties;
 import com.swak.config.jdbc.database.HikariDataSourceAutoConfiguration;
-import com.swak.config.jdbc.database.MetricsConfiguration;
 import com.swak.utils.Maps;
 import com.swak.utils.PropertyKit;
 
@@ -57,7 +56,7 @@ import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 @EnableConfigurationProperties({ ShardingJdbcShardingRuleConfigurationProperties.class,
 		ShardingJdbcMasterSlaveRuleConfigurationProperties.class })
 @ConditionalOnProperty(prefix = Constants.DATASOURCE_PREFIX, name = "db", havingValue = "sharding", matchIfMissing = false)
-public class ShardingJdbcConfiguration extends MetricsConfiguration implements EnvironmentAware {
+public class ShardingJdbcConfiguration implements EnvironmentAware {
 
 	@Autowired
 	private ShardingJdbcShardingRuleConfigurationProperties shardingProperties;
@@ -65,11 +64,11 @@ public class ShardingJdbcConfiguration extends MetricsConfiguration implements E
 	private ShardingJdbcMasterSlaveRuleConfigurationProperties masterSlaveProperties;
 	@Autowired
 	private DataSourceProperties properties;
-	private ObjectProvider<List<DataSourceOptionsCustomizer>> customizersProvider;
+	private ObjectProvider<List<SyncDataSourceOptionsCustomizer>> customizersProvider;
 
 	private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
 
-	public ShardingJdbcConfiguration(ObjectProvider<List<DataSourceOptionsCustomizer>> customizersProvider) {
+	public ShardingJdbcConfiguration(ObjectProvider<List<SyncDataSourceOptionsCustomizer>> customizersProvider) {
 		this.customizersProvider = customizersProvider;
 	}
 
@@ -130,6 +129,6 @@ public class ShardingJdbcConfiguration extends MetricsConfiguration implements E
 		if (dataSourceProps != null) {
 			properties = Maps.toBean(dataSourceProps, properties);
 		}
-		return new HikariDataSourceAutoConfiguration(customizersProvider).hikariDataSource(properties);
+		return new HikariDataSourceAutoConfiguration().hikariDataSource(properties, customizersProvider);
 	}
 }

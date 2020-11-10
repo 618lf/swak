@@ -1,7 +1,7 @@
 package com.swak.refs;
 import sun.misc.Unsafe;
 
-@SuppressWarnings({ "restriction", "unused" })
+@SuppressWarnings({ "unused" })
 public class RingBuf {
 
 }

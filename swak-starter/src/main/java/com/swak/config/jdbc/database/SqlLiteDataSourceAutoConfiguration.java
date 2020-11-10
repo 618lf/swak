@@ -1,7 +1,10 @@
 package com.swak.config.jdbc.database;
 
+import java.util.List;
+
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -12,6 +15,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.sqlite.SQLiteDataSource;
 
 import com.swak.Constants;
+import com.swak.config.customizer.SyncDataSourceOptionsCustomizer;
 import com.swak.exception.BaseRuntimeException;
 import com.swak.persistence.datasource.DataSourceHolder;
 
@@ -23,7 +27,7 @@ import com.swak.persistence.datasource.DataSourceHolder;
 @ConditionalOnClass({ SQLiteDataSource.class })
 @ConditionalOnMissingBean(DataSource.class)
 @ConditionalOnProperty(prefix = Constants.DATASOURCE_PREFIX, name = "db", havingValue = "sqlite", matchIfMissing = false)
-public class SqlLiteDataSourceAutoConfiguration extends MetricsConfiguration {
+public class SqlLiteDataSourceAutoConfiguration {
 
 	@Autowired
 	private DataSourceProperties properties;
@@ -38,10 +42,18 @@ public class SqlLiteDataSourceAutoConfiguration extends MetricsConfiguration {
 	 * 打包之后读取不到,开发环境可以使用，打包之后不能使用 3. 配置file: 打包之后在相对目录中获取，开发环境获取不到
 	 */
 	@Bean(destroyMethod = "")
-	public DataSource sqlLiteDataSource() {
+	public DataSource sqlLiteDataSource(ObjectProvider<List<SyncDataSourceOptionsCustomizer>> customizersProvider) {
 		SQLiteDataSource dataSource = new SQLiteDataSource();
 		dataSource.setUrl("jdbc:sqlite:" + loadSqliteUrl());
 		DataSourceHolder.setDataSource(dataSource);
+		List<SyncDataSourceOptionsCustomizer> customizers = customizersProvider != null
+				? customizersProvider.getIfAvailable()
+				: null;
+		if (customizers != null && !customizers.isEmpty()) {
+			for (SyncDataSourceOptionsCustomizer customizer : customizers) {
+				customizer.customize(dataSource);
+			}
+		}
 		return dataSource;
 	}
 
