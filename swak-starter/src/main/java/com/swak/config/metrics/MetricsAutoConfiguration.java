@@ -55,8 +55,7 @@ public class MetricsAutoConfiguration {
 	@Bean
 	public CodahaleMetricsFactory metricsFactory() {
 		CodahaleMetricsFactory metricsFactory = new CodahaleMetricsFactory(new MetricRegistry())
-				.setMethodOpen(properties.getMethod().isOpen()).setMethodCollectAll(properties.getMethod().isAll())
-				.setPoolOpen(properties.getPool().isOpen()).setSqlOpen(properties.getSql().isOpen());
+				.setMethodOpen(properties.getMethod().isOpen()).setMethodCollectAll(properties.getMethod().isAll());
 		Contexts.setMetricsFactory(metricsFactory);
 		return metricsFactory;
 	}

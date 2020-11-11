@@ -5,9 +5,11 @@ import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.swak.Constants;
 import com.swak.config.customizer.SyncDataSourceOptionsCustomizer;
 import com.swak.meters.MetricsFactory;
 import com.swak.persistence.metrics.MetricsCollector;
@@ -23,6 +25,7 @@ import com.zaxxer.hikari.metrics.dropwizard.CodahaleMetricsTrackerFactory;
 @ConditionalOnClass({ DataSource.class })
 @ConditionalOnBean({ MetricsFactory.class })
 @AutoConfigureAfter({ MetricsAutoConfiguration.class })
+@ConditionalOnProperty(prefix = Constants.ACTUATOR_METRICS, name = "syncdb.open", matchIfMissing = true)
 public class SyncDataSourceMetricsConfiguration {
 
 	@Bean

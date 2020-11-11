@@ -3,10 +3,12 @@ package com.swak.config.metrics;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.rabbitmq.client.impl.StandardMetricsCollector;
+import com.swak.Constants;
 import com.swak.config.customizer.RabbitOptionsCustomizer;
 import com.swak.meters.MetricsFactory;
 import com.swak.rabbit.RabbitMQTemplate;
@@ -20,6 +22,7 @@ import com.swak.rabbit.RabbitMQTemplate;
 @ConditionalOnClass({ RabbitMQTemplate.class })
 @ConditionalOnBean({ MetricsFactory.class })
 @AutoConfigureAfter({ MetricsAutoConfiguration.class })
+@ConditionalOnProperty(prefix = Constants.ACTUATOR_METRICS, name = "rabbitmq.open", matchIfMissing = true)
 public class RabbitMqMetricsConfiguration {
 
 	@Bean

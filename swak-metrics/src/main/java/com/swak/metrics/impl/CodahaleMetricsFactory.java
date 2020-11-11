@@ -21,8 +21,6 @@ public class CodahaleMetricsFactory implements MetricsFactory {
 
 	private boolean methodOpen;
 	private boolean methodCollectAll;
-	private boolean poolOpen;
-	private boolean sqlOpen;
 
 	public CodahaleMetricsFactory(MetricRegistry metricRegistry) {
 		this.registry = metricRegistry;
@@ -38,16 +36,6 @@ public class CodahaleMetricsFactory implements MetricsFactory {
 		return this;
 	}
 
-	public CodahaleMetricsFactory setPoolOpen(boolean poolOpen) {
-		this.poolOpen = poolOpen;
-		return this;
-	}
-
-	public CodahaleMetricsFactory setSqlOpen(boolean sqlOpen) {
-		this.sqlOpen = sqlOpen;
-		return this;
-	}
-
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T metricRegistry() {
@@ -56,12 +44,12 @@ public class CodahaleMetricsFactory implements MetricsFactory {
 
 	@Override
 	public PoolMetrics<?> createPoolMetrics(String name, int maxSize) {
-		return this.poolOpen ? new PoolMetricsImpl(registry, name + "pool", maxSize) : null;
+		return new PoolMetricsImpl(registry, name + "pool", maxSize);
 	}
 
 	@Override
 	public PoolMetrics<?> createScheduleMetrics(String name, int maxSize) {
-		return this.poolOpen ? new ScheduleMetricsImpl(registry, name + "schedule", maxSize) : null;
+		return new ScheduleMetricsImpl(registry, name + "schedule", maxSize);
 	}
 
 	@Override
@@ -79,6 +67,6 @@ public class CodahaleMetricsFactory implements MetricsFactory {
 
 	@Override
 	public SqlMetrics<?> createSqlMetrics(String sql) {
-		return this.sqlOpen ? SqlMetricsImpl.get(registry, sql) : null;
+		return SqlMetricsImpl.get(registry, sql);
 	}
 }

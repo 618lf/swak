@@ -28,26 +28,7 @@ import com.swak.Constants;
 public class MetricsProperties {
 
 	private Reporter reporter = new Reporter();
-	private Pool pool = new Pool();
-	private Jvm jvm = new Jvm();
-	private Sql sql = new Sql();
 	private Method method = new Method();
-
-	public Pool getPool() {
-		return pool;
-	}
-
-	public void setPool(Pool pool) {
-		this.pool = pool;
-	}
-
-	public Sql getSql() {
-		return sql;
-	}
-
-	public void setSql(Sql sql) {
-		this.sql = sql;
-	}
 
 	public Reporter getReporter() {
 		return reporter;
@@ -55,14 +36,6 @@ public class MetricsProperties {
 
 	public void setReporter(Reporter reporter) {
 		this.reporter = reporter;
-	}
-
-	public Jvm getJvm() {
-		return jvm;
-	}
-
-	public void setJvm(Jvm jvm) {
-		this.jvm = jvm;
 	}
 
 	public Method getMethod() {
@@ -106,60 +79,6 @@ public class MetricsProperties {
 
 		public void setUnit(TimeUnit unit) {
 			this.unit = unit;
-		}
-	}
-
-	/**
-	 * 配置JVM 的收集
-	 * 
-	 * @author lifeng
-	 * @date 2020年11月6日 上午10:50:30
-	 */
-	public class Pool {
-		private boolean open = Boolean.TRUE;
-
-		public boolean isOpen() {
-			return open;
-		}
-
-		public void setOpen(boolean open) {
-			this.open = open;
-		}
-	}
-
-	/**
-	 * 配置JVM 的收集
-	 * 
-	 * @author lifeng
-	 * @date 2020年11月6日 上午10:50:30
-	 */
-	public class Jvm {
-		private boolean open = Boolean.TRUE;
-
-		public boolean isOpen() {
-			return open;
-		}
-
-		public void setOpen(boolean open) {
-			this.open = open;
-		}
-	}
-
-	/**
-	 * 配置Sql 的收集
-	 * 
-	 * @author lifeng
-	 * @date 2020年11月6日 上午10:50:30
-	 */
-	public class Sql {
-		private boolean open = Boolean.TRUE;
-
-		public boolean isOpen() {
-			return open;
-		}
-
-		public void setOpen(boolean open) {
-			this.open = open;
 		}
 	}
 
