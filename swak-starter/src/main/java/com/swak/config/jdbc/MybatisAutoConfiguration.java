@@ -36,13 +36,9 @@ import com.swak.config.jdbc.database.HikariDataSourceAutoConfiguration;
 import com.swak.config.jdbc.database.SpringBootVFS;
 import com.swak.config.jdbc.database.SqlLiteDataSourceAutoConfiguration;
 import com.swak.config.jdbc.sharding.ShardingJdbcConfiguration;
-import com.swak.persistence.Database;
+import com.swak.persistence.JDBCDrivers;
 import com.swak.persistence.QueryCondition;
 import com.swak.persistence.dialect.Dialect;
-import com.swak.persistence.dialect.H2Dialect;
-import com.swak.persistence.dialect.MySQLDialect;
-import com.swak.persistence.dialect.OracleDialect;
-import com.swak.persistence.dialect.SqlLiteDialect;
 import com.swak.persistence.mybatis.PagingInterceptor;
 import com.swak.utils.StringUtils;
 
@@ -90,17 +86,7 @@ public class MybatisAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(Dialect.class)
 	public Dialect dbDialect(DataSourceProperties dbProperties) {
-		Database db = dbProperties.getDb();
-		if (db == Database.h2) {
-			return new H2Dialect();
-		} else if (db == Database.mysql) {
-			return new MySQLDialect();
-		} else if (db == Database.oracle) {
-			return new OracleDialect();
-		} else if (db == Database.sqlite) {
-			return new SqlLiteDialect();
-		}
-		return new MySQLDialect();
+		return JDBCDrivers.getDialect(dbProperties.getUrl(), dbProperties.getDriverClassName());
 	}
 
 	@Bean

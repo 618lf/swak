@@ -2,7 +2,6 @@ package com.swak.persistence.dialect;
 
 import java.util.Map;
 
-import com.swak.persistence.Database;
 import com.swak.utils.Maps;
 
 /**
@@ -12,20 +11,31 @@ import com.swak.utils.Maps;
  */
 public interface Dialect {
 
-	public boolean supportsLimit();
-
-	public String getLimitString(String sql, boolean hasOffset);
-
-	public String getLimitString(String sql, int offset, int limit);
-	
 	/**
-	 * 默认 Mysql ，会根据mysql 定义一些必要的命令集
+	 * 是否支持分页
 	 * 
 	 * @return
 	 */
-	default Database getDatabase() {
-		return Database.mysql;
-	}
+	boolean supportsLimit();
+
+	/**
+	 * 返回分页Sql
+	 * 
+	 * @param sql
+	 * @param hasOffset
+	 * @return
+	 */
+	String getLimitString(String sql, boolean hasOffset);
+
+	/**
+	 * 返回分页Sql
+	 * 
+	 * @param sql
+	 * @param offset
+	 * @param limit
+	 * @return
+	 */
+	String getLimitString(String sql, int offset, int limit);
 
 	/**
 	 * 定义一些特殊的全局变量

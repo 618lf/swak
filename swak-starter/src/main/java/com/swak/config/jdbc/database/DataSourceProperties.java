@@ -3,7 +3,6 @@ package com.swak.config.jdbc.database;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.swak.Constants;
-import com.swak.persistence.Database;
 import com.swak.persistence.JDBCDrivers;
 import com.swak.utils.StringUtils;
 
@@ -16,7 +15,6 @@ import com.swak.utils.StringUtils;
 public class DataSourceProperties {
 
 	private String name = "DB";
-	private Database db = Database.mysql;
 	private String url;
 	private String username;
 	private String password;
@@ -48,7 +46,6 @@ public class DataSourceProperties {
 
 	public DataSourceProperties(DataSourceProperties copy) {
 		this.name = copy.getName();
-		this.db = copy.getDb();
 		this.url = copy.getUrl();
 		this.username = copy.getUsername();
 		this.password = copy.getPassword();
@@ -87,14 +84,6 @@ public class DataSourceProperties {
 
 	public void setJdbcMaxRows(int jdbcMaxRows) {
 		this.jdbcMaxRows = jdbcMaxRows;
-	}
-
-	public Database getDb() {
-		return db;
-	}
-
-	public void setDb(Database db) {
-		this.db = db;
 	}
 
 	public Integer getMaxLifetime() {

@@ -2,6 +2,14 @@ package com.swak.persistence;
 
 import java.sql.SQLException;
 
+import com.alibaba.druid.util.JdbcConstants;
+import com.swak.persistence.dialect.Dialect;
+import com.swak.persistence.dialect.H2Dialect;
+import com.swak.persistence.dialect.MsSQLDialect;
+import com.swak.persistence.dialect.MySQLDialect;
+import com.swak.persistence.dialect.OracleDialect;
+import com.swak.persistence.dialect.SqlLiteDialect;
+
 /**
  * JDBCDrivers 驱动
  * 
@@ -157,6 +165,139 @@ public class JDBCDrivers {
 	}
 
 	/**
+	 * 获得方言
+	 * 
+	 * @param rawUrl
+	 * @param driverClassName
+	 * @return
+	 */
+	public static Dialect getDialect(String rawUrl, String driverClassName) {
+		String type = getDbType(rawUrl, driverClassName);
+		if (H2.equals(type)) {
+			return new H2Dialect();
+		}
+		if (MYSQL.equals(type)) {
+			return new MySQLDialect();
+		}
+		if (SQL_SERVER.equals(type)) {
+			return new MsSQLDialect();
+		}
+		if (ORACLE.equals(type)) {
+			return new OracleDialect();
+		}
+		if (SQLITE.equals(type)) {
+			return new SqlLiteDialect();
+		}
+		throw new RuntimeException("unknown jdbc driver : " + rawUrl);
+	}
+
+	/**
+	 * 数据库类型
+	 * 
+	 * @param rawUrl
+	 * @param driverClassName
+	 * @return
+	 */
+	public static String getDbType(String rawUrl, String driverClassName) {
+		if (rawUrl.startsWith("jdbc:derby:") || rawUrl.startsWith("jdbc:log4jdbc:derby:")) {
+			return DERBY;
+		} else if (rawUrl.startsWith("jdbc:mysql:") || rawUrl.startsWith("jdbc:cobar:")
+				|| rawUrl.startsWith("jdbc:log4jdbc:mysql:")) {
+			return MYSQL;
+		} else if (rawUrl.startsWith("jdbc:mariadb:")) {
+			return MARIADB;
+		} else if (rawUrl.startsWith("jdbc:oracle:") || rawUrl.startsWith("jdbc:log4jdbc:oracle:")) {
+			return ORACLE;
+		} else if (rawUrl.startsWith("jdbc:alibaba:oracle:")) {
+			return ALI_ORACLE;
+		} else if (rawUrl.startsWith("jdbc:oceanbase:")) {
+			return OCEANBASE;
+		} else if (rawUrl.startsWith("jdbc:oceanbase:oracle:")) {
+			return OCEANBASE_ORACLE;
+		} else if (rawUrl.startsWith("jdbc:microsoft:") || rawUrl.startsWith("jdbc:log4jdbc:microsoft:")) {
+			return SQL_SERVER;
+		} else if (rawUrl.startsWith("jdbc:sqlserver:") || rawUrl.startsWith("jdbc:log4jdbc:sqlserver:")) {
+			return SQL_SERVER;
+		} else if (rawUrl.startsWith("jdbc:sybase:Tds:") || rawUrl.startsWith("jdbc:log4jdbc:sybase:")) {
+			return SYBASE;
+		} else if (rawUrl.startsWith("jdbc:jtds:") || rawUrl.startsWith("jdbc:log4jdbc:jtds:")) {
+			return JTDS;
+		} else if (rawUrl.startsWith("jdbc:fake:") || rawUrl.startsWith("jdbc:mock:")) {
+			return MOCK;
+		} else if (rawUrl.startsWith("jdbc:postgresql:") || rawUrl.startsWith("jdbc:log4jdbc:postgresql:")) {
+			return POSTGRESQL;
+		} else if (rawUrl.startsWith("jdbc:edb:")) {
+			return ENTERPRISEDB;
+		} else if (rawUrl.startsWith("jdbc:hsqldb:") || rawUrl.startsWith("jdbc:log4jdbc:hsqldb:")) {
+			return HSQL;
+		} else if (rawUrl.startsWith("jdbc:odps:")) {
+			return ODPS;
+		} else if (rawUrl.startsWith("jdbc:db2:")) {
+			return DB2;
+		} else if (rawUrl.startsWith("jdbc:sqlite:")) {
+			return SQLITE;
+		} else if (rawUrl.startsWith("jdbc:ingres:")) {
+			return "ingres";
+		} else if (rawUrl.startsWith("jdbc:h2:") || rawUrl.startsWith("jdbc:log4jdbc:h2:")) {
+			return H2;
+		} else if (rawUrl.startsWith("jdbc:mckoi:")) {
+			return "mckoi";
+		} else if (rawUrl.startsWith("jdbc:cloudscape:")) {
+			return "cloudscape";
+		} else if (rawUrl.startsWith("jdbc:informix-sqli:") || rawUrl.startsWith("jdbc:log4jdbc:informix-sqli:")) {
+			return "informix";
+		} else if (rawUrl.startsWith("jdbc:timesten:")) {
+			return "timesten";
+		} else if (rawUrl.startsWith("jdbc:as400:")) {
+			return "as400";
+		} else if (rawUrl.startsWith("jdbc:sapdb:")) {
+			return "sapdb";
+		} else if (rawUrl.startsWith("jdbc:JSQLConnect:")) {
+			return "JSQLConnect";
+		} else if (rawUrl.startsWith("jdbc:JTurbo:")) {
+			return "JTurbo";
+		} else if (rawUrl.startsWith("jdbc:firebirdsql:")) {
+			return "firebirdsql";
+		} else if (rawUrl.startsWith("jdbc:interbase:")) {
+			return "interbase";
+		} else if (rawUrl.startsWith("jdbc:pointbase:")) {
+			return "pointbase";
+		} else if (rawUrl.startsWith("jdbc:edbc:")) {
+			return "edbc";
+		} else if (rawUrl.startsWith("jdbc:mimer:multi1:")) {
+			return "mimer";
+		} else if (rawUrl.startsWith("jdbc:dm:")) {
+			return JdbcConstants.DM;
+		} else if (rawUrl.startsWith("jdbc:kingbase:")) {
+			return JdbcConstants.KINGBASE;
+		} else if (rawUrl.startsWith("jdbc:gbase:")) {
+			return JdbcConstants.GBASE;
+		} else if (rawUrl.startsWith("jdbc:xugu:")) {
+			return JdbcConstants.XUGU;
+		} else if (rawUrl.startsWith("jdbc:log4jdbc:")) {
+			return LOG4JDBC;
+		} else if (rawUrl.startsWith("jdbc:hive:")) {
+			return HIVE;
+		} else if (rawUrl.startsWith("jdbc:hive2:")) {
+			return HIVE;
+		} else if (rawUrl.startsWith("jdbc:phoenix:")) {
+			return PHOENIX;
+		} else if (rawUrl.startsWith("jdbc:elastic:")) {
+			return ELASTIC_SEARCH;
+		} else if (rawUrl.startsWith("jdbc:clickhouse:")) {
+			return CLICKHOUSE;
+		} else if (rawUrl.startsWith("jdbc:presto:")) {
+			return PRESTO;
+		} else if (rawUrl.startsWith("jdbc:inspur:")) {
+			return JdbcConstants.KDB;
+		} else if (rawUrl.startsWith("jdbc:polardb")) {
+			return POLARDB;
+		} else {
+			throw new RuntimeException("unknown jdbc driver : " + rawUrl);
+		}
+	}
+
+	/**
 	 * 解析驱动
 	 * 
 	 * @param rawUrl
@@ -164,10 +305,6 @@ public class JDBCDrivers {
 	 * @throws SQLException
 	 */
 	public static String getDriverClassName(String rawUrl) {
-		if (rawUrl == null) {
-			return null;
-		}
-
 		if (rawUrl.startsWith("jdbc:derby:")) {
 			return "org.apache.derby.jdbc.EmbeddedDriver";
 		} else if (rawUrl.startsWith("jdbc:mysql:")) {

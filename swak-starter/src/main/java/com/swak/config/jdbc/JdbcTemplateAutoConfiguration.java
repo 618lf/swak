@@ -25,12 +25,8 @@ import com.swak.config.jdbc.database.DruidDataSourceAutoConfiguration;
 import com.swak.config.jdbc.database.HikariDataSourceAutoConfiguration;
 import com.swak.config.jdbc.database.SqlLiteDataSourceAutoConfiguration;
 import com.swak.config.jdbc.sharding.ShardingJdbcConfiguration;
-import com.swak.persistence.Database;
+import com.swak.persistence.JDBCDrivers;
 import com.swak.persistence.dialect.Dialect;
-import com.swak.persistence.dialect.H2Dialect;
-import com.swak.persistence.dialect.MySQLDialect;
-import com.swak.persistence.dialect.OracleDialect;
-import com.swak.persistence.dialect.SqlLiteDialect;
 
 /**
  * JDBC 操作模板
@@ -50,7 +46,7 @@ public class JdbcTemplateAutoConfiguration {
 	private DataSource dataSource;
 	@Autowired
 	private DataSourceProperties dbProperties;
-	
+
 	public JdbcTemplateAutoConfiguration() {
 		APP_LOGGER.debug("Loading Jdbc");
 	}
@@ -77,16 +73,6 @@ public class JdbcTemplateAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(Dialect.class)
 	public Dialect dbDialect() {
-		Database db = this.dbProperties.getDb();
-		if (db == Database.h2) {
-			return new H2Dialect();
-		} else if (db == Database.mysql) {
-			return new MySQLDialect();
-		} else if (db == Database.oracle) {
-			return new OracleDialect();
-		} else if (db == Database.sqlite) {
-			return new SqlLiteDialect();
-		}
-		return new MySQLDialect();
+		return JDBCDrivers.getDialect(this.dbProperties.getUrl(), this.dbProperties.getDriverClassName());
 	}
 }

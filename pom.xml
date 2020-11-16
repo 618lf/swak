@@ -90,6 +90,7 @@
 
 		<!-- db driver -->
 		<sharding.version>3.0.0</sharding.version>
+		<mssql-jdbc.version>7.4.1.jre8</mssql-jdbc.version>
 		<mysql-jdbc.version>8.0.19</mysql-jdbc.version>
 		<mssql-jdbc.version>7.4.1.jre8</mssql-jdbc.version>
 		<h2-jdbc.version>1.4.200</h2-jdbc.version>
