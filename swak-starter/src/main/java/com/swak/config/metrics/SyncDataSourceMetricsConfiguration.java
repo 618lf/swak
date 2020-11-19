@@ -25,10 +25,10 @@ import com.zaxxer.hikari.metrics.dropwizard.CodahaleMetricsTrackerFactory;
 @ConditionalOnClass({ DataSource.class })
 @ConditionalOnBean({ MetricsFactory.class })
 @AutoConfigureAfter({ MetricsAutoConfiguration.class })
-@ConditionalOnProperty(prefix = Constants.ACTUATOR_METRICS, name = "syncdb.open", matchIfMissing = true)
 public class SyncDataSourceMetricsConfiguration {
 
 	@Bean
+	@ConditionalOnProperty(prefix = Constants.ACTUATOR_METRICS, name = "syncdb.open", matchIfMissing = true)
 	public SyncDataSourceOptionsCustomizer dataSourceOptionsCustomizer(MetricsFactory metricsFactory) {
 		return (dataSource) -> {
 			if (dataSource instanceof HikariDataSource) {
@@ -38,6 +38,13 @@ public class SyncDataSourceMetricsConfiguration {
 							new CodahaleMetricsTrackerFactory(metricsFactory.metricRegistry()));
 				}
 			}
+		};
+	}
+
+	@Bean
+	@ConditionalOnProperty(prefix = Constants.ACTUATOR_METRICS, name = "syncSql.open", matchIfMissing = true)
+	public SyncDataSourceOptionsCustomizer sqlOptionsCustomizer(MetricsFactory metricsFactory) {
+		return (dataSource) -> {
 			MetricsCollector.registryMetricsFactory(metricsFactory);
 		};
 	}

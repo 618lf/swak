@@ -22,7 +22,7 @@ import com.swak.meters.MetricsFactory;
 @ConditionalOnClass({ DataSource.class })
 @ConditionalOnBean({ MetricsFactory.class })
 @AutoConfigureAfter({ MetricsAutoConfiguration.class })
-@ConditionalOnProperty(prefix = Constants.ACTUATOR_METRICS, name = "asyncdb.open", matchIfMissing = true)
+@ConditionalOnProperty(prefix = Constants.ACTUATOR_METRICS, name = "asyncSql.open", matchIfMissing = true)
 public class AsyncDataSourceMetricsConfiguration {
 
 	@Bean
