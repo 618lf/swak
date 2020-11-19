@@ -10,7 +10,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 
 import com.swak.incrementer.IdGen;
-import com.swak.serializer.SerializationUtils;
 
 /**
  * 全局 App 对象
@@ -24,7 +23,7 @@ public final class App {
 	private ApplicationContext context = null;
 	private String version = "0.0.0";
 	private String serverSn = "server-1-1";
-	private String serialization = "kryo_pool";
+	private OS os;
 
 	public ApplicationContext getContext() {
 		return context;
@@ -53,21 +52,20 @@ public final class App {
 		return this;
 	}
 
-	public String getSerialization() {
-		return serialization;
-	}
-
-	public App setSerialization(String serialization) {
-		this.serialization = serialization;
-		return this;
+	public OS getOs() {
+		return os;
 	}
 
 	/**
 	 * 初始化
 	 */
 	public App build() {
+
+		// 系统
+		os = OS.me();
+
+		// 本机信息初始化主键
 		IdGen.setServerSn(serverSn);
-		SerializationUtils.setSerializer(serialization);
 
 		// 返回当前对象
 		ME = this;

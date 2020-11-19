@@ -11,6 +11,7 @@ import com.swak.ApplicationProperties;
 import com.swak.Version;
 import com.swak.booter.AppBooter;
 import com.swak.booter.AppShuter;
+import com.swak.serializer.SerializationUtils;
 
 /**
  * 系统配置 - 启动和关闭
@@ -34,8 +35,13 @@ public class AppAutoConfiguration {
 	 */
 	@Bean
 	public App app() {
+
+		// 全局默认序列化方案
+		SerializationUtils.setSerializer(properties.getSerialization());
+
+		// App相关信息
 		return new App().setContext(context).setVersion(Version.getVersion()).setServerSn(properties.getServerSn())
-				.setSerialization(properties.getSerialization()).build();
+				.build();
 	}
 
 	/**
