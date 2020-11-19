@@ -38,7 +38,6 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import com.p6spy.engine.event.JdbcEventListener;
 import com.swak.meters.MetricsFactory;
 import com.swak.meters.SqlMetrics;
 

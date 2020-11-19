@@ -23,7 +23,6 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
-import com.p6spy.engine.event.JdbcEventListener;
 import com.swak.meters.MetricsFactory;
 import com.swak.meters.SqlMetrics;
 

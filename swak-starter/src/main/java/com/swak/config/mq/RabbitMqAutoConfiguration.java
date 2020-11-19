@@ -17,6 +17,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.rabbitmq.client.Connection;
 import com.swak.Constants;
 import com.swak.config.customizer.RabbitOptionsCustomizer;
 import com.swak.rabbit.EventBus;
@@ -35,7 +36,7 @@ import com.swak.reactivex.threads.WorkerContext;
  * @author lifeng
  */
 @Configuration
-@ConditionalOnClass({ RabbitMQTemplate.class })
+@ConditionalOnClass({ Connection.class, RabbitMQTemplate.class })
 @EnableConfigurationProperties(RabbitMQProperties.class)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMq", matchIfMissing = true)
 public class RabbitMqAutoConfiguration {

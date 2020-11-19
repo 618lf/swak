@@ -36,8 +36,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-import com.p6spy.engine.common.ConnectionInformation;
-import com.p6spy.engine.event.JdbcEventListener;
 import com.swak.meters.MetricsFactory;
 
 /**

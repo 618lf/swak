@@ -22,7 +22,7 @@ public final class App {
 
 	private static App ME = null;
 	private ApplicationContext context = null;
-	private String version = "1.0.0_final";
+	private String version = "0.0.0";
 	private String serverSn = "server-1-1";
 	private String serialization = "kryo_pool";
 
