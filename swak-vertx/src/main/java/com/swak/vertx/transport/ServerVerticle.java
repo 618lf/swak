@@ -4,7 +4,6 @@ import com.swak.vertx.config.VertxProperties;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Promise;
-import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.net.JksOptions;
 import io.vertx.core.net.PemKeyCertOptions;
@@ -56,7 +55,7 @@ public interface ServerVerticle {
 	 * @param startPromise
 	 * @param result
 	 */
-	default void startResult(Promise<Void> startPromise, AsyncResult<HttpServer> result) {
+	default void startResult(Promise<Void> startPromise, AsyncResult<?> result) {
 		if (result.failed()) {
 			startPromise.fail(result.cause());
 		} else {
