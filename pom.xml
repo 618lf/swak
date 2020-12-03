@@ -24,8 +24,6 @@
 		<module>swak-test</module>
 		<module>swak-app</module>
 		<module>swak-mq</module>
-		<module>swak-mqtt</module>
-		<module>swak-rocketmq</module>
 		<module>swak-template</module>
 		<module>swak-metrics</module>
 		<module>swak-mongodb</module>
@@ -33,7 +31,6 @@
 		<module>swak-api</module>
 		<module>swak-rxtx</module>
 		<module>swak-jdbc-async</module>
-		<module>swak-lib</module>
 		<module>swak-generate</module>
 		<module>swak-tools</module>
 		<module>swak-dubbo-async</module>
