@@ -18,8 +18,8 @@ public class TimerMeta extends ServerMeta{
 	private Double m5_rate;
 	private Double m15_rate;
 	private Double mean_rate;
-	private Double rate_unit;
-	private Double duration_unit;
+	private String rate_unit;
+	private String duration_unit;
 
 	public String getType() {
 		return type;
@@ -157,19 +157,19 @@ public class TimerMeta extends ServerMeta{
 		this.mean_rate = mean_rate;
 	}
 
-	public Double getRate_unit() {
+	public String getRate_unit() {
 		return rate_unit;
 	}
 
-	public void setRate_unit(Double rate_unit) {
+	public void setRate_unit(String rate_unit) {
 		this.rate_unit = rate_unit;
 	}
 
-	public Double getDuration_unit() {
+	public String getDuration_unit() {
 		return duration_unit;
 	}
 
-	public void setDuration_unit(Double duration_unit) {
+	public void setDuration_unit(String duration_unit) {
 		this.duration_unit = duration_unit;
 	}
 }

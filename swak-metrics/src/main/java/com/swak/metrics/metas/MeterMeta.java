@@ -1,6 +1,6 @@
 package com.swak.metrics.metas;
 
-public class MeterMeta extends ServerMeta{
+public class MeterMeta extends ServerMeta {
 	private String type;
 	private String name;
 	private Long count;
@@ -8,7 +8,7 @@ public class MeterMeta extends ServerMeta{
 	private Double m5_rate;
 	private Double m15_rate;
 	private Double mean_rate;
-	private Double rate_unit;
+	private String rate_unit;
 
 	public String getType() {
 		return type;
@@ -66,11 +66,11 @@ public class MeterMeta extends ServerMeta{
 		this.mean_rate = mean_rate;
 	}
 
-	public Double getRate_unit() {
+	public String getRate_unit() {
 		return rate_unit;
 	}
 
-	public void setRate_unit(Double rate_unit) {
+	public void setRate_unit(String rate_unit) {
 		this.rate_unit = rate_unit;
 	}
 }

@@ -343,7 +343,6 @@ public class MetricsReporter extends ScheduledReporter {
 
 	private void appendCountIfEnabled(Map<String, Object> meta, Counting counting) {
 		if (!getDisabledMetricAttributes().contains(COUNT)) {
-			// append(b, COUNT.getCode(), counting.getCount());
 			meta.put(COUNT.getCode(), counting.getCount());
 		}
 	}
