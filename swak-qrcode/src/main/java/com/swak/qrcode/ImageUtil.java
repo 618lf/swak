@@ -16,58 +16,50 @@ public class ImageUtil {
 
 	private static final int BLACK = 0xFF000000;
 	private static final int WHITE = 0xFFFFFFFF;
-	
-	/**
-	 * 在图片中间,插入圆角的logo
-	 *
-	 * @param qrCode
-	 *            原图
-	 * @param logo
-	 *            logo地址
-	 * @param logoStyle
-	 *            logo 的样式 （圆角， 直角）
-	 * @param logoBgColor
-	 *            logo的背景色
-	 * @throws IOException
-	 */
-	public static void insertLogo(BufferedImage qrCode, BufferedImage logo, QrcodeOptions.LogoStyle logoStyle,
-			Color logoBgColor) throws IOException {
-		int QRCODE_WIDTH = qrCode.getWidth();
-		int QRCODE_HEIGHT = qrCode.getHeight();
 
-		// 获取logo图片
-		BufferedImage bf = logo;
-		int size = bf.getWidth() / 15;
-		bf = ImageUtil.makeRoundBorder(bf, logoStyle, size, logoBgColor); // 边距为logo的1/15
-
-		// logo的宽高
-		int logoRate = 12;
-		int w = bf.getWidth() > QRCODE_WIDTH * 2 / logoRate ? QRCODE_WIDTH * 2 / logoRate : bf.getWidth();
-		int h = bf.getHeight() > QRCODE_HEIGHT * 2 / logoRate ? QRCODE_HEIGHT * 2 / logoRate : bf.getHeight();
-
-		// 插入LOGO
-		Graphics2D graph = qrCode.createGraphics();
-
-		int x = (QRCODE_WIDTH - w) >> 1;
-		int y = (QRCODE_HEIGHT - h) >> 1;
-
-		graph.drawImage(bf, x, y, w, h, null);
-		graph.dispose();
-		bf.flush();
-	}
+//	/**
+//	 * 在图片中间,插入圆角的logo
+//	 *
+//	 * @param qrCode      原图
+//	 * @param logo        logo地址
+//	 * @param logoStyle   logo 的样式 （圆角， 直角）
+//	 * @param logoBgColor logo的背景色
+//	 * @throws IOException
+//	 */
+//	public static void insertLogo(BufferedImage qrCode, BufferedImage logo, QrcodeOptions.LogoStyle logoStyle,
+//			Color logoBgColor) throws IOException {
+//		int QRCODE_WIDTH = qrCode.getWidth();
+//		int QRCODE_HEIGHT = qrCode.getHeight();
+//
+//		// 获取logo图片
+//		BufferedImage bf = logo;
+//		int size = bf.getWidth() / 15;
+//		bf = ImageUtil.makeRoundBorder(bf, logoStyle, size, logoBgColor); // 边距为logo的1/15
+//
+//		// logo的宽高
+//		int logoRate = 12;
+//		int w = bf.getWidth() > QRCODE_WIDTH * 2 / logoRate ? QRCODE_WIDTH * 2 / logoRate : bf.getWidth();
+//		int h = bf.getHeight() > QRCODE_HEIGHT * 2 / logoRate ? QRCODE_HEIGHT * 2 / logoRate : bf.getHeight();
+//
+//		// 插入LOGO
+//		Graphics2D graph = qrCode.createGraphics();
+//
+//		int x = (QRCODE_WIDTH - w) >> 1;
+//		int y = (QRCODE_HEIGHT - h) >> 1;
+//
+//		graph.drawImage(bf, x, y, w, h, null);
+//		graph.dispose();
+//		bf.flush();
+//	}
 
 	/**
 	 * <p>
 	 * 生成圆角图片 & 圆角边框
 	 *
-	 * @param image
-	 *            原图
-	 * @param logoStyle
-	 *            圆角的角度
-	 * @param size
-	 *            边框的边距
-	 * @param color
-	 *            边框的颜色
+	 * @param image     原图
+	 * @param logoStyle 圆角的角度
+	 * @param size      边框的边距
+	 * @param color     边框的颜色
 	 * @return 返回带边框的圆角图
 	 */
 	public static BufferedImage makeRoundBorder(BufferedImage image, QrcodeOptions.LogoStyle logoStyle, int size,
@@ -102,10 +94,8 @@ public class ImageUtil {
 	/**
 	 * 生成圆角图片
 	 *
-	 * @param image
-	 *            原始图片
-	 * @param cornerRadius
-	 *            圆角的弧度
+	 * @param image        原始图片
+	 * @param cornerRadius 圆角的弧度
 	 * @return 返回圆角图
 	 */
 	public static BufferedImage makeRoundedCorner(BufferedImage image, int cornerRadius) {
@@ -135,33 +125,159 @@ public class ImageUtil {
 		return output;
 	}
 
+//	/**
+//	 * 绘制背景图
+//	 *
+//	 * @param source     原图
+//	 * @param background 背景图
+//	 * @param bgW        背景图宽
+//	 * @param bgH        背景图高
+//	 * @return
+//	 * @throws IOException
+//	 */
+//	public static BufferedImage drawBackground(BufferedImage source, BufferedImage background, int bgW, int bgH)
+//			throws IOException {
+//		int sW = source.getWidth();
+//		int sH = source.getHeight();
+//
+//		// 背景的图宽高不应该小于原图
+//		if (bgW < sW) {
+//			bgW = sW;
+//		}
+//
+//		if (bgH < sH) {
+//			bgH = sH;
+//		}
+//
+//		// 获取背景图
+//		BufferedImage bg = background;
+//		if (bg.getWidth() != bgW || bg.getHeight() != bgH) { // 需要缩放
+//			BufferedImage temp = new BufferedImage(bgW, bgH, BufferedImage.TYPE_INT_ARGB);
+//			temp.getGraphics().drawImage(bg.getScaledInstance(bgW, bgH, Image.SCALE_SMOOTH), 0, 0, null);
+//			bg = temp;
+//		}
+//
+//		// 绘制背景图
+//		int x = (bgW - sW) >> 1;
+//		int y = (bgH - sH) >> 1;
+//		Graphics2D g2d = bg.createGraphics();
+//		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.85f)); // 透明度， 避免看不到背景
+//		g2d.drawImage(source, x, y, sW, sH, null);
+//		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 1.0f));
+//		g2d.dispose();
+//		bg.flush();
+//		return bg;
+//	}
+
 	/**
-	 * 绘制背景图
+	 * 在图片中间,插入圆角的logo
 	 *
-	 * @param source
-	 *            原图
-	 * @param background
-	 *            背景图
-	 * @param bgW
-	 *            背景图宽
-	 * @param bgH
-	 *            背景图高
+	 * @param qrCode      原图
+	 * @param logo        logo地址
+	 * @param logoStyle   logo 的样式 （圆角， 直角）
+	 * @param logoBgColor logo的背景色
+	 * @throws IOException
+	 */
+	public static BufferedImage drawLogo(BufferedImage qrCode, BufferedImage logo, QrcodeOptions.LogoStyle logoStyle,
+			Color logoBgColor) throws IOException {
+		int QRCODE_WIDTH = qrCode.getWidth();
+		int QRCODE_HEIGHT = qrCode.getHeight();
+
+		// 获取logo图片
+		BufferedImage bf = logo;
+		int size = bf.getWidth() / 15;
+		bf = ImageUtil.makeRoundBorder(bf, logoStyle, size, logoBgColor); // 边距为logo的1/15
+
+		// logo的宽高
+		int logoRate = 12;
+		int w = bf.getWidth() > QRCODE_WIDTH * 2 / logoRate ? QRCODE_WIDTH * 2 / logoRate : bf.getWidth();
+		int h = bf.getHeight() > QRCODE_HEIGHT * 2 / logoRate ? QRCODE_HEIGHT * 2 / logoRate : bf.getHeight();
+
+		int x = (QRCODE_WIDTH - w) >> 1;
+		int y = (QRCODE_HEIGHT - h) >> 1;
+
+		return drawImage(qrCode, bf, w, h, x, y);
+	}
+
+	/**
+	 * 两张图片绘制在一起， 制在正中间
+	 *
+	 * @param background 背景图
+	 * @param image      需要绘制的图
 	 * @return
 	 * @throws IOException
 	 */
-	public static BufferedImage drawBackground(BufferedImage source, BufferedImage background, int bgW, int bgH)
-			throws IOException {
-		int sW = source.getWidth();
-		int sH = source.getHeight();
+	public static BufferedImage drawImage(BufferedImage background, BufferedImage image) throws IOException {
+		int bgW = background.getWidth();
+		int bgH = background.getHeight();
+		int imgW = image.getWidth();
+		int imgH = image.getHeight();
 
-		// 背景的图宽高不应该小于原图
-		if (bgW < sW) {
-			bgW = sW;
+		// 图片的大小不应大于原图
+		if (imgW > bgW) {
+			imgW = bgW;
 		}
 
-		if (bgH < sH) {
-			bgH = sH;
+		if (imgH > bgH) {
+			imgH = bgH;
 		}
+
+		// 绘制图片
+		int imgX = (bgW - imgW) >> 1;
+		int imgY = (bgH - imgH) >> 1;
+		return drawImage(background, image, imgW, imgH, imgX, imgY);
+	}
+
+	/**
+	 * 两张图片绘制在一起
+	 *
+	 * @param background 背景图
+	 * @param image      需要绘制的图
+	 * @param imgW       图片图宽
+	 * @param imgH       图片图高
+	 * @param imgX       图片X坐标
+	 * @param imgY       图片Y坐标
+	 * @return
+	 * @throws IOException
+	 */
+	public static BufferedImage drawImage(BufferedImage background, BufferedImage image, int imgW, int imgH, int imgX,
+			int imgY) throws IOException {
+		int bgW = background.getWidth();
+		int bgH = background.getHeight();
+
+		// 图片的大小不应大于原图
+		if (imgW > bgW) {
+			imgW = bgW;
+		}
+
+		if (imgH > bgH) {
+			imgH = bgH;
+		}
+
+		// 绘制图片 -- 透明度， 避免看不到背景
+		Graphics2D g2d = background.createGraphics();
+		if (imgW == bgW) {
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.85f));
+		}
+		g2d.drawImage(image, imgX, imgY, imgW, imgH, null);
+		if (imgW == bgW) {
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 1.0f));
+		}
+		g2d.dispose();
+		background.flush();
+		return background;
+	}
+
+	/**
+	 * 绘制背景图
+	 *
+	 * @param background 背景图
+	 * @param bgW        背景图宽
+	 * @param bgH        背景图高
+	 * @return
+	 * @throws IOException
+	 */
+	public static BufferedImage drawImage(BufferedImage background, int bgW, int bgH) throws IOException {
 
 		// 获取背景图
 		BufferedImage bg = background;
@@ -170,15 +286,6 @@ public class ImageUtil {
 			temp.getGraphics().drawImage(bg.getScaledInstance(bgW, bgH, Image.SCALE_SMOOTH), 0, 0, null);
 			bg = temp;
 		}
-
-		// 绘制背景图
-		int x = (bgW - sW) >> 1;
-		int y = (bgH - sH) >> 1;
-		Graphics2D g2d = bg.createGraphics();
-		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.85f)); // 透明度， 避免看不到背景
-		g2d.drawImage(source, x, y, sW, sH, null);
-		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 1.0f));
-		g2d.dispose();
 		bg.flush();
 		return bg;
 	}
@@ -197,6 +304,7 @@ public class ImageUtil {
 				qrCode.setRGB(x, y, bitMatrix.get(x, y) ? BLACK : WHITE);
 			}
 		}
+		qrCode.flush();
 		return qrCode;
 	}
 }

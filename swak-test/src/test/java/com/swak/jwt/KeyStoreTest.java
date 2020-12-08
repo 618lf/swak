@@ -65,7 +65,8 @@ public class KeyStoreTest {
 		// 选择一种模式
 		JWTOptions useOptions = new JWTOptions();
 		useOptions.setAlgorithm("RS256"); // 需要和keystore中的算法一致
-
+		useOptions.setExpiresInMinutes(7*24);
+		
 		// 支持的所有模式
 		JWTAuthOptions options = new JWTAuthOptions();
 		KeyStoreOptions keystore = new KeyStoreOptions();
@@ -77,6 +78,10 @@ public class KeyStoreTest {
 		return options;
 	}
 
+	//eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJuYW1lIjoi5p2O6ZSLIiwiaWQiOiIxIn0.R_3ZTMTL_gt942HYn0YZqasxggc2hrFe30Qb9wIr0UKcf8YtnBfcSXagbeahoy__sBzyDwAdNuQwy5Z6z_QOkpdqzk8w5k-dq6YD4pP4QAQnpZkUXRLPseuRY_PK28nRsTBozvsvk78vL2wQQVPZTgggrwu7WQsnkafIzQwSjgJMHiHufNauElytoOxNjX7JbrCUaVyWeN28D-O6jj-dWF72lpbx-AgSXQOoiQJzC6m-iJ3DuO-XiwEtokpzJ_DuyvAl23G9Ctzot_vbXRhZy2JnTdmT7UqN53oFUZiQYf8S3fs8-vByCfGzE_DP8dj6cXM_UTUuPZ3beawnwQfgFg
+	//eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJuYW1lIjoi5p2O6ZSLIiwiaWQiOiIxIn0.R_3ZTMTL_gt942HYn0YZqasxggc2hrFe30Qb9wIr0UKcf8YtnBfcSXagbeahoy__sBzyDwAdNuQwy5Z6z_QOkpdqzk8w5k-dq6YD4pP4QAQnpZkUXRLPseuRY_PK28nRsTBozvsvk78vL2wQQVPZTgggrwu7WQsnkafIzQwSjgJMHiHufNauElytoOxNjX7JbrCUaVyWeN28D-O6jj-dWF72lpbx-AgSXQOoiQJzC6m-iJ3DuO-XiwEtokpzJ_DuyvAl23G9Ctzot_vbXRhZy2JnTdmT7UqN53oFUZiQYf8S3fs8-vByCfGzE_DP8dj6cXM_UTUuPZ3beawnwQfgFg
+	//eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJuYW1lIjoi5p2O6ZSLIiwiaWQiOiIxIiwiZXhwIjoxNjA3MzE3OTYxfQ.Kgbl8fmEjsVV8eVA7orM8AtfZhScbTYRqSoFw3lnkPguNiUUCLjHDK-LJvE13HwIYfZGGM3ooFOp18qZrNiJFmOHCQ4BWVIxCm1Ab5qc-dq9Bf_oeC1QRtFw7LcvTcBD4rukbQAejq-gu0VMjDg23nI9SVfBIxAylteNifNBP8D6l7bXQObqsH1hLFwuWiahAGO1kbxdSuU_M4-A4z28HSzege0ov_aHi1c3KnwoyEizScZ6mDnVeRc7s2PZTl8AXwymUueBwm1_0Mo6rYjWpdzSP2iF4lRmnjfQ01zxr6DGIcjjmXZTpV5a39O5l8RMVBJQjKJO_0mYU20tgD4F8w
+	//eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJuYW1lIjoi5p2O6ZSLIiwiaWQiOiIxIiwiZXhwIjoxNjA3MzE3OTgxfQ.jB6Ag7AnaJDY4suG9cWEXgIATMYyq6_l2Nz6RNXUJHr0KTXthVcYdOr87DnSCltBH9xto8QVqnFMyv9wRz-A4r2jZpk6yB37Mqq2dr-2uCyX49mkz9FcTdFmGbQ049WREmJv0BAwz912PhC-RoCrOfRuv3nf-7g6Hyyv4hJp1VfAo_ZX8TLYY_y_7ad9y7BNYISJkk_JvgRb_uhiMcH1bFDpn7Xaf9QOvYsWlOr52jQClhLeTtHkmAx8lVvXkLQy23pCy_9CiqXsliX6fpl0xSMi0Wn9SkPiylA474rhIyunPG8QDwcy4RS31CBQKvw7Aq4CVi3bgmygYB1fhsqJow
 	public static void main(String[] args) {
 		JWTAuthOptions config = KeyStoreOptions();
 		JwtAuthProvider jwt = new JwtAuthProvider(config);
@@ -84,6 +89,9 @@ public class KeyStoreTest {
 		payload.put("id", "1");
 		payload.put("name", "李锋");
 		String token = jwt.generateToken(payload);
-		System.out.println("生成的 token:" + token);
+		System.out.println(token);
+		
+		JWTPayload me = jwt.verifyToken(token);
+		System.out.println(me.getLong("exp"));
 	}
 }

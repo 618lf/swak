@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,407 +19,491 @@ import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
 import com.swak.codec.Encodes;
+import com.swak.utils.FileUtils;
+import com.swak.utils.StringUtils;
 
 /**
  * 二维码生成服务
+ * 
  * @author lifeng
  */
 public class QrcodeGen {
-	
+
 	private static final int QUIET_ZONE_SIZE = 4;
-	
+
 	/**
 	 * 入口
+	 * 
 	 * @param content
 	 * @return
 	 */
-    public static Builder of(String content) {
-        return new Builder().setMsg(content);
-    }
-	
+	public static Builder of(String content) {
+		return new Builder().setMsg(content);
+	}
+
+	/**
+	 * 创建为base64
+	 * 
+	 * @param qrCodeOptions
+	 * @return
+	 * @throws WriterException
+	 * @throws IOException
+	 */
 	private static String asString(QrcodeOptions qrCodeOptions) throws WriterException, IOException {
 		BitMatrixEx bitMatrix = encode(qrCodeOptions);
 		BufferedImage bufferedImage = toBufferedImage(qrCodeOptions, bitMatrix);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, qrCodeOptions.getPicType(), outputStream);
-        return Encodes.encodeBase64(outputStream.toByteArray());
-    }
-	
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		ImageIO.write(bufferedImage, qrCodeOptions.getPicType(), outputStream);
+		return Encodes.encodeBase64(outputStream.toByteArray());
+	}
+
+	/**
+	 * 写入文件
+	 * 
+	 * @param qrCodeOptions
+	 * @return
+	 * @throws WriterException
+	 * @throws IOException
+	 */
+	private static File asFile(QrcodeOptions qrCodeOptions) throws WriterException, IOException {
+		BitMatrixEx bitMatrix = encode(qrCodeOptions);
+		BufferedImage bufferedImage = toBufferedImage(qrCodeOptions, bitMatrix);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		ImageIO.write(bufferedImage, qrCodeOptions.getPicType(), outputStream);
+		File dest = qrCodeOptions.getOutFile();
+		if (dest == null) {
+			dest = FileUtils.tempFile(qrCodeOptions.getPicType());
+		} else {
+			dest = FileUtils.newFile(qrCodeOptions.getOutFile().getAbsolutePath());
+		}
+		FileUtils.write(dest, outputStream.toByteArray());
+		return dest;
+	}
+
 	private static BufferedImage toBufferedImage(QrcodeOptions qrCodeConfig, BitMatrixEx bitMatrix) throws IOException {
-        int qrCodeWidth = bitMatrix.getWidth();
-        int qrCodeHeight = bitMatrix.getHeight();
-        BufferedImage qrCode = ImageUtil.drawQrcode(qrCodeConfig, bitMatrix);
 
+		int qrCodeWidth = bitMatrix.getWidth();
+		int qrCodeHeight = bitMatrix.getHeight();
+		BufferedImage qrCode = ImageUtil.drawQrcode(qrCodeConfig, bitMatrix);
 
-        // 若二维码的实际宽高和预期的宽高不一致, 则缩放
-        int realQrCodeWidth = qrCodeConfig.getW();
-        int realQrCodeHeight = qrCodeConfig.getH();
-        if (qrCodeWidth != realQrCodeWidth || qrCodeHeight != realQrCodeHeight) {
-            BufferedImage tmp = new BufferedImage(realQrCodeWidth, realQrCodeHeight, BufferedImage.TYPE_INT_RGB);
-            tmp.getGraphics().drawImage(
-                    qrCode.getScaledInstance(realQrCodeWidth, realQrCodeHeight,
-                            Image.SCALE_SMOOTH), 0, 0, null);
-            qrCode = tmp;
-        }
+		// 若二维码的实际宽高和预期的宽高不一致, 则缩放
+		int realQrCodeWidth = qrCodeConfig.getW();
+		int realQrCodeHeight = qrCodeConfig.getH();
+		if (qrCodeWidth != realQrCodeWidth || qrCodeHeight != realQrCodeHeight) {
+			BufferedImage tmp = new BufferedImage(realQrCodeWidth, realQrCodeHeight, BufferedImage.TYPE_INT_RGB);
+			tmp.getGraphics().drawImage(qrCode.getScaledInstance(realQrCodeWidth, realQrCodeHeight, Image.SCALE_SMOOTH),
+					0, 0, null);
+			qrCode = tmp;
+		}
 
+		// 插入logo
+		if (qrCodeConfig.getLogo() != null) {
+			ImageUtil.drawLogo(qrCode, qrCodeConfig.getLogo(), qrCodeConfig.getLogoStyle(),
+					qrCodeConfig.getLogoBgColor());
+		}
 
-        // 绘制背景图
-        if (qrCodeConfig.getBackground() != null) {
-            qrCode = ImageUtil.drawBackground(qrCode,
-                    qrCodeConfig.getBackground(),
-                    qrCodeConfig.getBgW(),
-                    qrCodeConfig.getBgH());
-        }
+		// 绘制背景图
+		if (qrCodeConfig.getBackground() != null) {
+			BufferedImage bg = ImageUtil.drawImage(qrCodeConfig.getBackground(), qrCodeConfig.getBgW(),
+					qrCodeConfig.getBgH());
+			if (qrCodeConfig.getX() != null && qrCodeConfig.getY() != null) {
+				qrCode = ImageUtil.drawImage(bg, qrCode, qrCode.getWidth(), qrCode.getHeight(), qrCodeConfig.getX(),
+						qrCodeConfig.getY());
+			} else {
+				qrCode = ImageUtil.drawImage(bg, qrCode);
+			}
+		}
 
+		return qrCode;
+	}
 
-        // 插入logo
-        if (qrCodeConfig.getLogo() != null) {
-            ImageUtil.insertLogo(qrCode,
-                    qrCodeConfig.getLogo(),
-                    qrCodeConfig.getLogoStyle(),
-                    qrCodeConfig.getLogoBgColor());
-        }
-
-        return qrCode;
-    }
-    
 	private static BitMatrixEx encode(QrcodeOptions qrcodeOptions) throws WriterException {
 		ErrorCorrectionLevel errorCorrectionLevel = ErrorCorrectionLevel.L;
 		int quietZone = 1;
 		if (qrcodeOptions.getHints() != null) {
-            if (qrcodeOptions.getHints().containsKey(EncodeHintType.ERROR_CORRECTION)) {
-                errorCorrectionLevel = ErrorCorrectionLevel.valueOf(qrcodeOptions.getHints().get(EncodeHintType.ERROR_CORRECTION).toString());
-            }
-            if (qrcodeOptions.getHints().containsKey(EncodeHintType.MARGIN)) {
-                quietZone = Integer.parseInt(qrcodeOptions.getHints().get(EncodeHintType.MARGIN).toString());
-            }
+			if (qrcodeOptions.getHints().containsKey(EncodeHintType.ERROR_CORRECTION)) {
+				errorCorrectionLevel = ErrorCorrectionLevel
+						.valueOf(qrcodeOptions.getHints().get(EncodeHintType.ERROR_CORRECTION).toString());
+			}
+			if (qrcodeOptions.getHints().containsKey(EncodeHintType.MARGIN)) {
+				quietZone = Integer.parseInt(qrcodeOptions.getHints().get(EncodeHintType.MARGIN).toString());
+			}
 
-            if (quietZone > QUIET_ZONE_SIZE) {
-                quietZone = QUIET_ZONE_SIZE;
-            } else if (quietZone < 0) {
-                quietZone = 0;
-            }
-        }
-		
+			if (quietZone > QUIET_ZONE_SIZE) {
+				quietZone = QUIET_ZONE_SIZE;
+			} else if (quietZone < 0) {
+				quietZone = 0;
+			}
+		}
+
 		QRCode code = Encoder.encode(qrcodeOptions.getMsg(), errorCorrectionLevel, qrcodeOptions.getHints());
-	    return renderResult(code, qrcodeOptions.getW(), qrcodeOptions.getH(), quietZone);
+		return renderResult(code, qrcodeOptions.getW(), qrcodeOptions.getH(), quietZone);
 	}
-	
+
 	private static BitMatrixEx renderResult(QRCode code, int width, int height, int quietZone) {
 		ByteMatrix input = code.getMatrix();
-        if (input == null) {
-            throw new IllegalStateException();
-        }
+		if (input == null) {
+			throw new IllegalStateException();
+		}
 
-        // xxx 二维码宽高相等, 即 qrWidth == qrHeight
-        int inputWidth = input.getWidth();
-        int inputHeight = input.getHeight();
-        int qrWidth = inputWidth + (quietZone * 2);
-        int qrHeight = inputHeight + (quietZone * 2);
+		// xxx 二维码宽高相等, 即 qrWidth == qrHeight
+		int inputWidth = input.getWidth();
+		int inputHeight = input.getHeight();
+		int qrWidth = inputWidth + (quietZone * 2);
+		int qrHeight = inputHeight + (quietZone * 2);
 
+		// 白边过多时, 缩放
+		int minSize = Math.min(width, height);
+		int scale = calculateScale(qrWidth, minSize);
+		if (scale > 0) {
+			int padding, tmpValue;
+			// 计算边框留白
+			padding = (minSize - qrWidth * scale) / QUIET_ZONE_SIZE * quietZone;
+			tmpValue = qrWidth * scale + padding;
+			if (width == height) {
+				width = tmpValue;
+				height = tmpValue;
+			} else if (width > height) {
+				width = width * tmpValue / height;
+				height = tmpValue;
+			} else {
+				height = height * tmpValue / width;
+				width = tmpValue;
+			}
+		}
 
-        // 白边过多时, 缩放
-        int minSize = Math.min(width, height);
-        int scale = calculateScale(qrWidth, minSize);
-        if (scale > 0) {
-            int padding, tmpValue;
-            // 计算边框留白
-            padding = (minSize - qrWidth * scale) / QUIET_ZONE_SIZE * quietZone;
-            tmpValue = qrWidth * scale + padding;
-            if (width == height) {
-                width = tmpValue;
-                height = tmpValue;
-            } else if (width > height) {
-                width = width * tmpValue / height;
-                height = tmpValue;
-            } else {
-                height = height * tmpValue / width;
-                width = tmpValue;
-            }
-        }
+		int outputWidth = Math.max(width, qrWidth);
+		int outputHeight = Math.max(height, qrHeight);
 
-        int outputWidth = Math.max(width, qrWidth);
-        int outputHeight = Math.max(height, qrHeight);
+		int multiple = Math.min(outputWidth / qrWidth, outputHeight / qrHeight);
+		int leftPadding = (outputWidth - (inputWidth * multiple)) / 2;
+		int topPadding = (outputHeight - (inputHeight * multiple)) / 2;
 
-        int multiple = Math.min(outputWidth / qrWidth, outputHeight / qrHeight);
-        int leftPadding = (outputWidth - (inputWidth * multiple)) / 2;
-        int topPadding = (outputHeight - (inputHeight * multiple)) / 2;
+		BitMatrix output = new BitMatrix(outputWidth, outputHeight);
 
-        BitMatrix output = new BitMatrix(outputWidth, outputHeight);
+		BitMatrixEx res = new BitMatrixEx(output);
+		res.setLeftPadding(leftPadding);
+		res.setTopPadding(topPadding);
+		res.setMultiple(multiple);
 
-        BitMatrixEx res = new BitMatrixEx(output);
-        res.setLeftPadding(leftPadding);
-        res.setTopPadding(topPadding);
-        res.setMultiple(multiple);
+		// 获取位置探测图形的size，根据源码分析，有两种size的可能
+		// {@link
+		// com.google.zxing.qrcode.encoder.MatrixUtil.embedPositionDetectionPatternsAndSeparators}
+		int detectCornerSize = input.get(0, 5) == 1 ? 7 : 5;
 
-        // 获取位置探测图形的size，根据源码分析，有两种size的可能
-        // {@link com.google.zxing.qrcode.encoder.MatrixUtil.embedPositionDetectionPatternsAndSeparators}
-        int detectCornerSize = input.get(0, 5) == 1 ? 7 : 5;
+		for (int inputY = 0, outputY = topPadding; inputY < inputHeight; inputY++, outputY += multiple) {
+			// Write the contents of this row of the barcode
+			for (int inputX = 0, outputX = leftPadding; inputX < inputWidth; inputX++, outputX += multiple) {
+				if (input.get(inputX, inputY) == 1) {
+					output.setRegion(outputX, outputY, multiple, multiple);
+				}
 
-        for (int inputY = 0, outputY = topPadding; inputY < inputHeight; inputY++, outputY += multiple) {
-            // Write the contents of this row of the barcode
-            for (int inputX = 0, outputX = leftPadding; inputX < inputWidth; inputX++, outputX += multiple) {
-                if (input.get(inputX, inputY) == 1) {
-                    output.setRegion(outputX, outputY, multiple, multiple);
-                }
+				// 设置三个位置探测图形
+				if (inputX < detectCornerSize && inputY < detectCornerSize // 左上角
+						|| (inputX < detectCornerSize && inputY >= inputHeight - detectCornerSize) // 左下脚
+						|| (inputX >= inputWidth - detectCornerSize && inputY < detectCornerSize)) { // 右上角
+					res.setRegion(outputX, outputY, multiple, multiple);
+				}
+			}
+		}
 
-
-                // 设置三个位置探测图形
-                if (inputX < detectCornerSize && inputY < detectCornerSize // 左上角
-                        || (inputX < detectCornerSize && inputY >= inputHeight - detectCornerSize) // 左下脚
-                        || (inputX >= inputWidth - detectCornerSize && inputY < detectCornerSize)) { // 右上角
-                    res.setRegion(outputX, outputY, multiple, multiple);
-                }
-            }
-        }
-
-        return res;
+		return res;
 	}
-	
-    private static int calculateScale(int qrCodeSize, int expectSize) {
-        if (qrCodeSize >= expectSize) {
-            return 0;
-        }
 
-        int scale = expectSize / qrCodeSize;
-        int abs = expectSize - scale * qrCodeSize;
-        if (abs < expectSize * 0.15) {
-            return 0;
-        }
+	private static int calculateScale(int qrCodeSize, int expectSize) {
+		if (qrCodeSize >= expectSize) {
+			return 0;
+		}
 
-        return scale;
-    }
-    
-    /**
-     * 
-     * @author lifeng
-     */
-    public static class Builder {
-    	
-    	/**
-         * The message to put into QrCode
-         */
-        private String msg;
+		int scale = expectSize / qrCodeSize;
+		int abs = expectSize - scale * qrCodeSize;
+		if (abs < expectSize * 0.15) {
+			return 0;
+		}
 
-        /**
-         * background image
-         */
-        private BufferedImage background;
-        
-        /**
-         * background image width
-         */
-        private Integer bgW;
+		return scale;
+	}
 
+	/**
+	 * 
+	 * @author lifeng
+	 */
+	public static class Builder {
 
-        /**
-         * background image height
-         */
-        private Integer bgH;
+		/**
+		 * The message to put into QrCode
+		 */
+		private String msg;
 
-        /**
-         * qrcode center logo
-         */
-        private BufferedImage logo;
+		/**
+		 * background image
+		 */
+		private BufferedImage background;
 
-        /**
-         * logo的样式
-         */
-        private QrcodeOptions.LogoStyle logoStyle = QrcodeOptions.LogoStyle.NORMAL;
+		/**
+		 * background image width
+		 */
+		private Integer bgW;
 
-        /**
-         * logo的边框背景色
-         */
-        private Color logoBgColor = Color.WHITE;
+		/**
+		 * background image height
+		 */
+		private Integer bgH;
 
-        /**
-         * qrcode image width
-         */
-        private Integer w;
+		/**
+		 * qrcode center logo
+		 */
+		private BufferedImage logo;
 
-        /**
-         * qrcode image height
-         */
-        private Integer h;
+		/**
+		 * logo的样式
+		 */
+		private QrcodeOptions.LogoStyle logoStyle = QrcodeOptions.LogoStyle.NORMAL;
 
-        /**
-         * qrcode message's code, default UTF-8
-         */
-        private String code = "utf-8";
+		/**
+		 * logo的边框背景色
+		 */
+		private Color logoBgColor = Color.WHITE;
 
-        /**
-         * 0 - 4
-         */
-        private Integer padding;
+		/**
+		 * qrcode image width
+		 */
+		private Integer w;
 
-        /**
-         * error level, default H
-         */
-        private ErrorCorrectionLevel errorCorrection = ErrorCorrectionLevel.H;
+		/**
+		 * qrcode image height
+		 */
+		private Integer h;
 
-        /**
-         * output qrcode image type, default png
-         */
-        private String picType = "png";
+		/**
+		 * 生成二维码的X坐标
+		 */
+		private Integer x;
 
-        /**
-         * {@link QrCodeOptions.DrawStyle#name}
-         * draw qrcode msg info style
-         * 绘制二维码信息的样式
-         */
-        private String drawStyle;
+		/**
+		 * 生成二维码的Y坐标
+		 */
+		private Integer y;
 
-        /**
-         * draw qrcode msg info img
-         * 代表二维码信息的图片
-         */
-        private String drawImg;
-        
-        private QrcodeOptions build() {
+		/**
+		 * qrcode message's code, default UTF-8
+		 */
+		private String code = "utf-8";
 
-        	QrcodeOptions qrCodeConfig = new QrcodeOptions();
-            qrCodeConfig.setMsg(this.msg);
-            qrCodeConfig.setH(this.getH());
-            qrCodeConfig.setW(this.getW());
+		/**
+		 * 0 - 4
+		 */
+		private Integer padding;
 
+		/**
+		 * error level, default H
+		 */
+		private ErrorCorrectionLevel errorCorrection = ErrorCorrectionLevel.H;
 
-            // 设置背景图信息
-            qrCodeConfig.setBackground(this.background);
-            qrCodeConfig.setBgW(this.getBgW());
-            qrCodeConfig.setBgH(this.getBgH());
+		/**
+		 * output qrcode image type, default png
+		 */
+		private String picType = "png";
 
-            qrCodeConfig.setLogo(logo);
-            qrCodeConfig.setLogoStyle(logoStyle);
-            qrCodeConfig.setLogoBgColor(logoBgColor);
-            qrCodeConfig.setPicType(picType);
+		/**
+		 * {@link QrCodeOptions.DrawStyle#name} draw qrcode msg info style 绘制二维码信息的样式
+		 */
+		private String drawStyle;
 
-            Map<EncodeHintType, Object> hints = new HashMap<>(3);
-            hints.put(EncodeHintType.ERROR_CORRECTION, errorCorrection);
-            hints.put(EncodeHintType.CHARACTER_SET, code);
-            hints.put(EncodeHintType.MARGIN, this.getPadding());
-            qrCodeConfig.setHints(hints);
+		/**
+		 * draw qrcode msg info img 代表二维码信息的图片
+		 */
+		private String drawImg;
 
-            // 设置绘制二维码信息的style
-            qrCodeConfig.setDrawStyle(QrcodeOptions.DrawStyle.getDrawStyle(drawStyle));
-            qrCodeConfig.setDrawImg(drawImg);
-            return qrCodeConfig;
-        }
-        
-        public Builder setMsg(String msg) {
-            this.msg = msg;
-            return this;
-        }
+		/**
+		 * 输出路径
+		 */
+		private String outFile;
 
-        public Builder setBackground(BufferedImage background) {
-            this.background = background;
-            return this;
-        }
+		private QrcodeOptions build() {
 
-        public Builder setLogo(BufferedImage logo) {
-            this.logo = logo;
-            return this;
-        }
+			QrcodeOptions qrCodeConfig = new QrcodeOptions();
+			qrCodeConfig.setMsg(this.msg);
+			qrCodeConfig.setH(this.getH());
+			qrCodeConfig.setW(this.getW());
 
-        public Builder setLogoStyle(QrcodeOptions.LogoStyle logoStyle) {
-            this.logoStyle = logoStyle;
-            return this;
-        }
+			// 在背景图中的什么位置
+			qrCodeConfig.setX(this.x);
+			qrCodeConfig.setY(this.y);
 
-        public Builder setLogoBgColor(int color) {
-            this.logoBgColor = ColorUtil.int2color(color);
-            return this;
-        }
+			// 设置背景图信息
+			qrCodeConfig.setBackground(this.background);
+			qrCodeConfig.setBgW(this.getBgW());
+			qrCodeConfig.setBgH(this.getBgH());
 
-        public Builder setW(Integer w) {
-            this.w = w;
-            return this;
-        }
+			qrCodeConfig.setLogo(logo);
+			qrCodeConfig.setLogoStyle(logoStyle);
+			qrCodeConfig.setLogoBgColor(logoBgColor);
+			qrCodeConfig.setPicType(picType);
 
-        public Builder setH(Integer h) {
-            this.h = h;
-            return this;
-        }
+			Map<EncodeHintType, Object> hints = new HashMap<>(3);
+			hints.put(EncodeHintType.ERROR_CORRECTION, errorCorrection);
+			hints.put(EncodeHintType.CHARACTER_SET, code);
+			hints.put(EncodeHintType.MARGIN, this.getPadding());
+			qrCodeConfig.setHints(hints);
 
-        public Builder setCode(String code) {
-            this.code = code;
-            return this;
-        }
+			// 设置绘制二维码信息的style
+			qrCodeConfig.setDrawStyle(QrcodeOptions.DrawStyle.getDrawStyle(drawStyle));
+			qrCodeConfig.setDrawImg(drawImg);
 
-        public Builder setPadding(Integer padding) {
-            this.padding = padding;
-            return this;
-        }
+			// 设置文件输出
+			if (StringUtils.isNotBlank(outFile)) {
+				qrCodeConfig.setOutFile(new File(outFile));
+			}
+			return qrCodeConfig;
+		}
 
-        public Builder setPicType(String picType) {
-            this.picType = picType;
-            return this;
-        }
+		public Builder setX(Integer x) {
+			this.x = x;
+			return this;
+		}
 
-        public Builder setErrorCorrection(ErrorCorrectionLevel errorCorrection) {
-            this.errorCorrection = errorCorrection;
-            return this;
-        }
+		public Builder setY(Integer y) {
+			this.y = y;
+			return this;
+		}
 
-        public Builder setDrawStyle(String drawStyle) {
-            this.drawStyle = drawStyle;
-            return this;
-        }
+		public Builder setMsg(String msg) {
+			this.msg = msg;
+			return this;
+		}
 
-        public Builder setDrawImg(String drawImg) {
-            this.drawImg = drawImg;
-            return this;
-        }
-        
-		public void setBgW(Integer bgW) {
+		public Builder setBackground(BufferedImage background) {
+			this.background = background;
+			return this;
+		}
+
+		public Builder setLogo(BufferedImage logo) {
+			this.logo = logo;
+			return this;
+		}
+
+		public Builder setLogoStyle(QrcodeOptions.LogoStyle logoStyle) {
+			this.logoStyle = logoStyle;
+			return this;
+		}
+
+		public Builder setLogoBgColor(int color) {
+			this.logoBgColor = ColorUtil.int2color(color);
+			return this;
+		}
+
+		public Builder setW(Integer w) {
+			this.w = w;
+			return this;
+		}
+
+		public Builder setH(Integer h) {
+			this.h = h;
+			return this;
+		}
+
+		public Builder setCode(String code) {
+			this.code = code;
+			return this;
+		}
+
+		public Builder setPadding(Integer padding) {
+			this.padding = padding;
+			return this;
+		}
+
+		public Builder setPicType(String picType) {
+			this.picType = picType;
+			return this;
+		}
+
+		public Builder setErrorCorrection(ErrorCorrectionLevel errorCorrection) {
+			this.errorCorrection = errorCorrection;
+			return this;
+		}
+
+		public Builder setDrawStyle(String drawStyle) {
+			this.drawStyle = drawStyle;
+			return this;
+		}
+
+		public Builder setDrawImg(String drawImg) {
+			this.drawImg = drawImg;
+			return this;
+		}
+
+		public Builder setBgW(Integer bgW) {
 			this.bgW = bgW;
+			return this;
 		}
 
-		public void setBgH(Integer bgH) {
+		public Builder setBgH(Integer bgH) {
 			this.bgH = bgH;
+			return this;
 		}
 
-		// 提供的初始方法
-        public Integer getW() {
-            return w == null ? (h == null ? 200 : h) : w;
-        }
-        public Integer getH() {
-            return h == null ? (w == null ? 200 : w) : h;
-        }
-        public Integer getBgW() {
-        	return bgW == null ? getW() : bgW;
+		public Integer getW() {
+			return w == null ? (h == null ? 200 : h) : w;
 		}
-        public Integer getBgH() {
-        	return bgH == null ? getH() : bgH;
+
+		public Integer getH() {
+			return h == null ? (w == null ? 200 : w) : h;
 		}
-        public Integer getPadding() {
-            if (padding == null) {
-                return 1;
-            }
 
-            if (padding < 0) {
-                return 0;
-            }
+		public Integer getBgW() {
+			return bgW == null ? getW() : bgW;
+		}
 
-            if (padding > 4) {
-                return 4;
-            }
+		public Integer getBgH() {
+			return bgH == null ? getH() : bgH;
+		}
 
-            return padding;
-        }
-        
-        /**
-         * 生成图片
-         * @return
-         * @throws IOException
-         * @throws WriterException
-         */
-        public String asString(){
-            try {
+		public Integer getPadding() {
+			if (padding == null) {
+				return 1;
+			}
+
+			if (padding < 0) {
+				return 0;
+			}
+
+			if (padding > 4) {
+				return 4;
+			}
+
+			return padding;
+		}
+
+		public Builder setOutFile(String outFile) {
+			this.outFile = outFile;
+			return this;
+		}
+
+		/**
+		 * 生成图片
+		 * 
+		 * @return base64
+		 */
+		public String asString() {
+			try {
 				return QrcodeGen.asString(build());
 			} catch (Exception e) {
-				e.printStackTrace();
 				return null;
 			}
-        }
-    }
+		}
+
+		/**
+		 * 生成图片
+		 * 
+		 * @return 文件
+		 */
+		public File asFile() {
+			try {
+				return QrcodeGen.asFile(build());
+			} catch (Exception e) {
+				return null;
+			}
+		}
+	}
 }
