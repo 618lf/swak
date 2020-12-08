@@ -5,7 +5,7 @@ package com.swak.metrics.metas;
  * 
  * @author lifeng
  */
-public class GaugeMeta {
+public class GaugeMeta extends ServerMeta{
 
 	private String type;
 	private String name;

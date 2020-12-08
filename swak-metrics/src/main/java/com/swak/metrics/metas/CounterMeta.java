@@ -5,12 +5,13 @@ package com.swak.metrics.metas;
  * 
  * @author lifeng
  */
-public class CounterMeta {
+public class CounterMeta extends ServerMeta{
 
 	private String type;
 	private String name;
 	private Long value;
 
+	
 	public String getType() {
 		return type;
 	}

@@ -1,6 +1,6 @@
 package com.swak.metrics.metas;
 
-public class HistogramMeta {
+public class HistogramMeta extends ServerMeta{
 
 	private String type;
 	private String name;

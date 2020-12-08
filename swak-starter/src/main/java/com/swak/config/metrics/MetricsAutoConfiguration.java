@@ -5,6 +5,7 @@ import static com.swak.Application.APP_LOGGER;
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -15,7 +16,6 @@ import org.springframework.context.annotation.Configuration;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Reporter;
-import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.jvm.BufferPoolMetricSet;
 import com.codahale.metrics.jvm.ClassLoadingGaugeSet;
 import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
@@ -24,9 +24,10 @@ import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.swak.Constants;
 import com.swak.meters.MetricBinder;
+import com.swak.meters.Metrics;
 import com.swak.meters.MetricsFactory;
 import com.swak.metrics.impl.CodahaleMetricsFactory;
-import com.swak.metrics.impl.MetricsLogger;
+import com.swak.metrics.reporter.MetricsReporter;
 import com.swak.reactivex.threads.Contexts;
 
 /**
@@ -86,9 +87,10 @@ public class MetricsAutoConfiguration {
 		 */
 		@Bean
 		@ConditionalOnMissingBean(Reporter.class)
-		public Slf4jReporter slf4jReporter(MetricsFactory metricsFactory) {
-			return Slf4jReporter.forRegistry(metricsFactory.metricRegistry()).outputTo(MetricsLogger.me())
-					.convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS).build();
+		public MetricsReporter metricsReporter(MetricsFactory metricsFactory) {
+			return MetricsReporter.forRegistry(metricsFactory.metricRegistry())
+					.outputTo(LoggerFactory.getLogger(Metrics.class)).convertRatesTo(TimeUnit.SECONDS)
+					.convertDurationsTo(TimeUnit.MILLISECONDS).build();
 		}
 	}
 

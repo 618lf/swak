@@ -1,4 +1,4 @@
-package com.swak.metrics.impl;
+package com.swak.metrics.json;
 
 import java.util.concurrent.TimeUnit;
 
@@ -10,6 +10,8 @@ import com.codahale.metrics.Metered;
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.Snapshot;
 import com.codahale.metrics.Timer;
+import com.swak.metrics.impl.ThroughputMeter;
+import com.swak.metrics.impl.ThroughputTimer;
 
 @SuppressWarnings("rawtypes")
 public class Helper {

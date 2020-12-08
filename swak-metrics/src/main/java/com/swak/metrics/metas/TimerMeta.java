@@ -1,7 +1,7 @@
 package com.swak.metrics.metas;
 
-public class TimerMeta {
-	private String type;
+public class TimerMeta extends ServerMeta{
+	private String type = "TIMER";
 	private String name;
 	private Long count;
 	private Double min;

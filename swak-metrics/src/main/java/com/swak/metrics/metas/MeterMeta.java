@@ -1,6 +1,6 @@
 package com.swak.metrics.metas;
 
-public class MeterMeta {
+public class MeterMeta extends ServerMeta{
 	private String type;
 	private String name;
 	private Long count;

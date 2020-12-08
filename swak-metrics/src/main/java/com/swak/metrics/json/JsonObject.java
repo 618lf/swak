@@ -1,4 +1,4 @@
-package com.swak.metrics.impl;
+package com.swak.metrics.json;
 
 import java.util.Map;
 
