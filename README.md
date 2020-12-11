@@ -5,7 +5,7 @@
 <dependency> 
 	<groupId>com.github.618lf</groupId>
 	<artifactId>swak-starter</artifactId>
-	<version>1.0.0_final</version>
+	<version>1.2.0_final</version>
 </dependency>
 ````
 # swak
