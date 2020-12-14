@@ -104,8 +104,14 @@ public class SqlSession {
 	<T> void selectTx(boolean transaction, Sql<T> sql) {
 		try {
 			if (sql instanceof Dml || transaction) {
-				this.tx = this.connection.begin();
-				this.prepared.complete(this.tx);
+				this.connection.begin().onComplete(res -> {
+					if (res.succeeded()) {
+						this.tx = res.result();
+						this.prepared.complete(this.connection);
+					} else {
+						this.prepared.completeExceptionally(res.cause());
+					}
+				});
 			} else {
 				this.prepared.complete(this.connection);
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2011-2019 Contributors to the Eclipse Foundation
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -15,6 +15,7 @@ import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpResponseStatus.SWITCHING_PROTOCOLS;
 import static io.vertx.core.http.impl.HttpUtils.SC_BAD_GATEWAY;
 import static io.vertx.core.http.impl.HttpUtils.SC_SWITCHING_PROTOCOLS;
+import static io.vertx.core.spi.metrics.Metrics.METRICS_ENABLED;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
@@ -28,9 +29,14 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.MultiMap;
 import io.vertx.core.Promise;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpVersion;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.http.WebSocketFrame;
+import io.vertx.core.impl.ContextInternal;
+import io.vertx.core.spi.metrics.HttpServerMetrics;
 
 /**
  * This class is optimised for performance when used on the same event loop.
@@ -40,26 +46,32 @@ import io.vertx.core.http.WebSocketFrame;
  * used on the same event loop, then we benefit from biased locking which makes
  * the overhead of synchronized near zero.
  * 
- * 可以获取原生的请求， 仅仅允许连接的时候使用
- * 
+ * 返回原生的请求
+ *
  * @author <a href="http://tfox.org">Tim Fox</a>
  *
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ServerWebSocketImpl extends WebSocketImplBase<ServerWebSocketImpl> implements ServerWebSocket {
 
 	private final Http1xServerConnection conn;
+	private final String scheme;
+	private final String host;
 	private final String uri;
 	private final String path;
 	private final String query;
 	private final WebSocketServerHandshaker handshaker;
-	private HttpServerRequestImpl request;
+	private Http1xServerRequest request;
 	private Integer status;
 	private Promise<Integer> handshakePromise;
 
-	ServerWebSocketImpl(Http1xServerConnection conn, boolean supportsContinuation, HttpServerRequestImpl request,
-			WebSocketServerHandshaker handshaker, int maxWebSocketFrameSize, int maxWebSocketMessageSize) {
-		super(conn, supportsContinuation, maxWebSocketFrameSize, maxWebSocketMessageSize);
+	ServerWebSocketImpl(ContextInternal context, Http1xServerConnection conn, boolean supportsContinuation,
+			Http1xServerRequest request, WebSocketServerHandshaker handshaker, int maxWebSocketFrameSize,
+			int maxWebSocketMessageSize) {
+		super(context, conn, supportsContinuation, maxWebSocketFrameSize, maxWebSocketMessageSize);
 		this.conn = conn;
+		this.scheme = request.scheme();
+		this.host = request.host();
 		this.uri = request.uri();
 		this.path = request.path();
 		this.query = request.query();
@@ -67,6 +79,16 @@ public class ServerWebSocketImpl extends WebSocketImplBase<ServerWebSocketImpl> 
 		this.handshaker = handshaker;
 
 		headers(request.headers());
+	}
+
+	@Override
+	public String scheme() {
+		return scheme;
+	}
+
+	@Override
+	public String host() {
+		return host;
 	}
 
 	@Override
@@ -117,11 +139,8 @@ public class ServerWebSocketImpl extends WebSocketImplBase<ServerWebSocketImpl> 
 	}
 
 	@Override
-	public void close(short statusCode, String reason, Handler<AsyncResult<Void>> handler) {
+	public Future<Void> close(short statusCode, String reason) {
 		synchronized (conn) {
-			if (closed) {
-				return;
-			}
 			if (status == null) {
 				if (handshakePromise == null) {
 					tryHandshake(101);
@@ -130,11 +149,11 @@ public class ServerWebSocketImpl extends WebSocketImplBase<ServerWebSocketImpl> 
 				}
 			}
 		}
-		super.close(statusCode, reason, handler);
+		return super.close(statusCode, reason);
 	}
 
 	@Override
-	public ServerWebSocketImpl writeFrame(WebSocketFrame frame, Handler<AsyncResult<Void>> handler) {
+	public Future<Void> writeFrame(WebSocketFrame frame) {
 		synchronized (conn) {
 			Boolean check = checkAccept();
 			if (check == null) {
@@ -143,7 +162,7 @@ public class ServerWebSocketImpl extends WebSocketImplBase<ServerWebSocketImpl> 
 			if (!check) {
 				throw new IllegalStateException("Cannot write to WebSocket, it has been rejected");
 			}
-			return super.writeFrame(frame, handler);
+			return super.writeFrame(frame);
 		}
 	}
 
@@ -166,13 +185,19 @@ public class ServerWebSocketImpl extends WebSocketImplBase<ServerWebSocketImpl> 
 
 	private void doHandshake() {
 		Channel channel = conn.channel();
+		Object metric;
 		try {
 			handshaker.handshake(channel, request.nettyRequest());
+			metric = request.metric;
 		} catch (Exception e) {
 			request.response().setStatusCode(BAD_REQUEST.code()).end();
 			throw e;
 		} finally {
 			request = null;
+		}
+		if (conn.metrics != null) {
+			conn.metrics.responseBegin(metric, new HttpResponseHead(HttpVersion.HTTP_1_1, 101, "Switching Protocol",
+					MultiMap.caseInsensitiveMultiMap()));
 		}
 		conn.responseComplete();
 		status = SWITCHING_PROTOCOLS.code();
@@ -197,38 +222,50 @@ public class ServerWebSocketImpl extends WebSocketImplBase<ServerWebSocketImpl> 
 	}
 
 	@Override
-	public void setHandshake(Future<Integer> future) {
-		setHandshake(future, null);
+	public void setHandshake(Future<Integer> future, Handler<AsyncResult<Integer>> handler) {
+		Future<Integer> fut = setHandshake(future);
+		fut.onComplete(handler);
 	}
 
 	@Override
-	public void setHandshake(Future<Integer> future, Handler<AsyncResult<Integer>> handler) {
+	public Future<Integer> setHandshake(Future<Integer> future) {
 		if (future == null) {
 			throw new NullPointerException();
 		}
-		Promise<Integer> promise = Promise.promise();
+		// Change p1,p2 when we handle multiple listeners per future
+		Promise<Integer> p1 = Promise.promise();
+		Promise<Integer> p2 = Promise.promise();
 		synchronized (conn) {
 			if (handshakePromise != null) {
 				throw new IllegalStateException();
 			}
-			handshakePromise = promise;
+			handshakePromise = p1;
 		}
-		future.onComplete(promise);
-		promise.future().onComplete(ar -> {
+		future.onComplete(p1);
+		p1.future().onComplete(ar -> {
 			if (ar.succeeded()) {
 				handleHandshake(ar.result());
 			} else {
 				handleHandshake(500);
 			}
-			if (handler != null) {
-				handler.handle(ar);
-			}
+			p2.handle(ar);
 		});
+		return p2.future();
 	}
 
 	@Override
-	protected void doClose() {
+	protected void closeConnection() {
 		conn.channelHandlerContext().close();
+	}
+
+	@Override
+	protected void handleClose(boolean graceful) {
+		HttpServerMetrics metrics = conn.metrics;
+		if (METRICS_ENABLED && metrics != null) {
+			metrics.disconnected(getMetric());
+			setMetric(null);
+		}
+		super.handleClose(graceful);
 	}
 
 	/**
@@ -236,7 +273,7 @@ public class ServerWebSocketImpl extends WebSocketImplBase<ServerWebSocketImpl> 
 	 * 
 	 * @return
 	 */
-	public HttpServerRequestImpl originalRequest() {
+	public HttpServerRequest originalRequest() {
 		return this.request;
 	}
 }

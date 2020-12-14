@@ -91,8 +91,8 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- <dependency> <groupId>io.vertx</groupId> <artifactId>vertx-auth-jwt</artifactId> 
-			<version>3.9.0</version> </dependency> -->
+		<!-- <dependency> <groupId>io.vertx</groupId> <artifactId>vertx-codegen</artifactId> 
+			<version>${vertx.version}</version> </dependency> -->
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>

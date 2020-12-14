@@ -124,7 +124,7 @@ public class MainVerticle extends AbstractVerticle implements ServerVerticle {
 		return futures;
 	}
 
-	@SuppressWarnings({ "deprecation", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	private Future startService(ServiceBean service) {
 
 		// 发布服务标示
