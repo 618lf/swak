@@ -12,7 +12,7 @@ import com.swak.zookeeper.ZookeeperService;
 import com.swak.zookeeper.curator.CuratorZookeeperService;
 
 @Configuration
-@ConditionalOnClass(CuratorFramework.class)
+@ConditionalOnClass({CuratorFramework.class, ZookeeperService.class})
 @EnableConfigurationProperties(ZookeeperProperties.class)
 public class ZookeeperAutoConfiguration {
 

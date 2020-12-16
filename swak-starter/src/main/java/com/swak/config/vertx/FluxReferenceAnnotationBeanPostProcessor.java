@@ -23,7 +23,7 @@ import com.swak.vertx.config.ReferenceBean;
  * @date 2020年8月23日 下午2:29:17
  */
 @SuppressWarnings("unchecked")
-public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBeanPostProcessor {
+public class FluxReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBeanPostProcessor {
 
 	public static final String BEAN_NAME = "referenceAnnotationBeanPostProcessor";
 
@@ -36,7 +36,7 @@ public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBean
 	private final ConcurrentMap<InjectionMetadata.InjectedElement, ReferenceBean> injectedMethodReferenceBeanCache = new ConcurrentHashMap<>(
 			CACHE_SIZE);
 
-	public ReferenceAnnotationBeanPostProcessor() {
+	public FluxReferenceAnnotationBeanPostProcessor() {
 		super(FluxReferer.class);
 	}
 

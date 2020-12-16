@@ -28,7 +28,7 @@ import com.swak.vertx.config.ServiceBean;
  * @date 2020年8月23日 下午9:35:04
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class ServiceAnnotationBeanPostProcessor implements EnvironmentAware, BeanDefinitionRegistryPostProcessor {
+public class FluxServiceAnnotationBeanPostProcessor implements EnvironmentAware, BeanDefinitionRegistryPostProcessor {
 
 	private Environment environment;
 

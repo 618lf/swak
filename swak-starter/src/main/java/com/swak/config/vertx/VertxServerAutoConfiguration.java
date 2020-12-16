@@ -33,8 +33,8 @@ public class VertxServerAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public ServiceAnnotationBeanPostProcessor serviceAnnotationBeanPostProcessor() {
-		return new ServiceAnnotationBeanPostProcessor();
+	public FluxServiceAnnotationBeanPostProcessor fluxServiceAnnotationBeanPostProcessor() {
+		return new FluxServiceAnnotationBeanPostProcessor();
 	}
 
 	/**
@@ -43,8 +43,8 @@ public class VertxServerAutoConfiguration {
 	 * @return
 	 */
 	@Bean
-	public ReferenceAnnotationBeanPostProcessor referenceAnnotationBeanPostProcessor() {
-		return new ReferenceAnnotationBeanPostProcessor();
+	public FluxReferenceAnnotationBeanPostProcessor fluxReferenceAnnotationBeanPostProcessor() {
+		return new FluxReferenceAnnotationBeanPostProcessor();
 	}
 
 	/**

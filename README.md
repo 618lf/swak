@@ -8,6 +8,10 @@
 	<version>1.2.0_final</version>
 </dependency>
 ````
+
+#bugs
+1. vertx 的服务发现和依赖配置的spring注册类和dubbo的名称重复导致dubbo依赖配置不上
+
 # swak
 目前这个配置下Eclipse 下能lombok正常的编译、打包   
 swak分为很多单独的模块，每个模块都是单独的功能，相互之间没有强依赖，可以单独使用。  
