@@ -35,13 +35,24 @@ public class SqlMetricsImpl extends AbstractMetrics implements SqlMetrics<Timer.
 	 */
 	public static SqlMetrics<Timer.Context> get(MetricRegistry registry, String sql) {
 		String id = Digests.md5(sql);
-		SqlMetrics<Timer.Context> metric = METRICS.get(Digests.md5(sql));
+		SqlMetrics<Timer.Context> metric = METRICS.get(id);
 		if (metric == null) {
 			metric = METRICS.computeIfAbsent(id, (key) -> {
 				return new SqlMetricsImpl(registry, sql, id);
 			});
 		}
 		return metric;
+	}
+
+	/**
+	 * 获得对应的 Sql
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static String sql(String id) {
+		SqlMetrics<Timer.Context> metrics = METRICS.get(id);
+		return metrics != null ? metrics.sql() : null;
 	}
 
 	protected SqlMetricsImpl(MetricRegistry registry, String sql, String id) {
