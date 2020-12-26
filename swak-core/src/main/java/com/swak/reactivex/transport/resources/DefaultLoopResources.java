@@ -12,6 +12,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.DatagramChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.Future;
@@ -49,6 +51,11 @@ public class DefaultLoopResources extends AtomicInteger implements LoopResources
         this.maxExecTime = maxExecTime;
         this.maxExecTimeUnit = maxExecTimeUnit;
     }
+    
+	@Override
+	public Class<? extends DatagramChannel> onDatagramChannel() {
+		return NioDatagramChannel.class;
+	}
 
     @Override
     public Class<? extends ServerChannel> onServerChannel() {

@@ -39,6 +39,7 @@
 		<module>swak-dubbo-async</module>
 		<module>swak-zookeeper</module>
 		<module>swak-hazelcast</module>
+		<module>swak-paxos</module>
 	</modules>
 	<properties>
 		<spring-boot.version>2.3.4.RELEASE</spring-boot.version>

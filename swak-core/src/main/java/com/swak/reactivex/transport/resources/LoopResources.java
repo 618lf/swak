@@ -1,15 +1,17 @@
 package com.swak.reactivex.transport.resources;
 
+import java.util.concurrent.TimeUnit;
+
 import com.swak.OS;
 import com.swak.reactivex.threads.BlockedThreadChecker;
 import com.swak.reactivex.transport.Disposable;
 import com.swak.reactivex.transport.TransportMode;
+
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;
+import io.netty.channel.socket.DatagramChannel;
 import reactor.core.publisher.Mono;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * EventLoopGroup
@@ -62,6 +64,15 @@ public interface LoopResources extends Disposable {
      * @date 2020/3/29 12:55
      */
     Class<? extends ServerChannel> onServerChannel();
+    
+    /**
+     * DatagramChannel 实现类
+     *
+     * @return ServerChannel 实现类
+     * @author lifeng
+     * @date 2020/3/29 12:55
+     */
+    Class<? extends DatagramChannel> onDatagramChannel();
 
     /**
      * 事件监听线程池组

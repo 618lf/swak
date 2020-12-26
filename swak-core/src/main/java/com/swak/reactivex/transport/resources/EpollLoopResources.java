@@ -7,9 +7,11 @@ import com.swak.reactivex.threads.BlockedThreadChecker;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;
+import io.netty.channel.epoll.EpollDatagramChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.epoll.EpollSocketChannel;
+import io.netty.channel.socket.DatagramChannel;
 
 /**
  * EpollLoop
@@ -25,7 +27,12 @@ public class EpollLoopResources extends DefaultLoopResources {
                        BlockedThreadChecker blockedThreadChecker, long maxExecTime, TimeUnit maxExecTimeUnit) {
         super(prefix, selectCount, workerCount, daemon, blockedThreadChecker, maxExecTime, maxExecTimeUnit);
     }
-
+    
+    @Override
+    public Class<? extends DatagramChannel> onDatagramChannel() {
+        return EpollDatagramChannel.class;
+    }
+    
     @Override
     public Class<? extends ServerChannel> onServerChannel() {
         return EpollServerSocketChannel.class;
