@@ -3,8 +3,6 @@ package com.swak.paxos.transport.server;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
-import org.jboss.netty.channel.FixedReceiveBufferSizePredictor;
-
 import com.swak.paxos.config.ServerConfig;
 import com.swak.paxos.transport.ChannelState;
 import com.swak.reactivex.threads.Contexts;
@@ -13,10 +11,8 @@ import com.swak.reactivex.transport.resources.LoopResources;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 
 /**
  * 开启 Udp 服务器
@@ -58,7 +54,8 @@ public class UdpServer extends AbstractServer {
 		Bootstrap serverBootstrap = new Bootstrap();
 		serverBootstrap.group(bossGroup).channel(loopResources.onDatagramChannel())
 				.option(ChannelOption.SO_BROADCAST, true).option(ChannelOption.SO_SNDBUF, config.getSendBufferSizeUdp())
-				.option(ChannelOption.SO_RCVBUF, config.getRecvBufferSizeUdp()).handler(handler);
+				.option(ChannelOption.SO_RCVBUF, config.getRecvBufferSizeUdp())
+				.handler(new UpdMessageHandler(messageHandler));
 		ChannelFuture channelFuture = serverBootstrap
 				.bind(new InetSocketAddress(config.getsListenIp(), config.getListenPort()));
 		channelFuture.syncUninterruptibly();

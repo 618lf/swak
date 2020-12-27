@@ -62,7 +62,7 @@ public class TcpServer extends AbstractServer {
 				.childHandler(new ChannelInitializer<SocketChannel>() {
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
-
+						ch.pipeline().addLast("handler", new TcpMessageHandler(messageHandler));
 					}
 				});
 		serverBootstrap.childOption(ChannelOption.SO_RCVBUF, config.getRecvBufferSizeTcp());

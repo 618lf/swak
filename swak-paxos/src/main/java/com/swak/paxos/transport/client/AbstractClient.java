@@ -1,4 +1,4 @@
-package com.swak.paxos.transport.server;
+package com.swak.paxos.transport.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,10 +11,9 @@ import com.swak.paxos.transport.ChannelState;
  * @author lifeng
  * @date 2020年12月26日 下午7:55:49
  */
-public abstract class AbstractServer {
-	protected Logger logger = LoggerFactory.getLogger(AbstractServer.class);
+public abstract class AbstractClient {
+	protected Logger logger = LoggerFactory.getLogger(AbstractClient.class);
 	protected volatile ChannelState state = ChannelState.UNINIT;
-	protected MessageHandler messageHandler = new MessageHandler();
 
 	/**
 	 * 服务的状态

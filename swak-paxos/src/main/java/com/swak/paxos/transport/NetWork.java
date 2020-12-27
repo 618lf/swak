@@ -25,14 +25,14 @@ public interface NetWork {
 	/**
 	 * 发送消息
 	 */
-	void sendMessage(Request request);
+	void sendMessage(Message request);
 
 	/**
 	 * 处理消息接收的入口
 	 * 
 	 * @param message
 	 */
-	void onReceiveMessage(Response message);
+	void onReceiveMessage(Message message);
 
 	/**
 	 * 获得节点
