@@ -32,7 +32,8 @@ import com.swak.paxos.protol.PaxosMessage;
 import com.swak.paxos.transport.Message;
 
 /**
- * 单线程：处理一个实例的所有事件： 消息发送、消息接收、超时处理
+ * 单线程：处理一个实例的所有事件： 消息发送、消息接收、超时处理 <br>
+ * 相当于是一个任务队列： 顺序的处理任务
  */
 public class EventLoop extends Thread {
 	private final Logger logger = LoggerFactory.getLogger(EventLoop.class);
@@ -54,26 +55,9 @@ public class EventLoop extends Thread {
 		this.timer = new Timer();
 	}
 
-	@Override
-	public void run() {
-		this.isEnd = false;
-		while (true) {
-			try {
-				int nextTimeout = 5000;
-				nextTimeout = dealwithTimeout(nextTimeout);
-
-				oneLoop(nextTimeout);
-
-				if (this.isEnd) {
-					logger.info("IOLoop [End]");
-					break;
-				}
-			} catch (Throwable th) {
-				logger.error("io loop error", th);
-			}
-		}
-	}
-
+	/**
+	 * 停止事件轮询
+	 */
 	public void shutdown() {
 		if (!this.isEnd) {
 			this.isEnd = true;
@@ -85,119 +69,36 @@ public class EventLoop extends Thread {
 		}
 	}
 
-	public void oneLoop(int timeoutMs) {
-
-		try {
-			Message receiveMsg = this.messageQueue.poll(timeoutMs, TimeUnit.MILLISECONDS);
-			if (receiveMsg != null && receiveMsg.getReceiveLen() > 0 && !receiveMsg.isNotifyMsg()) {
-				this.queueMemSize.addAndGet(-receiveMsg.getReceiveLen());
-				this.poInstance.onReceive(receiveMsg.getReceiveBuf());
-			}
-
-			dealWithRetry();
-
-			this.poInstance.checkNewValue();
-		} catch (Exception e) {
-			logger.error("oneLoop error", e);
-		}
-	}
-
-	public void dealWithRetry() {
-		if (this.retryQueue.isEmpty()) {
-			return;
-		}
-
-		boolean haveRetryOne = false;
-		while (!this.retryQueue.isEmpty()) {
+	@Override
+	public void run() {
+		this.isEnd = false;
+		while (true) {
 			try {
-				PaxosMsg paxosMsg = this.retryQueue.peek();
-				if (paxosMsg.getInstanceID() > this.poInstance.getNowInstanceID() + 1) {
+				int nextTimeout = 5000;
+
+				// 处理超时
+				nextTimeout = dealwithTimeout(nextTimeout);
+
+				// 处理接收消息
+				this.dealWithMessage(nextTimeout);
+
+				// 处理消息重试
+				this.dealWithRetry();
+
+				// 处理提交新的消息
+				this.dealWithCommitMessage();
+
+				if (this.isEnd) {
+					logger.info("IOLoop [End]");
 					break;
-				} else if (paxosMsg.getInstanceID() == this.poInstance.getNowInstanceID() + 1) {
-					if (haveRetryOne) {
-						Breakpoint.getInstance().getIOLoopBP().dealWithRetryMsg(this.poConfig.getMyGroupIdx());
-						logger.debug("retry msg (i+1). instanceid {}.", paxosMsg.getInstanceID());
-						this.poInstance.onReceivePaxosMsg(paxosMsg, true);
-					} else {
-						break;
-					}
-				} else if (paxosMsg.getInstanceID() == this.poInstance.getNowInstanceID()) {
-					Breakpoint.getInstance().getIOLoopBP().dealWithRetryMsg(this.poConfig.getMyGroupIdx());
-					logger.debug("retry msg. instanceid {}.", paxosMsg.getInstanceID());
-					this.poInstance.onReceivePaxosMsg(paxosMsg, false);
-					haveRetryOne = true;
 				}
-
-				this.retryQueue.poll();
-			} catch (Exception e) {
-				logger.error("ioloop dealWithRetry error", e);
+			} catch (Throwable th) {
+				logger.error("io loop error", th);
 			}
 		}
 	}
 
-	public void clearRetryQueue() {
-		while (!this.retryQueue.isEmpty()) {
-			this.retryQueue.poll();
-		}
-	}
-
-	public int addMessage(Message receiveMsg) {
-		// every group send message with same channel, needn't lock;
-		try {
-
-			if (this.messageQueue.size() > this.poConfig.getMaxIOLoopQueueLen()) {
-				logger.error("Queue full, skip msg.");
-				return -2;
-			}
-
-			if (this.queueMemSize.get() > Def.MAX_QUEUE_MEM) {
-				logger.error("Queue memsize {} too large, can't enqueue", this.queueMemSize);
-				return -2;
-			}
-
-			this.messageQueue.offer(receiveMsg);
-			this.queueMemSize.addAndGet(receiveMsg.getReceiveLen());
-			return 0;
-		} catch (Exception e) {
-			logger.error("ioloop addMessage error", e);
-		}
-		return -2;
-	}
-
-	public int addRetryPaxosMsg(PaxosMsg paxosMsg) {
-		Breakpoint.getInstance().getIOLoopBP().enqueueRetryMsg(this.poConfig.getMyGroupIdx());
-
-		if (this.retryQueue.size() > RETRY_QUEUE_MAX_LEN) {
-			Breakpoint.getInstance().getIOLoopBP().enqueueMsgRejectByFullQueue(this.poConfig.getMyGroupIdx());
-			this.retryQueue.poll();
-		}
-
-		this.retryQueue.offer(paxosMsg);
-		return 0;
-	}
-
-	public void addNotify() {
-		this.messageQueue.offer(ReceiveMessage.getNotifyNullMsg());
-	}
-
-	public long addTimer(int timeout, int type) {
-		if (timeout == -1) {
-			return -1;
-		}
-		long absTime = Time.getSteadyClockMS() + timeout;
-		long timerID = this.timer.addTimerWithType(absTime, type);
-		this.timerIDExist.put(timerID, true);
-		this.addNotify();
-		return timerID;
-	}
-
-	public void removeTimer(long timerID) {
-		if (this.timerIDExist.containsKey(timerID)) {
-			this.timerIDExist.remove(timerID);
-		}
-	}
-
-	public int dealwithTimeout(int nextTimeout) {
+	private int dealwithTimeout(int nextTimeout) {
 		boolean hasTimeout = true;
 
 		while (hasTimeout) {
@@ -219,12 +120,150 @@ public class EventLoop extends Thread {
 		return nextTimeout;
 	}
 
-	public void dealwithTimeoutOne(long timerID, int type) {
+	private void dealwithTimeoutOne(long timerID, int type) {
 		if (!this.timerIDExist.containsKey(timerID)) {
 			return;
 		}
 
 		this.timerIDExist.remove(timerID);
 		this.poInstance.onTimeout(timerID, type);
+	}
+
+	private void dealWithMessage(int timeoutMs) {
+
+		try {
+			Message receiveMsg = this.messageQueue.poll(timeoutMs, TimeUnit.MILLISECONDS);
+			if (receiveMsg != null && receiveMsg.getReceiveLen() > 0 && !receiveMsg.isNotifyMsg()) {
+				this.queueMemSize.addAndGet(-receiveMsg.getReceiveLen());
+				this.poInstance.onReceive(receiveMsg.getReceiveBuf());
+			}
+
+			this.poInstance.checkNewValue();
+		} catch (Exception e) {
+			logger.error("oneLoop error", e);
+		}
+	}
+
+	private void dealWithCommitMessage() {
+		try {
+			this.poInstance.checkNewValue();
+		} catch (Exception e) {
+			logger.error("oneLoop error", e);
+		}
+	}
+
+	private void dealWithRetry() {
+		if (this.retryQueue.isEmpty()) {
+			return;
+		}
+
+		boolean haveRetryOne = false;
+		while (!this.retryQueue.isEmpty()) {
+			try {
+				PaxosMessage paxosMsg = this.retryQueue.peek();
+				if (paxosMsg.getInstanceID() > this.poInstance.getNowInstanceID() + 1) {
+					break;
+				} else if (paxosMsg.getInstanceID() == this.poInstance.getNowInstanceID() + 1) {
+					if (haveRetryOne) {
+						logger.debug("retry msg (i+1). instanceid {}.", paxosMsg.getInstanceID());
+						this.poInstance.onReceivePaxosMsg(paxosMsg, true);
+					} else {
+						break;
+					}
+				} else if (paxosMsg.getInstanceID() == this.poInstance.getNowInstanceID()) {
+					logger.debug("retry msg. instanceid {}.", paxosMsg.getInstanceID());
+					this.poInstance.onReceivePaxosMsg(paxosMsg, false);
+					haveRetryOne = true;
+				}
+
+				this.retryQueue.poll();
+			} catch (Exception e) {
+				logger.error("ioloop dealWithRetry error", e);
+			}
+		}
+	}
+
+	public void clearRetryQueue() {
+		while (!this.retryQueue.isEmpty()) {
+			this.retryQueue.poll();
+		}
+	}
+
+	/**
+	 * 添加接收到的消息
+	 * 
+	 * @param receiveMsg
+	 * @return
+	 */
+	public int addMessage(Message receiveMsg) {
+		try {
+
+			if (this.messageQueue.size() > this.poConfig.getMaxIOLoopQueueLen()) {
+				logger.error("Queue full, skip msg.");
+				return -2;
+			}
+
+			if (this.queueMemSize.get() > Def.MAX_QUEUE_MEM) {
+				logger.error("Queue memsize {} too large, can't enqueue", this.queueMemSize);
+				return -2;
+			}
+
+			this.messageQueue.offer(receiveMsg);
+			this.queueMemSize.addAndGet(receiveMsg.getReceiveLen());
+			return 0;
+		} catch (Exception e) {
+			logger.error("ioloop addMessage error", e);
+		}
+		return -2;
+	}
+
+	/**
+	 * 添加重试消息
+	 * 
+	 * @param paxosMsg
+	 */
+	public void addRetryPaxosMsg(PaxosMessage paxosMsg) {
+		if (this.retryQueue.size() > RETRY_QUEUE_MAX_LEN) {
+			this.retryQueue.poll();
+		}
+		this.retryQueue.offer(paxosMsg);
+	}
+
+	/**
+	 * 添加通知消息： 需要发送消息时，先添加一个这样的任务，来发送消息
+	 */
+	public void addNotify() {
+		this.messageQueue.offer(Message.getNotifyNullMsg());
+	}
+
+	/**
+	 * 添加过期的事件
+	 * 
+	 * @param timeout
+	 * @param type
+	 * @return
+	 */
+	public long addTimer(int timeout, int type) {
+		if (timeout == -1) {
+			return -1;
+		}
+		long absTime = Time.getSteadyClockMS() + timeout;
+		long timerID = this.timer.addTimerWithType(absTime, type);
+		this.timerIDExist.put(timerID, true);
+		this.addNotify();
+		return timerID;
+	}
+
+	/**
+	 * 删除事件
+	 * 
+	 * @param timeout
+	 * @param type
+	 * @return
+	 */
+	public void removeTimer(long timerID) {
+		if (this.timerIDExist.containsKey(timerID)) {
+			this.timerIDExist.remove(timerID);
+		}
 	}
 }

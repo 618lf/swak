@@ -5,7 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import com.swak.paxos.common.NodeId;
 import com.swak.paxos.config.Config;
-import com.swak.paxos.protol.ProposeParam;
+import com.swak.paxos.enums.PaxosNodeFunctionRet;
+import com.swak.paxos.protol.Propoal;
 import com.swak.paxos.protol.ProposeResult;
 import com.swak.paxos.transport.NetWork;
 
@@ -48,8 +49,21 @@ public class PaxosNode implements Node {
 
 	}
 
+	/**
+	 * 发送消息
+	 */
 	@Override
-	public ProposeResult propose(ProposeParam propose) {
+	public ProposeResult propose(Propoal propoal) {
+
+		// 校验分组信息
+		if (!groups.check(propoal.getGroup())) {
+			logger.error("message groupid {} wrong, groupsize {}.", groupIdx, groupList.size());
+			return new ProposeResult(PaxosNodeFunctionRet.Paxos_GroupIdxWrong.getRet(), 0);
+		}
+		
+		// 通过分组发送数据
+		groups.getGroup(propoal.getGroup()).getInstance().getCommitter().newValueGetIDNoRetry(propose)
+		
 		return null;
 	}
 

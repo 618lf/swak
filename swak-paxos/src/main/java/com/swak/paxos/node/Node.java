@@ -1,8 +1,7 @@
 package com.swak.paxos.node;
 
 import com.swak.paxos.config.Config;
-import com.swak.paxos.protol.ProposeParam;
-import com.swak.paxos.protol.ProposeResult;
+import com.swak.paxos.protol.Propoal;ort com.swak.paxos.protol.ProposeResult;
 
 /**
  * 定义节点： 一个应用
@@ -27,7 +26,7 @@ public interface Node {
 	 * @param propose
 	 * @return
 	 */
-	ProposeResult propose(ProposeParam propose);
+	ProposeResult propose(Propoal propoal);
 
 	/**
 	 * 停止 Paxos

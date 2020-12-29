@@ -1,20 +1,14 @@
 package com.swak.paxos.protol;
 
 /**
- * 提案参数
+ * 一个提案
  * 
  * @author lifeng
- * @date 2020年12月28日 上午11:16:27
+ * @date 2020年12月29日 下午5:04:35
  */
-public class ProposeParam {
-
+public class Propoal {
 	private int group;
 	private byte[] value;
-
-	public ProposeParam(int group, byte[] value) {
-		this.group = group;
-		this.value = value;
-	}
 
 	public int getGroup() {
 		return group;

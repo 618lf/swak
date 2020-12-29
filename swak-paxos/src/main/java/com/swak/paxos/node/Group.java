@@ -17,4 +17,23 @@ public class Group {
 	private Instance instance;
 	private Master master;
 
+	public Instance getInstance() {
+		return instance;
+	}
+
+	public void setInstance(Instance instance) {
+		this.instance = instance;
+	}
+
+	public Master getMaster() {
+		return master;
+	}
+
+	public void setMaster(Master master) {
+		this.master = master;
+	}
+
+	public Logger getLogger() {
+		return logger;
+	}
 }
