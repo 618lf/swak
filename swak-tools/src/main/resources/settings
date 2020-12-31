@@ -1,1 +1,1 @@
-{"codegen.ip":"192.168.137.100","codegen.port":"3306","codegen.pw":"rootadmin","codegen.udb":"cater","codegen.pkn":"com.cloud.cater","codegen.un":"root","codegen.db":"MySql"}
+{"codegen.ip":"192.168.137.100","codegen.port":"3306","codegen.pw":"rootadmin","codegen.udb":"cloud","codegen.pkn":"com.tmt.sale","codegen.un":"root","codegen.db":"MySql"}

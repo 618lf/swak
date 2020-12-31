@@ -240,6 +240,11 @@
 				<artifactId>swak-qrcode</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.github.618lf</groupId>
+				<artifactId>swak-dubbo</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
 			<!-- 测试 -->
 			<dependency>
