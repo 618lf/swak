@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -72,6 +73,17 @@ public class Maps {
 	 */
 	public static <K, V> Map<K, V> newLRUCache(int maxCapacity) {
 		return new LRUCache<>(maxCapacity);
+	}
+
+	/**
+	 * 并发Maps
+	 * 
+	 * @param <K>
+	 * @param <V>
+	 * @return
+	 */
+	public static <K, V> Map<K, V> newConcurrentMap() {
+		return new ConcurrentHashMap<>();
 	}
 
 	/**

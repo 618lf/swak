@@ -3,8 +3,6 @@ package com.swak.reliable;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -18,8 +16,6 @@ import com.swak.reliable.service.ReliableMessageService;
  * @date 2020年12月31日 下午5:16:07
  */
 public class ReliableMessageAspect implements Ordered {
-
-	private Logger logger = LoggerFactory.getLogger(ReliableMessageAspect.class);
 
 	@Autowired
 	private ReliableMessageService reliableMessageService;
@@ -47,14 +43,17 @@ public class ReliableMessageAspect implements Ordered {
 			throw new ReliableMessageException("Dont Use Reliable Message in Tx!");
 		}
 
+		// 预留位置，将消息发送到可靠消息服务器，通过可靠消息服务器来保证消息的可靠性
+		
+
 		// 执行事务部分
-		Object result = this.reliableMessageService.handleInTransactional(point);
+		ReliableMessageResult result = this.reliableMessageService.handleInTransactional(point);
 
 		// 发送可靠消息 -- 此时消息不一定要保证一定发送成功，但要保证消息是可溯性
-		this.reliableMessageService.sendReliableMessage();
+		this.reliableMessageService.sendReliableMessage(result.getMessage());
 
 		// 返回处理结果
-		return result;
+		return result.getTransactionalResult();
 	}
 
 	/**
@@ -64,6 +63,6 @@ public class ReliableMessageAspect implements Ordered {
 	 */
 	@Override
 	public int getOrder() {
-		return -1001;
+		return -1002;
 	}
 }

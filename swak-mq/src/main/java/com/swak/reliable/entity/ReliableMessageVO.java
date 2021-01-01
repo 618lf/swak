@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class ReliableMessage extends IdEntity<Long> {
+public class ReliableMessageVO extends IdEntity<Long> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -27,6 +27,7 @@ public class ReliableMessage extends IdEntity<Long> {
 	private String exchange;
 	private String routingKey;
 	private String queue;
+	private String module;
 	private String message;
 
 	/**

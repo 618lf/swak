@@ -1,6 +1,6 @@
 package com.swak.reliable;
 
-import com.swak.rabbit.message.Message;
+import com.swak.reliable.entity.ReliableMessageVO;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,5 +12,5 @@ import lombok.experimental.Accessors;
 public class ReliableMessageResult {
 
 	private Object transactionalResult;
-	private Message message;
+	private ReliableMessageVO message;
 }
