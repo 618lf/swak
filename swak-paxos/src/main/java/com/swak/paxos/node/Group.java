@@ -3,8 +3,6 @@ package com.swak.paxos.node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.swak.paxos.master.Master;
-
 /**
  * 分组
  * 
@@ -15,7 +13,6 @@ public class Group {
 
 	private final Logger logger = LoggerFactory.getLogger(Group.class);
 	private Instance instance;
-	private Master master;
 
 	public Instance getInstance() {
 		return instance;
@@ -23,17 +20,5 @@ public class Group {
 
 	public void setInstance(Instance instance) {
 		this.instance = instance;
-	}
-
-	public Master getMaster() {
-		return master;
-	}
-
-	public void setMaster(Master master) {
-		this.master = master;
-	}
-
-	public Logger getLogger() {
-		return logger;
 	}
 }

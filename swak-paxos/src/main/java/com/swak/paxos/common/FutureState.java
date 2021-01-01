@@ -14,49 +14,38 @@
  *    limitations under the License.
  */
 
-package com.swak.paxos.transport;
+package com.swak.paxos.common;
 
 /**
- * channel 节点的状态
+ * future task state
  * 
  * @author maijunsheng
  * @version 创建时间：2013-6-3
+ * 
  */
-public enum ChannelState {
-	/** 未初始化状态 **/
-	UNINIT(0),
-	/** 初始化完成 **/
-	INIT(1),
-	/** 存活可用状态 **/
-	ALIVE(2),
-	/** 不存活可用状态 **/
-	UNALIVE(3),
-	/** 关闭状态 **/
-	CLOSE(4);
+public enum FutureState {
+	/** the task is doing **/
+	DOING(0),
+	/** the task is done **/
+	DONE(1),
+	/** ths task is cancelled **/
+	CANCELLED(2);
 
 	public final int value;
 
-	private ChannelState(int value) {
+	private FutureState(int value) {
 		this.value = value;
 	}
 
-	public boolean isAliveState() {
-		return this == ALIVE;
+	public boolean isCancelledState() {
+		return this == CANCELLED;
 	}
 
-	public boolean isUnAliveState() {
-		return this == UNALIVE;
+	public boolean isDoneState() {
+		return this == DONE;
 	}
 
-	public boolean isCloseState() {
-		return this == CLOSE;
-	}
-
-	public boolean isInitState() {
-		return this == INIT;
-	}
-
-	public boolean isUnInitState() {
-		return this == UNINIT;
+	public boolean isDoingState() {
+		return this == DOING;
 	}
 }

@@ -19,13 +19,10 @@ package com.swak.paxos.enums;
  * 定时任务类型
  */
 public enum TimerType {
-	proposerPrepareTimeout(1),
-	proposerAcceptTimeout(2),
-	learnerAskforlearnNoop(3),
-	instanceCommitTimeout(4);
-	
+	PrepareTimeout(1), AcceptTimeout(2), learnerAskforlearnNoop(3), CommitTimeout(4);
+
 	private int value;
-	
+
 	private TimerType(int value) {
 		this.value = value;
 	}

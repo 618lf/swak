@@ -1,28 +1,21 @@
 package com.swak.paxos.protol;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
 /**
- * 一个提案
+ * 提案
  * 
  * @author lifeng
  * @date 2020年12月29日 下午5:04:35
  */
+@Getter
+@Setter
+@Accessors(chain = true)
 public class Propoal {
+	private long propoalID;
 	private int group;
 	private byte[] value;
-
-	public int getGroup() {
-		return group;
-	}
-
-	public void setGroup(int group) {
-		this.group = group;
-	}
-
-	public byte[] getValue() {
-		return value;
-	}
-
-	public void setValue(byte[] value) {
-		this.value = value;
-	}
+	private long timeoutMs;
 }

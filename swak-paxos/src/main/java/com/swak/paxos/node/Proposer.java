@@ -3,13 +3,14 @@ package com.swak.paxos.node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.swak.paxos.common.EventLoop;
 import com.swak.paxos.common.OtherUtils;
 import com.swak.paxos.common.TimeStat;
 import com.swak.paxos.config.Config;
 import com.swak.paxos.enums.PaxosMessageType;
 import com.swak.paxos.enums.TimerType;
+import com.swak.paxos.event.EventLoop;
 import com.swak.paxos.protol.PaxosMessage;
+import com.swak.paxos.protol.Propoal;
 
 /**
  * 议员
@@ -31,7 +32,7 @@ public class Proposer extends Role {
 	private long timeoutInstanceID;
 	private boolean canSkipPrepare;
 	private boolean wasRejectBySomeone;
-	private EventLoop ioLoop;
+	private EventLoop eventLoop;
 	private TimeStat timeStat = new TimeStat();
 	private Learner learner;
 
@@ -57,11 +58,11 @@ public class Proposer extends Role {
 	 * 
 	 * @param value
 	 */
-	public void propose(byte[] value) {
+	public void propose(Propoal propoal) {
 
 		// 设置一个新值
 		if (this.proposerState.getValue().length == 0) {
-			this.proposerState.setValue(value);
+			this.proposerState.setValue(propoal.getValue());
 		}
 
 		// 设置准备阶段的过期时间， 接受阶段的过期时间
@@ -121,23 +122,23 @@ public class Proposer extends Role {
 	private void exitAccept() {
 		if (this.isAccepting) {
 			this.isAccepting = false;
-			this.ioLoop.removeTimer(this.acceptTimerID);
+			this.eventLoop.removeTimer(this.acceptTimerID);
 			this.acceptTimerID = 0;
 		}
 	}
 
 	private void addPrepareTimer(int timeoutMs) {
 		if (this.prepareTimerID > 0) {
-			this.ioLoop.removeTimer(this.prepareTimerID);
+			this.eventLoop.removeTimer(this.prepareTimerID);
 			this.prepareTimerID = 0L;
 		}
 
 		if (timeoutMs > 0) {
-			this.prepareTimerID = this.ioLoop.addTimer(timeoutMs, TimerType.proposerPrepareTimeout.getValue());
+			this.prepareTimerID = this.eventLoop.addTimer(timeoutMs, TimerType.proposerPrepareTimeout.getValue());
 			return;
 		}
 
-		this.prepareTimerID = this.ioLoop.addTimer(this.lastPrepareTimeoutMs,
+		this.prepareTimerID = this.eventLoop.addTimer(this.lastPrepareTimeoutMs,
 				TimerType.proposerPrepareTimeout.getValue());
 		this.timeoutInstanceID = getInstanceID();
 

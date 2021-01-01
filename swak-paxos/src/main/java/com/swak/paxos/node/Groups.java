@@ -2,6 +2,9 @@ package com.swak.paxos.node;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.swak.utils.Lists;
 
 /**
@@ -11,6 +14,8 @@ import com.swak.utils.Lists;
  * @date 2020年12月28日 上午11:02:31
  */
 public class Groups {
+
+	private final Logger logger = LoggerFactory.getLogger(Groups.class);
 
 	/**
 	 * 分组
@@ -25,6 +30,7 @@ public class Groups {
 	 */
 	public boolean check(int group) {
 		if (group < 0 || group >= groups.size()) {
+			logger.error("message groupid {} wrong, groupsize {}.", group, groups.size());
 			return false;
 		}
 

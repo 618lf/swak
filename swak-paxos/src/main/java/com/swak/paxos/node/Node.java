@@ -1,7 +1,9 @@
 package com.swak.paxos.node;
 
+import com.swak.paxos.common.NodeId;
 import com.swak.paxos.config.Config;
-import com.swak.paxos.protol.Propoal;ort com.swak.paxos.protol.ProposeResult;
+import com.swak.paxos.protol.Propoal;
+import com.swak.paxos.protol.ProposePromise;
 
 /**
  * 定义节点： 一个应用
@@ -10,6 +12,20 @@ import com.swak.paxos.protol.Propoal;ort com.swak.paxos.protol.ProposeResult;
  * @date 2020年12月26日 下午7:26:07
  */
 public interface Node {
+
+	/**
+	 * node节点信息
+	 * 
+	 * @return
+	 */
+	NodeId id();
+	
+	/**
+	 * 是否是leader 节点
+	 * 
+	 * @return
+	 */
+	boolean isMaster();
 
 	/**
 	 * 开启节点
@@ -26,7 +42,7 @@ public interface Node {
 	 * @param propose
 	 * @return
 	 */
-	ProposeResult propose(Propoal propoal);
+	ProposePromise commit(Propoal propoal);
 
 	/**
 	 * 停止 Paxos
