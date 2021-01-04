@@ -17,6 +17,6 @@ import lombok.experimental.Accessors;
 public class ProposePromise {
 
 	private ResultCode ret;
-	private Propoal propoal;
+	private Proposal proposal;
 	private long timeoutTimerId;
 }

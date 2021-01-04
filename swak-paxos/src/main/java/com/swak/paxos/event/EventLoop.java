@@ -1,12 +1,12 @@
 package com.swak.paxos.event;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.swak.paxos.enums.TimerType;
 import com.swak.paxos.node.Instance;
-import com.swak.paxos.protol.Propoal;
-import com.swak.paxos.protol.ProposePromise;
+import com.swak.paxos.protol.Proposal;
 
 /**
  * 事件处理器
@@ -24,6 +24,7 @@ public class EventLoop extends Thread {
 	 * 超时处理器
 	 */
 	private Timer timer;
+	private Map<Long, Boolean> timerIDExist = new HashMap<Long, Boolean>();
 	private Instance instance;
 
 	public EventLoop() {
@@ -34,7 +35,20 @@ public class EventLoop extends Thread {
 	 * 添加超时器
 	 */
 	public long addTimer(long absTime, int type) {
-		return this.timer.addTimerWithType(absTime, type);
+		long timerID = this.timer.addTimerWithType(absTime, type);
+		this.timerIDExist.put(timerID, true);
+		return timerID;
+	}
+
+	/**
+	 * 删除操作
+	 * 
+	 * @param timerID
+	 */
+	public void removeTimer(long timerID) {
+		if (this.timerIDExist.containsKey(timerID)) {
+			this.timerIDExist.remove(timerID);
+		}
 	}
 
 	/**
@@ -42,8 +56,8 @@ public class EventLoop extends Thread {
 	 * 
 	 * @param propoal
 	 */
-	public void addCommitMessage(Propoal propoal) {
-		this.addEvent(Event.Propose(this, propoal));
+	public void addCommitMessage(Proposal proposal) {
+		this.addEvent(Event.Propose(this, proposal));
 	}
 
 	/**

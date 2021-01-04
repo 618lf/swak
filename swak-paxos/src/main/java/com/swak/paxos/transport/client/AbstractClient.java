@@ -3,7 +3,7 @@ package com.swak.paxos.transport.client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.swak.paxos.transport.ChannelState;
+import com.swak.paxos.common.ChannelState;
 
 /**
  * 基础的服务

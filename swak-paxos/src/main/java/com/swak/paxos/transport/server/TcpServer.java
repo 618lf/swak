@@ -3,8 +3,8 @@ package com.swak.paxos.transport.server;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
+import com.swak.paxos.common.ChannelState;
 import com.swak.paxos.config.ServerConfig;
-import com.swak.paxos.transport.ChannelState;
 import com.swak.reactivex.threads.Contexts;
 import com.swak.reactivex.transport.resources.LoopResources;
 

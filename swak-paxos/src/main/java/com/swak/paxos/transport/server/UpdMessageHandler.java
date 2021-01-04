@@ -21,8 +21,7 @@ public class UpdMessageHandler extends SimpleChannelInboundHandler<DatagramPacke
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
-		Message request = new Message();
-		handler.handle(ctx.channel(), request);
+		handler.handle(ctx.channel(), null);
 	}
 
 	@Override

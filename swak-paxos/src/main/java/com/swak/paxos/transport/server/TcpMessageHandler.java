@@ -1,7 +1,5 @@
 package com.swak.paxos.transport.server;
 
-import com.swak.paxos.transport.Message;
-
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -20,8 +18,7 @@ public class TcpMessageHandler extends ChannelDuplexHandler {
 
 	@Override
 	public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
-		Message request = new Message();
-		handler.handle(ctx.channel(), request);
+		handler.handle(ctx.channel(), null);
 	}
 
 	@Override

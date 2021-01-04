@@ -1,6 +1,6 @@
 package com.swak.paxos.event;
 
-import com.swak.paxos.protol.Propoal;
+import com.swak.paxos.protol.Proposal;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,7 +27,7 @@ public class Event {
 		return (T) event;
 	}
 
-	public static Event Propose(EventLoop loop, Propoal event) {
+	public static Event Propose(EventLoop loop, Proposal event) {
 		Event e = new Event();
 		e.loop = loop;
 		e.type = Event_Propose;

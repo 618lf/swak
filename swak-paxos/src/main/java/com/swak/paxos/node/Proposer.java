@@ -6,11 +6,14 @@ import org.slf4j.LoggerFactory;
 import com.swak.paxos.common.OtherUtils;
 import com.swak.paxos.common.TimeStat;
 import com.swak.paxos.config.Config;
-import com.swak.paxos.enums.PaxosMessageType;
+import com.swak.paxos.enums.ProposalType;
 import com.swak.paxos.enums.TimerType;
 import com.swak.paxos.event.EventLoop;
-import com.swak.paxos.protol.PaxosMessage;
-import com.swak.paxos.protol.Propoal;
+import com.swak.paxos.protol.Proposal;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 /**
  * 议员
@@ -18,8 +21,13 @@ import com.swak.paxos.protol.Propoal;
  * @author lifeng
  * @date 2020年12月28日 下午1:22:39
  */
-public class Proposer extends Role {
+@Getter
+@Setter
+@Accessors(chain = true)
+public class Proposer {
 	private final Logger logger = LoggerFactory.getLogger(Proposer.class);
+	private long instanceID;
+	private Instance instance;
 	private Config config;
 	private ProposerState proposerState;
 	private ProposerStat proposerStat;
@@ -36,8 +44,9 @@ public class Proposer extends Role {
 	private TimeStat timeStat = new TimeStat();
 	private Learner learner;
 
-	public Proposer(Config config) {
-		super(config);
+	public Proposer(Config config, Instance instance) {
+		this.config = config;
+		this.instance = instance;
 		this.isPreparing = false;
 		this.isAccepting = false;
 		this.canSkipPrepare = false;
@@ -58,11 +67,11 @@ public class Proposer extends Role {
 	 * 
 	 * @param value
 	 */
-	public void propose(Propoal propoal) {
+	public void propose(Proposal proposal) {
 
 		// 设置一个新值
 		if (this.proposerState.getValue().length == 0) {
-			this.proposerState.setValue(propoal.getValue());
+			this.proposerState.setValue(proposal.getValue());
 		}
 
 		// 设置准备阶段的过期时间， 接受阶段的过期时间
@@ -102,9 +111,9 @@ public class Proposer extends Role {
 		}
 
 		// 创建Paxos消息
-		PaxosMessage paxosMsg = new PaxosMessage();
-		paxosMsg.setMsgType(PaxosMessageType.paxosPrepare.getValue());
-		paxosMsg.setInstanceID(getInstanceID());
+		Proposal paxosMsg = new Proposal();
+		paxosMsg.setMsgType(ProposalType.paxosPrepare.getValue());
+		paxosMsg.setInstanceID(this.getInstanceID());
 		paxosMsg.setNodeID(this.config.getMyNodeID());
 		paxosMsg.setProposalID(this.proposerState.getProposalID());
 
@@ -134,12 +143,11 @@ public class Proposer extends Role {
 		}
 
 		if (timeoutMs > 0) {
-			this.prepareTimerID = this.eventLoop.addTimer(timeoutMs, TimerType.proposerPrepareTimeout.getValue());
+			this.prepareTimerID = this.eventLoop.addTimer(timeoutMs, TimerType.PrepareTimeout.getValue());
 			return;
 		}
 
-		this.prepareTimerID = this.eventLoop.addTimer(this.lastPrepareTimeoutMs,
-				TimerType.proposerPrepareTimeout.getValue());
+		this.prepareTimerID = this.eventLoop.addTimer(this.lastPrepareTimeoutMs, TimerType.PrepareTimeout.getValue());
 		this.timeoutInstanceID = getInstanceID();
 
 		this.lastPrepareTimeoutMs *= 2;
@@ -154,7 +162,7 @@ public class Proposer extends Role {
 	 * 
 	 * @param paxosMsg
 	 */
-	public void onPrepareReply(PaxosMessage paxosMsg) {
+	public void onPrepareReply(Proposal paxosMsg) {
 
 		// 当前议员是否处理准备阶段
 		if (!this.isPreparing) {
@@ -198,13 +206,13 @@ public class Proposer extends Role {
 		exitPrepare();
 		this.isAccepting = true;
 
-		PaxosMessage paxosMsg = new PaxosMessage();
-		paxosMsg.setMsgType(PaxosMessageType.paxosAccept.getValue());
+		Proposal paxosMsg = new Proposal();
+		paxosMsg.setMsgType(ProposalType.paxosAccept.getValue());
 		paxosMsg.setInstanceID(getInstanceID());
 		paxosMsg.setNodeID(this.config.getMyNodeID());
 		paxosMsg.setProposalID(this.proposerState.getProposalID());
 		paxosMsg.setValue(this.proposerState.getValue());
-		paxosMsg.setLastChecksum(getLastChecksum());
+		// paxosMsg.setLastChecksum(this.instance.);
 
 		this.proposerStat.startNewRound();
 		addAcceptTimer(0);
@@ -216,23 +224,23 @@ public class Proposer extends Role {
 	private void exitPrepare() {
 		if (this.isPreparing) {
 			this.isPreparing = false;
-			this.ioLoop.removeTimer(this.prepareTimerID);
+			this.eventLoop.removeTimer(this.prepareTimerID);
 			this.prepareTimerID = 0;
 		}
 	}
 
 	private void addAcceptTimer(int timeoutMs) {
 		if (this.acceptTimerID > 0) {
-			this.ioLoop.removeTimer(this.acceptTimerID);
+			this.eventLoop.removeTimer(this.acceptTimerID);
 			this.acceptTimerID = 0;
 		}
 
 		if (timeoutMs > 0) {
-			this.acceptTimerID = this.ioLoop.addTimer(timeoutMs, TimerType.proposerAcceptTimeout.getValue());
+			this.acceptTimerID = this.eventLoop.addTimer(timeoutMs, TimerType.AcceptTimeout.getValue());
 			return;
 		}
 
-		this.acceptTimerID = this.ioLoop.addTimer(this.lastAcceptTimeoutMs, TimerType.proposerAcceptTimeout.getValue());
+		this.acceptTimerID = this.eventLoop.addTimer(this.lastAcceptTimeoutMs, TimerType.AcceptTimeout.getValue());
 		this.timeoutInstanceID = getInstanceID();
 
 		logger.debug("accept timeout mills {}.", this.lastAcceptTimeoutMs);
@@ -243,7 +251,7 @@ public class Proposer extends Role {
 		}
 	}
 
-	public void onAcceptReply(PaxosMessage paxosMsg) {
+	public void onAcceptReply(Proposal paxosMsg) {
 
 		if (!this.isAccepting) {
 			return;
@@ -263,7 +271,7 @@ public class Proposer extends Role {
 		}
 
 		if (this.proposerStat.isPassedOnThisRound()) {
-			int useTimeMs = this.timeStat.point();
+			// int useTimeMs = this.timeStat.point();
 			exitAccept();
 			this.learner.proposerSendSuccess(getInstanceID(), this.proposerState.getProposalID());
 		} else if (this.proposerStat.isRejectedOnThisRound() || this.proposerStat.isAllReceiveOnThisRound()) {
