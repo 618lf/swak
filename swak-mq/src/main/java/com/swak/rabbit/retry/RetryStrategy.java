@@ -11,10 +11,11 @@ import com.swak.rabbit.message.PendingConfirm;
 import com.swak.utils.StringUtils;
 
 /**
- * 消息重试机制
+ * 消息重试机制: 此重试方式并不一定是可靠的
  * 
  * @author lifeng
  */
+@Deprecated
 public interface RetryStrategy extends ConfirmCallback, ReturnCallback {
 
 	// 专有的日志
@@ -44,8 +45,7 @@ public interface RetryStrategy extends ConfirmCallback, ReturnCallback {
 	/**
 	 * 删除已经确认的消息
 	 * 
-	 * @param id
-	 *            全局的消息ID
+	 * @param id 全局的消息ID
 	 */
 	void del(String id);
 

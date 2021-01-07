@@ -11,6 +11,7 @@ import com.swak.utils.ConcurrentHashSet;
  * 
  * @author lifeng
  */
+@Deprecated
 public class MemoryRetryStrategy extends AbstractRetryStrategy {
 	
 	private ConcurrentHashSet<String> confirms = new ConcurrentHashSet<>();

@@ -11,6 +11,7 @@ import com.swak.serializer.SerializationUtils;
  * 
  * @author lifeng
  */
+@Deprecated
 public class RedisRetryStrategy extends AbstractRetryStrategy {
 
 	private String confirms = "Retry.Ids";

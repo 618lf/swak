@@ -32,7 +32,9 @@ import com.swak.rabbit.message.Message;
 import com.swak.rabbit.message.PendingConfirm;
 
 /**
- * 管理整个连接, 和所有的 Channel
+ * 管理整个连接, 和所有的 Channel <br>
+ * 
+ * 268 行代码设置发送确认
  * 
  * @author lifeng
  */
@@ -45,8 +47,19 @@ public class RabbitMQTemplate
 	private Connection connection;
 	private final TransferQueue<CacheChannelProxy> channels;
 	private final Object connectionMonitor = new Object();
+
+	/**
+	 * 如果消息没有到exchange,则confirm回调,ack=false <br>
+	 * 如果消息到达exchange,则confirm回调,ack=true <br>
+	 */
 	private ConfirmCallback confirmCallback;
+
+	/**
+	 * exchange到queue成功,则不回调return <br>
+	 * exchange到queue失败,则回调return(需设置mandatory=true,否则不回回调,消息就丢了)<br>
+	 */
 	private ReturnCallback returnCallback;
+
 	private volatile boolean stopped;
 	private ExecutorService consumerWorkServiceExecutor;
 	private ThreadFactory daemonFactory;
@@ -252,10 +265,22 @@ public class RabbitMQTemplate
 		}
 		try {
 			Channel channel = this.newChannel();
-			channel.confirmSelect();
+			this.configConfirmAck(channel);
 			return new CacheChannelProxy(this.channels, channel);
 		} catch (IOException e) {
 			throw new AmqpException(e);
+		}
+	}
+
+	/**
+	 * 配置发送确认, 如果配置了发送确认
+	 * 
+	 * @param channel
+	 * @throws IOException
+	 */
+	protected void configConfirmAck(Channel channel) throws IOException {
+		if (this.config.isPublisherConfirms()) {
+			channel.confirmSelect();
 		}
 	}
 
@@ -311,18 +336,23 @@ public class RabbitMQTemplate
 
 	/////////////////// 簡單的發送消息/////////
 	public PendingConfirm basicPublish(String exchange, String routingKey, Message message) throws AmqpException {
-		return basicPublish(exchange, routingKey, message, true);
+
+		// 配置发送确认
+		boolean confirmAble = this.config.isPublisherConfirms();
+		boolean returnAble = this.config.isPublisherReturns();
+		return basicPublish(exchange, routingKey, message, confirmAble, returnAble);
 	}
 
-	public PendingConfirm basicPublish(String exchange, String routingKey, Message message, boolean confirm)
-			throws AmqpException {
+	public PendingConfirm basicPublish(String exchange, String routingKey, Message message, boolean confirmAble,
+			boolean returnAble) throws AmqpException {
 		return execute(channel -> {
 			PendingConfirm pendingConfirm = null;
-			if (confirm) {
+			if (confirmAble) {
 				pendingConfirm = new PendingConfirm(message.getId());
 				channel.addPendingConfirm(channel.getNextPublishSeqNo(), pendingConfirm);
 			}
-			channel.basicPublish(exchange, routingKey, true, message.getProperties(), message.getPayload());
+
+			channel.basicPublish(exchange, routingKey, returnAble, message.getProperties(), message.getPayload());
 			return pendingConfirm;
 		});
 	}
@@ -376,6 +406,7 @@ public class RabbitMQTemplate
 	 * 处理发送应答
 	 *
 	 */
+	@Deprecated
 	@FunctionalInterface
 	public interface ConfirmCallback {
 		void confirm(PendingConfirm pendingConfirm, boolean ack);
@@ -385,6 +416,7 @@ public class RabbitMQTemplate
 	 * 处理不可答返回
 	 *
 	 */
+	@Deprecated
 	@FunctionalInterface
 	public interface ReturnCallback {
 		void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey);

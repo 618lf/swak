@@ -39,6 +39,7 @@ import com.swak.reactivex.threads.WorkerContext;
 @ConditionalOnClass({ Connection.class, RabbitMQTemplate.class })
 @EnableConfigurationProperties(RabbitMQProperties.class)
 @ConditionalOnProperty(prefix = Constants.APPLICATION_PREFIX, name = "enableMq", matchIfMissing = true)
+@SuppressWarnings("deprecation")
 public class RabbitMqAutoConfiguration {
 
 	@Autowired

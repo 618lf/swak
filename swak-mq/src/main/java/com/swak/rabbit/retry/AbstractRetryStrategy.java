@@ -19,6 +19,7 @@ import com.swak.utils.JsonMapper;
  * 
  * @author lifeng
  */
+@Deprecated
 public abstract class AbstractRetryStrategy implements RetryStrategy, Runnable, DisposableBean {
 
 	private Logger logger = LoggerFactory.getLogger(RetryStrategy.class);

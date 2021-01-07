@@ -6,13 +6,13 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.swak.reliable.ReliableMessage;
 import com.swak.reliable.ReliableMessageException;
 import com.swak.reliable.ReliableMessageResult;
+import com.swak.reliable.dao.ReliableMessageDao;
 import com.swak.reliable.entity.ReliableMessageVO;
 import com.swak.reliable.invoke.InvokeService;
 import com.swak.utils.JsonMapper;
@@ -27,11 +27,8 @@ import com.swak.utils.StringUtils;
 @Service
 public class ReliableMessageService {
 
-	/**
-	 * Sql 操作
-	 */
 	@Autowired
-	private NamedParameterJdbcTemplate jdbcTemplate;
+	private ReliableMessageDao reliableMessageDao;
 	private InvokeService invokeService = new InvokeService();
 
 	/**
@@ -156,7 +153,7 @@ public class ReliableMessageService {
 	 */
 	@Transactional
 	public void saveReliableMessage(ReliableMessageVO message) {
-
+		this.reliableMessageDao.insert(message);
 	}
 
 	/**
