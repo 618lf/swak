@@ -15,9 +15,16 @@
  */
 package com.swak.paxos.node;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
 /**
  * acceptor current state
  */
+@Getter
+@Setter
+@Accessors(chain = true)
 public class AcceptorState {
 	private BallotNumber promiseBallot = new BallotNumber(0, 0);
 	private BallotNumber acceptedBallot = new BallotNumber(0, 0);

@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.swak.paxos.node.Instance;
 import com.swak.paxos.protol.Proposal;
 
 /**
@@ -25,7 +24,7 @@ public class EventLoop extends Thread {
 	 */
 	private Timer timer;
 	private Map<Long, Boolean> timerIDExist = new HashMap<Long, Boolean>();
-	private Instance instance;
+	//private Instance instance;
 
 	public EventLoop() {
 		this.timer = new Timer();
@@ -105,6 +104,6 @@ public class EventLoop extends Thread {
 	 * 处理提交的事件: 事件统一交给实例去处理
 	 */
 	private void dealWithCommitEvent(Event event) {
-		this.instance.onCommit(event);
+		//this.instance.onCommit(event);
 	}
 }

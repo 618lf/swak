@@ -84,7 +84,7 @@ public class QrcodeGen {
 
 		int qrCodeWidth = bitMatrix.getWidth();
 		int qrCodeHeight = bitMatrix.getHeight();
-		BufferedImage qrCode = ImageUtil.drawQrcode(qrCodeConfig, bitMatrix);
+		BufferedImage qrCode = ImageUtil.drawQrcode(bitMatrix);
 
 		// 若二维码的实际宽高和预期的宽高不一致, 则缩放
 		int realQrCodeWidth = qrCodeConfig.getW();

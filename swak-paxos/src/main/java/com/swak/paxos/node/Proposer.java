@@ -273,7 +273,7 @@ public class Proposer {
 		if (this.proposerStat.isPassedOnThisRound()) {
 			// int useTimeMs = this.timeStat.point();
 			exitAccept();
-			this.learner.proposerSendSuccess(getInstanceID(), this.proposerState.getProposalID());
+			//this.learner.proposerSendSuccess(getInstanceID(), this.proposerState.getProposalID());
 		} else if (this.proposerStat.isRejectedOnThisRound() || this.proposerStat.isAllReceiveOnThisRound()) {
 			addAcceptTimer(OtherUtils.fastRand() % 30 + 10);
 		}

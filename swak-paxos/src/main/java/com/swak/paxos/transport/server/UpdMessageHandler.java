@@ -1,7 +1,5 @@
 package com.swak.paxos.transport.server;
 
-import com.swak.paxos.transport.Message;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
