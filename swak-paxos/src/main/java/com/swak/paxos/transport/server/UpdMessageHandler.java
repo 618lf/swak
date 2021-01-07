@@ -1,7 +1,5 @@
 package com.swak.paxos.transport.server;
 
-import com.swak.paxos.transport.Message;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
@@ -21,8 +19,7 @@ public class UpdMessageHandler extends SimpleChannelInboundHandler<DatagramPacke
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
-		Message request = new Message();
-		handler.handle(ctx.channel(), request);
+		handler.handle(ctx.channel(), null);
 	}
 
 	@Override

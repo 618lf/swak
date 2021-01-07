@@ -6,10 +6,11 @@ import com.swak.rabbit.RabbitMQTemplate;
 import com.swak.rabbit.retry.RetryStrategy;
 
 /**
- * 安全的配置项目
+ * rabbit 配置支持
  * 
  * @author lifeng
  */
+@SuppressWarnings("deprecation")
 public class RabbitMqConfigurationSupport {
 
 	private RetryStrategy retryStrategy;
@@ -18,12 +19,15 @@ public class RabbitMqConfigurationSupport {
 	public RetryStrategy getRetryStrategy() {
 		return retryStrategy;
 	}
+
 	public void setRetryStrategy(RetryStrategy retryStrategy) {
 		this.retryStrategy = retryStrategy;
 	}
+
 	public Function<RabbitMQTemplate, Boolean> getApply() {
 		return apply;
 	}
+
 	public void setApply(Function<RabbitMQTemplate, Boolean> apply) {
 		this.apply = apply;
 	}

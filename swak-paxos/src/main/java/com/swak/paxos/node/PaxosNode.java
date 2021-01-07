@@ -5,9 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.swak.paxos.common.NodeId;
 import com.swak.paxos.config.Config;
-import com.swak.paxos.enums.ResultCode;
-import com.swak.paxos.event.Event;
-import com.swak.paxos.protol.Propoal;
+import com.swak.paxos.protol.Proposal;
 import com.swak.paxos.protol.ProposePromise;
 import com.swak.paxos.transport.NetWork;
 
@@ -32,7 +30,6 @@ public class PaxosNode implements Node {
 	private NetWork netWork;
 	private Groups groups;
 	private Config config;
-	private Master master;
 
 	@Override
 	public NodeId id() {
@@ -41,7 +38,7 @@ public class PaxosNode implements Node {
 
 	@Override
 	public boolean isMaster() {
-		return this.master.id().equals(this.id());
+		return false;
 	}
 
 	@Override
@@ -73,15 +70,16 @@ public class PaxosNode implements Node {
 	 * 发送消息
 	 */
 	@Override
-	public ProposePromise commit(Propoal propoal) {
+	public ProposePromise commit(Proposal proposal) {
 
-		// 校验分组信息
-		if (!groups.check(propoal.getGroup())) {
-			return new ProposePromise().setRet(ResultCode.GROUP_INDEX_ERROR);
-		}
-
-		// 通过分组发送数据
-		return groups.getGroup(propoal.getGroup()).getInstance().commit(propoal);
+//		// 校验分组信息
+//		if (!groups.check(proposal.getGroup())) {
+//			return new ProposePromise().setRet(ResultCode.GROUP_INDEX_ERROR);
+//		}
+//
+//		// 通过分组发送数据
+//		return groups.getGroup(proposal.getGroup()).getInstance().commit(propoal);
+		return null;
 	}
 
 	@Override

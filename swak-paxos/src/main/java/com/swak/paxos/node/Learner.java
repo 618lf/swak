@@ -1,8 +1,12 @@
 package com.swak.paxos.node;
 
 import com.swak.paxos.config.Config;
-import com.swak.paxos.enums.PaxosMessageType;
-import com.swak.paxos.protol.PaxosMessage;
+import com.swak.paxos.enums.ProposalType;
+import com.swak.paxos.protol.Proposal;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 /**
  * 学习议案
@@ -10,22 +14,33 @@ import com.swak.paxos.protol.PaxosMessage;
  * @author lifeng
  * @date 2020年12月28日 上午10:55:32
  */
-public class Learner extends Role {
+@Getter
+@Setter
+@Accessors(chain = true)
+public class Learner {
+
+	private long instanceID;
+	private Instance instance;
+	private Config config;
 
 	public Learner(Config config) {
-		super(config);
 	}
 
-	public void proposerSendSuccess(long learnInstanceID, long proposalID) {
-		PaxosMessage msg = new PaxosMessage();
-		msg.setMsgType(PaxosMessageType.paxosLearnerProposerSendSuccess.getValue());
-		msg.setInstanceID(learnInstanceID);
-		msg.setNodeID(this.config.getMyNodeID());
-		msg.setProposalID(proposalID);
-		msg.setLastChecksum(getLastChecksum());
+	public void askforLearn() {
+		Proposal paxosMsg = new Proposal();
+		paxosMsg.setInstanceID(getInstanceID());
+		paxosMsg.setNodeID(this.config.getMyNodeID());
+		paxosMsg.setMsgType(ProposalType.paxosLearnerAskforLearn.getValue());
 
-		// broadcastMessage(msg,
-		// BroadcastMessageType.BroadcastMessage_Type_RunSelf_First.getType(),
-		// MessageSendType.UDP.getValue());
+		if (this.config.isIMFollower()) {
+			// this is not proposal nodeid, just use this val to bring follow to nodeid
+			// info.
+			paxosMsg.setProposalNodeID(this.config.getFollowNodeID());
+		}
+
+		// 开始学习
+//		broadcastMessage(paxosMsg, BroadcastMessageType.BroadcastMessage_Type_RunSelf_None.getType(),
+//				MessageSendType.TCP.getValue());
+//		broadcastMessageToTempNode(paxosMsg, MessageSendType.UDP.getValue());
 	}
 }

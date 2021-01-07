@@ -2,7 +2,7 @@ package com.swak.paxos.node;
 
 import com.swak.paxos.common.NodeId;
 import com.swak.paxos.config.Config;
-import com.swak.paxos.protol.Propoal;
+import com.swak.paxos.protol.Proposal;
 import com.swak.paxos.protol.ProposePromise;
 
 /**
@@ -42,7 +42,7 @@ public interface Node {
 	 * @param propose
 	 * @return
 	 */
-	ProposePromise commit(Propoal propoal);
+	ProposePromise commit(Proposal proposal);
 
 	/**
 	 * 停止 Paxos

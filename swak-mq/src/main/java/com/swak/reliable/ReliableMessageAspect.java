@@ -43,9 +43,6 @@ public class ReliableMessageAspect implements Ordered {
 			throw new ReliableMessageException("Dont Use Reliable Message in Tx!");
 		}
 
-		// 预留位置，将消息发送到可靠消息服务器，通过可靠消息服务器来保证消息的可靠性
-		
-
 		// 执行事务部分
 		ReliableMessageResult result = this.reliableMessageService.handleInTransactional(point);
 

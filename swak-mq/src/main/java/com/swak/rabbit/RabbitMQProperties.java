@@ -99,6 +99,8 @@ public class RabbitMQProperties {
 	private long networkRecoveryInterval = DEFAULT_NETWORK_RECOVERY_INTERNAL;
 	private boolean automaticRecoveryEnabled = DEFAULT_AUTOMATIC_RECOVERY_ENABLED;
 	private boolean includeProperties = false;
+	private boolean publisherConfirms = true;
+	private boolean publisherReturns = true;
 
 	public RabbitMQProperties() {
 	}
@@ -120,6 +122,8 @@ public class RabbitMQProperties {
 		automaticRecoveryEnabled = that.automaticRecoveryEnabled;
 		includeProperties = that.includeProperties;
 		requestedChannelMax = that.requestedChannelMax;
+		publisherConfirms = that.publisherConfirms;
+		publisherReturns = that.publisherReturns;
 	}
 
 	public Integer getConnectionRetries() {
@@ -265,4 +269,23 @@ public class RabbitMQProperties {
 		this.includeProperties = includeProperties;
 		return this;
 	}
+
+	public boolean isPublisherConfirms() {
+		return publisherConfirms;
+	}
+
+	public RabbitMQProperties setPublisherConfirms(boolean publisherConfirms) {
+		this.publisherConfirms = publisherConfirms;
+		return this;
+	}
+
+	public boolean isPublisherReturns() {
+		return publisherReturns;
+	}
+
+	public RabbitMQProperties setPublisherReturns(boolean publisherReturns) {
+		this.publisherReturns = publisherReturns;
+		return this;
+	}
+
 }

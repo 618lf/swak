@@ -35,6 +35,7 @@ import com.swak.utils.StringUtils;
  * 
  * @author lifeng
  */
+@SuppressWarnings("deprecation")
 public class EventBus {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventBus.class);
@@ -512,11 +513,11 @@ public class EventBus {
 		message = message.build();
 		PendingConfirm pendingConfirm = null;
 		try {
-			pendingConfirm = this.templateForSender.basicPublish(exchange, routingKey, message, retryable);
+			pendingConfirm = this.templateForSender.basicPublish(exchange, routingKey, message, retryable, retryable);
 		} catch (Exception e) {
 			pendingConfirm = new PendingConfirm(message.getId());
 		}
-		if (this.retryStrategy != null && retryable) {
+		if (this.retryStrategy != null && pendingConfirm != null && retryable) {
 			this.bindPendingConfirm(exchange, routingKey, pendingConfirm, message);
 			this.retryStrategy.add(pendingConfirm);
 		}

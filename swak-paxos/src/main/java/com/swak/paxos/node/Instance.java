@@ -8,10 +8,13 @@ import org.slf4j.LoggerFactory;
 import com.swak.paxos.common.TimeStat;
 import com.swak.paxos.config.Config;
 import com.swak.paxos.enums.TimerType;
-import com.swak.paxos.event.Event;
 import com.swak.paxos.event.EventLoop;
-import com.swak.paxos.protol.Propoal;
+import com.swak.paxos.protol.Proposal;
 import com.swak.paxos.protol.ProposePromise;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 /**
  * 实例
@@ -19,6 +22,9 @@ import com.swak.paxos.protol.ProposePromise;
  * @author lifeng
  * @date 2020年12月28日 上午10:50:24
  */
+@Getter
+@Setter
+@Accessors(chain = true)
 public class Instance {
 
 	private final Logger logger = LoggerFactory.getLogger(Instance.class);
@@ -30,26 +36,18 @@ public class Instance {
 	private TimeStat timeStat = new TimeStat();
 	private boolean started = false;
 	private EventLoop eventLoop;
-	private Master master;
 
 	/**
 	 * 提交议案:委托master来提交
 	 */
-	public ProposePromise commit(Propoal propoal) {
+	public ProposePromise commit(Proposal propoal) {
 		ProposePromise promise = new ProposePromise();
-		promise.setPropoal(propoal);
+		promise.setProposal(propoal);
 		eventLoop.addCommitMessage(propoal);
 		if (propoal.getTimeoutMs() > 0) {
 			promise.setTimeoutTimerId(eventLoop.addTimer(propoal.getTimeoutMs(), TimerType.CommitTimeout.getValue()));
 		}
 		return promise;
-	}
-
-	/**
-	 * 处理消息的提交事件: 统一通过Event来标识是EventLoop 提交过来的数据
-	 */
-	public void onCommit(Event event) {
-		this.master.commit(event.getEvent());
 	}
 
 	/**
@@ -65,7 +63,7 @@ public class Instance {
 		// 开启一个新的议案 -- 无阻塞的获取
 		ProposePromise promise = proposeQueue.poll();
 		if (promise != null) {
-			this.proposer.propose(promise.getPropoal());
+			this.proposer.propose(promise.getProposal());
 		}
 	}
 }
