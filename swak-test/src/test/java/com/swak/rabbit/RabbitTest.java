@@ -38,7 +38,7 @@ public class RabbitTest {
 				false, 2, TimeUnit.SECONDS);
 		RabbitMQProperties config = new RabbitMQProperties();
 		config.setAutomaticRecoveryEnabled(true);
-		config.setUser("guest").setPassword("guest").setHost("127.0.0.1").setPort(5672);
+		config.setUser("guest").setPassword("guest").setHost("192.168.137.100").setPort(5672);
 		rabbitTemplate = new RabbitMQTemplate(config).setConsumerWorkServiceExecutor(executor)
 				.setDaemonFactory(new SwakThreadFactory("RabbitMQ-Daemons-", true, new AtomicInteger()));
 

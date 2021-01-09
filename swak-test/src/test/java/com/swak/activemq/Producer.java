@@ -13,7 +13,7 @@ import org.junit.Test;
 public class Producer {
 
 	@Test
-	public void send() throws JMSException {
+	public void send() throws JMSException, InterruptedException {
 		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(ActiveMQConnectionFactory.DEFAULT_USER,
 				ActiveMQConnectionFactory.DEFAULT_PASSWORD, "tcp://192.168.137.100:61616");
 		Connection connection = factory.createConnection();
@@ -25,14 +25,23 @@ public class Producer {
 
 		// 消息的生产者
 		MessageProducer producer = session.createProducer(queue);
-		
-		TextMessage message = session.createTextMessage("Hello World!");
-		
-		// 发送消息
-		producer.send(message);
-		
+		int i = 0;
+		while (true) {
+
+			TextMessage message = session.createTextMessage("" + (i++));
+
+			// 发送消息
+			producer.send(message);
+
+			if (i > 100) {
+				break;
+			}
+			
+			Thread.sleep(1000);
+		}
+
 		connection.close();
-		
+
 		System.out.println("消息发送成功！");
 	}
 }

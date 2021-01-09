@@ -11,7 +11,7 @@ import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.Test;
 
-public class Consumer {
+public class Consumer1 {
 
 	@Test
 	public void send() throws JMSException {
@@ -22,7 +22,7 @@ public class Consumer {
 		// 为啥需要start
 		connection.start();
 		
-		Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
 
 		// 创建一个队列
 		Queue queue = session.createQueue("user");
@@ -36,8 +36,9 @@ public class Consumer {
 			Message message = consumer.receive();
 			if (message instanceof TextMessage) {
 				TextMessage text = (TextMessage) message;
-				System.out.println("获取的消息：" + text.getText());
+				System.out.println("1 - 消费者获取的消息：" + text.getText());
 			}
+			message.acknowledge();
 		}
 	}
 }

@@ -19,17 +19,16 @@ import com.swak.test.utils.MultiThreadTest;
  */
 public class PublishTest extends RabbitTest {
 
-	// /**
-	// * 单个发送
-	// *
-	// * @throws IOException
-	// * @throws TimeoutException
-	// */
-	// @Test
-	// public void onePublisher() throws IOException, TimeoutException {
-	// rabbitTemplate.basicPublish(EXCHANGE, ROUTING,
-	// Message.of().setId("1").setPayload("123".getBytes()).build());
-	// }
+	/**
+	 * 单个发送
+	 *
+	 * @throws IOException
+	 * @throws TimeoutException
+	 */
+	@Test
+	public void onePublisher() throws IOException, TimeoutException {
+		rabbitTemplate.basicPublish(EXCHANGE, ROUTING, Message.of().setId("1").setPayload("123".getBytes()).build());
+	}
 
 	/**
 	 * 多个发送
