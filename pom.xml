@@ -118,6 +118,18 @@
 		<maven-gpg-plugin>1.6</maven-gpg-plugin>
 		<build-helper-maven-plugin>3.1.0</build-helper-maven-plugin>
 	</properties>
+	<repositories>
+		<repository>
+			<id>aliyun-repos</id>
+			<name>Nexus aliyun</name>
+			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>Central</id>
+			<name>Central</name>
+			<url>http://repo1.maven.org/maven2/</url>
+		</repository>
+	</repositories>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
