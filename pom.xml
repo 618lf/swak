@@ -36,7 +36,6 @@
 		<module>swak-jdbc-async</module>
 		<module>swak-generate</module>
 		<module>swak-tools</module>
-		<module>swak-dubbo-async</module>
 		<module>swak-zookeeper</module>
 		<module>swak-hazelcast</module>
 	</modules>
